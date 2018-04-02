@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">UseDesk SDK</string>
+
+    <string name="navigation_title_home">Home</string>
+    <string name="navigation_title_chat">Chat</string>
+    <string name="navigation_title_info">Info</string>
+
+    <string name="app_info_title">Usedesk — Perfect Tool for Customer Support and Communication.</string>
+    <string name="app_info_content">Usedesk helps your team to effectively answer all of your customers’ requests. All incoming requests are taken into account while your specialized staff can consult each other using the system. Thus customers feel your attention, and appreciate the personal touch.</string>
+    <string name="app_info_contacts">Contacts:\nhttp://usedesk.com/\nsupport@usedesk.com</string>
+
+    <string name="configuration_no_configuration">No usedesk configuration,\nplease configure your email address first</string>
+    <string name="configuration_dialog_title">Enter your data</string>
+    <string name="configuration_company_id_hint">Enter company ID</string>
+    <string name="configuration_email_hint">Enter email</string>
+    <string name="configuration_url_hint">Enter url</string>
+    <string name="configuration_email">Email: %1s</string>
+    <string name="configuration_company_id">Company ID: %1s</string>
+    <string name="configuration_url">URL: %1s</string>
+    <string name="configuration_configure">Configure</string>
+    <string name="configuration_clear_configuration">Clear configuration</string>
+
+    <string name="attachment_dialog_picture">Picture</string>
+    <string name="attachment_dialog_document">Document</string>
+    <string name="attachment_selected">1 attachment</string>
+
+    <string name="offline_form_dialog_title">Offline Form</string>
+    <string name="offline_form_company_id_hint">Enter company ID</string>
+    <string name="offline_form_email_hint">Enter email</string>
+    <string name="offline_form_name_hint">Enter name</string>
+    <string name="offline_form_message_hint">Enter message</string>
+
+    <string name="error">Error</string>
+    <string name="no_operators">No operators</string>
+    <string name="loading">Loading…</string>
+    <string name="message">Message</string>
+    <string name="no_connections">No internet connection</string>
+    <string name="long_message">Your message is too long for sending (more than 10 000 symbols)</string>
+
+</resources>

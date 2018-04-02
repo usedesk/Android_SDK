@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="message_disconnected">Disconnected</string>
+    <string name="message_connecting_error">Connecting Error</string>
+    <string name="message_no_operators">No operators</string>
+    <string name="message_feedback_sent">Thanks, your feedback has been submitted!</string>
+    <string name="message_offline_form_sent">Thanks, your Offline Form has been submitted!</string>
+
+</resources>

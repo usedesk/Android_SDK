@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        applicationId rootProject.applicationId
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}-${variant.buildType.name}.apk"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile project(':usedesk_sdk')
+
+    compile "com.android.support:appcompat-v7:${rootProject.supportVersion}"
+    compile "com.android.support:design:${rootProject.supportVersion}"
+    compile "com.android.support:support-vector-drawable:${rootProject.supportVersion}"
+
+    annotationProcessor "com.github.bumptech.glide:compiler:${rootProject.glideVersion}"
+    compile "com.github.bumptech.glide:glide:${rootProject.glideVersion}"
+
+    compile "com.squareup.picasso:picasso:${rootProject.picassoVersion}"
+
+    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${rootProject.permissionsdispatcherVersion}"
+    compile "com.github.hotchemi:permissionsdispatcher:${rootProject.permissionsdispatcherVersion}"
+
+    compile "com.droidninja:filepicker:${rootProject.filePickerVersion}"
+}

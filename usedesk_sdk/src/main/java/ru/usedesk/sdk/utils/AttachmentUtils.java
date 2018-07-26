@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.usedesk.sdk.models.UsedeskFile;
 
@@ -48,18 +49,26 @@ public class AttachmentUtils {
         return lastVal;
     }
 
-    public static UsedeskFile createUsedeskFile(ArrayList<String> paths) {
-        String firstFilePath = paths.get(0);
-        UsedeskFile usedeskFile = null;
+    public static List<UsedeskFile> createUsedeskFiles(ArrayList<String> paths) {
+        List<UsedeskFile> usedeskFiles = new ArrayList<>();
 
-        if (firstFilePath != null) {
-            File file = new File(firstFilePath);
-            String fileMimeType = getMimeType(firstFilePath);
-            usedeskFile = new UsedeskFile();
-            usedeskFile.setName(file.getName());
-            usedeskFile.setContent(String.format(CONTENT_FORMAT, fileMimeType, convertToBase64(firstFilePath)));
-            usedeskFile.setType(fileMimeType);
+        for (String path : paths) {
+            if (path != null) {
+                usedeskFiles.add(createUsedeskFile(path));
+            }
         }
+
+        return usedeskFiles;
+    }
+
+    public static UsedeskFile createUsedeskFile(String path) {
+        File file = new File(path);
+        String fileMimeType = getMimeType(path);
+
+        UsedeskFile usedeskFile = new UsedeskFile();
+        usedeskFile.setName(file.getName());
+        usedeskFile.setContent(String.format(CONTENT_FORMAT, fileMimeType, convertToBase64(path)));
+        usedeskFile.setType(fileMimeType);
 
         return usedeskFile;
     }

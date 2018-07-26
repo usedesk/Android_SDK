@@ -2,6 +2,8 @@ package ru.usedesk.sdk;
 
 import android.content.Context;
 
+import java.util.List;
+
 import ru.usedesk.sdk.models.Feedback;
 import ru.usedesk.sdk.models.OfflineForm;
 import ru.usedesk.sdk.models.UsedeskFile;
@@ -18,6 +20,10 @@ public class UsedeskSDK {
 
     public void sendMessage(String text, UsedeskFile usedeskFile) {
         usedeskManager.sendUserMessage(text, usedeskFile);
+    }
+
+    public void sendMessage(String text, List<UsedeskFile> usedeskFiles) {
+        usedeskManager.sendUserMessage(text, usedeskFiles);
     }
 
     public void sendTextMessage(String text) {

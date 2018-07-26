@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -18,19 +19,19 @@ import ru.usedesk.sdk.models.BaseRequest;
 import ru.usedesk.sdk.models.BaseResponse;
 import ru.usedesk.sdk.models.ErrorResponse;
 import ru.usedesk.sdk.models.Feedback;
-import ru.usedesk.sdk.models.OfflineForm;
-import ru.usedesk.sdk.models.SendFeedbackRequest;
-import ru.usedesk.sdk.models.SendFeedbackResponse;
-import ru.usedesk.sdk.models.UsedeskFile;
 import ru.usedesk.sdk.models.InitChatRequest;
 import ru.usedesk.sdk.models.InitChatResponse;
 import ru.usedesk.sdk.models.Message;
 import ru.usedesk.sdk.models.MessageType;
 import ru.usedesk.sdk.models.NewMessageResponse;
+import ru.usedesk.sdk.models.OfflineForm;
+import ru.usedesk.sdk.models.SendFeedbackRequest;
+import ru.usedesk.sdk.models.SendFeedbackResponse;
 import ru.usedesk.sdk.models.SendMessageRequest;
 import ru.usedesk.sdk.models.SetEmailRequest;
 import ru.usedesk.sdk.models.SetEmailResponse;
 import ru.usedesk.sdk.models.Setup;
+import ru.usedesk.sdk.models.UsedeskFile;
 import ru.usedesk.sdk.utils.LogUtils;
 import ru.usedesk.sdk.utils.SharedHelper;
 
@@ -116,6 +117,26 @@ class UsedeskManager {
         sendMessage(sendMessage);
     }
 
+    void sendUserMessage(String text, List<UsedeskFile> usedeskFiles) {
+        if (usedeskFiles == null || usedeskFiles.isEmpty()) {
+            return;
+        }
+
+        // checking for TEXT and ONE FILE
+        if (usedeskFiles.size() == 1) {
+            UsedeskFile usedeskFile = usedeskFiles.get(0);
+            sendUserMessage(text, usedeskFile);
+        } else {
+            // first - message with TEXT
+            sendUserTextMessage(text);
+
+            // than - FILES
+            for (UsedeskFile usedeskFile : usedeskFiles) {
+                sendUserFileMessage(usedeskFile);
+            }
+        }
+    }
+
     void sendUserTextMessage(String text) {
         if (!socket.connected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
@@ -147,6 +168,7 @@ class UsedeskManager {
         }
 
         SendFeedbackRequest feedbackRequest = new SendFeedbackRequest(feedback);
+        feedbackRequest.setToken(token);
         emitAction(feedbackRequest);
     }
 
@@ -198,6 +220,7 @@ class UsedeskManager {
 
     private void sendMessage(SendMessageRequest.Message sendMessage) {
         SendMessageRequest sendMessageRequest = new SendMessageRequest();
+        sendMessageRequest.setToken(token);
         sendMessageRequest.setMessage(sendMessage);
 
         emitAction(sendMessageRequest);
@@ -205,6 +228,7 @@ class UsedeskManager {
 
     private void setUserEmail() {
         SetEmailRequest setEmailRequest = new SetEmailRequest();
+        setEmailRequest.setToken(token);
         setEmailRequest.setEmail(usedeskConfiguration.getEmail());
 
         emitAction(setEmailRequest);

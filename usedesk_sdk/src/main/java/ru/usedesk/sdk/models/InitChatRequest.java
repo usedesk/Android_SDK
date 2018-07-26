@@ -9,8 +9,6 @@ public class InitChatRequest extends BaseRequest {
 
     public static final String TYPE = "@@server/chat/INIT";
 
-    private String token;
-
     @SerializedName(KEY_COMPANY_ID)
     private String companyId;
 
@@ -20,14 +18,6 @@ public class InitChatRequest extends BaseRequest {
     public InitChatRequest() {
         super(TYPE);
         payload = new Payload();
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getCompanyId() {

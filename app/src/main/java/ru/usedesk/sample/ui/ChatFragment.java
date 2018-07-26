@@ -39,7 +39,7 @@ import ru.usedesk.sdk.models.Message;
 import ru.usedesk.sdk.models.OfflineForm;
 import ru.usedesk.sdk.models.UsedeskFile;
 
-import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFile;
+import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFiles;
 
 @RuntimePermissions
 public class ChatFragment extends BaseFragment implements UsedeskActionListener {
@@ -47,6 +47,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     private static final String TAG = ChatFragment.class.getSimpleName();
 
     private static final int MAX_MESSAGE_LENGTH = 10000;
+    private static final int MAX_FILES = 3;
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
@@ -61,7 +62,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     private MessagesAdapter messagesAdapter;
     private UsedeskSDK usedeskSDK;
 
-    private UsedeskFile usedeskFile;
+    private List<UsedeskFile> usedeskFiles;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -92,7 +93,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        usedeskFile = null;
+        usedeskFiles = null;
 
         if (resultCode == Activity.RESULT_OK && data != null) {
             switch (requestCode) {
@@ -100,19 +101,19 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
                     ArrayList<String> photoPaths = new ArrayList<>(
                             data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
                     if (!photoPaths.isEmpty()) {
-                        usedeskFile = createUsedeskFile(photoPaths);
+                        usedeskFiles = createUsedeskFiles(photoPaths);
                     }
                     break;
                 case FilePickerConst.REQUEST_CODE_DOC:
                     ArrayList<String> documentPaths = new ArrayList<>(
                             data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
                     if (!documentPaths.isEmpty()) {
-                        usedeskFile = createUsedeskFile(documentPaths);
+                        usedeskFiles = createUsedeskFiles(documentPaths);
                     }
                     break;
             }
 
-            if (usedeskFile != null) {
+            if (usedeskFiles != null) {
                 attachmentMarkerTextView.setVisibility(View.VISIBLE);
                 sendImageButton.setEnabled(true);
             }
@@ -301,7 +302,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         }
 
         String textMessage = messageEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(textMessage) && usedeskFile == null) {
+        if (TextUtils.isEmpty(textMessage) && usedeskFiles == null) {
             messageEditText.requestFocus();
             return;
         }
@@ -311,14 +312,14 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
             return;
         }
 
-        if (usedeskFile != null) {
-            usedeskSDK.sendMessage(textMessage, usedeskFile);
+        if (usedeskFiles != null) {
+            usedeskSDK.sendMessage(textMessage, usedeskFiles);
         } else {
             usedeskSDK.sendTextMessage(textMessage);
         }
 
         messageEditText.setText("");
-        usedeskFile = null;
+        usedeskFiles = null;
         attachmentMarkerTextView.setVisibility(View.GONE);
     }
 
@@ -357,7 +358,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickPhoto() {
         FilePickerBuilder.getInstance()
-                .setMaxCount(1)
+                .setMaxCount(MAX_FILES)
                 .setSelectedFiles(new ArrayList<String>())
                 .pickPhoto(this);
     }
@@ -369,7 +370,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickDocument() {
         FilePickerBuilder.getInstance()
-                .setMaxCount(1)
+                .setMaxCount(MAX_FILES)
                 .setSelectedFiles(new ArrayList<String>())
                 .pickFile(this);
     }

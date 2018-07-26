@@ -22,7 +22,7 @@
 
     <string name="attachment_dialog_picture">Picture</string>
     <string name="attachment_dialog_document">Document</string>
-    <string name="attachment_selected">1 attachment</string>
+    <string name="attachment_selected">With attachment</string>
 
     <string name="offline_form_dialog_title">Offline Form</string>
     <string name="offline_form_company_id_hint">Enter company ID</string>

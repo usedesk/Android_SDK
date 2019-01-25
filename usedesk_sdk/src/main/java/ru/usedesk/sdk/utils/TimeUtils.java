@@ -17,21 +17,20 @@ public class TimeUtils {
     }
 
     public static String parseTime(String stringTimestamp) {
-        SimpleDateFormat inDateFormat1 = new SimpleDateFormat(IN_TIME_FORMAT_1);
-        SimpleDateFormat inDateFormat2 = new SimpleDateFormat(IN_TIME_FORMAT_2);
-
         SimpleDateFormat outDateFormat = new SimpleDateFormat(OUT_TIME_FORMAT);
 
         try {
             // try to parse with format #1
-            Date date1 = inDateFormat1.parse(stringTimestamp.replaceAll("Z$", "+0000"));
+            SimpleDateFormat inDateFormat = new SimpleDateFormat(IN_TIME_FORMAT_1);
+            Date date1 = inDateFormat.parse(stringTimestamp.replaceAll("Z$", "+0000"));
             return outDateFormat.format(date1);
         } catch (ParseException e) {
             LogUtils.LOGE(TAG, e);
 
             // try to parse with format #2
             try {
-                Date date2 = inDateFormat2.parse(stringTimestamp);
+                SimpleDateFormat inDateFormat = new SimpleDateFormat(IN_TIME_FORMAT_2);
+                Date date2 = inDateFormat.parse(stringTimestamp);
                 return outDateFormat.format(date2);
             } catch (ParseException e1) {
                 LogUtils.LOGE(TAG, e);

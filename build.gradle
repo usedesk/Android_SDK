@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
 
@@ -28,7 +28,7 @@ task clean(type: Delete) {
 ext {
     applicationId = "ru.usedesk.sample"
     compileSdkVersion = 27
-    buildToolsVersion = "27.0.3"
+    buildToolsVersion = "28.0.3"
     minSdkVersion = 19
     targetSdkVersion = 27
 

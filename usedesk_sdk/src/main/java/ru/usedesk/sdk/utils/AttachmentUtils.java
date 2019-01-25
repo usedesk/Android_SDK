@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.usedesk.sdk.models.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.UsedeskFile;
 
 public class AttachmentUtils {
 
@@ -49,7 +49,7 @@ public class AttachmentUtils {
         return lastVal;
     }
 
-    public static List<UsedeskFile> createUsedeskFiles(ArrayList<String> paths) {
+    public static List<UsedeskFile> createUsedeskFiles(ArrayList<String> paths) {//TODO: Перенести в UsedeskSDK
         List<UsedeskFile> usedeskFiles = new ArrayList<>();
 
         for (String path : paths) {

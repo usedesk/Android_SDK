@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.presenter;
+package ru.usedesk.sdk.domain.entity;
 
 import ru.usedesk.sdk.domain.entity.Feedback;
 

@@ -1,19 +1,31 @@
-package ru.usedesk.sdk.presenter;
+package ru.usedesk.sdk.appsdk;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import ru.usedesk.sdk.appsdk.di.ScopeSdk;
 import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.OfflineForm;
+import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.UsedeskFile;
 import ru.usedesk.sdk.domain.interactor.UsedeskManager;
+import toothpick.Toothpick;
 
 public class UsedeskSDK {
 
-    private Context context;
+    @Inject
     private UsedeskManager usedeskManager;
+
+    @Inject
+    UsedeskSDK(@NonNull Context context) {
+        ScopeSdk scopeSdk = new ScopeSdk(this, context);
+        Toothpick.inject(this, scopeSdk.getScope());
+    }
 
     public void destroy() {
         usedeskManager.disconnect();
@@ -44,11 +56,8 @@ public class UsedeskSDK {
         usedeskManager.sendOfflineForm(offlineForm);
     }
 
-    private UsedeskSDK(Context context) {
-        this.context = context;
-    }
-
-    private void set(UsedeskConfiguration usedeskConfiguration, UsedeskActionListener usedeskActionListener) {
+    public void set(UsedeskConfiguration usedeskConfiguration,
+                     UsedeskActionListener usedeskActionListener) {
         if (usedeskManager == null) {
             usedeskManager = new UsedeskManager(context, usedeskConfiguration, usedeskActionListener);
         } else {

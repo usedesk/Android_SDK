@@ -18,7 +18,7 @@ import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.data.framework.CallAPI;
 import ru.usedesk.sdk.data.framework.ResponseProcessorImpl;
-import ru.usedesk.sdk.data.framework.SharedHelper;
+import ru.usedesk.sdk.data.framework.sharedpreferences.SharedHelper;
 import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
 import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
@@ -30,6 +30,7 @@ import ru.usedesk.sdk.data.framework.entity.response.InitChatResponse;
 import ru.usedesk.sdk.data.framework.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.data.framework.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.data.framework.entity.response.SetEmailResponse;
+import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.Constants;
 import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.Message;
@@ -38,7 +39,7 @@ import ru.usedesk.sdk.domain.entity.OfflineForm;
 import ru.usedesk.sdk.domain.entity.Setup;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.UsedeskFile;
-import ru.usedesk.sdk.presenter.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.utils.LogUtils;
 
 import static ru.usedesk.sdk.domain.entity.Constants.OFFLINE_FORM_PATH;
@@ -48,7 +49,6 @@ public class UsedeskManager {
     private static final String TAG = UsedeskManager.class.getSimpleName();
 
     private Context context;
-    private SharedHelper sharedHelper;
     private UsedeskConfiguration usedeskConfiguration;
     private UsedeskActionListener usedeskActionListener;
     private Socket socket;
@@ -59,6 +59,8 @@ public class UsedeskManager {
     private ConnectEmitterListener connectEmitterListener;
     private ConnectErrorEmitterListener connectErrorEmitterListener;
     private DisconnectEmitterListener disconnectEmitterListener;
+
+    private IUserInfoRepository userInfoRepository;
 
     public UsedeskManager(Context context,
                           UsedeskConfiguration usedeskConfiguration,

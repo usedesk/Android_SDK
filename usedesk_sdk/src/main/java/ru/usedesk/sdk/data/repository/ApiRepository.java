@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import ru.usedesk.sdk.data.framework.api.HttpApi;
 import ru.usedesk.sdk.data.framework.api.SocketApi;
 import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
+import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 
@@ -53,7 +54,7 @@ public class ApiRepository {
         socketApi.setSocket(url);
     }
 
-    public void connect() {
-        socketApi.connect(actionListener);
+    public void connect(OnMessageListener onMessageListener) {
+        socketApi.connect(actionListener, onMessageListener);
     }
 }

@@ -28,6 +28,7 @@ import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.Message;
 import ru.usedesk.sdk.domain.entity.MessageType;
 import ru.usedesk.sdk.domain.entity.OfflineForm;
+import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.Setup;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
@@ -299,6 +300,35 @@ public class UsedeskManager {
     }
 
     private void connect() {
-        apiRepository.connect();
+        apiRepository.connect(getOnMessageListener());
+    }
+
+    private OnMessageListener getOnMessageListener() {
+        return new OnMessageListener() {
+            @Override
+            public void onNew(NewMessageResponse newMessageResponse) {
+                parseNewMessageResponse(newMessageResponse);
+            }
+
+            @Override
+            public void onFeedback(SendFeedbackResponse response) {
+                parseFeedbackResponse(response);
+            }
+
+            @Override
+            public void onError(ErrorResponse response) {
+                parseErrorResponse(response);
+            }
+
+            @Override
+            public void onInit(InitChatResponse response) {
+                parseInitResponse(response);
+            }
+
+            @Override
+            public void onInitChat() {
+                initChat();
+            }
+        };
     }
 }

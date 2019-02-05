@@ -3,9 +3,9 @@ package ru.usedesk.sdk.appsdk.di;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import ru.usedesk.sdk.data.framework.ConfigurationLoader;
-import ru.usedesk.sdk.data.framework.DataLoader;
-import ru.usedesk.sdk.data.framework.TokenLoader;
+import ru.usedesk.sdk.data.framework.loader.ConfigurationLoader;
+import ru.usedesk.sdk.data.framework.loader.DataLoader;
+import ru.usedesk.sdk.data.framework.loader.TokenLoader;
 import ru.usedesk.sdk.data.repository.UserInfoRepository;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
 import ru.usedesk.sdk.domain.interactor.UsedeskManager;

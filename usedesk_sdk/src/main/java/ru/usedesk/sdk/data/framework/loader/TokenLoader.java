@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework;
+package ru.usedesk.sdk.data.framework.loader;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,6 +28,17 @@ public class TokenLoader extends DataLoader<String> {
 
     @Override
     protected void saveData(@NonNull String token) {
+        sharedPreferences.edit()
+                .putString(KEY_TOKEN, token)
+                .apply();
+    }
 
+    @Override
+    public void clearData() {
+        super.clearData();
+
+        sharedPreferences.edit()
+                .remove(KEY_TOKEN)
+                .apply();
     }
 }

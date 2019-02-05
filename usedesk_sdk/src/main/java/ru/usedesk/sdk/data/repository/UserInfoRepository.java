@@ -1,11 +1,12 @@
 package ru.usedesk.sdk.data.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import ru.usedesk.sdk.data.framework.DataLoader;
+import ru.usedesk.sdk.data.framework.loader.DataLoader;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
@@ -30,8 +31,12 @@ public class UserInfoRepository implements IUserInfoRepository {
     }
 
     @Override
-    public void setToken(@NonNull String token) {
-        tokenDataLoader.setData(token);
+    public void setToken(@Nullable String token) {
+        if (token == null) {
+            tokenDataLoader.clearData();
+        } else {
+            tokenDataLoader.setData(token);
+        }
     }
 
     @Override
@@ -41,7 +46,11 @@ public class UserInfoRepository implements IUserInfoRepository {
     }
 
     @Override
-    public void setConfiguration(@NonNull UsedeskConfiguration configuration) {
-        configurationDataLoader.setData(configuration);
+    public void setConfiguration(@Nullable UsedeskConfiguration configuration) {
+        if (configuration == null) {
+            configurationDataLoader.clearData();
+        } else {
+            configurationDataLoader.setData(configuration);
+        }
     }
 }

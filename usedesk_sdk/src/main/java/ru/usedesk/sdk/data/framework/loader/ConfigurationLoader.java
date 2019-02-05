@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework;
+package ru.usedesk.sdk.data.framework.loader;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
-import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 
 @Singleton
 public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
@@ -27,7 +26,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
 
     @Override
     @Nullable
-    protected UsedeskConfiguration loadData(){
+    protected UsedeskConfiguration loadData() {
         final String id = sharedPreferences.getString(KEY_ID, null);
         final String url = sharedPreferences.getString(KEY_URL, null);
         final String email = sharedPreferences.getString(KEY_EMAIL, null);
@@ -45,6 +44,17 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
                 .putString(KEY_ID, configuration.getCompanyId())
                 .putString(KEY_URL, configuration.getUrl())
                 .putString(KEY_EMAIL, configuration.getEmail())
+                .apply();
+    }
+
+    @Override
+    public void clearData() {
+        super.clearData();
+
+        sharedPreferences.edit()
+                .remove(KEY_ID)
+                .remove(KEY_URL)
+                .remove(KEY_EMAIL)
                 .apply();
     }
 }

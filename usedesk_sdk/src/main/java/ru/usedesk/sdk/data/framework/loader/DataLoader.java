@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework;
+package ru.usedesk.sdk.data.framework.loader;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,8 +25,12 @@ public abstract class DataLoader<T> {
         return data;
     }
 
-    public final void setData(@NonNull T data) {
+    public final void setData(@Nullable T data) {
         this.data = data;
         saveData(data);
+    }
+
+    public void clearData() {
+        data = null;
     }
 }

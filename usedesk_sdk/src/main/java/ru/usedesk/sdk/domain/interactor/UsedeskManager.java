@@ -19,8 +19,8 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.data.framework.CallAPI;
 import ru.usedesk.sdk.data.framework.ResponseProcessorImpl;
+import ru.usedesk.sdk.data.framework.api.HttpApi;
 import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
 import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
@@ -65,6 +65,7 @@ public class UsedeskManager {
     private DisconnectEmitterListener disconnectEmitterListener;
 
     private IUserInfoRepository userInfoRepository;
+    private HttpApi httpApi;
 
     @Inject
     public UsedeskManager(@NonNull Context context,
@@ -215,7 +216,7 @@ public class UsedeskManager {
                 return;
             }
 
-            boolean success = CallAPI.post(postUrl, offlineForm.toJSONString());
+            boolean success = httpApi.post(postUrl, offlineForm.toJSONString());
             if (success) {
                 Message message = new Message(MessageType.SERVICE);
                 message.setText(context.getString(R.string.message_offline_form_sent));

@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework;
+package ru.usedesk.sdk.data.framework.api;
 
 import java.io.BufferedWriter;
 import java.io.OutputStream;
@@ -11,24 +11,24 @@ import javax.net.ssl.HttpsURLConnection;
 
 import ru.usedesk.sdk.utils.LogUtils;
 
-public class CallAPI {
+import static ru.usedesk.sdk.utils.LogUtils.LOGD;
 
-    private static final String TAG = CallAPI.class.getSimpleName();
+public class HttpApi {
+
+    private static final String TAG = HttpApi.class.getSimpleName();
 
     private static final String ENCODING = "UTF-8";
 
-    private CallAPI() {
+    private HttpApi() {
     }
 
-    public static boolean post(String urlString, String postData) {
-        URL url;
-        boolean success = false;
+    public boolean post(String urlString, String postData) {
 
         try {
-            url = new URL(urlString);
+            URL url = new URL(urlString);
 
-            LogUtils.LOGD(TAG, "URL: " + url);
-            LogUtils.LOGD(TAG, "Data: " + postData);
+            LOGD(TAG, "URL: " + url);
+            LOGD(TAG, "Data: " + postData);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -38,7 +38,7 @@ public class CallAPI {
                     new OutputStreamWriter(outputStream, ENCODING));
 
             String encodedData = URLEncoder.encode(postData, ENCODING);
-            LogUtils.LOGD(TAG, "Data (encoded): " + encodedData);
+            LOGD(TAG, "Data (encoded): " + encodedData);
             bufferedWriter.write(encodedData);
 
             bufferedWriter.flush();
@@ -46,13 +46,15 @@ public class CallAPI {
             outputStream.close();
 
             int responseCode = httpURLConnection.getResponseCode();
-            success = responseCode == HttpsURLConnection.HTTP_OK;
+            boolean success = responseCode == HttpsURLConnection.HTTP_OK;
 
-            LogUtils.LOGD(TAG, "SUCCESS: " + success);
+            LOGD(TAG, "SUCCESS: " + success);
+
+            return success;
         } catch (Exception e) {
             LogUtils.LOGE(TAG, e);
         }
 
-        return success;
+        return false;
     }
 }

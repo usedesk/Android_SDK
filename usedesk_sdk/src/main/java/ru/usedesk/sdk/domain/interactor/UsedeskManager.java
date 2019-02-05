@@ -17,8 +17,6 @@ import javax.inject.Inject;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.data.framework.ResponseProcessorImpl;
-import ru.usedesk.sdk.data.framework.api.HttpApi;
-import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
 import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
@@ -61,8 +59,7 @@ public class UsedeskManager {
     private DisconnectEmitterListener disconnectEmitterListener;
 
     private IUserInfoRepository userInfoRepository;
-    private HttpApi httpApi;
-    private SocketApi socketApi;
+    private ApiRepository apiRepository;
 
     @Inject
     public UsedeskManager(@NonNull Context context,
@@ -110,7 +107,7 @@ public class UsedeskManager {
     }
 
     public void disconnect() {
-        socketApi.disconnect();
+        apiRepository.disconnect();
 
         if (thread != null) {
             thread.interrupt();
@@ -119,7 +116,7 @@ public class UsedeskManager {
     }
 
     public void sendUserMessage(String text, UsedeskFile usedeskFile) {
-        if (!socketApi.isConnected()) {
+        if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -152,7 +149,7 @@ public class UsedeskManager {
     }
 
     public void sendUserTextMessage(String text) {
-        if (!socketApi.isConnected()) {
+        if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -164,7 +161,7 @@ public class UsedeskManager {
     }
 
     public void sendUserFileMessage(UsedeskFile usedeskFile) {
-        if (!socketApi.isConnected()) {
+        if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -176,18 +173,18 @@ public class UsedeskManager {
     }
 
     public void sendFeedbackMessage(Feedback feedback) {
-        if (!socketApi.isConnected()) {
+        if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
 
         SendFeedbackRequest feedbackRequest = new SendFeedbackRequest(feedback);
         feedbackRequest.setToken(token);
-        emitAction(feedbackRequest);
+        apiRepository.emitterAction(feedbackRequest);
     }
 
     public void sendOfflineForm(final OfflineForm offlineForm) {
-        if (!socketApi.isConnected()) {
+        if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -208,7 +205,7 @@ public class UsedeskManager {
                 return;
             }
 
-            boolean success = httpApi.post(postUrl, offlineForm.toJSONString());
+            boolean success = apiRepository.post(postUrl, offlineForm.toJSONString());
             if (success) {
                 Message message = new Message(MessageType.SERVICE);
                 message.setText(context.getString(R.string.message_offline_form_sent));
@@ -229,7 +226,7 @@ public class UsedeskManager {
         initChatRequest.setCompanyId(usedeskConfiguration.getCompanyId());
         initChatRequest.setUrl(usedeskConfiguration.getUrl());
 
-        emitAction(initChatRequest);
+        apiRepository.emitterAction(initChatRequest);
     }
 
     private void sendMessage(SendMessageRequest.Message sendMessage) {
@@ -237,7 +234,7 @@ public class UsedeskManager {
         sendMessageRequest.setToken(token);
         sendMessageRequest.setMessage(sendMessage);
 
-        emitAction(sendMessageRequest);
+        apiRepository.emitterAction(sendMessageRequest);
     }
 
     private void setUserEmail() {
@@ -245,7 +242,7 @@ public class UsedeskManager {
         setEmailRequest.setToken(token);
         setEmailRequest.setEmail(usedeskConfiguration.getEmail());
 
-        emitAction(setEmailRequest);
+        apiRepository.emitterAction(setEmailRequest);
     }
 
     private void parseNewMessageResponse(NewMessageResponse newMessageResponse) {
@@ -303,7 +300,7 @@ public class UsedeskManager {
 
     private void setSocket() {
         try {
-            socketApi.setSocket(usedeskConfiguration.getUrl());
+            apiRepository.setSocket(usedeskConfiguration.getUrl());
         } catch (ApiException e) {
             LOGE(TAG, e);
 
@@ -312,17 +309,7 @@ public class UsedeskManager {
     }
 
     private void connect() {
-        socketApi.connect();
-    }
-
-    private void emitAction(BaseRequest baseRequest) {
-        try {
-            socketApi.emitterAction(baseRequest);
-        } catch (ApiException e) {
-            LOGE(TAG, e);
-
-            usedeskActionListener.onError(e);
-        }
+        apiRepository.connect();
     }
 
     private class ConnectEmitterListener implements Emitter.Listener {

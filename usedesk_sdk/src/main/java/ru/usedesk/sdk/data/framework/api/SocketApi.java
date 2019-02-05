@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.domain.interactor;
+package ru.usedesk.sdk.data.framework.api;
 
 import android.support.annotation.NonNull;
 
@@ -18,15 +18,6 @@ public class SocketApi {
     private static final String TAG = SocketApi.class.getSimpleName();
 
     private Socket socket;
-
-    public void disconnect() {
-        socket.off(Socket.EVENT_CONNECT, connectEmitterListener);
-        socket.off(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
-        socket.off(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
-        socket.off(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
-        socket.off(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
-        socket.disconnect();
-    }
 
     public boolean isConnected() {
         return socket.connected();
@@ -52,6 +43,16 @@ public class SocketApi {
         socket.on(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
 
         socket.connect();
+    }
+
+    public void disconnect() {
+        socket.off(Socket.EVENT_CONNECT, connectEmitterListener);
+        socket.off(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
+        socket.off(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
+        socket.off(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
+        socket.off(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
+
+        socket.disconnect();
     }
 
     public void emitterAction(BaseRequest baseRequest) throws ApiException {

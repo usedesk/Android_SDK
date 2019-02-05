@@ -1,6 +1,7 @@
 package ru.usedesk.sdk.domain.interactor;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.json.JSONException;
@@ -12,13 +13,14 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.data.framework.CallAPI;
 import ru.usedesk.sdk.data.framework.ResponseProcessorImpl;
-import ru.usedesk.sdk.data.framework.sharedpreferences.SharedHelper;
 import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
 import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
@@ -37,12 +39,14 @@ import ru.usedesk.sdk.domain.entity.Message;
 import ru.usedesk.sdk.domain.entity.MessageType;
 import ru.usedesk.sdk.domain.entity.OfflineForm;
 import ru.usedesk.sdk.domain.entity.Setup;
+import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.UsedeskFile;
-import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.utils.LogUtils;
 
 import static ru.usedesk.sdk.domain.entity.Constants.OFFLINE_FORM_PATH;
+import static ru.usedesk.sdk.utils.LogUtils.LOGD;
 
 public class UsedeskManager {
 
@@ -62,17 +66,26 @@ public class UsedeskManager {
 
     private IUserInfoRepository userInfoRepository;
 
-    public UsedeskManager(Context context,
-                          UsedeskConfiguration usedeskConfiguration,
-                          UsedeskActionListener usedeskActionListener) {
+    @Inject
+    public UsedeskManager(@NonNull Context context,
+                          @NonNull UsedeskConfiguration usedeskConfiguration,
+                          @NonNull UsedeskActionListener usedeskActionListener,
+                          @NonNull IUserInfoRepository userInfoRepository) {
         this.context = context;
-        this.sharedHelper = new SharedHelper(context);
         this.usedeskConfiguration = usedeskConfiguration;
         this.usedeskActionListener = usedeskActionListener;
-        token = sharedHelper.changedEmail(usedeskConfiguration.getEmail()) ? null : sharedHelper.getToken();
+        this.userInfoRepository = userInfoRepository;
 
-        sharedHelper.saveUrl(usedeskConfiguration.getUrl());
-        sharedHelper.saveEmail(usedeskConfiguration.getEmail());
+        try {
+            UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
+            if (configuration.equals(usedeskConfiguration)) {
+                token = userInfoRepository.getToken();
+            }
+        } catch (DataNotFoundException e) {
+            LOGD(TAG, e);
+        }
+
+        userInfoRepository.setConfiguration(usedeskConfiguration);
 
         baseEventEmitterListener = new BaseEventEmitterListener();
         connectEmitterListener = new ConnectEmitterListener();
@@ -186,31 +199,31 @@ public class UsedeskManager {
             return;
         }
 
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String postUrl;
-                    try {
-                        URL url = new URL(sharedHelper.getUrl());
-                        postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
-                    } catch (MalformedURLException e) {
-                        LogUtils.LOGE(TAG, e);
-                        return;
-                    }
-
-                    boolean success = CallAPI.post(postUrl, offlineForm.toJSONString());
-                    if (success) {
-                        Message message = new Message(MessageType.SERVICE);
-                        message.setText(context.getString(R.string.message_offline_form_sent));
-                        usedeskActionListener.onServiceMessageReceived(message);
-                    }
-                } catch (JSONException e) {
-                    LogUtils.LOGE(TAG, e);
-                }
-            }
-        });
+        thread = new Thread(() -> postOfflineUrl(offlineForm));
         thread.start();
+    }
+
+    private void postOfflineUrl(final OfflineForm offlineForm) {
+        try {
+            String postUrl;
+            try {
+                UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
+                URL url = new URL(configuration.getUrl());
+                postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
+            } catch (MalformedURLException | DataNotFoundException e) {
+                LogUtils.LOGE(TAG, e);
+                return;
+            }
+
+            boolean success = CallAPI.post(postUrl, offlineForm.toJSONString());
+            if (success) {
+                Message message = new Message(MessageType.SERVICE);
+                message.setText(context.getString(R.string.message_offline_form_sent));
+                usedeskActionListener.onServiceMessageReceived(message);
+            }
+        } catch (JSONException e) {
+            LogUtils.LOGE(TAG, e);
+        }
     }
 
     public UsedeskConfiguration getUsedeskConfiguration() {
@@ -261,7 +274,7 @@ public class UsedeskManager {
 
     private void parseErrorResponse(ErrorResponse response) {
         if (HttpURLConnection.HTTP_FORBIDDEN == response.getCode()) {
-            sharedHelper.saveToken(null);
+            userInfoRepository.setToken(null);
             token = null;
 
             initChat();
@@ -270,7 +283,7 @@ public class UsedeskManager {
 
     private void parseInitResponse(InitChatResponse response) {
         token = response.getToken();
-        sharedHelper.saveToken(token);
+        userInfoRepository.setToken(token);
 
         usedeskActionListener.onConnected();
 
@@ -325,7 +338,7 @@ public class UsedeskManager {
         }
 
         try {
-            LogUtils.LOGD(TAG, "emitAction(). request = " + baseRequest.toJSONObject());
+            LOGD(TAG, "emitAction(). request = " + baseRequest.toJSONObject());
 
             socket.emit(Constants.EVENT_SERVER_ACTION, baseRequest.toJSONObject());
         } catch (JSONException e) {
@@ -339,7 +352,7 @@ public class UsedeskManager {
 
         @Override
         public void call(Object... args) {
-            LogUtils.LOGD(TAG, "ConnectEmitterListener.args = " + Arrays.toString(args));
+            LOGD(TAG, "ConnectEmitterListener.args = " + Arrays.toString(args));
             initChat();
         }
     }
@@ -376,7 +389,7 @@ public class UsedeskManager {
         public void call(Object... args) {
             String rawResponse = args[0].toString();
 
-            LogUtils.LOGD(TAG, "BaseEventEmitterListener.rawResponse = " + rawResponse);
+            LOGD(TAG, "BaseEventEmitterListener.rawResponse = " + rawResponse);
 
             BaseResponse response = responseProcessor.process(rawResponse);
 

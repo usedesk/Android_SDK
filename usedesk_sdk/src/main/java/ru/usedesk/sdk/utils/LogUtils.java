@@ -6,11 +6,10 @@ import ru.usedesk.sdk.BuildConfig;
 
 public class LogUtils {
 
-    public static boolean LOGGING_ENABLED = !BuildConfig.BUILD_TYPE.equalsIgnoreCase("release");
-
     private static final String LOG_PREFIX = "ru.usedesk.sdk.usedesk.sdk_";
     private static final int LOG_PREFIX_LENGTH = LOG_PREFIX.length();
     private static final int MAX_LOG_TAG_LENGTH = 23;
+    public static boolean LOGGING_ENABLED = !BuildConfig.BUILD_TYPE.equalsIgnoreCase("release");
 
     private LogUtils() {
     }
@@ -33,6 +32,12 @@ public class LogUtils {
     public static void LOGD(final String tag, String message) {
         if (LOGGING_ENABLED) {
             Log.d(tag, message);
+        }
+    }
+
+    public static void LOGD(final String tag, Throwable cause) {
+        if (LOGGING_ENABLED) {
+            Log.d(tag, cause.getMessage(), cause);
         }
     }
 

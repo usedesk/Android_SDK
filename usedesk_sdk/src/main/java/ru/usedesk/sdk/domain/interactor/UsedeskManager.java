@@ -8,15 +8,12 @@ import org.json.JSONException;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.data.framework.ResponseProcessorImpl;
@@ -33,7 +30,6 @@ import ru.usedesk.sdk.data.framework.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.data.framework.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.data.framework.entity.response.SetEmailResponse;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
-import ru.usedesk.sdk.domain.entity.Constants;
 import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.Message;
 import ru.usedesk.sdk.domain.entity.MessageType;
@@ -42,11 +38,12 @@ import ru.usedesk.sdk.domain.entity.Setup;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
-import ru.usedesk.sdk.utils.LogUtils;
 
 import static ru.usedesk.sdk.domain.entity.Constants.OFFLINE_FORM_PATH;
 import static ru.usedesk.sdk.utils.LogUtils.LOGD;
+import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 
 public class UsedeskManager {
 
@@ -55,7 +52,6 @@ public class UsedeskManager {
     private Context context;
     private UsedeskConfiguration usedeskConfiguration;
     private UsedeskActionListener usedeskActionListener;
-    private Socket socket;
     private String token;
     private Thread thread;
 
@@ -66,6 +62,7 @@ public class UsedeskManager {
 
     private IUserInfoRepository userInfoRepository;
     private HttpApi httpApi;
+    private SocketApi socketApi;
 
     @Inject
     public UsedeskManager(@NonNull Context context,
@@ -113,12 +110,7 @@ public class UsedeskManager {
     }
 
     public void disconnect() {
-        socket.off(Socket.EVENT_CONNECT, connectEmitterListener);
-        socket.off(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
-        socket.off(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
-        socket.off(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
-        socket.off(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
-        socket.disconnect();
+        socketApi.disconnect();
 
         if (thread != null) {
             thread.interrupt();
@@ -127,7 +119,7 @@ public class UsedeskManager {
     }
 
     public void sendUserMessage(String text, UsedeskFile usedeskFile) {
-        if (!socket.connected()) {
+        if (!socketApi.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -160,7 +152,7 @@ public class UsedeskManager {
     }
 
     public void sendUserTextMessage(String text) {
-        if (!socket.connected()) {
+        if (!socketApi.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -172,7 +164,7 @@ public class UsedeskManager {
     }
 
     public void sendUserFileMessage(UsedeskFile usedeskFile) {
-        if (!socket.connected()) {
+        if (!socketApi.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -184,7 +176,7 @@ public class UsedeskManager {
     }
 
     public void sendFeedbackMessage(Feedback feedback) {
-        if (!socket.connected()) {
+        if (!socketApi.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -195,7 +187,7 @@ public class UsedeskManager {
     }
 
     public void sendOfflineForm(final OfflineForm offlineForm) {
-        if (!socket.connected()) {
+        if (!socketApi.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             return;
         }
@@ -212,7 +204,7 @@ public class UsedeskManager {
                 URL url = new URL(configuration.getUrl());
                 postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
             } catch (MalformedURLException | DataNotFoundException e) {
-                LogUtils.LOGE(TAG, e);
+                LOGE(TAG, e);
                 return;
             }
 
@@ -223,7 +215,7 @@ public class UsedeskManager {
                 usedeskActionListener.onServiceMessageReceived(message);
             }
         } catch (JSONException e) {
-            LogUtils.LOGE(TAG, e);
+            LOGE(TAG, e);
         }
     }
 
@@ -311,39 +303,23 @@ public class UsedeskManager {
 
     private void setSocket() {
         try {
-            socket = IO.socket(usedeskConfiguration.getUrl());
-        } catch (URISyntaxException e) {
-            LogUtils.LOGE(TAG, e);
+            socketApi.setSocket(usedeskConfiguration.getUrl());
+        } catch (ApiException e) {
+            LOGE(TAG, e);
 
             usedeskActionListener.onError(e);
         }
     }
 
     private void connect() {
-        if (socket == null) {
-            return;
-        }
-
-        socket.on(Socket.EVENT_CONNECT, connectEmitterListener);
-        socket.on(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
-        socket.on(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
-        socket.on(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
-        socket.on(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
-
-        socket.connect();
+        socketApi.connect();
     }
 
     private void emitAction(BaseRequest baseRequest) {
-        if (socket == null) {
-            return;
-        }
-
         try {
-            LOGD(TAG, "emitAction(). request = " + baseRequest.toJSONObject());
-
-            socket.emit(Constants.EVENT_SERVER_ACTION, baseRequest.toJSONObject());
-        } catch (JSONException e) {
-            LogUtils.LOGE(TAG, e);
+            socketApi.emitterAction(baseRequest);
+        } catch (ApiException e) {
+            LOGE(TAG, e);
 
             usedeskActionListener.onError(e);
         }
@@ -362,7 +338,7 @@ public class UsedeskManager {
 
         @Override
         public void call(Object... args) {
-            LogUtils.LOGE(TAG, "Error connecting: + " + Arrays.toString(args));
+            LOGE(TAG, "Error connecting: + " + Arrays.toString(args));
 
             usedeskActionListener.onError(R.string.message_connecting_error);
         }
@@ -372,7 +348,7 @@ public class UsedeskManager {
 
         @Override
         public void call(Object... args) {
-            LogUtils.LOGE(TAG, "Disconnected.");
+            LOGE(TAG, "Disconnected.");
 
             usedeskActionListener.onDisconnected();
         }

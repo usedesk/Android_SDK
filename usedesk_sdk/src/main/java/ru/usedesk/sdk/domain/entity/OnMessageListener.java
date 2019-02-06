@@ -1,19 +1,14 @@
 package ru.usedesk.sdk.domain.entity;
 
-import ru.usedesk.sdk.data.framework.entity.response.ErrorResponse;
-import ru.usedesk.sdk.data.framework.entity.response.InitChatResponse;
-import ru.usedesk.sdk.data.framework.entity.response.NewMessageResponse;
-import ru.usedesk.sdk.data.framework.entity.response.SendFeedbackResponse;
-
 public interface OnMessageListener {
 
-    void onNew(NewMessageResponse newMessageResponse);
+    void onNew(Message message);
 
-    void onFeedback(SendFeedbackResponse response);
+    void onFeedback();
 
-    void onError(ErrorResponse response);
-
-    void onInit(InitChatResponse response);
+    void onInit(String token, Setup setup);
 
     void onInitChat();
+
+    void onTokenError();
 }

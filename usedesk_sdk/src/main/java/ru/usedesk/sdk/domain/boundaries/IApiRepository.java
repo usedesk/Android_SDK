@@ -2,11 +2,11 @@ package ru.usedesk.sdk.domain.boundaries;
 
 import android.support.annotation.NonNull;
 
-import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
 import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.UsedeskFile;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 
 public interface IApiRepository {
@@ -29,7 +29,7 @@ public interface IApiRepository {
 
     void sendFeedbackMessage(String token, Feedback feedback);
 
-    void sendMessageRequest(String token, SendMessageRequest.Message sendMessage);
+    void sendMessageRequest(String token, String text, UsedeskFile usedeskFile);
 
     void sendUserEmail(String token, String email);
 }

@@ -1,5 +1,7 @@
 package ru.usedesk.sdk.data.framework.api.emitter.listener;
 
+import java.net.HttpURLConnection;
+
 import ru.usedesk.sdk.data.framework.ResponseProcessorImpl;
 import ru.usedesk.sdk.data.framework.entity.response.BaseResponse;
 import ru.usedesk.sdk.data.framework.entity.response.ErrorResponse;
@@ -35,18 +37,24 @@ public class BaseEventEmitterListener extends EmitterListener {
         if (response != null) {
             switch (response.getType()) {
                 case ErrorResponse.TYPE:
-                    getOnMessageListener().onError((ErrorResponse) response);
+                    ErrorResponse errorResponse = (ErrorResponse) response;
+                    if (HttpURLConnection.HTTP_FORBIDDEN == errorResponse.getCode()) {
+                        getOnMessageListener().onTokenError();
+                    }
                     break;
                 case InitChatResponse.TYPE:
-                    getOnMessageListener().onInit((InitChatResponse) response);
+                    InitChatResponse initChatResponse = (InitChatResponse) response;
+                    getOnMessageListener().onInit(initChatResponse.getToken(),
+                            initChatResponse.getSetup());
                     break;
                 case SetEmailResponse.TYPE:
                     break;
                 case NewMessageResponse.TYPE:
-                    getOnMessageListener().onNew((NewMessageResponse) response);
+                    NewMessageResponse newMessageResponse = (NewMessageResponse) response;
+                    getOnMessageListener().onNew(newMessageResponse.getMessage());
                     break;
                 case SendFeedbackResponse.TYPE:
-                    getOnMessageListener().onFeedback((SendFeedbackResponse) response);
+                    getOnMessageListener().onFeedback();
                     break;
             }
         }

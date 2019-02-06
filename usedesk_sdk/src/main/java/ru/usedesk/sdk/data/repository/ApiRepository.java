@@ -8,6 +8,7 @@ import ru.usedesk.sdk.data.framework.api.HttpApi;
 import ru.usedesk.sdk.data.framework.api.SocketApi;
 import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
 import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
+import ru.usedesk.sdk.data.framework.entity.request.RequestMessage;
 import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SetEmailRequest;
@@ -16,6 +17,7 @@ import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.UsedeskFile;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 
 import static ru.usedesk.sdk.utils.LogUtils.LOGE;
@@ -66,10 +68,10 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void sendMessageRequest(String token, SendMessageRequest.Message sendMessage) {
+    public void sendMessageRequest(String token, String text, UsedeskFile usedeskFile) {
         emitterAction(new SendMessageRequest() {{
             setToken(token);
-            setMessage(sendMessage);
+            setRequestMessage(new RequestMessage(text, usedeskFile));
         }});
     }
 

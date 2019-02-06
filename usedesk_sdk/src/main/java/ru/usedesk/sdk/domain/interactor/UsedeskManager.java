@@ -6,7 +6,6 @@ import android.text.TextUtils;
 
 import org.json.JSONException;
 
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -14,11 +13,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
-import ru.usedesk.sdk.data.framework.entity.response.ErrorResponse;
-import ru.usedesk.sdk.data.framework.entity.response.InitChatResponse;
-import ru.usedesk.sdk.data.framework.entity.response.NewMessageResponse;
-import ru.usedesk.sdk.data.framework.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.Feedback;
@@ -109,10 +103,7 @@ public class UsedeskManager {
             return;
         }
 
-        sendMessage(new SendMessageRequest.Message() {{
-            setText(text);
-            setUsedeskFile(usedeskFile);
-        }});
+        sendMessage(text, usedeskFile);
     }
 
     public void sendUserMessage(String text, List<UsedeskFile> usedeskFiles) {
@@ -141,10 +132,7 @@ public class UsedeskManager {
             return;
         }
 
-        SendMessageRequest.Message sendMessage = new SendMessageRequest.Message();
-        sendMessage.setText(text);
-
-        sendMessage(sendMessage);
+        sendMessage(text, null);
     }
 
     public void sendUserFileMessage(UsedeskFile usedeskFile) {
@@ -153,10 +141,7 @@ public class UsedeskManager {
             return;
         }
 
-        SendMessageRequest.Message sendMessage = new SendMessageRequest.Message();
-        sendMessage.setUsedeskFile(usedeskFile);
-
-        sendMessage(sendMessage);
+        sendMessage(null, usedeskFile);
     }
 
     public void sendFeedbackMessage(Feedback feedback) {
@@ -209,47 +194,37 @@ public class UsedeskManager {
         apiRepository.initChat(token, usedeskConfiguration);
     }
 
-    private void sendMessage(SendMessageRequest.Message sendMessage) {
-        apiRepository.sendMessageRequest(token, sendMessage);
+    private void sendMessage(String text, UsedeskFile usedeskFile) {
+        apiRepository.sendMessageRequest(token, text, usedeskFile);
     }
 
     private void setUserEmail() {
         apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail());
     }
 
-    private void parseNewMessageResponse(NewMessageResponse newMessageResponse) {
-        if (newMessageResponse.getMessage() != null && newMessageResponse.getMessage().getChat() != null) {
-            boolean hasText = !TextUtils.isEmpty(newMessageResponse.getMessage().getText());
-            boolean hasFile = newMessageResponse.getMessage().getUsedeskFile() != null;
+    private void parseNewMessageResponse(Message message) {
+        if (message != null && message.getChat() != null) {
+            boolean hasText = !TextUtils.isEmpty(message.getText());
+            boolean hasFile = message.getUsedeskFile() != null;
 
             if (hasText || hasFile) {
-                usedeskActionListener.onMessageReceived(newMessageResponse.getMessage());
+                usedeskActionListener.onMessageReceived(message);
             }
         }
     }
 
-    private void parseFeedbackResponse(SendFeedbackResponse response) {
+    private void parseFeedbackResponse() {
         Message message = new Message(MessageType.SERVICE);
         message.setText(context.getString(R.string.message_feedback_sent));
         usedeskActionListener.onServiceMessageReceived(message);
     }
 
-    private void parseErrorResponse(ErrorResponse response) {
-        if (HttpURLConnection.HTTP_FORBIDDEN == response.getCode()) {
-            userInfoRepository.setToken(null);
-            token = null;
-
-            initChat();
-        }
-    }
-
-    private void parseInitResponse(InitChatResponse response) {
-        token = response.getToken();
+    private void parseInitResponse(String token, Setup setup) {
+        this.token = token;
         userInfoRepository.setToken(token);
 
         usedeskActionListener.onConnected();
 
-        Setup setup = response.getSetup();
         if (setup != null) {
             if (setup.isWaitingEmail()) {
                 setUserEmail();
@@ -287,27 +262,30 @@ public class UsedeskManager {
     private OnMessageListener getOnMessageListener() {
         return new OnMessageListener() {
             @Override
-            public void onNew(NewMessageResponse newMessageResponse) {
-                parseNewMessageResponse(newMessageResponse);
+            public void onNew(Message message) {
+                parseNewMessageResponse(message);
             }
 
             @Override
-            public void onFeedback(SendFeedbackResponse response) {
-                parseFeedbackResponse(response);
+            public void onFeedback() {
+                parseFeedbackResponse();
             }
 
             @Override
-            public void onError(ErrorResponse response) {
-                parseErrorResponse(response);
-            }
-
-            @Override
-            public void onInit(InitChatResponse response) {
-                parseInitResponse(response);
+            public void onInit(String token, Setup setup) {
+                parseInitResponse(token, setup);
             }
 
             @Override
             public void onInitChat() {
+                initChat();
+            }
+
+            @Override
+            public void onTokenError() {
+                userInfoRepository.setToken(null);
+                token = null;
+
                 initChat();
             }
         };

@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.3.1'
     }
 }
 
@@ -27,7 +27,7 @@ task clean(type: Delete) {
 
 ext {
     applicationId = "ru.usedesk.sample"
-    compileSdkVersion = 27
+    compileSdkVersion = 28
     buildToolsVersion = "28.0.3"
     minSdkVersion = 19
     targetSdkVersion = 27
@@ -36,7 +36,7 @@ ext {
     versionName = "0.0.2"
 
     // Dependencies versions
-    supportVersion = '27.0.2'
+    supportVersion = '28.0.0'
     glideVersion = "4.2.0"
     picassoVersion = '2.4.0'
     permissionsdispatcherVersion = '3.0.1'

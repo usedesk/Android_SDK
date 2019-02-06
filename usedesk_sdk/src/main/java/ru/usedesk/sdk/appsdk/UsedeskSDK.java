@@ -19,7 +19,10 @@ import toothpick.Toothpick;
 public class UsedeskSDK {
 
     @Inject
-    private UsedeskManager usedeskManager;
+    UsedeskManager usedeskManager;
+
+    @Inject
+    Context context;
 
     @Inject
     UsedeskSDK(@NonNull Context context) {
@@ -57,14 +60,10 @@ public class UsedeskSDK {
     }
 
     public void set(UsedeskConfiguration usedeskConfiguration,
-                     UsedeskActionListener usedeskActionListener) {
-        if (usedeskManager == null) {
-            usedeskManager = new UsedeskManager(context, usedeskConfiguration, usedeskActionListener);
-        } else {
-            usedeskManager.updateUsedeskConfiguration(usedeskConfiguration);
-            usedeskManager.updateUsedeskActionListener(usedeskActionListener);
-            usedeskManager.reConnect();
-        }
+                    UsedeskActionListener usedeskActionListener) {
+        usedeskManager.updateUsedeskConfiguration(usedeskConfiguration);
+        usedeskManager.updateUsedeskActionListener(usedeskActionListener);
+        usedeskManager.reConnect();
     }
 
     public UsedeskConfiguration getUsedeskConfiguration() {

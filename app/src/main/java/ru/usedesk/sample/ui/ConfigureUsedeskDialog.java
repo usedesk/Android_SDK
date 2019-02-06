@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sdk.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
 
@@ -39,11 +39,11 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         alertDialogBuilder.setTitle(R.string.configuration_dialog_title);
         alertDialogBuilder.setView(view);
 
-        companyIdEditText = (EditText) view.findViewById(R.id.company_id_edit_text);
-        emailEditText = (EditText) view.findViewById(R.id.email_edit_text);
-        urlEditText = (EditText) view.findViewById(R.id.url_edit_text);
+        companyIdEditText = view.findViewById(R.id.company_id_edit_text);
+        emailEditText = view.findViewById(R.id.email_edit_text);
+        urlEditText = view.findViewById(R.id.url_edit_text);
 
-        alertDialogBuilder.setPositiveButton(android.R.string.ok,  new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -52,18 +52,18 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                 boolean urlEntered = !TextUtils.isEmpty(urlEditText.getText());
 
                 if (companyIdEntered && emailEntered && urlEntered) {
-                    onConfigurationUsedeskListener.onConfigurationUsedeskSet(new UsedeskConfiguration.Builder()
-                            .companyId(companyIdEditText.getText().toString())
-                            .email(emailEditText.getText().toString())
-                            .url(urlEditText.getText().toString())
-                            .build());
+                    UsedeskConfiguration configuration = new UsedeskConfiguration(
+                            companyIdEditText.getText().toString(),
+                            emailEditText.getText().toString(),
+                            urlEditText.getText().toString());
+                    onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration);
                 }
 
                 dismiss();
             }
         });
 
-        alertDialogBuilder.setNegativeButton(android.R.string.cancel,  new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -74,7 +74,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         return alertDialogBuilder.create();
     }
 
-    public static interface OnConfigurationUsedeskListener {
+    public interface OnConfigurationUsedeskListener {
 
         void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration);
     }

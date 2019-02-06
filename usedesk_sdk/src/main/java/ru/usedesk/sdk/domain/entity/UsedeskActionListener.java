@@ -2,8 +2,6 @@ package ru.usedesk.sdk.domain.entity;
 
 import java.util.List;
 
-import ru.usedesk.sdk.domain.entity.Message;
-
 public interface UsedeskActionListener {
 
     void onConnected();

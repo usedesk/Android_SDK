@@ -25,24 +25,22 @@ android {
             outputFileName = "${applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}-${variant.buildType.name}.apk"
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':usedesk_sdk')
-
     implementation "com.android.support:appcompat-v7:${rootProject.supportVersion}"
     implementation "com.android.support:design:${rootProject.supportVersion}"
     implementation "com.android.support:support-vector-drawable:${rootProject.supportVersion}"
-
     annotationProcessor "com.github.bumptech.glide:compiler:${rootProject.glideVersion}"
     implementation "com.github.bumptech.glide:glide:${rootProject.glideVersion}"
-
     implementation "com.squareup.picasso:picasso:${rootProject.picassoVersion}"
-
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${rootProject.permissionsdispatcherVersion}"
     implementation "com.github.hotchemi:permissionsdispatcher:${rootProject.permissionsdispatcherVersion}"
-
     implementation "com.droidninja:filepicker:${rootProject.filePickerVersion}"
 }

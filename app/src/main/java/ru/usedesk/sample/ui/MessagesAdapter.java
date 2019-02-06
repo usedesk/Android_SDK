@@ -16,9 +16,9 @@ import java.util.List;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.utils.DownloadUtils;
 import ru.usedesk.sample.utils.ImageUtils;
-import ru.usedesk.sdk.ChatFeedbackListener;
-import ru.usedesk.sdk.models.Feedback;
-import ru.usedesk.sdk.models.Message;
+import ru.usedesk.sdk.domain.entity.ChatFeedbackListener;
+import ru.usedesk.sdk.domain.entity.Feedback;
+import ru.usedesk.sdk.domain.entity.Message;
 import ru.usedesk.sdk.utils.TimeUtils;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -39,7 +39,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
 
-    public MessagesAdapter(Context context, List<Message> messages, ChatFeedbackListener chatFeedbackListener) {
+    public MessagesAdapter(Context context, List<Message> messages,
+                           ChatFeedbackListener chatFeedbackListener) {
         this.context = context;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
@@ -52,21 +53,29 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         switch (viewType) {
             case TYPE_USER_TEXT:
-                return new ItemUserTextMessageHolder(layoutInflater.inflate(R.layout.item_user_text_message, parent, false));
+                return new ItemUserTextMessageHolder(layoutInflater.inflate(
+                        R.layout.item_user_text_message, parent, false));
             case TYPE_USER_FILE:
-                return new ItemUserFileMessageHolder(layoutInflater.inflate(R.layout.item_user_file_message, parent, false));
+                return new ItemUserFileMessageHolder(layoutInflater.inflate(
+                        R.layout.item_user_file_message, parent, false));
             case TYPE_USER_TEXT_FILE:
-                return new ItemUserTextFileMessageHolder(layoutInflater.inflate(R.layout.item_user_text_file_message, parent, false));
+                return new ItemUserTextFileMessageHolder(layoutInflater.inflate(
+                        R.layout.item_user_text_file_message, parent, false));
             case TYPE_OPERATOR_TEXT:
-                return new ItemOperatorTextMessageHolder(layoutInflater.inflate(R.layout.item_operator_text_message, parent, false));
+                return new ItemOperatorTextMessageHolder(layoutInflater.inflate(
+                        R.layout.item_operator_text_message, parent, false));
             case TYPE_OPERATOR_TEXT_FILE:
-                return new ItemOperatorTextFileMessageHolder(layoutInflater.inflate(R.layout.item_operator_text_file_message, parent, false));
+                return new ItemOperatorTextFileMessageHolder(layoutInflater.inflate(
+                        R.layout.item_operator_text_file_message, parent, false));
             case TYPE_OPERATOR_FILE:
-                return new ItemOperatorFileMessageHolder(layoutInflater.inflate(R.layout.item_operator_file_message, parent, false));
+                return new ItemOperatorFileMessageHolder(layoutInflater.inflate(
+                        R.layout.item_operator_file_message, parent, false));
             case TYPE_OPERATOR_FEEDBACK:
-                return new ItemOperatorFeedbackMessageHolder(layoutInflater.inflate(R.layout.item_operator_feedback_message, parent, false));
+                return new ItemOperatorFeedbackMessageHolder(layoutInflater.inflate(
+                        R.layout.item_operator_feedback_message, parent, false));
             case TYPE_SERVICE_TEXT:
-                return new ItemServiceTextMessageHolder(layoutInflater.inflate(R.layout.item_service_text_message, parent, false));
+                return new ItemServiceTextMessageHolder(layoutInflater.inflate(
+                        R.layout.item_service_text_message, parent, false));
         }
 
         return null;
@@ -144,13 +153,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 } else {
                     itemOperatorFileMessageHolder.progressBar.setVisibility(View.GONE);
                     itemOperatorFileMessageHolder.fileImageView.setImageResource(R.drawable.ic_document_black);
-                    itemOperatorFileMessageHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (message.getUsedeskFile() != null) {
-                                downloadUtils.download(message.getUsedeskFile().getName(),
-                                        message.getUsedeskFile().getContent());
-                            }
+                    itemOperatorFileMessageHolder.itemView.setOnClickListener(view -> {
+                        if (message.getUsedeskFile() != null) {
+                            downloadUtils.download(message.getUsedeskFile().getName(),
+                                    message.getUsedeskFile().getContent());
                         }
                     });
                 }
@@ -172,13 +178,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 } else {
                     itemOperatorTextFileMessageHolder.progressBar.setVisibility(View.GONE);
                     itemOperatorTextFileMessageHolder.fileImageView.setImageResource(R.drawable.ic_document_black);
-                    itemOperatorTextFileMessageHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (message.getUsedeskFile() != null) {
-                                downloadUtils.download(message.getUsedeskFile().getName(),
-                                        message.getUsedeskFile().getContent());
-                            }
+                    itemOperatorTextFileMessageHolder.itemView.setOnClickListener(view -> {
+                        if (message.getUsedeskFile() != null) {
+                            downloadUtils.download(message.getUsedeskFile().getName(),
+                                    message.getUsedeskFile().getContent());
                         }
                     });
                 }
@@ -197,21 +200,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     itemOperatorFeedbackMessageHolder.likeButton.setEnabled(true);
                     itemOperatorFeedbackMessageHolder.dislikeButton.setEnabled(true);
 
-                    itemOperatorFeedbackMessageHolder.likeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            chatFeedbackListener.onFeedbackSet(Feedback.LIKE);
-                            view.setEnabled(false);
-                            itemOperatorFeedbackMessageHolder.dislikeButton.setEnabled(false);
-                        }
+                    itemOperatorFeedbackMessageHolder.likeButton.setOnClickListener(view -> {
+                        chatFeedbackListener.onFeedbackSet(Feedback.LIKE);
+                        view.setEnabled(false);
+                        itemOperatorFeedbackMessageHolder.dislikeButton.setEnabled(false);
                     });
-                    itemOperatorFeedbackMessageHolder.dislikeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            chatFeedbackListener.onFeedbackSet(Feedback.DISLIKE);
-                            view.setEnabled(false);
-                            itemOperatorFeedbackMessageHolder.likeButton.setEnabled(false);
-                        }
+                    itemOperatorFeedbackMessageHolder.dislikeButton.setOnClickListener(view -> {
+                        chatFeedbackListener.onFeedbackSet(Feedback.DISLIKE);
+                        view.setEnabled(false);
+                        itemOperatorFeedbackMessageHolder.likeButton.setEnabled(false);
                     });
                 }
                 break;
@@ -286,11 +283,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         ItemOperatorFeedbackMessageHolder(View itemView) {
             super(itemView);
-            iconImageView = (ImageView) itemView.findViewById(R.id.icon_image_view);
-            nameTextView = (TextView) itemView.findViewById(R.id.name_text_view);
-            textTextView = (TextView) itemView.findViewById(R.id.text_text_view);
-            likeButton = (ImageButton) itemView.findViewById(R.id.like_button);
-            dislikeButton = (ImageButton) itemView.findViewById(R.id.dislike_button);
+            iconImageView = itemView.findViewById(R.id.icon_image_view);
+            nameTextView = itemView.findViewById(R.id.name_text_view);
+            textTextView = itemView.findViewById(R.id.text_text_view);
+            likeButton = itemView.findViewById(R.id.like_button);
+            dislikeButton = itemView.findViewById(R.id.dislike_button);
         }
     }
 
@@ -308,8 +305,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         ItemOperatorTextMessageHolder(View itemView) {
             super(itemView);
-            iconImageView = (ImageView) itemView.findViewById(R.id.icon_image_view);
-            nameTextView = (TextView) itemView.findViewById(R.id.name_text_view);
+            iconImageView = itemView.findViewById(R.id.icon_image_view);
+            nameTextView = itemView.findViewById(R.id.name_text_view);
         }
     }
 
@@ -326,7 +323,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         BaseItemTextMessageHolder(View itemView) {
             super(itemView);
-            textTextView = (TextView) itemView.findViewById(R.id.text_text_view);
+            textTextView = itemView.findViewById(R.id.text_text_view);
         }
     }
 
@@ -344,8 +341,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         ItemOperatorFileMessageHolder(View itemView) {
             super(itemView);
-            iconImageView = (ImageView) itemView.findViewById(R.id.icon_image_view);
-            nameTextView = (TextView) itemView.findViewById(R.id.name_text_view);
+            iconImageView = itemView.findViewById(R.id.icon_image_view);
+            nameTextView = itemView.findViewById(R.id.name_text_view);
         }
     }
 
@@ -356,8 +353,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         BaseItemFileMessageHolder(View itemView) {
             super(itemView);
-            fileImageView = (ImageView) itemView.findViewById(R.id.file_image_view);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+            fileImageView = itemView.findViewById(R.id.file_image_view);
+            progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }
 
@@ -375,8 +372,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         ItemOperatorTextFileMessageHolder(View itemView) {
             super(itemView);
-            iconImageView = (ImageView) itemView.findViewById(R.id.icon_image_view);
-            nameTextView = (TextView) itemView.findViewById(R.id.name_text_view);
+            iconImageView = itemView.findViewById(R.id.icon_image_view);
+            nameTextView = itemView.findViewById(R.id.name_text_view);
         }
     }
 
@@ -388,9 +385,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         BaseItemTextFileMessageHolder(View itemView) {
             super(itemView);
-            textTextView = (TextView) itemView.findViewById(R.id.text_text_view);
-            fileImageView = (ImageView) itemView.findViewById(R.id.file_image_view);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+            textTextView = itemView.findViewById(R.id.text_text_view);
+            fileImageView = itemView.findViewById(R.id.file_image_view);
+            progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }
 
@@ -400,7 +397,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         BaseItemMessageHolder(View itemView) {
             super(itemView);
-            timeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
+            timeTextView = itemView.findViewById(R.id.time_text_view);
         }
     }
 }

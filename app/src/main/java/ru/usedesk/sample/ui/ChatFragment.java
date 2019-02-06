@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,13 +32,11 @@ import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.utils.NetworkUtils;
-import ru.usedesk.sdk.ChatFeedbackListener;
-import ru.usedesk.sdk.UsedeskActionListener;
-import ru.usedesk.sdk.UsedeskSDK;
-import ru.usedesk.sdk.models.Feedback;
-import ru.usedesk.sdk.models.Message;
-import ru.usedesk.sdk.models.OfflineForm;
-import ru.usedesk.sdk.models.UsedeskFile;
+import ru.usedesk.sdk.appsdk.UsedeskSDK;
+import ru.usedesk.sdk.domain.entity.Feedback;
+import ru.usedesk.sdk.domain.entity.Message;
+import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.UsedeskFile;
 
 import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFiles;
 
@@ -78,7 +77,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         initUI(view);
         initList();
@@ -121,19 +120,16 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         ChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @Override
     public void onConnected() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE);
-            }
-        });
+        getActivity().runOnUiThread(() ->
+                contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE));
     }
 
     @Override
@@ -158,12 +154,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
             OfflineFormDialog offlineFormDialog = OfflineFormDialog.newInstance(
                     usedeskSDK.getUsedeskConfiguration().getCompanyId(),
                     usedeskSDK.getUsedeskConfiguration().getEmail(),
-                    new OfflineFormDialog.OnOfflineFormSetListener() {
-                        @Override
-                        public void onnOfflineFormSet(OfflineForm offlineForm) {
-                            usedeskSDK.sendOfflineForm(offlineForm);
-                        }
-                    });
+                    offlineForm -> usedeskSDK.sendOfflineForm(offlineForm));
             offlineFormDialog.show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
         }
     }
@@ -174,39 +165,26 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @Override
     public void onError(final int errorResId) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), errorResId, Toast.LENGTH_LONG).show();
-            }
-        });
+        getActivity().runOnUiThread(() ->
+                Toast.makeText(getActivity(), errorResId, Toast.LENGTH_LONG).show());
     }
 
     @Override
     public void onError(final Exception e) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+        getActivity().runOnUiThread(() ->
+                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
     private void initUI(View view) {
         contentViewSwitcher = view.findViewById(R.id.content_view_switcher);
         contentViewSwitcher.setDisplayedChild(SWITCHER_LOADING_STATE);
 
-        messagesRecyclerView = (RecyclerView) view.findViewById(R.id.messages_recycler_view);
+        messagesRecyclerView = view.findViewById(R.id.messages_recycler_view);
 
-        ImageButton attachFileImageButton = (ImageButton) view.findViewById(R.id.attach_file_image_view);
-        attachFileImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openAttachmentDialog();
-            }
-        });
+        ImageButton attachFileImageButton = view.findViewById(R.id.attach_file_image_view);
+        attachFileImageButton.setOnClickListener(view1 -> openAttachmentDialog());
 
-        messageEditText = (EditText) view.findViewById(R.id.message_edit_text);
+        messageEditText = view.findViewById(R.id.message_edit_text);
         messageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -222,16 +200,11 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
             }
         });
 
-        sendImageButton = (ImageButton) view.findViewById(R.id.send_image_view);
+        sendImageButton = view.findViewById(R.id.send_image_view);
         sendImageButton.setEnabled(false);
-        sendImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptSend();
-            }
-        });
+        sendImageButton.setOnClickListener(view12 -> attemptSend());
 
-        attachmentMarkerTextView = (TextView) view.findViewById(R.id.attachment_marker_text_view);
+        attachmentMarkerTextView = view.findViewById(R.id.attachment_marker_text_view);
     }
 
     private void initList() {
@@ -239,30 +212,15 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
 
         messages = new ArrayList<>();
-        messagesAdapter = new MessagesAdapter(getActivity(), messages, new ChatFeedbackListener() {
-
-            @Override
-            public void onFeedbackSet(Feedback feedback) {
-                sendFeedback(feedback);
-            }
-        });
+        messagesAdapter = new MessagesAdapter(getActivity(), messages, feedback -> sendFeedback(feedback));
         messagesRecyclerView.setAdapter(messagesAdapter);
 
-        messagesRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v,
-                    int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (bottom < oldBottom) {
-                    messagesRecyclerView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            scrollToBottom();
-                        }
-                    }, 100);
-                }
-            }
-        });
+        messagesRecyclerView.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    if (bottom < oldBottom) {
+                        messagesRecyclerView.postDelayed(() -> scrollToBottom(), 100);
+                    }
+                });
     }
 
     private void notifyListItemInserted(final Message message) {
@@ -270,13 +228,10 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
             return;
         }
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messages.add(message);
-                messagesAdapter.notifyItemInserted(messages.size() - 1);
-                scrollToBottom();
-            }
+        getActivity().runOnUiThread(() -> {
+            messages.add(message);
+            messagesAdapter.notifyItemInserted(messages.size() - 1);
+            scrollToBottom();
         });
     }
 
@@ -285,13 +240,10 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
             return;
         }
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messages.addAll(newMessages);
-                messagesAdapter.notifyItemRangeChanged(startPosition, messages.size() - 1);
-                scrollToBottom();
-            }
+        getActivity().runOnUiThread(() -> {
+            messages.addAll(newMessages);
+            messagesAdapter.notifyItemRangeChanged(startPosition, messages.size() - 1);
+            scrollToBottom();
         });
     }
 
@@ -331,20 +283,14 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
         View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.view_attachment_dialog, null);
 
-        bottomSheetView.findViewById(R.id.pick_photo_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetDialog.dismiss();
-                onPickPhotoClicked();
-            }
+        bottomSheetView.findViewById(R.id.pick_photo_button).setOnClickListener(view -> {
+            bottomSheetDialog.dismiss();
+            onPickPhotoClicked();
         });
 
-        bottomSheetView.findViewById(R.id.pick_document_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetDialog.dismiss();
-                onPickDocumentClicked();
-            }
+        bottomSheetView.findViewById(R.id.pick_document_button).setOnClickListener(view -> {
+            bottomSheetDialog.dismiss();
+            onPickDocumentClicked();
         });
 
         bottomSheetDialog.setContentView(bottomSheetView);
@@ -359,7 +305,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     public void pickPhoto() {
         FilePickerBuilder.getInstance()
                 .setMaxCount(MAX_FILES)
-                .setSelectedFiles(new ArrayList<String>())
+                .setSelectedFiles(new ArrayList<>())
                 .pickPhoto(this);
     }
 
@@ -371,7 +317,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     public void pickDocument() {
         FilePickerBuilder.getInstance()
                 .setMaxCount(MAX_FILES)
-                .setSelectedFiles(new ArrayList<String>())
+                .setSelectedFiles(new ArrayList<>())
                 .pickFile(this);
     }
 

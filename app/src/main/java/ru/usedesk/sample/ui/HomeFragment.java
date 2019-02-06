@@ -1,6 +1,7 @@
 package ru.usedesk.sample.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 
 import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
-import ru.usedesk.sdk.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 
 public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnConfigurationUsedeskListener {
 
@@ -25,12 +26,12 @@ public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnC
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initUI(view);
     }
@@ -55,15 +56,12 @@ public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnC
         noConfigurationTextView = view.findViewById(R.id.no_configuration_text_view);
 
         actionButton = view.findViewById(R.id.action_button);
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (AppSession.getSession() != null) {
-                    AppSession.clearSession();
-                    updateUI();
-                } else {
-                    showEmailDialog();
-                }
+        actionButton.setOnClickListener(view1 -> {
+            if (AppSession.getSession() != null) {
+                AppSession.clearSession();
+                updateUI();
+            } else {
+                showEmailDialog();
             }
         });
 

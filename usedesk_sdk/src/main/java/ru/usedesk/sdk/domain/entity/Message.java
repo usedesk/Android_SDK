@@ -3,10 +3,7 @@ package ru.usedesk.sdk.domain.entity;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
-
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_FILE;
 
 public class Message {
 
@@ -18,8 +15,7 @@ public class Message {
     private String name;
     private Chat chat;
 
-    @SerializedName(KEY_FILE)
-    private UsedeskFile usedeskFile;
+    private UsedeskFile file;
 
     private Object payload;
 
@@ -84,11 +80,11 @@ public class Message {
     }
 
     public UsedeskFile getUsedeskFile() {
-        return usedeskFile;
+        return file;
     }
 
     public void setUsedeskFile(UsedeskFile usedeskFile) {
-        this.usedeskFile = usedeskFile;
+        this.file = usedeskFile;
     }
 
     public Payload getPayload() {

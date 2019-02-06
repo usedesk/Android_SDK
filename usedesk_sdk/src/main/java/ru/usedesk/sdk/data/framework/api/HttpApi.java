@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
 
 import ru.usedesk.sdk.domain.entity.OfflineForm;
@@ -24,7 +25,11 @@ public class HttpApi {
 
     private static final String ENCODING = "UTF-8";
 
-    private HttpApi() {
+    private final Gson gson;
+
+    @Inject
+    private HttpApi(Gson gson) {
+        this.gson = gson;
     }
 
     public boolean post(String urlString, String postData) {
@@ -64,8 +69,8 @@ public class HttpApi {
     }
 
     public boolean post(String urlString, OfflineForm offlineForm) {
-        try {//TODO: инжектить gson с конвертацией имён
-            String postData = new JSONObject(new Gson().toJson(offlineForm)).toString();
+        try {
+            String postData = new JSONObject(gson.toJson(offlineForm)).toString();
 
             URL url = new URL(urlString);
 

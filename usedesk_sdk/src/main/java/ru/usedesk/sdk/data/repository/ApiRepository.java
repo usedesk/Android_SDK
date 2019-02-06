@@ -2,6 +2,9 @@ package ru.usedesk.sdk.data.repository;
 
 import android.support.annotation.NonNull;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.data.framework.api.HttpApi;
@@ -14,12 +17,14 @@ import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SetEmailRequest;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
 import ru.usedesk.sdk.domain.entity.Feedback;
+import ru.usedesk.sdk.domain.entity.OfflineForm;
 import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.UsedeskFile;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 
+import static ru.usedesk.sdk.domain.entity.Constants.OFFLINE_FORM_PATH;
 import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 
 public class ApiRepository implements IApiRepository {
@@ -31,7 +36,7 @@ public class ApiRepository implements IApiRepository {
     private UsedeskActionListener actionListener;
 
     @Inject
-    public ApiRepository(@NonNull SocketApi socketApi, @NonNull HttpApi httpApi) {
+    ApiRepository(@NonNull SocketApi socketApi, @NonNull HttpApi httpApi) {
         this.socketApi = socketApi;
         this.httpApi = httpApi;
     }
@@ -84,8 +89,15 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public boolean post(String postUrl, String data) {
-        return httpApi.post(postUrl, data);
+    public boolean post(UsedeskConfiguration configuration, OfflineForm offlineForm) {
+        try {
+            URL url = new URL(configuration.getUrl());
+            String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
+            return httpApi.post(postUrl, offlineForm);
+        } catch (MalformedURLException e) {
+            LOGE(TAG, e);
+            return false;
+        }
     }
 
     @Override

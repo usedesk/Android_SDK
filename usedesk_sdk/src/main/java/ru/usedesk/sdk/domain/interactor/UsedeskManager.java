@@ -4,10 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import org.json.JSONException;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +23,6 @@ import ru.usedesk.sdk.domain.entity.UsedeskFile;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 
-import static ru.usedesk.sdk.domain.entity.Constants.OFFLINE_FORM_PATH;
 import static ru.usedesk.sdk.utils.LogUtils.LOGD;
 import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 
@@ -45,11 +40,11 @@ public class UsedeskManager {
     private IApiRepository apiRepository;
 
     @Inject
-    public UsedeskManager(@NonNull Context context,
-                          @NonNull UsedeskConfiguration usedeskConfiguration,
-                          @NonNull UsedeskActionListener usedeskActionListener,
-                          @NonNull IUserInfoRepository userInfoRepository,
-                          @NonNull IApiRepository apiRepository) {
+    UsedeskManager(@NonNull Context context,
+                   @NonNull UsedeskConfiguration usedeskConfiguration,
+                   @NonNull UsedeskActionListener usedeskActionListener,
+                   @NonNull IUserInfoRepository userInfoRepository,
+                   @NonNull IApiRepository apiRepository) {
         this.context = context;
         this.usedeskConfiguration = usedeskConfiguration;
         this.usedeskActionListener = usedeskActionListener;
@@ -164,25 +159,11 @@ public class UsedeskManager {
     }
 
     private void postOfflineUrl(final OfflineForm offlineForm) {
-        try {
-            String postUrl;
-            try {
-                UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
-                URL url = new URL(configuration.getUrl());
-                postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
-            } catch (MalformedURLException | DataNotFoundException e) {
-                LOGE(TAG, e);
-                return;
-            }
-
-            boolean success = apiRepository.post(postUrl, offlineForm.toJSONString());
-            if (success) {
-                Message message = new Message(MessageType.SERVICE);
-                message.setText(context.getString(R.string.message_offline_form_sent));
-                usedeskActionListener.onServiceMessageReceived(message);
-            }
-        } catch (JSONException e) {
-            LOGE(TAG, e);
+        boolean success = apiRepository.post(usedeskConfiguration, offlineForm);
+        if (success) {
+            usedeskActionListener.onServiceMessageReceived(new Message(MessageType.SERVICE) {{
+                setText(context.getString(R.string.message_offline_form_sent));
+            }});
         }
     }
 

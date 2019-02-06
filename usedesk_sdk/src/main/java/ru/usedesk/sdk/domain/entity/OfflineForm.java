@@ -1,10 +1,6 @@
 package ru.usedesk.sdk.domain.entity;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static ru.usedesk.sdk.domain.entity.Constants.KEY_COMPANY_ID;
 
@@ -56,9 +52,5 @@ public class OfflineForm {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public String toJSONString() throws JSONException {
-        return new JSONObject(new Gson().toJson(this)).toString();
     }
 }

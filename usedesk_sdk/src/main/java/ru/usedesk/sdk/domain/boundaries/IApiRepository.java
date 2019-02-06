@@ -3,6 +3,7 @@ package ru.usedesk.sdk.domain.boundaries;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.sdk.domain.entity.Feedback;
+import ru.usedesk.sdk.domain.entity.OfflineForm;
 import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
@@ -13,9 +14,7 @@ public interface IApiRepository {
 
     void setActionListener(@NonNull UsedeskActionListener actionListener);
 
-    //void emitterAction(BaseRequest baseRequest);
-
-    boolean post(String postUrl, String data);
+    boolean post(UsedeskConfiguration configuration, OfflineForm offlineForm);
 
     void disconnect();
 

@@ -14,15 +14,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
-import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
 import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
-import ru.usedesk.sdk.data.framework.entity.request.SetEmailRequest;
 import ru.usedesk.sdk.data.framework.entity.response.ErrorResponse;
 import ru.usedesk.sdk.data.framework.entity.response.InitChatResponse;
 import ru.usedesk.sdk.data.framework.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.data.framework.entity.response.SendFeedbackResponse;
-import ru.usedesk.sdk.data.repository.ApiRepository;
+import ru.usedesk.sdk.domain.boundaries.IApiRepository;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.Message;
@@ -51,14 +48,14 @@ public class UsedeskManager {
     private Thread thread;
 
     private IUserInfoRepository userInfoRepository;
-    private ApiRepository apiRepository;
+    private IApiRepository apiRepository;
 
     @Inject
     public UsedeskManager(@NonNull Context context,
                           @NonNull UsedeskConfiguration usedeskConfiguration,
                           @NonNull UsedeskActionListener usedeskActionListener,
                           @NonNull IUserInfoRepository userInfoRepository,
-                          @NonNull ApiRepository apiRepository) {
+                          @NonNull IApiRepository apiRepository) {
         this.context = context;
         this.usedeskConfiguration = usedeskConfiguration;
         this.usedeskActionListener = usedeskActionListener;
@@ -112,11 +109,10 @@ public class UsedeskManager {
             return;
         }
 
-        SendMessageRequest.Message sendMessage = new SendMessageRequest.Message();
-        sendMessage.setText(text);
-        sendMessage.setUsedeskFile(usedeskFile);
-
-        sendMessage(sendMessage);
+        sendMessage(new SendMessageRequest.Message() {{
+            setText(text);
+            setUsedeskFile(usedeskFile);
+        }});
     }
 
     public void sendUserMessage(String text, List<UsedeskFile> usedeskFiles) {
@@ -169,9 +165,7 @@ public class UsedeskManager {
             return;
         }
 
-        SendFeedbackRequest feedbackRequest = new SendFeedbackRequest(feedback);
-        feedbackRequest.setToken(token);
-        apiRepository.emitterAction(feedbackRequest);
+        apiRepository.sendFeedbackMessage(token, feedback);
     }
 
     public void sendOfflineForm(final OfflineForm offlineForm) {
@@ -212,28 +206,15 @@ public class UsedeskManager {
     }
 
     private void initChat() {
-        InitChatRequest initChatRequest = new InitChatRequest();
-        initChatRequest.setToken(token);
-        initChatRequest.setCompanyId(usedeskConfiguration.getCompanyId());
-        initChatRequest.setUrl(usedeskConfiguration.getUrl());
-
-        apiRepository.emitterAction(initChatRequest);
+        apiRepository.initChat(token, usedeskConfiguration);
     }
 
     private void sendMessage(SendMessageRequest.Message sendMessage) {
-        SendMessageRequest sendMessageRequest = new SendMessageRequest();
-        sendMessageRequest.setToken(token);
-        sendMessageRequest.setMessage(sendMessage);
-
-        apiRepository.emitterAction(sendMessageRequest);
+        apiRepository.sendMessageRequest(token, sendMessage);
     }
 
     private void setUserEmail() {
-        SetEmailRequest setEmailRequest = new SetEmailRequest();
-        setEmailRequest.setToken(token);
-        setEmailRequest.setEmail(usedeskConfiguration.getEmail());
-
-        apiRepository.emitterAction(setEmailRequest);
+        apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail());
     }
 
     private void parseNewMessageResponse(NewMessageResponse newMessageResponse) {

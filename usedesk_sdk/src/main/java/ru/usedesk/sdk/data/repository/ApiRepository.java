@@ -7,9 +7,15 @@ import javax.inject.Inject;
 import ru.usedesk.sdk.data.framework.api.HttpApi;
 import ru.usedesk.sdk.data.framework.api.SocketApi;
 import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
+import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
+import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
+import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
+import ru.usedesk.sdk.data.framework.entity.request.SetEmailRequest;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
+import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 
 import static ru.usedesk.sdk.utils.LogUtils.LOGE;
@@ -33,8 +39,7 @@ public class ApiRepository implements IApiRepository {
         this.actionListener = actionListener;
     }
 
-    @Override
-    public void emitterAction(BaseRequest baseRequest) {
+    private void emitterAction(BaseRequest baseRequest) {
         try {
             socketApi.emitterAction(baseRequest);
         } catch (ApiException e) {
@@ -42,6 +47,38 @@ public class ApiRepository implements IApiRepository {
 
             actionListener.onError(e);
         }
+    }
+
+    @Override
+    public void initChat(String token, UsedeskConfiguration usedeskConfiguration) {
+        emitterAction(new InitChatRequest() {{
+            setToken(token);
+            setCompanyId(usedeskConfiguration.getCompanyId());
+            setUrl(usedeskConfiguration.getUrl());
+        }});
+    }
+
+    @Override
+    public void sendFeedbackMessage(String token, Feedback feedback) {
+        emitterAction(new SendFeedbackRequest(feedback) {{
+            setToken(token);
+        }});
+    }
+
+    @Override
+    public void sendMessageRequest(String token, SendMessageRequest.Message sendMessage) {
+        emitterAction(new SendMessageRequest() {{
+            setToken(token);
+            setMessage(sendMessage);
+        }});
+    }
+
+    @Override
+    public void sendUserEmail(String token, String email) {
+        emitterAction(new SetEmailRequest() {{
+            setToken(token);
+            setEmail(email);
+        }});
     }
 
     @Override

@@ -1,5 +1,7 @@
 package ru.usedesk.sdk.domain.entity;
 
+import com.google.gson.annotations.SerializedName;
+
 public class FeedbackButton {
 
     private String type;
@@ -43,7 +45,9 @@ public class FeedbackButton {
     }
 
     private enum Icon {
+        @SerializedName("like")
         LIKE,
+        @SerializedName("dislike")
         DISLIKE
     }
 }

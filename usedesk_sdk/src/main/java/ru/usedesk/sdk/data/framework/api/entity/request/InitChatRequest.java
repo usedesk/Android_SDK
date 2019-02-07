@@ -1,11 +1,15 @@
-package ru.usedesk.sdk.data.framework.entity.request;
+package ru.usedesk.sdk.data.framework.api.entity.request;
 
+import com.google.gson.annotations.SerializedName;
+
+import static ru.usedesk.sdk.domain.entity.Constants.KEY_COMPANY_ID;
 import static ru.usedesk.sdk.domain.entity.Constants.VALUE_CURRENT_SDK;
 
 public class InitChatRequest extends BaseRequest {
 
     public static final String TYPE = "@@server/chat/INIT";
 
+    @SerializedName(KEY_COMPANY_ID)
     private String companyId;
 
     private String url;

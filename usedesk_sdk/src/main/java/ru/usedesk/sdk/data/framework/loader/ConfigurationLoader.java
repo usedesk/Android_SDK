@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import ru.usedesk.sdk.data.repository.user.info.DataLoader;
@@ -21,7 +22,8 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
     private final SharedPreferences sharedPreferences;
 
     @Inject
-    public ConfigurationLoader(@NonNull Context context) {
+    @Named("configuration")
+    ConfigurationLoader(@NonNull Context context) {
         this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 

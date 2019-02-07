@@ -1,7 +1,10 @@
-package ru.usedesk.sdk.data.framework.entity.request;
+package ru.usedesk.sdk.data.framework.api.entity.request;
+
+import com.google.gson.annotations.SerializedName;
 
 import ru.usedesk.sdk.domain.entity.Feedback;
 
+import static ru.usedesk.sdk.domain.entity.Constants.KEY_DATA;
 import static ru.usedesk.sdk.domain.entity.Constants.VALUE_FEEDBACK_ACTION;
 
 public class SendFeedbackRequest extends BaseRequest {
@@ -19,11 +22,12 @@ public class SendFeedbackRequest extends BaseRequest {
 
         private String type;
 
-        private Feedback data;
+        @SerializedName(KEY_DATA)
+        private Feedback feedback;
 
         public Payload(Feedback feedback) {
             type = VALUE_FEEDBACK_ACTION;
-            this.data = feedback;
+            this.feedback = feedback;
         }
     }
 }

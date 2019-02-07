@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import ru.usedesk.sdk.data.repository.user.info.DataLoader;
@@ -18,7 +19,8 @@ public class TokenLoader extends DataLoader<String> {
     private final SharedPreferences sharedPreferences;
 
     @Inject
-    public TokenLoader(@NonNull Context context) {
+    @Named("token")
+    TokenLoader(@NonNull Context context) {
         this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 

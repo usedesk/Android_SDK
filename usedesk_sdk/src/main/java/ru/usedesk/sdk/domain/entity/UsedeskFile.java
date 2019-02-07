@@ -6,7 +6,7 @@ public class UsedeskFile {
 
     private String content;
     private String type;
-    private Long size;
+    private String size;
     private String name;
 
     public UsedeskFile() {
@@ -28,11 +28,11 @@ public class UsedeskFile {
         this.type = type;
     }
 
-    public Long getSize() {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(Long size) {
+    public void setSize(String size) {
         this.size = size;
     }
 

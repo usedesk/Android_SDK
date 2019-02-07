@@ -1,17 +1,17 @@
-package ru.usedesk.sdk.data.framework.entity.request;
+package ru.usedesk.sdk.data.framework.api.entity.request;
 
 public class SendMessageRequest extends BaseRequest {
 
     public static final String TYPE = "@@server/chat/SEND_MESSAGE";
 
-    private RequestMessage requestMessage;
+    private RequestMessage message;
 
     public SendMessageRequest(String token, RequestMessage requestMessage) {
         super(TYPE, token);
-        this.requestMessage = requestMessage;
+        this.message = requestMessage;
     }
 
     public RequestMessage getRequestMessage() {
-        return requestMessage;
+        return message;
     }
 }

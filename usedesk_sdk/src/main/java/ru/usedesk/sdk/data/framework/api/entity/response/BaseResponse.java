@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.entity.response;
+package ru.usedesk.sdk.data.framework.api.entity.response;
 
 public abstract class BaseResponse {
 

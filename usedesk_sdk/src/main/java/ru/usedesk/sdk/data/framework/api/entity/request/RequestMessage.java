@@ -1,19 +1,24 @@
-package ru.usedesk.sdk.data.framework.entity.request;
+package ru.usedesk.sdk.data.framework.api.entity.request;
+
+import com.google.gson.annotations.SerializedName;
 
 import ru.usedesk.sdk.domain.entity.UsedeskFile;
+
+import static ru.usedesk.sdk.domain.entity.Constants.KEY_FILE;
 
 public class RequestMessage {
 
     private String text;
 
-    private UsedeskFile file;
+    @SerializedName(KEY_FILE)
+    private UsedeskFile usedeskFile;
 
     public RequestMessage() {
     }
 
-    public RequestMessage(String text, UsedeskFile file) {
+    public RequestMessage(String text, UsedeskFile usedeskFile) {
         this.text = text;
-        this.file = file;
+        this.usedeskFile = usedeskFile;
     }
 
     public String getText() {
@@ -25,10 +30,10 @@ public class RequestMessage {
     }
 
     public UsedeskFile getUsedeskFile() {
-        return file;
+        return usedeskFile;
     }
 
     public void setUsedeskFile(UsedeskFile usedeskFile) {
-        this.file = usedeskFile;
+        this.usedeskFile = usedeskFile;
     }
 }

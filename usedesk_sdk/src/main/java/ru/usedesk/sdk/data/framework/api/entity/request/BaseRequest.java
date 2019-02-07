@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.entity.request;
+package ru.usedesk.sdk.data.framework.api.entity.request;
 
 public class BaseRequest {
 

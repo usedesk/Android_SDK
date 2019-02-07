@@ -9,12 +9,12 @@ import javax.inject.Inject;
 
 import ru.usedesk.sdk.data.framework.api.HttpApi;
 import ru.usedesk.sdk.data.framework.api.SocketApi;
-import ru.usedesk.sdk.data.framework.entity.request.BaseRequest;
-import ru.usedesk.sdk.data.framework.entity.request.InitChatRequest;
-import ru.usedesk.sdk.data.framework.entity.request.RequestMessage;
-import ru.usedesk.sdk.data.framework.entity.request.SendFeedbackRequest;
-import ru.usedesk.sdk.data.framework.entity.request.SendMessageRequest;
-import ru.usedesk.sdk.data.framework.entity.request.SetEmailRequest;
+import ru.usedesk.sdk.data.framework.api.entity.request.BaseRequest;
+import ru.usedesk.sdk.data.framework.api.entity.request.InitChatRequest;
+import ru.usedesk.sdk.data.framework.api.entity.request.RequestMessage;
+import ru.usedesk.sdk.data.framework.api.entity.request.SendFeedbackRequest;
+import ru.usedesk.sdk.data.framework.api.entity.request.SendMessageRequest;
+import ru.usedesk.sdk.data.framework.api.entity.request.SetEmailRequest;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
 import ru.usedesk.sdk.domain.entity.Feedback;
 import ru.usedesk.sdk.domain.entity.OfflineForm;

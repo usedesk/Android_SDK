@@ -1,7 +1,12 @@
 package ru.usedesk.sdk.domain.entity;
 
+import com.google.gson.annotations.SerializedName;
+
+import static ru.usedesk.sdk.domain.entity.Constants.KEY_COMPANY_ID;
+
 public class OfflineForm {
 
+    @SerializedName(KEY_COMPANY_ID)
     private String companyId;
     private String name;
     private String email;

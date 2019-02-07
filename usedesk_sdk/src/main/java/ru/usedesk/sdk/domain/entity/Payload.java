@@ -2,13 +2,20 @@ package ru.usedesk.sdk.domain.entity;
 
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
+
+import static ru.usedesk.sdk.domain.entity.Constants.KEY_FEEDBACK_BUTTONS;
+import static ru.usedesk.sdk.domain.entity.Constants.KEY_TICKET_ID;
 
 public class Payload {
 
+    @SerializedName(KEY_TICKET_ID)
     private long ticketId;
 
-    private List<FeedbackButton> buttons;
+    @SerializedName(KEY_FEEDBACK_BUTTONS)
+    private List<FeedbackButton> feedbackButtons;
 
     private boolean csi;
     private String userRating;
@@ -22,7 +29,7 @@ public class Payload {
     }
 
     public List<FeedbackButton> getFeedbackButtons() {
-        return buttons;
+        return feedbackButtons;
     }
 
     public boolean isCsi() {

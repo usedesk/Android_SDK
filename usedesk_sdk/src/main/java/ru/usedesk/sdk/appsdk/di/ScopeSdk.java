@@ -7,6 +7,11 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import ru.usedesk.sdk.data.framework.entity.response.ErrorResponse;
+import ru.usedesk.sdk.data.framework.entity.response.InitChatResponse;
+import ru.usedesk.sdk.data.framework.entity.response.NewMessageResponse;
+import ru.usedesk.sdk.data.framework.entity.response.SendFeedbackResponse;
+import ru.usedesk.sdk.data.framework.entity.response.SetEmailResponse;
 import ru.usedesk.sdk.data.framework.loader.ConfigurationLoader;
 import ru.usedesk.sdk.data.framework.loader.DataLoader;
 import ru.usedesk.sdk.data.framework.loader.TokenLoader;
@@ -35,8 +40,12 @@ public class ScopeSdk extends DependencyInjection {
     }
 
     private Gson makeGson() {
-        return new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(ErrorResponse.class, ErrorResponse.TYPE)
+                .registerTypeAdapter(InitChatResponse.class, InitChatResponse.TYPE)
+                .registerTypeAdapter(SetEmailResponse.class, SetEmailResponse.TYPE)
+                .registerTypeAdapter(NewMessageResponse.class, NewMessageResponse.TYPE)
+                .registerTypeAdapter(SendFeedbackResponse.class, SendFeedbackResponse.TYPE)
                 .create();
     }
 }

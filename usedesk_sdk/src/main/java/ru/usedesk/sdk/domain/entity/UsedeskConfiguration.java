@@ -23,4 +23,15 @@ public class UsedeskConfiguration {
     public String getUrl() {
         return url;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UsedeskConfiguration) {
+            UsedeskConfiguration configuration = (UsedeskConfiguration) obj;
+            return this.companyId.equals(configuration.companyId) &&
+                    this.email.equals(configuration.email) &&
+                    this.url.equals(configuration.url);
+        }
+        return false;
+    }
 }

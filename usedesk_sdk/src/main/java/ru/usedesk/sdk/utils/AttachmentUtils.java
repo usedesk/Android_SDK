@@ -49,7 +49,7 @@ public class AttachmentUtils {
         return lastVal;
     }
 
-    public static List<UsedeskFile> createUsedeskFiles(ArrayList<String> paths) {//TODO: Перенести в UsedeskSDK
+    public static List<UsedeskFile> createUsedeskFiles(ArrayList<String> paths) {
         List<UsedeskFile> usedeskFiles = new ArrayList<>();
 
         for (String path : paths) {

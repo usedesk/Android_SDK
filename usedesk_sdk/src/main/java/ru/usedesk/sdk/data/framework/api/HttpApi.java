@@ -28,44 +28,8 @@ public class HttpApi {
     private final Gson gson;
 
     @Inject
-    private HttpApi(Gson gson) {
+    public HttpApi(Gson gson) {
         this.gson = gson;
-    }
-
-    public boolean post(String urlString, String postData) {
-
-        try {
-            URL url = new URL(urlString);
-
-            LOGD(TAG, "URL: " + url);
-            LOGD(TAG, "Data: " + postData);
-
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod("POST");
-
-            OutputStream outputStream = httpURLConnection.getOutputStream();
-            BufferedWriter bufferedWriter = new BufferedWriter(
-                    new OutputStreamWriter(outputStream, ENCODING));
-
-            String encodedData = URLEncoder.encode(postData, ENCODING);
-            LOGD(TAG, "Data (encoded): " + encodedData);
-            bufferedWriter.write(encodedData);
-
-            bufferedWriter.flush();
-            bufferedWriter.close();
-            outputStream.close();
-
-            int responseCode = httpURLConnection.getResponseCode();
-            boolean success = responseCode == HttpsURLConnection.HTTP_OK;
-
-            LOGD(TAG, "SUCCESS: " + success);
-
-            return success;
-        } catch (Exception e) {
-            LogUtils.LOGE(TAG, e);
-        }
-
-        return false;
     }
 
     public boolean post(String urlString, OfflineForm offlineForm) {

@@ -95,12 +95,9 @@ public class Message {
                     JsonObject jsonObject = gson.toJsonTree(payload).getAsJsonObject();
                     if (jsonObject != null) {
                         return gson.fromJson(jsonObject, Payload.class);
-                    } else {
-                        return new Gson().fromJson(payload.toString(), Payload.class);
                     }
-                } else {
-                    return new Gson().fromJson(payload.toString(), Payload.class);
                 }
+                return gson.fromJson(payload.toString(), Payload.class);//TODO: переместить gson
             } catch (JsonSyntaxException e) {
                 return new Payload();
             }

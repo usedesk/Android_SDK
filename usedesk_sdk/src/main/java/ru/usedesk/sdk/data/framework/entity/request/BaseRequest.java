@@ -1,10 +1,5 @@
 package ru.usedesk.sdk.data.framework.entity.request;
 
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public abstract class BaseRequest {
 
     private String type;
@@ -24,9 +19,5 @@ public abstract class BaseRequest {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public JSONObject toJSONObject() throws JSONException {
-        return new JSONObject(new Gson().toJson(this));
     }
 }

@@ -1,12 +1,13 @@
 package ru.usedesk.sdk.data.framework.entity.request;
 
-public abstract class BaseRequest {
+public class BaseRequest {
 
     private String type;
     private String token;
 
-    public BaseRequest(String type) {
+    BaseRequest(String type, String token) {
         this.type = type;
+        this.token = token;
     }
 
     public String getType() {
@@ -15,9 +16,5 @@ public abstract class BaseRequest {
 
     public String getToken() {
         return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }

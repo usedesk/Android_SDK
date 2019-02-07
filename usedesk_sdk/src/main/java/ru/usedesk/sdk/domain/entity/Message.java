@@ -23,6 +23,11 @@ public class Message {
         this.type = type;
     }
 
+    public Message(MessageType type, String text) {
+        this(type);
+        this.text = text;
+    }
+
     public String getId() {
         return id;
     }

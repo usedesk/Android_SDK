@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import ru.usedesk.sdk.data.repository.user.info.DataLoader;
 import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
 
 @Singleton

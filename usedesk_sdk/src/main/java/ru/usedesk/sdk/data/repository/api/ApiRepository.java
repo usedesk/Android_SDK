@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.repository;
+package ru.usedesk.sdk.data.repository.api;
 
 import android.support.annotation.NonNull;
 
@@ -58,34 +58,24 @@ public class ApiRepository implements IApiRepository {
 
     @Override
     public void initChat(String token, UsedeskConfiguration usedeskConfiguration) {
-        emitterAction(new InitChatRequest() {{
-            setToken(token);
-            setCompanyId(usedeskConfiguration.getCompanyId());
-            setUrl(usedeskConfiguration.getUrl());
-        }});
+        emitterAction(new InitChatRequest(token, usedeskConfiguration.getCompanyId(),
+                usedeskConfiguration.getUrl()));
     }
 
     @Override
     public void sendFeedbackMessage(String token, Feedback feedback) {
-        emitterAction(new SendFeedbackRequest(feedback) {{
-            setToken(token);
-        }});
+        SendFeedbackRequest sendFeedbackRequest = new SendFeedbackRequest(token, feedback);
+        emitterAction(sendFeedbackRequest);
     }
 
     @Override
     public void sendMessageRequest(String token, String text, UsedeskFile usedeskFile) {
-        emitterAction(new SendMessageRequest() {{
-            setToken(token);
-            setRequestMessage(new RequestMessage(text, usedeskFile));
-        }});
+        emitterAction(new SendMessageRequest(token, new RequestMessage(text, usedeskFile)));
     }
 
     @Override
     public void sendUserEmail(String token, String email) {
-        emitterAction(new SetEmailRequest() {{
-            setToken(token);
-            setEmail(email);
-        }});
+        emitterAction(new SetEmailRequest(token, email));
     }
 
     @Override

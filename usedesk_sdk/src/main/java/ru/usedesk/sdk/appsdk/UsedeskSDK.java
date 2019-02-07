@@ -25,9 +25,12 @@ public class UsedeskSDK {
     Context context;
 
     @Inject
-    UsedeskSDK(@NonNull Context context) {
+    UsedeskSDK(@NonNull Context context, UsedeskConfiguration configuration,
+               UsedeskActionListener actionListener) {
         ScopeSdk scopeSdk = new ScopeSdk(this, context);
         Toothpick.inject(this, scopeSdk.getScope());
+
+        usedeskManager.init(configuration, actionListener);
     }
 
     public void destroy() {
@@ -101,9 +104,7 @@ public class UsedeskSDK {
                 throw new NullPointerException("UsedeskActionListener cannot be NULL!");
             }
 
-            UsedeskSDK usedeskSDK = new UsedeskSDK(context);
-            usedeskSDK.set(usedeskConfiguration, usedeskActionListener);
-            return usedeskSDK;
+            return new UsedeskSDK(context, usedeskConfiguration, usedeskActionListener);
         }
     }
 }

@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import ru.usedesk.sdk.data.repository.user.info.DataLoader;
+
 @Singleton
 public class TokenLoader extends DataLoader<String> {
     private static final String PREF_NAME = "usedeskSdkToken";

@@ -6,16 +6,12 @@ public class SendMessageRequest extends BaseRequest {
 
     private RequestMessage requestMessage;
 
-    public SendMessageRequest() {
-        super(TYPE);
+    public SendMessageRequest(String token, RequestMessage requestMessage) {
+        super(TYPE, token);
+        this.requestMessage = requestMessage;
     }
 
     public RequestMessage getRequestMessage() {
         return requestMessage;
     }
-
-    public void setRequestMessage(RequestMessage requestMessage) {
-        this.requestMessage = requestMessage;
-    }
-
 }

@@ -11,8 +11,12 @@ public class InitChatRequest extends BaseRequest {
     private String url;
     private Payload payload;
 
-    public InitChatRequest() {
-        super(TYPE);
+    public InitChatRequest(String token, String companyId, String url) {
+        super(TYPE, token);
+
+        this.companyId = companyId;
+        this.url = url;
+
         payload = new Payload();
     }
 

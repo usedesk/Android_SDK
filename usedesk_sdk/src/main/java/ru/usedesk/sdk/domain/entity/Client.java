@@ -4,7 +4,7 @@ public class Client {
 
     private String token;
     private String email;
-    private String chat;
+    private int chat;
 
     public Client() {
     }
@@ -18,6 +18,6 @@ public class Client {
     }
 
     public String getChat() {
-        return chat;
+        return chat + "";
     }
 }

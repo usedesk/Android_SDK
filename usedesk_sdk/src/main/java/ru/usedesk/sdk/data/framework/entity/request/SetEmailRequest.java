@@ -6,15 +6,12 @@ public class SetEmailRequest extends BaseRequest {
 
     private String email;
 
-    public SetEmailRequest() {
-        super(TYPE);
+    public SetEmailRequest(String token, String email) {
+        super(TYPE, token);
+        this.email = email;
     }
 
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 }

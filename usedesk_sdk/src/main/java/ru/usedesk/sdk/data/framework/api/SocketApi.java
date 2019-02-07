@@ -3,7 +3,7 @@ package ru.usedesk.sdk.data.framework.api;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonParseException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -117,8 +117,8 @@ public class SocketApi {
         this.onMessageListener = onMessageListener;
 
         emitterListeners.put(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
-        emitterListeners.put(Socket.EVENT_CONNECT_ERROR, connectEmitterListener);
-        emitterListeners.put(Socket.EVENT_CONNECT_TIMEOUT, connectEmitterListener);
+        emitterListeners.put(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
+        emitterListeners.put(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
         emitterListeners.put(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
         emitterListeners.put(Socket.EVENT_CONNECT, connectEmitterListener);
 
@@ -155,9 +155,27 @@ public class SocketApi {
     }
 
     private BaseResponse process(String rawResponse) {
-        TypeToken<BaseResponse> typeToken = new TypeToken<BaseResponse>() {
-        };
+        try {
+            BaseRequest baseRequest = gson.fromJson(rawResponse, BaseRequest.class);
 
-        return gson.fromJson(rawResponse, typeToken.getType());
+            if (baseRequest != null && baseRequest.getType() != null) {
+                switch (baseRequest.getType()) {
+                    case InitChatResponse.TYPE:
+                        return gson.fromJson(rawResponse, InitChatResponse.class);
+                    case ErrorResponse.TYPE:
+                        return gson.fromJson(rawResponse, ErrorResponse.class);
+                    case NewMessageResponse.TYPE:
+                        return gson.fromJson(rawResponse, NewMessageResponse.class);
+                    case SendFeedbackResponse.TYPE:
+                        return gson.fromJson(rawResponse, SendFeedbackResponse.class);
+                    case SetEmailResponse.TYPE:
+                        return gson.fromJson(rawResponse, SetEmailResponse.class);
+                }
+            }
+        } catch (JsonParseException e) {
+            LOGE(TAG, e);
+        }
+
+        return null;
     }
 }

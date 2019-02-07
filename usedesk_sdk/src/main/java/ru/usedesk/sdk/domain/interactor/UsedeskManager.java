@@ -41,31 +41,11 @@ public class UsedeskManager {
 
     @Inject
     UsedeskManager(@NonNull Context context,
-                   @NonNull UsedeskConfiguration usedeskConfiguration,
-                   @NonNull UsedeskActionListener usedeskActionListener,
                    @NonNull IUserInfoRepository userInfoRepository,
                    @NonNull IApiRepository apiRepository) {
         this.context = context;
-        this.usedeskConfiguration = usedeskConfiguration;
-        this.usedeskActionListener = usedeskActionListener;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;
-
-        apiRepository.setActionListener(usedeskActionListener);
-
-        try {
-            UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
-            if (configuration.equals(usedeskConfiguration)) {
-                token = userInfoRepository.getToken();
-            }
-        } catch (DataNotFoundException e) {
-            LOGD(TAG, e);
-        }
-
-        userInfoRepository.setConfiguration(usedeskConfiguration);
-
-        setSocket();
-        connect();
     }
 
     public void updateUsedeskConfiguration(UsedeskConfiguration usedeskConfiguration) {
@@ -161,9 +141,8 @@ public class UsedeskManager {
     private void postOfflineUrl(final OfflineForm offlineForm) {
         boolean success = apiRepository.post(usedeskConfiguration, offlineForm);
         if (success) {
-            usedeskActionListener.onServiceMessageReceived(new Message(MessageType.SERVICE) {{
-                setText(context.getString(R.string.message_offline_form_sent));
-            }});
+            usedeskActionListener.onServiceMessageReceived(new Message(MessageType.SERVICE,
+                    context.getString(R.string.message_offline_form_sent)));
         }
     }
 
@@ -270,5 +249,27 @@ public class UsedeskManager {
                 initChat();
             }
         };
+    }
+
+    public void init(UsedeskConfiguration usedeskConfiguration,
+                     UsedeskActionListener usedeskActionListener) {
+        this.usedeskConfiguration = usedeskConfiguration;
+        this.usedeskActionListener = usedeskActionListener;
+
+        apiRepository.setActionListener(usedeskActionListener);
+
+        try {
+            UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
+            if (configuration.equals(usedeskConfiguration)) {
+                token = userInfoRepository.getToken();
+            }
+        } catch (DataNotFoundException e) {
+            LOGD(TAG, e);
+        }
+
+        userInfoRepository.setConfiguration(usedeskConfiguration);
+
+        setSocket();
+        connect();
     }
 }

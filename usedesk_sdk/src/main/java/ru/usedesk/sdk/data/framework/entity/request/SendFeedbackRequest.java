@@ -10,8 +10,8 @@ public class SendFeedbackRequest extends BaseRequest {
 
     private Payload payload;
 
-    public SendFeedbackRequest(Feedback feedback) {
-        super(TYPE);
+    public SendFeedbackRequest(String token, Feedback feedback) {
+        super(TYPE, token);
         payload = new Payload(feedback);
     }
 

@@ -14,7 +14,7 @@ import ru.usedesk.sdk.data.repository.user.info.DataLoader;
 @Singleton
 public class TokenLoader extends DataLoader<String> {
     private static final String PREF_NAME = "usedeskSdkToken";
-    private static final String KEY_TOKEN = "token";//TODO: replace
+    private static final String KEY_TOKEN = "token";
 
     private final SharedPreferences sharedPreferences;
 

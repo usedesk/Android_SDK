@@ -37,7 +37,7 @@ public class Setup {
 
         for (Message message : messages) {
             if (message.getChat() != null
-                    && !TextUtils.isEmpty(message.getText())) {
+                    && (!TextUtils.isEmpty(message.getText()) || message.getUsedeskFile() != null)) {
                 filteredMessages.add(message);
             }
         }

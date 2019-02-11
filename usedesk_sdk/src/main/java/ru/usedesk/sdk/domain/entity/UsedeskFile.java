@@ -45,6 +45,12 @@ public class UsedeskFile {
     }
 
     public boolean isImage() {
-        return type != null && type.startsWith(IMAGE_TYPE);
+        return type != null && type.startsWith(IMAGE_TYPE) ||
+                name != null && endsLikeImage();
+    }
+
+    private boolean endsLikeImage() {
+        return name.endsWith(".png") || name.endsWith(".jpg") ||
+                name.endsWith(".bmp") || name.endsWith(".jpeg");
     }
 }

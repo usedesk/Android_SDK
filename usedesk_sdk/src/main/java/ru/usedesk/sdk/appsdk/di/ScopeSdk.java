@@ -14,6 +14,8 @@ import ru.usedesk.sdk.data.repository.user.info.DataLoader;
 import ru.usedesk.sdk.data.repository.user.info.UserInfoRepository;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
+import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
+import ru.usedesk.sdk.domain.interactor.knowledgebase.KnowledgeBaseInteractor;
 import ru.usedesk.sdk.domain.interactor.UsedeskManager;
 import toothpick.config.Module;
 
@@ -41,6 +43,8 @@ public class ScopeSdk extends DependencyInjection {
             bind(HttpApi.class).to(HttpApi.class);
 
             bind(Gson.class).toInstance(makeGson());
+
+            bind(IKnowledgeBaseInteractor.class).to(KnowledgeBaseInteractor.class);
         }};
     }
 

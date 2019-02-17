@@ -1,6 +1,6 @@
 package ru.usedesk.sdk.domain.entity.knowledgebase;
 
-public class Article {
+public class ArticleInfo {
     private long id;
     private String title;
     private int views;

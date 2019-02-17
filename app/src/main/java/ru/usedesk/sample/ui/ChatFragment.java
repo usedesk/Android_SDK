@@ -33,10 +33,10 @@ import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.utils.NetworkUtils;
 import ru.usedesk.sdk.appsdk.UsedeskSDK;
-import ru.usedesk.sdk.domain.entity.Feedback;
-import ru.usedesk.sdk.domain.entity.Message;
-import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
-import ru.usedesk.sdk.domain.entity.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.chat.Feedback;
+import ru.usedesk.sdk.domain.entity.chat.Message;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
 
 import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFiles;
 

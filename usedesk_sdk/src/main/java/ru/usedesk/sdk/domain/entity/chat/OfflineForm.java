@@ -1,8 +1,8 @@
-package ru.usedesk.sdk.domain.entity;
+package ru.usedesk.sdk.domain.entity.chat;
 
 import com.google.gson.annotations.SerializedName;
 
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_COMPANY_ID;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_COMPANY_ID;
 
 public class OfflineForm {
 

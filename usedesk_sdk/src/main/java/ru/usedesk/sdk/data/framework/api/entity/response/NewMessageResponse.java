@@ -1,6 +1,6 @@
 package ru.usedesk.sdk.data.framework.api.entity.response;
 
-import ru.usedesk.sdk.domain.entity.Message;
+import ru.usedesk.sdk.domain.entity.chat.Message;
 
 public class NewMessageResponse extends BaseResponse {
 

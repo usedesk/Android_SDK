@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.domain.entity;
+package ru.usedesk.sdk.domain.entity.chat;
 
 import android.text.TextUtils;
 
@@ -6,8 +6,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_FEEDBACK_BUTTONS;
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_TICKET_ID;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_FEEDBACK_BUTTONS;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_TICKET_ID;
 
 public class Payload {
 

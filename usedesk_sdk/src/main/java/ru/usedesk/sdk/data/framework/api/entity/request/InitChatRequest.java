@@ -2,8 +2,8 @@ package ru.usedesk.sdk.data.framework.api.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_COMPANY_ID;
-import static ru.usedesk.sdk.domain.entity.Constants.VALUE_CURRENT_SDK;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_COMPANY_ID;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.VALUE_CURRENT_SDK;
 
 public class InitChatRequest extends BaseRequest {
 

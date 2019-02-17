@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.domain.entity;
+package ru.usedesk.sdk.domain.entity.chat;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
 
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_FILE;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_FILE;
 
 public class Message {
 

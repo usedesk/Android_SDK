@@ -16,9 +16,9 @@ import java.util.List;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.utils.DownloadUtils;
 import ru.usedesk.sample.utils.ImageUtils;
-import ru.usedesk.sdk.domain.entity.ChatFeedbackListener;
-import ru.usedesk.sdk.domain.entity.Feedback;
-import ru.usedesk.sdk.domain.entity.Message;
+import ru.usedesk.sdk.domain.entity.chat.ChatFeedbackListener;
+import ru.usedesk.sdk.domain.entity.chat.Feedback;
+import ru.usedesk.sdk.domain.entity.chat.Message;
 import ru.usedesk.sdk.utils.TimeUtils;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

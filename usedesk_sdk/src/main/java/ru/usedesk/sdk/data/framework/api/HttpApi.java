@@ -14,7 +14,7 @@ import java.net.URLEncoder;
 import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
 
-import ru.usedesk.sdk.domain.entity.OfflineForm;
+import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 import ru.usedesk.sdk.utils.LogUtils;
 
 import static ru.usedesk.sdk.utils.LogUtils.LOGD;

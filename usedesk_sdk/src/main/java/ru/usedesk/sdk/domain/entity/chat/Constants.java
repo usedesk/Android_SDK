@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.domain.entity;
+package ru.usedesk.sdk.domain.entity.chat;
 
 public class Constants {
 

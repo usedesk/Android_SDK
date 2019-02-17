@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
 

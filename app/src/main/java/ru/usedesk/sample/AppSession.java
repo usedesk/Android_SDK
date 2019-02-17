@@ -1,6 +1,6 @@
 package ru.usedesk.sample;
 
-import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 
 public class AppSession {
 

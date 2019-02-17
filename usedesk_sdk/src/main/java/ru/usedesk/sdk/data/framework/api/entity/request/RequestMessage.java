@@ -2,9 +2,9 @@ package ru.usedesk.sdk.data.framework.api.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.sdk.domain.entity.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
 
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_FILE;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_FILE;
 
 public class RequestMessage {
 

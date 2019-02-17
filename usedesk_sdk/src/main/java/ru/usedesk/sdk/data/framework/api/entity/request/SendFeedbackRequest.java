@@ -2,10 +2,10 @@ package ru.usedesk.sdk.data.framework.api.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.sdk.domain.entity.Feedback;
+import ru.usedesk.sdk.domain.entity.chat.Feedback;
 
-import static ru.usedesk.sdk.domain.entity.Constants.KEY_DATA;
-import static ru.usedesk.sdk.domain.entity.Constants.VALUE_FEEDBACK_ACTION;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.KEY_DATA;
+import static ru.usedesk.sdk.domain.entity.chat.Constants.VALUE_FEEDBACK_ACTION;
 
 public class SendFeedbackRequest extends BaseRequest {
 

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
-import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 
 public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnConfigurationUsedeskListener {
 

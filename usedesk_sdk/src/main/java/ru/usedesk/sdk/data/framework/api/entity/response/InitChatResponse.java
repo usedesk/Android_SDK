@@ -1,6 +1,6 @@
 package ru.usedesk.sdk.data.framework.api.entity.response;
 
-import ru.usedesk.sdk.domain.entity.Setup;
+import ru.usedesk.sdk.domain.entity.chat.Setup;
 
 public class InitChatResponse extends BaseResponse {
 

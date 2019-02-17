@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sdk.domain.entity.OfflineForm;
+import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 
 public class OfflineFormDialog extends DialogFragment {
 

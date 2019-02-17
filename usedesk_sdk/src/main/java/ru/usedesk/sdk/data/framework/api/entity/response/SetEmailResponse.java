@@ -1,6 +1,6 @@
 package ru.usedesk.sdk.data.framework.api.entity.response;
 
-import ru.usedesk.sdk.domain.entity.State;
+import ru.usedesk.sdk.domain.entity.chat.State;
 
 public class SetEmailResponse extends BaseResponse {
 

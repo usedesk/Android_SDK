@@ -27,9 +27,9 @@ import ru.usedesk.sdk.data.framework.api.entity.response.InitChatResponse;
 import ru.usedesk.sdk.data.framework.api.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.data.framework.api.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.data.framework.api.entity.response.SetEmailResponse;
-import ru.usedesk.sdk.domain.entity.Constants;
-import ru.usedesk.sdk.domain.entity.OnMessageListener;
-import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.chat.Constants;
+import ru.usedesk.sdk.domain.entity.chat.OnMessageListener;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 
 import static ru.usedesk.sdk.utils.LogUtils.LOGD;

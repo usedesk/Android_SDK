@@ -16,4 +16,7 @@ public interface IKnowledgeBaseInteractor {
 
     @NonNull
     Single<ArticleBody> getArticleSingle(@NonNull ArticleInfo articleInfo);
+
+    @NonNull
+    Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery);
 }

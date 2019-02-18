@@ -79,7 +79,17 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
                 .usedeskActionListener(this)
                 .build();
 
-        checkSections();
+        checkArticles("ваиваи");
+        //checkSections();
+    }
+
+    private void checkArticles(String searchQuery) {
+        Disposable d = usedeskSDK.getArticlesSingle(searchQuery)
+                .subscribe(articles -> {
+                    articles = articles;
+                }, throwable -> {
+                    //throwable.printStackTrace();
+                });
     }
 
     private void checkSections() {

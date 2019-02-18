@@ -34,4 +34,11 @@ public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
                                   @NonNull ArticleInfo articleInfo) throws ApiException {
         return apiLoader.getArticle(id, Long.toString(articleInfo.getId()), token);
     }
+
+    @NonNull
+    @Override
+    public List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,
+                                         @NonNull String searchQuery) throws ApiException {
+        return apiLoader.getArticles(id, token, searchQuery);
+    }
 }

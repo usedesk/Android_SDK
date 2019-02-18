@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.api.retrofit;
+package ru.usedesk.sdk.data.framework.api.retrofit.entity;
 
 public class ApiError {
 

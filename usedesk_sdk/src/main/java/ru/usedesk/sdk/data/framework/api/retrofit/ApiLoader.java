@@ -6,11 +6,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Response;
+import ru.usedesk.sdk.data.framework.api.retrofit.entity.ApiError;
+import ru.usedesk.sdk.data.framework.api.retrofit.entity.ArticlesBodyPage;
 import ru.usedesk.sdk.data.repository.knowledgebase.IApiLoader;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
@@ -31,22 +35,28 @@ public class ApiLoader implements IApiLoader {
     @Override
     public Section[] getSections(@NonNull String accountId, @NonNull String token)
             throws ApiException {
-        return executeRequest(Section[].class,
-                () -> apiRetrofit.getSections(accountId, token));
+        return executeRequest(Section[].class, apiRetrofit.getSections(accountId, token));
     }
 
     @NonNull
     @Override
     public ArticleBody getArticle(@NonNull String accountId, @NonNull String articleId,
                                   @NonNull String token) throws ApiException {
-        return executeRequest(ArticleBody.class,
-                () -> apiRetrofit.getArticleBody(accountId, articleId, token));
+        return executeRequest(ArticleBody.class, apiRetrofit.getArticleBody(accountId, articleId, token));
     }
 
-    private <T> T executeRequest(@NonNull Class<T> tClass,
-                                 @NonNull ExecutableRequest<String> executableRequest) throws ApiException {
+    @NonNull
+    @Override
+    public List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
+                                         @NonNull String searchQuery) throws ApiException {
+        return Arrays.asList(executeRequest(ArticlesBodyPage.class,
+                apiRetrofit.getArticlesBody(accountId, token, searchQuery, "100"))
+                .getArticles());
+    }
+
+    private <T> T executeRequest(@NonNull Class<T> tClass, @NonNull Call<String> call)
+            throws ApiException {
         try {
-            Call<String> call = executableRequest.getCall();
             Response<String> sectionsResponse = call.execute();
 
             if (sectionsResponse.isSuccessful() && sectionsResponse.body() != null) {
@@ -62,10 +72,5 @@ public class ApiLoader implements IApiLoader {
             throw new ApiException(e.getMessage());
         }
         throw new ApiException("Unhandled response");
-    }
-
-    interface ExecutableRequest<T> {
-        @NonNull
-        Call<T> getCall();
     }
 }

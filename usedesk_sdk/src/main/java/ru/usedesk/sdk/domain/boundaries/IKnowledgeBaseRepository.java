@@ -16,4 +16,8 @@ public interface IKnowledgeBaseRepository {
     @NonNull
     ArticleBody getArticle(@NonNull String id, @NonNull String token,
                            @NonNull ArticleInfo articleInfo) throws ApiException;
+
+    @NonNull
+    List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,
+                                  @NonNull String searchQuery) throws ApiException;
 }

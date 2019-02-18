@@ -55,6 +55,15 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
                 .observeOn(mainThreadScheduler);
     }
 
+    @Override
+    @NonNull
+    public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
+        return Single.create(
+                (SingleOnSubscribe<List<ArticleBody>>) emitter -> emitter.onSuccess(getArticles(searchQuery)))
+                .subscribeOn(workScheduler)
+                .observeOn(mainThreadScheduler);
+    }
+
     @NonNull
     private List<Section> getSections() throws DataNotFoundException, ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
@@ -67,7 +76,8 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     }
 
     @NonNull
-    private ArticleBody getArticle(@NonNull ArticleInfo articleInfo) throws DataNotFoundException, ApiException {
+    private ArticleBody getArticle(@NonNull ArticleInfo articleInfo) throws DataNotFoundException,
+            ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
@@ -75,5 +85,17 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
         return knowledgeRepository.getArticle(id, token, articleInfo);
+    }
+
+    @NonNull
+    private List<ArticleBody> getArticles(@NonNull String searchQuery) throws DataNotFoundException,
+            ApiException {
+        String id = userInfoRepository.getConfiguration().getCompanyId();
+        String token = userInfoRepository.getToken();
+
+        id = "4";
+        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
+
+        return knowledgeRepository.getArticles(id, token, searchQuery);
     }
 }

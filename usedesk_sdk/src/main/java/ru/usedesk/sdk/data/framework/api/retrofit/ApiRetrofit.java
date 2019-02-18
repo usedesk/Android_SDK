@@ -14,4 +14,10 @@ public interface ApiRetrofit {
     Call<String> getArticleBody(@Path(value = "account_id", encoded = true) String accountId,
                                 @Path(value = "article_id", encoded = true) String articleId,
                                 @Query("api_token") String token);
+
+    @GET("{account_id}/articles/list")
+    Call<String> getArticlesBody(@Path(value = "account_id", encoded = true) String accountId,
+                                 @Query("api_token") String token,
+                                 @Query("query") String searchQuery,
+                                 @Query("count") String count);
 }

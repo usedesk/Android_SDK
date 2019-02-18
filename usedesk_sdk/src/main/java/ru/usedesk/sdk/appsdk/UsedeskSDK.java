@@ -90,6 +90,11 @@ public class UsedeskSDK {
         return knowledgeBaseInteractor.getArticleSingle(articleInfo);
     }
 
+    @NonNull
+    public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
+        return knowledgeBaseInteractor.getArticlesSingle(searchQuery);
+    }
+
     public static class Builder {
 
         private Context context;

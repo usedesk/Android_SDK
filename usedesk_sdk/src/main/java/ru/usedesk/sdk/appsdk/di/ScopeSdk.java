@@ -5,7 +5,17 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
+import javax.inject.Named;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import ru.usedesk.sdk.data.framework.api.retrofit.ApiLoader;
+import ru.usedesk.sdk.data.framework.api.retrofit.ApiRetrofit;
 import ru.usedesk.sdk.data.framework.api.standard.HttpApi;
 import ru.usedesk.sdk.data.framework.api.standard.SocketApi;
 import ru.usedesk.sdk.data.framework.loader.ConfigurationLoader;
@@ -46,17 +56,53 @@ public class ScopeSdk extends DependencyInjection {
             bind(SocketApi.class).to(SocketApi.class);
             bind(HttpApi.class).to(HttpApi.class);
 
-            bind(Gson.class).toInstance(makeGson());
+            bind(Gson.class).toInstance(gson());
 
             bind(IKnowledgeBaseInteractor.class).to(KnowledgeBaseInteractor.class);
 
             bind(IKnowledgeBaseRepository.class).to(KnowledgeBaseRepository.class);
 
             bind(IApiLoader.class).to(ApiLoader.class);
+
+            bind(ApiRetrofit.class).toInstance(apiRetrofit(retrofit()));
+
+            bind(Scheduler.class).withName("work").toInstance(Schedulers.io());
+            bind(Scheduler.class).withName("main").toInstance(AndroidSchedulers.mainThread());
         }};
     }
 
-    private Gson makeGson() {
+    @NonNull
+    @Named("serverBaseUrl")
+    private String serverBaseUrl() {
+        return "https://api.usedesk.ru/support/";
+    }
+
+    @NonNull
+    private OkHttpClient okHttpClient() {
+        return new OkHttpClient.Builder().build();
+    }
+
+    @NonNull
+    private GsonConverterFactory gsonConverterFactory() {
+        return GsonConverterFactory.create(gson());
+    }
+
+
+    private Retrofit retrofit() {
+        return new Retrofit.Builder()
+                .baseUrl(serverBaseUrl())
+                .client(okHttpClient())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(gsonConverterFactory())
+                .build();
+
+    }
+
+    private ApiRetrofit apiRetrofit(Retrofit retrofit) {
+        return retrofit.create(ApiRetrofit.class);
+    }
+
+    private Gson gson() {
         return new Gson();
     }
 }

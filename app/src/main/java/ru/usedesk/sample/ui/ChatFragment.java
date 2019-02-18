@@ -27,6 +27,7 @@ import java.util.List;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.fragments.BaseFragment;
+import io.reactivex.disposables.Disposable;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sample.AppSession;
@@ -37,6 +38,9 @@ import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.Message;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFiles;
 
@@ -74,6 +78,32 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
                 .usedeskConfiguration(AppSession.getSession().getUsedeskConfiguration())
                 .usedeskActionListener(this)
                 .build();
+
+        checkSections();
+    }
+
+    private void checkSections() {
+        Disposable d = usedeskSDK.getSectionsSingle()
+                .subscribe(sections -> {
+                    for (Section section : sections) {
+                        for (Category category : section.getCategories()) {
+                            for (ArticleInfo articleInfo : category.getArticles()) {
+                                checkArticle(articleInfo);
+                            }
+                        }
+                    }
+                }, throwable -> {
+                    //throwable.printStackTrace();
+                });
+    }
+
+    private void checkArticle(ArticleInfo articleInfo) {
+        Disposable d = usedeskSDK.getArticleSingle(articleInfo)
+                .subscribe(articleBody -> {
+                    articleBody.getText();
+                }, throwable -> {
+                    //throwable.printStackTrace();
+                });
     }
 
     @Override
@@ -134,18 +164,24 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @Override
     public void onMessageReceived(Message message) {
-        notifyListItemInserted(message);
+        if (message != null) {
+            notifyListItemInserted(message);
+        }
     }
 
     @Override
     public void onMessagesReceived(List<Message> messages) {
-        int startPosition = this.messages.isEmpty() ? 0 : this.messages.size() - 1;
-        notifyListItemsInserted(messages, startPosition);
+        if (messages != null) {
+            int startPosition = this.messages.isEmpty() ? 0 : this.messages.size() - 1;
+            notifyListItemsInserted(messages, startPosition);
+        }
     }
 
     @Override
     public void onServiceMessageReceived(Message message) {
-        notifyListItemInserted(message);
+        if (message != null) {
+            notifyListItemInserted(message);
+        }
     }
 
     @Override

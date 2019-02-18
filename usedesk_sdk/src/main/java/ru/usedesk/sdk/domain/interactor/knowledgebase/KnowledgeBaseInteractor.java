@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
@@ -28,7 +29,8 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     @Inject
     KnowledgeBaseInteractor(IUserInfoRepository userInfoRepository,
                             IKnowledgeBaseRepository knowledgeRepository,
-                            Scheduler workScheduler, Scheduler mainThreadScheduler) {
+                            @Named("work") Scheduler workScheduler,
+                            @Named("main") Scheduler mainThreadScheduler) {
         this.userInfoRepository = userInfoRepository;
         this.knowledgeRepository = knowledgeRepository;
         this.workScheduler = workScheduler;
@@ -58,6 +60,9 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
+        id = "4";
+        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
+
         return knowledgeRepository.getSections(id, token);
     }
 
@@ -65,6 +70,9 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     private ArticleBody getArticle(@NonNull ArticleInfo articleInfo) throws DataNotFoundException, ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
+
+        id = "4";
+        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
         return knowledgeRepository.getArticle(id, token, articleInfo);
     }

@@ -40,12 +40,14 @@ public class ApiLoader implements IApiLoader {
 
     private <T> T executeRequest(@NonNull ExecutableRequest<T> executableRequest) throws ApiException {
         try {
-            Response<T> sectionsResponse = executableRequest.getCall().execute();
+            Call<T> call = executableRequest.getCall();
+            Response<T> sectionsResponse = call.execute();
 
             if (sectionsResponse.isSuccessful() && sectionsResponse.body() != null) {
                 return sectionsResponse.body();
             }
-        } catch (IOException | JsonSyntaxException e) {
+        } catch (IOException | JsonSyntaxException | IllegalStateException e) {
+            e.printStackTrace();
             throw new ApiException(e.getMessage());
         }
         throw new ApiException("Unhandled response");

@@ -32,8 +32,8 @@ public class UsedeskSDK {
     @Inject
     Context context;
 
-    UsedeskSDK(@NonNull Context context, UsedeskConfiguration configuration,
-               UsedeskActionListener actionListener) {
+    private UsedeskSDK(@NonNull Context context, UsedeskConfiguration configuration,
+                       UsedeskActionListener actionListener) {
         ScopeSdk scopeSdk = new ScopeSdk(this, context);
         Toothpick.inject(this, scopeSdk.getScope());
 

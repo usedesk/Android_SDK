@@ -2,8 +2,6 @@ package ru.usedesk.sdk.domain.entity.knowledgebase;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class Section {
 
     private long id;
@@ -12,7 +10,7 @@ public class Section {
     private int access;
     private int order;
     private String image;
-    private List<Category> categories;
+    private Category[] categories;
 
     public long getId() {
         return id;
@@ -34,7 +32,7 @@ public class Section {
         return image;
     }
 
-    public List<Category> getCategories() {
+    public Category[] getCategories() {
         return categories;
     }
 }

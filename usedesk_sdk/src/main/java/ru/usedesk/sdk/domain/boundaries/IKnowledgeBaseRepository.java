@@ -9,7 +9,7 @@ import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
-public interface IKnowledgeRepository {
+public interface IKnowledgeBaseRepository {
     @NonNull
     List<Section> getSections(@NonNull String id, @NonNull String token) throws ApiException;
 

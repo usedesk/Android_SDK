@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.api;
+package ru.usedesk.sdk.data.framework.api.standard;
 
 import com.google.gson.Gson;
 

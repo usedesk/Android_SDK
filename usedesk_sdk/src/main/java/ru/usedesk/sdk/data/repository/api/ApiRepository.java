@@ -7,14 +7,14 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
-import ru.usedesk.sdk.data.framework.api.HttpApi;
-import ru.usedesk.sdk.data.framework.api.SocketApi;
-import ru.usedesk.sdk.data.framework.api.entity.request.BaseRequest;
-import ru.usedesk.sdk.data.framework.api.entity.request.InitChatRequest;
-import ru.usedesk.sdk.data.framework.api.entity.request.RequestMessage;
-import ru.usedesk.sdk.data.framework.api.entity.request.SendFeedbackRequest;
-import ru.usedesk.sdk.data.framework.api.entity.request.SendMessageRequest;
-import ru.usedesk.sdk.data.framework.api.entity.request.SetEmailRequest;
+import ru.usedesk.sdk.data.framework.api.standard.HttpApi;
+import ru.usedesk.sdk.data.framework.api.standard.SocketApi;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.BaseRequest;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.InitChatRequest;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.RequestMessage;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.SendFeedbackRequest;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.SendMessageRequest;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.SetEmailRequest;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.OfflineForm;

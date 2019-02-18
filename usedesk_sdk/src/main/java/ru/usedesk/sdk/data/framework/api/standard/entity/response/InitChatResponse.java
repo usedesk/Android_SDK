@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.api.entity.response;
+package ru.usedesk.sdk.data.framework.api.standard.entity.response;
 
 import ru.usedesk.sdk.domain.entity.chat.Setup;
 

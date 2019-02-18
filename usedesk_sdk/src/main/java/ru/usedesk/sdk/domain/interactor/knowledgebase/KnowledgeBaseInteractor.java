@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
-import ru.usedesk.sdk.domain.boundaries.IKnowledgeRepository;
+import ru.usedesk.sdk.domain.boundaries.IKnowledgeBaseRepository;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
@@ -21,13 +21,13 @@ import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
     private IUserInfoRepository userInfoRepository;
-    private IKnowledgeRepository knowledgeRepository;
+    private IKnowledgeBaseRepository knowledgeRepository;
     private Scheduler workScheduler;
     private Scheduler mainThreadScheduler;
 
     @Inject
     KnowledgeBaseInteractor(IUserInfoRepository userInfoRepository,
-                            IKnowledgeRepository knowledgeRepository,
+                            IKnowledgeBaseRepository knowledgeRepository,
                             Scheduler workScheduler, Scheduler mainThreadScheduler) {
         this.userInfoRepository = userInfoRepository;
         this.knowledgeRepository = knowledgeRepository;

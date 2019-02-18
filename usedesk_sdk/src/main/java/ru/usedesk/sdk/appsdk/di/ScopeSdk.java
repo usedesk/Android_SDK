@@ -5,18 +5,22 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-import ru.usedesk.sdk.data.framework.api.HttpApi;
-import ru.usedesk.sdk.data.framework.api.SocketApi;
+import ru.usedesk.sdk.data.framework.api.retrofit.ApiLoader;
+import ru.usedesk.sdk.data.framework.api.standard.HttpApi;
+import ru.usedesk.sdk.data.framework.api.standard.SocketApi;
 import ru.usedesk.sdk.data.framework.loader.ConfigurationLoader;
 import ru.usedesk.sdk.data.framework.loader.TokenLoader;
 import ru.usedesk.sdk.data.repository.api.ApiRepository;
+import ru.usedesk.sdk.data.repository.knowledgebase.IApiLoader;
+import ru.usedesk.sdk.data.repository.knowledgebase.KnowledgeBaseRepository;
 import ru.usedesk.sdk.data.repository.user.info.DataLoader;
 import ru.usedesk.sdk.data.repository.user.info.UserInfoRepository;
 import ru.usedesk.sdk.domain.boundaries.IApiRepository;
+import ru.usedesk.sdk.domain.boundaries.IKnowledgeBaseRepository;
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
+import ru.usedesk.sdk.domain.interactor.UsedeskManager;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.KnowledgeBaseInteractor;
-import ru.usedesk.sdk.domain.interactor.UsedeskManager;
 import toothpick.config.Module;
 
 public class ScopeSdk extends DependencyInjection {
@@ -45,6 +49,10 @@ public class ScopeSdk extends DependencyInjection {
             bind(Gson.class).toInstance(makeGson());
 
             bind(IKnowledgeBaseInteractor.class).to(KnowledgeBaseInteractor.class);
+
+            bind(IKnowledgeBaseRepository.class).to(KnowledgeBaseRepository.class);
+
+            bind(IApiLoader.class).to(ApiLoader.class);
         }};
     }
 

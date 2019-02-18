@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.api.entity.response;
+package ru.usedesk.sdk.data.framework.api.standard.entity.response;
 
 public class ErrorResponse extends BaseResponse {
 

@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.api.entity.request;
+package ru.usedesk.sdk.data.framework.api.standard.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 

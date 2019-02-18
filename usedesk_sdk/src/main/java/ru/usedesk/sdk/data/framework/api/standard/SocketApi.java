@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.data.framework.api;
+package ru.usedesk.sdk.data.framework.api.standard;
 
 import android.support.annotation.NonNull;
 
@@ -20,13 +20,13 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.data.framework.api.entity.request.BaseRequest;
-import ru.usedesk.sdk.data.framework.api.entity.response.BaseResponse;
-import ru.usedesk.sdk.data.framework.api.entity.response.ErrorResponse;
-import ru.usedesk.sdk.data.framework.api.entity.response.InitChatResponse;
-import ru.usedesk.sdk.data.framework.api.entity.response.NewMessageResponse;
-import ru.usedesk.sdk.data.framework.api.entity.response.SendFeedbackResponse;
-import ru.usedesk.sdk.data.framework.api.entity.response.SetEmailResponse;
+import ru.usedesk.sdk.data.framework.api.standard.entity.request.BaseRequest;
+import ru.usedesk.sdk.data.framework.api.standard.entity.response.BaseResponse;
+import ru.usedesk.sdk.data.framework.api.standard.entity.response.ErrorResponse;
+import ru.usedesk.sdk.data.framework.api.standard.entity.response.InitChatResponse;
+import ru.usedesk.sdk.data.framework.api.standard.entity.response.NewMessageResponse;
+import ru.usedesk.sdk.data.framework.api.standard.entity.response.SendFeedbackResponse;
+import ru.usedesk.sdk.data.framework.api.standard.entity.response.SetEmailResponse;
 import ru.usedesk.sdk.domain.entity.chat.Constants;
 import ru.usedesk.sdk.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;

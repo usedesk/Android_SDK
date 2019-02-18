@@ -8,9 +8,9 @@ import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public interface IApiLoader {
     @NonNull
-    Section[] getSections(@NonNull String companyId, @NonNull String token) throws ApiException;
+    Section[] getSections(@NonNull String accountId, @NonNull String token) throws ApiException;
 
     @NonNull
-    ArticleBody getArticle(@NonNull String companyId, long articleId, @NonNull String token)
+    ArticleBody getArticle(@NonNull String accountId, @NonNull String articleId, @NonNull String token)
             throws ApiException;
 }

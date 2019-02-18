@@ -12,8 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.usedesk.sdk.data.framework.api.retrofit.ApiLoader;
 import ru.usedesk.sdk.data.framework.api.retrofit.ApiRetrofit;
 import ru.usedesk.sdk.data.framework.api.standard.HttpApi;
@@ -82,20 +81,18 @@ public class ScopeSdk extends DependencyInjection {
         return new OkHttpClient.Builder().build();
     }
 
-    @NonNull
-    private GsonConverterFactory gsonConverterFactory() {
-        return GsonConverterFactory.create(gson());
-    }
-
 
     private Retrofit retrofit() {
         return new Retrofit.Builder()
                 .baseUrl(serverBaseUrl())
                 .client(okHttpClient())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(gsonConverterFactory())
+                .addConverterFactory(scalarsConverterFactory())
                 .build();
 
+    }
+
+    private ScalarsConverterFactory scalarsConverterFactory() {
+        return ScalarsConverterFactory.create();
     }
 
     private ApiRetrofit apiRetrofit(Retrofit retrofit) {

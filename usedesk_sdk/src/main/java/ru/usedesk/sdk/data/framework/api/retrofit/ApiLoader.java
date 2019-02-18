@@ -2,6 +2,7 @@ package ru.usedesk.sdk.data.framework.api.retrofit;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
@@ -18,33 +19,43 @@ import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 public class ApiLoader implements IApiLoader {
 
     private ApiRetrofit apiRetrofit;
+    private Gson gson;
 
     @Inject
-    public ApiLoader(ApiRetrofit apiRetrofit) {
+    ApiLoader(ApiRetrofit apiRetrofit, Gson gson) {
         this.apiRetrofit = apiRetrofit;
+        this.gson = gson;
     }
 
     @NonNull
     @Override
     public Section[] getSections(@NonNull String accountId, @NonNull String token)
             throws ApiException {
-        return executeRequest(() -> apiRetrofit.getSections(accountId, token));
+        return executeRequest(Section[].class,
+                () -> apiRetrofit.getSections(accountId, token));
     }
 
     @NonNull
     @Override
     public ArticleBody getArticle(@NonNull String accountId, @NonNull String articleId,
                                   @NonNull String token) throws ApiException {
-        return executeRequest(() -> apiRetrofit.getArticleBody(accountId, articleId, token));
+        return executeRequest(ArticleBody.class,
+                () -> apiRetrofit.getArticleBody(accountId, articleId, token));
     }
 
-    private <T> T executeRequest(@NonNull ExecutableRequest<T> executableRequest) throws ApiException {
+    private <T> T executeRequest(@NonNull Class<T> tClass,
+                                 @NonNull ExecutableRequest<String> executableRequest) throws ApiException {
         try {
-            Call<T> call = executableRequest.getCall();
-            Response<T> sectionsResponse = call.execute();
+            Call<String> call = executableRequest.getCall();
+            Response<String> sectionsResponse = call.execute();
 
             if (sectionsResponse.isSuccessful() && sectionsResponse.body() != null) {
-                return sectionsResponse.body();
+                try {
+                    return gson.fromJson(sectionsResponse.body(), tClass);
+                } catch (JsonSyntaxException | IllegalStateException e) {
+                    ApiError apiError = gson.fromJson(sectionsResponse.body(), ApiError.class);
+                    throw new ApiException(apiError.getError());
+                }
             }
         } catch (IOException | JsonSyntaxException | IllegalStateException e) {
             e.printStackTrace();

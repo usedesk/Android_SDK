@@ -49,9 +49,9 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
     @Override
     @NonNull
-    public Single<ArticleBody> getArticleSingle(@NonNull ArticleInfo articleInfo) {
+    public Single<ArticleBody> getArticleSingle(long articleId) {
         return Single.create(
-                (SingleOnSubscribe<ArticleBody>) emitter -> emitter.onSuccess(getArticle(articleInfo)))
+                (SingleOnSubscribe<ArticleBody>) emitter -> emitter.onSuccess(getArticle(articleId)))
                 .subscribeOn(workScheduler)
                 .observeOn(mainThreadScheduler);
     }
@@ -106,7 +106,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     }
 
     @NonNull
-    private ArticleBody getArticle(@NonNull ArticleInfo articleInfo) throws DataNotFoundException,
+    private ArticleBody getArticle(long articleId) throws DataNotFoundException,
             ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
@@ -114,7 +114,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         id = "4";
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
-        return knowledgeRepository.getArticle(id, token, articleInfo);
+        return knowledgeRepository.getArticle(id, token, articleId);
     }
 
     @NonNull

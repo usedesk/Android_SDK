@@ -38,7 +38,7 @@ public class ArticlesFragment extends Fragment {
         recyclerViewSections = view.findViewById(R.id.rv_list);
 
         ArticlesViewModel viewModel = ViewModelProviders.of(this)
-                .get(ArticlesViewModel.class);
+                .get(ArticlesViewModel.class);//TODO: put key
 
         viewModel.getArticlesLiveData()
                 .observe(this, this::onSectionsLoaded);

@@ -38,7 +38,7 @@ public class CategoriesFragment extends Fragment {
         recyclerViewSections = view.findViewById(R.id.rv_list);
 
         CategoriesViewModel viewModel = ViewModelProviders.of(this)
-                .get(CategoriesViewModel.class);
+                .get(CategoriesViewModel.class);//TODO: put key
 
         viewModel.getCategoriesLiveData()
                 .observe(this, this::onSectionsLoaded);

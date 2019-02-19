@@ -59,8 +59,8 @@ public final class KnowledgeBase {
     }
 
     @NonNull
-    public Single<ArticleBody> getArticleSingle(@NonNull ArticleInfo articleInfo) {
-        return knowledgeBaseInteractor.getArticleSingle(articleInfo);
+    public Single<ArticleBody> getArticleSingle(long articleId) {
+        return knowledgeBaseInteractor.getArticleSingle(articleId);
     }
 
     @NonNull

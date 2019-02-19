@@ -16,8 +16,7 @@ public interface IKnowledgeBaseRepository {
     List<Section> getSections(@NonNull String id, @NonNull String token) throws ApiException;
 
     @NonNull
-    ArticleBody getArticle(@NonNull String id, @NonNull String token,
-                           @NonNull ArticleInfo articleInfo) throws ApiException;
+    ArticleBody getArticle(@NonNull String id, @NonNull String token, long articleId) throws ApiException;
 
     @NonNull
     List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,

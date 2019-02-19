@@ -18,9 +18,7 @@ public class CategoriesViewModel extends ViewModel {
     public CategoriesViewModel(long sectionId) {//TODO: make factory
         disposable = KnowledgeBase.getInstance()
                 .getCategoriesSingle(sectionId)
-                .subscribe(categories -> {
-                    categoriesLiveData.setValue(categories);
-                });
+                .subscribe(categoriesLiveData::setValue);
     }
 
     LiveData<List<Category>> getCategoriesLiveData() {

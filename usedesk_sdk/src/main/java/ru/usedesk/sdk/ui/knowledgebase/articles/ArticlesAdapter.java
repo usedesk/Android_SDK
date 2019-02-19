@@ -43,21 +43,19 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Sectio
     }
 
     class SectionViewHolder extends RecyclerView.ViewHolder {
-
         private TextView textViewTitle;
-        private TextView textViewText;
+        private TextView textViewCount;
 
         SectionViewHolder(@NonNull View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.tv_title);
-            textViewText = itemView.findViewById(R.id.tv_text);
+            textViewCount = itemView.findViewById(R.id.tv_count);
         }
 
         void bind(@NonNull final ArticleInfo articleInfo) {
-            //imageViewIcon.setImageURI(section.getImage());//TODO:set icon
             textViewTitle.setText(articleInfo.getTitle());
-            textViewText.setText("dbg_views: " + articleInfo.getViews());
+            textViewCount.setText(articleInfo.getViews());
 
             itemView.setOnClickListener(v -> onArticleClickListener.onArticleClick(articleInfo.getId()));
         }

@@ -18,9 +18,7 @@ public class SectionsViewModel extends ViewModel {
     public SectionsViewModel() {
         disposable = KnowledgeBase.getInstance()
                 .getSectionsSingle()
-                .subscribe(sections -> {
-                    sectionsLiveData.setValue(sections);
-                });
+                .subscribe(sectionsLiveData::setValue);
     }
 
     LiveData<List<Section>> getSectionsLiveData() {

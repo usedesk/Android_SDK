@@ -47,21 +47,18 @@ public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.Sectio
 
         private ImageView imageViewIcon;
         private TextView textViewTitle;
-        private TextView textViewText;
 
         SectionViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imageViewIcon = itemView.findViewById(R.id.iv_icon);
             textViewTitle = itemView.findViewById(R.id.tv_title);
-            textViewText = itemView.findViewById(R.id.tv_text);
         }
 
         void bind(@NonNull final Section section,
                   @NonNull final IOnSectionClickListener IOnSectionClickListener) {
             //imageViewIcon.setImageURI(section.getImage());//TODO:set icon
             textViewTitle.setText(section.getTitle());
-            textViewText.setText(section.getTitle());
 
             itemView.setOnClickListener(v -> IOnSectionClickListener.onSectionClick(section.getId()));
         }

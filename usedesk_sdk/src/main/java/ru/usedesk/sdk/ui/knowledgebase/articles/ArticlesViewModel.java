@@ -18,9 +18,7 @@ public class ArticlesViewModel extends ViewModel {
     public ArticlesViewModel(long categoryId) {//TODO: make factory
         sectionsDisposable = KnowledgeBase.getInstance()
                 .getArticlesSingle(categoryId)
-                .subscribe(articles -> {
-                    articlesLiveData.setValue(articles);
-                });
+                .subscribe(articlesLiveData::setValue);
     }
 
     LiveData<List<ArticleInfo>> getArticlesLiveData() {

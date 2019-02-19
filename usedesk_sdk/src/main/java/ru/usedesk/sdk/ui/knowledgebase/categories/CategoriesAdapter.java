@@ -27,7 +27,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Se
     @Override
     public SectionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.section_item, viewGroup, false);
+                .inflate(R.layout.category_item, viewGroup, false);
 
         return new SectionViewHolder(view);
     }
@@ -45,20 +45,16 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Se
     class SectionViewHolder extends RecyclerView.ViewHolder {
 
         private TextView textViewTitle;
-        private TextView textViewText;
 
         SectionViewHolder(@NonNull View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.tv_title);
-            textViewText = itemView.findViewById(R.id.tv_text);
         }
 
         void bind(@NonNull final Category category,
                   @NonNull final IOnCategoryClickListener onCategoryClickListener) {
-            //imageViewIcon.setImageURI(section.getImage());//TODO:set icon
             textViewTitle.setText(category.getTitle());
-            textViewText.setText(category.getTitle());
 
             itemView.setOnClickListener(v -> onCategoryClickListener.onCategoryClick(category.getId()));
         }

@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
                 currentFragment = HomeFragment.newInstance();
                 break;
             case R.id.knowledge_base:
-                currentFragment = SectionsFragment.getInstance();
+                currentFragment = SectionsFragment.newInstance();
                 break;
             case R.id.navigation_chat:
                 if (AppSession.getSession() != null) {

@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.sections;
+package ru.usedesk.sdk.ui.knowledgebase.categories;
 
 
 import android.arch.lifecycle.ViewModelProviders;
@@ -15,18 +15,18 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
+import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
 
-public class SectionsFragment extends Fragment {
+public class CategoriesFragment extends Fragment {
 
     private RecyclerView recyclerViewSections;
     private TextView textViewLoading;
 
-    public SectionsFragment() {
+    public CategoriesFragment() {
     }
 
-    public static SectionsFragment newInstance() {
-        return new SectionsFragment();
+    public static CategoriesFragment newInstance() {
+        return new CategoriesFragment();
     }
 
     @Override
@@ -37,22 +37,22 @@ public class SectionsFragment extends Fragment {
         textViewLoading = view.findViewById(R.id.tv_loading);
         recyclerViewSections = view.findViewById(R.id.rv_list);
 
-        SectionsViewModel viewModel = ViewModelProviders.of(this)
-                .get(SectionsViewModel.class);
+        CategoriesViewModel viewModel = ViewModelProviders.of(this)
+                .get(CategoriesViewModel.class);
 
-        viewModel.getSectionsLiveData()
+        viewModel.getCategoriesLiveData()
                 .observe(this, this::onSectionsLoaded);
 
         return view;
     }
 
-    private void onSectionsLoaded(List<Section> sections) {
-        if (!(getParentFragment() instanceof IOnSectionClickListener)) {
+    private void onSectionsLoaded(List<Category> categories) {
+        if (!(getParentFragment() instanceof IOnCategoryClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
-                    IOnSectionClickListener.class.getSimpleName());
+                    IOnCategoryClickListener.class.getSimpleName());
         }
-        SectionsAdapter adapter = new SectionsAdapter(sections,
-                (IOnSectionClickListener) getParentFragment());
+        CategoriesAdapter adapter = new CategoriesAdapter(categories,
+                (IOnCategoryClickListener) getParentFragment());
 
         recyclerViewSections.setAdapter(adapter);
         recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));

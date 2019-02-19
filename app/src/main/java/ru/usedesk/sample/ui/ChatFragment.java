@@ -33,6 +33,7 @@ import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.utils.NetworkUtils;
+import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.appsdk.UsedeskSDK;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.Message;
@@ -74,17 +75,11 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        usedeskSDK = new UsedeskSDK.Builder(getActivity())
-                .usedeskConfiguration(AppSession.getSession().getUsedeskConfiguration())
-                .usedeskActionListener(this)
-                .build();
-
-        checkArticles("ваиваи");
-        //checkSections();
     }
 
     private void checkArticles(String searchQuery) {
-        Disposable d = usedeskSDK.getArticlesSingle(searchQuery)
+        Disposable d = KnowledgeBase.getInstance()
+                .getArticlesSingle(searchQuery)
                 .subscribe(articles -> {
                     articles = articles;
                 }, throwable -> {
@@ -93,7 +88,8 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     }
 
     private void checkSections() {
-        Disposable d = usedeskSDK.getSectionsSingle()
+        Disposable d = KnowledgeBase.getInstance()
+                .getSectionsSingle()
                 .subscribe(sections -> {
                     for (Section section : sections) {
                         for (Category category : section.getCategories()) {
@@ -108,7 +104,8 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     }
 
     private void checkArticle(ArticleInfo articleInfo) {
-        Disposable d = usedeskSDK.getArticleSingle(articleInfo)
+        Disposable d = KnowledgeBase.getInstance()
+                .getArticleSingle(articleInfo)
                 .subscribe(articleBody -> {
                     articleBody.getText();
                 }, throwable -> {
@@ -121,6 +118,16 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         initUI(view);
         initList();
+
+        usedeskSDK = new UsedeskSDK.Builder(getActivity())
+                .usedeskConfiguration(AppSession.getSession().getUsedeskConfiguration())
+                .usedeskActionListener(this)
+                .build();
+
+        KnowledgeBase.init(getContext());
+        //checkArticles("ваиваи");
+        //checkSections();
+
         return view;
     }
 

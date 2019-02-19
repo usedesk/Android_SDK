@@ -9,13 +9,17 @@ import javax.inject.Inject;
 
 import ru.usedesk.sdk.domain.boundaries.IKnowledgeBaseRepository;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
+import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
 
     private IApiLoader apiLoader;
+
+    private List<Section> sectionList;
 
     @Inject
     KnowledgeBaseRepository(IApiLoader apiLoader) {
@@ -25,7 +29,10 @@ public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
     @NonNull
     @Override
     public List<Section> getSections(@NonNull String id, @NonNull String token) throws ApiException {
-        return Arrays.asList(apiLoader.getSections(id, token));
+        if (sectionList == null) {
+            sectionList = Arrays.asList(apiLoader.getSections(id, token));
+        }
+        return sectionList;
     }
 
     @NonNull
@@ -40,5 +47,46 @@ public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
     public List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,
                                          @NonNull String searchQuery) throws ApiException {
         return apiLoader.getArticles(id, token, searchQuery);
+    }
+
+    @NonNull
+    @Override
+    public List<Category> getCategories(@NonNull String id, @NonNull String token, long sectionId)
+            throws ApiException, DataNotFoundException {
+        if (sectionList == null) {
+            getSections(id, token);
+        }
+        return Arrays.asList(getCategories(sectionId));
+    }
+
+    @NonNull
+    @Override
+    public List<ArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId)
+            throws ApiException, DataNotFoundException {
+        if (sectionList == null) {
+            getSections(id, token);
+        }
+        return Arrays.asList(getArticles(categoryId));
+    }
+
+    @NonNull
+    private ArticleInfo[] getArticles(long categoryId) throws DataNotFoundException {
+        for (Section section : sectionList) {
+            for (Category category : section.getCategories())
+                if (category.getId() == categoryId) {
+                    return category.getArticles();
+                }
+        }
+        throw new DataNotFoundException("Can't found category with id " + categoryId);
+    }
+
+    @NonNull
+    private Category[] getCategories(long sectionId) throws DataNotFoundException {
+        for (Section section : sectionList) {
+            if (section.getId() == sectionId) {
+                return section.getCategories();
+            }
+        }
+        throw new DataNotFoundException("Can't found section with id " + sectionId);
     }
 }

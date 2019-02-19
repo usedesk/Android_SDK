@@ -17,6 +17,7 @@ import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
@@ -55,6 +56,24 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
                 .observeOn(mainThreadScheduler);
     }
 
+    @NonNull
+    @Override
+    public Single<List<Category>> getCategoriesSingle(long sectionId) {
+        return Single.create(
+                (SingleOnSubscribe<List<Category>>) emitter -> emitter.onSuccess(getCategories(sectionId)))
+                .subscribeOn(workScheduler)
+                .observeOn(mainThreadScheduler);
+    }
+
+    @NonNull
+    @Override
+    public Single<List<ArticleInfo>> getArticlesSingle(long categoryId) {
+        return Single.create(
+                (SingleOnSubscribe<List<ArticleInfo>>) emitter -> emitter.onSuccess(getArticles(categoryId)))
+                .subscribeOn(workScheduler)
+                .observeOn(mainThreadScheduler);
+    }
+
     @Override
     @NonNull
     public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
@@ -62,6 +81,17 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
                 (SingleOnSubscribe<List<ArticleBody>>) emitter -> emitter.onSuccess(getArticles(searchQuery)))
                 .subscribeOn(workScheduler)
                 .observeOn(mainThreadScheduler);
+    }
+
+    @NonNull
+    private List<Category> getCategories(long sectionId) throws DataNotFoundException, ApiException {
+        String id = userInfoRepository.getConfiguration().getCompanyId();
+        String token = userInfoRepository.getToken();
+
+        id = "4";
+        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
+
+        return knowledgeRepository.getCategories(id, token, sectionId);
     }
 
     @NonNull
@@ -98,4 +128,16 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
         return knowledgeRepository.getArticles(id, token, searchQuery);
     }
+
+    @NonNull
+    private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, ApiException {
+        String id = userInfoRepository.getConfiguration().getCompanyId();
+        String token = userInfoRepository.getToken();
+
+        id = "4";
+        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
+
+        return knowledgeRepository.getArticles(id, token, categoryId);
+    }
+
 }

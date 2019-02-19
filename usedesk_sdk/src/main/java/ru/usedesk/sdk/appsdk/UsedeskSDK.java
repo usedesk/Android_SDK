@@ -7,27 +7,19 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
 import ru.usedesk.sdk.appsdk.di.ScopeSdk;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 import ru.usedesk.sdk.domain.interactor.UsedeskManager;
-import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
 import toothpick.Toothpick;
 
 public class UsedeskSDK {
 
     @Inject
     UsedeskManager usedeskManager;
-
-    @Inject
-    IKnowledgeBaseInteractor knowledgeBaseInteractor;
 
     @Inject
     Context context;
@@ -78,21 +70,6 @@ public class UsedeskSDK {
 
     public UsedeskConfiguration getUsedeskConfiguration() {
         return usedeskManager.getUsedeskConfiguration();
-    }
-
-    @NonNull
-    public Single<List<Section>> getSectionsSingle() {
-        return knowledgeBaseInteractor.getSectionsSingle();
-    }
-
-    @NonNull
-    public Single<ArticleBody> getArticleSingle(@NonNull ArticleInfo articleInfo) {
-        return knowledgeBaseInteractor.getArticleSingle(articleInfo);
-    }
-
-    @NonNull
-    public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
-        return knowledgeBaseInteractor.getArticlesSingle(searchQuery);
     }
 
     public static class Builder {

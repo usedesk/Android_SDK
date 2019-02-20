@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import ru.usedesk.sample.ui.ChatFragment;
 import ru.usedesk.sample.ui.HomeFragment;
 import ru.usedesk.sample.ui.InfoFragment;
-import ru.usedesk.sdk.ui.knowledgebase.sections.SectionsFragment;
+import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeBaseFragment;
 
 import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
 
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity
                 currentFragment = HomeFragment.newInstance();
                 break;
             case R.id.knowledge_base:
-                currentFragment = SectionsFragment.newInstance();
+                currentFragment = KnowledgeBaseFragment.newInstance();
                 break;
             case R.id.navigation_chat:
                 if (AppSession.getSession() != null) {

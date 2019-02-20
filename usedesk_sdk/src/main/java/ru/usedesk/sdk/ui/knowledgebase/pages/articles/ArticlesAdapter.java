@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.articles;
+package ru.usedesk.sdk.ui.knowledgebase.pages.articles;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +12,7 @@ import java.util.List;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 
-public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.SectionViewHolder> {
+public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ArticleViewHolder> {
 
     private final List<ArticleInfo> articleInfoList;
     private final IOnArticleClickListener onArticleClickListener;
@@ -25,16 +25,16 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Sectio
 
     @NonNull
     @Override
-    public SectionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.section_item, viewGroup, false);
+                .inflate(R.layout.article_item, viewGroup, false);
 
-        return new SectionViewHolder(view);
+        return new ArticleViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SectionViewHolder sectionViewHolder, int i) {
-        sectionViewHolder.bind(articleInfoList.get(i));
+    public void onBindViewHolder(@NonNull ArticleViewHolder articleViewHolder, int i) {
+        articleViewHolder.bind(articleInfoList.get(i));
     }
 
     @Override
@@ -42,11 +42,11 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Sectio
         return articleInfoList.size();
     }
 
-    class SectionViewHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTitle;
-        private TextView textViewCount;
+    class ArticleViewHolder extends RecyclerView.ViewHolder {
+        private final TextView textViewTitle;
+        private final TextView textViewCount;
 
-        SectionViewHolder(@NonNull View itemView) {
+        ArticleViewHolder(@NonNull View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.tv_title);
@@ -55,7 +55,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Sectio
 
         void bind(@NonNull final ArticleInfo articleInfo) {
             textViewTitle.setText(articleInfo.getTitle());
-            textViewCount.setText(articleInfo.getViews());
+            textViewCount.setText(Integer.toString(articleInfo.getViews()));
 
             itemView.setOnClickListener(v -> onArticleClickListener.onArticleClick(articleInfo.getId()));
         }

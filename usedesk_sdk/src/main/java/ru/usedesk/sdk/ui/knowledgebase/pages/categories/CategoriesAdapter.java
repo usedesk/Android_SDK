@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.categories;
+package ru.usedesk.sdk.ui.knowledgebase.pages.categories;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -44,7 +44,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Se
 
     class SectionViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView textViewTitle;
+        private final TextView textViewTitle;
 
         SectionViewHolder(@NonNull View itemView) {
             super(itemView);

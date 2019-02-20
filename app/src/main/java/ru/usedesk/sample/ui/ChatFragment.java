@@ -27,21 +27,16 @@ import java.util.List;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.fragments.BaseFragment;
-import io.reactivex.disposables.Disposable;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.utils.NetworkUtils;
-import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.appsdk.UsedeskSDK;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.Message;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
-import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFiles;
 
@@ -77,7 +72,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         super.onCreate(savedInstanceState);
     }
 
-    private void checkArticles(String searchQuery) {
+    /*private void checkArticles(String searchQuery) {
         Disposable d = KnowledgeBase.getInstance()
                 .getArticlesSingle(searchQuery)
                 .subscribe(articles -> {
@@ -105,13 +100,13 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     private void checkArticle(ArticleInfo articleInfo) {
         Disposable d = KnowledgeBase.getInstance()
-                .getArticleSingle(articleInfo)
+                .getArticleSingle(articleInfo.getId())
                 .subscribe(articleBody -> {
                     articleBody.getText();
                 }, throwable -> {
                     //throwable.printStackTrace();
                 });
-    }
+    }*/
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -124,7 +119,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
                 .usedeskActionListener(this)
                 .build();
 
-        KnowledgeBase.init(getContext());
+        //KnowledgeBase.init(getContext());
         //checkArticles("ваиваи");
         //checkSections();
 

@@ -1,10 +1,8 @@
-package ru.usedesk.sdk.ui.knowledgebase.articles;
+package ru.usedesk.sdk.ui.knowledgebase.pages.sections;
 
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,18 +13,22 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.sdk.appsdk.KnowledgeBase;
+import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
+import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
 
-public class ArticlesFragment extends Fragment {
+public class SectionsFragment extends FragmentView<SectionsViewModel> {
 
+    private final KnowledgeBase knowledgeBase;
     private RecyclerView recyclerViewSections;
     private TextView textViewLoading;
 
-    public ArticlesFragment() {
+    public SectionsFragment() {
+        knowledgeBase = KnowledgeBase.getInstance();
     }
 
-    public static ArticlesFragment newInstance() {
-        return new ArticlesFragment();
+    public static SectionsFragment newInstance() {
+        return new SectionsFragment();
     }
 
     @Override
@@ -37,22 +39,21 @@ public class ArticlesFragment extends Fragment {
         textViewLoading = view.findViewById(R.id.tv_loading);
         recyclerViewSections = view.findViewById(R.id.rv_list);
 
-        ArticlesViewModel viewModel = ViewModelProviders.of(this)
-                .get(ArticlesViewModel.class);//TODO: put key
+        initViewModel(new SectionsViewModel.Factory(knowledgeBase));
 
-        viewModel.getArticlesLiveData()
+        getViewModel().getSectionsLiveData()
                 .observe(this, this::onSectionsLoaded);
 
         return view;
     }
 
-    private void onSectionsLoaded(List<ArticleInfo> articleInfos) {
-        if (!(getParentFragment() instanceof IOnArticleClickListener)) {
+    private void onSectionsLoaded(List<Section> sections) {
+        if (!(getParentFragment() instanceof IOnSectionClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
-                    IOnArticleClickListener.class.getSimpleName());
+                    IOnSectionClickListener.class.getSimpleName());
         }
-        ArticlesAdapter adapter = new ArticlesAdapter(articleInfos,
-                (IOnArticleClickListener) getParentFragment());
+        SectionsAdapter adapter = new SectionsAdapter(sections,
+                (IOnSectionClickListener) getParentFragment());
 
         recyclerViewSections.setAdapter(adapter);
         recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));

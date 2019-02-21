@@ -15,9 +15,9 @@ import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
 public class CategoriesViewModel extends ViewModel {
 
     private final Disposable disposable;
-    private MutableLiveData<List<Category>> categoriesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Category>> categoriesLiveData = new MutableLiveData<>();
 
-    private CategoriesViewModel(@NonNull KnowledgeBase knowledgeBase, long sectionId) {
+    CategoriesViewModel(@NonNull KnowledgeBase knowledgeBase, long sectionId) {
         disposable = knowledgeBase.getCategoriesSingle(sectionId)
                 .subscribe(categoriesLiveData::setValue);
     }

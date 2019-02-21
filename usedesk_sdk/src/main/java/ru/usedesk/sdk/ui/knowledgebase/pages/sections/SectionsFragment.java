@@ -34,7 +34,7 @@ public class SectionsFragment extends FragmentView<SectionsViewModel> {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sections, container, false);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         textViewLoading = view.findViewById(R.id.tv_loading);
         recyclerViewSections = view.findViewById(R.id.rv_list);

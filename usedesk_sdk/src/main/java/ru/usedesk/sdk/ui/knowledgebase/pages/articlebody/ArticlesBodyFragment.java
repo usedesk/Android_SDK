@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.pages.categories;
+package ru.usedesk.sdk.ui.knowledgebase.pages.articlebody;
 
 
 import android.os.Bundle;
@@ -14,27 +14,28 @@ import java.util.List;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
-import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
 
-public class CategoriesFragment extends FragmentView<CategoriesViewModel> {
+public class ArticlesBodyFragment extends FragmentView<ArticlesBodyViewModel> {
 
-    public static final String SECTION_ID_KEY = "sectionIdKey";
+    public static final String SEARCH_QUERY_KEY = "searchQueryKey";
+
     private final KnowledgeBase knowledgeBase;
     private RecyclerView recyclerViewSections;
     private TextView textViewLoading;
 
-    public CategoriesFragment() {
+    public ArticlesBodyFragment() {
         knowledgeBase = KnowledgeBase.getInstance();
     }
 
-    public static CategoriesFragment newInstance(long sectionId) {
+    public static ArticlesBodyFragment newInstance(@NonNull String searchQuery) {
         Bundle args = new Bundle();
-        args.putLong(SECTION_ID_KEY, sectionId);
+        args.putString(SEARCH_QUERY_KEY, searchQuery);
 
-        CategoriesFragment fragment = new CategoriesFragment();
-        fragment.setArguments(args);
-        return fragment;
+        ArticlesBodyFragment articlesBodyFragment = new ArticlesBodyFragment();
+        articlesBodyFragment.setArguments(args);
+        return articlesBodyFragment;
     }
 
     @Override
@@ -45,23 +46,23 @@ public class CategoriesFragment extends FragmentView<CategoriesViewModel> {
         textViewLoading = view.findViewById(R.id.tv_loading);
         recyclerViewSections = view.findViewById(R.id.rv_list);
 
-        long categoryId = getNonNullArguments().getLong(SECTION_ID_KEY);
+        String searchQuery = getNonNullArguments().getString(SEARCH_QUERY_KEY);
 
-        initViewModel(new CategoriesViewModel.Factory(knowledgeBase, categoryId));
+        initViewModel(new ArticlesBodyViewModel.Factory(knowledgeBase, searchQuery));
 
-        getViewModel().getCategoriesLiveData()
+        getViewModel().getArticlesLiveData()
                 .observe(this, this::onSectionsLoaded);
 
         return view;
     }
 
-    private void onSectionsLoaded(List<Category> categories) {
-        if (!(getParentFragment() instanceof IOnCategoryClickListener)) {
+    private void onSectionsLoaded(List<ArticleBody> articleInfos) {
+        if (!(getParentFragment() instanceof IOnArticleBodyClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
-                    IOnCategoryClickListener.class.getSimpleName());
+                    IOnArticleBodyClickListener.class.getSimpleName());
         }
-        CategoriesAdapter adapter = new CategoriesAdapter(categories,
-                (IOnCategoryClickListener) getParentFragment());
+        ArticlesBodyAdapter adapter = new ArticlesBodyAdapter(articleInfos,
+                (IOnArticleBodyClickListener) getParentFragment());
 
         recyclerViewSections.setAdapter(adapter);
         recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));

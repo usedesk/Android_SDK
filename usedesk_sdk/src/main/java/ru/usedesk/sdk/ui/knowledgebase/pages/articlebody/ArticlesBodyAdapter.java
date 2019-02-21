@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.pages.articles;
+package ru.usedesk.sdk.ui.knowledgebase.pages.articlebody;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -10,15 +10,15 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 
-public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ArticleViewHolder> {
+public class ArticlesBodyAdapter extends RecyclerView.Adapter<ArticlesBodyAdapter.ArticleViewHolder> {
 
-    private final List<ArticleInfo> articleInfoList;
-    private final IOnArticleClickListener onArticleClickListener;
+    private final List<ArticleBody> articleInfoList;
+    private final IOnArticleBodyClickListener onArticleClickListener;
 
-    ArticlesAdapter(@NonNull List<ArticleInfo> articleInfoList,
-                    @NonNull IOnArticleClickListener onArticleClickListener) {
+    ArticlesBodyAdapter(@NonNull List<ArticleBody> articleInfoList,
+                        @NonNull IOnArticleBodyClickListener onArticleClickListener) {
         this.articleInfoList = articleInfoList;
         this.onArticleClickListener = onArticleClickListener;
     }
@@ -27,7 +27,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Articl
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.article_item, viewGroup, false);
+                .inflate(R.layout.article_info_item, viewGroup, false);
 
         return new ArticleViewHolder(view);
     }
@@ -53,11 +53,11 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.Articl
             textViewCount = itemView.findViewById(R.id.tv_count);
         }
 
-        void bind(@NonNull final ArticleInfo articleInfo) {
-            textViewTitle.setText(articleInfo.getTitle());
-            textViewCount.setText(Integer.toString(articleInfo.getViews()));
+        void bind(@NonNull final ArticleBody articleBody) {
+            textViewTitle.setText(articleBody.getTitle());
+            textViewCount.setText(Integer.toString(articleBody.getViews()));
 
-            itemView.setOnClickListener(v -> onArticleClickListener.onArticleClick(articleInfo.getId()));
+            itemView.setOnClickListener(v -> onArticleClickListener.onArticleClick(articleBody.getId()));
         }
     }
 }

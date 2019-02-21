@@ -11,15 +11,15 @@ import android.view.ViewGroup;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.ui.knowledgebase.pages.article.ArticleFragment;
-import ru.usedesk.sdk.ui.knowledgebase.pages.articles.ArticlesFragment;
-import ru.usedesk.sdk.ui.knowledgebase.pages.articles.IOnArticleClickListener;
+import ru.usedesk.sdk.ui.knowledgebase.pages.articlesinfo.ArticlesInfoFragment;
+import ru.usedesk.sdk.ui.knowledgebase.pages.articlesinfo.IOnArticleInfoClickListener;
 import ru.usedesk.sdk.ui.knowledgebase.pages.categories.CategoriesFragment;
 import ru.usedesk.sdk.ui.knowledgebase.pages.categories.IOnCategoryClickListener;
 import ru.usedesk.sdk.ui.knowledgebase.pages.sections.IOnSectionClickListener;
 import ru.usedesk.sdk.ui.knowledgebase.pages.sections.SectionsFragment;
 
 public class KnowledgeBaseFragment extends Fragment implements IOnSectionClickListener,
-        IOnCategoryClickListener, IOnArticleClickListener {
+        IOnCategoryClickListener, IOnArticleInfoClickListener {
 
     public KnowledgeBaseFragment() {
     }
@@ -57,7 +57,7 @@ public class KnowledgeBaseFragment extends Fragment implements IOnSectionClickLi
 
     @Override
     public void onCategoryClick(long categoryId) {
-        switchFragment(ArticlesFragment.newInstance(categoryId));
+        switchFragment(ArticlesInfoFragment.newInstance(categoryId));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.pages.articles;
+package ru.usedesk.sdk.ui.knowledgebase.pages.articlesinfo;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -12,12 +12,12 @@ import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
 
-public class ArticlesViewModel extends ViewModel {
+public class ArticlesInfoViewModel extends ViewModel {
 
     private final Disposable disposable;
-    private MutableLiveData<List<ArticleInfo>> articlesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<ArticleInfo>> articlesLiveData = new MutableLiveData<>();
 
-    public ArticlesViewModel(@NonNull KnowledgeBase knowledgeBase, long categoryId) {
+    ArticlesInfoViewModel(@NonNull KnowledgeBase knowledgeBase, long categoryId) {
         disposable = knowledgeBase.getArticlesSingle(categoryId)
                 .subscribe(articlesLiveData::setValue);
     }
@@ -33,7 +33,7 @@ public class ArticlesViewModel extends ViewModel {
         disposable.dispose();
     }
 
-    static class Factory extends ViewModelFactory<ArticlesViewModel> {
+    static class Factory extends ViewModelFactory<ArticlesInfoViewModel> {
         private final KnowledgeBase knowledgeBase;
         private final long categoryId;
 
@@ -44,14 +44,14 @@ public class ArticlesViewModel extends ViewModel {
 
         @NonNull
         @Override
-        protected ArticlesViewModel create() {
-            return new ArticlesViewModel(knowledgeBase, categoryId);
+        protected ArticlesInfoViewModel create() {
+            return new ArticlesInfoViewModel(knowledgeBase, categoryId);
         }
 
         @NonNull
         @Override
-        protected Class<ArticlesViewModel> getClassType() {
-            return ArticlesViewModel.class;
+        protected Class<ArticlesInfoViewModel> getClassType() {
+            return ArticlesInfoViewModel.class;
         }
     }
 }

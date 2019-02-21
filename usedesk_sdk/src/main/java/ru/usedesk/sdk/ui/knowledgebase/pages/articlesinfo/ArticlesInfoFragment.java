@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.pages.articles;
+package ru.usedesk.sdk.ui.knowledgebase.pages.articlesinfo;
 
 
 import android.os.Bundle;
@@ -17,37 +17,38 @@ import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
 
-public class ArticlesFragment extends FragmentView<ArticlesViewModel> {
+public class ArticlesInfoFragment extends FragmentView<ArticlesInfoViewModel> {
 
     public static final String CATEGORY_ID_KEY = "categoryIdKey";
+
     private final KnowledgeBase knowledgeBase;
     private RecyclerView recyclerViewSections;
     private TextView textViewLoading;
 
-    public ArticlesFragment() {
+    public ArticlesInfoFragment() {
         knowledgeBase = KnowledgeBase.getInstance();
     }
 
-    public static ArticlesFragment newInstance(long categoryId) {
+    public static ArticlesInfoFragment newInstance(long categoryId) {
         Bundle args = new Bundle();
         args.putLong(CATEGORY_ID_KEY, categoryId);
 
-        ArticlesFragment articlesFragment = new ArticlesFragment();
-        articlesFragment.setArguments(args);
-        return articlesFragment;
+        ArticlesInfoFragment articlesInfoFragment = new ArticlesInfoFragment();
+        articlesInfoFragment.setArguments(args);
+        return articlesInfoFragment;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sections, container, false);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         textViewLoading = view.findViewById(R.id.tv_loading);
         recyclerViewSections = view.findViewById(R.id.rv_list);
 
         long categoryId = getNonNullArguments().getLong(CATEGORY_ID_KEY);
 
-        initViewModel(new ArticlesViewModel.Factory(knowledgeBase, categoryId));
+        initViewModel(new ArticlesInfoViewModel.Factory(knowledgeBase, categoryId));
 
         getViewModel().getArticlesLiveData()
                 .observe(this, this::onSectionsLoaded);
@@ -56,12 +57,12 @@ public class ArticlesFragment extends FragmentView<ArticlesViewModel> {
     }
 
     private void onSectionsLoaded(List<ArticleInfo> articleInfos) {
-        if (!(getParentFragment() instanceof IOnArticleClickListener)) {
+        if (!(getParentFragment() instanceof IOnArticleInfoClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
-                    IOnArticleClickListener.class.getSimpleName());
+                    IOnArticleInfoClickListener.class.getSimpleName());
         }
-        ArticlesAdapter adapter = new ArticlesAdapter(articleInfos,
-                (IOnArticleClickListener) getParentFragment());
+        ArticlesInfoAdapter adapter = new ArticlesInfoAdapter(articleInfos,
+                (IOnArticleInfoClickListener) getParentFragment());
 
         recyclerViewSections.setAdapter(adapter);
         recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));

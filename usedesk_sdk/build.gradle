@@ -36,7 +36,6 @@ dependencies {
 
     implementation "android.arch.lifecycle:extensions:${rootProject.lifecycleVersion}"
     implementation "android.arch.lifecycle:reactivestreams:${rootProject.lifecycleVersion}"
-    implementation 'com.android.support:support-v4:28.0.0'
     annotationProcessor "android.arch.lifecycle:compiler:${rootProject.lifecycleVersion}"
 
     implementation "io.reactivex.rxjava2:rxjava:${rootProject.rx2JavaVersion}"

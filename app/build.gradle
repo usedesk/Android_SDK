@@ -44,8 +44,12 @@ dependencies {
 
     implementation "com.squareup.picasso:picasso:${rootProject.picassoVersion}"
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation "android.arch.lifecycle:extensions:${rootProject.lifecycleVersion}"
+    implementation "android.arch.lifecycle:reactivestreams:${rootProject.lifecycleVersion}"
+    annotationProcessor "android.arch.lifecycle:compiler:${rootProject.lifecycleVersion}"
+
+    implementation "io.reactivex.rxjava2:rxjava:${rootProject.rx2JavaVersion}"
+    implementation "io.reactivex.rxjava2:rxandroid:${rootProject.rx2AndroidVersion}"
 
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${rootProject.permissionsdispatcherVersion}"
     implementation "com.github.hotchemi:permissionsdispatcher:${rootProject.permissionsdispatcherVersion}"

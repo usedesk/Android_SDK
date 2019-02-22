@@ -1,5 +1,6 @@
 package ru.usedesk.sample;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     private BottomNavigationView bottomNavigationView;
 
     private KnowledgeViewParent knowledgeViewParent;
+    private MainViewModel mainViewModel;
 
     public MainActivity() {
         knowledgeViewParent = new KnowledgeViewParent();
@@ -35,41 +37,61 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initBottomNavigation();
 
-        if (savedInstanceState == null) {
-            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
-        }
+        mainViewModel = ViewModelProviders.of(this)
+                .get(MainViewModel.class);
+
+        mainViewModel.getNavigateLiveData()
+                .observe(this, this::onNavigate);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        knowledgeViewParent.setOnSearchQueryListener(null);
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                switchFragment(HomeFragment.newInstance());
+                mainViewModel.onNavigate(MainViewModel.NAVIGATE_HOME);
                 break;
             case R.id.knowledge_base:
+                mainViewModel.onNavigate(MainViewModel.NAVIGATE_BASE);
+                break;
+            case R.id.navigation_info:
+                mainViewModel.onNavigate(MainViewModel.NAVIGATE_INFO);
+                break;
+            default:
+                return true;
+        }
+
+        return false;
+    }
+
+    private void onNavigate(int navigateId) {
+        knowledgeViewParent.setOnSearchQueryListener(null);
+        switch (navigateId) {
+            case MainViewModel.NAVIGATE_HOME:
+                switchFragment(HomeFragment.newInstance());
+                break;
+            case MainViewModel.NAVIGATE_BASE:
                 KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance();
                 knowledgeViewParent.setOnSearchQueryListener(knowledgeBaseFragment);
                 switchFragment(knowledgeBaseFragment);
                 break;
-            case R.id.navigation_info:
+            case MainViewModel.NAVIGATE_INFO:
                 switchFragment(InfoFragment.newInstance());
                 break;
-            default:
-                return false;
         }
         setToolbar(this);
-
-        return true;
     }
 
     private void initBottomNavigation() {
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
     }
 
     @Override

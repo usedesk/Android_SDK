@@ -57,7 +57,7 @@ public class ArticlesInfoAdapter extends RecyclerView.Adapter<ArticlesInfoAdapte
             textViewTitle.setText(articleInfo.getTitle());
             textViewCount.setText(Integer.toString(articleInfo.getViews()));
 
-            itemView.setOnClickListener(v -> onArticleClickListener.onArticleClick(articleInfo.getId()));
+            itemView.setOnClickListener(v -> onArticleClickListener.onArticleInfoClick(articleInfo.getId()));
         }
     }
 }

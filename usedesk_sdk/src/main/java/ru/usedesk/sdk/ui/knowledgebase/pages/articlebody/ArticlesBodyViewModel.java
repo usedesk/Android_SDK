@@ -11,15 +11,21 @@ import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.utils.LogUtils;
 
 public class ArticlesBodyViewModel extends ViewModel {
+
+    private static final String TAG = ArticlesBodyViewModel.class.getSimpleName();
 
     private final Disposable disposable;
     private final MutableLiveData<List<ArticleBody>> articlesLiveData = new MutableLiveData<>();
 
     ArticlesBodyViewModel(@NonNull KnowledgeBase knowledgeBase, @NonNull String searchQuery) {
         disposable = knowledgeBase.getArticlesSingle(searchQuery)
-                .subscribe(articlesLiveData::setValue);
+                .subscribe(articlesLiveData::setValue,
+                        throwable -> {
+                            LogUtils.LOGE(TAG, throwable);
+                        });
     }
 
     LiveData<List<ArticleBody>> getArticlesLiveData() {

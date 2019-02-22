@@ -9,8 +9,11 @@ import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.utils.LogUtils;
 
 public class ArticleViewModel extends ViewModel {
+
+    private static final String TAG = ArticleViewModel.class.getSimpleName();
 
     private final Disposable disposable;
 
@@ -18,7 +21,10 @@ public class ArticleViewModel extends ViewModel {
 
     ArticleViewModel(@NonNull KnowledgeBase knowledgeBase, long articleId) {
         disposable = knowledgeBase.getArticleSingle(articleId)
-                .subscribe(articleLiveData::setValue);
+                .subscribe(articleLiveData::setValue,
+                        throwable -> {
+                            LogUtils.LOGE(TAG, throwable);
+                        });
     }
 
     LiveData<ArticleBody> getArticleLiveData() {

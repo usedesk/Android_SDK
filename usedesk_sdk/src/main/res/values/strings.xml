@@ -8,5 +8,7 @@
 
     <string name="loading_title">Загрузка&#8230;</string>
     <string name="shows_postfix">просмотров</string>
+    <string name="search">Поиск</string>
+    <string name="chat_with_support">Написать в поддержку</string>
 
 </resources>

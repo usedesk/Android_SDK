@@ -27,12 +27,7 @@ public class ToolbarHelper {
     public static void setSubtitle(final AppCompatActivity activity, final String subTitle) {
         Toolbar toolbar = getToolbar(activity);
         if (toolbar != null) {
-            toolbar.post(new Runnable() {
-                @Override
-                public void run() {
-                    activity.getSupportActionBar().setSubtitle(subTitle);
-                }
-            });
+            toolbar.post(() -> activity.getSupportActionBar().setSubtitle(subTitle));
         }
     }
 

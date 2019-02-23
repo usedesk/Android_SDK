@@ -2,13 +2,14 @@ package ru.usedesk.sdk.ui.knowledgebase.pages.categories;
 
 
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
 import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
-import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
 public class CategoriesFragment extends FragmentListView<Category, CategoriesViewModel> {
 
@@ -29,22 +30,20 @@ public class CategoriesFragment extends FragmentListView<Category, CategoriesVie
     }
 
     @Override
-    protected ListViewModel<Category> initViewModel() {
+    protected ViewModelFactory<CategoriesViewModel> getViewModelFactory() {
         long categoryId = getNonNullArguments().getLong(SECTION_ID_KEY);
 
-        initViewModel(new CategoriesViewModel.Factory(knowledgeBase, categoryId));
-
-        return getViewModel();
+        return new CategoriesViewModel.Factory(knowledgeBase, categoryId);
     }
 
     @Override
-    protected void onData(List<Category> categories) {
+    protected RecyclerView.Adapter getAdapter(List<Category> list) {
         if (!(getParentFragment() instanceof IOnCategoryClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnCategoryClickListener.class.getSimpleName());
         }
 
-        initRecyclerView(new CategoriesAdapter(categories,
-                (IOnCategoryClickListener) getParentFragment()));
+        return new CategoriesAdapter(list,
+                (IOnCategoryClickListener) getParentFragment());
     }
 }

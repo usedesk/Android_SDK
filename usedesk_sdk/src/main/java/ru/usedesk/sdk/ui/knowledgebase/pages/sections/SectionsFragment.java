@@ -1,12 +1,14 @@
 package ru.usedesk.sdk.ui.knowledgebase.pages.sections;
 
 
+import android.support.v7.widget.RecyclerView;
+
 import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
+import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
 import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
-import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
 public class SectionsFragment extends FragmentListView<Section, SectionsViewModel> {
 
@@ -21,19 +23,18 @@ public class SectionsFragment extends FragmentListView<Section, SectionsViewMode
     }
 
     @Override
-    protected ListViewModel<Section> initViewModel() {
-        initViewModel(new SectionsViewModel.Factory(knowledgeBase));
-        return getViewModel();
+    protected ViewModelFactory<SectionsViewModel> getViewModelFactory() {
+        return new SectionsViewModel.Factory(knowledgeBase);
     }
 
     @Override
-    protected void onData(List<Section> sections) {
+    protected RecyclerView.Adapter getAdapter(List<Section> list) {
         if (!(getParentFragment() instanceof IOnSectionClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnSectionClickListener.class.getSimpleName());
         }
 
-        initRecyclerView(new SectionsAdapter(sections,
-                (IOnSectionClickListener) getParentFragment()));
+        return new SectionsAdapter(list,
+                (IOnSectionClickListener) getParentFragment());
     }
 }

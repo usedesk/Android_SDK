@@ -2,12 +2,14 @@ package ru.usedesk.sdk.ui.knowledgebase.pages.sections;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
+import ru.usedesk.sdk.ui.knowledgebase.DataViewModel;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
-import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
-class SectionsViewModel extends ListViewModel<Section> {
+class SectionsViewModel extends DataViewModel<List<Section>> {
 
     private SectionsViewModel(@NonNull KnowledgeBase knowledgeBase) {
         loadData(knowledgeBase.getSectionsSingle());

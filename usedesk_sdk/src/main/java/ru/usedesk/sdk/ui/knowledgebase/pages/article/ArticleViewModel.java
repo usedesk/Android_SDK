@@ -1,41 +1,16 @@
 package ru.usedesk.sdk.ui.knowledgebase.pages.article;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
-import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
+import ru.usedesk.sdk.ui.knowledgebase.DataViewModel;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
-import ru.usedesk.sdk.utils.LogUtils;
 
-public class ArticleViewModel extends ViewModel {
-
-    private static final String TAG = ArticleViewModel.class.getSimpleName();
-
-    private final Disposable disposable;
-
-    private final MutableLiveData<ArticleBody> articleLiveData = new MutableLiveData<>();
+public class ArticleViewModel extends DataViewModel<ArticleBody> {
 
     private ArticleViewModel(@NonNull KnowledgeBase knowledgeBase, long articleId) {
-        disposable = knowledgeBase.getArticleSingle(articleId)
-                .subscribe(articleLiveData::setValue,
-                        throwable -> {
-                            LogUtils.LOGE(TAG, throwable);
-                        });
-    }
-
-    LiveData<ArticleBody> getArticleLiveData() {
-        return articleLiveData;
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        disposable.dispose();
+        loadData(knowledgeBase.getArticleSingle(articleId));
     }
 
     static class Factory extends ViewModelFactory<ArticleViewModel> {

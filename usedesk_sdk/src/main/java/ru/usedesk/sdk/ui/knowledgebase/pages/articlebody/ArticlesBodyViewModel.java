@@ -2,12 +2,14 @@ package ru.usedesk.sdk.ui.knowledgebase.pages.articlebody;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
+import ru.usedesk.sdk.ui.knowledgebase.DataViewModel;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
-import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
-class ArticlesBodyViewModel extends ListViewModel<ArticleBody> {
+class ArticlesBodyViewModel extends DataViewModel<List<ArticleBody>> {
 
     private ArticlesBodyViewModel(@NonNull KnowledgeBase knowledgeBase, @NonNull String searchQuery) {
         loadData(knowledgeBase.getArticlesSingle(searchQuery));

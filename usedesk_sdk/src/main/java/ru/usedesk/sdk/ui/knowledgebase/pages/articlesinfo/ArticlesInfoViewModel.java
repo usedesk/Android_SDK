@@ -2,12 +2,14 @@ package ru.usedesk.sdk.ui.knowledgebase.pages.articlesinfo;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.sdk.ui.knowledgebase.DataViewModel;
 import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
-import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
-class ArticlesInfoViewModel extends ListViewModel<ArticleInfo> {
+class ArticlesInfoViewModel extends DataViewModel<List<ArticleInfo>> {
 
     private ArticlesInfoViewModel(@NonNull KnowledgeBase knowledgeBase, long categoryId) {
         loadData(knowledgeBase.getArticlesSingle(categoryId));

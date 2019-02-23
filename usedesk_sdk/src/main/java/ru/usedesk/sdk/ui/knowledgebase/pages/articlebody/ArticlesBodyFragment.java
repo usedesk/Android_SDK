@@ -3,13 +3,14 @@ package ru.usedesk.sdk.ui.knowledgebase.pages.articlebody;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
+import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
 import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
-import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
 public class ArticlesBodyFragment extends FragmentListView<ArticleBody, ArticlesBodyViewModel> {
 
@@ -31,21 +32,18 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
     }
 
     @Override
-    protected ListViewModel<ArticleBody> initViewModel() {
+    protected ViewModelFactory<ArticlesBodyViewModel> getViewModelFactory() {
         String searchQuery = getNonNullArguments().getString(SEARCH_QUERY_KEY);
 
-        initViewModel(new ArticlesBodyViewModel.Factory(knowledgeBase, searchQuery));
-
-        return getViewModel();
+        return new ArticlesBodyViewModel.Factory(knowledgeBase, searchQuery);
     }
 
     @Override
-    protected void onData(List<ArticleBody> articleInfos) {
+    protected RecyclerView.Adapter getAdapter(List<ArticleBody> list) {
         if (!(getParentFragment() instanceof IOnArticleBodyClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnArticleBodyClickListener.class.getSimpleName());
         }
-        initRecyclerView(new ArticlesBodyAdapter(articleInfos,
-                (IOnArticleBodyClickListener) getParentFragment()));
+        return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment());
     }
 }

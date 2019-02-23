@@ -2,27 +2,18 @@ package ru.usedesk.sdk.ui.knowledgebase.pages.categories;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
-import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
+import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
+import ru.usedesk.sdk.ui.knowledgebase.pages.ListViewModel;
 
-public class CategoriesFragment extends FragmentView<CategoriesViewModel> {
+public class CategoriesFragment extends FragmentListView<Category, CategoriesViewModel> {
 
     public static final String SECTION_ID_KEY = "sectionIdKey";
     private final KnowledgeBase knowledgeBase;
-    private RecyclerView recyclerViewSections;
-    private TextView textViewLoading;
 
     public CategoriesFragment() {
         knowledgeBase = KnowledgeBase.getInstance();
@@ -38,34 +29,22 @@ public class CategoriesFragment extends FragmentView<CategoriesViewModel> {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-
-        textViewLoading = view.findViewById(R.id.tv_loading);
-        recyclerViewSections = view.findViewById(R.id.rv_list);
-
+    protected ListViewModel<Category> initViewModel() {
         long categoryId = getNonNullArguments().getLong(SECTION_ID_KEY);
 
         initViewModel(new CategoriesViewModel.Factory(knowledgeBase, categoryId));
 
-        getViewModel().getCategoriesLiveData()
-                .observe(this, this::onSectionsLoaded);
-
-        return view;
+        return getViewModel();
     }
 
-    private void onSectionsLoaded(List<Category> categories) {
+    @Override
+    protected void onData(List<Category> categories) {
         if (!(getParentFragment() instanceof IOnCategoryClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnCategoryClickListener.class.getSimpleName());
         }
-        CategoriesAdapter adapter = new CategoriesAdapter(categories,
-                (IOnCategoryClickListener) getParentFragment());
 
-        recyclerViewSections.setAdapter(adapter);
-        recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        textViewLoading.setVisibility(View.GONE);
+        initRecyclerView(new CategoriesAdapter(categories,
+                (IOnCategoryClickListener) getParentFragment()));
     }
 }

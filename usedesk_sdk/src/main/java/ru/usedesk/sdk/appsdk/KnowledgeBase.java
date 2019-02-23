@@ -43,7 +43,7 @@ public final class KnowledgeBase {
     @NonNull
     public static KnowledgeBase getInstance() {
         if (instance == null) {
-            throw new RuntimeException("You must call " + KnowledgeBase.class.getSimpleName() + ".init() static method before");
+            throw new RuntimeException("You must call " + KnowledgeBase.class.getSimpleName() + ".initViewModel() static method before");
         }
         return instance;
     }

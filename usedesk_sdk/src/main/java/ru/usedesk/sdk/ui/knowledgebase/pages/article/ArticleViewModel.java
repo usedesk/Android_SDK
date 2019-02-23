@@ -19,7 +19,7 @@ public class ArticleViewModel extends ViewModel {
 
     private final MutableLiveData<ArticleBody> articleLiveData = new MutableLiveData<>();
 
-    ArticleViewModel(@NonNull KnowledgeBase knowledgeBase, long articleId) {
+    private ArticleViewModel(@NonNull KnowledgeBase knowledgeBase, long articleId) {
         disposable = knowledgeBase.getArticleSingle(articleId)
                 .subscribe(articleLiveData::setValue,
                         throwable -> {

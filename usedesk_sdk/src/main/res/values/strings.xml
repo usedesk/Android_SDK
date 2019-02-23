@@ -7,6 +7,7 @@
     <string name="message_offline_form_sent">Thanks, your Offline Form has been submitted!</string>
 
     <string name="loading_title">Загрузка&#8230;</string>
+    <string name="loading_error">Ошибка загрузки</string>
     <string name="shows_postfix">просмотров</string>
     <string name="search">Поиск</string>
     <string name="chat_with_support">Написать в поддержку</string>

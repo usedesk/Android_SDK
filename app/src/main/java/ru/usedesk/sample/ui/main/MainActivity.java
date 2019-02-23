@@ -72,10 +72,10 @@ public class MainActivity extends AppCompatActivity
                 mainViewModel.onNavigate(MainViewModel.NAVIGATE_INFO);
                 break;
             default:
-                return true;
+                return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override

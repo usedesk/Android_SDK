@@ -1,44 +1,76 @@
 package ru.usedesk.sdk.ui.knowledgebase.main;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class KnowledgeViewParent {
 
-    private IOnSearchQueryListener onSearchQueryListener;
+    private KnowledgeBaseFragment knowledgeBaseFragment;
+    private IOnSupportClickListener onSupportButtonListener;
 
-    public IOnSearchQueryListener getOnSearchQueryListener() {
-        return onSearchQueryListener;
+    public boolean withChild() {
+        return knowledgeBaseFragment != null;
     }
 
-    public void setOnSearchQueryListener(@Nullable IOnSearchQueryListener onSearchQueryListener) {
-        this.onSearchQueryListener = onSearchQueryListener;
+    public void attachChild(@NonNull KnowledgeBaseFragment knowledgeBaseFragment, ActionBar actionBar) {
+        this.knowledgeBaseFragment = knowledgeBaseFragment;
+
+        if (actionBar != null) {
+            knowledgeBaseFragment.setOnFragmentStackSizeListener(
+                    size -> actionBar.setDisplayHomeAsUpEnabled(size > 1));
+        }
+
+        knowledgeBaseFragment.setOnSupportClickListener(onSupportButtonListener);
     }
 
-    public void initSearch(@NonNull Menu menu, int action_search) {
-        MenuItem myActionMenuItem = menu.findItem(action_search);
-        SearchView searchView = (SearchView) myActionMenuItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                onQuery(query);
-                return false;
-            }
+    public void detachChild() {
+        if (knowledgeBaseFragment != null) {
+            knowledgeBaseFragment.setOnFragmentStackSizeListener(null);
+            knowledgeBaseFragment.setOnSupportClickListener(null);
+        }
+    }
 
-            @Override
-            public boolean onQueryTextChange(String s) {
-                onQuery(s);
-                return false;
-            }
+    public boolean onBackPressed() {
+        if (knowledgeBaseFragment != null) {
+            return knowledgeBaseFragment.onBackPressed();
+        }
+        return false;
+    }
 
-            private void onQuery(String s) {
-                if (onSearchQueryListener != null) {
-                    onSearchQueryListener.onSearchQuery(s);
-                }
+    public void setOnSupportClickListener(IOnSupportClickListener onSupportButtonListener) {
+        this.onSupportButtonListener = onSupportButtonListener;
+    }
+
+    public void onCreateOptionsMenu(@NonNull Menu menu, int searchId) {
+        MenuItem menuItem = menu.findItem(searchId);
+        if (menuItem != null) {
+            menuItem.setVisible(withChild());
+
+            if (withChild()) {
+                SearchView searchView = (SearchView) menuItem.getActionView();
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        onQuery(query);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        onQuery(s);
+                        return false;
+                    }
+
+                    private void onQuery(String s) {
+                        if (knowledgeBaseFragment != null) {
+                            knowledgeBaseFragment.onSearchQuery(s);
+                        }
+                    }
+                });
             }
-        });
+        }
     }
 }

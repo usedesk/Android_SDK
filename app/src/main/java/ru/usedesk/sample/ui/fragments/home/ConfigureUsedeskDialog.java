@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui;
+package ru.usedesk.sample.ui.fragments.home;
 
 import android.app.Dialog;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package ru.usedesk.sample;
+package ru.usedesk.sample.ui.main;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -10,19 +10,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import ru.usedesk.sample.ui.ChatFragment;
-import ru.usedesk.sample.ui.HomeFragment;
-import ru.usedesk.sample.ui.InfoFragment;
-import ru.usedesk.sdk.ui.knowledgebase.main.IOnSupportClickListener;
+import ru.usedesk.sample.R;
+import ru.usedesk.sample.ui.fragments.chat.ChatFragment;
+import ru.usedesk.sample.ui.fragments.home.HomeFragment;
+import ru.usedesk.sample.ui.fragments.info.InfoFragment;
 import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeBaseFragment;
 import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeViewParent;
 
 import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
 
 public class MainActivity extends AppCompatActivity
-        implements BottomNavigationView.OnNavigationItemSelectedListener, IOnSupportClickListener {
-
-    private BottomNavigationView bottomNavigationView;
+        implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private KnowledgeViewParent knowledgeViewParent;
     private MainViewModel mainViewModel;
@@ -45,6 +43,15 @@ public class MainActivity extends AppCompatActivity
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+
+        knowledgeViewParent.setOnSupportClickListener(() -> switchFragment(ChatFragment.newInstance()));
+
+        if (savedInstanceState != null) {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame_layout);
+            if (fragment instanceof KnowledgeBaseFragment) {
+                knowledgeViewParent.attachChild((KnowledgeBaseFragment) fragment, getSupportActionBar());
+            }
+        }
     }
 
     @Override
@@ -71,15 +78,22 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!knowledgeViewParent.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
     private void onNavigate(int navigateId) {
-        knowledgeViewParent.setOnSearchQueryListener(null);
+        knowledgeViewParent.detachChild();
         switch (navigateId) {
             case MainViewModel.NAVIGATE_HOME:
                 switchFragment(HomeFragment.newInstance());
                 break;
             case MainViewModel.NAVIGATE_BASE:
                 KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance();
-                knowledgeViewParent.setOnSearchQueryListener(knowledgeBaseFragment);
+                knowledgeViewParent.attachChild(knowledgeBaseFragment, getSupportActionBar());
                 switchFragment(knowledgeBaseFragment);
                 break;
             case MainViewModel.NAVIGATE_INFO:
@@ -90,28 +104,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initBottomNavigation() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (knowledgeViewParent.getOnSearchQueryListener() != null) {
-            getMenuInflater().inflate(R.menu.toolbar_menu_with_search, menu);
-
-            knowledgeViewParent.initSearch(menu, R.id.action_search);
-        } else {
-            getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
-
         return true;
     }
 
     @Override
-    public void onSupportClick() {
-        if (AppSession.getSession() != null) {
-            switchFragment(ChatFragment.newInstance());
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu_with_search, menu);
+
+        knowledgeViewParent.onCreateOptionsMenu(menu, R.id.action_search);
+
+        return true;
     }
 
     private void switchFragment(Fragment fragment) {

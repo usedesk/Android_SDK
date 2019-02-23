@@ -21,13 +21,17 @@ import ru.usedesk.sdk.ui.knowledgebase.pages.categories.IOnCategoryClickListener
 import ru.usedesk.sdk.ui.knowledgebase.pages.sections.IOnSectionClickListener;
 import ru.usedesk.sdk.ui.knowledgebase.pages.sections.SectionsFragment;
 
+interface IOnFragmentStackSizeListener {
+    void onFragmentStackSize(int size);
+}
+
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
         IOnArticleBodyClickListener, IOnSearchQueryListener {
 
-    private View pagesView;
-    private View searchView;
     private Button supportButton;
+    private IOnFragmentStackSizeListener onFragmentStackSizeListener;
+    private IOnSupportClickListener onSupportClickListener;
 
     public static KnowledgeBaseFragment newInstance() {
         return new KnowledgeBaseFragment();
@@ -38,13 +42,11 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_knowledge_base, container, false);
 
-        pagesView = view.findViewById(R.id.pages_layout);
-        searchView = view.findViewById(R.id.search_layout);
         supportButton = view.findViewById(R.id.btn_support);
-
         supportButton.setOnClickListener(this::onSupportClick);
 
-        hideSearchFragment();
+        getChildFragmentManager().removeOnBackStackChangedListener(this::onFragmentStackSize);
+        getChildFragmentManager().addOnBackStackChangedListener(this::onFragmentStackSize);
 
         initViewModel(new KnowledgeBaseViewModel.Factory(inflater.getContext()));
 
@@ -52,63 +54,53 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
                 .observe(this, this::showSearchQuery);
 
         if (savedInstanceState == null) {
-            switchPage(SectionsFragment.newInstance());
+            switchFragment(SectionsFragment.newInstance());
         }
 
         return view;
     }
 
-    private void showSearchQuery(String query) {
-        if (query.isEmpty()) {
-            hideSearchFragment();
-        } else {
-            showSearchFragment(query);
+    private void onFragmentStackSize() {
+        if (onFragmentStackSizeListener != null) {
+            onFragmentStackSizeListener.onFragmentStackSize(
+                    getChildFragmentManager().getBackStackEntryCount());
         }
+    }
+
+    private void showSearchQuery(String query) {
+        switchFragment(ArticlesBodyFragment.newInstance(query));
     }
 
     private void onSupportClick(View view) {
-        IOnSupportClickListener onSupportClickListener;
-        if (getParentFragment() instanceof IOnSupportClickListener) {
-            onSupportClickListener = (IOnSupportClickListener) getParentFragment();
-        } else if (getActivity() instanceof IOnSupportClickListener) {
-            onSupportClickListener = (IOnSupportClickListener) getActivity();
-        } else {
-            throw new RuntimeException("Parent must to implement " + IOnSupportClickListener.class.getSimpleName());
-        }
-
-        onSupportClickListener.onSupportClick();
+        if (onSupportClickListener != null)
+            onSupportClickListener.onSupportClick();
     }
 
-    private void switchPage(@NonNull Fragment fragment) {
+    private void switchFragment(@NonNull Fragment fragment) {
         getChildFragmentManager().beginTransaction()
-                .replace(R.id.page_container, fragment)
-                .commit();
-    }
-
-    private void switchSearch(@NonNull Fragment fragment) {
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.search_container, fragment)
+                .addToBackStack("cur")
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
     @Override
     public void onArticleInfoClick(long articleId) {
-        switchPage(ArticleFragment.newInstance(articleId));
+        switchFragment(ArticleFragment.newInstance(articleId));
     }
 
     @Override
     public void onArticleBodyClick(long articleId) {
-        switchSearch(ArticleFragment.newInstance(articleId));
+        switchFragment(ArticleFragment.newInstance(articleId));
     }
 
     @Override
     public void onCategoryClick(long categoryId) {
-        switchPage(ArticlesInfoFragment.newInstance(categoryId));
+        switchFragment(ArticlesInfoFragment.newInstance(categoryId));
     }
 
     @Override
     public void onSectionClick(long sectionId) {
-        switchPage(CategoriesFragment.newInstance(sectionId));
+        switchFragment(CategoriesFragment.newInstance(sectionId));
 
     }
 
@@ -117,25 +109,19 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         getViewModel().onSearchQuery(query);
     }
 
-    /**
-     * Возвращает false если нажатие не обработано
-     **/
     public boolean onBackPressed() {
-        if (searchView.getVisibility() == View.VISIBLE) {
-            getChildFragmentManager().findFragmentById(R.id.search_container);
+        if (getChildFragmentManager().getBackStackEntryCount() > 1) {
+            getChildFragmentManager().popBackStack();
+            return true;
         }
         return false;
     }
 
-    private void showSearchFragment(@NonNull String query) {
-        pagesView.setVisibility(View.GONE);
-        searchView.setVisibility(View.VISIBLE);
-
-        switchSearch(ArticlesBodyFragment.newInstance(query));
+    public void setOnFragmentStackSizeListener(IOnFragmentStackSizeListener onFragmentStackSizeListener) {
+        this.onFragmentStackSizeListener = onFragmentStackSizeListener;
     }
 
-    private void hideSearchFragment() {
-        pagesView.setVisibility(View.VISIBLE);
-        searchView.setVisibility(View.GONE);
+    public void setOnSupportClickListener(IOnSupportClickListener onSupportButtonListener) {
+        this.onSupportClickListener = onSupportButtonListener;
     }
 }

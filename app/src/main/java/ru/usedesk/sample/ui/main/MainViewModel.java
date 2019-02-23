@@ -1,4 +1,4 @@
-package ru.usedesk.sample;
+package ru.usedesk.sample.ui.main;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;

@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui;
+package ru.usedesk.sample.ui.fragments.chat;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

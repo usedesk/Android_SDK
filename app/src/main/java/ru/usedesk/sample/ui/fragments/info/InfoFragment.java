@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui;
+package ru.usedesk.sample.ui.fragments.info;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

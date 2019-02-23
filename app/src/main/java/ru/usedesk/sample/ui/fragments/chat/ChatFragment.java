@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui;
+package ru.usedesk.sample.ui.fragments.chat;
 
 import android.Manifest;
 import android.app.Activity;
@@ -72,42 +72,6 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         super.onCreate(savedInstanceState);
     }
 
-    /*private void checkArticles(String searchQuery) {
-        Disposable d = KnowledgeBase.getInstance()
-                .getArticlesSingle(searchQuery)
-                .subscribe(articles -> {
-                    articles = articles;
-                }, throwable -> {
-                    //throwable.printStackTrace();
-                });
-    }
-
-    private void checkSections() {
-        Disposable d = KnowledgeBase.getInstance()
-                .getSectionsSingle()
-                .subscribe(sections -> {
-                    for (Section section : sections) {
-                        for (Category category : section.getCategories()) {
-                            for (ArticleInfo articleInfo : category.getArticles()) {
-                                checkArticle(articleInfo);
-                            }
-                        }
-                    }
-                }, throwable -> {
-                    //throwable.printStackTrace();
-                });
-    }
-
-    private void checkArticle(ArticleInfo articleInfo) {
-        Disposable d = KnowledgeBase.getInstance()
-                .getArticleSingle(articleInfo.getId())
-                .subscribe(articleBody -> {
-                    articleBody.getText();
-                }, throwable -> {
-                    //throwable.printStackTrace();
-                });
-    }*/
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
@@ -118,10 +82,6 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
                 .usedeskConfiguration(AppSession.getSession().getUsedeskConfiguration())
                 .usedeskActionListener(this)
                 .build();
-
-        //KnowledgeBase.init(getContext());
-        //checkArticles("ваиваи");
-        //checkSections();
 
         return view;
     }

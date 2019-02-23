@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.main;
+package ru.usedesk.sdk.ui.knowledgebase.main.view;
 
 
 import android.os.Bundle;
@@ -11,6 +11,10 @@ import android.widget.Button;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
+import ru.usedesk.sdk.ui.knowledgebase.main.IOnFragmentStackSizeListener;
+import ru.usedesk.sdk.ui.knowledgebase.main.IOnSearchQueryListener;
+import ru.usedesk.sdk.ui.knowledgebase.main.IOnSupportClickListener;
+import ru.usedesk.sdk.ui.knowledgebase.main.viewmodel.KnowledgeBaseViewModel;
 import ru.usedesk.sdk.ui.knowledgebase.pages.article.ArticleFragment;
 import ru.usedesk.sdk.ui.knowledgebase.pages.articlebody.ArticlesBodyFragment;
 import ru.usedesk.sdk.ui.knowledgebase.pages.articlebody.IOnArticleBodyClickListener;
@@ -20,10 +24,6 @@ import ru.usedesk.sdk.ui.knowledgebase.pages.categories.CategoriesFragment;
 import ru.usedesk.sdk.ui.knowledgebase.pages.categories.IOnCategoryClickListener;
 import ru.usedesk.sdk.ui.knowledgebase.pages.sections.IOnSectionClickListener;
 import ru.usedesk.sdk.ui.knowledgebase.pages.sections.SectionsFragment;
-
-interface IOnFragmentStackSizeListener {
-    void onFragmentStackSize(int size);
-}
 
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,

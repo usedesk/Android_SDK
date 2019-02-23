@@ -6,6 +6,8 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment;
+
 public class KnowledgeViewParent {
 
     private KnowledgeBaseFragment knowledgeBaseFragment;

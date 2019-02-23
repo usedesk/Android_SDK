@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.main;
+package ru.usedesk.sdk.ui.knowledgebase.main.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -30,15 +30,15 @@ public class KnowledgeBaseViewModel extends ViewModel {
         KnowledgeBase.destroy();
     }
 
-    void onSearchQuery(@NonNull String query) {
+    public void onSearchQuery(@NonNull String query) {
         delayedQuery.onNext(query);
     }
 
-    LiveData<String> getSearchQueryLiveData() {
+    public LiveData<String> getSearchQueryLiveData() {
         return searchQueryLiveData;
     }
 
-    static class Factory extends ViewModelFactory<KnowledgeBaseViewModel> {
+    public static class Factory extends ViewModelFactory<KnowledgeBaseViewModel> {
 
         private final Context context;
 

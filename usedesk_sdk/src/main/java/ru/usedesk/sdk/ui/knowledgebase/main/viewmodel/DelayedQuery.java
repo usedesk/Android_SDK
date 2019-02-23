@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase.main;
+package ru.usedesk.sdk.ui.knowledgebase.main.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;

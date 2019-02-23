@@ -14,8 +14,8 @@ import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.chat.ChatFragment;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
-import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeBaseFragment;
 import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeViewParent;
+import ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
 import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
 

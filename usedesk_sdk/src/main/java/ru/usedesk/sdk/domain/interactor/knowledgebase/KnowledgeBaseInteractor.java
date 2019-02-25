@@ -98,10 +98,6 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
-        //TODO: DEBUG
-        id = "4";
-        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
-
         return knowledgeRepository.getCategories(id, token, sectionId);
     }
 
@@ -109,10 +105,6 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     private List<Section> getSections() throws DataNotFoundException, ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
-
-        //TODO: DEBUG
-        id = "4";
-        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
         return knowledgeRepository.getSections(id, token);
     }
@@ -123,10 +115,6 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
-        //TODO: DEBUG
-        id = "4";
-        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
-
         return knowledgeRepository.getArticle(id, token, articleId);
     }
 
@@ -135,10 +123,6 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
             ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
-
-        //TODO: DEBUG
-        id = "4";
-        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
         SearchQuery query = new SearchQuery.Builder(searchQuery).build();
 
@@ -151,10 +135,6 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
-        //TODO: DEBUG
-        id = "4";
-        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
-
         return knowledgeRepository.getArticles(id, token, searchQuery);
     }
 
@@ -162,10 +142,6 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
-
-        //TODO: DEBUG
-        id = "4";
-        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
         return knowledgeRepository.getArticles(id, token, categoryId);
     }

@@ -44,11 +44,6 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         emailEditText = view.findViewById(R.id.email_edit_text);
         urlEditText = view.findViewById(R.id.url_edit_text);
 
-        //TODO:DEBUG
-        companyIdEditText.setText("153712");
-        emailEditText.setText("example@m.c");
-        urlEditText.setText("https://pubsub.usedesk.ru:1992");
-
         alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             boolean companyIdEntered = !TextUtils.isEmpty(companyIdEditText.getText());
             boolean emailEntered = !TextUtils.isEmpty(emailEditText.getText());

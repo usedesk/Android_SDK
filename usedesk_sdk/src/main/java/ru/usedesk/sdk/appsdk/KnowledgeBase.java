@@ -50,7 +50,7 @@ public final class KnowledgeBase {
     }
 
     @NonNull
-    public Scope getScope() {
+    private Scope getScope() {
         return scope.getScope();
     }
 

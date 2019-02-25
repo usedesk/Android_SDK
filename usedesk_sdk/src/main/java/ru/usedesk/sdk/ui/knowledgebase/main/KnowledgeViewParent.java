@@ -13,7 +13,7 @@ public class KnowledgeViewParent {
     private KnowledgeBaseFragment knowledgeBaseFragment;
     private IOnSupportClickListener onSupportButtonListener;
 
-    public boolean withChild() {
+    public boolean isAttached() {
         return knowledgeBaseFragment != null;
     }
 
@@ -49,9 +49,9 @@ public class KnowledgeViewParent {
     public void onCreateOptionsMenu(@NonNull Menu menu, int searchId) {
         MenuItem menuItem = menu.findItem(searchId);
         if (menuItem != null) {
-            menuItem.setVisible(withChild());
+            menuItem.setVisible(isAttached());
 
-            if (withChild()) {
+            if (isAttached()) {
                 SearchView searchView = (SearchView) menuItem.getActionView();
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override

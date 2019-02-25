@@ -13,6 +13,7 @@ import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
@@ -43,9 +44,9 @@ public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
 
     @NonNull
     @Override
-    public List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,
-                                         @NonNull String searchQuery) throws ApiException {
-        return apiLoader.getArticles(id, token, searchQuery);
+    public List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
+                                         @NonNull SearchQuery searchQuery) throws ApiException {
+        return apiLoader.getArticles(accountId, token, searchQuery);
     }
 
     @NonNull

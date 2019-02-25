@@ -18,6 +18,7 @@ import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
@@ -83,11 +84,21 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
                 .observeOn(mainThreadScheduler);
     }
 
+    @Override
+    @NonNull
+    public Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery) {
+        return Single.create(
+                (SingleOnSubscribe<List<ArticleBody>>) emitter -> emitter.onSuccess(getArticles(searchQuery)))
+                .subscribeOn(workScheduler)
+                .observeOn(mainThreadScheduler);
+    }
+
     @NonNull
     private List<Category> getCategories(long sectionId) throws DataNotFoundException, ApiException {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
+        //TODO: DEBUG
         id = "4";
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
@@ -99,6 +110,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
+        //TODO: DEBUG
         id = "4";
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
@@ -111,6 +123,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
+        //TODO: DEBUG
         id = "4";
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
@@ -123,6 +136,22 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
+        //TODO: DEBUG
+        id = "4";
+        token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
+
+        SearchQuery query = new SearchQuery.Builder(searchQuery).build();
+
+        return knowledgeRepository.getArticles(id, token, query);
+    }
+
+    @NonNull
+    private List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws DataNotFoundException,
+            ApiException {
+        String id = userInfoRepository.getConfiguration().getCompanyId();
+        String token = userInfoRepository.getToken();
+
+        //TODO: DEBUG
         id = "4";
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 
@@ -134,6 +163,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         String id = userInfoRepository.getConfiguration().getCompanyId();
         String token = userInfoRepository.getToken();
 
+        //TODO: DEBUG
         id = "4";
         token = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75";
 

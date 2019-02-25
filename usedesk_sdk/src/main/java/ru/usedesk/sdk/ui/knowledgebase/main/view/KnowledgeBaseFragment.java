@@ -29,7 +29,6 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
         IOnArticleBodyClickListener, IOnSearchQueryListener {
 
-    private Button supportButton;
     private IOnFragmentStackSizeListener onFragmentStackSizeListener;
     private IOnSupportClickListener onSupportClickListener;
 
@@ -42,7 +41,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_knowledge_base, container, false);
 
-        supportButton = view.findViewById(R.id.btn_support);
+        Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);
 
         getChildFragmentManager().removeOnBackStackChangedListener(this::onFragmentStackSize);

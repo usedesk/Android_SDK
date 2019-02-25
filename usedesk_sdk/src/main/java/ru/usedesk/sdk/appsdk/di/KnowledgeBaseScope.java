@@ -15,6 +15,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.usedesk.sdk.data.framework.api.retrofit.ApiLoader;
 import ru.usedesk.sdk.data.framework.api.retrofit.ApiRetrofit;
+import ru.usedesk.sdk.data.framework.api.retrofit.entity.RetrofitEnumConverterFactory;
 import ru.usedesk.sdk.data.framework.loader.ConfigurationLoader;
 import ru.usedesk.sdk.data.framework.loader.TokenLoader;
 import ru.usedesk.sdk.data.repository.knowledgebase.IApiLoader;
@@ -75,8 +76,12 @@ public class KnowledgeBaseScope extends DependencyInjection {
                 .baseUrl(serverBaseUrl())
                 .client(okHttpClient())
                 .addConverterFactory(scalarsConverterFactory())
+                .addConverterFactory(retrofitEnumConverterFactory())
                 .build();
+    }
 
+    private RetrofitEnumConverterFactory retrofitEnumConverterFactory() {
+        return new RetrofitEnumConverterFactory();
     }
 
     private ScalarsConverterFactory scalarsConverterFactory() {

@@ -9,6 +9,7 @@ import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public interface IKnowledgeBaseRepository {
@@ -20,7 +21,7 @@ public interface IKnowledgeBaseRepository {
 
     @NonNull
     List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,
-                                  @NonNull String searchQuery) throws ApiException;
+                                  @NonNull SearchQuery searchQuery) throws ApiException;
 
     @NonNull
     List<Category> getCategories(@NonNull String id, @NonNull String token, long sectionId)

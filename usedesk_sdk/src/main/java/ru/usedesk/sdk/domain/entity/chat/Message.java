@@ -106,7 +106,7 @@ public class Message {
                         return gson.fromJson(jsonObject, Payload.class);
                     }
                 }
-                return gson.fromJson(payload.toString(), Payload.class);//TODO: переместить gson
+                return gson.fromJson(payload.toString(), Payload.class);
             } catch (JsonSyntaxException e) {
                 return new Payload();
             }

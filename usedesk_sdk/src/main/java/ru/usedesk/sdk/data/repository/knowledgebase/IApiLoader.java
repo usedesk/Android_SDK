@@ -6,6 +6,7 @@ import java.util.List;
 
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public interface IApiLoader {
@@ -17,6 +18,7 @@ public interface IApiLoader {
             throws ApiException;
 
     @NonNull
-    List<ArticleBody> getArticles(@NonNull String id, @NonNull String token, @NonNull String searchQuery)
+    List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
+                                  @NonNull SearchQuery searchQuery)
             throws ApiException;
 }

@@ -4,6 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 
 public interface ApiRetrofit {
     @GET("{account_id}/list")
@@ -19,5 +20,12 @@ public interface ApiRetrofit {
     Call<String> getArticlesBody(@Path(value = "account_id", encoded = true) String accountId,
                                  @Query("api_token") String token,
                                  @Query("query") String searchQuery,
-                                 @Query("count") String count);
+                                 @Query("count") String count,
+                                 @Query("collection_ids") String collectionIds,
+                                 @Query("category_ids") String categoryIds,
+                                 @Query("article_ids") String articleIds,
+                                 @Query("page") String page,
+                                 @Query("type") SearchQuery.Type type,
+                                 @Query("sort") SearchQuery.Sort sort,
+                                 @Query("order") SearchQuery.Order order);
 }

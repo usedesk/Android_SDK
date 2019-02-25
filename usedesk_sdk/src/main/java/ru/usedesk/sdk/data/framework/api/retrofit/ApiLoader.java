@@ -18,6 +18,7 @@ import ru.usedesk.sdk.data.framework.api.retrofit.entity.ArticlesBodyPage;
 import ru.usedesk.sdk.data.repository.knowledgebase.IApiLoader;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public class ApiLoader implements IApiLoader {
@@ -48,9 +49,13 @@ public class ApiLoader implements IApiLoader {
     @NonNull
     @Override
     public List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
-                                         @NonNull String searchQuery) throws ApiException {
+                                         @NonNull SearchQuery searchQuery) throws ApiException {
         return Arrays.asList(executeRequest(ArticlesBodyPage.class,
-                apiRetrofit.getArticlesBody(accountId, token, searchQuery, "100"))
+                apiRetrofit.getArticlesBody(accountId, token,
+                        searchQuery.getSearchQuery(), searchQuery.getCount(),
+                        searchQuery.getCollectionIds(), searchQuery.getCategoryIds(),
+                        searchQuery.getArticleIds(), searchQuery.getPage(), searchQuery.getType(),
+                        searchQuery.getSort(), searchQuery.getOrder()))
                 .getArticles());
     }
 

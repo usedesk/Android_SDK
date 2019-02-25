@@ -12,6 +12,7 @@ import ru.usedesk.sdk.appsdk.di.KnowledgeBaseScope;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
 import toothpick.Scope;
@@ -65,6 +66,11 @@ public final class KnowledgeBase {
 
     @NonNull
     public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
+        return knowledgeBaseInteractor.getArticlesSingle(searchQuery);
+    }
+
+    @NonNull
+    public Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery) {
         return knowledgeBaseInteractor.getArticlesSingle(searchQuery);
     }
 

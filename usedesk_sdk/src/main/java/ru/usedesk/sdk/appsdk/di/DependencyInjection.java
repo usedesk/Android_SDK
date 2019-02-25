@@ -10,7 +10,7 @@ import toothpick.config.Module;
 public abstract class DependencyInjection {
     private Scope scope;
 
-    public DependencyInjection(final Object scopeObject, final Context context) {
+    DependencyInjection(final Object scopeObject, final Context context) {
         scope = Toothpick.openScope(scopeObject);
         scope.installModules(getModule(context.getApplicationContext()));
     }

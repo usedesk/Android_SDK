@@ -41,4 +41,9 @@ ext {
     picassoVersion = '2.4.0'
     permissionsdispatcherVersion = '3.0.1'
     filePickerVersion = '2.1.1'
+
+    lifecycleVersion = '1.1.1'
+
+    rx2JavaVersion = '2.1.14'
+    rx2AndroidVersion = '2.0.2'
 }

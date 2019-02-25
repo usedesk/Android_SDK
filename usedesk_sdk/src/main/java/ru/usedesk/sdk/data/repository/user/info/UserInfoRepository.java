@@ -8,7 +8,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
-import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 
 @Singleton

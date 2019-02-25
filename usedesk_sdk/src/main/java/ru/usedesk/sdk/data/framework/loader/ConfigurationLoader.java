@@ -10,7 +10,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import ru.usedesk.sdk.data.repository.user.info.DataLoader;
-import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 
 @Singleton
 public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {

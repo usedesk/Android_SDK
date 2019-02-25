@@ -8,11 +8,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.appsdk.di.ScopeSdk;
-import ru.usedesk.sdk.domain.entity.Feedback;
-import ru.usedesk.sdk.domain.entity.OfflineForm;
-import ru.usedesk.sdk.domain.entity.UsedeskActionListener;
-import ru.usedesk.sdk.domain.entity.UsedeskConfiguration;
-import ru.usedesk.sdk.domain.entity.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.chat.Feedback;
+import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.domain.interactor.UsedeskManager;
 import toothpick.Toothpick;
 
@@ -24,9 +24,8 @@ public class UsedeskSDK {
     @Inject
     Context context;
 
-    @Inject
-    UsedeskSDK(@NonNull Context context, UsedeskConfiguration configuration,
-               UsedeskActionListener actionListener) {
+    private UsedeskSDK(@NonNull Context context, UsedeskConfiguration configuration,
+                       UsedeskActionListener actionListener) {
         ScopeSdk scopeSdk = new ScopeSdk(this, context);
         Toothpick.inject(this, scopeSdk.getScope());
 

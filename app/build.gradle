@@ -25,11 +25,14 @@ android {
             outputFileName = "${applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}-${variant.buildType.name}.apk"
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':usedesk_sdk')
 
     implementation "com.android.support:appcompat-v7:${rootProject.supportVersion}"
@@ -41,8 +44,14 @@ dependencies {
 
     implementation "com.squareup.picasso:picasso:${rootProject.picassoVersion}"
 
+    implementation "android.arch.lifecycle:extensions:${rootProject.lifecycleVersion}"
+    implementation "android.arch.lifecycle:reactivestreams:${rootProject.lifecycleVersion}"
+    annotationProcessor "android.arch.lifecycle:compiler:${rootProject.lifecycleVersion}"
+
+    implementation "io.reactivex.rxjava2:rxjava:${rootProject.rx2JavaVersion}"
+    implementation "io.reactivex.rxjava2:rxandroid:${rootProject.rx2AndroidVersion}"
+
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${rootProject.permissionsdispatcherVersion}"
     implementation "com.github.hotchemi:permissionsdispatcher:${rootProject.permissionsdispatcherVersion}"
-
     implementation "com.droidninja:filepicker:${rootProject.filePickerVersion}"
 }

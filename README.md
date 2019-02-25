@@ -86,6 +86,136 @@
   private String message;
   ```
 
+## База знаний
+### 1. API
+Для работы напрямую с API необходимо подключить библиотеку:
+
+    implementation "io.reactivex.rxjava2:rxjava:${rootProject.rx2JavaVersion}"
+    implementation "io.reactivex.rxjava2:rxandroid:${rootProject.rx2AndroidVersion}"
+
+------------
+
+
+Для получения доступа к методам API базы знаний, необходимо инициализировать класс KnowledgeBase, вызвав:
+
+    KnowledgeBase knowledgeBase = KnowledgeBase.init(context);
+
+Получить объект в любом месте после инициализации можно вызвав:
+
+    KnowledgeBase knowledgeBase = KnowledgeBase.getInstance();
+
+Освободить память можно вызвав:
+
+    KnowledgeBase.destroy();
+
+------------
+
+
+После получения объекта класса KnowledgeBase можно приступить к вызовам методов:
+
+- Получить список секций:
+
+
+    @NonNull
+    public Single<List<Section>> getSectionsSingle();
+
+- Получить статью целиком по её идентификатору:
+
+
+    @NonNull
+    public Single<ArticleBody> getArticleSingle(long articleId);
+
+- Получить список статей по поисковому запросу:
+
+
+    @NonNull
+    public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery);
+
+- Получить список статей по поисковому запросу, с возможностью кастомизации параметров:
+
+
+    @NonNull
+    public Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery);
+
+- Получить список категорий в секции по её идентификатору:
+
+
+    @NonNull
+    public Single<List<Category>> getCategoriesSingle(long sectionId);
+
+- Получить список статей (не полная статья) в категории по её идентификатору:
+
+
+    @NonNull
+    public Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
+
+### 2. UI
+Так же есть возможность использовать базу знаний с уже реализованным интерфейсом. Для этого подключение библиотек необязательно, а сделать нужно следующее:
+
+В активити родителя получите объект, необходимый для связи с фрагментом базы знаний:
+
+    KnowledgeViewParent knowledgeViewParent = new KnowledgeViewParent();
+
+Для создания самого фрагмента необходимо вызвать:
+
+    KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance()
+
+Чтобы привязать фрагмент, вызовите:
+
+    knowledgeViewParent.attachChild(knowledgeBaseFragment, getSupportActionBar());
+
+А чтобы отвязать фрагмент, вызовите:
+
+
+    knowledgeViewParent.detachChild();
+
+
+Для проверки наличия привязанного фрагмента вызовите:
+
+    knowledgeViewParent.isAttached();
+
+------------
+
+
+Для прослушивания нажатий на кнопку "Чат с поддержкой" вызовите:
+
+    knowledgeViewParent.setOnSupportClickListener(() ->{});
+
+
+------------
+
+
+Для возможности отслеживания нажатий на кнопку назад переопределите метод:
+
+    @Override
+    public void onBackPressed() {
+        if (!knowledgeViewParent.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
+В случае, если нажатие не было обработано, метод вернёт false.
+
+Для возможности отслеживания нажатий на верхней панели, вызовите:
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return true;
+    }
+
+------------
+
+
+Для автоматической изменений верхней панели привяжите её, вызвав метод:
+
+
+    knowledgeViewParent.onCreateOptionsMenu(menu, R.id.action_search);
+
+Для этого потребуется заранее создать кнопку с идентификатором R.id.action_search.
+
 
 ## Описание Usedesk Sample App
 

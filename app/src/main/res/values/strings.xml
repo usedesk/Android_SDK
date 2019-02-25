@@ -36,5 +36,8 @@
     <string name="message">Message</string>
     <string name="no_connections">No internet connection</string>
     <string name="long_message">Your message is too long for sending (more than 10 000 symbols)</string>
+    <string name="open_knowledge_base">Открыть базу знаний</string>
+    <string name="info">Информация</string>
+    <string name="support">Support</string>
 
 </resources>

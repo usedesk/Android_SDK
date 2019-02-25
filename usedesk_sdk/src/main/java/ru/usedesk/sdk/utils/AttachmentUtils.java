@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.usedesk.sdk.models.UsedeskFile;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
 
 public class AttachmentUtils {
 

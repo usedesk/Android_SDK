@@ -29,7 +29,7 @@
 
 - [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером.
   ```
-  private String companyId;
+  private String accountId;
   private String email;
   private String url;
   ```
@@ -80,7 +80,7 @@
 - `sendOfflineForm(OfflineForm offlineForm)` - метод отправки оффлайн формы, это форма для отправки данных на сервер (для дальнейшей связи с пользователем) когда все операторы не в сети.
 Возможные поля для заполнения:
   ```
-  private String companyId;
+  private String accountId;
   private String name;
   private String email;
   private String message;

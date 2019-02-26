@@ -11,13 +11,17 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.usedesk.sample.R;
+import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
 
     private EditText companyIdEditText;
     private EditText emailEditText;
     private EditText urlEditText;
+    private EditText accountIdEditText;
+    private EditText tokenEditText;
 
     private OnConfigurationUsedeskListener onConfigurationUsedeskListener;
 
@@ -43,6 +47,15 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         companyIdEditText = view.findViewById(R.id.company_id_edit_text);
         emailEditText = view.findViewById(R.id.email_edit_text);
         urlEditText = view.findViewById(R.id.url_edit_text);
+        accountIdEditText = view.findViewById(R.id.et_account_id);
+        tokenEditText = view.findViewById(R.id.et_token);
+
+        //TODO: становите свои значения, если требуется
+        companyIdEditText.setText("153712");
+        emailEditText.setText("android_sdk@usedesk.ru");
+        urlEditText.setText("https://pubsub.usedesk.ru:1992");
+        accountIdEditText.setText("4");
+        tokenEditText.setText("11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
 
         alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             boolean companyIdEntered = !TextUtils.isEmpty(companyIdEditText.getText());
@@ -55,6 +68,8 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                         emailEditText.getText().toString(),
                         urlEditText.getText().toString());
                 onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration);
+
+                initKnowledgeBaseConfiguration();
             }
 
             dismiss();
@@ -63,6 +78,15 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         alertDialogBuilder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss());
 
         return alertDialogBuilder.create();
+    }
+
+    private void initKnowledgeBaseConfiguration() {
+        String accountId = accountIdEditText.getText().toString();
+        String token = tokenEditText.getText().toString();
+
+        KnowledgeBase.init(tokenEditText.getContext())
+                .setConfiguration(new KnowledgeBaseConfiguration(accountId, token));
+        KnowledgeBase.destroy();
     }
 
     public interface OnConfigurationUsedeskListener {

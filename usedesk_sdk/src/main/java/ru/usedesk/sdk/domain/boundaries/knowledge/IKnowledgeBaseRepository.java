@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.domain.boundaries;
+package ru.usedesk.sdk.domain.boundaries.knowledge;
 
 import android.support.annotation.NonNull;
 

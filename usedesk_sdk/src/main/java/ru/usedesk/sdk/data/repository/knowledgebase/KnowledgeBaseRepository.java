@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.usedesk.sdk.domain.boundaries.IKnowledgeBaseRepository;
+import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseRepository;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;

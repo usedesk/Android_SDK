@@ -11,32 +11,38 @@ import javax.inject.Named;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
-import ru.usedesk.sdk.domain.boundaries.IKnowledgeBaseRepository;
-import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
+import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseInfoRepository;
+import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseRepository;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
 public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
-    private IUserInfoRepository userInfoRepository;
+    private IKnowledgeBaseInfoRepository knowledgeBaseInfoRepository;
     private IKnowledgeBaseRepository knowledgeRepository;
     private Scheduler workScheduler;
     private Scheduler mainThreadScheduler;
 
     @Inject
-    KnowledgeBaseInteractor(IUserInfoRepository userInfoRepository,
+    KnowledgeBaseInteractor(IKnowledgeBaseInfoRepository knowledgeBaseInfoRepository,
                             IKnowledgeBaseRepository knowledgeRepository,
                             @Named("work") Scheduler workScheduler,
                             @Named("main") Scheduler mainThreadScheduler) {
-        this.userInfoRepository = userInfoRepository;
+        this.knowledgeBaseInfoRepository = knowledgeBaseInfoRepository;
         this.knowledgeRepository = knowledgeRepository;
         this.workScheduler = workScheduler;
         this.mainThreadScheduler = mainThreadScheduler;
+    }
+
+    @Override
+    public void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
+        knowledgeBaseInfoRepository.setConfiguration(configuration);
     }
 
     @Override
@@ -95,55 +101,43 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
     @NonNull
     private List<Category> getCategories(long sectionId) throws DataNotFoundException, ApiException {
-        String id = userInfoRepository.getConfiguration().getCompanyId();
-        String token = userInfoRepository.getToken();
-
-        return knowledgeRepository.getCategories(id, token, sectionId);
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        return knowledgeRepository.getCategories(configuration.getAccountId(), configuration.getToken(), sectionId);
     }
 
     @NonNull
     private List<Section> getSections() throws DataNotFoundException, ApiException {
-        String id = userInfoRepository.getConfiguration().getCompanyId();
-        String token = userInfoRepository.getToken();
-
-        return knowledgeRepository.getSections(id, token);
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        return knowledgeRepository.getSections(configuration.getAccountId(), configuration.getToken());
     }
 
     @NonNull
     private ArticleBody getArticle(long articleId) throws DataNotFoundException,
             ApiException {
-        String id = userInfoRepository.getConfiguration().getCompanyId();
-        String token = userInfoRepository.getToken();
-
-        return knowledgeRepository.getArticle(id, token, articleId);
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        return knowledgeRepository.getArticle(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @NonNull
     private List<ArticleBody> getArticles(@NonNull String searchQuery) throws DataNotFoundException,
             ApiException {
-        String id = userInfoRepository.getConfiguration().getCompanyId();
-        String token = userInfoRepository.getToken();
-
         SearchQuery query = new SearchQuery.Builder(searchQuery).build();
 
-        return knowledgeRepository.getArticles(id, token, query);
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), query);
     }
 
     @NonNull
     private List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws DataNotFoundException,
             ApiException {
-        String id = userInfoRepository.getConfiguration().getCompanyId();
-        String token = userInfoRepository.getToken();
-
-        return knowledgeRepository.getArticles(id, token, searchQuery);
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), searchQuery);
     }
 
     @NonNull
     private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, ApiException {
-        String id = userInfoRepository.getConfiguration().getCompanyId();
-        String token = userInfoRepository.getToken();
-
-        return knowledgeRepository.getArticles(id, token, categoryId);
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }
 
 }

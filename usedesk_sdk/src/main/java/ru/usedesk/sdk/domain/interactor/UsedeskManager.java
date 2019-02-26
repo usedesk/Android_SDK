@@ -9,8 +9,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.domain.boundaries.IApiRepository;
-import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
+import ru.usedesk.sdk.domain.boundaries.chat.IApiRepository;
+import ru.usedesk.sdk.domain.boundaries.chat.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.Message;
 import ru.usedesk.sdk.domain.entity.chat.MessageType;

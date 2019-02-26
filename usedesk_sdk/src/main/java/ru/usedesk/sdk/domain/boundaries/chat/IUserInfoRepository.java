@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.domain.boundaries;
+package ru.usedesk.sdk.domain.boundaries.chat;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

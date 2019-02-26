@@ -17,13 +17,16 @@ import ru.usedesk.sdk.data.framework.api.retrofit.ApiLoader;
 import ru.usedesk.sdk.data.framework.api.retrofit.ApiRetrofit;
 import ru.usedesk.sdk.data.framework.api.retrofit.entity.RetrofitEnumConverterFactory;
 import ru.usedesk.sdk.data.framework.loader.ConfigurationLoader;
+import ru.usedesk.sdk.data.framework.loader.KnowledgeBaseConfigurationLoader;
 import ru.usedesk.sdk.data.framework.loader.TokenLoader;
 import ru.usedesk.sdk.data.repository.knowledgebase.IApiLoader;
+import ru.usedesk.sdk.data.repository.knowledgebase.KnowledgeBaseInfoRepository;
 import ru.usedesk.sdk.data.repository.knowledgebase.KnowledgeBaseRepository;
 import ru.usedesk.sdk.data.repository.user.info.DataLoader;
 import ru.usedesk.sdk.data.repository.user.info.UserInfoRepository;
-import ru.usedesk.sdk.domain.boundaries.IKnowledgeBaseRepository;
-import ru.usedesk.sdk.domain.boundaries.IUserInfoRepository;
+import ru.usedesk.sdk.domain.boundaries.chat.IUserInfoRepository;
+import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseInfoRepository;
+import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseRepository;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.KnowledgeBaseInteractor;
 import toothpick.config.Module;
@@ -56,6 +59,9 @@ public class KnowledgeBaseScope extends DependencyInjection {
 
             bind(Scheduler.class).withName("work").toInstance(Schedulers.io());
             bind(Scheduler.class).withName("main").toInstance(AndroidSchedulers.mainThread());
+
+            bind(IKnowledgeBaseInfoRepository.class).to(KnowledgeBaseInfoRepository.class);
+            bind(DataLoader.class).withName("knowledgeBaseConfiguration").to(KnowledgeBaseConfigurationLoader.class);
         }};
     }
 

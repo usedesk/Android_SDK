@@ -8,6 +8,7 @@ import io.reactivex.Single;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 
@@ -30,4 +31,6 @@ public interface IKnowledgeBaseInteractor {
 
     @NonNull
     Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
+
+    void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration);
 }

@@ -3,7 +3,7 @@ package ru.usedesk.sample.ui.main;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-class MainViewModel extends ViewModel {
+public class MainViewModel extends ViewModel {
 
     static final int NAVIGATE_HOME = 1;
     static final int NAVIGATE_BASE = 2;
@@ -11,7 +11,7 @@ class MainViewModel extends ViewModel {
 
     private final MutableLiveData<Integer> navigateLiveData = new MutableLiveData<>();
 
-    MainViewModel() {
+    public MainViewModel() {
         navigateLiveData.setValue(NAVIGATE_HOME);
     }
 

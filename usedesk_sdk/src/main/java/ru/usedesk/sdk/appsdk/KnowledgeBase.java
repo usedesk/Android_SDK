@@ -12,6 +12,7 @@ import ru.usedesk.sdk.appsdk.di.KnowledgeBaseScope;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
+import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
@@ -52,6 +53,10 @@ public final class KnowledgeBase {
     @NonNull
     private Scope getScope() {
         return scope.getScope();
+    }
+
+    public void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
+        knowledgeBaseInteractor.setConfiguration(configuration);
     }
 
     @NonNull

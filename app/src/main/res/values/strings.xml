@@ -39,5 +39,7 @@
     <string name="open_knowledge_base">Открыть базу знаний</string>
     <string name="info">Информация</string>
     <string name="support">Support</string>
+    <string name="enter_token">Enter token</string>
+    <string name="account_id">Ented Account ID</string>
 
 </resources>

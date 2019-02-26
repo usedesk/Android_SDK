@@ -15,7 +15,7 @@ import ru.usedesk.sdk.data.framework.api.standard.entity.request.RequestMessage;
 import ru.usedesk.sdk.data.framework.api.standard.entity.request.SendFeedbackRequest;
 import ru.usedesk.sdk.data.framework.api.standard.entity.request.SendMessageRequest;
 import ru.usedesk.sdk.data.framework.api.standard.entity.request.SetEmailRequest;
-import ru.usedesk.sdk.domain.boundaries.IApiRepository;
+import ru.usedesk.sdk.domain.boundaries.chat.IApiRepository;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 import ru.usedesk.sdk.domain.entity.chat.OnMessageListener;

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnFragmentStackSizeListener;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnSearchQueryListener;
@@ -28,12 +29,25 @@ import ru.usedesk.sdk.ui.knowledgebase.pages.sections.SectionsFragment;
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
         IOnArticleBodyClickListener, IOnSearchQueryListener {
+    private static final String COMPANY_ID_KEY = "companyIdKey";
+    private static final String TOKEN_KEY = "tokenKey";
 
     private IOnFragmentStackSizeListener onFragmentStackSizeListener;
     private IOnSupportClickListener onSupportClickListener;
 
     public static KnowledgeBaseFragment newInstance() {
         return new KnowledgeBaseFragment();
+    }
+
+    private static KnowledgeBaseConfiguration getConfiguration(Bundle args) {
+        if (args != null) {
+            String companyId = args.getString(COMPANY_ID_KEY);
+            String token = args.getString(TOKEN_KEY);
+            if (companyId != null && token != null) {
+                return new KnowledgeBaseConfiguration(companyId, token);
+            }
+        }
+        return null;
     }
 
     @Override

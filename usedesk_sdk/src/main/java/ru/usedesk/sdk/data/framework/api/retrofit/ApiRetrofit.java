@@ -28,4 +28,10 @@ public interface ApiRetrofit {
                                  @Query("type") SearchQuery.Type type,
                                  @Query("sort") SearchQuery.Sort sort,
                                  @Query("order") SearchQuery.Order order);
+
+    @GET("{account_id}/articles/{article_id}/add-views")
+    Call<String> addViews(@Path(value = "account_id", encoded = true) String accountId,
+                          @Path(value = "article_id", encoded = true) long articleId,
+                          @Query("api_token") String token,
+                          @Query("count") int count);
 }

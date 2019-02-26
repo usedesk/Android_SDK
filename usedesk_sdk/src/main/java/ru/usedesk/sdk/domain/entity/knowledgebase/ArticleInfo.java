@@ -16,4 +16,8 @@ public class ArticleInfo {
     public int getViews() {
         return views;
     }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
 }

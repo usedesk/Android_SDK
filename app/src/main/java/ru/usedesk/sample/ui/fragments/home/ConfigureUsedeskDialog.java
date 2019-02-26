@@ -50,7 +50,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         accountIdEditText = view.findViewById(R.id.et_account_id);
         tokenEditText = view.findViewById(R.id.et_token);
 
-        //TODO: становите свои значения, если требуется
+        //TODO: установите свои значения, если требуется
         companyIdEditText.setText("153712");
         emailEditText.setText("android_sdk@usedesk.ru");
         urlEditText.setText("https://pubsub.usedesk.ru:1992");

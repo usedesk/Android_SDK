@@ -21,4 +21,7 @@ public interface IApiLoader {
     List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
                                   @NonNull SearchQuery searchQuery)
             throws ApiException;
+
+    int addViews(@NonNull String accountId, @NonNull String token, long articleId, int count)
+            throws ApiException;
 }

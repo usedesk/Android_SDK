@@ -17,7 +17,7 @@ public interface IKnowledgeBaseRepository {
     List<Section> getSections(@NonNull String id, @NonNull String token) throws ApiException;
 
     @NonNull
-    ArticleBody getArticle(@NonNull String id, @NonNull String token, long articleId) throws ApiException;
+    ArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws ApiException;
 
     @NonNull
     List<ArticleBody> getArticles(@NonNull String id, @NonNull String token,
@@ -30,4 +30,7 @@ public interface IKnowledgeBaseRepository {
     @NonNull
     List<ArticleInfo> getArticles(@NonNull String id, @NonNull String token,
                                   long categoryId) throws ApiException, DataNotFoundException;
+
+    void addViews(@NonNull String accountId, @NonNull String token, long articleId)
+            throws ApiException, DataNotFoundException;
 }

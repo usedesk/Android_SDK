@@ -8,6 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import io.reactivex.Completable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
@@ -100,6 +101,22 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     }
 
     @NonNull
+    @Override
+    public Completable addViewsCompletable(long articleId) {
+        return Completable.create(emitter -> {
+            addViews(articleId);
+            emitter.onComplete();
+        })
+                .subscribeOn(workScheduler)
+                .observeOn(mainThreadScheduler);
+    }
+
+    private void addViews(long articleId) throws DataNotFoundException, ApiException {
+        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+        knowledgeRepository.addViews(configuration.getAccountId(), configuration.getToken(), articleId);
+    }
+
+    @NonNull
     private List<Category> getCategories(long sectionId) throws DataNotFoundException, ApiException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getCategories(configuration.getAccountId(), configuration.getToken(), sectionId);
@@ -115,7 +132,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
     private ArticleBody getArticle(long articleId) throws DataNotFoundException,
             ApiException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
-        return knowledgeRepository.getArticle(configuration.getAccountId(), configuration.getToken(), articleId);
+        return knowledgeRepository.getArticleBody(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @NonNull

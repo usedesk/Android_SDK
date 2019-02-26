@@ -38,7 +38,7 @@ public class DataViewModel<T> extends ViewModel {
         liveData.setValue(DataOrMessage);
     }
 
-    private void onData(T data) {
+    protected void onData(T data) {
         setData(new DataOrMessage<>(data));
     }
 

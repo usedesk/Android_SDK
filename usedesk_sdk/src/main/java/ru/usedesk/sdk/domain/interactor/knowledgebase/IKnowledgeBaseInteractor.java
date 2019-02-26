@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
@@ -33,4 +34,7 @@ public interface IKnowledgeBaseInteractor {
     Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
 
     void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration);
+
+    @NonNull
+    Completable addViewsCompletable(long articleId);
 }

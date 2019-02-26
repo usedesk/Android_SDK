@@ -46,6 +46,10 @@ public class ArticleBody {
         return views;
     }
 
+    public void setViews(int views) {
+        this.views = views;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }

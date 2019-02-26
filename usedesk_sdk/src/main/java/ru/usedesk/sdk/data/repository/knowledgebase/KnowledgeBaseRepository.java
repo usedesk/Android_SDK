@@ -38,7 +38,7 @@ public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
 
     @NonNull
     @Override
-    public ArticleBody getArticle(@NonNull String id, @NonNull String token, long articleId) throws ApiException {
+    public ArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws ApiException {
         return apiLoader.getArticle(id, Long.toString(articleId), token);
     }
 
@@ -67,6 +67,27 @@ public class KnowledgeBaseRepository implements IKnowledgeBaseRepository {
             getSections(id, token);
         }
         return Arrays.asList(getArticles(categoryId));
+    }
+
+    @Override
+    public void addViews(@NonNull String accountId, @NonNull String token, long articleId)
+            throws ApiException, DataNotFoundException {
+        int views = apiLoader.addViews(accountId, token, articleId, 1);
+
+        getArticleBody(accountId, token, articleId).setViews(views);
+        getArticleInfo(articleId).setViews(views);
+    }
+
+    private ArticleInfo getArticleInfo(long articleId) throws DataNotFoundException {
+        for (Section section : sectionList) {
+            for (Category category : section.getCategories())
+                for (ArticleInfo articleInfo : category.getArticles()) {
+                    if (articleInfo.getId() == articleId) {
+                        return articleInfo;
+                    }
+                }
+        }
+        throw new DataNotFoundException();
     }
 
     @NonNull

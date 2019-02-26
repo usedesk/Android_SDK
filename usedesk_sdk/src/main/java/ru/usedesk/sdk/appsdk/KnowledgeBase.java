@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import ru.usedesk.sdk.appsdk.di.KnowledgeBaseScope;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
@@ -87,5 +88,10 @@ public final class KnowledgeBase {
     @NonNull
     public Single<List<ArticleInfo>> getArticlesSingle(long categoryId) {
         return knowledgeBaseInteractor.getArticlesSingle(categoryId);
+    }
+
+    @NonNull
+    public Completable addViews(long articleId) {
+        return knowledgeBaseInteractor.addViewsCompletable(articleId);
     }
 }

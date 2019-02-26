@@ -15,6 +15,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import ru.usedesk.sdk.data.framework.api.retrofit.entity.ApiError;
 import ru.usedesk.sdk.data.framework.api.retrofit.entity.ArticlesBodyPage;
+import ru.usedesk.sdk.data.framework.api.retrofit.entity.ViewsAdded;
 import ru.usedesk.sdk.data.repository.knowledgebase.IApiLoader;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
@@ -57,6 +58,13 @@ public class ApiLoader implements IApiLoader {
                         searchQuery.getArticleIds(), searchQuery.getPage(), searchQuery.getType(),
                         searchQuery.getSort(), searchQuery.getOrder()))
                 .getArticles());
+    }
+
+    @Override
+    public int addViews(@NonNull String accountId, @NonNull String token, long articleId, int count) throws ApiException {
+        return executeRequest(ViewsAdded.class,
+                apiRetrofit.addViews(accountId, articleId, token, count))
+                .getViews();
     }
 
     private <T> T executeRequest(@NonNull Class<T> tClass, @NonNull Call<String> call)

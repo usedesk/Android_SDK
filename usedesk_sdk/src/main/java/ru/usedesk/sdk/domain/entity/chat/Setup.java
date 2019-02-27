@@ -17,7 +17,7 @@ public class Setup {
     }
 
     public boolean isWaitingEmail() {
-        return waitingEmail;
+        return waitingEmail || (client != null && client.getEmail() == null);
     }
 
     public boolean isNoOperators() {

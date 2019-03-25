@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui.fragments.chat;
+package ru.usedesk.sdk.ui.chat;
 
 import android.Manifest;
 import android.app.Activity;
@@ -29,14 +29,13 @@ import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.fragments.BaseFragment;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
-import ru.usedesk.sample.AppSession;
-import ru.usedesk.sample.R;
-import ru.usedesk.sample.utils.NetworkUtils;
+import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.appsdk.UsedeskSDK;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
 import ru.usedesk.sdk.domain.entity.chat.Message;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.utils.NetworkUtils;
 
 import static ru.usedesk.sdk.utils.AttachmentUtils.createUsedeskFiles;
 

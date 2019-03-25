@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui.fragments.chat;
+package ru.usedesk.sdk.ui.chat;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import ru.usedesk.sample.R;
+import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 
 public class OfflineFormDialog extends DialogFragment {

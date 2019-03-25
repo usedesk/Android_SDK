@@ -1,4 +1,4 @@
-package ru.usedesk.sample;
+package ru.usedesk.sdk.ui.chat;
 
 import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 

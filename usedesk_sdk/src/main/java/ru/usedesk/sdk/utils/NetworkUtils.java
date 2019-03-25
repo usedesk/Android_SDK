@@ -1,4 +1,4 @@
-package ru.usedesk.sample.utils;
+package ru.usedesk.sdk.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

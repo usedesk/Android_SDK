@@ -11,7 +11,14 @@ import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
 
 class ArticlesBodyViewModel extends DataViewModel<List<ArticleBody>> {
 
+    private KnowledgeBase knowledgeBase;
+
     private ArticlesBodyViewModel(@NonNull KnowledgeBase knowledgeBase, @NonNull String searchQuery) {
+        this.knowledgeBase = knowledgeBase;
+        onSearchQueryUpdate(searchQuery);
+    }
+
+    public void onSearchQueryUpdate(@NonNull String searchQuery) {
         loadData(knowledgeBase.getArticlesSingle(searchQuery));
     }
 

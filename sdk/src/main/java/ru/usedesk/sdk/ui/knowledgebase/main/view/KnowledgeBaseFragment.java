@@ -9,8 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
+import ru.usedesk.sdk.ui.knowledgebase.FragmentSwitcher;
 import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnFragmentStackSizeListener;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnSearchQueryListener;
@@ -29,11 +30,18 @@ import ru.usedesk.sdk.ui.knowledgebase.pages.sections.SectionsFragment;
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
         IOnArticleBodyClickListener, IOnSearchQueryListener {
+
     private static final String COMPANY_ID_KEY = "companyIdKey";
     private static final String TOKEN_KEY = "tokenKey";
 
     private IOnFragmentStackSizeListener onFragmentStackSizeListener;
     private IOnSupportClickListener onSupportClickListener;
+
+    private final FragmentSwitcher fragmentSwitcher;
+
+    public KnowledgeBaseFragment() {
+        this.fragmentSwitcher = new FragmentSwitcher(this, R.id.container);
+    }
 
     public static KnowledgeBaseFragment newInstance() {
         return new KnowledgeBaseFragment();
@@ -58,8 +66,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);
 
-        getChildFragmentManager().removeOnBackStackChangedListener(this::onFragmentStackSize);
-        getChildFragmentManager().addOnBackStackChangedListener(this::onFragmentStackSize);
+        fragmentSwitcher.setOnBackStackChangedListener(this::onFragmentStackSize);
 
         initViewModel(new KnowledgeBaseViewModel.Factory(inflater.getContext()));
 
@@ -67,7 +74,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
                 .observe(this, this::showSearchQuery);
 
         if (savedInstanceState == null) {
-            switchFragment(SectionsFragment.newInstance());
+            fragmentSwitcher.switchFragment(SectionsFragment.newInstance());
         }
 
         return view;
@@ -75,13 +82,17 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
 
     private void onFragmentStackSize() {
         if (onFragmentStackSizeListener != null) {
-            onFragmentStackSizeListener.onFragmentStackSize(
-                    getChildFragmentManager().getBackStackEntryCount());
+            onFragmentStackSizeListener.onFragmentStackSize(fragmentSwitcher.getStackSize());
         }
     }
 
-    private void showSearchQuery(String query) {
-        switchFragment(ArticlesBodyFragment.newInstance(query));
+    private void showSearchQuery(@NonNull String query) {
+        Fragment fragment = fragmentSwitcher.getLastFragment();
+        if (fragment instanceof ArticlesBodyFragment) {
+            ((ArticlesBodyFragment) fragment).onSearchQueryUpdate(query);
+        } else {
+            fragmentSwitcher.switchFragment(ArticlesBodyFragment.newInstance(query));
+        }
     }
 
     private void onSupportClick(View view) {
@@ -89,31 +100,24 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
             onSupportClickListener.onSupportClick();
     }
 
-    private void switchFragment(@NonNull Fragment fragment) {
-        getChildFragmentManager().beginTransaction()
-                .addToBackStack("cur")
-                .replace(R.id.container, fragment)
-                .commit();
-    }
-
     @Override
     public void onArticleInfoClick(long articleId) {
-        switchFragment(ArticleFragment.newInstance(articleId));
+        fragmentSwitcher.switchFragment(ArticleFragment.newInstance(articleId));
     }
 
     @Override
     public void onArticleBodyClick(long articleId) {
-        switchFragment(ArticleFragment.newInstance(articleId));
+        fragmentSwitcher.switchFragment(ArticleFragment.newInstance(articleId));
     }
 
     @Override
     public void onCategoryClick(long categoryId) {
-        switchFragment(ArticlesInfoFragment.newInstance(categoryId));
+        fragmentSwitcher.switchFragment(ArticlesInfoFragment.newInstance(categoryId));
     }
 
     @Override
     public void onSectionClick(long sectionId) {
-        switchFragment(CategoriesFragment.newInstance(sectionId));
+        fragmentSwitcher.switchFragment(CategoriesFragment.newInstance(sectionId));
 
     }
 
@@ -123,11 +127,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
     }
 
     public boolean onBackPressed() {
-        if (getChildFragmentManager().getBackStackEntryCount() > 1) {
-            getChildFragmentManager().popBackStack();
-            return true;
-        }
-        return false;
+        return fragmentSwitcher.onBackPressed();
     }
 
     public void setOnFragmentStackSizeListener(IOnFragmentStackSizeListener onFragmentStackSizeListener) {

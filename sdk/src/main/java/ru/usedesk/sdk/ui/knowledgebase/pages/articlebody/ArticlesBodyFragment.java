@@ -46,4 +46,8 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
         }
         return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment());
     }
+
+    public void onSearchQueryUpdate(@NonNull String searchQuery) {
+        getViewModel().onSearchQueryUpdate(searchQuery);
+    }
 }

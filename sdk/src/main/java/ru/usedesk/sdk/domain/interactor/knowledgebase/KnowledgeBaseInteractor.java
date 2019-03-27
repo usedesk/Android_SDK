@@ -11,6 +11,7 @@ import javax.inject.Named;
 import io.reactivex.Completable;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseInfoRepository;
 import ru.usedesk.sdk.domain.boundaries.knowledge.IKnowledgeBaseRepository;
@@ -46,58 +47,46 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         knowledgeBaseInfoRepository.setConfiguration(configuration);
     }
 
+    private <T> Single<T> createSingle(SingleOnSubscribe<T> emitter) {
+        return Single.create(new SafeSingleEmitter<>(emitter))
+                .subscribeOn(workScheduler)
+                .observeOn(mainThreadScheduler);
+    }
+
     @Override
     @NonNull
     public Single<List<Section>> getSectionsSingle() {
-        return Single.create(
-                (SingleOnSubscribe<List<Section>>) emitter -> emitter.onSuccess(getSections()))
-                .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler);
+        return createSingle(emitter -> emitter.onSuccess(getSections()));
     }
 
     @Override
     @NonNull
     public Single<ArticleBody> getArticleSingle(long articleId) {
-        return Single.create(
-                (SingleOnSubscribe<ArticleBody>) emitter -> emitter.onSuccess(getArticle(articleId)))
-                .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler);
+        return createSingle(emitter -> emitter.onSuccess(getArticle(articleId)));
     }
 
     @NonNull
     @Override
     public Single<List<Category>> getCategoriesSingle(long sectionId) {
-        return Single.create(
-                (SingleOnSubscribe<List<Category>>) emitter -> emitter.onSuccess(getCategories(sectionId)))
-                .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler);
+        return createSingle(emitter -> emitter.onSuccess(getCategories(sectionId)));
     }
 
     @NonNull
     @Override
     public Single<List<ArticleInfo>> getArticlesSingle(long categoryId) {
-        return Single.create(
-                (SingleOnSubscribe<List<ArticleInfo>>) emitter -> emitter.onSuccess(getArticles(categoryId)))
-                .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler);
+        return createSingle(emitter -> emitter.onSuccess(getArticles(categoryId)));
     }
 
     @Override
     @NonNull
     public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
-        return Single.create(
-                (SingleOnSubscribe<List<ArticleBody>>) emitter -> emitter.onSuccess(getArticles(searchQuery)))
-                .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler);
+        return createSingle(emitter -> emitter.onSuccess(getArticles(searchQuery)));
     }
 
     @Override
     @NonNull
     public Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery) {
-        return Single.create(
-                (SingleOnSubscribe<List<ArticleBody>>) emitter -> emitter.onSuccess(getArticles(searchQuery)))
-                .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler);
+        return createSingle(emitter -> emitter.onSuccess(getArticles(searchQuery)));
     }
 
     @NonNull
@@ -157,4 +146,22 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }
 
+    class SafeSingleEmitter<T> implements SingleOnSubscribe<T> {
+        private final SingleOnSubscribe<T> singleOnSubscribeSafe;
+
+        SafeSingleEmitter(SingleOnSubscribe<T> singleOnSubscribeSafe) {
+            this.singleOnSubscribeSafe = singleOnSubscribeSafe;
+        }
+
+        @Override
+        public void subscribe(SingleEmitter<T> emitter) throws Exception {
+            try {
+                singleOnSubscribeSafe.subscribe(emitter);
+            } catch (Exception e) {
+                if (!emitter.isDisposed()) {
+                    throw e;
+                }
+            }
+        }
+    }
 }

@@ -6,7 +6,8 @@ import android.arch.lifecycle.ViewModel;
 
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
-import ru.usedesk.sdk.utils.LogUtils;
+
+import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 
 public class DataViewModel<T> extends ViewModel {
 
@@ -31,7 +32,9 @@ public class DataViewModel<T> extends ViewModel {
     protected void onCleared() {
         super.onCleared();
 
-        disposable.dispose();
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
     }
 
     protected void setData(DataOrMessage<T> DataOrMessage) {
@@ -43,7 +46,7 @@ public class DataViewModel<T> extends ViewModel {
     }
 
     private void onThrowable(Throwable throwable) {
-        LogUtils.LOGE(TAG, throwable);
+        LOGE(TAG, throwable);
 
         setData(new DataOrMessage<>(DataOrMessage.Message.ERROR));
     }

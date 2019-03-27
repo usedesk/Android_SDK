@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import ru.usedesk.sample.AppSession;
 import ru.usedesk.sample.R;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.ui.chat.AppSession;
 
 public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnConfigurationUsedeskListener {
 

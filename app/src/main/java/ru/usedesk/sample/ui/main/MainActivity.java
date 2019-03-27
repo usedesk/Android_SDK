@@ -11,9 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sample.ui.fragments.chat.ChatFragment;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
+import ru.usedesk.sdk.ui.chat.ChatFragment;
 import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeViewParent;
 import ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 

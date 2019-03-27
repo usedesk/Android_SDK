@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath 'com.android.tools.build:gradle:3.3.2'
     }
 }
 
@@ -15,35 +15,10 @@ allprojects {
 
         jcenter()
 
-        maven { url "https://maven.google.com" }
-
-        maven { url "https://jitpack.io" }
+        maven { url 'https://github.com/Uncreated/UsedeskSDK/raw/master/' }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-ext {
-    applicationId = "ru.usedesk.sample"
-    compileSdkVersion = 28
-    buildToolsVersion = "28.0.3"
-    minSdkVersion = 19
-    targetSdkVersion = 27
-
-    versionCode = 6
-    versionName = "0.1.0"
-
-    // Dependencies versions
-    supportVersion = '28.0.0'
-    glideVersion = "4.2.0"
-    picassoVersion = '2.4.0'
-    permissionsdispatcherVersion = '3.0.1'
-    filePickerVersion = '2.1.1'
-
-    lifecycleVersion = '1.1.1'
-
-    rx2JavaVersion = '2.1.14'
-    rx2AndroidVersion = '2.0.2'
 }

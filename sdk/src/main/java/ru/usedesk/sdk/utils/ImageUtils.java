@@ -1,12 +1,14 @@
 package ru.usedesk.sdk.utils;
 
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 public class ImageUtils {
 
@@ -15,7 +17,7 @@ public class ImageUtils {
 
     public static void checkForDisplayImage(ImageView imageImageView, String pictureUrl, int errorResId) {
         if (!TextUtils.isEmpty(pictureUrl)) {
-            Picasso.with(imageImageView.getContext())
+            GlideApp.with(imageImageView)
                     .load(pictureUrl)
                     .error(errorResId)
                     .into(imageImageView);
@@ -24,21 +26,25 @@ public class ImageUtils {
         }
     }
 
-    public static void checkForDisplayImage(ImageView imageImageView, final ProgressBar progressBar, String pictureUrl) {
+    public static void checkForDisplayImage(ImageView imageImageView, final ProgressBar progressBar,
+                                            String pictureUrl) {
         if (!TextUtils.isEmpty(pictureUrl)) {
-            Picasso.with(imageImageView.getContext())
+            GlideApp.with(imageImageView)
                     .load(pictureUrl)
-                    .into(imageImageView, new Callback() {
+                    .into(new SimpleTarget<Drawable>() {
                         @Override
-                        public void onSuccess() {
+                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
                             hideProgress(progressBar);
                         }
 
                         @Override
-                        public void onError() {
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            super.onLoadFailed(errorDrawable);
+
                             hideProgress(progressBar);
                         }
                     });
+
         } else {
             hideProgress(progressBar);
         }

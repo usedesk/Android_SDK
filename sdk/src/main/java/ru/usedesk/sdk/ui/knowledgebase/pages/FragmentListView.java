@@ -8,8 +8,8 @@ import android.view.View;
 import java.util.List;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.ui.knowledgebase.DataViewModel;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentDataView;
+import ru.usedesk.sdk.ui.knowledgebase.common.DataViewModel;
+import ru.usedesk.sdk.ui.knowledgebase.common.FragmentDataView;
 
 public abstract class FragmentListView<V, T extends DataViewModel<List<V>>>
         extends FragmentDataView<List<V>, T> {

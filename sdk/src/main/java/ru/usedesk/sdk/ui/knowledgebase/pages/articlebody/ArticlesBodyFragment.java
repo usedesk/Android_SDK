@@ -9,7 +9,7 @@ import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
 
 public class ArticlesBodyFragment extends FragmentListView<ArticleBody, ArticlesBodyViewModel> {

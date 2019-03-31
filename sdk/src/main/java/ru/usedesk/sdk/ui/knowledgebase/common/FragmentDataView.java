@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase;
+package ru.usedesk.sdk.ui.knowledgebase.common;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.ui.knowledgebase.entity.DataOrMessage;
 
 public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends FragmentView<T> {
 

@@ -17,6 +17,7 @@ import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.domain.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Section;
 import ru.usedesk.sdk.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
+import ru.usedesk.sdk.ui.ViewCustomizer;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -30,6 +31,9 @@ public final class KnowledgeBase {
     @Inject
     IKnowledgeBaseInteractor knowledgeBaseInteractor;
 
+    @Inject
+    ViewCustomizer viewCustomizer;
+
     private KnowledgeBase(@NonNull Context appContext) {
         scope = new KnowledgeBaseScope(this, appContext);
         Toothpick.inject(this, getScope());
@@ -37,7 +41,10 @@ public final class KnowledgeBase {
 
     @NonNull
     public static KnowledgeBase init(@NonNull Context context) {
-        return instance = new KnowledgeBase(context.getApplicationContext());
+        if (instance == null) {
+            instance = new KnowledgeBase(context.getApplicationContext());
+        }
+        return instance;
     }
 
     public static void destroy() {
@@ -50,6 +57,10 @@ public final class KnowledgeBase {
             throw new RuntimeException("You must call " + KnowledgeBase.class.getSimpleName() + ".initViewModel() static method before");
         }
         return instance;
+    }
+
+    public ViewCustomizer getViewCustomizer() {
+        return viewCustomizer;
     }
 
     @NonNull

@@ -8,7 +8,7 @@ import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.Category;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
 
 public class CategoriesFragment extends FragmentListView<Category, CategoriesViewModel> {
@@ -43,7 +43,7 @@ public class CategoriesFragment extends FragmentListView<Category, CategoriesVie
                     IOnCategoryClickListener.class.getSimpleName());
         }
 
-        return new CategoriesAdapter(list,
-                (IOnCategoryClickListener) getParentFragment());
+        return new CategoriesAdapter(list, (IOnCategoryClickListener) getParentFragment(),
+                knowledgeBase.getViewCustomizer());
     }
 }

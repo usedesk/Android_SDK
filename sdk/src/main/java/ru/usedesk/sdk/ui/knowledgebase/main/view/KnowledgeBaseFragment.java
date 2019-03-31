@@ -11,8 +11,8 @@ import android.widget.Button;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentSwitcher;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
+import ru.usedesk.sdk.ui.knowledgebase.helper.FragmentSwitcher;
+import ru.usedesk.sdk.ui.knowledgebase.common.FragmentView;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnFragmentStackSizeListener;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnSearchQueryListener;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnSupportClickListener;

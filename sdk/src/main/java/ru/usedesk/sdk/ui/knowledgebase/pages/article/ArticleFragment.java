@@ -10,8 +10,8 @@ import android.widget.TextView;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentDataView;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.FragmentDataView;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 
 public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewModel> {
 

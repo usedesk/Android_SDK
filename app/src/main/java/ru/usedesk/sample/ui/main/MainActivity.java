@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
+import ru.usedesk.sdk.appsdk.KnowledgeBase;
+import ru.usedesk.sdk.ui.ViewCustomizer;
 import ru.usedesk.sdk.ui.chat.ChatFragment;
 import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeViewParent;
 import ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment;
@@ -92,6 +94,9 @@ public class MainActivity extends AppCompatActivity
                 switchFragment(HomeFragment.newInstance());
                 break;
             case MainViewModel.NAVIGATE_BASE:
+                KnowledgeBase.init(this)
+                        .getViewCustomizer()
+                        .setLayoutId(ViewCustomizer.Type.CATEGORY_ITEM, R.layout.category_item);
                 KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance();
                 knowledgeViewParent.attachChild(knowledgeBaseFragment, getSupportActionBar());
                 switchFragment(knowledgeBaseFragment);

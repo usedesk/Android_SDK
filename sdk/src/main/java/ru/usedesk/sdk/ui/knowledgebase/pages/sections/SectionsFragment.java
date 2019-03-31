@@ -34,7 +34,7 @@ public class SectionsFragment extends FragmentListView<Section, SectionsViewMode
                     IOnSectionClickListener.class.getSimpleName());
         }
 
-        return new SectionsAdapter(list,
-                (IOnSectionClickListener) getParentFragment());
+        return new SectionsAdapter(list, (IOnSectionClickListener) getParentFragment(),
+                knowledgeBase.getViewCustomizer());
     }
 }

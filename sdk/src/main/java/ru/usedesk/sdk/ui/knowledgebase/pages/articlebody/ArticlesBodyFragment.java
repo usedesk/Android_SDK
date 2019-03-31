@@ -44,7 +44,8 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
             throw new RuntimeException("Parent fragment must implement " +
                     IOnArticleBodyClickListener.class.getSimpleName());
         }
-        return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment());
+        return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment(),
+                knowledgeBase.getViewCustomizer());
     }
 
     public void onSearchQueryUpdate(@NonNull String searchQuery) {

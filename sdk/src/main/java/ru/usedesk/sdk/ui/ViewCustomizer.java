@@ -1,49 +1,40 @@
 package ru.usedesk.sdk.ui;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
-
-import ru.usedesk.sdk.R;
 
 public class ViewCustomizer {
 
-    private final HashMap<Type, Integer> layoutIds = new HashMap<Type, Integer>() {{
-        put(Type.ARTICLE_INFO_ITEM, R.layout.article_info_item);
-        put(Type.CATEGORY_ITEM, R.layout.category_item);
-    }};
+    private final SparseIntArray layoutIds = new SparseIntArray();
 
     @Inject
     public ViewCustomizer() {
     }
 
-    public View createView(@NonNull ViewGroup viewGroup, @NonNull Type type) {
-        int resourceId = getLayoutId(type);
+    public View createView(@NonNull ViewGroup viewGroup, int defaultId) {
+        int resourceId = getLayoutId(defaultId);
 
         return LayoutInflater.from(viewGroup.getContext())
                 .inflate(resourceId, viewGroup, false);
     }
 
-    public int getLayoutId(@NonNull Type type) {
-        Integer id = layoutIds.get(type);
-        if (id == null) {
-            throw new RuntimeException("Resource ID is not contains for this type");
-        } else {
-            return id;
-        }
+    public int getLayoutId(int defaultId) {
+        return layoutIds.get(defaultId, defaultId);
     }
 
-    public void setLayoutId(@NonNull Type type, int resourceId) {
-        layoutIds.put(type, resourceId);
+    public void setLayoutId(int defaultId, int customId) {
+        layoutIds.put(defaultId, customId);
     }
 
-    public enum Type {
-        ARTICLE_INFO_ITEM,
-        CATEGORY_ITEM
+    @NonNull
+    public View createView(@NonNull LayoutInflater inflater, int layoutId,
+                           @Nullable ViewGroup viewGroup, boolean attachToRoot) {
+        return inflater.inflate(layoutId, viewGroup, attachToRoot);
     }
 }

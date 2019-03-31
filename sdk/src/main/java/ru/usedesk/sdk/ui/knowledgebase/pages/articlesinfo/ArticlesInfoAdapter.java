@@ -29,7 +29,7 @@ public class ArticlesInfoAdapter extends RecyclerView.Adapter<ArticlesInfoAdapte
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = viewCustomizer.createView(viewGroup, ViewCustomizer.Type.ARTICLE_INFO_ITEM);
+        View view = viewCustomizer.createView(viewGroup, R.layout.article_info_item);
 
         return new ArticleViewHolder(view);
     }

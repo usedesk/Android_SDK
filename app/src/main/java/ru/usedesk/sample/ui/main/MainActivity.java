@@ -94,9 +94,7 @@ public class MainActivity extends AppCompatActivity
                 switchFragment(HomeFragment.newInstance());
                 break;
             case MainViewModel.NAVIGATE_BASE:
-                KnowledgeBase.init(this)
-                        .getViewCustomizer()
-                        .setLayoutId(ViewCustomizer.Type.CATEGORY_ITEM, R.layout.category_item);
+                CustomizeView();
                 KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance();
                 knowledgeViewParent.attachChild(knowledgeBaseFragment, getSupportActionBar());
                 switchFragment(knowledgeBaseFragment);
@@ -106,6 +104,14 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
         setToolbar(this);
+    }
+
+    private void CustomizeView() {
+        ViewCustomizer viewCustomizer = KnowledgeBase.init(this)
+                .getViewCustomizer();
+
+        viewCustomizer.setLayoutId(ViewCustomizer.Type.CATEGORY_ITEM, R.layout.category_item);
+        viewCustomizer.setLayoutId(ViewCustomizer.Type.ARTICLE_INFO_ITEM, R.layout.article_info_item);
     }
 
     private void initBottomNavigation() {

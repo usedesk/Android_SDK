@@ -29,7 +29,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Se
     @NonNull
     @Override
     public SectionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = viewCustomizer.createView(viewGroup, R.layout.category_item);
+        View view = viewCustomizer.createView(viewGroup, R.layout.usedesk_category_item);
 
         return new SectionViewHolder(view);
     }

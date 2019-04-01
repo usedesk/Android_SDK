@@ -17,7 +17,7 @@ public abstract class FragmentListView<V, T extends DataViewModel<List<V>>>
     private RecyclerView recyclerViewSections;
 
     public FragmentListView() {
-        super(R.layout.fragment_list);
+        super(R.layout.usedesk_fragment_list);
     }
 
     @Override

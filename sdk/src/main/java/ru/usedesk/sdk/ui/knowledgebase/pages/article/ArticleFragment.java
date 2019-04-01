@@ -23,7 +23,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
     private TextView textViewText;
 
     public ArticleFragment() {
-        super(KnowledgeBase.getInstance().getViewCustomizer().getLayoutId(R.layout.fragment_article));
+        super(KnowledgeBase.getInstance().getViewCustomizer().getLayoutId(R.layout.usedesk_fragment_article));
 
         knowledgeBase = KnowledgeBase.getInstance();
     }

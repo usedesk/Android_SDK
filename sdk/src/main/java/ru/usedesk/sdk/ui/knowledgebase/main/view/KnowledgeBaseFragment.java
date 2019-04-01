@@ -61,7 +61,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_knowledge_base, container, false);
+        View view = inflater.inflate(R.layout.usedesk_fragment_knowledge_base, container, false);
 
         Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);

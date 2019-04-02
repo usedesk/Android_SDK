@@ -6,8 +6,8 @@ import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.ui.knowledgebase.DataViewModel;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.DataViewModel;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 
 class ArticlesInfoViewModel extends DataViewModel<List<ArticleInfo>> {
 

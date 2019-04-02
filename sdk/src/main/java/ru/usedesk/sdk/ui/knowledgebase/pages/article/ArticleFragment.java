@@ -7,11 +7,11 @@ import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
+import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentDataView;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.FragmentDataView;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 
 public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewModel> {
 
@@ -23,7 +23,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
     private TextView textViewText;
 
     public ArticleFragment() {
-        super(R.layout.fragment_article);
+        super(KnowledgeBase.getInstance().getViewCustomizer().getLayoutId(R.layout.usedesk_fragment_article));
 
         knowledgeBase = KnowledgeBase.getInstance();
     }

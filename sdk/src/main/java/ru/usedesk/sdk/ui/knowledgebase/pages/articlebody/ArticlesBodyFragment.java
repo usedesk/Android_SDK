@@ -9,7 +9,7 @@ import java.util.List;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
 import ru.usedesk.sdk.domain.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 import ru.usedesk.sdk.ui.knowledgebase.pages.FragmentListView;
 
 public class ArticlesBodyFragment extends FragmentListView<ArticleBody, ArticlesBodyViewModel> {
@@ -44,7 +44,8 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
             throw new RuntimeException("Parent fragment must implement " +
                     IOnArticleBodyClickListener.class.getSimpleName());
         }
-        return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment());
+        return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment(),
+                knowledgeBase.getViewCustomizer());
     }
 
     public void onSearchQueryUpdate(@NonNull String searchQuery) {

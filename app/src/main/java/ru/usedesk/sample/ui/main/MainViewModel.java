@@ -5,21 +5,23 @@ import android.arch.lifecycle.ViewModel;
 
 public class MainViewModel extends ViewModel {
 
-    static final int NAVIGATE_HOME = 1;
-    static final int NAVIGATE_BASE = 2;
-    static final int NAVIGATE_INFO = 3;
-
-    private final MutableLiveData<Integer> navigateLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Navigate> navigateLiveData = new MutableLiveData<>();
 
     public MainViewModel() {
-        navigateLiveData.setValue(NAVIGATE_HOME);
+        navigateLiveData.setValue(Navigate.HOME);
     }
 
-    MutableLiveData<Integer> getNavigateLiveData() {
+    MutableLiveData<Navigate> getNavigateLiveData() {
         return navigateLiveData;
     }
 
-    void onNavigate(int navigateId) {
-        navigateLiveData.setValue(navigateId);
+    void onNavigate(Navigate navigate) {
+        navigateLiveData.setValue(navigate);
+    }
+
+    public enum Navigate {
+        HOME,
+        BASE,
+        INFO
     }
 }

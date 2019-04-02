@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase;
+package ru.usedesk.sdk.ui.knowledgebase.common;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
+import ru.usedesk.sdk.ui.knowledgebase.entity.DataOrMessage;
 
 import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 

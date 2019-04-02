@@ -7,7 +7,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.sdk.appsdk.KnowledgeBase;
-import ru.usedesk.sdk.ui.knowledgebase.ViewModelFactory;
+import ru.usedesk.sdk.ui.knowledgebase.common.ViewModelFactory;
 
 public class KnowledgeBaseViewModel extends ViewModel {
 

@@ -72,7 +72,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.usedesk_fragment_chat, container, false);
         initUI(view);
         initList();
 
@@ -287,7 +287,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     private void openAttachmentDialog() {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
-        View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.view_attachment_dialog, null);
+        View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.usedesk_view_attachment_dialog, null);
 
         bottomSheetView.findViewById(R.id.pick_photo_button).setOnClickListener(view -> {
             bottomSheetDialog.dismiss();

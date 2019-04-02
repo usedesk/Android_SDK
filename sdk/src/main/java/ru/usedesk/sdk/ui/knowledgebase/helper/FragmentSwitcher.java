@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase;
+package ru.usedesk.sdk.ui.knowledgebase.helper;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

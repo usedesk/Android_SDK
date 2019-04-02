@@ -13,10 +13,15 @@ import android.view.MenuItem;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
+import ru.usedesk.sdk.appsdk.KnowledgeBase;
+import ru.usedesk.sdk.ui.ViewCustomizer;
 import ru.usedesk.sdk.ui.chat.ChatFragment;
 import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeViewParent;
 import ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
+import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.BASE;
+import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.HOME;
+import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.INFO;
 import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
 
 public class MainActivity extends AppCompatActivity
@@ -63,13 +68,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                mainViewModel.onNavigate(MainViewModel.NAVIGATE_HOME);
+                mainViewModel.onNavigate(HOME);
                 break;
             case R.id.knowledge_base:
-                mainViewModel.onNavigate(MainViewModel.NAVIGATE_BASE);
+                mainViewModel.onNavigate(BASE);
                 break;
             case R.id.navigation_info:
-                mainViewModel.onNavigate(MainViewModel.NAVIGATE_INFO);
+                mainViewModel.onNavigate(INFO);
                 break;
             default:
                 return false;
@@ -85,22 +90,31 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void onNavigate(int navigateId) {
+    private void onNavigate(MainViewModel.Navigate navigate) {
         knowledgeViewParent.detachChild();
-        switch (navigateId) {
-            case MainViewModel.NAVIGATE_HOME:
+        switch (navigate) {
+            case HOME:
                 switchFragment(HomeFragment.newInstance());
                 break;
-            case MainViewModel.NAVIGATE_BASE:
+            case BASE:
+                CustomizeView();
                 KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance();
                 knowledgeViewParent.attachChild(knowledgeBaseFragment, getSupportActionBar());
                 switchFragment(knowledgeBaseFragment);
                 break;
-            case MainViewModel.NAVIGATE_INFO:
+            case INFO:
                 switchFragment(InfoFragment.newInstance());
                 break;
         }
         setToolbar(this);
+    }
+
+    private void CustomizeView() {
+        ViewCustomizer viewCustomizer = KnowledgeBase.init(this)
+                .getViewCustomizer();
+
+        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_category_item, R.layout.category_item);
+        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_article_info_item, R.layout.article_info_item);
     }
 
     private void initBottomNavigation() {

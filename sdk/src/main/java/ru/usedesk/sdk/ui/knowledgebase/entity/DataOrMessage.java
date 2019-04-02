@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.ui.knowledgebase;
+package ru.usedesk.sdk.ui.knowledgebase.entity;
 
 public class DataOrMessage<T> {
     private T data;

@@ -11,8 +11,8 @@ import android.widget.Button;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentSwitcher;
-import ru.usedesk.sdk.ui.knowledgebase.FragmentView;
+import ru.usedesk.sdk.ui.knowledgebase.helper.FragmentSwitcher;
+import ru.usedesk.sdk.ui.knowledgebase.common.FragmentView;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnFragmentStackSizeListener;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnSearchQueryListener;
 import ru.usedesk.sdk.ui.knowledgebase.main.IOnSupportClickListener;
@@ -61,7 +61,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_knowledge_base, container, false);
+        View view = inflater.inflate(R.layout.usedesk_fragment_knowledge_base, container, false);
 
         Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);

@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.domain.boundaries.chat.IApiRepository;
 import ru.usedesk.sdk.domain.boundaries.chat.IUserInfoRepository;
 import ru.usedesk.sdk.domain.entity.chat.Feedback;
@@ -21,11 +23,7 @@ import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.domain.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.domain.entity.exceptions.DataNotFoundException;
-import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.utils.LogUtils;
-
-import static ru.usedesk.sdk.utils.LogUtils.LOGD;
-import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 
 public class UsedeskManager {
 
@@ -196,10 +194,7 @@ public class UsedeskManager {
             }
 
             if (setup.isNoOperators()) {
-                Message message = new Message(MessageType.SERVICE);
-                message.setText(context.getString(R.string.message_no_operators));
-                usedeskActionListener.onServiceMessageReceived(message);
-                usedeskActionListener.onOfflineFormExpected();
+                onOfflineFormDialog();
             }
         } else {
             setUserEmail();
@@ -224,6 +219,20 @@ public class UsedeskManager {
         return new OnMessageListener() {
             @Override
             public void onNew(Message message) {
+                try {
+                    if (message != null && message.getPayloadAsObject() != null) {
+                        Map map = (Map) message.getPayloadAsObject();
+
+                        Boolean noOperators = (Boolean) map.get("noOperators");
+
+                        if (noOperators != null && noOperators) {
+                            onOfflineFormDialog();
+                            return;
+                        }
+                    }
+                } catch (ClassCastException e) {
+                    //nothing
+                }
                 parseNewMessageResponse(message);
             }
 
@@ -250,6 +259,13 @@ public class UsedeskManager {
                 initChat();
             }
         };
+    }
+
+    private void onOfflineFormDialog() {
+        Message message = new Message(MessageType.SERVICE);
+        message.setText(context.getString(R.string.message_no_operators));
+        usedeskActionListener.onServiceMessageReceived(message);
+        usedeskActionListener.onOfflineFormExpected();
     }
 
     public void init(UsedeskConfiguration usedeskConfiguration,

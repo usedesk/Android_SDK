@@ -94,6 +94,10 @@ public class Message {
         this.usedeskFile = usedeskFile;
     }
 
+    public Object getPayloadAsObject() {
+        return payload;
+    }
+
     public Payload getPayload() {
         if (payload != null) {
             try {

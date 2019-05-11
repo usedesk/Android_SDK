@@ -19,10 +19,6 @@ import javax.inject.Inject;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import ru.usedesk.sdk.domain.entity.chat.Constants;
-import ru.usedesk.sdk.domain.entity.chat.OnMessageListener;
-import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
-import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.data.framework.api.standard.entity.request.BaseRequest;
 import ru.usedesk.sdk.data.framework.api.standard.entity.response.BaseResponse;
@@ -31,10 +27,11 @@ import ru.usedesk.sdk.data.framework.api.standard.entity.response.InitChatRespon
 import ru.usedesk.sdk.data.framework.api.standard.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.data.framework.api.standard.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.data.framework.api.standard.entity.response.SetEmailResponse;
+import ru.usedesk.sdk.domain.entity.chat.Constants;
+import ru.usedesk.sdk.domain.entity.chat.OnMessageListener;
+import ru.usedesk.sdk.domain.entity.chat.UsedeskActionListener;
+import ru.usedesk.sdk.domain.entity.exceptions.ApiException;
 import ru.usedesk.sdk.utils.LogUtils;
-
-import static ru.usedesk.sdk.utils.LogUtils.LOGD;
-import static ru.usedesk.sdk.utils.LogUtils.LOGE;
 
 public class SocketApi {
     private static final String TAG = SocketApi.class.getSimpleName();

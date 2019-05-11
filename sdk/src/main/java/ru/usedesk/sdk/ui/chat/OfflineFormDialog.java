@@ -2,6 +2,7 @@ package ru.usedesk.sdk.ui.chat;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -9,8 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.domain.entity.chat.OfflineForm;
 
 public class OfflineFormDialog extends DialogFragment {
 
@@ -37,6 +38,7 @@ public class OfflineFormDialog extends DialogFragment {
     }
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.usedesk_view_offline_form, null);
 

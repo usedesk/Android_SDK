@@ -36,6 +36,8 @@ public class HttpApi {
         try {
             String postData = new JSONObject(gson.toJson(offlineForm)).toString();
 
+            urlString = "https://secure.usedesk.ru/widget.js/post";
+
             URL url = new URL(urlString);
 
             LogUtils.LOGD(TAG, "URL: " + url);

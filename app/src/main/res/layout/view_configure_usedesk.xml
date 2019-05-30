@@ -53,6 +53,20 @@
         android:layout_height="match_parent">
 
         <EditText
+            android:id="@+id/offline_url_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dialog_configure_usedesk_margin"
+            android:hint="@string/configuration_offline_url_hint"
+            android:inputType="textUri" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
             android:id="@+id/et_account_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

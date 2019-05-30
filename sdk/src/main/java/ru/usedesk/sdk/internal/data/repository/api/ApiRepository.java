@@ -81,7 +81,7 @@ public class ApiRepository implements IApiRepository {
     @Override
     public boolean post(UsedeskConfiguration configuration, OfflineForm offlineForm) {
         try {
-            URL url = new URL(configuration.getUrl());
+            URL url = new URL(configuration.getOfflineFormUrl());
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
             return httpApi.post(postUrl, offlineForm);
         } catch (MalformedURLException e) {

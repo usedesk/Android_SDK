@@ -13,11 +13,11 @@ import android.view.MenuItem;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
-import ru.usedesk.sdk.appsdk.KnowledgeBase;
-import ru.usedesk.sdk.ui.ViewCustomizer;
-import ru.usedesk.sdk.ui.chat.ChatFragment;
-import ru.usedesk.sdk.ui.knowledgebase.main.KnowledgeViewParent;
-import ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment;
+import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.sdk.external.ui.ViewCustomizer;
+import ru.usedesk.sdk.external.ui.chat.ChatFragment;
+import ru.usedesk.sdk.external.ui.knowledgebase.main.KnowledgeViewParent;
+import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.BASE;
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.HOME;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void CustomizeView() {
-        ViewCustomizer viewCustomizer = KnowledgeBase.init(this)
+        ViewCustomizer viewCustomizer = UsedeskSdk.initKnowledgeBase(this)
                 .getViewCustomizer();
 
         viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_category_item, R.layout.category_item);

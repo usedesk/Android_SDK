@@ -98,11 +98,11 @@
 
 Для получения доступа к методам API базы знаний, необходимо инициализировать класс KnowledgeBase, вызвав:
 
-    KnowledgeBase knowledgeBase = KnowledgeBase.init(context);
+    KnowledgeBase usedeskKnowledgeBase = KnowledgeBase.init(context);
 
 Получить объект в любом месте после инициализации можно вызвав:
 
-    KnowledgeBase knowledgeBase = KnowledgeBase.getInstance();
+    KnowledgeBase usedeskKnowledgeBase = KnowledgeBase.getInstance();
 
 Освободить память можно вызвав:
 

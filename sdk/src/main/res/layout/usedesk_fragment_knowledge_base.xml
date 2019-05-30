@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.usedesk.sdk.ui.knowledgebase.main.view.KnowledgeBaseFragment">
+    tools:context="ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment">
 
     <FrameLayout
         android:id="@+id/frameLayout"

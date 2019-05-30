@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sdk.appsdk.KnowledgeBase;
-import ru.usedesk.sdk.domain.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.domain.entity.knowledgebase.KnowledgeBaseConfiguration;
+import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
 
@@ -84,9 +84,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String accountId = accountIdEditText.getText().toString();
         String token = tokenEditText.getText().toString();
 
-        KnowledgeBase.init(tokenEditText.getContext())
+        UsedeskSdk.initKnowledgeBase(tokenEditText.getContext())
                 .setConfiguration(new KnowledgeBaseConfiguration(accountId, token));
-        KnowledgeBase.destroy();
+        UsedeskSdk.releaseUsedeskKnowledgeBase();
     }
 
     public interface OnConfigurationUsedeskListener {

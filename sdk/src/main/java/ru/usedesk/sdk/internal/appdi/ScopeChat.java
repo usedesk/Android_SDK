@@ -13,6 +13,8 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
+import ru.usedesk.sdk.external.service.notifications.NotificationsPresenter;
 import ru.usedesk.sdk.internal.data.framework.api.retrofit.ApiLoader;
 import ru.usedesk.sdk.internal.data.framework.api.retrofit.ApiRetrofit;
 import ru.usedesk.sdk.internal.data.framework.api.standard.HttpApi;
@@ -67,6 +69,10 @@ public class ScopeChat extends DependencyInjection {
 
             bind(Scheduler.class).withName("work").toInstance(Schedulers.io());
             bind(Scheduler.class).withName("main").toInstance(AndroidSchedulers.mainThread());
+
+            //tmp for service
+            bind(NotificationsPresenter.class).to(NotificationsPresenter.class);
+            bind(UsedeskActionListenerRx.class).to(UsedeskActionListenerRx.class);
         }};
     }
 

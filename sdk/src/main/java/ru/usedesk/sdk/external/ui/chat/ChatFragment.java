@@ -36,7 +36,7 @@ import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.service.NotificationsService;
+import ru.usedesk.sdk.external.service.notifications.NotificationsService;
 import ru.usedesk.sdk.internal.utils.AttachmentUtils;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 

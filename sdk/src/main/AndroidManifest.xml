@@ -9,7 +9,7 @@
 
     <application android:allowBackup="true">
         <service
-            android:name=".external.service.NotificationsService"
+            android:name=".external.service.notifications.NotificationsService"
             android:enabled="true"
             android:exported="true"></service>
     </application>

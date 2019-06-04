@@ -2,6 +2,8 @@ package ru.usedesk.sdk.external.entity.chat;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -14,6 +16,10 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
     private final Subject<EmptyItem> disconnectedSubject = BehaviorSubject.create();
     private final Subject<Integer> errorResIdSubject = BehaviorSubject.create();
     private final Subject<Exception> errorSubject = BehaviorSubject.create();
+
+    @Inject
+    public UsedeskActionListenerRx() {
+    }
 
     private void onMessage(Message message) {
         if (message != null) {

@@ -11,9 +11,10 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
+import javax.inject.Inject;
+
 import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.internal.appdi.ScopeChat;
 import ru.usedesk.sdk.mvi.MviView;
@@ -24,7 +25,9 @@ public class NotificationsService extends Service implements MviView<Notificatio
     private static final String NEW_MESSAGES_CHANNEL_ID = "newMessages";
     private static final String MESSAGES_FROM_OPERATOR_CHANNEL_TITLE = "Messages from operator";
 
-    private NotificationsPresenter notificationsPresenter;
+    @Inject
+    NotificationsPresenter notificationsPresenter;
+
     private NotificationManager notificationManager;
 
     private Disposable messagesDisposable;
@@ -39,18 +42,21 @@ public class NotificationsService extends Service implements MviView<Notificatio
         context.startService(intent);
     }
 
+    public static void stopService(@NonNull Context context) {
+        Intent intent = new Intent(context, NotificationsService.class);
+        context.stopService(intent);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        notificationsPresenter = new NotificationsPresenter(new UsedeskActionListenerRx());
 
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         registerNotification();
 
-        ScopeChat scopeChat = new ScopeChat(notificationsPresenter, this);
-        Toothpick.inject(notificationsPresenter, scopeChat.getScope());
+        ScopeChat scopeChat = new ScopeChat(this, this);
+        Toothpick.inject(this, scopeChat.getScope());
     }
 
     private void registerNotification() {

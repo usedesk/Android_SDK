@@ -20,6 +20,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private EditText companyIdEditText;
     private EditText emailEditText;
     private EditText urlEditText;
+    private EditText offlineUrlEditText;
     private EditText accountIdEditText;
     private EditText tokenEditText;
 
@@ -47,6 +48,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         companyIdEditText = view.findViewById(R.id.company_id_edit_text);
         emailEditText = view.findViewById(R.id.email_edit_text);
         urlEditText = view.findViewById(R.id.url_edit_text);
+        offlineUrlEditText = view.findViewById(R.id.offline_url_edit_text);
         accountIdEditText = view.findViewById(R.id.et_account_id);
         tokenEditText = view.findViewById(R.id.et_token);
 
@@ -54,6 +56,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         companyIdEditText.setText("153712");
         emailEditText.setText("android_sdk@usedesk.ru");
         urlEditText.setText("https://pubsub.usedesk.ru:1992");
+        offlineUrlEditText.setText("https://secure.usedesk.ru");
         accountIdEditText.setText("4");
         tokenEditText.setText("11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
 
@@ -61,12 +64,14 @@ public class ConfigureUsedeskDialog extends DialogFragment {
             boolean companyIdEntered = !TextUtils.isEmpty(companyIdEditText.getText());
             boolean emailEntered = !TextUtils.isEmpty(emailEditText.getText());
             boolean urlEntered = !TextUtils.isEmpty(urlEditText.getText());
+            boolean offlineUrlEntered = !TextUtils.isEmpty(offlineUrlEditText.getText());
 
-            if (companyIdEntered && emailEntered && urlEntered) {
+            if (companyIdEntered && emailEntered && urlEntered && offlineUrlEntered) {
                 UsedeskConfiguration configuration = new UsedeskConfiguration(
                         companyIdEditText.getText().toString(),
                         emailEditText.getText().toString(),
-                        urlEditText.getText().toString());
+                        urlEditText.getText().toString(),
+                        offlineUrlEditText.getText().toString());
                 onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration);
 
                 initKnowledgeBaseConfiguration();

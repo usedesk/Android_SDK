@@ -19,5 +19,6 @@
     <string name="configuration_url">URL: %1s</string>
     <string name="configuration_configure">Configure</string>
     <string name="configuration_clear_configuration">Clear configuration</string>
+    <string name="configuration_offline_url_hint">Enter offline form url</string>
 
 </resources>

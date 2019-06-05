@@ -26,7 +26,7 @@ public class HttpApi {
     private final Gson gson;
 
     @Inject
-    public HttpApi(Gson gson) {
+    HttpApi(Gson gson) {
         this.gson = gson;
     }
 
@@ -34,7 +34,7 @@ public class HttpApi {
         try {
             String postData = new JSONObject(gson.toJson(offlineForm)).toString();
 
-            urlString = "https://secure.usedesk.ru/widget.js/post";
+            //urlString = "https://secure.usedesk.ru/widget.js/post";
 
             URL url = new URL(urlString);
 

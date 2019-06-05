@@ -3,12 +3,13 @@ package ru.usedesk.sdk.external.service.notifications;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
 import javax.inject.Inject;
@@ -20,7 +21,7 @@ import ru.usedesk.sdk.internal.appdi.ScopeChat;
 import ru.usedesk.sdk.mvi.MviView;
 import toothpick.Toothpick;
 
-public class NotificationsService extends Service implements MviView<NotificationsModel> {
+public class UsedeskNotificationsService extends Service implements MviView<NotificationsModel> {
 
     private static final String NEW_MESSAGES_CHANNEL_ID = "newMessages";
     private static final String MESSAGES_FROM_OPERATOR_CHANNEL_TITLE = "Messages from operator";
@@ -32,19 +33,7 @@ public class NotificationsService extends Service implements MviView<Notificatio
 
     private Disposable messagesDisposable;
 
-    public NotificationsService() {
-    }
-
-    public static void startService(@NonNull Context context,
-                                    @NonNull UsedeskConfiguration usedeskConfiguration) {
-        Intent intent = new Intent(context, NotificationsService.class);
-        usedeskConfiguration.serialize(intent);
-        context.startService(intent);
-    }
-
-    public static void stopService(@NonNull Context context) {
-        Intent intent = new Intent(context, NotificationsService.class);
-        context.stopService(intent);
+    public UsedeskNotificationsService() {
     }
 
     @Override
@@ -90,6 +79,21 @@ public class NotificationsService extends Service implements MviView<Notificatio
 
     @Override
     public void renderModel(@NonNull NotificationsModel model) {
+        notificationManager.notify(1, createNotification(model));
+    }
+
+    @Nullable
+    protected PendingIntent getContentPendingIntent() {
+        return null;
+    }
+
+    @Nullable
+    protected PendingIntent getDeletePendingIntent() {
+        return null;
+    }
+
+    @NonNull
+    protected Notification createNotification(@NonNull NotificationsModel model) {
         String title = "Operator: " + model.getMessage().getOperator();
         String text = model.getCount() == 1
                 ? "Message: " + model.getMessage().getText()
@@ -99,9 +103,13 @@ public class NotificationsService extends Service implements MviView<Notificatio
                 .setSmallIcon(android.R.drawable.ic_dialog_email)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setContentIntent(getContentPendingIntent())
+                .setDeleteIntent(getDeletePendingIntent())
                 .build();
 
-        notificationManager.notify(1, notification);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        return notification;
     }
 
     @Override

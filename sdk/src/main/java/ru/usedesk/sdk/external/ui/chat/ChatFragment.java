@@ -36,14 +36,11 @@ import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.service.notifications.NotificationsService;
 import ru.usedesk.sdk.internal.utils.AttachmentUtils;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
 public class ChatFragment extends BaseFragment implements UsedeskActionListener {
-
-    private static final String TAG = ChatFragment.class.getSimpleName();
 
     private static final int MAX_MESSAGE_LENGTH = 10000;
     private static final int MAX_FILES = 3;
@@ -93,14 +90,16 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     public void onStart() {
         super.onStart();
 
-        NotificationsService.stopService(getContext());
+        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+                .stopService(getContext());
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        NotificationsService.startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
+        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+                .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
     }
 
     @Override
@@ -300,14 +299,17 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     private void openAttachmentDialog() {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
-        View bottomSheetView = getActivity().getLayoutInflater().inflate(R.layout.usedesk_view_attachment_dialog, null);
+        View bottomSheetView = getActivity().getLayoutInflater()
+                .inflate(R.layout.usedesk_view_attachment_dialog, null);
 
-        bottomSheetView.findViewById(R.id.pick_photo_button).setOnClickListener(view -> {
+        bottomSheetView.findViewById(R.id.pick_photo_button)
+                .setOnClickListener(view -> {
             bottomSheetDialog.dismiss();
             onPickPhotoClicked();
         });
 
-        bottomSheetView.findViewById(R.id.pick_document_button).setOnClickListener(view -> {
+        bottomSheetView.findViewById(R.id.pick_document_button)
+                .setOnClickListener(view -> {
             bottomSheetDialog.dismiss();
             onPickDocumentClicked();
         });

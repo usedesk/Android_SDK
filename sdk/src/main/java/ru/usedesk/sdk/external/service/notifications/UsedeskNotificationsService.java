@@ -23,7 +23,7 @@ import toothpick.Toothpick;
 
 public class UsedeskNotificationsService extends Service implements MviView<NotificationsModel> {
 
-    private static final String NEW_MESSAGES_CHANNEL_ID = "newMessages";
+    private static final String NEW_MESSAGES_CHANNEL_ID = "newUsedeskMessages";
     private static final String MESSAGES_FROM_OPERATOR_CHANNEL_TITLE = "Messages from operator";
 
     @Inject
@@ -51,7 +51,7 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
     private void registerNotification() {
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel notificationChannel = new NotificationChannel(NEW_MESSAGES_CHANNEL_ID,
-                    MESSAGES_FROM_OPERATOR_CHANNEL_TITLE, NotificationManager.IMPORTANCE_DEFAULT);
+                    getChannelTitle(), NotificationManager.IMPORTANCE_DEFAULT);
 
             notificationChannel.enableLights(true);
             notificationChannel.enableVibration(true);
@@ -67,12 +67,14 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        UsedeskConfiguration usedeskConfiguration = UsedeskConfiguration.deserialize(intent);
+        if (intent != null) {
+            UsedeskConfiguration usedeskConfiguration = UsedeskConfiguration.deserialize(intent);
 
-        UsedeskSdk.initChat(this, usedeskConfiguration, notificationsPresenter.getActionListenerRx());
+            UsedeskSdk.initChat(this, usedeskConfiguration, notificationsPresenter.getActionListenerRx());
 
-        messagesDisposable = notificationsPresenter.getModelObservable()
-                .subscribe(this::renderModel);
+            messagesDisposable = notificationsPresenter.getModelObservable()
+                    .subscribe(this::renderModel);
+        }
 
         return START_STICKY;
     }
@@ -90,6 +92,11 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
     @Nullable
     protected PendingIntent getDeletePendingIntent() {
         return null;
+    }
+
+    @NonNull
+    protected String getChannelTitle() {
+        return MESSAGES_FROM_OPERATOR_CHANNEL_TITLE;
     }
 
     @NonNull

@@ -7,9 +7,6 @@ import ru.usedesk.sample.R;
 
 public class ToolbarHelper {
 
-    private ToolbarHelper() {
-    }
-
     public static void setToolbar(AppCompatActivity activity) {
         Toolbar toolbar = getToolbar(activity);
         if (toolbar != null) {
@@ -20,14 +17,16 @@ public class ToolbarHelper {
     public static void setToolbarWithUpButton(AppCompatActivity activity) {
         setToolbar(activity);
         if (activity.getSupportActionBar() != null) {
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar()
+                    .setDisplayHomeAsUpEnabled(true);
         }
     }
 
     public static void setSubtitle(final AppCompatActivity activity, final String subTitle) {
         Toolbar toolbar = getToolbar(activity);
         if (toolbar != null) {
-            toolbar.post(() -> activity.getSupportActionBar().setSubtitle(subTitle));
+            toolbar.post(() -> activity.getSupportActionBar()
+                    .setSubtitle(subTitle));
         }
     }
 

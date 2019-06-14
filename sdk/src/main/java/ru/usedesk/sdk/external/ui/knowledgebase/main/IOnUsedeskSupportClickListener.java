@@ -1,5 +1,5 @@
 package ru.usedesk.sdk.external.ui.knowledgebase.main;
 
-public interface IOnSupportClickListener {
+public interface IOnUsedeskSupportClickListener {
     void onSupportClick();
 }

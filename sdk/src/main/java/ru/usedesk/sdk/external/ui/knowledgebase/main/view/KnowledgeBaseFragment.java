@@ -4,18 +4,19 @@ package ru.usedesk.sdk.external.ui.knowledgebase.main.view;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
+import ru.usedesk.sdk.external.ui.IUsedeskOnBackPressedListener;
+import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.common.FragmentView;
 import ru.usedesk.sdk.external.ui.knowledgebase.helper.FragmentSwitcher;
-import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnFragmentStackSizeListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnSearchQueryListener;
-import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnSupportClickListener;
+import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.viewmodel.KnowledgeBaseViewModel;
 import ru.usedesk.sdk.external.ui.knowledgebase.pages.article.ArticleFragment;
 import ru.usedesk.sdk.external.ui.knowledgebase.pages.articlebody.ArticlesBodyFragment;
@@ -29,33 +30,14 @@ import ru.usedesk.sdk.external.ui.knowledgebase.pages.sections.SectionsFragment;
 
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
-        IOnArticleBodyClickListener, IOnSearchQueryListener {
-
-    private static final String COMPANY_ID_KEY = "companyIdKey";
-    private static final String TOKEN_KEY = "tokenKey";
-
-    private IOnFragmentStackSizeListener onFragmentStackSizeListener;
-    private IOnSupportClickListener onSupportClickListener;
-
-    private final FragmentSwitcher fragmentSwitcher;
+        IOnArticleBodyClickListener, IOnSearchQueryListener,
+        IUsedeskOnBackPressedListener, IUsedeskOnSearchQueryListener {
 
     public KnowledgeBaseFragment() {
-        this.fragmentSwitcher = new FragmentSwitcher(this, R.id.container);
     }
 
     public static KnowledgeBaseFragment newInstance() {
         return new KnowledgeBaseFragment();
-    }
-
-    private static KnowledgeBaseConfiguration getConfiguration(Bundle args) {
-        if (args != null) {
-            String companyId = args.getString(COMPANY_ID_KEY);
-            String token = args.getString(TOKEN_KEY);
-            if (companyId != null && token != null) {
-                return new KnowledgeBaseConfiguration(companyId, token);
-            }
-        }
-        return null;
     }
 
     @Override
@@ -66,58 +48,58 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);
 
-        fragmentSwitcher.setOnBackStackChangedListener(this::onFragmentStackSize);
-
         initViewModel(new KnowledgeBaseViewModel.Factory(inflater.getContext()));
 
         getViewModel().getSearchQueryLiveData()
                 .observe(this, this::showSearchQuery);
 
         if (savedInstanceState == null) {
-            fragmentSwitcher.switchFragment(SectionsFragment.newInstance());
+            FragmentSwitcher.switchFragment(this, SectionsFragment.newInstance(),
+                    R.id.container);
         }
 
         return view;
     }
 
-    private void onFragmentStackSize() {
-        if (onFragmentStackSizeListener != null) {
-            onFragmentStackSizeListener.onFragmentStackSize(fragmentSwitcher.getStackSize());
-        }
-    }
-
     private void showSearchQuery(@NonNull String query) {
-        Fragment fragment = fragmentSwitcher.getLastFragment();
+        Fragment fragment = FragmentSwitcher.getLastFragment(this);
         if (fragment instanceof ArticlesBodyFragment) {
             ((ArticlesBodyFragment) fragment).onSearchQueryUpdate(query);
         } else {
-            fragmentSwitcher.switchFragment(ArticlesBodyFragment.newInstance(query));
+            FragmentSwitcher.switchFragment(this, ArticlesBodyFragment.newInstance(query),
+                    R.id.container);
         }
     }
 
     private void onSupportClick(View view) {
-        if (onSupportClickListener != null)
-            onSupportClickListener.onSupportClick();
+        FragmentActivity activity = getActivity();
+        if (activity instanceof IOnUsedeskSupportClickListener) {
+            ((IOnUsedeskSupportClickListener) activity).onSupportClick();
+        }
+    }
+
+    private void switchFragment(@NonNull Fragment fragment) {
+        FragmentSwitcher.switchFragment(this, fragment, R.id.container);
     }
 
     @Override
     public void onArticleInfoClick(long articleId) {
-        fragmentSwitcher.switchFragment(ArticleFragment.newInstance(articleId));
+        switchFragment(ArticleFragment.newInstance(articleId));
     }
 
     @Override
     public void onArticleBodyClick(long articleId) {
-        fragmentSwitcher.switchFragment(ArticleFragment.newInstance(articleId));
+        switchFragment(ArticleFragment.newInstance(articleId));
     }
 
     @Override
     public void onCategoryClick(long categoryId) {
-        fragmentSwitcher.switchFragment(ArticlesInfoFragment.newInstance(categoryId));
+        switchFragment(ArticlesInfoFragment.newInstance(categoryId));
     }
 
     @Override
     public void onSectionClick(long sectionId) {
-        fragmentSwitcher.switchFragment(CategoriesFragment.newInstance(sectionId));
+        switchFragment(CategoriesFragment.newInstance(sectionId));
 
     }
 
@@ -126,15 +108,8 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         getViewModel().onSearchQuery(query);
     }
 
+    @Override
     public boolean onBackPressed() {
-        return fragmentSwitcher.onBackPressed();
-    }
-
-    public void setOnFragmentStackSizeListener(IOnFragmentStackSizeListener onFragmentStackSizeListener) {
-        this.onFragmentStackSizeListener = onFragmentStackSizeListener;
-    }
-
-    public void setOnSupportClickListener(IOnSupportClickListener onSupportButtonListener) {
-        this.onSupportClickListener = onSupportButtonListener;
+        return FragmentSwitcher.onBackPressed(this);
     }
 }

@@ -54,8 +54,10 @@ public class UsedeskSdk {
     }
 
     public static void releaseChat() {
-        usedeskChatBox.release();
-        usedeskChatBox = null;
+        if (usedeskChatBox != null) {
+            usedeskChatBox.release();
+            usedeskChatBox = null;
+        }
     }
 
     @NonNull
@@ -76,7 +78,10 @@ public class UsedeskSdk {
     }
 
     public static void releaseUsedeskKnowledgeBase() {
-        usedeskKnowledgeBaseBox.release();
+        if (usedeskKnowledgeBaseBox != null) {
+            usedeskKnowledgeBaseBox.release();
+            usedeskKnowledgeBaseBox = null;
+        }
     }
 
     public static UsedeskNotificationsServiceFactory getUsedeskNotificationsServiceFactory() {

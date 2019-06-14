@@ -5,49 +5,62 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import java.util.List;
+
 public class FragmentSwitcher {
-    private final Fragment parentFragment;
-    private final int idContainer;
 
-    private Fragment lastFragment;
-
-    public FragmentSwitcher(@NonNull Fragment parentFragment, int idContainer) {
-        this.parentFragment = parentFragment;
-        this.idContainer = idContainer;
+    public static void switchFragment(@Nullable Fragment parentFragment, @NonNull Fragment fragment,
+                                      int idContainer) {
+        if (parentFragment != null) {
+            parentFragment.getChildFragmentManager()
+                    .beginTransaction()
+                    .addToBackStack("cur")
+                    .replace(idContainer, fragment)
+                    .commit();
+        }
     }
 
-    public void switchFragment(@NonNull Fragment fragment) {
-        this.lastFragment = fragment;
+    public static void setOnBackStackChangedListener(@Nullable Fragment parentFragment,
+                                                     @NonNull FragmentManager.OnBackStackChangedListener onFragmentStackSize) {
 
-        getChildFragmentManager().beginTransaction()
-                .addToBackStack("cur")
-                .replace(idContainer, fragment)
-                .commit();
+        if (parentFragment != null) {
+            parentFragment.getChildFragmentManager()
+                    .removeOnBackStackChangedListener(onFragmentStackSize);
+
+            parentFragment.getChildFragmentManager()
+                    .addOnBackStackChangedListener(onFragmentStackSize);
+        }
     }
 
-    @Nullable
-    public Fragment getLastFragment() {
-        return lastFragment;
+    public static int getStackSize(@Nullable Fragment parentFragment) {
+        if (parentFragment != null) {
+            return parentFragment.getChildFragmentManager().getBackStackEntryCount();
+        } else {
+            return 0;
+        }
     }
 
-    public void setOnBackStackChangedListener(FragmentManager.OnBackStackChangedListener onFragmentStackSize) {
-        getChildFragmentManager().removeOnBackStackChangedListener(onFragmentStackSize);
-        getChildFragmentManager().addOnBackStackChangedListener(onFragmentStackSize);
-    }
-
-    private FragmentManager getChildFragmentManager() {
-        return parentFragment.getChildFragmentManager();
-    }
-
-    public boolean onBackPressed() {
-        if (getChildFragmentManager().getBackStackEntryCount() > 1) {
-            getChildFragmentManager().popBackStack();
-            return true;
+    public static boolean onBackPressed(@Nullable Fragment parentFragment) {
+        if (parentFragment != null) {
+            int count = parentFragment.getChildFragmentManager()
+                    .getBackStackEntryCount();
+            if (count > 0) {
+                parentFragment.getChildFragmentManager()
+                        .popBackStack();
+                return true;
+            }
         }
         return false;
     }
 
-    public int getStackSize() {
-        return getChildFragmentManager().getBackStackEntryCount();
+    @Nullable
+    public static Fragment getLastFragment(@NonNull Fragment fragment) {
+        List<Fragment> fragments = fragment.getChildFragmentManager()
+                .getFragments();
+        if (fragments.size() > 0) {
+            return fragments.get(fragments.size() - 1);
+        }
+
+        return null;
     }
 }

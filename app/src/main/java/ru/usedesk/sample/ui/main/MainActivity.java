@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,24 +15,25 @@ import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
 import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.sdk.external.ui.IUsedeskOnBackPressedListener;
+import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.ViewCustomizer;
 import ru.usedesk.sdk.external.ui.chat.ChatFragment;
-import ru.usedesk.sdk.external.ui.knowledgebase.main.KnowledgeViewParent;
+import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.BASE;
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.HOME;
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.INFO;
-import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
+import static ru.usedesk.sample.utils.ToolbarHelper.setToolbarWithUpButton;
 
 public class MainActivity extends AppCompatActivity
-        implements BottomNavigationView.OnNavigationItemSelectedListener {
+        implements BottomNavigationView.OnNavigationItemSelectedListener,
+        IOnUsedeskSupportClickListener {
 
-    private KnowledgeViewParent knowledgeViewParent;
     private MainViewModel mainViewModel;
 
     public MainActivity() {
-        knowledgeViewParent = new KnowledgeViewParent();
     }
 
     @Override
@@ -49,14 +51,11 @@ public class MainActivity extends AppCompatActivity
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
-        knowledgeViewParent.setOnSupportClickListener(() -> switchFragment(ChatFragment.newInstance()));
+        customizeView();
+    }
 
-        if (savedInstanceState != null) {
-            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame_layout);
-            if (fragment instanceof KnowledgeBaseFragment) {
-                knowledgeViewParent.attachChild((KnowledgeBaseFragment) fragment, getSupportActionBar());
-            }
-        }
+    private Fragment getCurrentFragment() {
+        return getSupportFragmentManager().findFragmentById(R.id.container_frame_layout);
     }
 
     @Override
@@ -85,31 +84,35 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (!knowledgeViewParent.onBackPressed()) {
+        Fragment fragment = getCurrentFragment();
+        if (!(fragment instanceof IUsedeskOnBackPressedListener &&
+                ((IUsedeskOnBackPressedListener) fragment).onBackPressed())) {
             super.onBackPressed();
         }
     }
 
+    @Override
+    public void onSupportClick() {
+        switchFragment(ChatFragment.newInstance());
+    }
+
     private void onNavigate(MainViewModel.Navigate navigate) {
-        knowledgeViewParent.detachChild();
         switch (navigate) {
             case HOME:
                 switchFragment(HomeFragment.newInstance());
                 break;
             case BASE:
-                CustomizeView();
-                KnowledgeBaseFragment knowledgeBaseFragment = KnowledgeBaseFragment.newInstance();
-                knowledgeViewParent.attachChild(knowledgeBaseFragment, getSupportActionBar());
-                switchFragment(knowledgeBaseFragment);
+                setToolbarWithUpButton(this);
+                switchFragment(KnowledgeBaseFragment.newInstance());
                 break;
             case INFO:
                 switchFragment(InfoFragment.newInstance());
                 break;
         }
-        setToolbar(this);
+        //setToolbar(this);
     }
 
-    private void CustomizeView() {
+    private void customizeView() {
         ViewCustomizer viewCustomizer = UsedeskSdk.initKnowledgeBase(this)
                 .getViewCustomizer();
 
@@ -124,8 +127,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                //getSupportActionBar().setDisplayShowHomeEnabled(false);
+                break;
+            case R.id.action_search:
+                //getSupportActionBar().setDisplayShowHomeEnabled(true);
+                break;
         }
         return true;
     }
@@ -134,9 +143,38 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu_with_search, menu);
 
-        knowledgeViewParent.onCreateOptionsMenu(menu, R.id.action_search);
+        setSearchQueryListener(menu);
 
         return true;
+    }
+
+    private void setSearchQueryListener(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        if (menuItem != null) {
+            menuItem.setVisible(true);
+
+            SearchView searchView = (SearchView) menuItem.getActionView();
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    onQuery(query);
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    onQuery(s);
+                    return false;
+                }
+
+                private void onQuery(String s) {
+                    Fragment fragment = getCurrentFragment();
+                    if (fragment instanceof IUsedeskOnSearchQueryListener) {
+                        ((IUsedeskOnSearchQueryListener) fragment).onSearchQuery(s);
+                    }
+                }
+            });
+        }
     }
 
     private void switchFragment(Fragment fragment) {

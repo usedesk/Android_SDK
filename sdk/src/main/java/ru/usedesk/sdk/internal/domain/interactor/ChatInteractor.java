@@ -47,21 +47,6 @@ public class ChatInteractor {
         this.apiRepository = apiRepository;
     }
 
-    public void updateUsedeskConfiguration(UsedeskConfiguration usedeskConfiguration) {
-        this.usedeskConfiguration = usedeskConfiguration;
-    }
-
-    public void updateUsedeskActionListener(UsedeskActionListener usedeskActionListener) {
-        this.usedeskActionListener = usedeskActionListener;
-    }
-
-    public void reConnect() {
-        disconnect();
-
-        setSocket();
-        connect();
-    }
-
     public void disconnect() {
         apiRepository.disconnect();
 

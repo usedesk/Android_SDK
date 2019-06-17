@@ -101,7 +101,7 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
 
     @NonNull
     protected Notification createNotification(@NonNull NotificationsModel model) {
-        String title = "Operator: " + model.getMessage().getOperator();
+        String title = "Operator: " + model.getMessage().getName();
         String text = model.getCount() == 1
                 ? "Message: " + model.getMessage().getText()
                 : model.getCount() + " messages";

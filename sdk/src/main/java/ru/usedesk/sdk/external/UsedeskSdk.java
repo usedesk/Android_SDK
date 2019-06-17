@@ -3,12 +3,8 @@ package ru.usedesk.sdk.external;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
@@ -17,11 +13,9 @@ import ru.usedesk.sdk.internal.appdi.ScopeChat;
 import ru.usedesk.sdk.internal.appdi.ScopeKnowledgeBase;
 import toothpick.Toothpick;
 
-import static ru.usedesk.sdk.external.entity.chat.MessageType.OPERATOR_TO_CLIENT;
-
 public class UsedeskSdk {
 
-    private static UsedeskChatBox usedeskChatBox;
+    private static UsedeskChatBox usedeskChatBox = null;
     private static UsedeskKnowledgeBaseBox usedeskKnowledgeBaseBox;
     private static UsedeskNotificationsServiceFactory usedeskNotificationsServiceFactory;
 
@@ -34,13 +28,13 @@ public class UsedeskSdk {
                     usedeskConfiguration, usedeskActionListener);
         }
 
-        Observable.interval(5, 5, TimeUnit.SECONDS)
+        /*Observable.interval(5, 5, TimeUnit.SECONDS)
                 .map(aLong -> new Message(OPERATOR_TO_CLIENT, "Ok"))
                 .map(message -> {
                     message.setOperator("Виталий");
                     return message;
                 })
-                .subscribe(usedeskActionListener::onMessageReceived);
+                .subscribe(usedeskActionListener::onMessageReceived);*/
 
         return usedeskChatBox.usedeskChat;
     }

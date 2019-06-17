@@ -76,15 +76,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         initUI(view);
         initList();
 
-        usedeskChat = UsedeskSdk.initChat(getActivity(), AppSession.getSession().getUsedeskConfiguration(), this);
-
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        usedeskChat.destroy();
     }
 
     @Override
@@ -93,11 +85,15 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .stopService(getContext());
+
+        usedeskChat = UsedeskSdk.initChat(getActivity(), AppSession.getSession().getUsedeskConfiguration(), this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
+        UsedeskSdk.releaseChat();
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());

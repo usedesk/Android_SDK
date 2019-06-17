@@ -27,7 +27,7 @@ public class NotificationsPresenter extends MviPresenter<NotificationsModel> {
     @NonNull
     @Override
     protected Observable<NotificationsModel> getNewModelObservable() {
-        return actionListenerRx.getMessageObservable()
+        return actionListenerRx.getNewMessageObservable()
                 .filter(message -> message.getType() == MessageType.OPERATOR_TO_CLIENT)
                 .map(NotificationsModel::new);
     }

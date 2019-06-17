@@ -12,6 +12,7 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
 
     private final Subject<EmptyItem> connectedSubject = BehaviorSubject.create();
     private final Subject<Message> messageSubject = BehaviorSubject.create();
+    private final Subject<Message> newMessageSubject = BehaviorSubject.create();
     private final Subject<EmptyItem> offlineFormExpectedSubject = BehaviorSubject.create();
     private final Subject<EmptyItem> disconnectedSubject = BehaviorSubject.create();
     private final Subject<Integer> errorResIdSubject = BehaviorSubject.create();
@@ -27,12 +28,22 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
         }
     }
 
+    private void onNewMessage(Message message) {
+        if (message != null) {
+            newMessageSubject.onNext(message);
+        }
+    }
+
     public Observable<EmptyItem> getConnectedObservable() {
         return connectedSubject;
     }
 
     public Observable<Message> getMessageObservable() {
         return messageSubject;
+    }
+
+    public Observable<Message> getNewMessageObservable() {
+        return newMessageSubject;
     }
 
     public Observable<EmptyItem> getOfflineFormExpectedObservable() {
@@ -59,6 +70,7 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
     @Override
     public void onMessageReceived(Message message) {
         onMessage(message);
+        onNewMessage(message);
     }
 
     @Override

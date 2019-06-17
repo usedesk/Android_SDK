@@ -59,13 +59,6 @@ public class UsedeskChat {
         chatInteractor.sendOfflineForm(offlineForm);
     }
 
-    public void set(UsedeskConfiguration usedeskConfiguration,
-                    UsedeskActionListener usedeskActionListener) {
-        chatInteractor.updateUsedeskConfiguration(usedeskConfiguration);
-        chatInteractor.updateUsedeskActionListener(usedeskActionListener);
-        chatInteractor.reConnect();
-    }
-
     public UsedeskConfiguration getUsedeskConfiguration() {
         return chatInteractor.getUsedeskConfiguration();
     }

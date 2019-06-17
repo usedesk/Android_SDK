@@ -15,7 +15,6 @@ import ru.usedesk.sdk.external.ui.IUsedeskOnBackPressedListener;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.common.FragmentView;
 import ru.usedesk.sdk.external.ui.knowledgebase.helper.FragmentSwitcher;
-import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.viewmodel.KnowledgeBaseViewModel;
 import ru.usedesk.sdk.external.ui.knowledgebase.pages.article.ArticleFragment;
@@ -30,7 +29,7 @@ import ru.usedesk.sdk.external.ui.knowledgebase.pages.sections.SectionsFragment;
 
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
-        IOnArticleBodyClickListener, IOnSearchQueryListener,
+        IOnArticleBodyClickListener,
         IUsedeskOnBackPressedListener, IUsedeskOnSearchQueryListener {
 
     public KnowledgeBaseFragment() {

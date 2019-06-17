@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -15,7 +16,6 @@ import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
 import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.ui.IUsedeskOnBackPressedListener;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.ViewCustomizer;
 import ru.usedesk.sdk.external.ui.chat.ChatFragment;
@@ -25,13 +25,18 @@ import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.BASE;
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.HOME;
 import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.INFO;
-import static ru.usedesk.sample.utils.ToolbarHelper.setToolbarWithUpButton;
+import static ru.usedesk.sample.utils.ToolbarHelper.hideSearchButton;
+import static ru.usedesk.sample.utils.ToolbarHelper.hideToolbarUpButton;
+import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
+import static ru.usedesk.sample.utils.ToolbarHelper.showSearchButton;
+import static ru.usedesk.sample.utils.ToolbarHelper.showToolbarUpButton;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         IOnUsedeskSupportClickListener {
 
     private MainViewModel mainViewModel;
+    private SearchView searchView;
 
     public MainActivity() {
     }
@@ -52,6 +57,8 @@ public class MainActivity extends AppCompatActivity
         StrictMode.setVmPolicy(builder.build());
 
         customizeView();
+
+        setToolbar(this);
     }
 
     private Fragment getCurrentFragment() {
@@ -85,31 +92,42 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         Fragment fragment = getCurrentFragment();
-        if (!(fragment instanceof IUsedeskOnBackPressedListener &&
-                ((IUsedeskOnBackPressedListener) fragment).onBackPressed())) {
+
+        if (fragment instanceof KnowledgeBaseFragment) {
+            if (!((KnowledgeBaseFragment) fragment).onBackPressed()) {
+                mainViewModel.onNavigate(HOME);
+            }
+        } else if (fragment instanceof ChatFragment) {
+            mainViewModel.onNavigate(BASE);
+        } else {
             super.onBackPressed();
         }
     }
 
     @Override
     public void onSupportClick() {
+        hideSearchButton(searchView);
         switchFragment(ChatFragment.newInstance());
     }
 
-    private void onNavigate(MainViewModel.Navigate navigate) {
+    private void onNavigate(@NonNull MainViewModel.Navigate navigate) {
         switch (navigate) {
             case HOME:
+                hideToolbarUpButton(this);
+                hideSearchButton(searchView);
                 switchFragment(HomeFragment.newInstance());
                 break;
             case BASE:
-                setToolbarWithUpButton(this);
+                showToolbarUpButton(this);
+                showSearchButton(searchView);
                 switchFragment(KnowledgeBaseFragment.newInstance());
                 break;
             case INFO:
+                showToolbarUpButton(this);
+                hideSearchButton(searchView);
                 switchFragment(InfoFragment.newInstance());
                 break;
         }
-        //setToolbar(this);
     }
 
     private void customizeView() {
@@ -130,10 +148,6 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                //getSupportActionBar().setDisplayShowHomeEnabled(false);
-                break;
-            case R.id.action_search:
-                //getSupportActionBar().setDisplayShowHomeEnabled(true);
                 break;
         }
         return true;
@@ -142,6 +156,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu_with_search, menu);
+
+        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
 
         setSearchQueryListener(menu);
 

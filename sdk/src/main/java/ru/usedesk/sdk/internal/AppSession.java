@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.external.ui.chat;
+package ru.usedesk.sdk.internal;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 

@@ -56,14 +56,7 @@ public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnC
         noConfigurationTextView = view.findViewById(R.id.no_configuration_text_view);
 
         actionButton = view.findViewById(R.id.action_button);
-        actionButton.setOnClickListener(view1 -> {
-            if (AppSession.getSession() != null) {
-                AppSession.clearSession();
-                updateUI();
-            } else {
-                showEmailDialog();
-            }
-        });
+        actionButton.setOnClickListener(view1 -> showEmailDialog());
 
         companyIdTextView = view.findViewById(R.id.company_id_text_view);
         emailTextView = view.findViewById(R.id.email_text_view);
@@ -76,7 +69,7 @@ public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnC
 
             noConfigurationTextView.setVisibility(View.GONE);
 
-            actionButton.setText(R.string.configuration_clear_configuration);
+            actionButton.setText(R.string.configuration_set_configuration);
 
             companyIdTextView.setVisibility(View.VISIBLE);
             companyIdTextView.setText(getString(R.string.configuration_company_id, usedeskConfiguration.getCompanyId()));
@@ -101,7 +94,8 @@ public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnC
 
     private void showEmailDialog() {
         if (getFragmentManager().findFragmentByTag(ConfigureUsedeskDialog.class.getSimpleName()) == null) {
-            ConfigureUsedeskDialog.newInstance(this).show(getFragmentManager(), ConfigureUsedeskDialog.class.getSimpleName());
+            ConfigureUsedeskDialog.newInstance(this)
+                    .show(getFragmentManager(), ConfigureUsedeskDialog.class.getSimpleName());
         }
     }
 }

@@ -103,8 +103,10 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
     }
 
     @Override
-    public void onSearchQuery(@NonNull String query) {
-        getViewModel().onSearchQuery(query);
+    public void onSearchQuery(String query) {
+        if (query != null && !query.isEmpty()) {
+            getViewModel().onSearchQuery(query);
+        }
     }
 
     @Override

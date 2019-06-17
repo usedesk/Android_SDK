@@ -1,12 +1,10 @@
 package ru.usedesk.sample.ui.main;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -15,6 +13,7 @@ import android.view.MenuItem;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
+import ru.usedesk.sample.utils.ToolbarHelper;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.ViewCustomizer;
@@ -22,23 +21,15 @@ import ru.usedesk.sdk.external.ui.chat.ChatFragment;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
-import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.BASE;
-import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.HOME;
-import static ru.usedesk.sample.ui.main.MainViewModel.Navigate.INFO;
-import static ru.usedesk.sample.utils.ToolbarHelper.hideSearchButton;
-import static ru.usedesk.sample.utils.ToolbarHelper.hideToolbarUpButton;
-import static ru.usedesk.sample.utils.ToolbarHelper.setToolbar;
-import static ru.usedesk.sample.utils.ToolbarHelper.showSearchButton;
-import static ru.usedesk.sample.utils.ToolbarHelper.showToolbarUpButton;
-
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener,
         IOnUsedeskSupportClickListener {
 
-    private MainViewModel mainViewModel;
-    private SearchView searchView;
+    private ToolbarHelper toolbarHelper;
+    private BottomNavigationView bottomNavigationView;
 
     public MainActivity() {
+        toolbarHelper = new ToolbarHelper(this);
     }
 
     @Override
@@ -47,18 +38,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         initBottomNavigation();
 
-        mainViewModel = ViewModelProviders.of(this)
-                .get(MainViewModel.class);
-
-        mainViewModel.getNavigateLiveData()
-                .observe(this, this::onNavigate);
-
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
         customizeView();
 
-        setToolbar(this);
+        toolbarHelper.setToolbar();
+
+        if (savedInstanceState == null) {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        }
     }
 
     private Fragment getCurrentFragment() {
@@ -74,13 +63,16 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.navigation_home:
-                mainViewModel.onNavigate(HOME);
+                toolbarHelper.update(ToolbarHelper.State.BASE);
+                switchFragment(HomeFragment.newInstance());
                 break;
-            case R.id.knowledge_base:
-                mainViewModel.onNavigate(BASE);
+            case R.id.navigation_base:
+                toolbarHelper.update(ToolbarHelper.State.HOME_SEARCH);
+                switchFragment(KnowledgeBaseFragment.newInstance());
                 break;
             case R.id.navigation_info:
-                mainViewModel.onNavigate(INFO);
+                toolbarHelper.update(ToolbarHelper.State.HOME);
+                switchFragment(InfoFragment.newInstance());
                 break;
             default:
                 return false;
@@ -95,10 +87,10 @@ public class MainActivity extends AppCompatActivity
 
         if (fragment instanceof KnowledgeBaseFragment) {
             if (!((KnowledgeBaseFragment) fragment).onBackPressed()) {
-                mainViewModel.onNavigate(HOME);
+                bottomNavigationView.setSelectedItemId(R.id.navigation_home);
             }
-        } else if (fragment instanceof ChatFragment) {
-            mainViewModel.onNavigate(BASE);
+        } else if (fragment instanceof ChatFragment || fragment instanceof InfoFragment) {
+            bottomNavigationView.setSelectedItemId(R.id.navigation_base);
         } else {
             super.onBackPressed();
         }
@@ -106,28 +98,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSupportClick() {
-        hideSearchButton(searchView);
+        toolbarHelper.update(ToolbarHelper.State.HOME);
         switchFragment(ChatFragment.newInstance());
-    }
-
-    private void onNavigate(@NonNull MainViewModel.Navigate navigate) {
-        switch (navigate) {
-            case HOME:
-                hideToolbarUpButton(this);
-                hideSearchButton(searchView);
-                switchFragment(HomeFragment.newInstance());
-                break;
-            case BASE:
-                showToolbarUpButton(this);
-                showSearchButton(searchView);
-                switchFragment(KnowledgeBaseFragment.newInstance());
-                break;
-            case INFO:
-                showToolbarUpButton(this);
-                hideSearchButton(searchView);
-                switchFragment(InfoFragment.newInstance());
-                break;
-        }
     }
 
     private void customizeView() {
@@ -139,7 +111,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
@@ -157,11 +129,16 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu_with_search, menu);
 
-        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-
         setSearchQueryListener(menu);
 
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        toolbarHelper.setSearchButton(menu.findItem(R.id.action_search));
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     private void setSearchQueryListener(Menu menu) {
@@ -197,5 +174,11 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_frame_layout, fragment)
                 .commit();
+    }
+
+    public enum Navigate {
+        HOME,
+        BASE,
+        INFO
     }
 }

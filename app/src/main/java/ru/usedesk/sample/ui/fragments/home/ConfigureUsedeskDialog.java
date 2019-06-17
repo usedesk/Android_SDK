@@ -9,11 +9,14 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import ru.usedesk.sample.R;
 import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
+import ru.usedesk.sdk.internal.AppSession;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
 
@@ -75,12 +78,23 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                 onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration);
 
                 initKnowledgeBaseConfiguration();
-            }
 
-            dismiss();
+                UsedeskSdk.initChat(getActivity(), configuration, new UsedeskActionListenerRx());
+
+                dismiss();
+            } else {
+                Toast.makeText(getActivity(), "You must set all parameters", Toast.LENGTH_LONG).show();
+            }
         });
 
-        alertDialogBuilder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss());
+        alertDialogBuilder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    if (AppSession.getSession().getUsedeskConfiguration() == null) {
+                        getActivity().finish();
+                    } else {
+                        dismiss();
+                    }
+                }
+        );
 
         return alertDialogBuilder.create();
     }

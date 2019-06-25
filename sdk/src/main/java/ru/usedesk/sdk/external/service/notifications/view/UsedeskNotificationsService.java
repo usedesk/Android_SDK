@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.external.service.notifications;
+package ru.usedesk.sdk.external.service.notifications.view;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,11 +17,13 @@ import javax.inject.Inject;
 import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.external.service.notifications.presenter.NotificationsModel;
+import ru.usedesk.sdk.external.service.notifications.presenter.NotificationsPresenter;
 import ru.usedesk.sdk.internal.appdi.ScopeChat;
 import ru.usedesk.sdk.mvi.MviView;
 import toothpick.Toothpick;
 
-public class UsedeskNotificationsService extends Service implements MviView<NotificationsModel> {
+public abstract class UsedeskNotificationsService extends Service implements MviView<NotificationsModel> {
 
     private static final String NEW_MESSAGES_CHANNEL_ID = "newUsedeskMessages";
     private static final String MESSAGES_FROM_OPERATOR_CHANNEL_TITLE = "Messages from operator";
@@ -30,7 +32,6 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
     NotificationsPresenter notificationsPresenter;
 
     private NotificationManager notificationManager;
-
     private Disposable messagesDisposable;
 
     public UsedeskNotificationsService() {
@@ -50,7 +51,7 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
 
     private void registerNotification() {
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel notificationChannel = new NotificationChannel(NEW_MESSAGES_CHANNEL_ID,
+            NotificationChannel notificationChannel = new NotificationChannel(getChannelId(),
                     getChannelTitle(), NotificationManager.IMPORTANCE_DEFAULT);
 
             notificationChannel.enableLights(true);
@@ -58,6 +59,20 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
 
             notificationManager.createNotificationChannel(notificationChannel);
         }
+    }
+
+    protected NotificationManager getNotificationManager() {
+        return notificationManager;
+    }
+
+    @NonNull
+    protected String getChannelId() {
+        return NEW_MESSAGES_CHANNEL_ID;
+    }
+
+    @NonNull
+    protected String getChannelTitle() {
+        return MESSAGES_FROM_OPERATOR_CHANNEL_TITLE;
     }
 
     @Override
@@ -81,8 +96,10 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
 
     @Override
     public void renderModel(@NonNull NotificationsModel model) {
-        notificationManager.notify(1, createNotification(model));
+        showNotification(createNotification(model));
     }
+
+    protected abstract void showNotification(@NonNull Notification notification);
 
     @Nullable
     protected PendingIntent getContentPendingIntent() {
@@ -95,18 +112,15 @@ public class UsedeskNotificationsService extends Service implements MviView<Noti
     }
 
     @NonNull
-    protected String getChannelTitle() {
-        return MESSAGES_FROM_OPERATOR_CHANNEL_TITLE;
-    }
-
-    @NonNull
     protected Notification createNotification(@NonNull NotificationsModel model) {
-        String title = "Operator: " + model.getMessage().getName();
-        String text = model.getCount() == 1
-                ? "Message: " + model.getMessage().getText()
-                : model.getCount() + " messages";
+        String title = model.getMessage().getName();
+        String text = model.getMessage().getText();
 
-        Notification notification = new NotificationCompat.Builder(this, NEW_MESSAGES_CHANNEL_ID)
+        if (model.getCount() > 1) {
+            title += " (" + model.getCount() + ")";
+        }
+
+        Notification notification = new NotificationCompat.Builder(this, getChannelId())
                 .setSmallIcon(android.R.drawable.ic_dialog_email)
                 .setContentTitle(title)
                 .setContentText(text)

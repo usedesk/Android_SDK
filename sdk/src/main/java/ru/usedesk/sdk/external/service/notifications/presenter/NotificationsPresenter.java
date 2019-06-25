@@ -1,4 +1,4 @@
-package ru.usedesk.sdk.external.service.notifications;
+package ru.usedesk.sdk.external.service.notifications.presenter;
 
 import android.support.annotation.NonNull;
 

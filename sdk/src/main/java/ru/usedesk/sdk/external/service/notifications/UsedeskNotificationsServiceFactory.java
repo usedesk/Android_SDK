@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.external.service.notifications.view.UsedeskNotificationsService;
 
 public class UsedeskNotificationsServiceFactory {
     public void startService(@NonNull Context context, @NonNull UsedeskConfiguration configuration) {

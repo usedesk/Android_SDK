@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import ru.usedesk.sample.R;
@@ -25,6 +26,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private EditText offlineUrlEditText;
     private EditText accountIdEditText;
     private EditText tokenEditText;
+    private Switch foregroundSwitch;
 
     private OnConfigurationUsedeskListener onConfigurationUsedeskListener;
 
@@ -53,6 +55,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         offlineUrlEditText = view.findViewById(R.id.offline_url_edit_text);
         accountIdEditText = view.findViewById(R.id.et_account_id);
         tokenEditText = view.findViewById(R.id.et_token);
+        foregroundSwitch = view.findViewById(R.id.switch_foreground);
 
         //TODO: установите свои значения, если требуется
         companyIdEditText.setText("153712");
@@ -74,7 +77,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                         emailEditText.getText().toString(),
                         urlEditText.getText().toString(),
                         offlineUrlEditText.getText().toString());
-                onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration);
+                onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration, foregroundSwitch.isChecked());
 
                 initKnowledgeBaseConfiguration();
 
@@ -107,6 +110,6 @@ public class ConfigureUsedeskDialog extends DialogFragment {
 
     public interface OnConfigurationUsedeskListener {
 
-        void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration);
+        void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration, boolean foregroundService);
     }
 }

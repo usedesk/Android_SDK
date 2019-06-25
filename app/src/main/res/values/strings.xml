@@ -20,5 +20,6 @@
     <string name="configuration_configure">Configure</string>
     <string name="configuration_set_configuration">Set configuration</string>
     <string name="configuration_offline_url_hint">Enter offline form url</string>
+    <string name="switch_hint">Foreground service</string>
 
 </resources>

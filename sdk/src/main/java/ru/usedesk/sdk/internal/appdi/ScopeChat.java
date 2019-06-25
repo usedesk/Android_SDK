@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
-import ru.usedesk.sdk.external.service.notifications.NotificationsPresenter;
+import ru.usedesk.sdk.external.service.notifications.presenter.NotificationsPresenter;
 import ru.usedesk.sdk.internal.data.framework.api.retrofit.ApiLoader;
 import ru.usedesk.sdk.internal.data.framework.api.retrofit.ApiRetrofit;
 import ru.usedesk.sdk.internal.data.framework.api.standard.HttpApi;

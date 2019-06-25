@@ -2,12 +2,14 @@ package ru.usedesk.sample.service;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import ru.usedesk.sample.ui.main.MainActivity;
-import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsService;
+import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
+import ru.usedesk.sdk.external.service.notifications.view.UsedeskSimpleNotificationsService;
 
-public class CustomNotificationsService extends UsedeskNotificationsService {
+public class CustomSimpleNotificationsService extends UsedeskSimpleNotificationsService {
 
     @Nullable
     @Override
@@ -21,5 +23,13 @@ public class CustomNotificationsService extends UsedeskNotificationsService {
     @Override
     protected PendingIntent getDeletePendingIntent() {
         return null;
+    }
+
+    public static class Factory extends UsedeskNotificationsServiceFactory {
+        @NonNull
+        @Override
+        protected Class<?> getServiceClass() {
+            return CustomSimpleNotificationsService.class;
+        }
     }
 }

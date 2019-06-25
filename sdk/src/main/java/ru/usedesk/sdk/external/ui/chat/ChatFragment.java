@@ -86,7 +86,8 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .stopService(getContext());
 
-        usedeskChat = UsedeskSdk.initChat(getActivity(), AppSession.getSession().getUsedeskConfiguration(), this);
+        usedeskChat = UsedeskSdk.initChat(getContext(),
+                AppSession.getSession().getUsedeskConfiguration(), this);
     }
 
     @Override
@@ -137,8 +138,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @Override
     public void onConnected() {
-        getActivity().runOnUiThread(() ->
-                contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE));
+        getActivity().runOnUiThread(() -> contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE));
     }
 
     @Override
@@ -169,6 +169,7 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
             OfflineFormDialog offlineFormDialog = OfflineFormDialog.newInstance(
                     usedeskChat.getUsedeskConfiguration().getCompanyId(),
                     usedeskChat.getUsedeskConfiguration().getEmail(),
+                    messageEditText.getText().toString(),
                     offlineForm -> usedeskChat.sendOfflineForm(offlineForm));
             offlineFormDialog.show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
         }
@@ -301,15 +302,15 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
         bottomSheetView.findViewById(R.id.pick_photo_button)
                 .setOnClickListener(view -> {
-            bottomSheetDialog.dismiss();
-            onPickPhotoClicked();
-        });
+                    bottomSheetDialog.dismiss();
+                    onPickPhotoClicked();
+                });
 
         bottomSheetView.findViewById(R.id.pick_document_button)
                 .setOnClickListener(view -> {
-            bottomSheetDialog.dismiss();
-            onPickDocumentClicked();
-        });
+                    bottomSheetDialog.dismiss();
+                    onPickDocumentClicked();
+                });
 
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
@@ -346,8 +347,8 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
     }
 
     private void showError(int messageResId) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
-        alertBuilder.setTitle(R.string.error)
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.error)
                 .setMessage(messageResId)
                 .setPositiveButton(android.R.string.ok, null)
                 .show();

@@ -22,17 +22,19 @@ public class OfflineFormDialog extends DialogFragment {
 
     private String companyId;
     private String email;
+    private String message;
 
     private OnOfflineFormSetListener onOfflineFormSetListener;
 
     public OfflineFormDialog() {
     }
 
-    public static OfflineFormDialog newInstance(String companyId, String email,
+    public static OfflineFormDialog newInstance(String companyId, String email, String message,
                                                 OnOfflineFormSetListener onOfflineFormSetListener) {
         OfflineFormDialog dialogFragment = new OfflineFormDialog();
         dialogFragment.companyId = companyId;
         dialogFragment.email = email;
+        dialogFragment.message = message;
         dialogFragment.onOfflineFormSetListener = onOfflineFormSetListener;
         return dialogFragment;
     }
@@ -54,6 +56,7 @@ public class OfflineFormDialog extends DialogFragment {
 
         companyIdEditText.setText(companyId);
         emailEditText.setText(email);
+        messageEditText.setText(message);
 
         alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             boolean companyIdEntered = !TextUtils.isEmpty(companyIdEditText.getText());

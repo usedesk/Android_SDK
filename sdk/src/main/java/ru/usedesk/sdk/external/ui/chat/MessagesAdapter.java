@@ -1,6 +1,7 @@
 package ru.usedesk.sdk.external.ui.chat;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -39,8 +40,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
 
-    public MessagesAdapter(Context context, List<Message> messages,
-                           ChatFeedbackListener chatFeedbackListener) {
+    MessagesAdapter(Context context, List<Message> messages,
+                    ChatFeedbackListener chatFeedbackListener) {
         this.context = context;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
@@ -48,7 +49,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @NonNull
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         switch (viewType) {
@@ -74,15 +76,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 return new ItemOperatorFeedbackMessageHolder(layoutInflater.inflate(
                         R.layout.usedesk_item_operator_feedback_message, parent, false));
             case TYPE_SERVICE_TEXT:
+            default:
                 return new ItemServiceTextMessageHolder(layoutInflater.inflate(
                         R.layout.usedesk_item_service_text_message, parent, false));
         }
-
-        return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final Message message = messages.get(position);
 
         BaseItemMessageHolder baseItemMessageHolder = (BaseItemMessageHolder) holder;

@@ -1,21 +1,25 @@
 package ru.usedesk.sdk.internal.utils;
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 public class ImageUtils {
 
     private ImageUtils() {
     }
 
-    public static void checkForDisplayImage(ImageView imageImageView, String pictureUrl, int errorResId) {
+    public static void checkForDisplayImage(@NonNull ImageView imageImageView,
+                                            @NonNull String pictureUrl, int errorResId) {
         if (!TextUtils.isEmpty(pictureUrl)) {
             GlideApp.with(imageImageView)
                     .load(pictureUrl)
@@ -26,24 +30,29 @@ public class ImageUtils {
         }
     }
 
-    public static void checkForDisplayImage(ImageView imageImageView, final ProgressBar progressBar,
-                                            String pictureUrl) {
+    public static void checkForDisplayImage(@NonNull ImageView imageImageView,
+                                            @NonNull ProgressBar progressBar,
+                                            @NonNull String pictureUrl) {
         if (!TextUtils.isEmpty(pictureUrl)) {
             GlideApp.with(imageImageView)
                     .load(pictureUrl)
-                    .into(new SimpleTarget<Drawable>() {
+                    .listener(new RequestListener<Drawable>() {
                         @Override
-                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Drawable> target, boolean isFirstResource) {
                             hideProgress(progressBar);
+                            return false;
                         }
 
                         @Override
-                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                            super.onLoadFailed(errorDrawable);
-
+                        public boolean onResourceReady(Drawable resource, Object model,
+                                                       Target<Drawable> target, DataSource dataSource,
+                                                       boolean isFirstResource) {
                             hideProgress(progressBar);
+                            return false;
                         }
-                    });
+                    })
+                    .into(imageImageView);
 
         } else {
             hideProgress(progressBar);

@@ -98,6 +98,9 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
+
+        messages.clear();
+        messagesAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -127,13 +130,6 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
                 sendImageButton.setEnabled(true);
             }
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        ChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @Override
@@ -314,6 +310,13 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        ChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     public void onPickPhotoClicked() {

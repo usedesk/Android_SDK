@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,9 +25,6 @@ import android.widget.ViewSwitcher;
 import java.util.ArrayList;
 import java.util.List;
 
-import droidninja.filepicker.FilePickerBuilder;
-import droidninja.filepicker.FilePickerConst;
-import droidninja.filepicker.fragments.BaseFragment;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
@@ -37,17 +35,19 @@ import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.AppSession;
-import ru.usedesk.sdk.internal.utils.AttachmentUtils;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
-public class ChatFragment extends BaseFragment implements UsedeskActionListener {
+public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     private static final int MAX_MESSAGE_LENGTH = 10000;
     private static final int MAX_FILES = 3;
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
+
+    private static final int REQUEST_CODE_PHOTO = 10301;
+    private static final int REQUEST_CODE_DOCUMENT = 10302;
 
     private ViewSwitcher contentViewSwitcher;
     private RecyclerView messagesRecyclerView;
@@ -109,19 +109,19 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
         if (resultCode == Activity.RESULT_OK && data != null) {
             switch (requestCode) {
-                case FilePickerConst.REQUEST_CODE_PHOTO:
-                    ArrayList<String> photoPaths = new ArrayList<>(
+                case REQUEST_CODE_PHOTO:
+                    /*ArrayList<String> photoPaths = new ArrayList<>(
                             data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
                     if (!photoPaths.isEmpty()) {
                         usedeskFiles = AttachmentUtils.createUsedeskFiles(photoPaths);
-                    }
+                    }*/
                     break;
-                case FilePickerConst.REQUEST_CODE_DOC:
-                    ArrayList<String> documentPaths = new ArrayList<>(
+                case REQUEST_CODE_DOCUMENT:
+                    /*ArrayList<String> documentPaths = new ArrayList<>(
                             data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
                     if (!documentPaths.isEmpty()) {
                         usedeskFiles = AttachmentUtils.createUsedeskFiles(documentPaths);
-                    }
+                    }*/
                     break;
             }
 
@@ -325,10 +325,11 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickPhoto() {
-        FilePickerBuilder.getInstance()
-                .setMaxCount(MAX_FILES)
-                .setSelectedFiles(new ArrayList<>())
-                .pickPhoto(this);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_CODE_PHOTO);
     }
 
     public void onPickDocumentClicked() {
@@ -337,10 +338,11 @@ public class ChatFragment extends BaseFragment implements UsedeskActionListener 
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickDocument() {
-        FilePickerBuilder.getInstance()
-                .setMaxCount(MAX_FILES)
-                .setSelectedFiles(new ArrayList<>())
-                .pickFile(this);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setType("*/*");
+        startActivityForResult(intent, REQUEST_CODE_PHOTO);
     }
 
     private void scrollToBottom() {

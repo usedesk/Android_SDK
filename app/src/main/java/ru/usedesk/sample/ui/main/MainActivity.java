@@ -175,10 +175,4 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.container_frame_layout, fragment)
                 .commit();
     }
-
-    public enum Navigate {
-        HOME,
-        BASE,
-        INFO
-    }
 }

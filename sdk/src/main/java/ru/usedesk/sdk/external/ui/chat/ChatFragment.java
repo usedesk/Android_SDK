@@ -42,7 +42,6 @@ import ru.usedesk.sdk.internal.utils.NetworkUtils;
 public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     private static final int MAX_MESSAGE_LENGTH = 10000;
-    private static final int MAX_FILES = 3;
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
@@ -216,13 +215,13 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
 
         messages = new ArrayList<>();
-        messagesAdapter = new MessagesAdapter(getActivity(), messages, feedback -> sendFeedback(feedback));
+        messagesAdapter = new MessagesAdapter(getActivity(), messages, this::sendFeedback);
         messagesRecyclerView.setAdapter(messagesAdapter);
 
         messagesRecyclerView.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     if (bottom < oldBottom) {
-                        messagesRecyclerView.postDelayed(() -> scrollToBottom(), 100);
+                        messagesRecyclerView.postDelayed(this::scrollToBottom, 100);
                     }
                 });
     }

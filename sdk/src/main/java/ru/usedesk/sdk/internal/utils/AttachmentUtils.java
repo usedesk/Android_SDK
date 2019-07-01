@@ -1,12 +1,18 @@
 package ru.usedesk.sdk.internal.utils;
 
+import android.content.ClipData;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.webkit.MimeTypeMap;
 
+import com.annimon.stream.Stream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +23,9 @@ public class AttachmentUtils {
 
     private static final String CONTENT_FORMAT = "data:%1s;base64,%2s";
 
-    private AttachmentUtils() {
-    }
-
-    public static String convertToBase64(String filePath) {
-        File file = new File(filePath);
-        InputStream inputStream;
-        String encodedFile = "";
-        String lastVal;
-        try {
-            inputStream = new FileInputStream(file.getAbsolutePath());
-
+    @NonNull
+    private static String convertToBase64(@NonNull Context context, @NonNull Uri uri) {
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
             byte[] buffer = new byte[10240];//specify the size to allow
             int bytesRead;
             ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -37,48 +35,63 @@ public class AttachmentUtils {
                 output64.write(buffer, 0, bytesRead);
             }
 
-            output64.close();
-
-            encodedFile = output.toString();
+            return output.toString();
         } catch (Exception e) {
             LogUtils.LOGE(AttachmentUtils.class.getSimpleName(), e);
         }
 
-        lastVal = encodedFile;
-
-        return lastVal;
+        return "";
     }
 
-    public static List<UsedeskFile> createUsedeskFiles(ArrayList<String> paths) {
-        List<UsedeskFile> usedeskFiles = new ArrayList<>();
-
-        for (String path : paths) {
-            if (path != null) {
-                usedeskFiles.add(createUsedeskFile(path));
+    @NonNull
+    private static List<Uri> getUriList(@NonNull Intent data) {
+        Uri uri = data.getData();//single file
+        if (uri != null) {
+            List<Uri> uriList = new ArrayList<>(1);
+            uriList.add(uri);
+            return uriList;
+        } else {
+            ClipData clipData = data.getClipData();//list of files
+            if (clipData != null) {
+                List<Uri> uriList = new ArrayList<>(clipData.getItemCount());
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    ClipData.Item item = clipData.getItemAt(i);
+                    uri = item.getUri();
+                    if (uri != null) {
+                        uriList.add(uri);
+                    }
+                }
+                return uriList;
             }
         }
-
-        return usedeskFiles;
+        return new ArrayList<>();
     }
 
-    public static UsedeskFile createUsedeskFile(String path) {
-        File file = new File(path);
-        String fileMimeType = getMimeType(path);
+    private static String getMimeType(String path) {
+        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+        if (extension != null) {
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return null;
+    }
+
+    @NonNull
+    private static UsedeskFile createUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
+        File file = new File(uri.getPath());
+        String fileMimeType = getMimeType(uri.getPath());
 
         UsedeskFile usedeskFile = new UsedeskFile();
         usedeskFile.setName(file.getName());
-        usedeskFile.setContent(String.format(CONTENT_FORMAT, fileMimeType, convertToBase64(path)));
+        usedeskFile.setContent(String.format(CONTENT_FORMAT, fileMimeType, convertToBase64(context, uri)));
         usedeskFile.setType(fileMimeType);
 
         return usedeskFile;
     }
 
-    private static String getMimeType(String path) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-        if (extension != null) {
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-        return type;
+    @NonNull
+    public static List<UsedeskFile> getUsedeskFiles(@NonNull Context context, @NonNull Intent data) {
+        return Stream.of(getUriList(data))
+                .map(uri -> AttachmentUtils.createUsedeskFile(context, uri))
+                .toList();
     }
 }

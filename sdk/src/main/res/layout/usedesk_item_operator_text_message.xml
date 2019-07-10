@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginBottom="@dimen/chat_operator_text_message_margin_bottom"
-                android:layout_marginLeft="@dimen/chat_operator_text_message_margin_left"
+                android:layout_marginStart="@dimen/chat_operator_text_message_margin_left"
                 android:autoLink="web"
                 android:background="@drawable/operator_bubble"
                 android:textAppearance="?android:attr/textAppearanceMedium"

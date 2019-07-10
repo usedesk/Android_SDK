@@ -8,8 +8,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
 
-import java.util.List;
-
 public class Message {
 
     private String id;
@@ -19,7 +17,7 @@ public class Message {
     private String createdAt;
     private String name;
     private Object chat;
-    private List<String> messageButtons;
+    private MessageWithButtons messageWithButtons;
 
     @SerializedName(Constants.KEY_FILE)
     private UsedeskFile usedeskFile;
@@ -37,7 +35,10 @@ public class Message {
 
     @NonNull
     public MessageWithButtons getMessageWithButtons() {
-        return new MessageWithButtons(text);
+        if (messageWithButtons == null) {
+            messageWithButtons = new MessageWithButtons(text);
+        }
+        return messageWithButtons;
     }
 
     public String getId() {
@@ -65,7 +66,7 @@ public class Message {
     }
 
     public String getText() {
-        return text;
+        return getMessageWithButtons().getText();
     }
 
     public void setText(String text) {
@@ -102,14 +103,6 @@ public class Message {
 
     public void setUsedeskFile(UsedeskFile usedeskFile) {
         this.usedeskFile = usedeskFile;
-    }
-
-    public List<String> getMessageButtons() {
-        return messageButtons;
-    }
-
-    public void setMessageButtons(List<String> messageButtons) {
-        this.messageButtons = messageButtons;
     }
 
     public Object getPayloadAsObject() {

@@ -55,10 +55,17 @@ public class MessageButtons {
                     .replace("}}", "")
                     .split(";");
 
-            this.text = sections[0];
-            this.url = sections[1];
-            this.type = sections[2];
-            this.show = sections[3].equals("show");
+            if (sections.length == 4) {
+                this.text = sections[0];
+                this.url = sections[1];
+                this.type = sections[2];
+                this.show = sections[3].equals("show");
+            } else {
+                this.text = "";
+                this.url = "";
+                this.type = "";
+                this.show = true;
+            }
         }
 
         @NonNull

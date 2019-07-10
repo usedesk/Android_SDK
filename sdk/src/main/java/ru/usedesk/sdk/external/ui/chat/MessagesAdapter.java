@@ -35,14 +35,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static final int TYPE_SERVICE_TEXT = 3;
 
-    private Context context;
     private List<Message> messages;
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
 
     MessagesAdapter(Context context, List<Message> messages,
                     ChatFeedbackListener chatFeedbackListener) {
-        this.context = context;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
         downloadUtils = new DownloadUtils(context);
@@ -51,7 +49,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
             case TYPE_USER_TEXT:

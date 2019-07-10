@@ -1,10 +1,14 @@
 package ru.usedesk.sdk.external.entity.chat;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
+
+import java.util.List;
 
 public class Message {
 
@@ -15,6 +19,7 @@ public class Message {
     private String createdAt;
     private String name;
     private Object chat;
+    private List<String> messageButtons;
 
     @SerializedName(Constants.KEY_FILE)
     private UsedeskFile usedeskFile;
@@ -28,6 +33,11 @@ public class Message {
     public Message(MessageType type, String text) {
         this(type);
         this.text = text;
+    }
+
+    @NonNull
+    public MessageWithButtons getMessageWithButtons() {
+        return new MessageWithButtons(text);
     }
 
     public String getId() {
@@ -92,6 +102,14 @@ public class Message {
 
     public void setUsedeskFile(UsedeskFile usedeskFile) {
         this.usedeskFile = usedeskFile;
+    }
+
+    public List<String> getMessageButtons() {
+        return messageButtons;
+    }
+
+    public void setMessageButtons(List<String> messageButtons) {
+        this.messageButtons = messageButtons;
     }
 
     public Object getPayloadAsObject() {

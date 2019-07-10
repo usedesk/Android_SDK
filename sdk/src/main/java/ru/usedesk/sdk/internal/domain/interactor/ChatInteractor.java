@@ -1,6 +1,8 @@
 package ru.usedesk.sdk.internal.domain.interactor;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -12,6 +14,7 @@ import javax.inject.Inject;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
+import ru.usedesk.sdk.external.entity.chat.MessageButtons;
 import ru.usedesk.sdk.external.entity.chat.MessageType;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
 import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
@@ -273,5 +276,15 @@ public class ChatInteractor {
 
         setSocket();
         connect();
+    }
+
+    public void onClickButtonWidget(@NonNull MessageButtons.MessageButton messageButton) {
+        if (messageButton.getUrl().isEmpty()) {
+            sendMessage(messageButton.getText(), null);
+        } else {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));
+            browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(browserIntent);
+        }
     }
 }

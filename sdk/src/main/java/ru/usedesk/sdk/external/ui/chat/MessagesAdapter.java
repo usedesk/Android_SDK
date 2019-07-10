@@ -13,15 +13,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.ChatFeedbackListener;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.MessageWithButtons;
+import ru.usedesk.sdk.external.entity.chat.MessageButtons;
 import ru.usedesk.sdk.internal.utils.DownloadUtils;
 import ru.usedesk.sdk.internal.utils.ImageUtils;
 import ru.usedesk.sdk.internal.utils.TimeUtils;
@@ -311,19 +311,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         void bind(Message message) {
-            MessageWithButtons messageWithButtons = message.getMessageWithButtons();
-            //layoutButtons.removeAllViewsInLayout();
+            MessageButtons messageButtons = message.getMessageButtons();
             layoutButtons.removeAllViews();
-            if (messageWithButtons.getText() != null) {
-                textTextView.setText(messageWithButtons.getText());
+            if (messageButtons.getMessageText() != null) {
+                textTextView.setText(messageButtons.getMessageText());
 
-                for (String messageButton : messageWithButtons.getButtons()) {
+                for (MessageButtons.MessageButton messageButton : messageButtons.getMessageButtons()) {
                     Button button = new Button(layoutButtons.getContext());
 
-                    button.setText(messageButton);
-                    button.setOnClickListener(v -> {
-                        Toast.makeText(v.getContext(), messageButton, Toast.LENGTH_SHORT).show();
-                    });
+                    button.setText(messageButton.getText());
+                    button.setOnClickListener(v ->
+                            UsedeskSdk.getChat().onClickButtonWidget(messageButton));
 
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

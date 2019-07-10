@@ -17,7 +17,7 @@ public class Message {
     private String createdAt;
     private String name;
     private Object chat;
-    private MessageWithButtons messageWithButtons;
+    private MessageButtons messageButtons;
 
     @SerializedName(Constants.KEY_FILE)
     private UsedeskFile usedeskFile;
@@ -34,11 +34,11 @@ public class Message {
     }
 
     @NonNull
-    public MessageWithButtons getMessageWithButtons() {
-        if (messageWithButtons == null) {
-            messageWithButtons = new MessageWithButtons(text);
+    public MessageButtons getMessageButtons() {
+        if (messageButtons == null) {
+            messageButtons = new MessageButtons(text);
         }
-        return messageWithButtons;
+        return messageButtons;
     }
 
     public String getId() {
@@ -66,7 +66,7 @@ public class Message {
     }
 
     public String getText() {
-        return getMessageWithButtons().getText();
+        return getMessageButtons().getMessageText();
     }
 
     public void setText(String text) {

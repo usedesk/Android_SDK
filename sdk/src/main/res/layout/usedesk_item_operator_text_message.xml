@@ -63,6 +63,14 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:text="Text" />
 
+            <LinearLayout
+                android:id="@+id/layout_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="@dimen/chat_operator_text_message_margin_left"
+                android:orientation="vertical" />
+
         </LinearLayout>
 
     </LinearLayout>

@@ -325,7 +325,8 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     private void scrollToBottom() {
         if (!messages.isEmpty()) {
-            messagesRecyclerView.smoothScrollToPosition(messagesAdapter.getItemCount() - 1);
+            messagesRecyclerView.post(() ->
+                    messagesRecyclerView.scrollToPosition(messagesAdapter.getItemCount() - 1));
         }
     }
 

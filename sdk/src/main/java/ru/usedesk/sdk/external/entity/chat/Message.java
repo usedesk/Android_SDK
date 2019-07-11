@@ -1,5 +1,7 @@
 package ru.usedesk.sdk.external.entity.chat;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -15,6 +17,7 @@ public class Message {
     private String createdAt;
     private String name;
     private Object chat;
+    private MessageButtons messageButtons;
 
     @SerializedName(Constants.KEY_FILE)
     private UsedeskFile usedeskFile;
@@ -28,6 +31,14 @@ public class Message {
     public Message(MessageType type, String text) {
         this(type);
         this.text = text;
+    }
+
+    @NonNull
+    public MessageButtons getMessageButtons() {
+        if (messageButtons == null) {
+            messageButtons = new MessageButtons(text);
+        }
+        return messageButtons;
     }
 
     public String getId() {
@@ -55,7 +66,7 @@ public class Message {
     }
 
     public String getText() {
-        return text;
+        return getMessageButtons().getMessageText();
     }
 
     public void setText(String text) {

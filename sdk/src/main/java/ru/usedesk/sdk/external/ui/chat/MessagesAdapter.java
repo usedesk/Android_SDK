@@ -7,17 +7,21 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
 
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.ChatFeedbackListener;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
+import ru.usedesk.sdk.external.entity.chat.MessageButtons;
 import ru.usedesk.sdk.internal.utils.DownloadUtils;
 import ru.usedesk.sdk.internal.utils.ImageUtils;
 import ru.usedesk.sdk.internal.utils.TimeUtils;
@@ -35,14 +39,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static final int TYPE_SERVICE_TEXT = 3;
 
-    private Context context;
     private List<Message> messages;
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
 
     MessagesAdapter(Context context, List<Message> messages,
                     ChatFeedbackListener chatFeedbackListener) {
-        this.context = context;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
         downloadUtils = new DownloadUtils(context);
@@ -51,7 +53,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
             case TYPE_USER_TEXT:
@@ -132,11 +134,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
                 break;
             case TYPE_OPERATOR_TEXT:
-                ItemOperatorTextMessageHolder itemOperatorTextMessageHolder = (ItemOperatorTextMessageHolder) holder;
-                itemOperatorTextMessageHolder.textTextView.setText(message.getText());
-                itemOperatorTextMessageHolder.nameTextView.setText(message.getName());
-
-                checkForDisplayImageOperatorAvatar(message, itemOperatorTextMessageHolder.iconImageView);
+                ((ItemOperatorTextMessageHolder) holder).bind(message);
                 break;
             case TYPE_OPERATOR_FILE:
                 ItemOperatorFileMessageHolder itemOperatorFileMessageHolder = (ItemOperatorFileMessageHolder) holder;
@@ -303,11 +301,40 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         ImageView iconImageView;
         TextView nameTextView;
+        LinearLayout layoutButtons;
 
         ItemOperatorTextMessageHolder(View itemView) {
             super(itemView);
             iconImageView = itemView.findViewById(R.id.icon_image_view);
             nameTextView = itemView.findViewById(R.id.name_text_view);
+            layoutButtons = itemView.findViewById(R.id.layout_buttons);
+        }
+
+        void bind(Message message) {
+            MessageButtons messageButtons = message.getMessageButtons();
+            layoutButtons.removeAllViews();
+            if (messageButtons.getMessageText() != null) {
+                textTextView.setText(messageButtons.getMessageText());
+
+                for (MessageButtons.MessageButton messageButton : messageButtons.getMessageButtons()) {
+                    Button button = new Button(layoutButtons.getContext());
+
+                    button.setText(messageButton.getText());
+                    button.setOnClickListener(v ->
+                            UsedeskSdk.getChat().onClickButtonWidget(messageButton));
+
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                    layoutButtons.addView(button, layoutParams);
+                }
+
+            } else {
+                textTextView.setText(message.getText());
+            }
+            nameTextView.setText(message.getName());
+
+            checkForDisplayImageOperatorAvatar(message, iconImageView);
         }
     }
 

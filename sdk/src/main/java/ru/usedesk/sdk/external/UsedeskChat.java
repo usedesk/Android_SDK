@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.external.entity.chat.Feedback;
+import ru.usedesk.sdk.external.entity.chat.MessageButtons;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
@@ -61,5 +62,9 @@ public class UsedeskChat {
 
     public UsedeskConfiguration getUsedeskConfiguration() {
         return chatInteractor.getUsedeskConfiguration();
+    }
+
+    public void onClickButtonWidget(@NonNull MessageButtons.MessageButton messageButton) {
+        chatInteractor.onClickButtonWidget(messageButton);
     }
 }

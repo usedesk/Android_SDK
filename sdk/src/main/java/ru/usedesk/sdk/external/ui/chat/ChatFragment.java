@@ -35,7 +35,6 @@ import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.AppSession;
-import ru.usedesk.sdk.internal.utils.AttachmentUtils;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
@@ -45,12 +44,6 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
-
-    private static final int REQUEST_CODE_PHOTO = 10301;
-    private static final int REQUEST_CODE_DOCUMENT = 10302;
-
-    private static final String MIME_TYPE_ALL_IMAGES = "image/*";
-    private static final String MIME_TYPE_ALL_DOCS = "*/*";
 
     private ViewSwitcher contentViewSwitcher;
     private RecyclerView messagesRecyclerView;
@@ -64,6 +57,8 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     private List<UsedeskFile> usedeskFiles;
 
+    private FilePicker filePicker;
+
     public static ChatFragment newInstance() {
         return new ChatFragment();
     }
@@ -71,6 +66,8 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        filePicker = new FilePicker();
     }
 
     @Override
@@ -109,15 +106,13 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-            switch (requestCode) {
-                case REQUEST_CODE_DOCUMENT:
-                case REQUEST_CODE_PHOTO: {
-                    usedeskFiles = AttachmentUtils.getUsedeskFiles(getContext(), data);
-                    if (usedeskFiles.size() > 0) {
-                        attachmentMarkerTextView.setVisibility(View.VISIBLE);
-                        sendImageButton.setEnabled(true);
-                    }
-                    break;
+
+            List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
+            if (selectedUsedeskFiles != null) {
+                usedeskFiles = selectedUsedeskFiles;
+                if (usedeskFiles.size() > 0) {
+                    attachmentMarkerTextView.setVisibility(View.VISIBLE);
+                    sendImageButton.setEnabled(true);
                 }
             }
         }
@@ -303,14 +298,6 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         bottomSheetDialog.show();
     }
 
-    private void pickFile(@NonNull String mimeType, int requestCode) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setType(mimeType);
-        startActivityForResult(intent, requestCode);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -324,7 +311,7 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickPhoto() {
-        pickFile(MIME_TYPE_ALL_IMAGES, REQUEST_CODE_PHOTO);
+        filePicker.pickImage(getActivity());
     }
 
     public void onPickDocumentClicked() {
@@ -333,12 +320,13 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickDocument() {
-        pickFile(MIME_TYPE_ALL_DOCS, REQUEST_CODE_DOCUMENT);
+        filePicker.pickDocument(getActivity());
     }
 
     private void scrollToBottom() {
         if (!messages.isEmpty()) {
-            messagesRecyclerView.smoothScrollToPosition(messagesAdapter.getItemCount() - 1);
+            messagesRecyclerView.post(() ->
+                    messagesRecyclerView.scrollToPosition(messagesAdapter.getItemCount() - 1));
         }
     }
 

@@ -200,7 +200,7 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
         sendImageButton = view.findViewById(R.id.send_image_view);
         sendImageButton.setEnabled(false);
-        sendImageButton.setOnClickListener(view12 -> attemptSend());
+        sendImageButton.setOnClickListener(v -> attemptSend());
 
         attachmentMarkerTextView = view.findViewById(R.id.attachment_marker_text_view);
     }
@@ -311,7 +311,7 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickPhoto() {
-        filePicker.pickImage(getActivity());
+        filePicker.pickImage(this);
     }
 
     public void onPickDocumentClicked() {
@@ -320,7 +320,7 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickDocument() {
-        filePicker.pickDocument(getActivity());
+        filePicker.pickDocument(this);
     }
 
     private void scrollToBottom() {

@@ -1,13 +1,13 @@
 package ru.usedesk.sdk.internal.utils;
 
 import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Base64OutputStream;
-import android.webkit.MimeTypeMap;
 
 import com.annimon.stream.Stream;
 
@@ -67,23 +67,20 @@ public class AttachmentUtils {
         return new ArrayList<>();
     }
 
-    private static String getMimeType(String path) {
-        String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-        if (extension != null) {
-            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        }
-        return null;
+    private static String getMimeType(@NonNull Context context, @NonNull Uri uri) {
+        ContentResolver contentResolver = context.getContentResolver();
+        return contentResolver.getType(uri);
     }
 
     @NonNull
     private static UsedeskFile createUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
         File file = new File(uri.getPath());
-        String fileMimeType = getMimeType(uri.getPath());
+        String mimeType = getMimeType(context, uri);
 
         UsedeskFile usedeskFile = new UsedeskFile();
         usedeskFile.setName(file.getName());
-        usedeskFile.setContent(String.format(CONTENT_FORMAT, fileMimeType, convertToBase64(context, uri)));
-        usedeskFile.setType(fileMimeType);
+        usedeskFile.setContent(String.format(CONTENT_FORMAT, mimeType, convertToBase64(context, uri)));
+        usedeskFile.setType(mimeType);
 
         return usedeskFile;
     }

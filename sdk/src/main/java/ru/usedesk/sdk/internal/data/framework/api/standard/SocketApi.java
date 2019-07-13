@@ -144,7 +144,7 @@ public class SocketApi {
 
         try {
             JSONObject jsonObject = new JSONObject(gson.toJson(baseRequest));
-            LogUtils.LOGD(TAG, "emitAction(). request = " + jsonObject);
+            //LogUtils.LOGD(TAG, "emitAction(). request = " + jsonObject);
 
             socket.emit(Constants.EVENT_SERVER_ACTION, jsonObject);
         } catch (JSONException e) {

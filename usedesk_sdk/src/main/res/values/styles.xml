@@ -1,0 +1,61 @@
+<resources>
+
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="ToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <style name="ChatButtonStyle">
+        <item name="android:layout_width">?attr/listPreferredItemHeightSmall</item>
+        <item name="android:layout_height">?attr/listPreferredItemHeightSmall</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="ChatAttachmentButtonStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="ChatUserTextMessageStyle">
+        <item name="android:paddingBottom">@dimen/chat_user_text_message_padding_bottom</item>
+        <item name="android:paddingLeft">@dimen/chat_user_text_message_padding_left</item>
+        <item name="android:paddingRight">@dimen/chat_user_text_message_padding_right</item>
+        <item name="android:paddingTop">@dimen/chat_user_text_message_padding_top</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="ChatOperatorTextMessageStyle">
+        <item name="android:paddingBottom">@dimen/chat_operator_text_message_padding_bottom</item>
+        <item name="android:paddingLeft">@dimen/chat_operator_text_message_padding_left</item>
+        <item name="android:paddingRight">@dimen/chat_operator_text_message_padding_right</item>
+        <item name="android:paddingTop">@dimen/chat_operator_text_message_padding_top</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="ChatTimeHeaderStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+</resources>

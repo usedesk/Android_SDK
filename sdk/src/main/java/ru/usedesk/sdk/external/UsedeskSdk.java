@@ -28,14 +28,6 @@ public class UsedeskSdk {
                     usedeskConfiguration, usedeskActionListener);
         }
 
-        /*Observable.interval(5, 5, TimeUnit.SECONDS)
-                .map(aLong -> new Message(OPERATOR_TO_CLIENT, "Ok"))
-                .map(message -> {
-                    message.setOperator("Виталий");
-                    return message;
-                })
-                .subscribe(usedeskActionListener::onMessageReceived);*/
-
         return usedeskChatBox.usedeskChat;
     }
 

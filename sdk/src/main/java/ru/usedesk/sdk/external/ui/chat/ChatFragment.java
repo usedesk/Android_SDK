@@ -28,13 +28,13 @@ import java.util.List;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.internal.AppSession;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions

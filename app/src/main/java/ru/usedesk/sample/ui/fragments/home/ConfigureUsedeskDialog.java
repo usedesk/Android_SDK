@@ -13,10 +13,10 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import ru.usedesk.sample.R;
+import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.internal.AppSession;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
 

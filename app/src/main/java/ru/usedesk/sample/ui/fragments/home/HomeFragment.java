@@ -12,9 +12,9 @@ import android.widget.TextView;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
+import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.internal.AppSession;
 
 public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnConfigurationUsedeskListener {
 

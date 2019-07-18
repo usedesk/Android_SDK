@@ -29,7 +29,7 @@ public class UsedeskChat {
         chatInteractor.init(configuration, actionListener);
     }
 
-    public void destroy() {
+    void destroy() {
         if (chatInteractor != null) {
             chatInteractor.disconnect();
         }

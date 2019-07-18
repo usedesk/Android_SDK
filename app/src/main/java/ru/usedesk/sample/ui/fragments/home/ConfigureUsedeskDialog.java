@@ -1,6 +1,9 @@
 package ru.usedesk.sample.ui.fragments.home;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -19,6 +22,15 @@ import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 
 public class ConfigureUsedeskDialog extends DialogFragment {
+
+    private static final String APP_CONFIGURATION_PREF = "AppConfigure";
+    private static final String COMPANY_ID_KEY = "companyId";
+    private static final String EMAIL_KEY = "email";
+    private static final String URL_KEY = "url";
+    private static final String OFFLINE_URL_KEY = "offlineUrl";
+    private static final String ACCOUNT_ID_KEY = "accountId";
+    private static final String TOKEN_KEY = "token";
+    private static final String FOREGROUND_KEY = "foreground";
 
     private EditText companyIdEditText;
     private EditText emailEditText;
@@ -58,34 +70,27 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         foregroundSwitch = view.findViewById(R.id.switch_foreground);
 
         //TODO: установите свои значения, если требуется
-        companyIdEditText.setText("153712");
-        emailEditText.setText("android_sdk@usedesk.ru");
-        urlEditText.setText("https://pubsub.usedesk.ru:1992");
-        offlineUrlEditText.setText("https://secure.usedesk.ru");
-        accountIdEditText.setText("4");
-        tokenEditText.setText("11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(APP_CONFIGURATION_PREF,
+                Context.MODE_PRIVATE);
 
-        alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            boolean companyIdEntered = !TextUtils.isEmpty(companyIdEditText.getText());
-            boolean emailEntered = !TextUtils.isEmpty(emailEditText.getText());
-            boolean urlEntered = !TextUtils.isEmpty(urlEditText.getText());
-            boolean offlineUrlEntered = !TextUtils.isEmpty(offlineUrlEditText.getText());
 
-            if (companyIdEntered && emailEntered && urlEntered && offlineUrlEntered) {
-                UsedeskConfiguration configuration = new UsedeskConfiguration(
-                        companyIdEditText.getText().toString(),
-                        emailEditText.getText().toString(),
-                        urlEditText.getText().toString(),
-                        offlineUrlEditText.getText().toString());
-                onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration, foregroundSwitch.isChecked());
+        String companyId = sharedPreferences.getString(COMPANY_ID_KEY, "153712");
+        String email = sharedPreferences.getString(EMAIL_KEY, "android_sdk@usedesk.ru");
+        String url = sharedPreferences.getString(URL_KEY, "https://pubsub.usedesk.ru:1992");
+        String offlineUrl = sharedPreferences.getString(OFFLINE_URL_KEY, "https://secure.usedesk.ru");
+        String accountId = sharedPreferences.getString(ACCOUNT_ID_KEY, "4");
+        String token = sharedPreferences.getString(TOKEN_KEY, "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
+        boolean foreground = sharedPreferences.getBoolean(FOREGROUND_KEY, true);
 
-                initKnowledgeBaseConfiguration();
+        companyIdEditText.setText(companyId);
+        emailEditText.setText(email);
+        urlEditText.setText(url);
+        offlineUrlEditText.setText(offlineUrl);
+        accountIdEditText.setText(accountId);
+        tokenEditText.setText(token);
+        foregroundSwitch.setChecked(foreground);
 
-                dismiss();
-            } else {
-                Toast.makeText(getActivity(), "You must set all parameters", Toast.LENGTH_LONG).show();
-            }
-        });
+        alertDialogBuilder.setPositiveButton(android.R.string.ok, this::onAcceptClick);
 
         alertDialogBuilder.setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                     if (AppSession.getSession().getUsedeskConfiguration() == null) {
@@ -99,10 +104,45 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         return alertDialogBuilder.create();
     }
 
-    private void initKnowledgeBaseConfiguration() {
+    private void onAcceptClick(DialogInterface dialog, int which) {
+        String companyId = companyIdEditText.getText().toString();
+        String email = emailEditText.getText().toString();
+        String url = urlEditText.getText().toString();
+        String offlineUrl = offlineUrlEditText.getText().toString();
         String accountId = accountIdEditText.getText().toString();
         String token = tokenEditText.getText().toString();
+        boolean foreground = foregroundSwitch.isChecked();
 
+        getContext().getSharedPreferences(APP_CONFIGURATION_PREF, Context.MODE_PRIVATE)
+                .edit()
+                .putString(COMPANY_ID_KEY, companyId)
+                .putString(EMAIL_KEY, email)
+                .putString(URL_KEY, url)
+                .putString(OFFLINE_URL_KEY, offlineUrl)
+                .putString(ACCOUNT_ID_KEY, accountId)
+                .putString(TOKEN_KEY, token)
+                .putBoolean(FOREGROUND_KEY, foreground)
+                .apply();
+
+
+        boolean companyIdEntered = !TextUtils.isEmpty(companyId);
+        boolean emailEntered = !TextUtils.isEmpty(email);
+        boolean urlEntered = !TextUtils.isEmpty(url);
+        boolean offlineUrlEntered = !TextUtils.isEmpty(offlineUrl);
+
+        if (companyIdEntered && emailEntered && urlEntered && offlineUrlEntered) {
+            onConfigurationUsedeskListener.onConfigurationUsedeskSet(
+                    new UsedeskConfiguration(companyId, email, url, offlineUrl), foreground);
+
+            initKnowledgeBaseConfiguration(accountId, token);
+
+            dismiss();
+        } else {
+            Toast.makeText(getActivity(), "You must set all parameters", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void initKnowledgeBaseConfiguration(String accountId, String token) {
         UsedeskSdk.initKnowledgeBase(tokenEditText.getContext())
                 .setConfiguration(new KnowledgeBaseConfiguration(accountId, token));
         UsedeskSdk.releaseUsedeskKnowledgeBase();

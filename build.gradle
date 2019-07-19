@@ -15,7 +15,7 @@ allprojects {
 
         jcenter()
 
-        maven { url 'https://github.com/usedesk/Android_SDK/tree/maven/' }
+        maven { url 'https://github.com/usedesk/Android_SDK_Maven/raw/master/' }
     }
 }
 

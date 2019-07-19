@@ -24,6 +24,26 @@ dependencies {
 }
 ```
 
+### Через Maven репозиторий
+Добавьте в `build.gradle` вашего проекта строку:
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://github.com/usedesk/Android_SDK_Maven/raw/master/' }
+    }
+}
+```
+
+Добавьте в `build.gradle` вашего модуля строку:
+```
+dependencies {
+    ...
+    implementation 'ru.usedesk:usedesk_sdk:1.0.0'
+    ...
+}
+```
+
 ## Основные этапы работы/взаимодействия с библиотекой
 
 [UsedeskSDK](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSDK.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.

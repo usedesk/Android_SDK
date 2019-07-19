@@ -58,11 +58,11 @@ dependencies {
 }
 
 uploadArchives {
-    project.version = android.defaultConfig.versionName
+    project.version = '1.0.0'
     project.group = 'ru.usedesk'
     repositories {
         mavenDeployer {
-            repository(url: 'file://localhost/Android/MavenRepositories/UsedeskSdk/')
+            repository(url: 'file://localhost/Android/Projects/Android_SDK_Maven/')
         }
     }
 }

@@ -29,16 +29,13 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.AppSession;
-import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
-public class ChatFragment extends Fragment implements UsedeskActionListener {
+public class ChatFragment extends Fragment {
 
     private static final int MAX_MESSAGE_LENGTH = 10000;
 
@@ -51,13 +48,13 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
     private ImageButton sendImageButton;
     private TextView attachmentMarkerTextView;
 
-    private List<Message> messages;
     private MessagesAdapter messagesAdapter;
-    private UsedeskChat usedeskChat;
 
     private List<UsedeskFile> usedeskFiles;
 
     private FilePicker filePicker;
+
+    private ChatViewModel viewModel;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -76,6 +73,9 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         initUI(view);
         initList();
 
+        viewModel.getModelLiveData()
+                .observe(this, this::renderModel);
+
         return view;
     }
 
@@ -86,8 +86,8 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .stopService(getContext());
 
-        usedeskChat = UsedeskSdk.initChat(getContext(),
-                AppSession.getSession().getUsedeskConfiguration(), this);
+
+        viewModel = new ChatViewModel(getContext());//TODO: сделать нормальное получение через ViewModel.Factory
     }
 
     @Override
@@ -98,15 +98,11 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
-
-        messages.clear();
-        messagesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-
             List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
             if (selectedUsedeskFiles != null) {
                 usedeskFiles = selectedUsedeskFiles;
@@ -118,59 +114,33 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         }
     }
 
-    @Override
-    public void onConnected() {
-        getActivity().runOnUiThread(() -> contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE));
-    }
-
-    @Override
-    public void onMessageReceived(Message message) {
-        if (message != null) {
-            notifyListItemInserted(message);
+    private void renderModel(@NonNull ChatModel model) {
+        if (!model.isLoading()) {
+            contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE);
         }
-    }
 
-    @Override
-    public void onMessagesReceived(List<Message> messages) {
-        if (messages != null) {
-            int startPosition = this.messages.isEmpty() ? 0 : this.messages.size() - 1;
-            notifyListItemsInserted(messages, startPosition);
+        if (model.getMessagesCountDif() > 0) {
+            messagesAdapter.updateMessages(model.getMessages(), model.getMessagesCountDif());
+            scrollToBottom();
         }
-    }
 
-    @Override
-    public void onServiceMessageReceived(Message message) {
-        if (message != null) {
-            notifyListItemInserted(message);
+        if (model.isOfflineFormExpected()) {//TODO: Вынести offlineFormDialog в отдельный класс
+            if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
+                OfflineFormDialog offlineFormDialog = OfflineFormDialog.newInstance(
+                        usedeskChat.getUsedeskConfiguration().getCompanyId(),
+                        usedeskChat.getUsedeskConfiguration().getEmail(),
+                        messageEditText.getText().toString(),
+                        offlineForm -> usedeskChat.sendOfflineForm(offlineForm));
+                offlineFormDialog.show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
+            }
         }
-    }
 
-    @Override
-    public void onOfflineFormExpected() {
-        if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
-            OfflineFormDialog offlineFormDialog = OfflineFormDialog.newInstance(
-                    usedeskChat.getUsedeskConfiguration().getCompanyId(),
-                    usedeskChat.getUsedeskConfiguration().getEmail(),
-                    messageEditText.getText().toString(),
-                    offlineForm -> usedeskChat.sendOfflineForm(offlineForm));
-            offlineFormDialog.show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
+        if (model.getErrorId() != 0) {
+            Toast.makeText(getActivity(), model.getErrorId(), Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onDisconnected() {
-    }
-
-    @Override
-    public void onError(final int errorResId) {
-        getActivity().runOnUiThread(() ->
-                Toast.makeText(getActivity(), errorResId, Toast.LENGTH_LONG).show());
-    }
-
-    @Override
-    public void onError(final Exception e) {
-        getActivity().runOnUiThread(() ->
-                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show());
+        if (model.getException() != null) {
+            Toast.makeText(getActivity(), model.getException().getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initUI(View view) {
@@ -209,8 +179,7 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
 
-        messages = new ArrayList<>();
-        messagesAdapter = new MessagesAdapter(getActivity(), messages, this::sendFeedback);
+        messagesAdapter = new MessagesAdapter(getContext(), new ArrayList<>(), this::sendFeedback);
         messagesRecyclerView.setAdapter(messagesAdapter);
 
         messagesRecyclerView.addOnLayoutChangeListener(
@@ -221,32 +190,8 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
                 });
     }
 
-    private void notifyListItemInserted(final Message message) {
-        if (!isAdded()) {
-            return;
-        }
-
-        getActivity().runOnUiThread(() -> {
-            messages.add(message);
-            messagesAdapter.notifyItemInserted(messages.size() - 1);
-            scrollToBottom();
-        });
-    }
-
-    private void notifyListItemsInserted(final List<Message> newMessages, final int startPosition) {
-        if (!isAdded()) {
-            return;
-        }
-
-        getActivity().runOnUiThread(() -> {
-            messages.addAll(newMessages);
-            messagesAdapter.notifyItemRangeChanged(startPosition, messages.size() - 1);
-            scrollToBottom();
-        });
-    }
-
     private void attemptSend() {
-        if (!NetworkUtils.isNetworkConnected(getActivity())) {
+        if (!NetworkUtils.isNetworkConnected(getContext())) {
             showError(R.string.no_connections);
             return;
         }

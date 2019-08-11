@@ -43,8 +43,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
 
-    MessagesAdapter(Context context, List<Message> messages,
-                    ChatFeedbackListener chatFeedbackListener) {
+    MessagesAdapter(@NonNull Context context,
+                    @NonNull List<Message> messages,
+                    @NonNull ChatFeedbackListener chatFeedbackListener) {
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
         downloadUtils = new DownloadUtils(context);
@@ -270,6 +271,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     message.getPayload().getAvatar(),
                     R.drawable.ic_operator_black);
         }
+    }
+
+    void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
+        this.messages = messages;
+        notifyItemInserted(messages.size() - messagesCountDif);
     }
 
     private class ItemOperatorFeedbackMessageHolder extends BaseItemMessageHolder {

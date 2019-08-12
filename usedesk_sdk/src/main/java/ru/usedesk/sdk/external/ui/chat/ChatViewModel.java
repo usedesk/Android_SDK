@@ -3,11 +3,15 @@ package ru.usedesk.sdk.external.ui.chat;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import io.reactivex.disposables.CompositeDisposable;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.external.ui.UsedeskViewModel;
 
 public class ChatViewModel extends UsedeskViewModel<ChatModel> {
@@ -49,11 +53,16 @@ public class ChatViewModel extends UsedeskViewModel<ChatModel> {
                 AppSession.getSession().getUsedeskConfiguration(), actionListenerRx);
     }
 
+    void sendMessage(String textMessage, List<UsedeskFile> usedeskFiles) {
+        if (usedeskFiles != null) {
+            usedeskChat.sendMessage(textMessage, usedeskFiles);
+        } else {
+            usedeskChat.sendTextMessage(textMessage);
+        }
+    }
 
-    @NonNull
-    @Override
-    protected ChatModel reduceModels(@NonNull ChatModel oldModel, @NonNull ChatModel newModel) {
-        return null;
+    void sendFeedback(Feedback feedback) {
+        usedeskChat.sendFeedbackMessage(feedback);
     }
 
     @Override

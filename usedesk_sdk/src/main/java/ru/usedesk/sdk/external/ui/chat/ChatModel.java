@@ -5,8 +5,9 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.Message;
+import ru.usedesk.sdk.external.ui.Reducable;
 
-public class ChatModel {
+public class ChatModel implements Reducable<ChatModel> {
     private boolean loading;
 
     private boolean offlineFormExpected;
@@ -42,6 +43,11 @@ public class ChatModel {
 
     public Exception getException() {
         return exception;
+    }
+
+    @Override
+    public ChatModel reduce(@NonNull ChatModel oldModel) {
+        return null;
     }
 
     public static class Builder {

@@ -30,7 +30,6 @@ import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
@@ -50,7 +49,7 @@ public class ChatFragment extends Fragment {
 
     private MessagesAdapter messagesAdapter;
 
-    private List<UsedeskFile> usedeskFiles;
+    private List<UsedeskFile> usedeskFiles;//TODO: to viewModel
 
     private FilePicker filePicker;
 
@@ -121,17 +120,12 @@ public class ChatFragment extends Fragment {
 
         if (model.getMessagesCountDif() > 0) {
             messagesAdapter.updateMessages(model.getMessages(), model.getMessagesCountDif());
-            scrollToBottom();
         }
 
         if (model.isOfflineFormExpected()) {//TODO: Вынести offlineFormDialog в отдельный класс
             if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
-                OfflineFormDialog offlineFormDialog = OfflineFormDialog.newInstance(
-                        usedeskChat.getUsedeskConfiguration().getCompanyId(),
-                        usedeskChat.getUsedeskConfiguration().getEmail(),
-                        messageEditText.getText().toString(),
-                        offlineForm -> usedeskChat.sendOfflineForm(offlineForm));
-                offlineFormDialog.show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
+                OfflineFormDialog.newInstance(messageEditText.getText().toString())
+                        .show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
             }
         }
 
@@ -179,13 +173,13 @@ public class ChatFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         messagesRecyclerView.setLayoutManager(linearLayoutManager);
 
-        messagesAdapter = new MessagesAdapter(getContext(), new ArrayList<>(), this::sendFeedback);
+        messagesAdapter = new MessagesAdapter(messagesRecyclerView, new ArrayList<>(), viewModel::sendFeedback);
         messagesRecyclerView.setAdapter(messagesAdapter);
 
         messagesRecyclerView.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     if (bottom < oldBottom) {
-                        messagesRecyclerView.postDelayed(this::scrollToBottom, 100);
+                        messagesRecyclerView.postDelayed(messagesAdapter::scrollToBottom, 100);
                     }
                 });
     }
@@ -207,23 +201,15 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        if (usedeskFiles != null) {
-            usedeskChat.sendMessage(textMessage, usedeskFiles);
-        } else {
-            usedeskChat.sendTextMessage(textMessage);
-        }
+        viewModel.sendMessage(textMessage, usedeskFiles);
 
         messageEditText.setText("");
         usedeskFiles = null;
         attachmentMarkerTextView.setVisibility(View.GONE);
     }
 
-    private void sendFeedback(Feedback feedback) {
-        usedeskChat.sendFeedbackMessage(feedback);
-    }
-
     private void openAttachmentDialog() {
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         View bottomSheetView = getActivity().getLayoutInflater()
                 .inflate(R.layout.usedesk_view_attachment_dialog, null);
 
@@ -268,15 +254,8 @@ public class ChatFragment extends Fragment {
         filePicker.pickDocument(this);
     }
 
-    private void scrollToBottom() {
-        if (!messages.isEmpty()) {
-            messagesRecyclerView.post(() ->
-                    messagesRecyclerView.scrollToPosition(messagesAdapter.getItemCount() - 1));
-        }
-    }
-
     private void showError(int messageResId) {
-        new AlertDialog.Builder(getActivity())
+        new AlertDialog.Builder(getContext())
                 .setTitle(R.string.error)
                 .setMessage(messageResId)
                 .setPositiveButton(android.R.string.ok, null)

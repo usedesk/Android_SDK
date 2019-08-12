@@ -1,6 +1,5 @@
 package ru.usedesk.sdk.external.ui.chat;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -42,13 +41,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Message> messages;
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
+    private RecyclerView recyclerView;
 
-    MessagesAdapter(@NonNull Context context,
+    MessagesAdapter(@NonNull RecyclerView recyclerView,
                     @NonNull List<Message> messages,
                     @NonNull ChatFeedbackListener chatFeedbackListener) {
+        this.recyclerView = recyclerView;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
-        downloadUtils = new DownloadUtils(context);
+        downloadUtils = new DownloadUtils(recyclerView.getContext());
     }
 
     @Override
@@ -276,6 +277,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
         this.messages = messages;
         notifyItemInserted(messages.size() - messagesCountDif);
+        scrollToBottom();
+    }
+
+    void scrollToBottom() {
+        if (!messages.isEmpty()) {
+            recyclerView.post(() ->
+                    recyclerView.scrollToPosition(messages.size() - 1));
+        }
     }
 
     private class ItemOperatorFeedbackMessageHolder extends BaseItemMessageHolder {

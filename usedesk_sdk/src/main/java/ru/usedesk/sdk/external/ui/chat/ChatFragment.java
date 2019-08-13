@@ -2,6 +2,7 @@ package ru.usedesk.sdk.external.ui.chat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,8 +29,6 @@ import java.util.List;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.AppSession;
-import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
@@ -69,6 +68,10 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.usedesk_fragment_chat, container, false);
+
+        viewModel = ViewModelProviders.of(this, new ChatViewModel.Factory(getContext()))
+                .get(ChatViewModel.class);
+
         initUI(view);
         initList();
 
@@ -82,21 +85,18 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        UsedeskSdk.getUsedeskNotificationsServiceFactory()
-                .stopService(getContext());
-
-
-        viewModel = new ChatViewModel(getContext());//TODO: сделать нормальное получение через ViewModel.Factory
+        /*UsedeskSdk.getUsedeskNotificationsServiceFactory()
+                .stopService(getContext());*///TODO
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        UsedeskSdk.releaseChat();
+        /*UsedeskSdk.releaseChat();
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
-                .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
+                .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());*///TODO
     }
 
     @Override
@@ -129,7 +129,7 @@ public class ChatFragment extends Fragment {
             }
         }
 
-        if (model.getErrorId() != 0) {
+        if (model.getErrorId() != null && model.getErrorId() != 0) {
             Toast.makeText(getActivity(), model.getErrorId(), Toast.LENGTH_LONG).show();
         }
         if (model.getException() != null) {
@@ -170,8 +170,7 @@ public class ChatFragment extends Fragment {
     }
 
     private void initList() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        messagesRecyclerView.setLayoutManager(linearLayoutManager);
+        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
         messagesAdapter = new MessagesAdapter(messagesRecyclerView, new ArrayList<>(), viewModel::sendFeedback);
         messagesRecyclerView.setAdapter(messagesAdapter);

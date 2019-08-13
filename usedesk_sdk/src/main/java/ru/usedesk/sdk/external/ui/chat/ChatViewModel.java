@@ -1,53 +1,53 @@
 package ru.usedesk.sdk.external.ui.chat;
 
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.ui.UsedeskViewModel;
+import ru.usedesk.sdk.external.ui.MviViewModel;
 
-public class ChatViewModel extends UsedeskViewModel<ChatModel> {
+public class ChatViewModel extends MviViewModel<ChatModel> {
+
     private UsedeskChat usedeskChat;
     private UsedeskActionListenerRx actionListenerRx;
-    private CompositeDisposable disposables;
+    private Disposable disposable;
 
     public ChatViewModel(@NonNull Context context) {
-
-        disposables = new CompositeDisposable();
+        super(new ChatModel(true, false, new ArrayList<>(),
+                0, 0, null));
 
         actionListenerRx = new UsedeskActionListenerRx();
 
-        disposables.add(actionListenerRx.getConnectedObservable()
-                .subscribe(emptyItem ->
-                        onNewModel(new ChatModel.Builder()
-                                .setLoading(true)
-                                .build())));
-
-        disposables.add(actionListenerRx.getMessagesObservable()
-                .subscribe(messages ->
-                        onNewModel(new ChatModel.Builder()
+        disposable = Observable.merge(
+                actionListenerRx.getConnectedObservable()
+                        .map(emptyItem -> new ChatModel.Builder()
+                                .setLoading(false)
+                                .build()),
+                actionListenerRx.getMessagesObservable()
+                        .map(messages -> new ChatModel.Builder()
                                 .setMessages(messages)
-                                .build())));
-
-        disposables.add(actionListenerRx.getOfflineFormExpectedObservable()
-                .subscribe(emptyItem ->
-                        onNewModel(new ChatModel.Builder()
+                                .build()),
+                actionListenerRx.getOfflineFormExpectedObservable()
+                        .map(emptyItem -> new ChatModel.Builder()
                                 .setOfflineFormExpected(true)
-                                .build())));
-
-        disposables.add(actionListenerRx.getErrorResIdSubject()
-                .subscribe(errorId ->
-                        onNewModel(new ChatModel.Builder()
+                                .build()),
+                actionListenerRx.getErrorResIdSubject()
+                        .map(errorId -> new ChatModel.Builder()
                                 .setErrorId(errorId)
-                                .build())));
+                                .build()))
+                .subscribe(this::onNewModel);
 
         usedeskChat = UsedeskSdk.initChat(context,
                 AppSession.getSession().getUsedeskConfiguration(), actionListenerRx);
@@ -61,7 +61,7 @@ public class ChatViewModel extends UsedeskViewModel<ChatModel> {
         }
     }
 
-    void sendFeedback(Feedback feedback) {
+    void sendFeedback(@NonNull Feedback feedback) {
         usedeskChat.sendFeedbackMessage(feedback);
     }
 
@@ -69,6 +69,21 @@ public class ChatViewModel extends UsedeskViewModel<ChatModel> {
     protected void onCleared() {
         super.onCleared();
 
-        disposables.dispose();
+        disposable.dispose();
+    }
+
+    public static class Factory implements ViewModelProvider.Factory {
+        private Context context;
+
+        public Factory(@NonNull Context context) {
+            this.context = context.getApplicationContext();
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked cast")
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new ChatViewModel(context);
+        }
     }
 }

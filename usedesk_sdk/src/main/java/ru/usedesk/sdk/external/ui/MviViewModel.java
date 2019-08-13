@@ -4,16 +4,16 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
-public abstract class UsedeskViewModel<T extends Reducable<T>> extends ViewModel {
+public abstract class MviViewModel<T extends Reducable<T>> extends ViewModel {
 
     private MutableLiveData<T> modelLiveData = new MutableLiveData<>();
-    private T oldModel;
+
+    public MviViewModel(@NonNull T model) {
+        modelLiveData.setValue(model);
+    }
 
     protected void onNewModel(@NonNull T newModel) {
-        oldModel = oldModel == null//TODO: реализовать reduce через rx
-                ? newModel
-                : newModel.reduce(oldModel);
-        modelLiveData.postValue(oldModel);
+        modelLiveData.postValue(modelLiveData.getValue().reduce(newModel));
     }
 
     public MutableLiveData<T> getModelLiveData() {

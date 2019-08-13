@@ -22,6 +22,6 @@ public class DataOrMessage<T> {
     }
 
     public enum Message {
-        LOADING, ERROR, NONE;
+        LOADING, ERROR, NONE
     }
 }

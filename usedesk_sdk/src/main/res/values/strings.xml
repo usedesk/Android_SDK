@@ -34,4 +34,7 @@
     <string name="offline_form_name_hint">Enter name</string>
     <string name="offline_form_message_hint">Enter message</string>
 
+
+    <string name="tools_large_text">Before hitting send on a text, delivering a proposal to a client, or taking the stage at an industry conference, run your actions by the R-Factor Test.</string>
+
 </resources>

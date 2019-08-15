@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoLink="web"
-                    tools:text="Before hitting send on a text, delivering a proposal to a client, or taking the stage at an industry conference, run your actions by the R-Factor Test." />
+                    tools:text="@string/tools_large_text" />
             </FrameLayout>
         </RelativeLayout>
     </LinearLayout>

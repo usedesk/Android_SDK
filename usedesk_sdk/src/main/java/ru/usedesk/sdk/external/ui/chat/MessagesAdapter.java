@@ -60,29 +60,29 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (viewType) {
             case TYPE_USER_TEXT:
                 return new ItemUserTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_user_text_message, parent, false));
+                        R.layout.usedesk_item_message_user_text, parent, false));
             case TYPE_USER_FILE:
                 return new ItemUserFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_user_file_message, parent, false));
+                        R.layout.usedesk_item_message_user_file, parent, false));
             case TYPE_USER_TEXT_FILE:
                 return new ItemUserTextFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_user_text_file_message, parent, false));
+                        R.layout.usedesk_item_message_user_text_file, parent, false));
             case TYPE_OPERATOR_TEXT:
                 return new ItemOperatorTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_text_message, parent, false));
+                        R.layout.usedesk_item_message_operator_text, parent, false));
             case TYPE_OPERATOR_TEXT_FILE:
                 return new ItemOperatorTextFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_text_file_message, parent, false));
+                        R.layout.usedesk_item_message_operator_text_file, parent, false));
             case TYPE_OPERATOR_FILE:
                 return new ItemOperatorFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_file_message, parent, false));
+                        R.layout.usedesk_item_message_operator_file, parent, false));
             case TYPE_OPERATOR_FEEDBACK:
                 return new ItemOperatorFeedbackMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_feedback_message, parent, false));
+                        R.layout.usedesk_item_message_operator_feedback, parent, false));
             case TYPE_SERVICE_TEXT:
             default:
                 return new ItemServiceTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_service_text_message, parent, false));
+                        R.layout.usedesk_item_message_service_text, parent, false));
         }
     }
 

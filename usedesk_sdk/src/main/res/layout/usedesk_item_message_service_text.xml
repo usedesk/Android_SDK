@@ -3,23 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/chat_padding">
+    android:layout_margin="@dimen/chat_padding"
+    android:gravity="center_vertical">
 
     <TextView
-        style="@style/ChatTimeHeaderStyle"
         android:id="@+id/time_text_view"
-        android:layout_alignParentTop="true"
+        style="?attr/usedesk_item_message_time_header_style"
         tools:text="12:12" />
 
     <TextView
-        style="@style/ChatUserTextMessageStyle"
         android:id="@+id/text_text_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@+id/time_text_view"
         android:autoLink="web"
-        android:background="@drawable/user_bubble"
-        tools:text="Before hitting send on a text, delivering a proposal to a client, or taking the stage at an industry conference, run your actions by the R-Factor Test." />
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/messageServiceColor"
+        android:textStyle="bold"
+        tools:text="Service message" />
 
 </RelativeLayout>

@@ -5,11 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/chat_padding"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/Usedesk.Item.Message.Operator.Text">
 
     <TextView
-        style="@style/ChatTimeHeaderStyle"
         android:id="@+id/time_text_view"
+        style="?attr/usedesk_item_message_time_header_style"
         tools:text="12:12" />
 
     <LinearLayout
@@ -40,7 +41,6 @@
                 android:gravity="center"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 tools:text="Name" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -59,7 +59,7 @@
                 android:layout_marginBottom="@dimen/chat_operator_text_message_margin_bottom"
                 android:layout_marginStart="@dimen/chat_operator_text_message_margin_left"
                 android:autoLink="web"
-                android:background="@drawable/operator_bubble"
+                android:background="?attr/usedesk_item_message_operator_background"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 tools:text="Text" />
 
@@ -70,9 +70,6 @@
                 android:layout_gravity="bottom"
                 android:layout_marginStart="@dimen/chat_operator_text_message_margin_left"
                 android:orientation="vertical" />
-
         </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>

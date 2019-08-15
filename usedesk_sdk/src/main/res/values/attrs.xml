@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="usedesk_item_marginTop" format="string" />
+    <attr name="usedesk_item_marginBottom" format="string" />
+    <attr name="usedesk_item_marginStart" format="string" />
+    <attr name="usedesk_item_marginEnd" format="string" />
+
+    <attr name="usedesk_item_article_info_title_marginTop" format="string" />
+    <attr name="usedesk_item_article_info_title_marginStart" format="string" />
+
+    <attr name="usedesk_item_article_info_shows_marginTop" format="string" />
+    <attr name="usedesk_item_article_info_shows_marginBottom" format="string" />
+    <attr name="usedesk_item_article_info_shows_marginEnd" format="string" />
+    <attr name="usedesk_item_article_info_shows_text" format="string" />
+
+    <attr name="usedesk_item_article_info_count_marginEnd" format="string" />
+
+    <attr name="usedesk_item_category_title_text_size" format="string" />
+
+
+    <attr name="usedesk_item_message_paddingTop" format="string" />
+    <attr name="usedesk_item_message_paddingBottom" format="string" />
+    <attr name="usedesk_item_message_paddingStart" format="string" />
+    <attr name="usedesk_item_message_paddingEnd" format="string" />
+    <attr name="usedesk_item_message_image_width" format="string" />
+    <attr name="usedesk_item_message_image_height" format="string" />
+
+    <attr name="usedesk_item_message_time_header_style" format="string" />
+
+    <attr name="usedesk_item_message_operator_background" format="string" />
+
+    <attr name="usedesk_item_message_user_background" format="string" />
+
+</resources>

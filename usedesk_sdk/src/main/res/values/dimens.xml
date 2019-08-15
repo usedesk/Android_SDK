@@ -1,7 +1,5 @@
 <resources>
 
-    <dimen name="activity_margin">16dp</dimen>
-
     <dimen name="chat_padding">10dp</dimen>
 
     <dimen name="dialog_configure_usedesk_margin">10dp</dimen>

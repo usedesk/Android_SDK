@@ -58,4 +58,83 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="Usedesk" />
+
+    <style name="Usedesk.Item">
+        <item name="usedesk_item_marginTop">8dp</item>
+        <item name="usedesk_item_marginBottom">8dp</item>
+        <item name="usedesk_item_marginStart">8dp</item>
+        <item name="usedesk_item_marginEnd">8dp</item>
+    </style>
+
+    <style name="Usedesk.Item.ArticleInfo">
+        <item name="usedesk_item_article_info_title_marginTop">8dp</item>
+        <item name="usedesk_item_article_info_title_marginStart">8dp</item>
+
+        <item name="usedesk_item_article_info_shows_marginTop">8dp</item>
+        <item name="usedesk_item_article_info_shows_marginBottom">8dp</item>
+        <item name="usedesk_item_article_info_shows_marginEnd">8dp</item>
+
+        <item name="usedesk_item_article_info_shows_text">@string/shows_postfix</item>
+
+        <item name="usedesk_item_article_info_count_marginEnd">4dp</item>
+    </style>
+
+    <style name="Usedesk.Item.Category">
+        <item name="usedesk_item_category_title_text_size">20sp</item>
+    </style>
+
+    <style name="Usedesk.Item.Message">
+        <item name="usedesk_item_message_time_header_style">@style/ChatTimeHeaderStyle</item>
+
+        <item name="usedesk_item_message_paddingTop">8dp</item>
+        <item name="usedesk_item_message_paddingBottom">8dp</item>
+        <item name="usedesk_item_message_paddingStart">8dp</item>
+        <item name="usedesk_item_message_paddingEnd">8dp</item>
+
+        <item name="usedesk_item_message_image_width">150dp</item>
+        <item name="usedesk_item_message_image_height">150dp</item>
+    </style>
+
+
+    <style name="Usedesk.Item.Message.Operator">
+        <item name="usedesk_item_message_operator_background">@drawable/operator_bubble
+        </item><!--TODO:Сделать векторным-->
+        <item name="usedesk_item_message_paddingStart">16dp</item>
+    </style>
+
+    <style name="Usedesk.Item.Message.Operator.Feedback">
+
+    </style>
+
+    <style name="Usedesk.Item.Message.Operator.File">
+
+    </style>
+
+    <style name="Usedesk.Item.Message.Operator.Text">
+
+    </style>
+
+    <style name="Usedesk.Item.Message.Operator.TextFile">
+
+    </style>
+
+
+    <style name="Usedesk.Item.Message.User">
+        <item name="usedesk_item_message_user_background">@drawable/user_bubble
+        </item><!--TODO:Сделать векторным-->
+        <item name="usedesk_item_message_paddingEnd">16dp</item>
+    </style>
+
+    <style name="Usedesk.Item.Message.User.File">
+
+    </style>
+
+    <style name="Usedesk.Item.Message.User.Text">
+
+    </style>
+
+    <style name="Usedesk.Item.Message.User.TextFile">
+
+    </style>
 </resources>

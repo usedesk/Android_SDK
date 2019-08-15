@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity
         ViewCustomizer viewCustomizer = UsedeskSdk.initKnowledgeBase(this)
                 .getViewCustomizer();
 
-        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_category_item, R.layout.category_item);
-        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_article_info_item, R.layout.article_info_item);
+        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.category_item);
+        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, R.layout.article_info_item);
     }
 
     private void initBottomNavigation() {

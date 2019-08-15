@@ -1,21 +1,5 @@
 <resources>
 
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="windowActionModeOverlay">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="ToolbarStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:minHeight">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-    </style>
-
     <style name="ChatButtonStyle">
         <item name="android:layout_width">?attr/listPreferredItemHeightSmall</item>
         <item name="android:layout_height">?attr/listPreferredItemHeightSmall</item>
@@ -35,10 +19,6 @@
     </style>
 
     <style name="ChatUserTextMessageStyle">
-        <item name="android:paddingBottom">@dimen/chat_user_text_message_padding_bottom</item>
-        <item name="android:paddingLeft">@dimen/chat_user_text_message_padding_left</item>
-        <item name="android:paddingRight">@dimen/chat_user_text_message_padding_right</item>
-        <item name="android:paddingTop">@dimen/chat_user_text_message_padding_top</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 

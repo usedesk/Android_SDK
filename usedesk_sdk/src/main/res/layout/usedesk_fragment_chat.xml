@@ -58,9 +58,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 app:srcCompat="@drawable/ic_send_black" />
-
         </RelativeLayout>
-
     </RelativeLayout>
 
     <TextView
@@ -69,5 +67,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/loading"/>
-
 </ViewSwitcher>

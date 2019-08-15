@@ -23,12 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.external.AppSession;
+import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
@@ -47,8 +48,6 @@ public class ChatFragment extends Fragment {
     private TextView attachmentMarkerTextView;
 
     private MessagesAdapter messagesAdapter;
-
-    private List<UsedeskFile> usedeskFiles;//TODO: to viewModel
 
     private FilePicker filePicker;
 
@@ -85,18 +84,16 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        /*UsedeskSdk.getUsedeskNotificationsServiceFactory()
-                .stopService(getContext());*///TODO
+        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+                .stopService(getContext());
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        /*UsedeskSdk.releaseChat();
-
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
-                .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());*///TODO
+                .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
     }
 
     @Override
@@ -104,11 +101,7 @@ public class ChatFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK && data != null) {
             List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
             if (selectedUsedeskFiles != null) {
-                usedeskFiles = selectedUsedeskFiles;
-                if (usedeskFiles.size() > 0) {
-                    attachmentMarkerTextView.setVisibility(View.VISIBLE);
-                    sendImageButton.setEnabled(true);
-                }
+                viewModel.setUsedeskFiles(selectedUsedeskFiles);
             }
         }
     }
@@ -122,11 +115,18 @@ public class ChatFragment extends Fragment {
             messagesAdapter.updateMessages(model.getMessages(), model.getMessagesCountDif());
         }
 
-        if (model.isOfflineFormExpected()) {//TODO: Вынести offlineFormDialog в отдельный класс
+        if (model.isOfflineFormExpected()) {
             if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
                 OfflineFormDialog.newInstance(messageEditText.getText().toString())
                         .show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
             }
+        }
+
+        if (model.getUsedeskFiles().size() > 0) {
+            attachmentMarkerTextView.setVisibility(View.VISIBLE);
+            sendImageButton.setEnabled(true);
+        } else {
+            attachmentMarkerTextView.setVisibility(View.GONE);
         }
 
         if (model.getErrorId() != null && model.getErrorId() != 0) {
@@ -172,7 +172,7 @@ public class ChatFragment extends Fragment {
     private void initList() {
         messagesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-        messagesAdapter = new MessagesAdapter(messagesRecyclerView, new ArrayList<>(), viewModel::sendFeedback);
+        messagesAdapter = new MessagesAdapter(messagesRecyclerView, viewModel.getModelLiveData().getValue().getMessages(), viewModel::sendFeedback);
         messagesRecyclerView.setAdapter(messagesAdapter);
 
         messagesRecyclerView.addOnLayoutChangeListener(
@@ -183,6 +183,12 @@ public class ChatFragment extends Fragment {
                 });
     }
 
+    @NonNull
+    @SuppressWarnings("ConstantConditions")
+    private ChatModel getLastModel() {
+        return viewModel.getModelLiveData().getValue();
+    }
+
     private void attemptSend() {
         if (!NetworkUtils.isNetworkConnected(getContext())) {
             showError(R.string.no_connections);
@@ -190,7 +196,7 @@ public class ChatFragment extends Fragment {
         }
 
         String textMessage = messageEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(textMessage) && usedeskFiles == null) {
+        if (TextUtils.isEmpty(textMessage) && getLastModel().getUsedeskFiles().size() == 0) {
             messageEditText.requestFocus();
             return;
         }
@@ -200,10 +206,9 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        viewModel.sendMessage(textMessage, usedeskFiles);
+        viewModel.sendMessage(textMessage, getLastModel().getUsedeskFiles());
 
         messageEditText.setText("");
-        usedeskFiles = null;
         attachmentMarkerTextView.setVisibility(View.GONE);
     }
 

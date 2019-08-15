@@ -6,15 +6,18 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.ui.Reducable;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.ui.mvi.ReducableModel;
 
-public class ChatModel extends Reducable<ChatModel> {
+public class ChatModel extends ReducableModel<ChatModel> {
     private Boolean loading;
 
-    private Boolean offlineFormExpected;
+    private Boolean offlineFormExpected = false;
 
     private List<Message> messages;
-    private Integer messagesCountDif;
+    private Integer messagesCountDif = 0;
+
+    private List<UsedeskFile> usedeskFiles;
 
     private Integer errorId;
     private Exception exception;
@@ -24,11 +27,13 @@ public class ChatModel extends Reducable<ChatModel> {
 
     public ChatModel(@NonNull Boolean loading, @NonNull Boolean offlineFormExpected,
                      @NonNull List<Message> messages, @NonNull Integer messagesCountDif,
+                     @NonNull List<UsedeskFile> usedeskFiles,
                      @Nullable Integer errorId, @Nullable Exception exception) {
         this.loading = loading;
         this.offlineFormExpected = offlineFormExpected;
         this.messages = messages;
         this.messagesCountDif = messagesCountDif;
+        this.usedeskFiles = usedeskFiles;
         this.errorId = errorId;
         this.exception = exception;
     }
@@ -50,6 +55,11 @@ public class ChatModel extends Reducable<ChatModel> {
         return messagesCountDif;
     }
 
+    @NonNull
+    public List<UsedeskFile> getUsedeskFiles() {
+        return usedeskFiles;
+    }
+
     @Nullable
     public Integer getErrorId() {
         return errorId;
@@ -68,12 +78,13 @@ public class ChatModel extends Reducable<ChatModel> {
         }
 
         return new ChatModel.Builder()
-                .setLoading(reduceValue(this.loading, newModel.loading))
-                .setOfflineFormExpected(reduceValue(this.offlineFormExpected, newModel.offlineFormExpected))
-                .setMessages(reduceValue(this.messages, newModel.messages))
-                .setMessagesCountDif(reduceValue(this.messagesCountDif, newModel.messagesCountDif))
-                .setErrorId(reduceValue(this.errorId, newModel.errorId))
-                .setException(reduceValue(this.exception, newModel.exception))
+                .setLoading(reduce(this.loading, newModel.loading))
+                .setOfflineFormExpected(newModel.offlineFormExpected)
+                .setMessages(reduce(this.messages, newModel.messages))
+                .setMessagesCountDif(newModel.messagesCountDif)
+                .setUsedeskFiles(reduce(this.usedeskFiles, newModel.usedeskFiles))
+                .setErrorId(newModel.errorId)
+                .setException(newModel.exception)
                 .build();
     }
 
@@ -100,6 +111,11 @@ public class ChatModel extends Reducable<ChatModel> {
 
         public Builder setMessagesCountDif(int messagesCountDif) {
             chatModel.messagesCountDif = messagesCountDif;
+            return this;
+        }
+
+        public Builder setUsedeskFiles(List<UsedeskFile> usedeskFiles) {
+            chatModel.usedeskFiles = usedeskFiles;
             return this;
         }
 

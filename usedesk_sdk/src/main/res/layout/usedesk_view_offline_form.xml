@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/edit_name"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/Usedesk.Dialog.OfflineForm">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -14,10 +15,12 @@
             android:id="@+id/company_id_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_configure_usedesk_margin"
+            android:layout_marginStart="?attr/usedesk_content_marginStart"
+            android:layout_marginTop="?attr/usedesk_content_marginTop"
+            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_company_id_hint"
             android:inputType="text" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -28,10 +31,12 @@
             android:id="@+id/email_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_configure_usedesk_margin"
+            android:layout_marginStart="?attr/usedesk_content_marginStart"
+            android:layout_marginTop="?attr/usedesk_content_marginTop"
+            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_email_hint"
             android:inputType="textEmailAddress" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -42,10 +47,12 @@
             android:id="@+id/name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_configure_usedesk_margin"
+            android:layout_marginStart="?attr/usedesk_content_marginStart"
+            android:layout_marginTop="?attr/usedesk_content_marginTop"
+            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_name_hint"
             android:inputType="text" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -56,10 +63,11 @@
             android:id="@+id/message_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_configure_usedesk_margin"
+            android:layout_marginStart="?attr/usedesk_content_marginStart"
+            android:layout_marginTop="?attr/usedesk_content_marginTop"
+            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_message_hint"
             android:inputType="text" />
-
     </android.support.design.widget.TextInputLayout>
-
 </LinearLayout>

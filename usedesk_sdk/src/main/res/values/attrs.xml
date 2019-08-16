@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="usedesk_item_marginTop" format="dimension" />
-    <attr name="usedesk_item_marginBottom" format="dimension" />
-    <attr name="usedesk_item_marginStart" format="dimension" />
-    <attr name="usedesk_item_marginEnd" format="dimension" />
+    <attr name="usedesk_marginTop" format="dimension" />
+    <attr name="usedesk_marginBottom" format="dimension" />
+    <attr name="usedesk_marginStart" format="dimension" />
+    <attr name="usedesk_marginEnd" format="dimension" />
+
+    <attr name="usedesk_content_marginTop" format="dimension" />
+    <attr name="usedesk_content_marginBottom" format="dimension" />
+    <attr name="usedesk_content_marginStart" format="dimension" />
+    <attr name="usedesk_content_marginEnd" format="dimension" />
+
+    <attr name="usedesk_item_text_default_style" format="reference" />
+
+    <attr name="usedesk_item_section_icon_width" format="dimension" />
+    <attr name="usedesk_item_section_icon_height" format="dimension" />
 
     <attr name="usedesk_item_article_info_title_marginTop" format="dimension" />
     <attr name="usedesk_item_article_info_title_marginStart" format="dimension" />
@@ -16,6 +26,7 @@
     <attr name="usedesk_item_article_info_count_marginEnd" format="dimension" />
 
     <attr name="usedesk_item_category_title_text_size" format="dimension" />
+    <attr name="usedesk_item_section_title_text_size" format="dimension" />
 
 
     <attr name="usedesk_item_message_paddingTop" format="dimension" />
@@ -28,7 +39,21 @@
     <attr name="usedesk_item_message_time_header_style" format="reference" />
 
     <attr name="usedesk_item_message_operator_background" format="reference" />
+    <attr name="usedesk_item_message_operator_icon_width" format="dimension" />
+    <attr name="usedesk_item_message_operator_icon_height" format="dimension" />
+
+    <attr name="usedesk_item_message_operator_feedback_button_width" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_height" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_marginStart" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_marginEnd" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_padding" format="dimension" />
 
     <attr name="usedesk_item_message_user_background" format="reference" />
+
+    <attr name="usedesk_dialog_style" format="reference" />
+    <attr name="usedesk_dialog_attachment_document_title" format="reference" />
+    <attr name="usedesk_dialog_attachment_photo_title" format="reference" />
+    <attr name="usedesk_dialog_attachment_icon_width" format="dimension" />
+    <attr name="usedesk_dialog_attachment_icon_height" format="dimension" />
 
 </resources>

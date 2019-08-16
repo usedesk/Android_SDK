@@ -9,10 +9,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/usedesk_item_marginStart"
-        android:layout_marginTop="?attr/usedesk_item_marginTop"
-        android:layout_marginEnd="?attr/usedesk_item_marginEnd"
-        android:layout_marginBottom="?attr/usedesk_item_marginBottom"
+        android:layout_marginStart="?attr/usedesk_marginStart"
+        android:layout_marginTop="?attr/usedesk_marginTop"
+        android:layout_marginEnd="?attr/usedesk_marginEnd"
+        android:layout_marginBottom="?attr/usedesk_marginBottom"
         android:orientation="vertical">
 
         <TextView
@@ -26,7 +26,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:gravity="start"
@@ -34,8 +34,8 @@
 
                 <ImageView
                     android:id="@+id/icon_image_view"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="?attr/usedesk_item_message_operator_icon_width"
+                    android:layout_height="?attr/usedesk_item_message_operator_icon_height"
                     android:layout_gravity="center"
                     android:background="@color/colorPrimary"
                     app:srcCompat="@drawable/ic_operator_black"
@@ -45,44 +45,37 @@
                     android:id="@+id/name_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
                     android:gravity="center"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    tools:text="Алексей Ельфимов" />
+                    tools:text="@string/tools_operator_name_text" />
             </LinearLayout>
 
-
-            <FrameLayout
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:background="?attr/usedesk_item_message_operator_background"
+                android:orientation="vertical"
                 android:paddingStart="?attr/usedesk_item_message_paddingStart"
                 android:paddingTop="?attr/usedesk_item_message_paddingTop"
                 android:paddingEnd="?attr/usedesk_item_message_paddingEnd"
                 android:paddingBottom="?attr/usedesk_item_message_paddingBottom">
 
+                <TextView
+                    android:id="@+id/text_text_view"
+                    style="@style/ChatOperatorTextMessageStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    tools:text="@string/tools_little_text" />
+
                 <LinearLayout
+                    android:id="@+id/layout_buttons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/text_text_view"
-                        style="@style/ChatOperatorTextMessageStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:autoLink="web"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        tools:text="@string/tools_large_text" />
-
-                    <LinearLayout
-                        android:id="@+id/layout_buttons"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-                </LinearLayout>
-            </FrameLayout>
+                    android:orientation="vertical" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

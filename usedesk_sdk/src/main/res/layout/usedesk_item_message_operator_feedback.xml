@@ -9,10 +9,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/usedesk_item_marginStart"
-        android:layout_marginTop="?attr/usedesk_item_marginTop"
-        android:layout_marginEnd="?attr/usedesk_item_marginEnd"
-        android:layout_marginBottom="?attr/usedesk_item_marginBottom"
+        android:layout_marginStart="?attr/usedesk_marginStart"
+        android:layout_marginTop="?attr/usedesk_marginTop"
+        android:layout_marginEnd="?attr/usedesk_marginEnd"
+        android:layout_marginBottom="?attr/usedesk_marginBottom"
         android:orientation="vertical">
 
         <TextView
@@ -26,7 +26,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:gravity="start"
@@ -34,8 +34,8 @@
 
                 <ImageView
                     android:id="@+id/icon_image_view"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="?attr/usedesk_item_message_operator_icon_width"
+                    android:layout_height="?attr/usedesk_item_message_operator_icon_height"
                     android:layout_gravity="center"
                     android:background="@color/colorPrimary"
                     app:srcCompat="@drawable/ic_operator_black"
@@ -45,12 +45,10 @@
                     android:id="@+id/name_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
                     android:gravity="center"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    tools:text="Алексей Ельфимов" />
+                    tools:text="@string/tools_operator_name_text" />
             </LinearLayout>
-
 
             <FrameLayout
                 android:layout_width="wrap_content"
@@ -79,29 +77,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:dividerPadding="10dp"
                         android:gravity="center"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/like_button"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_width="?attr/usedesk_item_message_operator_feedback_button_width"
+                            android:layout_height="?attr/usedesk_item_message_operator_feedback_button_height"
+                            android:layout_marginStart="?attr/usedesk_item_message_operator_feedback_button_marginStart"
+                            android:layout_marginEnd="?attr/usedesk_item_message_operator_feedback_button_marginEnd"
                             android:background="@drawable/selector_chat_button_like"
-                            android:padding="10dp"
+                            android:padding="?attr/usedesk_item_message_operator_feedback_button_padding"
                             android:scaleType="fitCenter"
                             android:src="@drawable/ic_like" />
 
                         <ImageButton
                             android:id="@+id/dislike_button"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
+                            android:layout_width="?attr/usedesk_item_message_operator_feedback_button_width"
+                            android:layout_height="?attr/usedesk_item_message_operator_feedback_button_height"
+                            android:layout_marginStart="?attr/usedesk_item_message_operator_feedback_button_marginStart"
+                            android:layout_marginEnd="?attr/usedesk_item_message_operator_feedback_button_marginEnd"
                             android:background="@drawable/selector_chat_button_dislike"
-                            android:padding="10dp"
+                            android:padding="?attr/usedesk_item_message_operator_feedback_button_padding"
                             android:scaleType="fitCenter"
                             android:src="@drawable/ic_dislike" />
                     </LinearLayout>

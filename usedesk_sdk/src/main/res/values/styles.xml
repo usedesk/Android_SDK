@@ -1,23 +1,5 @@
 <resources>
 
-    <style name="ChatButtonStyle">
-        <item name="android:layout_width">?attr/listPreferredItemHeightSmall</item>
-        <item name="android:layout_height">?attr/listPreferredItemHeightSmall</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:scaleType">centerInside</item>
-    </style>
-
-    <style name="ChatAttachmentButtonStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:gravity">center</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:padding">10dp</item>
-    </style>
-
     <style name="ChatUserTextMessageStyle">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
@@ -29,18 +11,58 @@
     <style name="ChatTimeHeaderStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">5dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="Usedesk" />
+    <style name="Usedesk.TextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="Usedesk">
+        <item name="usedesk_marginTop">4dp</item>
+        <item name="usedesk_marginBottom">4dp</item>
+        <item name="usedesk_marginStart">4dp</item>
+        <item name="usedesk_marginEnd">4dp</item>
+
+        <item name="usedesk_content_marginTop">8dp</item>
+        <item name="usedesk_content_marginBottom">8dp</item>
+        <item name="usedesk_content_marginStart">8dp</item>
+        <item name="usedesk_content_marginEnd">8dp</item>
+    </style>
+
+    <style name="Usedesk.Fragment">
+
+    </style>
+
+    <style name="Usedesk.Fragment.Article">
+
+    </style>
+
+    <style name="Usedesk.Fragment.Chat">
+
+    </style>
+
+    <style name="Usedesk.Dialog">
+
+    </style>
+
+    <style name="Usedesk.Dialog.OfflineForm">
+
+    </style>
+
+    <style name="Usedesk.Dialog.Attachment">
+        <item name="usedesk_dialog_attachment_document_title">@string/attachment_dialog_document
+        </item>
+        <item name="usedesk_dialog_attachment_photo_title">@string/attachment_dialog_photo</item>
+        <item name="usedesk_dialog_attachment_icon_width">60dp</item>
+        <item name="usedesk_dialog_attachment_icon_height">60dp</item>
+    </style>
 
     <style name="Usedesk.Item">
-        <item name="usedesk_item_marginTop">8dp</item>
-        <item name="usedesk_item_marginBottom">8dp</item>
-        <item name="usedesk_item_marginStart">8dp</item>
-        <item name="usedesk_item_marginEnd">8dp</item>
+        <item name="usedesk_item_text_default_style">@style/Usedesk.TextStyle</item>
     </style>
 
     <style name="Usedesk.Item.ArticleInfo">
@@ -60,6 +82,13 @@
         <item name="usedesk_item_category_title_text_size">20sp</item>
     </style>
 
+    <style name="Usedesk.Item.Section">
+        <item name="usedesk_item_section_title_text_size">20sp</item>
+
+        <item name="usedesk_item_section_icon_width">60dp</item>
+        <item name="usedesk_item_section_icon_height">60dp</item>
+    </style>
+
     <style name="Usedesk.Item.Message">
         <item name="usedesk_item_message_time_header_style">@style/ChatTimeHeaderStyle</item>
 
@@ -68,21 +97,29 @@
         <item name="usedesk_item_message_paddingStart">8dp</item>
         <item name="usedesk_item_message_paddingEnd">8dp</item>
 
-        <item name="usedesk_item_message_image_width">150dp</item>
-        <item name="usedesk_item_message_image_height">150dp</item>
+        <item name="usedesk_item_message_image_width">160dp</item>
+        <item name="usedesk_item_message_image_height">160dp</item>
     </style>
 
 
-    <style name="Usedesk.Item.Message.Service"></style>
+    <style name="Usedesk.Item.Message.Service">
+
+    </style>
 
     <style name="Usedesk.Item.Message.Operator">
-        <item name="usedesk_item_message_operator_background">@drawable/operator_bubble
-        </item><!--TODO:Сделать векторным-->
+        <item name="usedesk_item_message_operator_background">@drawable/operator_bubble</item>
         <item name="usedesk_item_message_paddingStart">16dp</item>
+
+        <item name="usedesk_item_message_operator_icon_width">60dp</item>
+        <item name="usedesk_item_message_operator_icon_height">60dp</item>
     </style>
 
     <style name="Usedesk.Item.Message.Operator.Feedback">
-
+        <item name="usedesk_item_message_operator_feedback_button_width">40dp</item>
+        <item name="usedesk_item_message_operator_feedback_button_height">40dp</item>
+        <item name="usedesk_item_message_operator_feedback_button_marginStart">20dp</item>
+        <item name="usedesk_item_message_operator_feedback_button_marginEnd">20dp</item>
+        <item name="usedesk_item_message_operator_feedback_button_padding">8dp</item>
     </style>
 
     <style name="Usedesk.Item.Message.Operator.File">
@@ -97,10 +134,8 @@
 
     </style>
 
-
     <style name="Usedesk.Item.Message.User">
-        <item name="usedesk_item_message_user_background">@drawable/user_bubble
-        </item><!--TODO:Сделать векторным-->
+        <item name="usedesk_item_message_user_background">@drawable/user_bubble</item>
         <item name="usedesk_item_message_paddingEnd">16dp</item>
     </style>
 

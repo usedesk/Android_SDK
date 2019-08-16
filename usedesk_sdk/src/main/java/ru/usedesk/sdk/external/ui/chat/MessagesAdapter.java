@@ -312,6 +312,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    //TODO: заменять пробелы в имени оператора
     private class ItemOperatorTextMessageHolder extends BaseItemTextMessageHolder {
 
         ImageView iconImageView;

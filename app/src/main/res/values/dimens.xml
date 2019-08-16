@@ -1,26 +1,4 @@
 <resources>
-
     <dimen name="activity_margin">16dp</dimen>
-
-    <dimen name="chat_padding">10dp</dimen>
-
     <dimen name="dialog_configure_usedesk_margin">10dp</dimen>
-
-    <dimen name="chat_operator_text_message_margin_bottom">5dp</dimen>
-    <dimen name="chat_operator_text_message_margin_left">10dp</dimen>
-    <dimen name="chat_operator_text_message_padding_bottom">10dp</dimen>
-    <dimen name="chat_operator_text_message_padding_left">15dp</dimen>
-    <dimen name="chat_operator_text_message_padding_right">10dp</dimen>
-    <dimen name="chat_operator_text_message_padding_top">10dp</dimen>
-
-    <dimen name="chat_user_text_message_padding_bottom">10dp</dimen>
-    <dimen name="chat_user_text_message_padding_left">10dp</dimen>
-    <dimen name="chat_user_text_message_padding_right">15dp</dimen>
-    <dimen name="chat_user_text_message_padding_top">10dp</dimen>
-
-    <dimen name="chat_file_message_size">200dp</dimen>
-    <dimen name="chat_file_message_size_small">150dp</dimen>
-
-    <dimen name="attachment_dialog_button_text_margin_top">16dp</dimen>
-
 </resources>

@@ -1,44 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/attachment_items_view"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="10dp">
+    android:theme="@style/Usedesk.Dialog.Attachment">
 
     <LinearLayout
-        style="@style/ChatAttachmentButtonStyle"
-        android:id="@+id/pick_photo_button">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="?attr/usedesk_marginStart"
+        android:layout_marginTop="?attr/usedesk_marginTop"
+        android:layout_marginEnd="?attr/usedesk_marginEnd"
+        android:layout_marginBottom="?attr/usedesk_marginBottom"
+        android:baselineAligned="true"
+        android:orientation="horizontal"
+        android:paddingTop="?attr/usedesk_content_marginTop"
+        android:paddingBottom="?attr/usedesk_content_marginBottom">
 
-        <ImageView
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            app:srcCompat="@drawable/ic_attachment_photo_black" />
+        <LinearLayout
+            android:id="@+id/pick_photo_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/attachment_dialog_button_text_margin_top"
-            android:text="@string/attachment_dialog_picture" />
+            <ImageView
+                android:layout_width="?attr/usedesk_dialog_attachment_icon_width"
+                android:layout_height="?attr/usedesk_dialog_attachment_icon_height"
+                app:srcCompat="@drawable/ic_attachment_photo_black" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="?attr/usedesk_dialog_attachment_photo_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pick_document_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="?attr/usedesk_dialog_attachment_icon_width"
+                android:layout_height="?attr/usedesk_dialog_attachment_icon_height"
+                app:srcCompat="@drawable/ic_attachment_document_black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="?attr/usedesk_dialog_attachment_document_title" />
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        style="@style/ChatAttachmentButtonStyle"
-        android:id="@+id/pick_document_button">
-
-        <ImageView
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            app:srcCompat="@drawable/ic_attachment_document_black" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/attachment_dialog_button_text_margin_top"
-            android:text="@string/attachment_dialog_document" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>

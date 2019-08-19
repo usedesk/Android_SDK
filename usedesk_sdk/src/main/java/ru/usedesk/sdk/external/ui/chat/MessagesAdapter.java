@@ -141,7 +141,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_OPERATOR_FILE:
                 ItemOperatorFileMessageHolder itemOperatorFileMessageHolder = (ItemOperatorFileMessageHolder) holder;
 
-                itemOperatorFileMessageHolder.nameTextView.setText(message.getName());
+                itemOperatorFileMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
 
                 checkForDisplayImageOperatorAvatar(message, itemOperatorFileMessageHolder.iconImageView);
 
@@ -166,7 +166,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ItemOperatorTextFileMessageHolder itemOperatorTextFileMessageHolder = (ItemOperatorTextFileMessageHolder) holder;
 
                 itemOperatorTextFileMessageHolder.textTextView.setText(message.getText());
-                itemOperatorTextFileMessageHolder.nameTextView.setText(message.getName());
+                itemOperatorTextFileMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
 
                 checkForDisplayImageOperatorAvatar(message, itemOperatorTextFileMessageHolder.iconImageView);
 
@@ -189,7 +189,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case TYPE_OPERATOR_FEEDBACK:
                 final ItemOperatorFeedbackMessageHolder itemOperatorFeedbackMessageHolder = (ItemOperatorFeedbackMessageHolder) holder;
-                itemOperatorFeedbackMessageHolder.nameTextView.setText(message.getName());
+                itemOperatorFeedbackMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
                 itemOperatorFeedbackMessageHolder.textTextView.setText(message.getText());
 
                 checkForDisplayImageOperatorAvatar(message, itemOperatorFeedbackMessageHolder.iconImageView);
@@ -312,7 +312,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    //TODO: заменять пробелы в имени оператора
     private class ItemOperatorTextMessageHolder extends BaseItemTextMessageHolder {
 
         ImageView iconImageView;
@@ -348,7 +347,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 textTextView.setText(message.getText());
             }
-            nameTextView.setText(message.getName());
+            nameTextView.setText(message.getName().replace(' ', '\n'));
 
             checkForDisplayImageOperatorAvatar(message, iconImageView);
         }

@@ -10,7 +10,10 @@
     <attr name="usedesk_content_marginStart" format="dimension" />
     <attr name="usedesk_content_marginEnd" format="dimension" />
 
-    <attr name="usedesk_item_text_default_style" format="reference" />
+    <attr name="usedesk_textstyle_chat_massage" format="reference" />
+    <attr name="usedesk_textstyle_chat_time" format="reference" />
+
+    <attr name="usedesk_fragment_knowledge_support_title" format="string" />
 
     <attr name="usedesk_item_section_icon_width" format="dimension" />
     <attr name="usedesk_item_section_icon_height" format="dimension" />
@@ -55,5 +58,25 @@
     <attr name="usedesk_dialog_attachment_photo_title" format="reference" />
     <attr name="usedesk_dialog_attachment_icon_width" format="dimension" />
     <attr name="usedesk_dialog_attachment_icon_height" format="dimension" />
+
+    <attr name="usedesk_fragment_article" format="reference" />
+    <attr name="usedesk_fragment_chat" format="reference" />
+    <attr name="usedesk_fragment_knowledge_base" format="reference" />
+    <attr name="usedesk_fragment_list" format="reference" />
+    <attr name="usedesk_dialog_offlineform" format="reference" />
+    <attr name="usedesk_dialog_attachment" format="reference" />
+    <attr name="usedesk_item_articleinfo" format="reference" />
+    <attr name="usedesk_item_category" format="reference" />
+    <attr name="usedesk_item_section" format="reference" />
+    <attr name="usedesk_item_message_service" format="reference" />
+    <attr name="usedesk_item_message_operator" format="reference" />
+    <attr name="usedesk_item_message_operator_feedback" format="reference" />
+    <attr name="usedesk_item_message_operator_file" format="reference" />
+    <attr name="usedesk_item_message_operator_text" format="reference" />
+    <attr name="usedesk_item_message_operator_textfile" format="reference" />
+    <attr name="usedesk_item_message_user" format="reference" />
+    <attr name="usedesk_item_message_user_file" format="reference" />
+    <attr name="usedesk_item_message_user_text" format="reference" />
+    <attr name="usedesk_item_message_user_textfile" format="reference" />
 
 </resources>

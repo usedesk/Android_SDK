@@ -5,7 +5,7 @@
     android:id="@+id/content_view_switcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Usedesk.Fragment.Chat">
+    android:theme="?attr/usedesk_fragment_chat">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

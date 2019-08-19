@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Usedesk.Item.Message.Operator.TextFile">
+    android:theme="?attr/usedesk_item_message_operator_textfile">
 
     <LinearLayout
         android:layout_width="match_parent"

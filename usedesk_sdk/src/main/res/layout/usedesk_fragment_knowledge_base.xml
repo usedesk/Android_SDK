@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="?attr/usedesk_fragment_knowledge_base"
     tools:context="ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment">
 
     <FrameLayout
@@ -23,7 +24,7 @@
         android:id="@+id/btn_support"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/chat_with_support"
+        android:text="?attr/usedesk_fragment_knowledge_support_title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

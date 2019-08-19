@@ -215,7 +215,7 @@ public class ChatFragment extends Fragment {
     private void openAttachmentDialog() {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         View bottomSheetView = getActivity().getLayoutInflater()
-                .inflate(R.layout.usedesk_view_attachment_dialog, null);
+                .inflate(R.layout.usedesk_dialog_attachment, null);
 
         bottomSheetView.findViewById(R.id.pick_photo_button)
                 .setOnClickListener(view -> {

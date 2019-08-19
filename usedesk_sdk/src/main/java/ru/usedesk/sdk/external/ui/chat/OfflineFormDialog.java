@@ -44,7 +44,7 @@ public class OfflineFormDialog extends DialogFragment {
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.usedesk_view_offline_form, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.usedesk_dialog_offline_form, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
 

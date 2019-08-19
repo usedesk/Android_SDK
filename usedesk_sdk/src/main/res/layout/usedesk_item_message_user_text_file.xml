@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Usedesk.Item.Message.User.TextFile">
+    android:theme="?attr/usedesk_item_message_user_textfile">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
 
                 <TextView
                     android:id="@+id/text_text_view"
-                    style="@style/ChatUserTextMessageStyle"
+                    style="@style/Usedesk.TextStyle.Chat.Massage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoLink="web"

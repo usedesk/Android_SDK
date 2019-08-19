@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/Usedesk.Item.Message.Operator.Text">
+    android:theme="?attr/usedesk_item_message_operator_text">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,19 +63,19 @@
 
                 <TextView
                     android:id="@+id/text_text_view"
-                    style="@style/ChatOperatorTextMessageStyle"
+                    style="@style/Usedesk.TextStyle.Chat.Massage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoLink="web"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     tools:text="@string/tools_little_text" />
-
-                <LinearLayout
-                    android:id="@+id/layout_buttons"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
     </LinearLayout>
 </FrameLayout>

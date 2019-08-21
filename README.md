@@ -1,3 +1,4 @@
+
 # Android Usedesk SDK
 
 ## Требования к API
@@ -24,7 +25,7 @@ dependencies {
 }
 ```
 
-## Основные этапы работы/взаимодействия с библиотекой
+## Основные этапы работы/взаимодействия с библиотекой
 
 [UsedeskSDK](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSDK.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.
 
@@ -50,7 +51,7 @@ dependencies {
 
 Метод инициализации принимает объекты следующих классов:
 
-- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером.
+- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером.
 ```
 private String accountId;
 private String email;
@@ -58,7 +59,7 @@ private String url;
 private String offlineFormUrl;
 ```
 
-- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе.
+- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе.
 ```
 onConnected()
 onMessageReceived(Message message)
@@ -203,6 +204,56 @@ public void onBackPressed() {
     }
 }
 ```
+## Кастомизация UI
+Для кастомизации интерфейса необходимо воспользоваться классом [UsedeskViewCustomizer](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/ui/UsedeskViewCustomizer.java).
+### 1. Тема
+Для кастомизации готового интерфейса через темы определите свою, унаследованную от `Usedesk.Theme`, переопределив нужные атрибуты.
+Каждый из атрибутов указывает на тему для конкретного слоя.
+Пример из семпла:
+```
+...
+
+<style name="Usedesk.TextStyle.Chat.Time.Custom">
+	<item name="android:textColor">#000000</item>
+</style>
+
+<style name="Usedesk.TextStyle.Chat.Massage.Custom">
+	<item name="android:textColor">#000000</item>
+</style>
+
+...
+
+<style name="Usedesk.Item.Message.Operator.Custom">
+	<item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+	</item>
+	<item name="usedesk_item_message_time_header_style">@style/Usedesk.TextStyle.Chat.Time.Custom</item>
+</style>
+
+...
+
+<style name="Usedesk.Theme.Custom">
+	<item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat.Custom</item>
+	<item name="usedesk_item_message_service">@style/Usedesk.Item.Message.Service.Custom</item>
+	<item name="usedesk_item_message_operator">@style/Usedesk.Item.Message.Operator.Custom</item>
+	<item name="usedesk_item_message_user">@style/Usedesk.Item.Message.User.Custom</item>
+</style>
+```
+
+Далее необходимо указать эту тему:
+```
+UsedeskSdk.getUsedeskViewCustomizer()
+	.setThemeId(R.style.Usedesk_Theme_Custom);
+```
+
+### 2. Подмена ресурса
+Воспользовавшись следующим методом, можно полностью заменить слой на новый.
+При этом есть необходимость устанавливать такие же id элементов, как в оригинале.
+
+```
+UsedeskSdk.getUsedeskViewCustomizer()
+	.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.custom_item_category);
+```
+
 
 ## Локальные уведомления
 

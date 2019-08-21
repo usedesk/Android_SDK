@@ -37,7 +37,7 @@ public class Message {
     @NonNull
     public MessageButtons getMessageButtons() {
         if (messageButtons == null) {
-            messageButtons = new MessageButtons(Html.fromHtml(text).toString());
+            messageButtons = new MessageButtons(Html.fromHtml(Html.fromHtml(text).toString()).toString());
         }
         return messageButtons;
     }

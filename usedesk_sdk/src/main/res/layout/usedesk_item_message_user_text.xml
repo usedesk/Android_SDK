@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_message_user_text">
+    android:theme="?attr/usedesk_item_message_user"
+    tools:theme="@style/Usedesk.Item.Message.User">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,11 +32,11 @@
 
             <TextView
                 android:id="@+id/text_text_view"
-                style="@style/Usedesk.TextStyle.Chat.Massage"
+                style="?attr/usedesk_item_message_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
-                tools:text="@string/tools_large_text" />
+                tools:text="@string/tools_little_text" />
         </FrameLayout>
     </LinearLayout>
 </FrameLayout>

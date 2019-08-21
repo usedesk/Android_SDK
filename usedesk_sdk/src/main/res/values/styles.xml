@@ -7,6 +7,7 @@
     </style>
 
     <style name="Usedesk.TextStyle.Chat">
+
     </style>
 
     <style name="Usedesk.TextStyle.Chat.Massage">
@@ -39,16 +40,35 @@
 
     </style>
 
-    <style name="Usedesk.Fragment.Chat">
+    <style name="Usedesk.Fragment.Chat.Button" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">#00000000</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
 
+    <style name="Usedesk.Fragment.Chat.Button.Attachment">
+        <item name="android:src">@drawable/ic_attach_file_black</item>
+    </style>
+
+    <style name="Usedesk.Fragment.Chat.Button.Send">
+        <item name="android:src">@drawable/ic_send_black</item>
+    </style>
+
+    <style name="Usedesk.Fragment.Chat">
+        <item name="usedesk_fragment_chat_attachment_style">
+            @style/Usedesk.Fragment.Chat.Button.Attachment
+        </item>
+        <item name="usedesk_fragment_chat_send_style">@style/Usedesk.Fragment.Chat.Button.Send
+        </item>
     </style>
 
     <style name="Usedesk.Fragment.KnowledgeBase">
-
+        <item name="usedesk_fragment_knowledge_support_title">@string/chat_with_support</item>
     </style>
 
     <style name="Usedesk.Fragment.List">
-        <item name="usedesk_fragment_knowledge_support_title">@string/chat_with_support</item>
+
     </style>
 
     <style name="Usedesk.Dialog">
@@ -68,6 +88,7 @@
     </style>
 
     <style name="Usedesk.Item">
+
     </style>
 
     <style name="Usedesk.Item.ArticleInfo">
@@ -105,8 +126,9 @@
 
         <item name="usedesk_item_message_image_width">160dp</item>
         <item name="usedesk_item_message_image_height">160dp</item>
-    </style>
 
+        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage</item>
+    </style>
 
     <style name="Usedesk.Item.Message.Service">
 
@@ -118,9 +140,7 @@
 
         <item name="usedesk_item_message_operator_icon_width">60dp</item>
         <item name="usedesk_item_message_operator_icon_height">60dp</item>
-    </style>
 
-    <style name="Usedesk.Item.Message.Operator.Feedback">
         <item name="usedesk_item_message_operator_feedback_button_width">40dp</item>
         <item name="usedesk_item_message_operator_feedback_button_height">40dp</item>
         <item name="usedesk_item_message_operator_feedback_button_marginStart">20dp</item>
@@ -128,33 +148,9 @@
         <item name="usedesk_item_message_operator_feedback_button_padding">8dp</item>
     </style>
 
-    <style name="Usedesk.Item.Message.Operator.File">
-
-    </style>
-
-    <style name="Usedesk.Item.Message.Operator.Text">
-
-    </style>
-
-    <style name="Usedesk.Item.Message.Operator.TextFile">
-
-    </style>
-
     <style name="Usedesk.Item.Message.User">
         <item name="usedesk_item_message_user_background">@drawable/user_bubble</item>
         <item name="usedesk_item_message_paddingEnd">16dp</item>
-    </style>
-
-    <style name="Usedesk.Item.Message.User.File">
-
-    </style>
-
-    <style name="Usedesk.Item.Message.User.Text">
-
-    </style>
-
-    <style name="Usedesk.Item.Message.User.TextFile">
-
     </style>
 
     <style name="Usedesk.Theme" parent="">
@@ -169,20 +165,6 @@
         <item name="usedesk_item_section">@style/Usedesk.Item.Section</item>
         <item name="usedesk_item_message_service">@style/Usedesk.Item.Message.Service</item>
         <item name="usedesk_item_message_operator">@style/Usedesk.Item.Message.Operator</item>
-        <item name="usedesk_item_message_operator_feedback">
-            @style/Usedesk.Item.Message.Operator.Feedback
-        </item>
-        <item name="usedesk_item_message_operator_file">@style/Usedesk.Item.Message.Operator.File
-        </item>
-        <item name="usedesk_item_message_operator_text">@style/Usedesk.Item.Message.Operator.Text
-        </item>
-        <item name="usedesk_item_message_operator_textfile">
-            @style/Usedesk.Item.Message.Operator.TextFile
-        </item>
         <item name="usedesk_item_message_user">@style/Usedesk.Item.Message.User</item>
-        <item name="usedesk_item_message_user_file">@style/Usedesk.Item.Message.User.File</item>
-        <item name="usedesk_item_message_user_text">@style/Usedesk.Item.Message.User.Text</item>
-        <item name="usedesk_item_message_user_textfile">@style/Usedesk.Item.Message.User.TextFile
-        </item>
     </style>
 </resources>

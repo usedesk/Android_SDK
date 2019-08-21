@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_message_service">
+    android:theme="?attr/usedesk_item_message_service"
+    tools:theme="@style/Usedesk.Item.Message.Service">
 
     <LinearLayout
         android:layout_width="match_parent"

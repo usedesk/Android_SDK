@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="?attr/usedesk_fragment_list"
-    tools:context="ru.usedesk.sdk.external.ui.knowledgebase.pages.sections.SectionsFragment">
+    tools:theme="@style/Usedesk.Fragment.List">
 
     <TextView
         android:id="@+id/tv_message"

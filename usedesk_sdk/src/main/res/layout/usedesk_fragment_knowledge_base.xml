@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="?attr/usedesk_fragment_knowledge_base"
-    tools:context="ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment">
+    tools:theme="@style/Usedesk.Fragment.KnowledgeBase">
 
     <FrameLayout
         android:id="@+id/frameLayout"

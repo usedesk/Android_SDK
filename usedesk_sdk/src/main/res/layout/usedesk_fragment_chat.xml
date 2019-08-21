@@ -5,7 +5,8 @@
     android:id="@+id/content_view_switcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="?attr/usedesk_fragment_chat">
+    android:theme="?attr/usedesk_fragment_chat"
+    tools:theme="@style/Usedesk.Fragment.Chat">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -43,14 +44,10 @@
 
             <ImageButton
                 android:id="@+id/attach_file_image_view"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="#00000000"
-                android:scaleType="centerCrop"
+                style="?attr/usedesk_fragment_chat_attachment_style"
                 app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/message_edit_text"
-                app:srcCompat="@drawable/ic_attach_file_black" />
+                app:layout_constraintTop_toTopOf="@+id/message_edit_text" />
 
             <EditText
                 android:id="@+id/message_edit_text"
@@ -65,14 +62,10 @@
 
             <ImageButton
                 android:id="@+id/send_image_view"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="#00000000"
-                android:scaleType="centerCrop"
+                style="?attr/usedesk_fragment_chat_send_style"
                 app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/message_edit_text"
-                app:srcCompat="@drawable/ic_send_black"
                 tools:visibility="visible" />
         </android.support.constraint.ConstraintLayout>
     </android.support.constraint.ConstraintLayout>

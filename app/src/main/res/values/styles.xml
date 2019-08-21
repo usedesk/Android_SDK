@@ -14,4 +14,61 @@
         <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
+
+    <style name="Usedesk.TextStyle.Chat.Time.Custom">
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="Usedesk.TextStyle.Chat.Massage.Custom">
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="Usedesk.Item.Message.Service.Custom">
+        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+        </item>
+        <item name="usedesk_item_message_time_header_style">
+            @style/Usedesk.TextStyle.Chat.Time.Custom
+        </item>
+    </style>
+
+    <style name="Usedesk.Item.Message.Operator.Custom">
+        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+        </item>
+        <item name="usedesk_item_message_time_header_style">
+            @style/Usedesk.TextStyle.Chat.Time.Custom
+        </item>
+    </style>
+
+    <style name="Usedesk.Item.Message.User.Custom">
+        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+        </item>
+        <item name="usedesk_item_message_time_header_style">
+            @style/Usedesk.TextStyle.Chat.Time.Custom
+        </item>
+    </style>
+
+    <style name="Usedesk.Fragment.Chat.Button.Send.Custom">
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="Usedesk.Fragment.Chat.Button.Attachment.Custom">
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="Usedesk.Fragment.Chat.Custom">
+        <item name="usedesk_fragment_chat_send_style">
+            @style/Usedesk.Fragment.Chat.Button.Send.Custom
+        </item>
+        <item name="usedesk_fragment_chat_attachment_style">
+            @style/Usedesk.Fragment.Chat.Button.Attachment.Custom
+        </item>
+    </style>
+
+    <style name="Usedesk.Theme.Custom">
+        <item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat.Custom</item>
+        <item name="usedesk_item_message_service">@style/Usedesk.Item.Message.Service.Custom</item>
+        <item name="usedesk_item_message_operator">@style/Usedesk.Item.Message.Operator.Custom
+        </item>
+        <item name="usedesk_item_message_user">@style/Usedesk.Item.Message.User.Custom</item>
+    </style>
 </resources>

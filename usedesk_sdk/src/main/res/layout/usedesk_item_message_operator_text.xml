@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_message_operator_text">
+    android:theme="?attr/usedesk_item_message_operator"
+    tools:theme="@style/Usedesk.Item.Message.Operator">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,7 +64,7 @@
 
                 <TextView
                     android:id="@+id/text_text_view"
-                    style="@style/Usedesk.TextStyle.Chat.Massage"
+                    style="?attr/usedesk_item_message_text_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:autoLink="web"

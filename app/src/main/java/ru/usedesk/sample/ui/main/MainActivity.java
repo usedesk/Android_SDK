@@ -14,7 +14,6 @@ import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
 import ru.usedesk.sample.utils.ToolbarHelper;
-import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.chat.ChatFragment;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
@@ -34,15 +33,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UsedeskSdk.getUsedeskViewCustomizer()
-                .setThemeId(R.style.Usedesk_Theme_Custom);
         setContentView(R.layout.activity_main);
         initBottomNavigation();
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-
-        customizeView();
 
         toolbarHelper.setToolbar();
 
@@ -101,13 +96,6 @@ public class MainActivity extends AppCompatActivity
     public void onSupportClick() {
         toolbarHelper.update(ToolbarHelper.State.HOME);
         switchFragment(ChatFragment.newInstance());
-    }
-
-    private void customizeView() {
-        /*UsedeskViewCustomizer usedeskViewCustomizer = UsedeskSdk.getUsedeskViewCustomizer();
-
-        usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.category_item);
-        usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, R.layout.article_info_item);*/
     }
 
     private void initBottomNavigation() {

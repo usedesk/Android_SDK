@@ -31,7 +31,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@android:drawable/btn_star_big_on" />
+                tools:srcCompat="@android:drawable/btn_star_big_on" />
 
             <TextView
                 android:id="@+id/tv_title"

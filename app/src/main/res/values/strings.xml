@@ -23,5 +23,6 @@
     <string name="switch_hint">Foreground service</string>
 
     <string name="enter_token">Enter token</string>
+    <string name="custom_views">Custom views</string>
 
 </resources>

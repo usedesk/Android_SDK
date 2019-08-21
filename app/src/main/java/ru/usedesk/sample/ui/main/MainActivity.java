@@ -16,7 +16,6 @@ import ru.usedesk.sample.ui.fragments.info.InfoFragment;
 import ru.usedesk.sample.utils.ToolbarHelper;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
-import ru.usedesk.sdk.external.ui.ViewCustomizer;
 import ru.usedesk.sdk.external.ui.chat.ChatFragment;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
@@ -35,7 +34,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Usedesk_Theme_Custom);
+        UsedeskSdk.getUsedeskViewCustomizer()
+                .setThemeId(R.style.Usedesk_Theme_Custom);
         setContentView(R.layout.activity_main);
         initBottomNavigation();
 
@@ -104,11 +104,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void customizeView() {
-        ViewCustomizer viewCustomizer = UsedeskSdk.initKnowledgeBase(this)
-                .getViewCustomizer();
+        /*UsedeskViewCustomizer usedeskViewCustomizer = UsedeskSdk.getUsedeskViewCustomizer();
 
-        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.category_item);
-        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, R.layout.article_info_item);
+        usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.category_item);
+        usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, R.layout.article_info_item);*/
     }
 
     private void initBottomNavigation() {

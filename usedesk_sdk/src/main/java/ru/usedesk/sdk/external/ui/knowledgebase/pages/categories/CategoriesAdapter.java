@@ -10,26 +10,26 @@ import java.util.List;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.entity.knowledgebase.Category;
-import ru.usedesk.sdk.external.ui.ViewCustomizer;
+import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
 
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder> {
 
     private final List<Category> categoryList;
     private final IOnCategoryClickListener onCategoryClickListener;
-    private final ViewCustomizer viewCustomizer;
+    private final UsedeskViewCustomizer usedeskViewCustomizer;
 
     CategoriesAdapter(@NonNull List<Category> categoryList,
                       @NonNull IOnCategoryClickListener onCategoryClickListener,
-                      @NonNull ViewCustomizer viewCustomizer) {
+                      @NonNull UsedeskViewCustomizer usedeskViewCustomizer) {
         this.categoryList = categoryList;
         this.onCategoryClickListener = onCategoryClickListener;
-        this.viewCustomizer = viewCustomizer;
+        this.usedeskViewCustomizer = usedeskViewCustomizer;
     }
 
     @NonNull
     @Override
     public SectionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = viewCustomizer.createView(viewGroup, R.layout.usedesk_item_category);
+        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_category);
 
         return new SectionViewHolder(view);
     }

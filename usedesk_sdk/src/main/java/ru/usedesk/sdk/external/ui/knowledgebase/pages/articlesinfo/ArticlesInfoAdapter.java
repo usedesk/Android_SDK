@@ -10,26 +10,26 @@ import java.util.List;
 
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.external.ui.ViewCustomizer;
+import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
 
 public class ArticlesInfoAdapter extends RecyclerView.Adapter<ArticlesInfoAdapter.ArticleViewHolder> {
 
     private final List<ArticleInfo> articleInfoList;
     private final IOnArticleInfoClickListener onArticleClickListener;
-    private final ViewCustomizer viewCustomizer;
+    private final UsedeskViewCustomizer usedeskViewCustomizer;
 
     ArticlesInfoAdapter(@NonNull List<ArticleInfo> articleInfoList,
                         @NonNull IOnArticleInfoClickListener onArticleClickListener,
-                        @NonNull ViewCustomizer viewCustomizer) {
+                        @NonNull UsedeskViewCustomizer usedeskViewCustomizer) {
         this.articleInfoList = articleInfoList;
         this.onArticleClickListener = onArticleClickListener;
-        this.viewCustomizer = viewCustomizer;
+        this.usedeskViewCustomizer = usedeskViewCustomizer;
     }
 
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = viewCustomizer.createView(viewGroup, R.layout.usedesk_item_article_info);
+        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_article_info);
 
         return new ArticleViewHolder(view);
     }

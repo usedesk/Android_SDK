@@ -66,7 +66,8 @@ public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.usedesk_fragment_chat, container, false);
+        View view = UsedeskSdk.getUsedeskViewCustomizer()
+                .createView(inflater, R.layout.usedesk_fragment_chat, container, false);
 
         viewModel = ViewModelProviders.of(this, new ChatViewModel.Factory(getContext()))
                 .get(ChatViewModel.class);

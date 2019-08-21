@@ -14,23 +14,15 @@ import ru.usedesk.sdk.external.entity.knowledgebase.Category;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.external.entity.knowledgebase.Section;
-import ru.usedesk.sdk.external.ui.ViewCustomizer;
 import ru.usedesk.sdk.internal.domain.interactor.knowledgebase.IKnowledgeBaseInteractor;
 
 public final class UsedeskKnowledgeBase {
 
     private IKnowledgeBaseInteractor knowledgeBaseInteractor;
-    private ViewCustomizer viewCustomizer;
 
     @Inject
-    UsedeskKnowledgeBase(@NonNull IKnowledgeBaseInteractor knowledgeBaseInteractor,
-                         @NonNull ViewCustomizer viewCustomizer) {
+    UsedeskKnowledgeBase(@NonNull IKnowledgeBaseInteractor knowledgeBaseInteractor) {
         this.knowledgeBaseInteractor = knowledgeBaseInteractor;
-        this.viewCustomizer = viewCustomizer;
-    }
-
-    public ViewCustomizer getViewCustomizer() {
-        return viewCustomizer;
     }
 
     public void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {

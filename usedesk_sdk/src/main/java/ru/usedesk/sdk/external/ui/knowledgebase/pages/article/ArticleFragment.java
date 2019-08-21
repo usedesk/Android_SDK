@@ -24,7 +24,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
     private TextView textViewText;
 
     public ArticleFragment() {
-        super(UsedeskSdk.getUsedeskKnowledgeBase().getViewCustomizer().getLayoutId(R.layout.usedesk_fragment_article));
+        super(UsedeskSdk.getUsedeskViewCustomizer().getLayoutId(R.layout.usedesk_fragment_article));
 
         usedeskKnowledgeBase = UsedeskSdk.getUsedeskKnowledgeBase();
     }

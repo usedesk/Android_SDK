@@ -36,6 +36,6 @@ public class SectionsFragment extends FragmentListView<Section, SectionsViewMode
         }
 
         return new SectionsAdapter(list, (IOnSectionClickListener) getParentFragment(),
-                usedeskKnowledgeBase.getViewCustomizer());
+                UsedeskSdk.getUsedeskViewCustomizer());
     }
 }

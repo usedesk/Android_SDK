@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
+import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
 import ru.usedesk.sdk.internal.appdi.DependencyInjection;
 import ru.usedesk.sdk.internal.appdi.ScopeChat;
 import ru.usedesk.sdk.internal.appdi.ScopeKnowledgeBase;
@@ -18,6 +19,7 @@ public class UsedeskSdk {
     private static UsedeskChatBox usedeskChatBox = null;
     private static UsedeskKnowledgeBaseBox usedeskKnowledgeBaseBox;
     private static UsedeskNotificationsServiceFactory usedeskNotificationsServiceFactory;
+    private static UsedeskViewCustomizer usedeskViewCustomizer = new UsedeskViewCustomizer();
 
     @NonNull
     public static UsedeskChat initChat(@NonNull Context context,
@@ -44,6 +46,11 @@ public class UsedeskSdk {
             usedeskChatBox.release();
             usedeskChatBox = null;
         }
+    }
+
+    @NonNull
+    public static UsedeskViewCustomizer getUsedeskViewCustomizer() {
+        return usedeskViewCustomizer;
     }
 
     @NonNull

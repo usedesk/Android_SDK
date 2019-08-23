@@ -1,6 +1,5 @@
 package ru.usedesk.sdk.external.ui.chat;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -42,12 +41,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Message> messages;
     private ChatFeedbackListener chatFeedbackListener;
     private DownloadUtils downloadUtils;
+    private RecyclerView recyclerView;
 
-    MessagesAdapter(Context context, List<Message> messages,
-                    ChatFeedbackListener chatFeedbackListener) {
+    MessagesAdapter(@NonNull RecyclerView recyclerView,
+                    @NonNull List<Message> messages,
+                    @NonNull ChatFeedbackListener chatFeedbackListener) {
+        this.recyclerView = recyclerView;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
-        downloadUtils = new DownloadUtils(context);
+        downloadUtils = new DownloadUtils(recyclerView.getContext());
     }
 
     @Override
@@ -58,29 +60,29 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         switch (viewType) {
             case TYPE_USER_TEXT:
                 return new ItemUserTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_user_text_message, parent, false));
+                        R.layout.usedesk_item_message_user_text, parent, false));
             case TYPE_USER_FILE:
                 return new ItemUserFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_user_file_message, parent, false));
+                        R.layout.usedesk_item_message_user_file, parent, false));
             case TYPE_USER_TEXT_FILE:
                 return new ItemUserTextFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_user_text_file_message, parent, false));
+                        R.layout.usedesk_item_message_user_text_file, parent, false));
             case TYPE_OPERATOR_TEXT:
                 return new ItemOperatorTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_text_message, parent, false));
+                        R.layout.usedesk_item_message_operator_text, parent, false));
             case TYPE_OPERATOR_TEXT_FILE:
                 return new ItemOperatorTextFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_text_file_message, parent, false));
+                        R.layout.usedesk_item_message_operator_text_file, parent, false));
             case TYPE_OPERATOR_FILE:
                 return new ItemOperatorFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_file_message, parent, false));
+                        R.layout.usedesk_item_message_operator_file, parent, false));
             case TYPE_OPERATOR_FEEDBACK:
                 return new ItemOperatorFeedbackMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_operator_feedback_message, parent, false));
+                        R.layout.usedesk_item_message_operator_feedback, parent, false));
             case TYPE_SERVICE_TEXT:
             default:
                 return new ItemServiceTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_service_text_message, parent, false));
+                        R.layout.usedesk_item_message_service_text, parent, false));
         }
     }
 
@@ -139,7 +141,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case TYPE_OPERATOR_FILE:
                 ItemOperatorFileMessageHolder itemOperatorFileMessageHolder = (ItemOperatorFileMessageHolder) holder;
 
-                itemOperatorFileMessageHolder.nameTextView.setText(message.getName());
+                itemOperatorFileMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
 
                 checkForDisplayImageOperatorAvatar(message, itemOperatorFileMessageHolder.iconImageView);
 
@@ -164,7 +166,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ItemOperatorTextFileMessageHolder itemOperatorTextFileMessageHolder = (ItemOperatorTextFileMessageHolder) holder;
 
                 itemOperatorTextFileMessageHolder.textTextView.setText(message.getText());
-                itemOperatorTextFileMessageHolder.nameTextView.setText(message.getName());
+                itemOperatorTextFileMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
 
                 checkForDisplayImageOperatorAvatar(message, itemOperatorTextFileMessageHolder.iconImageView);
 
@@ -187,7 +189,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case TYPE_OPERATOR_FEEDBACK:
                 final ItemOperatorFeedbackMessageHolder itemOperatorFeedbackMessageHolder = (ItemOperatorFeedbackMessageHolder) holder;
-                itemOperatorFeedbackMessageHolder.nameTextView.setText(message.getName());
+                itemOperatorFeedbackMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
                 itemOperatorFeedbackMessageHolder.textTextView.setText(message.getText());
 
                 checkForDisplayImageOperatorAvatar(message, itemOperatorFeedbackMessageHolder.iconImageView);
@@ -272,6 +274,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
+        this.messages = messages;
+        notifyItemInserted(messages.size() - messagesCountDif);
+        scrollToBottom();
+    }
+
+    void scrollToBottom() {
+        if (!messages.isEmpty()) {
+            recyclerView.post(() ->
+                    recyclerView.scrollToPosition(messages.size() - 1));
+        }
+    }
+
     private class ItemOperatorFeedbackMessageHolder extends BaseItemMessageHolder {
 
         ImageView iconImageView;
@@ -332,7 +347,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 textTextView.setText(message.getText());
             }
-            nameTextView.setText(message.getName());
+            nameTextView.setText(message.getName().replace(' ', '\n'));
 
             checkForDisplayImageOperatorAvatar(message, iconImageView);
         }

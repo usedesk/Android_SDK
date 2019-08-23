@@ -31,6 +31,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private static final String ACCOUNT_ID_KEY = "accountId";
     private static final String TOKEN_KEY = "token";
     private static final String FOREGROUND_KEY = "foreground";
+    private static final String CUSTOM_VIEWS_KEY = "customViews";
 
     private EditText companyIdEditText;
     private EditText emailEditText;
@@ -39,6 +40,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private EditText accountIdEditText;
     private EditText tokenEditText;
     private Switch foregroundSwitch;
+    private Switch customViewsSwitch;
 
     private OnConfigurationUsedeskListener onConfigurationUsedeskListener;
 
@@ -68,6 +70,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         accountIdEditText = view.findViewById(R.id.et_account_id);
         tokenEditText = view.findViewById(R.id.et_token);
         foregroundSwitch = view.findViewById(R.id.switch_foreground);
+        customViewsSwitch = view.findViewById(R.id.switch_custom_views);
 
         //TODO: установите свои значения, если требуется
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(APP_CONFIGURATION_PREF,
@@ -81,6 +84,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String accountId = sharedPreferences.getString(ACCOUNT_ID_KEY, "4");
         String token = sharedPreferences.getString(TOKEN_KEY, "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
         boolean foreground = sharedPreferences.getBoolean(FOREGROUND_KEY, true);
+        boolean customViews = sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, false);
 
         companyIdEditText.setText(companyId);
         emailEditText.setText(email);
@@ -89,6 +93,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         accountIdEditText.setText(accountId);
         tokenEditText.setText(token);
         foregroundSwitch.setChecked(foreground);
+        customViewsSwitch.setChecked(customViews);
 
         alertDialogBuilder.setPositiveButton(android.R.string.ok, this::onAcceptClick);
 
@@ -112,6 +117,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String accountId = accountIdEditText.getText().toString();
         String token = tokenEditText.getText().toString();
         boolean foreground = foregroundSwitch.isChecked();
+        boolean customViews = customViewsSwitch.isChecked();
 
         getContext().getSharedPreferences(APP_CONFIGURATION_PREF, Context.MODE_PRIVATE)
                 .edit()
@@ -122,6 +128,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                 .putString(ACCOUNT_ID_KEY, accountId)
                 .putString(TOKEN_KEY, token)
                 .putBoolean(FOREGROUND_KEY, foreground)
+                .putBoolean(CUSTOM_VIEWS_KEY, customViews)
                 .apply();
 
 
@@ -132,7 +139,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
 
         if (companyIdEntered && emailEntered && urlEntered && offlineUrlEntered) {
             onConfigurationUsedeskListener.onConfigurationUsedeskSet(
-                    new UsedeskConfiguration(companyId, email, url, offlineUrl), foreground);
+                    new UsedeskConfiguration(companyId, email, url, offlineUrl), foreground, customViews);
 
             initKnowledgeBaseConfiguration(accountId, token);
 
@@ -150,6 +157,6 @@ public class ConfigureUsedeskDialog extends DialogFragment {
 
     public interface OnConfigurationUsedeskListener {
 
-        void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration, boolean foregroundService);
+        void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration, boolean foregroundService, boolean customViews);
     }
 }

@@ -39,7 +39,7 @@ allprojects {
 ```
 dependencies {
     ...
-    implementation 'ru.usedesk:usedesk_sdk:1.0.0'
+    implementation 'ru.usedesk:usedesk_sdk:1.0.2'
     ...
 }
 ```

@@ -1,6 +1,7 @@
 package ru.usedesk.sdk.external.entity.chat;
 
 import android.support.annotation.NonNull;
+import android.text.Html;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -36,7 +37,7 @@ public class Message {
     @NonNull
     public MessageButtons getMessageButtons() {
         if (messageButtons == null) {
-            messageButtons = new MessageButtons(text);
+            messageButtons = new MessageButtons(Html.fromHtml(Html.fromHtml(text).toString()).toString());
         }
         return messageButtons;
     }

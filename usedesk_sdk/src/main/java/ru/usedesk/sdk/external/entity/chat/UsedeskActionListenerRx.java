@@ -1,5 +1,6 @@
 package ru.usedesk.sdk.external.entity.chat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,8 +19,15 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
     private final Subject<Integer> errorResIdSubject = BehaviorSubject.create();
     private final Subject<Exception> errorSubject = BehaviorSubject.create();
 
+    private final Observable<List<Message>> messagesObservable;
+
     @Inject
     public UsedeskActionListenerRx() {
+        messagesObservable = messageSubject.scan(new ArrayList<>(), (messages, message) -> {
+            List<Message> newMessages = new ArrayList<>(messages);
+            newMessages.add(message);
+            return newMessages;
+        });
     }
 
     private void onMessage(Message message) {
@@ -38,12 +46,25 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
         return connectedSubject;
     }
 
+    /**
+     * Все сообщения
+     */
     public Observable<Message> getMessageObservable() {
         return messageSubject;
     }
 
+    /**
+     * Только новые сообщения, генерируемые после подписки
+     */
     public Observable<Message> getNewMessageObservable() {
         return newMessageSubject;
+    }
+
+    /**
+     * Полный список сообщений, генерируется с каждым сообщением
+     */
+    public Observable<List<Message>> getMessagesObservable() {
+        return messagesObservable;
     }
 
     public Observable<EmptyItem> getOfflineFormExpectedObservable() {
@@ -109,7 +130,7 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
         }
     }
 
-    enum EmptyItem {
+    public enum EmptyItem {
         IGNORE_ME
     }
 }

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.ui.IUsedeskOnBackPressedListener;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.common.FragmentView;
@@ -42,7 +43,8 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.usedesk_fragment_knowledge_base, container, false);
+        View view = UsedeskSdk.getUsedeskViewCustomizer()
+                .createView(inflater, R.layout.usedesk_fragment_knowledge_base, container, false);
 
         Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);

@@ -11,9 +11,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.usedesk.sdk.R;
+import ru.usedesk.sdk.external.UsedeskChat;
+import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
 
 public class OfflineFormDialog extends DialogFragment {
+
+    private static final String KEY_MESSAGE = "keyMessage";
 
     private EditText companyIdEditText;
     private EditText nameEditText;
@@ -22,29 +26,27 @@ public class OfflineFormDialog extends DialogFragment {
 
     private String companyId;
     private String email;
-    private String message;
 
-    private OnOfflineFormSetListener onOfflineFormSetListener;
+    private UsedeskChat usedeskChat;
 
     public OfflineFormDialog() {
     }
 
-    public static OfflineFormDialog newInstance(String companyId, String email, String message,
-                                                OnOfflineFormSetListener onOfflineFormSetListener) {
+    public static OfflineFormDialog newInstance(String message) {
+        Bundle args = new Bundle();
+        args.putString(KEY_MESSAGE, message);
+
         OfflineFormDialog dialogFragment = new OfflineFormDialog();
-        dialogFragment.companyId = companyId;
-        dialogFragment.email = email;
-        dialogFragment.message = message;
-        dialogFragment.onOfflineFormSetListener = onOfflineFormSetListener;
+        dialogFragment.setArguments(args);
         return dialogFragment;
     }
 
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.usedesk_view_offline_form, null);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.usedesk_dialog_offline_form, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
 
         alertDialogBuilder.setTitle(R.string.offline_form_dialog_title);
         alertDialogBuilder.setView(view);
@@ -54,9 +56,16 @@ public class OfflineFormDialog extends DialogFragment {
         nameEditText = view.findViewById(R.id.name_edit_text);
         messageEditText = view.findViewById(R.id.message_edit_text);
 
+        usedeskChat = UsedeskSdk.getChat();
+
+        this.companyId = usedeskChat.getUsedeskConfiguration().getCompanyId();
+        this.email = usedeskChat.getUsedeskConfiguration().getEmail();
+
         companyIdEditText.setText(companyId);
         emailEditText.setText(email);
-        messageEditText.setText(message);
+        if (getArguments() != null) {
+            messageEditText.setText(getArguments().getString(KEY_MESSAGE, ""));
+        }
 
         alertDialogBuilder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             boolean companyIdEntered = !TextUtils.isEmpty(companyIdEditText.getText());
@@ -69,7 +78,7 @@ public class OfflineFormDialog extends DialogFragment {
                 offlineForm.setName(nameEditText.getText().toString());
                 offlineForm.setMessage(messageEditText.getText().toString());
 
-                onOfflineFormSetListener.onnOfflineFormSet(offlineForm);
+                usedeskChat.sendOfflineForm(offlineForm);
             }
 
             dismiss();
@@ -78,10 +87,5 @@ public class OfflineFormDialog extends DialogFragment {
         alertDialogBuilder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss());
 
         return alertDialogBuilder.create();
-    }
-
-    public interface OnOfflineFormSetListener {
-
-        void onnOfflineFormSet(OfflineForm offlineForm);
     }
 }

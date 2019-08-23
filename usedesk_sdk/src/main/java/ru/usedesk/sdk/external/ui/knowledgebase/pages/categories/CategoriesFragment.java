@@ -45,6 +45,6 @@ public class CategoriesFragment extends FragmentListView<Category, CategoriesVie
         }
 
         return new CategoriesAdapter(list, (IOnCategoryClickListener) getParentFragment(),
-                usedeskKnowledgeBase.getViewCustomizer());
+                UsedeskSdk.getUsedeskViewCustomizer());
     }
 }

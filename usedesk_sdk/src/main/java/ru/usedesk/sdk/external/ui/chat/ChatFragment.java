@@ -2,6 +2,7 @@ package ru.usedesk.sdk.external.ui.chat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,23 +23,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.AppSession;
-import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
-public class ChatFragment extends Fragment implements UsedeskActionListener {
+public class ChatFragment extends Fragment {
 
     private static final int MAX_MESSAGE_LENGTH = 10000;
 
@@ -51,13 +47,11 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
     private ImageButton sendImageButton;
     private TextView attachmentMarkerTextView;
 
-    private List<Message> messages;
     private MessagesAdapter messagesAdapter;
-    private UsedeskChat usedeskChat;
-
-    private List<UsedeskFile> usedeskFiles;
 
     private FilePicker filePicker;
+
+    private ChatViewModel viewModel;
 
     public static ChatFragment newInstance() {
         return new ChatFragment();
@@ -72,9 +66,17 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.usedesk_fragment_chat, container, false);
+        View view = UsedeskSdk.getUsedeskViewCustomizer()
+                .createView(inflater, R.layout.usedesk_fragment_chat, container, false);
+
+        viewModel = ViewModelProviders.of(this, new ChatViewModel.Factory(getContext()))
+                .get(ChatViewModel.class);
+
         initUI(view);
         initList();
+
+        viewModel.getModelLiveData()
+                .observe(this, this::renderModel);
 
         return view;
     }
@@ -85,92 +87,55 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .stopService(getContext());
-
-        usedeskChat = UsedeskSdk.initChat(getContext(),
-                AppSession.getSession().getUsedeskConfiguration(), this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        UsedeskSdk.releaseChat();
-
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
                 .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
-
-        messages.clear();
-        messagesAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data != null) {
-
             List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
             if (selectedUsedeskFiles != null) {
-                usedeskFiles = selectedUsedeskFiles;
-                if (usedeskFiles.size() > 0) {
-                    attachmentMarkerTextView.setVisibility(View.VISIBLE);
-                    sendImageButton.setEnabled(true);
-                }
+                viewModel.setUsedeskFiles(selectedUsedeskFiles);
             }
         }
     }
 
-    @Override
-    public void onConnected() {
-        getActivity().runOnUiThread(() -> contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE));
-    }
-
-    @Override
-    public void onMessageReceived(Message message) {
-        if (message != null) {
-            notifyListItemInserted(message);
+    private void renderModel(@NonNull ChatModel model) {
+        if (!model.isLoading()) {
+            contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE);
         }
-    }
 
-    @Override
-    public void onMessagesReceived(List<Message> messages) {
-        if (messages != null) {
-            int startPosition = this.messages.isEmpty() ? 0 : this.messages.size() - 1;
-            notifyListItemsInserted(messages, startPosition);
+        if (model.getMessagesCountDif() > 0) {
+            messagesAdapter.updateMessages(model.getMessages(), model.getMessagesCountDif());
         }
-    }
 
-    @Override
-    public void onServiceMessageReceived(Message message) {
-        if (message != null) {
-            notifyListItemInserted(message);
+        if (model.isOfflineFormExpected()) {
+            if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
+                OfflineFormDialog.newInstance(messageEditText.getText().toString())
+                        .show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
+            }
         }
-    }
 
-    @Override
-    public void onOfflineFormExpected() {
-        if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
-            OfflineFormDialog offlineFormDialog = OfflineFormDialog.newInstance(
-                    usedeskChat.getUsedeskConfiguration().getCompanyId(),
-                    usedeskChat.getUsedeskConfiguration().getEmail(),
-                    messageEditText.getText().toString(),
-                    offlineForm -> usedeskChat.sendOfflineForm(offlineForm));
-            offlineFormDialog.show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
+        if (model.getUsedeskFiles().size() > 0) {
+            attachmentMarkerTextView.setVisibility(View.VISIBLE);
+            sendImageButton.setEnabled(true);
+        } else {
+            attachmentMarkerTextView.setVisibility(View.GONE);
         }
-    }
 
-    @Override
-    public void onDisconnected() {
-    }
-
-    @Override
-    public void onError(final int errorResId) {
-        getActivity().runOnUiThread(() ->
-                Toast.makeText(getActivity(), errorResId, Toast.LENGTH_LONG).show());
-    }
-
-    @Override
-    public void onError(final Exception e) {
-        getActivity().runOnUiThread(() ->
-                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show());
+        if (model.getErrorId() != null && model.getErrorId() != 0) {
+            Toast.makeText(getActivity(), model.getErrorId(), Toast.LENGTH_LONG).show();
+        }
+        if (model.getException() != null) {
+            Toast.makeText(getActivity(), model.getException().getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initUI(View view) {
@@ -206,53 +171,33 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
     }
 
     private void initList() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        messagesRecyclerView.setLayoutManager(linearLayoutManager);
+        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-        messages = new ArrayList<>();
-        messagesAdapter = new MessagesAdapter(getActivity(), messages, this::sendFeedback);
+        messagesAdapter = new MessagesAdapter(messagesRecyclerView, viewModel.getModelLiveData().getValue().getMessages(), viewModel::sendFeedback);
         messagesRecyclerView.setAdapter(messagesAdapter);
 
         messagesRecyclerView.addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     if (bottom < oldBottom) {
-                        messagesRecyclerView.postDelayed(this::scrollToBottom, 100);
+                        messagesRecyclerView.postDelayed(messagesAdapter::scrollToBottom, 100);
                     }
                 });
     }
 
-    private void notifyListItemInserted(final Message message) {
-        if (!isAdded()) {
-            return;
-        }
-
-        getActivity().runOnUiThread(() -> {
-            messages.add(message);
-            messagesAdapter.notifyItemInserted(messages.size() - 1);
-            scrollToBottom();
-        });
-    }
-
-    private void notifyListItemsInserted(final List<Message> newMessages, final int startPosition) {
-        if (!isAdded()) {
-            return;
-        }
-
-        getActivity().runOnUiThread(() -> {
-            messages.addAll(newMessages);
-            messagesAdapter.notifyItemRangeChanged(startPosition, messages.size() - 1);
-            scrollToBottom();
-        });
+    @NonNull
+    @SuppressWarnings("ConstantConditions")
+    private ChatModel getLastModel() {
+        return viewModel.getModelLiveData().getValue();
     }
 
     private void attemptSend() {
-        if (!NetworkUtils.isNetworkConnected(getActivity())) {
+        if (!NetworkUtils.isNetworkConnected(getContext())) {
             showError(R.string.no_connections);
             return;
         }
 
         String textMessage = messageEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(textMessage) && usedeskFiles == null) {
+        if (TextUtils.isEmpty(textMessage) && getLastModel().getUsedeskFiles().size() == 0) {
             messageEditText.requestFocus();
             return;
         }
@@ -262,25 +207,17 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
             return;
         }
 
-        if (usedeskFiles != null) {
-            usedeskChat.sendMessage(textMessage, usedeskFiles);
-        } else {
-            usedeskChat.sendTextMessage(textMessage);
-        }
+        viewModel.sendMessage(textMessage, getLastModel().getUsedeskFiles());
 
         messageEditText.setText("");
-        usedeskFiles = null;
         attachmentMarkerTextView.setVisibility(View.GONE);
     }
 
-    private void sendFeedback(Feedback feedback) {
-        usedeskChat.sendFeedbackMessage(feedback);
-    }
-
     private void openAttachmentDialog() {
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getActivity());
-        View bottomSheetView = getActivity().getLayoutInflater()
-                .inflate(R.layout.usedesk_view_attachment_dialog, null);
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        View bottomSheetView = UsedeskSdk.getUsedeskViewCustomizer()
+                .createView(getActivity().getLayoutInflater(),
+                        R.layout.usedesk_dialog_attachment, null, false);
 
         bottomSheetView.findViewById(R.id.pick_photo_button)
                 .setOnClickListener(view -> {
@@ -323,15 +260,8 @@ public class ChatFragment extends Fragment implements UsedeskActionListener {
         filePicker.pickDocument(this);
     }
 
-    private void scrollToBottom() {
-        if (!messages.isEmpty()) {
-            messagesRecyclerView.post(() ->
-                    messagesRecyclerView.scrollToPosition(messagesAdapter.getItemCount() - 1));
-        }
-    }
-
     private void showError(int messageResId) {
-        new AlertDialog.Builder(getActivity())
+        new AlertDialog.Builder(getContext())
                 .setTitle(R.string.error)
                 .setMessage(messageResId)
                 .setPositiveButton(android.R.string.ok, null)

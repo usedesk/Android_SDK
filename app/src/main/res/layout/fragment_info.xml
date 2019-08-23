@@ -24,5 +24,4 @@
         android:linksClickable="true"
         android:text="@string/app_info_contacts"
         android:textStyle="bold" />
-
 </LinearLayout>

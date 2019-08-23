@@ -14,9 +14,7 @@ import ru.usedesk.sample.R;
 import ru.usedesk.sample.ui.fragments.home.HomeFragment;
 import ru.usedesk.sample.ui.fragments.info.InfoFragment;
 import ru.usedesk.sample.utils.ToolbarHelper;
-import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
-import ru.usedesk.sdk.external.ui.ViewCustomizer;
 import ru.usedesk.sdk.external.ui.chat.ChatFragment;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
@@ -40,8 +38,6 @@ public class MainActivity extends AppCompatActivity
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
-
-        customizeView();
 
         toolbarHelper.setToolbar();
 
@@ -100,14 +96,6 @@ public class MainActivity extends AppCompatActivity
     public void onSupportClick() {
         toolbarHelper.update(ToolbarHelper.State.HOME);
         switchFragment(ChatFragment.newInstance());
-    }
-
-    private void customizeView() {
-        ViewCustomizer viewCustomizer = UsedeskSdk.initKnowledgeBase(this)
-                .getViewCustomizer();
-
-        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_category_item, R.layout.category_item);
-        viewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_article_info_item, R.layout.article_info_item);
     }
 
     private void initBottomNavigation() {

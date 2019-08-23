@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="usedesk_marginTop" format="dimension" />
+    <attr name="usedesk_marginBottom" format="dimension" />
+    <attr name="usedesk_marginStart" format="dimension" />
+    <attr name="usedesk_marginEnd" format="dimension" />
+
+    <attr name="usedesk_content_marginTop" format="dimension" />
+    <attr name="usedesk_content_marginBottom" format="dimension" />
+    <attr name="usedesk_content_marginStart" format="dimension" />
+    <attr name="usedesk_content_marginEnd" format="dimension" />
+
+    <attr name="usedesk_textstyle_chat_massage" format="reference" />
+    <attr name="usedesk_textstyle_chat_time" format="reference" />
+
+    <attr name="usedesk_fragment_knowledge_support_title" format="string" />
+
+    <attr name="usedesk_fragment_chat_attachment_style" format="reference" />
+    <attr name="usedesk_fragment_chat_send_style" format="reference" />
+
+    <attr name="usedesk_item_section_icon_width" format="dimension" />
+    <attr name="usedesk_item_section_icon_height" format="dimension" />
+
+    <attr name="usedesk_item_article_info_title_marginTop" format="dimension" />
+    <attr name="usedesk_item_article_info_title_marginStart" format="dimension" />
+
+    <attr name="usedesk_item_article_info_shows_marginTop" format="dimension" />
+    <attr name="usedesk_item_article_info_shows_marginBottom" format="dimension" />
+    <attr name="usedesk_item_article_info_shows_marginEnd" format="dimension" />
+    <attr name="usedesk_item_article_info_shows_text" format="string" />
+
+    <attr name="usedesk_item_article_info_count_marginEnd" format="dimension" />
+
+    <attr name="usedesk_item_category_title_text_size" format="dimension" />
+    <attr name="usedesk_item_section_title_text_size" format="dimension" />
+
+    <attr name="usedesk_item_message_paddingTop" format="dimension" />
+    <attr name="usedesk_item_message_paddingBottom" format="dimension" />
+    <attr name="usedesk_item_message_paddingStart" format="dimension" />
+    <attr name="usedesk_item_message_paddingEnd" format="dimension" />
+    <attr name="usedesk_item_message_image_width" format="dimension" />
+    <attr name="usedesk_item_message_image_height" format="dimension" />
+    <attr name="usedesk_item_message_text_style" format="dimension" />
+
+    <attr name="usedesk_item_message_time_header_style" format="reference" />
+
+    <attr name="usedesk_item_message_operator_background" format="reference" />
+    <attr name="usedesk_item_message_operator_icon_width" format="dimension" />
+    <attr name="usedesk_item_message_operator_icon_height" format="dimension" />
+
+    <attr name="usedesk_item_message_operator_feedback_button_width" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_height" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_marginStart" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_marginEnd" format="dimension" />
+    <attr name="usedesk_item_message_operator_feedback_button_padding" format="dimension" />
+
+    <attr name="usedesk_item_message_user_background" format="reference" />
+
+    <attr name="usedesk_dialog_style" format="reference" />
+    <attr name="usedesk_dialog_attachment_document_title" format="string" />
+    <attr name="usedesk_dialog_attachment_photo_title" format="string" />
+    <attr name="usedesk_dialog_attachment_icon_width" format="dimension" />
+    <attr name="usedesk_dialog_attachment_icon_height" format="dimension" />
+
+    <attr name="usedesk_fragment_article" format="reference" />
+    <attr name="usedesk_fragment_chat" format="reference" />
+    <attr name="usedesk_fragment_knowledge_base" format="reference" />
+    <attr name="usedesk_fragment_list" format="reference" />
+    <attr name="usedesk_dialog_offlineform" format="reference" />
+    <attr name="usedesk_dialog_attachment" format="reference" />
+    <attr name="usedesk_item_articleinfo" format="reference" />
+    <attr name="usedesk_item_category" format="reference" />
+    <attr name="usedesk_item_section" format="reference" />
+    <attr name="usedesk_item_message_service" format="reference" />
+    <attr name="usedesk_item_message_operator" format="reference" />
+    <attr name="usedesk_item_message_user" format="reference" />
+</resources>

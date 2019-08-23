@@ -46,7 +46,7 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
                     IOnArticleBodyClickListener.class.getSimpleName());
         }
         return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment(),
-                usedeskKnowledgeBase.getViewCustomizer());
+                UsedeskSdk.getUsedeskViewCustomizer());
     }
 
     public void onSearchQueryUpdate(@NonNull String searchQuery) {

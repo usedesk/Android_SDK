@@ -17,7 +17,6 @@
             android:layout_margin="@dimen/dialog_configure_usedesk_margin"
             android:hint="@string/configuration_company_id_hint"
             android:inputType="text" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -31,7 +30,6 @@
             android:layout_margin="@dimen/dialog_configure_usedesk_margin"
             android:hint="@string/configuration_email_hint"
             android:inputType="textEmailAddress" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -45,7 +43,6 @@
             android:layout_margin="@dimen/dialog_configure_usedesk_margin"
             android:hint="@string/configuration_url_hint"
             android:inputType="textUri" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -59,7 +56,6 @@
             android:layout_margin="@dimen/dialog_configure_usedesk_margin"
             android:hint="@string/configuration_offline_url_hint"
             android:inputType="textUri" />
-
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -86,7 +82,6 @@
             android:layout_margin="@dimen/dialog_configure_usedesk_margin"
             android:hint="@string/enter_token"
             android:inputType="textUri" />
-
     </android.support.design.widget.TextInputLayout>
 
     <Switch
@@ -98,4 +93,12 @@
         android:text="@string/switch_hint"
         android:textSize="18sp" />
 
+    <Switch
+        android:id="@+id/switch_custom_views"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="14dp"
+        android:checked="false"
+        android:text="@string/custom_views"
+        android:textSize="18sp" />
 </LinearLayout>

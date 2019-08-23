@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.usedesk.sdk.external.ui.knowledgebase.pages.article.ArticleFragment">
+    android:theme="?attr/usedesk_fragment_article"
+    tools:theme="@style/Usedesk.Fragment.Article">
 
     <TextView
         android:id="@+id/tv_message"
@@ -37,5 +38,4 @@
                 android:textSize="16sp" />
         </ScrollView>
     </LinearLayout>
-
 </FrameLayout>

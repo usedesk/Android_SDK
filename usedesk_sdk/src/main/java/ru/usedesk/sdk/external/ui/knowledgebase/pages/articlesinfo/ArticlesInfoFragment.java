@@ -46,6 +46,6 @@ public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, Articles
         }
 
         return new ArticlesInfoAdapter(list, (IOnArticleInfoClickListener) getParentFragment(),
-                usedeskKnowledgeBase.getViewCustomizer());
+                UsedeskSdk.getUsedeskViewCustomizer());
     }
 }

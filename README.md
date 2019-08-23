@@ -25,7 +25,27 @@ dependencies {
 }
 ```
 
-## Основные этапы работы/взаимодействия с библиотекой
+### Через Maven репозиторий
+Добавьте в `build.gradle` вашего проекта строку:
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://github.com/usedesk/Android_SDK_Maven/raw/master/' }
+    }
+}
+```
+
+Добавьте в `build.gradle` вашего модуля строку:
+```
+dependencies {
+    ...
+    implementation 'ru.usedesk:usedesk_sdk:1.0.2'
+    ...
+}
+```
+
+## Основные этапы работы/взаимодействия с библиотекой
 
 [UsedeskSDK](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSDK.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.
 
@@ -51,7 +71,7 @@ dependencies {
 
 Метод инициализации принимает объекты следующих классов:
 
-- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером.
+- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером.
 ```
 private String accountId;
 private String email;
@@ -59,7 +79,7 @@ private String url;
 private String offlineFormUrl;
 ```
 
-- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе.
+- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе.
 ```
 onConnected()
 onMessageReceived(Message message)

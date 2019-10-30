@@ -7,9 +7,9 @@ import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.ui.mvi.ReducableModel;
+import ru.usedesk.sdk.external.ui.mvi.ReducibleModel;
 
-public class ChatModel extends ReducableModel<ChatModel> {
+public class ChatModel extends ReducibleModel<ChatModel> {
     private Boolean loading;
 
     private Boolean offlineFormExpected = false;

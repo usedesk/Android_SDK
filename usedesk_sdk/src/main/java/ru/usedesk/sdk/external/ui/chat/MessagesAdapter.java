@@ -55,169 +55,30 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-
         switch (viewType) {
             case TYPE_USER_TEXT:
-                return new ItemUserTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_user_text, parent, false));
+                return new ItemUserTextMessageHolder(parent);
             case TYPE_USER_FILE:
-                return new ItemUserFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_user_file, parent, false));
+                return new ItemUserFileMessageHolder(parent);
             case TYPE_USER_TEXT_FILE:
-                return new ItemUserTextFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_user_text_file, parent, false));
+                return new ItemUserTextFileMessageHolder(parent);
             case TYPE_OPERATOR_TEXT:
-                return new ItemOperatorTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_operator_text, parent, false));
+                return new ItemOperatorTextMessageHolder(parent);
             case TYPE_OPERATOR_TEXT_FILE:
-                return new ItemOperatorTextFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_operator_text_file, parent, false));
+                return new ItemOperatorTextFileMessageHolder(parent);
             case TYPE_OPERATOR_FILE:
-                return new ItemOperatorFileMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_operator_file, parent, false));
+                return new ItemOperatorFileMessageHolder(parent);
             case TYPE_OPERATOR_FEEDBACK:
-                return new ItemOperatorFeedbackMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_operator_feedback, parent, false));
+                return new ItemOperatorFeedbackMessageHolder(parent);
             case TYPE_SERVICE_TEXT:
             default:
-                return new ItemServiceTextMessageHolder(layoutInflater.inflate(
-                        R.layout.usedesk_item_message_service_text, parent, false));
+                return new ItemServiceTextMessageHolder(parent);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        final Message message = messages.get(position);
-
-        BaseItemMessageHolder baseItemMessageHolder = (BaseItemMessageHolder) holder;
-        if (message.getCreatedAt() != null) {
-            String time = TimeUtils.parseTime(message.getCreatedAt());
-            if (TextUtils.isEmpty(time)) {
-                baseItemMessageHolder.timeTextView.setVisibility(View.GONE);
-            } else {
-                baseItemMessageHolder.timeTextView.setVisibility(View.VISIBLE);
-                baseItemMessageHolder.timeTextView.setText(time);
-            }
-        }
-
-        switch (getItemViewType(position)) {
-            case TYPE_USER_TEXT:
-                ItemUserTextMessageHolder itemUserTextMessageHolder = (ItemUserTextMessageHolder) holder;
-                itemUserTextMessageHolder.textTextView.setText(message.getText());
-                break;
-            case TYPE_USER_FILE:
-                ItemUserFileMessageHolder itemUserFileMessageHolder = (ItemUserFileMessageHolder) holder;
-                if (message.getUsedeskFile().isImage()) {
-                    itemUserFileMessageHolder.progressBar.setVisibility(View.VISIBLE);
-                    ImageUtils.checkForDisplayImage(
-                            itemUserFileMessageHolder.fileImageView,
-                            itemUserFileMessageHolder.progressBar,
-                            message.getUsedeskFile().getContent());
-                } else {
-                    itemUserFileMessageHolder.progressBar.setVisibility(View.GONE);
-                    itemUserFileMessageHolder.fileImageView.setImageResource(R.drawable.ic_document_black);
-                }
-                break;
-            case TYPE_USER_TEXT_FILE:
-                ItemUserTextFileMessageHolder itemUserTextFileMessageHolder = (ItemUserTextFileMessageHolder) holder;
-
-                itemUserTextFileMessageHolder.textTextView.setText(message.getText());
-
-                if (message.getUsedeskFile().isImage()) {
-                    itemUserTextFileMessageHolder.progressBar.setVisibility(View.VISIBLE);
-                    ImageUtils.checkForDisplayImage(
-                            itemUserTextFileMessageHolder.fileImageView,
-                            itemUserTextFileMessageHolder.progressBar,
-                            message.getUsedeskFile().getContent());
-                } else {
-                    itemUserTextFileMessageHolder.progressBar.setVisibility(View.GONE);
-                    itemUserTextFileMessageHolder.fileImageView.setImageResource(R.drawable.ic_document_black);
-                }
-                break;
-            case TYPE_OPERATOR_TEXT:
-                ((ItemOperatorTextMessageHolder) holder).bind(message);
-                break;
-            case TYPE_OPERATOR_FILE:
-                ItemOperatorFileMessageHolder itemOperatorFileMessageHolder = (ItemOperatorFileMessageHolder) holder;
-
-                itemOperatorFileMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
-
-                checkForDisplayImageOperatorAvatar(message, itemOperatorFileMessageHolder.iconImageView);
-
-                if (message.getUsedeskFile().isImage()) {
-                    itemOperatorFileMessageHolder.progressBar.setVisibility(View.VISIBLE);
-                    ImageUtils.checkForDisplayImage(
-                            itemOperatorFileMessageHolder.fileImageView,
-                            itemOperatorFileMessageHolder.progressBar,
-                            message.getUsedeskFile().getContent());
-                } else {
-                    itemOperatorFileMessageHolder.progressBar.setVisibility(View.GONE);
-                    itemOperatorFileMessageHolder.fileImageView.setImageResource(R.drawable.ic_document_black);
-                    itemOperatorFileMessageHolder.itemView.setOnClickListener(view -> {
-                        if (message.getUsedeskFile() != null) {
-                            downloadUtils.download(message.getUsedeskFile().getName(),
-                                    message.getUsedeskFile().getContent());
-                        }
-                    });
-                }
-                break;
-            case TYPE_OPERATOR_TEXT_FILE:
-                ItemOperatorTextFileMessageHolder itemOperatorTextFileMessageHolder = (ItemOperatorTextFileMessageHolder) holder;
-
-                itemOperatorTextFileMessageHolder.textTextView.setText(message.getText());
-                itemOperatorTextFileMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
-
-                checkForDisplayImageOperatorAvatar(message, itemOperatorTextFileMessageHolder.iconImageView);
-
-                if (message.getUsedeskFile().isImage()) {
-                    itemOperatorTextFileMessageHolder.progressBar.setVisibility(View.VISIBLE);
-                    ImageUtils.checkForDisplayImage(
-                            itemOperatorTextFileMessageHolder.fileImageView,
-                            itemOperatorTextFileMessageHolder.progressBar,
-                            message.getUsedeskFile().getContent());
-                } else {
-                    itemOperatorTextFileMessageHolder.progressBar.setVisibility(View.GONE);
-                    itemOperatorTextFileMessageHolder.fileImageView.setImageResource(R.drawable.ic_document_black);
-                    itemOperatorTextFileMessageHolder.itemView.setOnClickListener(view -> {
-                        if (message.getUsedeskFile() != null) {
-                            downloadUtils.download(message.getUsedeskFile().getName(),
-                                    message.getUsedeskFile().getContent());
-                        }
-                    });
-                }
-                break;
-            case TYPE_OPERATOR_FEEDBACK:
-                final ItemOperatorFeedbackMessageHolder itemOperatorFeedbackMessageHolder = (ItemOperatorFeedbackMessageHolder) holder;
-                itemOperatorFeedbackMessageHolder.nameTextView.setText(message.getName().replace(' ', '\n'));
-                itemOperatorFeedbackMessageHolder.textTextView.setText(message.getText());
-
-                checkForDisplayImageOperatorAvatar(message, itemOperatorFeedbackMessageHolder.iconImageView);
-
-                if (message.getPayload().hasFeedback()) {
-                    itemOperatorFeedbackMessageHolder.likeButton.setEnabled(false);
-                    itemOperatorFeedbackMessageHolder.dislikeButton.setEnabled(false);
-                } else {
-                    itemOperatorFeedbackMessageHolder.likeButton.setEnabled(true);
-                    itemOperatorFeedbackMessageHolder.dislikeButton.setEnabled(true);
-
-                    itemOperatorFeedbackMessageHolder.likeButton.setOnClickListener(view -> {
-                        chatFeedbackListener.onFeedbackSet(Feedback.LIKE);
-                        view.setEnabled(false);
-                        itemOperatorFeedbackMessageHolder.dislikeButton.setEnabled(false);
-                    });
-                    itemOperatorFeedbackMessageHolder.dislikeButton.setOnClickListener(view -> {
-                        chatFeedbackListener.onFeedbackSet(Feedback.DISLIKE);
-                        view.setEnabled(false);
-                        itemOperatorFeedbackMessageHolder.likeButton.setEnabled(false);
-                    });
-                }
-                break;
-            case TYPE_SERVICE_TEXT:
-                ItemServiceTextMessageHolder itemServiceTextMessageHolder = (ItemServiceTextMessageHolder) holder;
-                itemServiceTextMessageHolder.textTextView.setText(message.getText());
-                break;
-        }
+        ((MessageHolder) holder).bind(messages.get(position));
     }
 
     @Override
@@ -282,50 +143,86 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     void scrollToBottom() {
         if (!messages.isEmpty()) {
-            recyclerView.post(() ->
-                    recyclerView.scrollToPosition(messages.size() - 1));
+            recyclerView.post(() -> recyclerView.scrollToPosition(messages.size() - 1));
         }
     }
 
-    private class ItemOperatorFeedbackMessageHolder extends BaseItemMessageHolder {
-
+    private class ItemOperatorFeedbackMessageHolder extends MessageHolder {
         ImageView iconImageView;
         TextView nameTextView;
         TextView textTextView;
         ImageButton likeButton;
         ImageButton dislikeButton;
 
-        ItemOperatorFeedbackMessageHolder(View itemView) {
-            super(itemView);
+        ItemOperatorFeedbackMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_operator_feedback);
+
             iconImageView = itemView.findViewById(R.id.icon_image_view);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             textTextView = itemView.findViewById(R.id.text_text_view);
             likeButton = itemView.findViewById(R.id.like_button);
             dislikeButton = itemView.findViewById(R.id.dislike_button);
         }
-    }
 
-    private class ItemUserTextMessageHolder extends BaseItemTextMessageHolder {
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            nameTextView.setText(message.getName().replace(' ', '\n'));
+            textTextView.setText(message.getText());
 
-        ItemUserTextMessageHolder(View itemView) {
-            super(itemView);
+            checkForDisplayImageOperatorAvatar(message, iconImageView);
+
+            if (message.getPayload().hasFeedback()) {
+                likeButton.setEnabled(false);
+                dislikeButton.setEnabled(false);
+            } else {
+                likeButton.setEnabled(true);
+                dislikeButton.setEnabled(true);
+
+                likeButton.setOnClickListener(view -> {
+                    chatFeedbackListener.onFeedbackSet(Feedback.LIKE);
+                    view.setEnabled(false);
+                    dislikeButton.setEnabled(false);
+                });
+                dislikeButton.setOnClickListener(view -> {
+                    chatFeedbackListener.onFeedbackSet(Feedback.DISLIKE);
+                    view.setEnabled(false);
+                    likeButton.setEnabled(false);
+                });
+            }
         }
     }
 
-    private class ItemOperatorTextMessageHolder extends BaseItemTextMessageHolder {
+    private class ItemUserTextMessageHolder extends TextMessageHolder {
+
+        ItemUserTextMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_user_text);
+        }
+
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            textTextView.setText(message.getText());
+        }
+    }
+
+    private class ItemOperatorTextMessageHolder extends TextMessageHolder {
 
         ImageView iconImageView;
         TextView nameTextView;
         LinearLayout layoutButtons;
 
-        ItemOperatorTextMessageHolder(View itemView) {
-            super(itemView);
+        ItemOperatorTextMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_operator_text);
+
             iconImageView = itemView.findViewById(R.id.icon_image_view);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             layoutButtons = itemView.findViewById(R.id.layout_buttons);
         }
 
-        void bind(Message message) {
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
             MessageButtons messageButtons = message.getMessageButtons();
             layoutButtons.removeAllViews();
             if (messageButtons.getMessageText() != null) {
@@ -353,94 +250,199 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private class ItemServiceTextMessageHolder extends BaseItemTextMessageHolder {
+    private class ItemServiceTextMessageHolder extends TextMessageHolder {
 
-        ItemServiceTextMessageHolder(View itemView) {
-            super(itemView);
+        ItemServiceTextMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_service_text);
+        }
+
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            textTextView.setText(message.getText());
         }
     }
 
-    private abstract class BaseItemTextMessageHolder extends BaseItemMessageHolder {
+    private abstract class TextMessageHolder extends MessageHolder {
 
         TextView textTextView;
 
-        BaseItemTextMessageHolder(View itemView) {
-            super(itemView);
+        TextMessageHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(viewGroup, id);
+
             textTextView = itemView.findViewById(R.id.text_text_view);
         }
     }
 
-    private class ItemUserFileMessageHolder extends BaseItemFileMessageHolder {
+    private class ItemUserFileMessageHolder extends FileMessageHolder {
 
-        ItemUserFileMessageHolder(View itemView) {
-            super(itemView);
+        ItemUserFileMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_user_file);
+        }
+
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            if (message.getUsedeskFile().isImage()) {
+                progressBar.setVisibility(View.VISIBLE);
+                ImageUtils.checkForDisplayImage(
+                        fileImageView,
+                        progressBar,
+                        message.getUsedeskFile().getContent());
+            } else {
+                progressBar.setVisibility(View.GONE);
+                fileImageView.setImageResource(R.drawable.ic_document_black);
+            }
         }
     }
 
-    private class ItemOperatorFileMessageHolder extends BaseItemFileMessageHolder {
+    private class ItemOperatorFileMessageHolder extends FileMessageHolder {
 
         ImageView iconImageView;
         TextView nameTextView;
 
-        ItemOperatorFileMessageHolder(View itemView) {
-            super(itemView);
+        ItemOperatorFileMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_operator_file);
+
             iconImageView = itemView.findViewById(R.id.icon_image_view);
             nameTextView = itemView.findViewById(R.id.name_text_view);
         }
+
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            nameTextView.setText(message.getName().replace(' ', '\n'));
+
+            checkForDisplayImageOperatorAvatar(message, iconImageView);
+
+            if (message.getUsedeskFile().isImage()) {
+                progressBar.setVisibility(View.VISIBLE);
+                ImageUtils.checkForDisplayImage(
+                        fileImageView,
+                        progressBar,
+                        message.getUsedeskFile().getContent());
+            } else {
+                progressBar.setVisibility(View.GONE);
+                fileImageView.setImageResource(R.drawable.ic_document_black);
+                itemView.setOnClickListener(view -> {
+                    if (message.getUsedeskFile() != null) {
+                        downloadUtils.download(message.getUsedeskFile().getName(),
+                                message.getUsedeskFile().getContent());
+                    }
+                });
+            }
+        }
     }
 
-    private abstract class BaseItemFileMessageHolder extends BaseItemMessageHolder {
+    private abstract class FileMessageHolder extends MessageHolder {
 
         ImageView fileImageView;
         ProgressBar progressBar;
 
-        BaseItemFileMessageHolder(View itemView) {
-            super(itemView);
+        FileMessageHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(viewGroup, id);
+
             fileImageView = itemView.findViewById(R.id.file_image_view);
             progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }
 
-    private class ItemUserTextFileMessageHolder extends BaseItemTextFileMessageHolder {
+    private class ItemUserTextFileMessageHolder extends TextFileMessageHolder {
+        ItemUserTextFileMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_user_text_file);
+        }
 
-        ItemUserTextFileMessageHolder(View itemView) {
-            super(itemView);
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            textTextView.setText(message.getText());
+
+            if (message.getUsedeskFile().isImage()) {
+                progressBar.setVisibility(View.VISIBLE);
+                ImageUtils.checkForDisplayImage(
+                        fileImageView,
+                        progressBar,
+                        message.getUsedeskFile().getContent());
+            } else {
+                progressBar.setVisibility(View.GONE);
+                fileImageView.setImageResource(R.drawable.ic_document_black);
+            }
         }
     }
 
-    private class ItemOperatorTextFileMessageHolder extends BaseItemTextFileMessageHolder {
+    private class ItemOperatorTextFileMessageHolder extends TextFileMessageHolder {
 
         ImageView iconImageView;
         TextView nameTextView;
 
-        ItemOperatorTextFileMessageHolder(View itemView) {
-            super(itemView);
+        ItemOperatorTextFileMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_operator_text_file);
+
             iconImageView = itemView.findViewById(R.id.icon_image_view);
             nameTextView = itemView.findViewById(R.id.name_text_view);
         }
+
+        @Override
+        void bind(@NonNull Message message) {
+            super.bind(message);
+            textTextView.setText(message.getText());
+            nameTextView.setText(message.getName().replace(' ', '\n'));
+
+            checkForDisplayImageOperatorAvatar(message, iconImageView);
+
+            if (message.getUsedeskFile().isImage()) {
+                progressBar.setVisibility(View.VISIBLE);
+                ImageUtils.checkForDisplayImage(
+                        fileImageView,
+                        progressBar,
+                        message.getUsedeskFile().getContent());
+            } else {
+                progressBar.setVisibility(View.GONE);
+                fileImageView.setImageResource(R.drawable.ic_document_black);
+                itemView.setOnClickListener(view -> {
+                    if (message.getUsedeskFile() != null) {
+                        downloadUtils.download(message.getUsedeskFile().getName(),
+                                message.getUsedeskFile().getContent());
+                    }
+                });
+            }
+        }
     }
 
-    private abstract class BaseItemTextFileMessageHolder extends BaseItemMessageHolder {
+    private abstract class TextFileMessageHolder extends MessageHolder {
 
         TextView textTextView;
         ImageView fileImageView;
         ProgressBar progressBar;
 
-        BaseItemTextFileMessageHolder(View itemView) {
-            super(itemView);
+        TextFileMessageHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(viewGroup, id);
+
             textTextView = itemView.findViewById(R.id.text_text_view);
             fileImageView = itemView.findViewById(R.id.file_image_view);
             progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }
 
-    private abstract class BaseItemMessageHolder extends RecyclerView.ViewHolder {
+    private abstract class MessageHolder extends RecyclerView.ViewHolder {
 
         TextView timeTextView;
 
-        BaseItemMessageHolder(View itemView) {
-            super(itemView);
+        MessageHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
             timeTextView = itemView.findViewById(R.id.time_text_view);
+        }
+
+        void bind(@NonNull Message message) {
+            if (message.getCreatedAt() != null) {
+                String time = TimeUtils.parseTime(message.getCreatedAt());
+                if (TextUtils.isEmpty(time)) {
+                    timeTextView.setVisibility(View.GONE);
+                } else {
+                    timeTextView.setVisibility(View.VISIBLE);
+                    timeTextView.setText(time);
+                }
+            }
         }
     }
 }

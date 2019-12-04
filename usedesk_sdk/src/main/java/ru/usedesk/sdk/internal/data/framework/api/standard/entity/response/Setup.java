@@ -1,9 +1,12 @@
-package ru.usedesk.sdk.external.entity.chat;
+package ru.usedesk.sdk.internal.data.framework.api.standard.entity.response;
 
 import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.usedesk.sdk.external.entity.chat.Client;
+import ru.usedesk.sdk.external.entity.chat.Message;
 
 public class Setup {
 

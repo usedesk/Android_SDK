@@ -1,7 +1,5 @@
 package ru.usedesk.sdk.internal.data.framework.api.standard.entity.response;
 
-import ru.usedesk.sdk.external.entity.chat.State;
-
 public class SetEmailResponse extends BaseResponse {
 
     public static final String TYPE = "@@chat/current/SET";

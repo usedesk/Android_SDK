@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
@@ -22,6 +21,7 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.Reques
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendFeedbackRequest;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendMessageRequest;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SetEmailRequest;
+import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 
 public class ApiRepository implements IApiRepository {

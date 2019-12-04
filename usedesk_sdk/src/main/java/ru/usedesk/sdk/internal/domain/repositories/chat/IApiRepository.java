@@ -4,11 +4,11 @@ import android.support.annotation.NonNull;
 
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.external.entity.exceptions.ApiException;
+import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 
 public interface IApiRepository {
 

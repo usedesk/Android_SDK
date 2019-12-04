@@ -1,7 +1,5 @@
 package ru.usedesk.sdk.internal.data.framework.api.standard.entity.response;
 
-import ru.usedesk.sdk.external.entity.chat.Setup;
-
 public class InitChatResponse extends BaseResponse {
 
     public static final String TYPE = "@@chat/current/INITED";

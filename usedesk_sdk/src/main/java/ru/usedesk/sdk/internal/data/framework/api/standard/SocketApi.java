@@ -20,7 +20,6 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.exceptions.ApiException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.BaseRequest;
@@ -30,6 +29,7 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.InitC
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.SetEmailResponse;
+import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.internal.utils.LogUtils;
 
 public class SocketApi {

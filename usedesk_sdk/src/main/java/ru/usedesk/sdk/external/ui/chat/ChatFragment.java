@@ -130,11 +130,8 @@ public class ChatFragment extends Fragment {
             attachmentMarkerTextView.setVisibility(View.GONE);
         }
 
-        if (model.getErrorId() != null && model.getErrorId() != 0) {
-            Toast.makeText(getActivity(), model.getErrorId(), Toast.LENGTH_LONG).show();
-        }
-        if (model.getException() != null) {
-            Toast.makeText(getActivity(), model.getException().getMessage(), Toast.LENGTH_LONG).show();
+        if (model.getUsedeskException() != null) {
+            Toast.makeText(getActivity(), model.getUsedeskException().getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

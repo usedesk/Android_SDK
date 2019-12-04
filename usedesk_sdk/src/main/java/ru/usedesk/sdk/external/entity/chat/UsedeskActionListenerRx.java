@@ -1,5 +1,7 @@
 package ru.usedesk.sdk.external.entity.chat;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 
 public class UsedeskActionListenerRx implements UsedeskActionListener {
 
@@ -18,6 +21,7 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
     private final Subject<EmptyItem> disconnectedSubject = BehaviorSubject.create();
     private final Subject<Integer> errorResIdSubject = BehaviorSubject.create();
     private final Subject<Exception> errorSubject = BehaviorSubject.create();
+    private final Subject<UsedeskException> exceptionSubject = BehaviorSubject.create();
 
     private final Observable<List<Message>> messagesObservable;
 
@@ -119,15 +123,26 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
     }
 
     @Override
+    @Deprecated
     public void onError(int errorResId) {
         errorResIdSubject.onNext(errorResId);
     }
 
     @Override
+    @Deprecated
     public void onError(Exception e) {
         if (e != null) {
             errorSubject.onError(e);
         }
+    }
+
+    @Override
+    public void onException(@NonNull UsedeskException usedeskException) {
+        exceptionSubject.onNext(usedeskException);
+    }
+
+    public Subject<UsedeskException> getExceptionSubject() {
+        return exceptionSubject;
     }
 
     public enum EmptyItem {

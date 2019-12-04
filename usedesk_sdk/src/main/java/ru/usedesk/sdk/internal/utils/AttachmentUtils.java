@@ -37,7 +37,7 @@ public class AttachmentUtils {
 
             return output.toString();
         } catch (Exception e) {
-            LogUtils.LOGE(AttachmentUtils.class.getSimpleName(), e);
+            e.printStackTrace();
         }
 
         return "";

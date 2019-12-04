@@ -7,6 +7,7 @@ import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.sdk.external.ui.mvi.ReducibleModel;
 
 public class ChatModel extends ReducibleModel<ChatModel> {
@@ -19,23 +20,20 @@ public class ChatModel extends ReducibleModel<ChatModel> {
 
     private List<UsedeskFile> usedeskFiles;
 
-    private Integer errorId;
-    private Exception exception;
+    private UsedeskException usedeskException;
 
     private ChatModel() {
     }
 
     public ChatModel(@NonNull Boolean loading, @NonNull Boolean offlineFormExpected,
                      @NonNull List<Message> messages, @NonNull Integer messagesCountDif,
-                     @NonNull List<UsedeskFile> usedeskFiles,
-                     @Nullable Integer errorId, @Nullable Exception exception) {
+                     @NonNull List<UsedeskFile> usedeskFiles, @Nullable UsedeskException usedeskException) {
         this.loading = loading;
         this.offlineFormExpected = offlineFormExpected;
         this.messages = messages;
         this.messagesCountDif = messagesCountDif;
         this.usedeskFiles = usedeskFiles;
-        this.errorId = errorId;
-        this.exception = exception;
+        this.usedeskException = usedeskException;
     }
 
     public boolean isLoading() {
@@ -61,13 +59,8 @@ public class ChatModel extends ReducibleModel<ChatModel> {
     }
 
     @Nullable
-    public Integer getErrorId() {
-        return errorId;
-    }
-
-    @Nullable
-    public Exception getException() {
-        return exception;
+    public Exception getUsedeskException() {
+        return usedeskException;
     }
 
     @Override
@@ -83,8 +76,7 @@ public class ChatModel extends ReducibleModel<ChatModel> {
                 .setMessages(reduce(this.messages, newModel.messages))
                 .setMessagesCountDif(newModel.messagesCountDif)
                 .setUsedeskFiles(reduce(this.usedeskFiles, newModel.usedeskFiles))
-                .setErrorId(newModel.errorId)
-                .setException(newModel.exception)
+                .setUsedeskException(newModel.usedeskException)
                 .build();
     }
 
@@ -119,13 +111,8 @@ public class ChatModel extends ReducibleModel<ChatModel> {
             return this;
         }
 
-        public Builder setErrorId(Integer errorId) {
-            chatModel.errorId = errorId;
-            return this;
-        }
-
-        public Builder setException(Exception exception) {
-            chatModel.exception = exception;
+        public Builder setUsedeskException(UsedeskException exception) {
+            chatModel.usedeskException = exception;
             return this;
         }
 

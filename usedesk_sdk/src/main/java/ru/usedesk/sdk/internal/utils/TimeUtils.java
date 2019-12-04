@@ -25,15 +25,13 @@ public class TimeUtils {
             Date date1 = inDateFormat.parse(stringTimestamp.replaceAll("Z$", "+0000"));
             return outDateFormat.format(date1);
         } catch (ParseException e) {
-            LogUtils.LOGE(TAG, e);
-
             // try to parse with format #2
             try {
                 SimpleDateFormat inDateFormat = new SimpleDateFormat(IN_TIME_FORMAT_2);
                 Date date2 = inDateFormat.parse(stringTimestamp);
                 return outDateFormat.format(date2);
             } catch (ParseException e1) {
-                LogUtils.LOGE(TAG, e);
+                //nothing
             }
         }
 

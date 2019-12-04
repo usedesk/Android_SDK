@@ -24,9 +24,6 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendMe
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SetEmailRequest;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 
-import static ru.usedesk.sdk.external.entity.chat.Constants.OFFLINE_FORM_PATH;
-import static ru.usedesk.sdk.internal.utils.LogUtils.LOGE;
-
 public class ApiRepository implements IApiRepository {
     private static final String TAG = ApiRepository.class.getSimpleName();
 
@@ -50,7 +47,7 @@ public class ApiRepository implements IApiRepository {
         try {
             socketApi.emitterAction(baseRequest);
         } catch (ApiException e) {
-            LOGE(TAG, e);
+            e.printStackTrace();
 
             actionListener.onError(e);
         }
@@ -85,7 +82,7 @@ public class ApiRepository implements IApiRepository {
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
             return httpApi.post(postUrl, offlineForm);
         } catch (MalformedURLException e) {
-            LOGE(TAG, e);
+            e.printStackTrace();
             return false;
         }
     }

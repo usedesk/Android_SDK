@@ -269,7 +269,7 @@ public class ChatInteractor {
                 token = userInfoRepository.getToken();
             }
         } catch (DataNotFoundException e) {
-            LogUtils.LOGD(TAG, e);
+            e.printStackTrace();
         }
 
         userInfoRepository.setConfiguration(usedeskConfiguration);

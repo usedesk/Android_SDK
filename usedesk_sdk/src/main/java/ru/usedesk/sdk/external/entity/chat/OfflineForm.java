@@ -3,8 +3,9 @@ package ru.usedesk.sdk.external.entity.chat;
 import com.google.gson.annotations.SerializedName;
 
 public class OfflineForm {
+    private static final String KEY_COMPANY_ID = "company_id";
 
-    @SerializedName(Constants.KEY_COMPANY_ID)
+    @SerializedName(KEY_COMPANY_ID)
     private String companyId;
     private String name;
     private String email;

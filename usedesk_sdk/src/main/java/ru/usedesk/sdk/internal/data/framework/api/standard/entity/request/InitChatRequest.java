@@ -2,13 +2,13 @@ package ru.usedesk.sdk.internal.data.framework.api.standard.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.sdk.external.entity.chat.Constants;
-
 public class InitChatRequest extends BaseRequest {
-
     public static final String TYPE = "@@server/chat/INIT";
 
-    @SerializedName(Constants.KEY_COMPANY_ID)
+    private static final String KEY_COMPANY_ID = "company_id";
+    private static final String VALUE_CURRENT_SDK = "android";
+
+    @SerializedName(KEY_COMPANY_ID)
     private String companyId;
 
     private String url;
@@ -48,7 +48,7 @@ public class InitChatRequest extends BaseRequest {
         private String sdk;
 
         private Payload() {
-            this.sdk = Constants.VALUE_CURRENT_SDK;
+            this.sdk = VALUE_CURRENT_SDK;
         }
 
         public String getSdk() {

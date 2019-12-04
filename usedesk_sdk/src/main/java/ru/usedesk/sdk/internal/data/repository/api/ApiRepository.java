@@ -25,7 +25,7 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SetEma
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 
 public class ApiRepository implements IApiRepository {
-    private static final String TAG = ApiRepository.class.getSimpleName();
+    private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/post";
 
     private final SocketApi socketApi;
     private final HttpApi httpApi;

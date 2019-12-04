@@ -20,7 +20,6 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.Constants;
 import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.exceptions.ApiException;
@@ -34,6 +33,8 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.SetEm
 import ru.usedesk.sdk.internal.utils.LogUtils;
 
 public class SocketApi {
+    private static final String EVENT_SERVER_ACTION = "dispatch";
+
     private static final String TAG = SocketApi.class.getSimpleName();
 
     private final Map<String, Emitter.Listener> emitterListeners = new HashMap<>(5);
@@ -114,7 +115,7 @@ public class SocketApi {
         this.actionListener = actionListener;
         this.onMessageListener = onMessageListener;
 
-        emitterListeners.put(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
+        emitterListeners.put(EVENT_SERVER_ACTION, baseEventEmitterListener);
         emitterListeners.put(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
         emitterListeners.put(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
         emitterListeners.put(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
@@ -144,9 +145,8 @@ public class SocketApi {
 
         try {
             JSONObject jsonObject = new JSONObject(gson.toJson(baseRequest));
-            //LogUtils.LOGD(TAG, "emitAction(). request = " + jsonObject);
 
-            socket.emit(Constants.EVENT_SERVER_ACTION, jsonObject);
+            socket.emit(EVENT_SERVER_ACTION, jsonObject);
         } catch (JSONException e) {
             throw new ApiException(e.getMessage());
         }

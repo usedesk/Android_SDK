@@ -7,11 +7,13 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Payload {
+    private static final String KEY_TICKET_ID = "ticket_id";
+    private static final String KEY_FEEDBACK_BUTTONS = "buttons";
 
-    @SerializedName(Constants.KEY_TICKET_ID)
+    @SerializedName(KEY_TICKET_ID)
     private long ticketId;
 
-    @SerializedName(Constants.KEY_FEEDBACK_BUTTONS)
+    @SerializedName(KEY_FEEDBACK_BUTTONS)
     private List<FeedbackButton> feedbackButtons;
 
     private boolean csi;

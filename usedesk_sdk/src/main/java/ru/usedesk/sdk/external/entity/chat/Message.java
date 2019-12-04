@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
 
 public class Message {
+    private static final String KEY_FILE = "file";
 
     private String id;
     private MessageType type;
@@ -20,7 +21,7 @@ public class Message {
     private Object chat;
     private MessageButtons messageButtons;
 
-    @SerializedName(Constants.KEY_FILE)
+    @SerializedName(KEY_FILE)
     private UsedeskFile usedeskFile;
 
     private Object payload;

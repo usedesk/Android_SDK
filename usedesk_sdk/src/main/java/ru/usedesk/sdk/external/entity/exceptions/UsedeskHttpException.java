@@ -31,6 +31,9 @@ public class UsedeskHttpException extends UsedeskException {
     }
 
     public enum Error {
+        SERVER_ERROR,
+        INVALID_TOKEN,
+        ACCESS_ERROR,
         JSON_ERROR,
         IO_ERROR,
         UNKNOWN_ERROR

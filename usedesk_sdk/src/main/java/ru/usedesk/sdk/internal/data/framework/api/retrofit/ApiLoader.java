@@ -23,6 +23,9 @@ import ru.usedesk.sdk.internal.data.framework.api.retrofit.entity.ViewsAdded;
 import ru.usedesk.sdk.internal.data.repository.knowledgebase.IApiLoader;
 
 public class ApiLoader implements IApiLoader {
+    private static final String SERVER_ERROR = "111";
+    private static final String INVALID_TOKEN = "112";
+    private static final String ACCESS_ERROR = "115";
 
     private ApiRetrofit apiRetrofit;
     private Gson gson;
@@ -77,7 +80,22 @@ public class ApiLoader implements IApiLoader {
                     return gson.fromJson(sectionsResponse.body(), tClass);
                 } catch (JsonSyntaxException | IllegalStateException e) {
                     ApiError apiError = gson.fromJson(sectionsResponse.body(), ApiError.class);
-                    throw new UsedeskHttpException(apiError.getError());
+                    UsedeskHttpException usedeskHttpException;
+                    switch (apiError.getCode()) {
+                        case SERVER_ERROR:
+                            usedeskHttpException = new UsedeskHttpException(UsedeskHttpException.Error.SERVER_ERROR, apiError.getError());
+                            break;
+                        case INVALID_TOKEN:
+                            usedeskHttpException = new UsedeskHttpException(UsedeskHttpException.Error.INVALID_TOKEN, apiError.getError());
+                            break;
+                        case ACCESS_ERROR:
+                            usedeskHttpException = new UsedeskHttpException(UsedeskHttpException.Error.ACCESS_ERROR, apiError.getError());
+                            break;
+                        default:
+                            usedeskHttpException = new UsedeskHttpException(apiError.getError());
+                            break;
+                    }
+                    throw usedeskHttpException;
                 }
             }
         } catch (IOException | IllegalStateException e) {

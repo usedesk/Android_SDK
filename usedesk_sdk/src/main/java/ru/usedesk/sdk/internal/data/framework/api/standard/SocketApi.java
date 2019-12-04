@@ -36,9 +36,9 @@ import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.E
 import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.DISCONNECTED;
 import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.FORBIDDEN_ERROR;
 import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.INTERNAL_SERVER_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.IO_ERROR;
 import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.JSON_ERROR;
 import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.URI_SYNTAX_ERROR;
 
 public class SocketApi {
     private static final String EVENT_SERVER_ACTION = "dispatch";
@@ -114,7 +114,7 @@ public class SocketApi {
         try {
             socket = IO.socket(url);
         } catch (URISyntaxException e) {
-            throw new UsedeskSocketException(URI_SYNTAX_ERROR, e.getMessage());
+            throw new UsedeskSocketException(IO_ERROR, e.getMessage());
         }
     }
 

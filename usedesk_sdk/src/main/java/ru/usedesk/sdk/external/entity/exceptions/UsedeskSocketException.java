@@ -33,9 +33,9 @@ public class UsedeskSocketException extends UsedeskException {
         INTERNAL_SERVER_ERROR,
         BAD_REQUEST_ERROR,
         FORBIDDEN_ERROR,
-        URI_SYNTAX_ERROR,
-        JSON_ERROR,
         DISCONNECTED,
+        IO_ERROR,
+        JSON_ERROR,
         UNKNOWN_FROM_SERVER_ERROR,
         UNKNOWN_ERROR
     }

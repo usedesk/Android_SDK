@@ -12,7 +12,7 @@
 - [UI базы знаний и чата](#ui)
 - [Локальные уведомления](#local_notifications)
 
-<a name="requires"/>
+<a name="requires"></a>
 
 ## Требования к API
 
@@ -21,7 +21,7 @@
 - minSdkVersion = **19**
 - targetSdkVersion = **28**
 
-<a name="implementation"/>
+<a name="implementation"></a>
 
 ## Подключение к проекту
 
@@ -30,7 +30,7 @@
 **[Usedesk Sample App](https://github.com/usedesk/Android_SDK/tree/master/app)** - пример использования библиотеки с использованием готовых фрагментов из sdk.
 
 
-<a name="implementation_import"/>
+<a name="implementation_import"></a>
 
 ### Импорт модуля в проект
 Перенесите модуль в проект и добавьте в `build.gradle` вашего модуля строку:
@@ -42,7 +42,7 @@ dependencies {
 }
 ```
 
-<a name="implementation_maven"/>
+<a name="implementation_maven"></a>
 
 ### Через Maven репозиторий
 Добавьте в `build.gradle` вашего проекта строку:
@@ -64,13 +64,13 @@ dependencies {
 }
 ```
 
-<a name="base"/>
+<a name="base"></a>
 
 ## Основные этапы работы/взаимодействия с библиотекой
 
 [UsedeskSdk](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSdk.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.
 
-<a name="base_setup"/>
+<a name="base_setup"></a>
 
 ### 1. Настройка UsedeskChat
 
@@ -148,7 +148,7 @@ dependencies {
 | JSON_ERROR    | Ошибка обработки JSON     |
 | UNKNOWN_ERROR | Необработанная ошибка     |
 
-<a name="base_manage"/>
+<a name="base_manage"></a>
 
 ### 2. Методы взаимодействия с UsedeskChat
 
@@ -178,11 +178,11 @@ dependencies {
 | email      | String | Почта пользователя     |
 | message    | String | Сообщение пользователя |
 
-<a name="knowledge_base"/>
+<a name="knowledge_base"></a>
 
 ## База знаний
 
-<a name="knowledge_base_setup"/>
+<a name="knowledge_base_setup"></a>
 
 ### 1. Настройка UsedeskKnowledgeBase
 
@@ -207,7 +207,7 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
-<a name="knowledge_base_manage"/>
+<a name="knowledge_base_manage"></a>
 
 ### 2. Методы взаимодействия с UsedeskKnowledgeBase
 
@@ -282,7 +282,7 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
   public Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
   ```
 
-<a name="ui"/>
+<a name="ui"></a>
 
 ## UI базы знаний и чата
 
@@ -331,7 +331,7 @@ public void onBackPressed() {
 }
 ```
 
-<a name="local_notifications"/>
+<a name="local_notifications"></a>
 
 ## Локальные уведомления
 
@@ -355,7 +355,7 @@ public void onBackPressed() {
 ```
     @NonNull
     @Override
-    protected Class<?> getServiceClass();//Нужно вернуть класс сервис
+    protected Class<?> getServiceClass();
 ```
 
 Для инициализации уведомлений необходимо вызвать следующий метод, где аргументов будет объект класса `UsedeskNotificationsServiceFactory`, пример из семпла:

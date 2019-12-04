@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 public class UsedeskConfiguration {
+    private static final String COMPANY_ID_KEY = "companyIdKey";
+    private static final String EMAIL_KEY = "emailKey";
+    private static final String URL_KEY = "urlKey";
+    private static final String OFFLINE_FORM_URL_KEY = "offlineFormUrlKey";
 
     private final String companyId;
     private final String email;
@@ -20,10 +24,10 @@ public class UsedeskConfiguration {
 
     @NonNull
     public static UsedeskConfiguration deserialize(@NonNull Intent intent) {
-        return new UsedeskConfiguration(intent.getStringExtra("companyIdKey"),
-                intent.getStringExtra("emailKey"),
-                intent.getStringExtra("urlKey"),
-                intent.getStringExtra("offlineFormUrlKey"));
+        return new UsedeskConfiguration(intent.getStringExtra(COMPANY_ID_KEY),
+                intent.getStringExtra(EMAIL_KEY),
+                intent.getStringExtra(URL_KEY),
+                intent.getStringExtra(OFFLINE_FORM_URL_KEY));
     }
 
     @NonNull
@@ -59,9 +63,9 @@ public class UsedeskConfiguration {
     }
 
     public void serialize(@NonNull Intent intent) {
-        intent.putExtra("companyIdKey", companyId);
-        intent.putExtra("emailKey", email);
-        intent.putExtra("urlKey", url);
-        intent.putExtra("offlineFormUrlKey", offlineFormUrl);
+        intent.putExtra(COMPANY_ID_KEY, companyId);
+        intent.putExtra(EMAIL_KEY, email);
+        intent.putExtra(URL_KEY, url);
+        intent.putExtra(OFFLINE_FORM_URL_KEY, offlineFormUrl);
     }
 }

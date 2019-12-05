@@ -20,7 +20,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
 
     private UsedeskChat usedeskChat;
 
-    public ChatViewModel(@NonNull Context context) {
+    private ChatViewModel(@NonNull Context context) {
         super(new ChatModel(true, false, new ArrayList<>(),
                 0, new ArrayList<>(), null));
 

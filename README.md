@@ -118,8 +118,6 @@ dependencies {
 | onServiceMessageReceived | Message       | Сервисное сообщение                              |
 | onOfflineFormExpected    | -             | Ожидается оффлайн форма                          |
 | onDisconnected           | -             | Соединение разорвано                             |
-| ~~onError~~                  | ~~int~~           | ~~ID текстового сообщения ошибки~~  |
-| ~~onError~~                  | ~~Exception~~     | ~~Возникшее исключение~~       |
 | onException                  | UsedeskException     | Возникшее исключение         |
 
 - [UsedeskException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskException.java) - исключение, обработанное SDK, может быть UsedeskSocketException и UsedeskHttpException.

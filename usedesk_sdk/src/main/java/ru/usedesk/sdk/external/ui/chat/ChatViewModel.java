@@ -35,16 +35,33 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
                 .map(messages -> new ChatModel.Builder()
                         .setMessages(messages)
                         .build()));
+
         addModelObservable(actionListenerRx.getOfflineFormExpectedObservable()
                 .map(emptyItem -> new ChatModel.Builder()
                         .setOfflineFormExpected(true)
                         .build()));
 
-
         addModelObservable(actionListenerRx.getExceptionSubject()
-                .map(exception -> new ChatModel.Builder()
-                        .setUsedeskException(exception)
-                        .build()));
+                .map(exception -> {
+                    /*if (exception instanceof UsedeskSocketException) {
+                        switch (((UsedeskSocketException) exception).getError()) {
+                            case DISCONNECTED:
+                                break;
+                            case FORBIDDEN_ERROR:
+                                break;
+                        }
+                    } else if (exception instanceof UsedeskHttpException) {
+                        switch (((UsedeskHttpException) exception).getError()) {
+                            case IO_ERROR:
+                                break;
+                            case JSON_ERROR:
+                                break;
+                        }
+                    }*/
+                    return new ChatModel.Builder()
+                            .setUsedeskException(exception)
+                            .build();
+                }));
 
         initLiveData(throwable -> {
             //nothing

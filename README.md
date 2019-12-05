@@ -77,7 +77,7 @@ dependencies {
 
 [UsedeskChat](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskChat.java) - класс работы с чатом.
 
-Перед началом работы его неоходимо проинициализировать, вызвав метод initChat со следующими параметрами:
+Перед началом работы его необходимо проинициализировать, вызвав метод initChat со следующими параметрами:
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
@@ -152,7 +152,7 @@ dependencies {
 
 ### 2. Методы взаимодействия с UsedeskChat
 
-- `sendMessage(String text, UsedeskFile usedeskFile)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно.
+- `sendMessage(String text, UsedeskFile usedeskFile)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно. Файлы отправляются по одному.
 [UsedeskFile](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskFile.java) - класс файла для отправки посредством SDK:
 
 | Переменная | Тип    | Описание                            |

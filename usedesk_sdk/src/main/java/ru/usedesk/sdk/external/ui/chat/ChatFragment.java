@@ -99,7 +99,7 @@ public class ChatFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && data != null) {
+        if (resultCode == Activity.RESULT_OK) {
             List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
             if (selectedUsedeskFiles != null) {
                 viewModel.setUsedeskFiles(selectedUsedeskFiles);
@@ -222,6 +222,12 @@ public class ChatFragment extends Fragment {
                     onPickPhotoClicked();
                 });
 
+        bottomSheetView.findViewById(R.id.take_photo_button)
+                .setOnClickListener(view -> {
+                    bottomSheetDialog.dismiss();
+                    onTakePhotoClicked();
+                });
+
         bottomSheetView.findViewById(R.id.pick_document_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
@@ -243,9 +249,18 @@ public class ChatFragment extends Fragment {
         ChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
     }
 
+    public void onTakePhotoClicked() {
+        ChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
+    }
+
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickPhoto() {
         filePicker.pickImage(this);
+    }
+
+    @NeedsPermission({Manifest.permission.CAMERA})
+    public void takePhoto() {
+        filePicker.takePhoto(this);
     }
 
     public void onPickDocumentClicked() {

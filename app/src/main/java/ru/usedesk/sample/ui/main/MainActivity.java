@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity
 
     private ToolbarHelper toolbarHelper;
     private BottomNavigationView bottomNavigationView;
+    private boolean knowledgeBase = true;
 
     public MainActivity() {
         toolbarHelper = new ToolbarHelper(this);
@@ -63,8 +64,13 @@ public class MainActivity extends AppCompatActivity
                 switchFragment(HomeFragment.newInstance());
                 break;
             case R.id.navigation_base:
-                toolbarHelper.update(ToolbarHelper.State.HOME_SEARCH);
-                switchFragment(KnowledgeBaseFragment.newInstance());
+                if (knowledgeBase) {
+                    toolbarHelper.update(ToolbarHelper.State.HOME_SEARCH);
+                    switchFragment(KnowledgeBaseFragment.newInstance());
+                } else {
+                    toolbarHelper.update(ToolbarHelper.State.HOME);
+                    switchFragment(ChatFragment.newInstance());
+                }
                 break;
             case R.id.navigation_info:
                 toolbarHelper.update(ToolbarHelper.State.HOME);
@@ -85,7 +91,7 @@ public class MainActivity extends AppCompatActivity
             if (!((KnowledgeBaseFragment) fragment).onBackPressed()) {
                 bottomNavigationView.setSelectedItemId(R.id.navigation_home);
             }
-        } else if (fragment instanceof ChatFragment || fragment instanceof InfoFragment) {
+        } else if (fragment instanceof ChatFragment && knowledgeBase || fragment instanceof InfoFragment) {
             bottomNavigationView.setSelectedItemId(R.id.navigation_base);
         } else {
             super.onBackPressed();
@@ -156,6 +162,10 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+    }
+
+    public void setKnowledgeBase(boolean knowledgeBase) {
+        this.knowledgeBase = knowledgeBase;
     }
 
     private void switchFragment(Fragment fragment) {

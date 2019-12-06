@@ -16,6 +16,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import ru.usedesk.sample.R;
+import ru.usedesk.sample.ui.main.MainActivity;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
@@ -32,6 +33,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private static final String TOKEN_KEY = "token";
     private static final String FOREGROUND_KEY = "foreground";
     private static final String CUSTOM_VIEWS_KEY = "customViews";
+    private static final String KNOWLEDGE_BASE_KEY = "knowledgeBase";
 
     private EditText companyIdEditText;
     private EditText emailEditText;
@@ -41,6 +43,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private EditText tokenEditText;
     private Switch foregroundSwitch;
     private Switch customViewsSwitch;
+    private Switch knowledgeBaseSwitch;
 
     private OnConfigurationUsedeskListener onConfigurationUsedeskListener;
 
@@ -71,8 +74,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         tokenEditText = view.findViewById(R.id.et_token);
         foregroundSwitch = view.findViewById(R.id.switch_foreground);
         customViewsSwitch = view.findViewById(R.id.switch_custom_views);
+        knowledgeBaseSwitch = view.findViewById(R.id.switch_knowledge_base);
 
-        //TODO: установите свои значения, если требуется
+        //TODO: установите свои значения
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(APP_CONFIGURATION_PREF,
                 Context.MODE_PRIVATE);
 
@@ -85,6 +89,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String token = sharedPreferences.getString(TOKEN_KEY, "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
         boolean foreground = sharedPreferences.getBoolean(FOREGROUND_KEY, true);
         boolean customViews = sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, false);
+        boolean knowledgeBase = sharedPreferences.getBoolean(KNOWLEDGE_BASE_KEY, true);
 
         companyIdEditText.setText(companyId);
         emailEditText.setText(email);
@@ -94,6 +99,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         tokenEditText.setText(token);
         foregroundSwitch.setChecked(foreground);
         customViewsSwitch.setChecked(customViews);
+        knowledgeBaseSwitch.setChecked(knowledgeBase);
 
         alertDialogBuilder.setPositiveButton(android.R.string.ok, this::onAcceptClick);
 
@@ -118,6 +124,7 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String token = tokenEditText.getText().toString();
         boolean foreground = foregroundSwitch.isChecked();
         boolean customViews = customViewsSwitch.isChecked();
+        boolean knowledgeBase = knowledgeBaseSwitch.isChecked();
 
         getContext().getSharedPreferences(APP_CONFIGURATION_PREF, Context.MODE_PRIVATE)
                 .edit()
@@ -129,7 +136,10 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                 .putString(TOKEN_KEY, token)
                 .putBoolean(FOREGROUND_KEY, foreground)
                 .putBoolean(CUSTOM_VIEWS_KEY, customViews)
+                .putBoolean(KNOWLEDGE_BASE_KEY, knowledgeBase)
                 .apply();
+
+        ((MainActivity) getActivity()).setKnowledgeBase(knowledgeBase);
 
 
         boolean companyIdEntered = !TextUtils.isEmpty(companyId);
@@ -138,8 +148,8 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         boolean offlineUrlEntered = !TextUtils.isEmpty(offlineUrl);
 
         if (companyIdEntered && emailEntered && urlEntered && offlineUrlEntered) {
-            onConfigurationUsedeskListener.onConfigurationUsedeskSet(
-                    new UsedeskConfiguration(companyId, email, url, offlineUrl), foreground, customViews);
+            UsedeskConfiguration configuration = new UsedeskConfiguration(companyId, email, url, offlineUrl);
+            onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration, foreground, customViews, knowledgeBase);
 
             initKnowledgeBaseConfiguration(accountId, token);
 
@@ -157,6 +167,6 @@ public class ConfigureUsedeskDialog extends DialogFragment {
 
     public interface OnConfigurationUsedeskListener {
 
-        void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration, boolean foregroundService, boolean customViews);
+        void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration, boolean foregroundService, boolean customViews, boolean knowledgeBase);
     }
 }

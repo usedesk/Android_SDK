@@ -24,5 +24,6 @@
 
     <string name="enter_token">Enter token</string>
     <string name="custom_views">Custom views</string>
+    <string name="knowledge_base">With KnowledgeBase</string>
 
 </resources>

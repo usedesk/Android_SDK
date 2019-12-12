@@ -8,8 +8,8 @@ android {
         applicationId 'ru.usedesk.sample'
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 17
-        versionName '1.0.4'
+        versionCode 18
+        versionName '1.0.5'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -22,7 +22,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "${variant.applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}-${variant.buildType.name}.apk"
+            outputFileName = "${variant.applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}.apk"
         }
     }
     compileOptions {

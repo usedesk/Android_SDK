@@ -24,6 +24,11 @@ public class UsedeskSocketException extends UsedeskException {
         this.error = error;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "\n" + error.toString();
+    }
+
     @NonNull
     public Error getError() {
         return error;

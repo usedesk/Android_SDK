@@ -131,7 +131,11 @@ public class ChatFragment extends Fragment {
         }
 
         if (model.getUsedeskException() != null) {
-            Toast.makeText(getActivity(), model.getUsedeskException().getMessage(), Toast.LENGTH_LONG).show();
+            String message = model.getUsedeskException().getMessage();
+            if (message == null) {
+                message = model.getUsedeskException().toString();
+            }
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         }
     }
 

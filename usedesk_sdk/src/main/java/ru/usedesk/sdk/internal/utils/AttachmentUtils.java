@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Base64OutputStream;
+import android.webkit.MimeTypeMap;
 
 import com.annimon.stream.Stream;
 
@@ -37,7 +38,7 @@ public class AttachmentUtils {
 
             return output.toString();
         } catch (Exception e) {
-            LogUtils.LOGE(AttachmentUtils.class.getSimpleName(), e);
+            e.printStackTrace();
         }
 
         return "";
@@ -68,8 +69,15 @@ public class AttachmentUtils {
     }
 
     private static String getMimeType(@NonNull Context context, @NonNull Uri uri) {
-        ContentResolver contentResolver = context.getContentResolver();
-        return contentResolver.getType(uri);
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            return context.getApplicationContext()
+                    .getContentResolver()
+                    .getType(uri);
+        } else {
+            String extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+                    .toLowerCase();
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
     }
 
     @NonNull
@@ -90,5 +98,10 @@ public class AttachmentUtils {
         return Stream.of(getUriList(data))
                 .map(uri -> AttachmentUtils.createUsedeskFile(context, uri))
                 .toList();
+    }
+
+    @NonNull
+    public static UsedeskFile getUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
+        return AttachmentUtils.createUsedeskFile(context, uri);
     }
 }

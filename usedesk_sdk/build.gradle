@@ -58,7 +58,7 @@ dependencies {
 }
 
 uploadArchives {
-    project.version = '1.0.2'
+    project.version = '1.0.5'
     project.group = 'ru.usedesk'
     repositories {
         mavenDeployer {

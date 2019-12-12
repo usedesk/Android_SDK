@@ -13,8 +13,8 @@ import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
-import ru.usedesk.sdk.external.entity.exceptions.ApiException;
 import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
 import ru.usedesk.sdk.external.entity.knowledgebase.Category;
@@ -100,33 +100,33 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
                 .observeOn(mainThreadScheduler);
     }
 
-    private void addViews(long articleId) throws DataNotFoundException, ApiException {
+    private void addViews(long articleId) throws DataNotFoundException, UsedeskHttpException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         knowledgeRepository.addViews(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @NonNull
-    private List<Category> getCategories(long sectionId) throws DataNotFoundException, ApiException {
+    private List<Category> getCategories(long sectionId) throws DataNotFoundException, UsedeskHttpException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getCategories(configuration.getAccountId(), configuration.getToken(), sectionId);
     }
 
     @NonNull
-    private List<Section> getSections() throws DataNotFoundException, ApiException {
+    private List<Section> getSections() throws DataNotFoundException, UsedeskHttpException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getSections(configuration.getAccountId(), configuration.getToken());
     }
 
     @NonNull
     private ArticleBody getArticle(long articleId) throws DataNotFoundException,
-            ApiException {
+            UsedeskHttpException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getArticleBody(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @NonNull
     private List<ArticleBody> getArticles(@NonNull String searchQuery) throws DataNotFoundException,
-            ApiException {
+            UsedeskHttpException {
         SearchQuery query = new SearchQuery.Builder(searchQuery).build();
 
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
@@ -135,13 +135,13 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
     @NonNull
     private List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws DataNotFoundException,
-            ApiException {
+            UsedeskHttpException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), searchQuery);
     }
 
     @NonNull
-    private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, ApiException {
+    private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, UsedeskHttpException {
         KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }

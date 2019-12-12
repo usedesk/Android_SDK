@@ -8,7 +8,7 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-public abstract class MviViewModel<T extends ReducableModel<T>> extends ViewModel {
+public abstract class MviViewModel<T extends ReducibleModel<T>> extends ViewModel {
 
     private Disposable disposable;
     private MutableLiveData<T> modelLiveData = new MutableLiveData<>();

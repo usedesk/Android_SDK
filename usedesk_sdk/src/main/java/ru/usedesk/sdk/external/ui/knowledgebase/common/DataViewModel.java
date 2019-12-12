@@ -8,8 +8,6 @@ import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.external.ui.knowledgebase.entity.DataOrMessage;
 
-import static ru.usedesk.sdk.internal.utils.LogUtils.LOGE;
-
 public class DataViewModel<T> extends ViewModel {
 
     private static final String TAG = DataViewModel.class.getSimpleName();
@@ -47,8 +45,6 @@ public class DataViewModel<T> extends ViewModel {
     }
 
     private void onThrowable(Throwable throwable) {
-        LOGE(TAG, throwable);
-
         setData(new DataOrMessage<>(DataOrMessage.Message.ERROR));
     }
 }

@@ -1,6 +1,10 @@
 package ru.usedesk.sdk.external.entity.chat;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
+
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 
 public interface UsedeskActionListener {
 
@@ -16,7 +20,11 @@ public interface UsedeskActionListener {
 
     void onDisconnected();
 
+    @Deprecated
     void onError(int errorResId);
 
+    @Deprecated
     void onError(Exception e);
+
+    void onException(@NonNull UsedeskException usedeskException);
 }

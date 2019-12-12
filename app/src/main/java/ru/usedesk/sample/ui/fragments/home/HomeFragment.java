@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment implements ConfigureUsedeskDialog.OnC
 
     @Override
     public void onConfigurationUsedeskSet(UsedeskConfiguration usedeskConfiguration,
-                                          boolean foregroundService, boolean customViews) {
+                                          boolean foregroundService, boolean customViews, boolean knowledgeBase) {
         AppSession.startSession(usedeskConfiguration);
         updateUI();
 

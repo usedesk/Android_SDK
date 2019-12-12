@@ -2,18 +2,18 @@ package ru.usedesk.sdk.internal.data.repository.api;
 
 import android.support.annotation.NonNull;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.entity.exceptions.ApiException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.HttpApi;
 import ru.usedesk.sdk.internal.data.framework.api.standard.SocketApi;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.BaseRequest;
@@ -22,13 +22,11 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.Reques
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendFeedbackRequest;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendMessageRequest;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SetEmailRequest;
+import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 
-import static ru.usedesk.sdk.external.entity.chat.Constants.OFFLINE_FORM_PATH;
-import static ru.usedesk.sdk.internal.utils.LogUtils.LOGE;
-
 public class ApiRepository implements IApiRepository {
-    private static final String TAG = ApiRepository.class.getSimpleName();
+    private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/post";
 
     private final SocketApi socketApi;
     private final HttpApi httpApi;
@@ -49,10 +47,9 @@ public class ApiRepository implements IApiRepository {
     private void emitterAction(BaseRequest baseRequest) {
         try {
             socketApi.emitterAction(baseRequest);
-        } catch (ApiException e) {
-            LOGE(TAG, e);
-
+        } catch (UsedeskSocketException e) {
             actionListener.onError(e);
+            actionListener.onException(e);
         }
     }
 
@@ -84,10 +81,12 @@ public class ApiRepository implements IApiRepository {
             URL url = new URL(configuration.getOfflineFormUrl());
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
             return httpApi.post(postUrl, offlineForm);
-        } catch (MalformedURLException e) {
-            LOGE(TAG, e);
-            return false;
+        } catch (UsedeskHttpException e) {
+            actionListener.onException(e);
+        } catch (IOException e) {
+            actionListener.onException(new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage()));
         }
+        return false;
     }
 
     @Override
@@ -101,7 +100,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void setSocket(String url) throws ApiException {
+    public void setSocket(String url) throws UsedeskSocketException {
         socketApi.setSocket(url);
     }
 

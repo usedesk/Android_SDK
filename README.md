@@ -1,4 +1,18 @@
 # Android Usedesk SDK
+- [Требования к API](#requires)
+- [Подключение к проекту](#implementation)
+ - [Импорт модуля в проект](#implementation_import)
+ - [Через Maven репозиторий](#implementation_maven)
+- [Основные этапы работы/взаимодействия с библиотекой](#base)
+ - [Настройка UsedeskChat](#base_setup)
+ - [Методы взаимодействия с UsedeskChat](#base_manage)
+- [База знаний](#knowledge_base)
+ - [Настройка UsedeskKnowledgeBase](#knowledge_base_setup)
+ - [Методы взаимодействия с UsedeskKnowledgeBase](#knowledge_base_manage)
+- [UI базы знаний и чата](#ui)
+- [Локальные уведомления](#local_notifications)
+
+<a name="requires"></a>
 
 ## Требования к API
 
@@ -7,12 +21,16 @@
 - minSdkVersion = **19**
 - targetSdkVersion = **28**
 
+<a name="implementation"></a>
+
 ## Подключение к проекту
 
 **[Usedesk SDK](https://github.com/usedesk/Android_SDK/tree/master/usedesk_sdk)** - библиотека Usedesk.
 
 **[Usedesk Sample App](https://github.com/usedesk/Android_SDK/tree/master/app)** - пример использования библиотеки с использованием готовых фрагментов из sdk.
 
+
+<a name="implementation_import"></a>
 
 ### Импорт модуля в проект
 Перенесите модуль в проект и добавьте в `build.gradle` вашего модуля строку:
@@ -23,6 +41,8 @@ dependencies {
     ...
 }
 ```
+
+<a name="implementation_maven"></a>
 
 ### Через Maven репозиторий
 Добавьте в `build.gradle` вашего проекта строку:
@@ -44,17 +64,28 @@ dependencies {
 }
 ```
 
+<a name="base"></a>
+
 ## Основные этапы работы/взаимодействия с библиотекой
 
-[UsedeskSDK](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSDK.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.
+[UsedeskSdk](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSdk.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.
 
+<a name="base_setup"></a>
 
 ### 1. Настройка UsedeskChat
 
 
 [UsedeskChat](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskChat.java) - класс работы с чатом.
 
-Перед началом работы его неоходимо проинициализировать:
+Перед началом работы его необходимо проинициализировать, вызвав метод initChat со следующими параметрами:
+
+| Переменная            | Тип                   | Описание                    |
+|-----------------------|-----------------------|-----------------------------|
+| appContext            | Context               | Контекст приложения         |
+| usedeskConfiguration  | UsedeskConfiguration  | Конфигурация чата           |
+| usedeskActionListener | UsedeskActionListener | Слушатель возможных событий |
+
+Пример:
 
     UsedeskChat usedeskChat = UsedeskSdk.initChat(context, usedeskConfiguration, usedeskActionListener);
 
@@ -66,40 +97,68 @@ dependencies {
 
     UsedeskSdk.releaseChat();
 
-Попытка получить объект без инициализации или после освобожения вызовет исключение.
+Попытка получить объект без инициализации или после освобожения вызовет исключение (RuntimeException).
 
-Метод инициализации принимает объекты следующих классов:
+- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером:
 
-- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером.
-```
-private String accountId;
-private String email;
-private String url;
-private String offlineFormUrl;
-```
+| Переменная     | Тип    | Описание                                 |
+|----------------|--------|------------------------------------------|
+| accountId      | String | ID базы знаний                           |
+| email          | String | Почта клиента                            |
+| url            | String | Адрес сервера с номером порта            |
+| offlineFormUrl | String | Адрес сервера для отправки оффлайн формы |
 
-- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе.
-```
-onConnected()
-onMessageReceived(Message message)
-onMessagesReceived(List<Message> messages)
-onServiceMessageReceived(Message message)
-onOfflineFormExpected()
-onDisconnected()
-onError(int errorResId)
-onError(Exception e)
-```
+- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе:
+
+| Метод                    | Параметры     | Описание события                                 |
+|--------------------------|---------------|--------------------------------------------------|
+| onConnected              | -             | Успешное подключение к серверу                   |
+| onMessageReceived        | Message       | Новое сообщение                                  |
+| onMessagesReceived       | List&lt;Message&gt; | Список сообщений из в чата на момент подключения |
+| onServiceMessageReceived | Message       | Сервисное сообщение                              |
+| onOfflineFormExpected    | -             | Ожидается оффлайн форма                          |
+| onDisconnected           | -             | Соединение разорвано                             |
+| onException                  | UsedeskException     | Возникшее исключение         |
+
+- [UsedeskException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskException.java) - исключение, обработанное SDK, может быть UsedeskSocketException и UsedeskHttpException.
+
+- [UsedeskSocketException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskSocketException.java) - исключение, обработанное во время работы чата. Метод getError возвращает следующие значения:
+
+| Тип ошибки                | Описание                         |
+|---------------------------|----------------------------------|
+| INTERNAL_SERVER_ERROR     | Внутренняя ошибка на сервере    |
+| BAD_REQUEST_ERROR         | Неправильный запрос   |
+| FORBIDDEN_ERROR           | Доступ запрещён    |
+| IO_ERROR                  | Ошибка исполнения запроса        |
+| JSON_ERROR                | Ошибка обработки JSON            |
+| DISCONNECTED              | Соединение разорвано             |
+| UNKNOWN_FROM_SERVER_ERROR | Необработанная ошибка от сервера |
+| UNKNOWN_ERROR             | Необработанная ошибка            |
+
+ -  [UsedeskHttpException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskHttpException.java) - Исключение, обработанное во время работы базы знаний. Метод getError возвращает следующие значения:
+
+| Тип ошибки    | Описание                  |
+|---------------|---------------------------|
+| SERVER_ERROR  | Ошибка на сервере         |
+| INVALID_TOKEN | Некорректный токен        |
+| ACCESS_ERROR  | Ошибка доступа            |
+| IO_ERROR      | Ошибка исполнения запроса |
+| JSON_ERROR    | Ошибка обработки JSON     |
+| UNKNOWN_ERROR | Необработанная ошибка     |
+
+<a name="base_manage"></a>
 
 ### 2. Методы взаимодействия с UsedeskChat
 
-- `sendMessage(String text, UsedeskFile usedeskFile)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно.
-[UsedeskFile](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/models/UsedeskFile.java) - объект файла для отправки посредством SDK. Он имеет все необходимые поля для отправки файла:
-```
-private String content;
-private String type;
-private Long size;
-private String name;
-```
+- `sendMessage(String text, UsedeskFile usedeskFile)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно. Файлы отправляются по одному.
+[UsedeskFile](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskFile.java) - класс файла для отправки посредством SDK:
+
+| Переменная | Тип    | Описание                            |
+|------------|--------|-------------------------------------|
+| content    | String | Данные файла, кодированные в Base64 |
+| type       | String | MIME-тип                            |
+| size       | Long   | Размер файла                        |
+| name       | String | Имя файла                           |
 
 - `sendTextMessage(String text)` - метод отправки текстовых сообщений.
  
@@ -109,14 +168,20 @@ private String name;
 
 - `sendOfflineForm(OfflineForm offlineForm)` - метод отправки оффлайн формы, это форма для отправки данных на сервер (для дальнейшей связи с пользователем) когда все операторы не в сети.
 Возможные поля для заполнения:
-```
-private String accountId;
-private String name;
-private String email; 
-private String message;
-```
+
+| Переменная | Тип    | Описание               |
+|------------|--------|------------------------|
+| companyId  | String | ID компании            |
+| name       | String | Имя пользователя       |
+| email      | String | Почта пользователя     |
+| message    | String | Сообщение пользователя |
+
+<a name="knowledge_base"></a>
 
 ## База знаний
+
+<a name="knowledge_base_setup"></a>
+
 ### 1. Настройка UsedeskKnowledgeBase
 
 [UsedeskKnowledgeBase](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskKnowledgeBase.java) - класс работы с базой знаний.
@@ -140,6 +205,8 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
     implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
+<a name="knowledge_base_manage"></a>
+
 ### 2. Методы взаимодействия с UsedeskKnowledgeBase
 
 - Получить список секций:
@@ -147,12 +214,47 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
   @NonNull
   public Single<List<Section>> getSectionsSingle();
   ```
+  
+-- [Section](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/knowledgebase/Section.java) - класс секций Базы Знаний, со следующими полями:
+ 
+| Переменная | Тип        | Описание                     |
+|------------|------------|------------------------------|
+| id         | long       | Идентификатор секции         |
+| title      | String     | Название секции              |
+| image      | String     | Ссылка на изображение секции |
+| categories | Category[] | Категории                    |
+
+-- [Category](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/knowledgebase/Category.java) - класс категории Базы Знаний, со следующими полями:
+ 
+| Переменная | Тип           | Описание                       |
+|------------|---------------|--------------------------------|
+| id         | long          | Идентификатор категории        |
+| title      | String        | Название категории             |
+| articles   | ArticleInfo[] | Список с информацией о статьях |
+
+-- [ArticleInfo](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/knowledgebase/ArticleInfo.java) - класс категории Базы Знаний, со следующими полями:
+ 
+| Переменная | Тип    | Описание              |
+|------------|--------|-----------------------|
+| id         | long   | Идентификатор статьи  |
+| title      | String | Название статьи       |
+| views      | int    | Количество просмотров |
 
 - Получить статью целиком по её идентификатору:
   ```
   @NonNull
   public Single<ArticleBody> getArticleSingle(long articleId);
   ```
+
+-- [ArticleBody](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/knowledgebase/ArticleBody.java) - класс категории Базы Знаний, со следующими полями:
+ 
+| Переменная | Тип    | Описание                             |
+|------------|--------|--------------------------------------|
+| id         | long   | Идентификатор статьи                 |
+| title      | String | Название статьи                      |
+| text       | String | Текст статьи                         |
+| categoryId | long   | Идентификатор родительской категории |
+| views      | int    | Количество просмотров                |
 
 - Получить список статей по поисковому запросу:
   ```
@@ -178,7 +280,10 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
   public Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
   ```
 
+<a name="ui"></a>
+
 ## UI базы знаний и чата
+
 В UsedeskSDK есть готовые фрагменты, реализующие функционал базы знаний `KnowledgeBaseFragment` и чата `ChatFragment`. Родитель, использующий этот фрагмент, должен:
 
 - Реализовать интерфейс `IOnUsedeskSupportClickListener`, для отслеживания событий нажатия на кнопку и реализации перехода к чату. Пример из семпла:
@@ -194,10 +299,10 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
 
 - Предоставить события ввода поискового запроса в базу знаний (например из верхней панели). Пример из семпла:
 ```
-private void onQuery(String s) {
+private void onQuery(String query) {
     Fragment fragment = getCurrentFragment();
     if (fragment instanceof IUsedeskOnSearchQueryListener) {
-        ((IUsedeskOnSearchQueryListener) fragment).onSearchQuery(s);
+        ((IUsedeskOnSearchQueryListener) fragment).onSearchQuery(query);
     }
 }
 ```
@@ -224,6 +329,8 @@ public void onBackPressed() {
 }
 ```
 
+<a name="local_notifications"></a>
+
 ## Локальные уведомления
 
 Для уведомления пользователей о новых сообщениях от оператора в чате можно использовать сервис локальных уведомлений. Для инициализации этого сервиса нужно создать 2 собственных класса:
@@ -246,9 +353,9 @@ public void onBackPressed() {
 ```
     @NonNull
     @Override
-    protected Class<?> getServiceClass();//Нужно вернуть класс сервис
+    protected Class<?> getServiceClass();
 ```
-###
+
 Для инициализации уведомлений необходимо вызвать следующий метод, где аргументов будет объект класса `UsedeskNotificationsServiceFactory`, пример из семпла:
 ```
 UsedeskSdk.setUsedeskNotificationsServiceFactory(foregroundService

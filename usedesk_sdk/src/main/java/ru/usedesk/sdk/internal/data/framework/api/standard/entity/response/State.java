@@ -1,4 +1,6 @@
-package ru.usedesk.sdk.external.entity.chat;
+package ru.usedesk.sdk.internal.data.framework.api.standard.entity.response;
+
+import ru.usedesk.sdk.external.entity.chat.Client;
 
 public class State {
 

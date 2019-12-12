@@ -2,9 +2,11 @@ package ru.usedesk.sdk.internal.data.framework.api.standard;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -15,12 +17,9 @@ import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
 
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.internal.utils.LogUtils;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
 
 public class HttpApi {
-
-    private static final String TAG = HttpApi.class.getSimpleName();
-
     private static final String ENCODING = "UTF-8";
 
     private final Gson gson;
@@ -30,16 +29,11 @@ public class HttpApi {
         this.gson = gson;
     }
 
-    public boolean post(String urlString, OfflineForm offlineForm) {
+    public boolean post(String urlString, OfflineForm offlineForm) throws UsedeskHttpException {
         try {
             String postData = new JSONObject(gson.toJson(offlineForm)).toString();
 
-            //urlString = "https://secure.usedesk.ru/widget.js/post";
-
             URL url = new URL(urlString);
-
-            LogUtils.LOGD(TAG, "URL: " + url);
-            LogUtils.LOGD(TAG, "Data: " + postData);
 
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
@@ -49,23 +43,17 @@ public class HttpApi {
                     new OutputStreamWriter(outputStream, ENCODING));
 
             String encodedData = URLEncoder.encode(postData, ENCODING);
-            LogUtils.LOGD(TAG, "Data (encoded): " + encodedData);
             bufferedWriter.write(encodedData);
 
             bufferedWriter.flush();
             bufferedWriter.close();
             outputStream.close();
 
-            int responseCode = httpURLConnection.getResponseCode();
-            boolean success = responseCode == HttpsURLConnection.HTTP_OK;
-
-            LogUtils.LOGD(TAG, "SUCCESS: " + success);
-
-            return success;
-        } catch (Exception e) {
-            LogUtils.LOGE(TAG, e);
+            return httpURLConnection.getResponseCode() == HttpsURLConnection.HTTP_OK;
+        } catch (JSONException e) {
+            throw new UsedeskHttpException(UsedeskHttpException.Error.JSON_ERROR, e.getMessage());
+        } catch (IOException e) {
+            throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage());
         }
-
-        return false;
     }
 }

@@ -23,6 +23,7 @@
     <string name="account_id">Enter Account ID</string>
 
     <string name="attachment_dialog_photo">Picture</string>
+    <string name="attachment_dialog_camera">Camera</string>
     <string name="attachment_dialog_document">Document</string>
     <string name="attachment_selected">With attachment</string>
 

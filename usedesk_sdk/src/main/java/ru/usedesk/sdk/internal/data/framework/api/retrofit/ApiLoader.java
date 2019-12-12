@@ -13,7 +13,7 @@ import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import ru.usedesk.sdk.external.entity.exceptions.ApiException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
 import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
 import ru.usedesk.sdk.external.entity.knowledgebase.Section;
@@ -23,6 +23,9 @@ import ru.usedesk.sdk.internal.data.framework.api.retrofit.entity.ViewsAdded;
 import ru.usedesk.sdk.internal.data.repository.knowledgebase.IApiLoader;
 
 public class ApiLoader implements IApiLoader {
+    private static final String SERVER_ERROR = "111";
+    private static final String INVALID_TOKEN = "112";
+    private static final String ACCESS_ERROR = "115";
 
     private ApiRetrofit apiRetrofit;
     private Gson gson;
@@ -36,21 +39,21 @@ public class ApiLoader implements IApiLoader {
     @NonNull
     @Override
     public Section[] getSections(@NonNull String accountId, @NonNull String token)
-            throws ApiException {
+            throws UsedeskHttpException {
         return executeRequest(Section[].class, apiRetrofit.getSections(accountId, token));
     }
 
     @NonNull
     @Override
     public ArticleBody getArticle(@NonNull String accountId, @NonNull String articleId,
-                                  @NonNull String token) throws ApiException {
+                                  @NonNull String token) throws UsedeskHttpException {
         return executeRequest(ArticleBody.class, apiRetrofit.getArticleBody(accountId, articleId, token));
     }
 
     @NonNull
     @Override
     public List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
-                                         @NonNull SearchQuery searchQuery) throws ApiException {
+                                         @NonNull SearchQuery searchQuery) throws UsedeskHttpException {
         return Arrays.asList(executeRequest(ArticlesBodyPage.class,
                 apiRetrofit.getArticlesBody(accountId, token,
                         searchQuery.getSearchQuery(), searchQuery.getCount(),
@@ -61,14 +64,14 @@ public class ApiLoader implements IApiLoader {
     }
 
     @Override
-    public int addViews(@NonNull String accountId, @NonNull String token, long articleId, int count) throws ApiException {
+    public int addViews(@NonNull String accountId, @NonNull String token, long articleId, int count) throws UsedeskHttpException {
         return executeRequest(ViewsAdded.class,
                 apiRetrofit.addViews(accountId, articleId, token, count))
                 .getViews();
     }
 
     private <T> T executeRequest(@NonNull Class<T> tClass, @NonNull Call<String> call)
-            throws ApiException {
+            throws UsedeskHttpException {
         try {
             Response<String> sectionsResponse = call.execute();
 
@@ -77,13 +80,29 @@ public class ApiLoader implements IApiLoader {
                     return gson.fromJson(sectionsResponse.body(), tClass);
                 } catch (JsonSyntaxException | IllegalStateException e) {
                     ApiError apiError = gson.fromJson(sectionsResponse.body(), ApiError.class);
-                    throw new ApiException(apiError.getError());
+                    UsedeskHttpException usedeskHttpException;
+                    switch (apiError.getCode()) {
+                        case SERVER_ERROR:
+                            usedeskHttpException = new UsedeskHttpException(UsedeskHttpException.Error.SERVER_ERROR, apiError.getError());
+                            break;
+                        case INVALID_TOKEN:
+                            usedeskHttpException = new UsedeskHttpException(UsedeskHttpException.Error.INVALID_TOKEN, apiError.getError());
+                            break;
+                        case ACCESS_ERROR:
+                            usedeskHttpException = new UsedeskHttpException(UsedeskHttpException.Error.ACCESS_ERROR, apiError.getError());
+                            break;
+                        default:
+                            usedeskHttpException = new UsedeskHttpException(apiError.getError());
+                            break;
+                    }
+                    throw usedeskHttpException;
                 }
             }
-        } catch (IOException | JsonSyntaxException | IllegalStateException e) {
-            e.printStackTrace();
-            throw new ApiException(e.getMessage());
+        } catch (IOException | IllegalStateException e) {
+            throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage());
+        } catch (JsonSyntaxException e) {
+            throw new UsedeskHttpException(UsedeskHttpException.Error.JSON_ERROR, e.getMessage());
         }
-        throw new ApiException("Unhandled response");
+        throw new UsedeskHttpException("Unhandled response");
     }
 }

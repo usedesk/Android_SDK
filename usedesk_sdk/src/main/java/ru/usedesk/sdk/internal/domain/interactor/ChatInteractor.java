@@ -17,20 +17,17 @@ import ru.usedesk.sdk.external.entity.chat.Message;
 import ru.usedesk.sdk.external.entity.chat.MessageButtons;
 import ru.usedesk.sdk.external.entity.chat.MessageType;
 import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
-import ru.usedesk.sdk.external.entity.chat.Setup;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.entity.exceptions.ApiException;
 import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
+import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
+import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IUserInfoRepository;
-import ru.usedesk.sdk.internal.utils.LogUtils;
 
 public class ChatInteractor {
-
-    private static final String TAG = ChatInteractor.class.getSimpleName();
 
     private Context context;
     private UsedeskConfiguration usedeskConfiguration;
@@ -62,6 +59,7 @@ public class ChatInteractor {
     public void sendUserMessage(String text, UsedeskFile usedeskFile) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
+            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
             return;
         }
 
@@ -91,6 +89,7 @@ public class ChatInteractor {
     public void sendUserTextMessage(String text) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
+            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
             return;
         }
 
@@ -100,6 +99,7 @@ public class ChatInteractor {
     public void sendUserFileMessage(UsedeskFile usedeskFile) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
+            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
             return;
         }
 
@@ -109,6 +109,7 @@ public class ChatInteractor {
     public void sendFeedbackMessage(Feedback feedback) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
+            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
             return;
         }
 
@@ -116,11 +117,6 @@ public class ChatInteractor {
     }
 
     public void sendOfflineForm(final OfflineForm offlineForm) {
-        if (!apiRepository.isConnected()) {
-            usedeskActionListener.onError(R.string.message_disconnected);
-            return;
-        }
-
         thread = new Thread(() -> postOfflineUrl(offlineForm));
         thread.start();
     }
@@ -192,10 +188,9 @@ public class ChatInteractor {
     private void setSocket() {
         try {
             apiRepository.setSocket(usedeskConfiguration.getUrl());
-        } catch (ApiException e) {
-            LogUtils.LOGE(TAG, e);
-
+        } catch (UsedeskSocketException e) {
             usedeskActionListener.onError(e);
+            usedeskActionListener.onException(e);
         }
     }
 
@@ -269,7 +264,7 @@ public class ChatInteractor {
                 token = userInfoRepository.getToken();
             }
         } catch (DataNotFoundException e) {
-            LogUtils.LOGD(TAG, e);
+            e.printStackTrace();
         }
 
         userInfoRepository.setConfiguration(usedeskConfiguration);

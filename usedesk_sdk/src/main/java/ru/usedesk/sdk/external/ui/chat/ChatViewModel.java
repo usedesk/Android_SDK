@@ -20,9 +20,9 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
 
     private UsedeskChat usedeskChat;
 
-    public ChatViewModel(@NonNull Context context) {
+    private ChatViewModel(@NonNull Context context) {
         super(new ChatModel(true, false, new ArrayList<>(),
-                0, new ArrayList<>(), 0, null));
+                0, new ArrayList<>(), null));
 
         UsedeskActionListenerRx actionListenerRx = new UsedeskActionListenerRx();
 
@@ -35,23 +35,36 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
                 .map(messages -> new ChatModel.Builder()
                         .setMessages(messages)
                         .build()));
+
         addModelObservable(actionListenerRx.getOfflineFormExpectedObservable()
                 .map(emptyItem -> new ChatModel.Builder()
                         .setOfflineFormExpected(true)
                         .build()));
 
-        addModelObservable(actionListenerRx.getErrorResIdSubject()
-                .map(errorId -> new ChatModel.Builder()
-                        .setErrorId(errorId)
-                        .build()));
-
-        addModelObservable(actionListenerRx.getErrorSubject()
-                .map(exception -> new ChatModel.Builder()
-                        .setException(exception)
-                        .build()));
+        addModelObservable(actionListenerRx.getExceptionSubject()
+                .map(exception -> {
+                    /*if (exception instanceof UsedeskSocketException) {
+                        switch (((UsedeskSocketException) exception).getError()) {
+                            case DISCONNECTED:
+                                break;
+                            case FORBIDDEN_ERROR:
+                                break;
+                        }
+                    } else if (exception instanceof UsedeskHttpException) {
+                        switch (((UsedeskHttpException) exception).getError()) {
+                            case IO_ERROR:
+                                break;
+                            case JSON_ERROR:
+                                break;
+                        }
+                    }*/
+                    return new ChatModel.Builder()
+                            .setUsedeskException(exception)
+                            .build();
+                }));
 
         initLiveData(throwable -> {
-            throwable = throwable;//dbg
+            //nothing
         });
 
         usedeskChat = UsedeskSdk.initChat(context,

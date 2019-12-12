@@ -59,6 +59,7 @@
     <attr name="usedesk_dialog_style" format="reference" />
     <attr name="usedesk_dialog_attachment_document_title" format="string" />
     <attr name="usedesk_dialog_attachment_photo_title" format="string" />
+    <attr name="usedesk_dialog_attachment_camera_title" format="string" />
     <attr name="usedesk_dialog_attachment_icon_width" format="dimension" />
     <attr name="usedesk_dialog_attachment_icon_height" format="dimension" />
 

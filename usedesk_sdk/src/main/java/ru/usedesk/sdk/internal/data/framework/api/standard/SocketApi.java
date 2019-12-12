@@ -8,9 +8,7 @@ import com.google.gson.JsonParseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,10 +18,8 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.Constants;
-import ru.usedesk.sdk.external.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
-import ru.usedesk.sdk.external.entity.exceptions.ApiException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.BaseRequest;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.BaseResponse;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.ErrorResponse;
@@ -31,10 +27,21 @@ import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.InitC
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.NewMessageResponse;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.SendFeedbackResponse;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.SetEmailResponse;
-import ru.usedesk.sdk.internal.utils.LogUtils;
+import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
+
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.BAD_REQUEST_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.DISCONNECTED;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.FORBIDDEN_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.INTERNAL_SERVER_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.IO_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.JSON_ERROR;
+import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR;
 
 public class SocketApi {
-    private static final String TAG = SocketApi.class.getSimpleName();
+    private static final String EVENT_SERVER_ACTION = "dispatch";
 
     private final Map<String, Emitter.Listener> emitterListeners = new HashMap<>(5);
 
@@ -43,23 +50,15 @@ public class SocketApi {
     private Socket socket;
 
     private UsedeskActionListener actionListener;
-    private final Emitter.Listener disconnectEmitterListener = args -> {
-        LogUtils.LOGE(TAG, "Disconnected.");
-        actionListener.onDisconnected();
-    };
+    private final Emitter.Listener disconnectEmitterListener = args -> actionListener.onDisconnected();
     private final Emitter.Listener connectErrorEmitterListener = args -> {
-        LogUtils.LOGE(TAG, "Error connecting: + " + Arrays.toString(args));
         actionListener.onError(R.string.message_connecting_error);
+        actionListener.onException(new UsedeskSocketException(DISCONNECTED));
     };
     private OnMessageListener onMessageListener;
-    private final Emitter.Listener connectEmitterListener = args -> {
-        LogUtils.LOGD(TAG, "ConnectEmitterListener.args = " + Arrays.toString(args));
-        onMessageListener.onInitChat();
-    };
+    private final Emitter.Listener connectEmitterListener = args -> onMessageListener.onInitChat();
     private final Emitter.Listener baseEventEmitterListener = args -> {
         String rawResponse = args[0].toString();
-
-        LogUtils.LOGD(TAG, "BaseEventEmitterListener.rawResponse = " + rawResponse);
 
         BaseResponse response = process(rawResponse);
 
@@ -67,14 +66,27 @@ public class SocketApi {
             switch (response.getType()) {
                 case ErrorResponse.TYPE:
                     ErrorResponse errorResponse = (ErrorResponse) response;
-                    if (HttpURLConnection.HTTP_FORBIDDEN == errorResponse.getCode()) {
-                        onMessageListener.onTokenError();
+                    UsedeskSocketException usedeskSocketException;
+                    switch (errorResponse.getCode()) {
+                        case HTTP_FORBIDDEN:
+                            onMessageListener.onTokenError();
+                            usedeskSocketException = new UsedeskSocketException(FORBIDDEN_ERROR, errorResponse.getMessage());
+                            break;
+                        case HTTP_BAD_REQUEST:
+                            usedeskSocketException = new UsedeskSocketException(BAD_REQUEST_ERROR, errorResponse.getMessage());
+                            break;
+                        case HTTP_INTERNAL_ERROR:
+                            usedeskSocketException = new UsedeskSocketException(INTERNAL_SERVER_ERROR, errorResponse.getMessage());
+                            break;
+                        default:
+                            usedeskSocketException = new UsedeskSocketException(UNKNOWN_FROM_SERVER_ERROR, errorResponse.getMessage());
+                            break;
                     }
+                    actionListener.onException(usedeskSocketException);
                     break;
                 case InitChatResponse.TYPE:
                     InitChatResponse initChatResponse = (InitChatResponse) response;
-                    onMessageListener.onInit(initChatResponse.getToken(),
-                            initChatResponse.getSetup());
+                    onMessageListener.onInit(initChatResponse.getToken(), initChatResponse.getSetup());
                     break;
                 case SetEmailResponse.TYPE:
                     break;
@@ -98,11 +110,11 @@ public class SocketApi {
         return socket.connected();
     }
 
-    public void setSocket(@NonNull String url) throws ApiException {
+    public void setSocket(@NonNull String url) throws UsedeskSocketException {
         try {
             socket = IO.socket(url);
         } catch (URISyntaxException e) {
-            throw new ApiException(e.getMessage());
+            throw new UsedeskSocketException(IO_ERROR, e.getMessage());
         }
     }
 
@@ -114,7 +126,7 @@ public class SocketApi {
         this.actionListener = actionListener;
         this.onMessageListener = onMessageListener;
 
-        emitterListeners.put(Constants.EVENT_SERVER_ACTION, baseEventEmitterListener);
+        emitterListeners.put(EVENT_SERVER_ACTION, baseEventEmitterListener);
         emitterListeners.put(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
         emitterListeners.put(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
         emitterListeners.put(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
@@ -137,18 +149,17 @@ public class SocketApi {
         socket.disconnect();
     }
 
-    public void emitterAction(BaseRequest baseRequest) throws ApiException {
+    public void emitterAction(BaseRequest baseRequest) throws UsedeskSocketException {
         if (socket == null) {
             return;
         }
 
         try {
             JSONObject jsonObject = new JSONObject(gson.toJson(baseRequest));
-            //LogUtils.LOGD(TAG, "emitAction(). request = " + jsonObject);
 
-            socket.emit(Constants.EVENT_SERVER_ACTION, jsonObject);
+            socket.emit(EVENT_SERVER_ACTION, jsonObject);
         } catch (JSONException e) {
-            throw new ApiException(e.getMessage());
+            throw new UsedeskSocketException(JSON_ERROR, e.getMessage());
         }
     }
 
@@ -171,7 +182,7 @@ public class SocketApi {
                 }
             }
         } catch (JsonParseException e) {
-            LogUtils.LOGE(TAG, e);
+            actionListener.onException(new UsedeskSocketException(JSON_ERROR, e.getMessage()));
         }
 
         return null;

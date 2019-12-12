@@ -8,8 +8,8 @@ android {
         applicationId 'ru.usedesk.sample'
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 15
-        versionName '1.0.2'
+        versionCode 18
+        versionName '1.0.5'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -22,7 +22,7 @@ android {
 
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "${variant.applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}-${variant.buildType.name}.apk"
+            outputFileName = "${variant.applicationId}_Android_v.${variant.versionName}_c.${variant.versionCode}.apk"
         }
     }
     compileOptions {
@@ -35,7 +35,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation project(':usedesk_sdk')
-    //implementation 'ru.usedesk:sdk:1.0.2'
+    //implementation 'ru.usedesk:sdk:1.0.4'
 
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation 'android.arch.lifecycle:reactivestreams:1.1.1'
@@ -44,5 +44,5 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:support-vector-drawable:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:2.0.0-beta2'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.0-beta3'
 }

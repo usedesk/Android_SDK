@@ -99,7 +99,7 @@ public class ChatFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && data != null) {
+        if (resultCode == Activity.RESULT_OK) {
             List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
             if (selectedUsedeskFiles != null) {
                 viewModel.setUsedeskFiles(selectedUsedeskFiles);
@@ -130,11 +130,12 @@ public class ChatFragment extends Fragment {
             attachmentMarkerTextView.setVisibility(View.GONE);
         }
 
-        if (model.getErrorId() != null && model.getErrorId() != 0) {
-            Toast.makeText(getActivity(), model.getErrorId(), Toast.LENGTH_LONG).show();
-        }
-        if (model.getException() != null) {
-            Toast.makeText(getActivity(), model.getException().getMessage(), Toast.LENGTH_LONG).show();
+        if (model.getUsedeskException() != null) {
+            String message = model.getUsedeskException().getMessage();
+            if (message == null) {
+                message = model.getUsedeskException().toString();
+            }
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -225,6 +226,12 @@ public class ChatFragment extends Fragment {
                     onPickPhotoClicked();
                 });
 
+        bottomSheetView.findViewById(R.id.take_photo_button)
+                .setOnClickListener(view -> {
+                    bottomSheetDialog.dismiss();
+                    onTakePhotoClicked();
+                });
+
         bottomSheetView.findViewById(R.id.pick_document_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
@@ -246,9 +253,18 @@ public class ChatFragment extends Fragment {
         ChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
     }
 
+    public void onTakePhotoClicked() {
+        ChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
+    }
+
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     public void pickPhoto() {
         filePicker.pickImage(this);
+    }
+
+    @NeedsPermission({Manifest.permission.CAMERA})
+    public void takePhoto() {
+        filePicker.takePhoto(this);
     }
 
     public void onPickDocumentClicked() {

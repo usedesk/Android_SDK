@@ -31,6 +31,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private static final String OFFLINE_URL_KEY = "offlineUrl";
     private static final String ACCOUNT_ID_KEY = "accountId";
     private static final String TOKEN_KEY = "token";
+    private static final String NAME_KEY = "name";
+    private static final String PHONE_KEY = "phone";
+    private static final String ADDITIONAL_ID_KEY = "additional";
     private static final String FOREGROUND_KEY = "foreground";
     private static final String CUSTOM_VIEWS_KEY = "customViews";
     private static final String KNOWLEDGE_BASE_KEY = "knowledgeBase";
@@ -41,6 +44,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
     private EditText offlineUrlEditText;
     private EditText accountIdEditText;
     private EditText tokenEditText;
+    private EditText nameEditText;
+    private EditText phoneEditText;
+    private EditText additionalIdEditText;
     private Switch foregroundSwitch;
     private Switch customViewsSwitch;
     private Switch knowledgeBaseSwitch;
@@ -72,6 +78,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         offlineUrlEditText = view.findViewById(R.id.offline_url_edit_text);
         accountIdEditText = view.findViewById(R.id.et_account_id);
         tokenEditText = view.findViewById(R.id.et_token);
+        nameEditText = view.findViewById(R.id.et_client_name);
+        phoneEditText = view.findViewById(R.id.et_client_phone);
+        additionalIdEditText = view.findViewById(R.id.et_client_additional_id);
         foregroundSwitch = view.findViewById(R.id.switch_foreground);
         customViewsSwitch = view.findViewById(R.id.switch_custom_views);
         knowledgeBaseSwitch = view.findViewById(R.id.switch_knowledge_base);
@@ -87,6 +96,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String offlineUrl = sharedPreferences.getString(OFFLINE_URL_KEY, "https://secure.usedesk.ru");
         String accountId = sharedPreferences.getString(ACCOUNT_ID_KEY, "4");
         String token = sharedPreferences.getString(TOKEN_KEY, "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75");
+        String name = sharedPreferences.getString(NAME_KEY, "");
+        String phone = sharedPreferences.getString(PHONE_KEY, "");
+        String additionalId = sharedPreferences.getString(ADDITIONAL_ID_KEY, "");
         boolean foreground = sharedPreferences.getBoolean(FOREGROUND_KEY, true);
         boolean customViews = sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, false);
         boolean knowledgeBase = sharedPreferences.getBoolean(KNOWLEDGE_BASE_KEY, true);
@@ -97,6 +109,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         offlineUrlEditText.setText(offlineUrl);
         accountIdEditText.setText(accountId);
         tokenEditText.setText(token);
+        nameEditText.setText(name);
+        phoneEditText.setText(phone);
+        additionalIdEditText.setText(additionalId);
         foregroundSwitch.setChecked(foreground);
         customViewsSwitch.setChecked(customViews);
         knowledgeBaseSwitch.setChecked(knowledgeBase);
@@ -122,6 +137,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         String offlineUrl = offlineUrlEditText.getText().toString();
         String accountId = accountIdEditText.getText().toString();
         String token = tokenEditText.getText().toString();
+        String name = nameEditText.getText().toString();
+        String phone = phoneEditText.getText().toString();
+        String additionalId = additionalIdEditText.getText().toString();
         boolean foreground = foregroundSwitch.isChecked();
         boolean customViews = customViewsSwitch.isChecked();
         boolean knowledgeBase = knowledgeBaseSwitch.isChecked();
@@ -134,6 +152,9 @@ public class ConfigureUsedeskDialog extends DialogFragment {
                 .putString(OFFLINE_URL_KEY, offlineUrl)
                 .putString(ACCOUNT_ID_KEY, accountId)
                 .putString(TOKEN_KEY, token)
+                .putString(NAME_KEY, name)
+                .putString(PHONE_KEY, phone)
+                .putString(ADDITIONAL_ID_KEY, additionalId)
                 .putBoolean(FOREGROUND_KEY, foreground)
                 .putBoolean(CUSTOM_VIEWS_KEY, customViews)
                 .putBoolean(KNOWLEDGE_BASE_KEY, knowledgeBase)
@@ -148,7 +169,24 @@ public class ConfigureUsedeskDialog extends DialogFragment {
         boolean offlineUrlEntered = !TextUtils.isEmpty(offlineUrl);
 
         if (companyIdEntered && emailEntered && urlEntered && offlineUrlEntered) {
-            UsedeskConfiguration configuration = new UsedeskConfiguration(companyId, email, url, offlineUrl);
+            if (name.isEmpty()) {
+                name = null;
+            }
+            Long phoneNumber = null;
+            if (phone.isEmpty()) {
+                phone = null;
+            }
+            if (phone != null) {
+                phoneNumber = Long.valueOf(phone);
+            }
+            Long id = null;
+            if (additionalId.isEmpty()) {
+                additionalId = null;
+            }
+            if (additionalId != null) {
+                id = Long.valueOf(additionalId);
+            }
+            UsedeskConfiguration configuration = new UsedeskConfiguration(companyId, email, url, offlineUrl, name, phoneNumber, id);
             onConfigurationUsedeskListener.onConfigurationUsedeskSet(configuration, foreground, customViews, knowledgeBase);
 
             initKnowledgeBaseConfiguration(accountId, token);

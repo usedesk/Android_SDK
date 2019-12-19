@@ -142,7 +142,7 @@ public class ChatInteractor {
     }
 
     private void setUserEmail() {
-        apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail());
+        apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail(), usedeskConfiguration.getName(), usedeskConfiguration.getPhone(), usedeskConfiguration.getAdditionalId());
     }
 
     private void parseNewMessageResponse(Message message) {

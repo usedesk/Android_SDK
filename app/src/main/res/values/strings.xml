@@ -25,5 +25,8 @@
     <string name="enter_token">Enter token</string>
     <string name="custom_views">Custom views</string>
     <string name="knowledge_base">With KnowledgeBase</string>
+    <string name="client_name">Client Name</string>
+    <string name="client_phone">Client Phone Number</string>
+    <string name="client_additional_id">Client Additional Id</string>
 
 </resources>

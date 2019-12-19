@@ -1,4 +1,4 @@
-# Android Usedesk SDK
+# Android Usedesk SDK (v1.0.5)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
  - [Импорт модуля в проект](#implementation_import)
@@ -59,7 +59,7 @@ allprojects {
 ```
 dependencies {
     ...
-    implementation 'ru.usedesk:usedesk_sdk:1.0.2'
+    implementation 'ru.usedesk:usedesk_sdk:1.0.5'
     ...
 }
 ```

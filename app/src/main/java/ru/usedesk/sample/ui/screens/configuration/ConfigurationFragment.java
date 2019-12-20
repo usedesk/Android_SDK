@@ -75,7 +75,7 @@ public class ConfigurationFragment extends Fragment {
 
     private void onNewConfigureValidateionModel(@NonNull ConfigurationValidationModel configurationValidationModel) {
         if (configurationValidationModel.isSuccessed()) {
-            ((IOnGoToSdkListener) getActivity()).goToSdk(viewModel.getConfigureModule().getValue().isWithKnowledgeBase());
+            ((IOnGoToSdkListener) getActivity()).goToSdk();
         } else {
             renderValidationErrors(configurationValidationModel);
         }
@@ -105,6 +105,6 @@ public class ConfigurationFragment extends Fragment {
     }
 
     public interface IOnGoToSdkListener {
-        void goToSdk(boolean withKnowledgeBase);
+        void goToSdk();
     }
 }

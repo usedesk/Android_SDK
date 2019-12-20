@@ -169,11 +169,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void goToSdk(boolean withKnowledgeBase) {
-        this.withKnowledgeBase = withKnowledgeBase;
+    public void goToSdk() {
 
-        ConfigurationRepository configurationRepository = new ConfigurationRepository();
-        ConfigurationModel configurationModel = configurationRepository.getConfigurationModel();
+        ConfigurationModel configurationModel = new ConfigurationRepository().getConfigurationModel();
+
+        this.withKnowledgeBase = configurationModel.isWithKnowledgeBase();
 
         UsedeskConfiguration usedeskConfiguration = new UsedeskConfiguration(configurationModel.getCompanyId(),
                 configurationModel.getEmail(),
@@ -184,6 +184,9 @@ public class MainActivity extends AppCompatActivity
                 Long.valueOf(configurationModel.getAccountId()));
 
         AppSession.startSession(usedeskConfiguration);
+
+        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+                .stopService(this);
 
         UsedeskSdk.setUsedeskNotificationsServiceFactory(configurationModel.isForegroundService()
                 ? new CustomForegroundNotificationsService.Factory()

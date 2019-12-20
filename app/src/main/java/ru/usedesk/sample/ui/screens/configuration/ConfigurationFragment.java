@@ -44,7 +44,7 @@ public class ConfigurationFragment extends Fragment {
     private void onGoToSdk() {
         renderValidationErrors(new ConfigurationValidationModel());
 
-        viewModel.onGoToSdk(binding.etAccountId.getText().toString(),
+        viewModel.onGoToSdk(binding.etCompanyId.getText().toString(),
                 binding.etEmail.getText().toString(),
                 binding.etUrl.getText().toString(),
                 binding.etOfflineUrl.getText().toString(),

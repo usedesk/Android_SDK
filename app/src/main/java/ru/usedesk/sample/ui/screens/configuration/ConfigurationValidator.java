@@ -27,28 +27,28 @@ public class ConfigurationValidator {
 
     @Nullable
     private String validateCompanyId(@NonNull ConfigurationModel configurationModel) {
-        return configurationModel.getToken().isEmpty()
+        return configurationModel.getCompanyId().isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : null;
     }
 
     @Nullable
     private String validateEmail(@NonNull ConfigurationModel configurationModel) {
-        return configurationModel.getToken().isEmpty()
+        return configurationModel.getEmail().isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : null;
     }
 
     @Nullable
     private String validateUrl(@NonNull ConfigurationModel configurationModel) {
-        return configurationModel.getToken().isEmpty()
+        return configurationModel.getUrl().isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : null;
     }
 
     @Nullable
     private String validateOfflineFormUrl(@NonNull ConfigurationModel configurationModel) {
-        return configurationModel.getToken().isEmpty()
+        return configurationModel.getOfflineFormUrl().isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : null;
     }
@@ -62,7 +62,7 @@ public class ConfigurationValidator {
 
     @Nullable
     private String validateToken(@NonNull ConfigurationModel configurationModel) {
-        return configurationModel.getToken().isEmpty()
+        return configurationModel.isWithKnowledgeBase() && configurationModel.getToken().isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : null;
     }

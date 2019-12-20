@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
                 configurationModel.getOfflineFormUrl(),
                 configurationModel.getClientName(),
                 Long.valueOf(configurationModel.getClientPhoneNumber()),
-                Long.valueOf(configurationModel.getAccountId()));
+                Long.valueOf(configurationModel.getClientAdditionalId()));
 
         AppSession.startSession(usedeskConfiguration);
 
@@ -209,9 +209,11 @@ public class MainActivity extends AppCompatActivity
             usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme);
         }
 
-        UsedeskSdk.initKnowledgeBase(this)
-                .setConfiguration(new KnowledgeBaseConfiguration(configurationModel.getAccountId(), configurationModel.getToken()));
-        UsedeskSdk.releaseUsedeskKnowledgeBase();
+        if (withKnowledgeBase) {
+            UsedeskSdk.initKnowledgeBase(this)
+                    .setConfiguration(new KnowledgeBaseConfiguration(configurationModel.getAccountId(), configurationModel.getToken()));
+            UsedeskSdk.releaseUsedeskKnowledgeBase();
+        }
 
         if (this.withKnowledgeBase) {
             goToKnowledgeBase();

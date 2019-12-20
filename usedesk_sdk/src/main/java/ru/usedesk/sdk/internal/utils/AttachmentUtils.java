@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
@@ -47,23 +48,19 @@ public class AttachmentUtils {
     @NonNull
     private static List<Uri> getUriList(@NonNull Intent data) {
         Uri uri = data.getData();//single file
-        if (uri != null) {
-            List<Uri> uriList = new ArrayList<>(1);
-            uriList.add(uri);
-            return uriList;
-        } else {
-            ClipData clipData = data.getClipData();//list of files
-            if (clipData != null) {
-                List<Uri> uriList = new ArrayList<>(clipData.getItemCount());
-                for (int i = 0; i < clipData.getItemCount(); i++) {
-                    ClipData.Item item = clipData.getItemAt(i);
-                    uri = item.getUri();
-                    if (uri != null) {
-                        uriList.add(uri);
-                    }
+        ClipData clipData = data.getClipData();//list of files
+        if (clipData != null) {
+            List<Uri> uriList = new ArrayList<>(clipData.getItemCount());
+            for (int i = 0; i < clipData.getItemCount(); i++) {
+                ClipData.Item item = clipData.getItemAt(i);
+                uri = item.getUri();
+                if (uri != null) {
+                    uriList.add(uri);
                 }
-                return uriList;
             }
+            return uriList;
+        } else if (uri != null) {
+            return new ArrayList<>(Arrays.asList(uri));
         }
         return new ArrayList<>();
     }

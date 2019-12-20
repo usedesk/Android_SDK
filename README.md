@@ -1,14 +1,14 @@
-# Android Usedesk SDK (v1.0.5)
+# Android Usedesk SDK (v1.0.6)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
- - [Импорт модуля в проект](#implementation_import)
- - [Через Maven репозиторий](#implementation_maven)
+-- [Импорт модуля в проект](#implementation_import)
+-- [Через Maven репозиторий](#implementation_maven)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
- - [Настройка UsedeskChat](#base_setup)
- - [Методы взаимодействия с UsedeskChat](#base_manage)
+-- [Настройка UsedeskChat](#base_setup)
+-- [Методы взаимодействия с UsedeskChat](#base_manage)
 - [База знаний](#knowledge_base)
- - [Настройка UsedeskKnowledgeBase](#knowledge_base_setup)
- - [Методы взаимодействия с UsedeskKnowledgeBase](#knowledge_base_manage)
+-- [Настройка UsedeskKnowledgeBase](#knowledge_base_setup)
+-- [Методы взаимодействия с UsedeskKnowledgeBase](#knowledge_base_manage)
 - [UI базы знаний и чата](#ui)
 - [Локальные уведомления](#local_notifications)
 
@@ -59,7 +59,7 @@ allprojects {
 ```
 dependencies {
     ...
-    implementation 'ru.usedesk:usedesk_sdk:1.0.5'
+    implementation 'ru.usedesk:usedesk_sdk:1.0.6'
     ...
 }
 ```
@@ -107,6 +107,9 @@ dependencies {
 | email          | String | Почта клиента                            |
 | url            | String | Адрес сервера с номером порта            |
 | offlineFormUrl | String | Адрес сервера для отправки оффлайн формы |
+| clientName | String | (Необязательно) Имя клиента |
+| clientPhoneNumber | Long | (Необязательно) Телефонный номер клиента|
+| clientAdditionalId | Long | (Необязательно) Дополнительный идентификатор клиента |
 
 - [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе:
 
@@ -202,7 +205,7 @@ UsedeskSdk.releaseUsedeskKnowledgeBase();
 
 Для работы напрямую с API необходимо подключить библиотеку:
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
 <a name="knowledge_base_manage"></a>

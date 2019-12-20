@@ -88,6 +88,7 @@ public class UsedeskSdk {
         UsedeskSdk.usedeskNotificationsServiceFactory = usedeskNotificationsServiceFactory;
     }
 
+    @SuppressWarnings("Injectable")
     static class UsedeskChatBox extends InjectBox {
         @Inject
         UsedeskChat usedeskChat;
@@ -106,6 +107,7 @@ public class UsedeskSdk {
         }
     }
 
+    @SuppressWarnings("Injectable")
     static class UsedeskKnowledgeBaseBox extends InjectBox {
         @Inject
         UsedeskKnowledgeBase usedeskKnowledgeBase;

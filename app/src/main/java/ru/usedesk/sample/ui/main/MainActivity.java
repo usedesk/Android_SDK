@@ -3,6 +3,7 @@ package ru.usedesk.sample.ui.main;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -168,6 +169,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private Long getLong(@Nullable String value) {
+        return value == null || value.isEmpty()
+                ? null
+                : Long.valueOf(value);
+    }
+
     @Override
     public void goToSdk() {
 
@@ -180,8 +187,8 @@ public class MainActivity extends AppCompatActivity
                 configurationModel.getUrl(),
                 configurationModel.getOfflineFormUrl(),
                 configurationModel.getClientName(),
-                Long.valueOf(configurationModel.getClientPhoneNumber()),
-                Long.valueOf(configurationModel.getClientAdditionalId()));
+                getLong(configurationModel.getClientPhoneNumber()),
+                getLong(configurationModel.getClientAdditionalId()));
 
         AppSession.startSession(usedeskConfiguration);
 

@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui.screens.configuration;
+package ru.usedesk.sample.model.configuration.entity;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

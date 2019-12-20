@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui.screens.configuration;
+package ru.usedesk.sample.model.configuration.repository;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 
 import ru.usedesk.sample.App;
 import ru.usedesk.sample.R;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationValidationModel;
 
 public class ConfigurationValidator {
 

@@ -1,10 +1,11 @@
-package ru.usedesk.sample.ui.screens.configuration;
+package ru.usedesk.sample.model.configuration.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.sample.App;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
 
 public class ConfigurationRepository {
     private static final String COMPANY_ID_KEY = "companyIdKey";

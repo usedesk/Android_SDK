@@ -12,11 +12,11 @@ import android.view.MenuItem;
 
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
+import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
-import ru.usedesk.sample.ui.screens.configuration.ConfigurationModel;
-import ru.usedesk.sample.ui.screens.configuration.ConfigurationRepository;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
 import ru.usedesk.sample.utils.ToolbarHelper;
 import ru.usedesk.sdk.external.AppSession;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
         implements ConfigurationFragment.IOnGoToSdkListener, IOnUsedeskSupportClickListener {
 
     private ToolbarHelper toolbarHelper;
-    private boolean withKnowledgeBase = true;
+    private boolean withKnowledgeBase;
     private ActivityMainBinding binding;
 
     public MainActivity() {
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             goToConfigure();
+            withKnowledgeBase = new ConfigurationRepository().getConfigurationModel().isWithKnowledgeBase();
         }
     }
 

@@ -5,6 +5,11 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 
+import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationValidationModel;
+import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
+import ru.usedesk.sample.model.configuration.repository.ConfigurationValidator;
+
 public class ConfigurationViewModel extends ViewModel {
 
     private final ConfigurationRepository configurationRepository;

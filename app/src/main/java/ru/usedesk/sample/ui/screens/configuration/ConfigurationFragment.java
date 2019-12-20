@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.FragmentConfigureBinding;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationValidationModel;
 
 public class ConfigurationFragment extends Fragment {
 

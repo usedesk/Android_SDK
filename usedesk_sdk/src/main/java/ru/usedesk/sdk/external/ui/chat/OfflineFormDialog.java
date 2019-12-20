@@ -51,8 +51,8 @@ public class OfflineFormDialog extends DialogFragment {
         alertDialogBuilder.setTitle(R.string.offline_form_dialog_title);
         alertDialogBuilder.setView(view);
 
-        companyIdEditText = view.findViewById(R.id.company_id_edit_text);
-        emailEditText = view.findViewById(R.id.email_edit_text);
+        companyIdEditText = view.findViewById(R.id.et_company_id);
+        emailEditText = view.findViewById(R.id.et_email);
         nameEditText = view.findViewById(R.id.name_edit_text);
         messageEditText = view.findViewById(R.id.message_edit_text);
 

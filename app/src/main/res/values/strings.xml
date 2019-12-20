@@ -28,5 +28,11 @@
     <string name="client_name">Client Name</string>
     <string name="client_phone">Client Phone Number</string>
     <string name="client_additional_id">Client Additional Id</string>
+    <string name="button_go_to_sdk">Go to sdk</string>
+    <string name="validation_empty_error">Заполните поле</string>
+    <string name="configuration_title">Configuration</string>
+    <string name="info_title">Info</string>
+    <string name="knowledge_base_title">KnowledgeBase</string>
+    <string name="chat_title">Chat</string>
 
 </resources>

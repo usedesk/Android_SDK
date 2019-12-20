@@ -17,9 +17,10 @@ public class UsedeskConfiguration {
     private final String email;
     private final String url;
     private final String offlineFormUrl;
-    private final String name;
-    private final Long phone;
-    private final Long additionalId;
+
+    private final String clientName;
+    private final Long clientPhoneNumber;
+    private final Long clientAdditionalId;
 
     public UsedeskConfiguration(@NonNull String companyId, @NonNull String email,
                                 @NonNull String url, @NonNull String offlineFormUrl) {
@@ -28,14 +29,14 @@ public class UsedeskConfiguration {
 
     public UsedeskConfiguration(@NonNull String companyId, @NonNull String email,
                                 @NonNull String url, @NonNull String offlineFormUrl,
-                                @Nullable String name, @Nullable Long phone, @Nullable Long additionalId) {
+                                @Nullable String clientName, @Nullable Long clientPhoneNumber, @Nullable Long clientAdditionalId) {
         this.companyId = companyId;
         this.email = email;
         this.url = url;
         this.offlineFormUrl = offlineFormUrl;
-        this.name = name;
-        this.phone = phone;
-        this.additionalId = additionalId;
+        this.clientName = clientName;
+        this.clientPhoneNumber = clientPhoneNumber;
+        this.clientAdditionalId = clientAdditionalId;
     }
 
     @NonNull
@@ -60,9 +61,9 @@ public class UsedeskConfiguration {
         intent.putExtra(EMAIL_KEY, email);
         intent.putExtra(URL_KEY, url);
         intent.putExtra(OFFLINE_FORM_URL_KEY, offlineFormUrl);
-        intent.putExtra(NAME_KEY, name);
-        intent.putExtra(PHONE_KEY, phone);
-        intent.putExtra(ADDITIONAL_ID_KEY, additionalId);
+        intent.putExtra(NAME_KEY, clientName);
+        intent.putExtra(PHONE_KEY, clientPhoneNumber);
+        intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId);
     }
 
     @Override
@@ -73,9 +74,9 @@ public class UsedeskConfiguration {
                     equals(this.email, configuration.email) &&
                     equals(this.url, configuration.url) &&
                     equals(this.offlineFormUrl, configuration.offlineFormUrl) &&
-                    equals(this.name, configuration.name) &&
-                    equals(this.phone, configuration.phone) &&
-                    equals(this.additionalId, configuration.additionalId);
+                    equals(this.clientName, configuration.clientName) &&
+                    equals(this.clientPhoneNumber, configuration.clientPhoneNumber) &&
+                    equals(this.clientAdditionalId, configuration.clientAdditionalId);
         }
         return false;
     }
@@ -101,18 +102,18 @@ public class UsedeskConfiguration {
     }
 
     @Nullable
-    public String getName() {
-        return name;
+    public String getClientName() {
+        return clientName;
     }
 
     @Nullable
-    public Long getPhone() {
-        return phone;
+    public Long getClientPhoneNumber() {
+        return clientPhoneNumber;
     }
 
     @Nullable
-    public Long getAdditionalId() {
-        return additionalId;
+    public Long getClientAdditionalId() {
+        return clientAdditionalId;
     }
 
     private boolean equals(@Nullable Object obj1, @Nullable Object obj2) {

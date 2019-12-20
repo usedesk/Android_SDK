@@ -3,68 +3,67 @@ package ru.usedesk.sample.utils;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import ru.usedesk.sample.R;
 
 public class ToolbarHelper {
-    private final AppCompatActivity activity;
-    private State state = State.BASE;
+    private State state = State.CONFIGURATION;
+    private Toolbar toolbar;
 
-    public ToolbarHelper(AppCompatActivity activity) {
-        this.activity = activity;
+    public ToolbarHelper() {
     }
 
-    public void setToolbar() {
-        Toolbar toolbar = activity.findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            activity.setSupportActionBar(toolbar);
-        }
+    public void initToolbar(@NonNull AppCompatActivity activity, @NonNull Toolbar toolbar) {
+        this.toolbar = toolbar;
+        activity.setSupportActionBar(toolbar);
+        activity.invalidateOptionsMenu();
     }
 
-    public void update(@NonNull State state) {
+    public void update(@NonNull AppCompatActivity activity, @NonNull State state) {
         this.state = state;
 
         activity.invalidateOptionsMenu();
-
         if (activity.getSupportActionBar() != null) {
             activity.getSupportActionBar()
-                    .setDisplayHomeAsUpEnabled(state.showHomeButton);
+                    .setDisplayHomeAsUpEnabled(state.showBackButton);
+
+            activity.getSupportActionBar()
+                    .setTitle(state.titleId);
         }
     }
 
-    public void setSearchButton(@NonNull MenuItem item) {
-        item.setVisible(state.isShowSearchButton());
+    public boolean onCreateOptionsMenu(MenuInflater menuInflater, Menu menu) {
+        menuInflater.inflate(R.menu.toolbar_menu_with_search, menu);
+
+        return true;
     }
 
-    /*public void setSubtitle(final String subTitle) {
-        ActionBar actionBar = activity.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(subTitle);
-        }
-    }*/
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_search)
+                .setVisible(state.showSearchButton);
+
+        menu.findItem(R.id.action_info)
+                .setVisible(state.showInfoButton);
+    }
 
     public enum State {
-        BASE(false, false),
-        HOME(true, false),
-        SEARCH(false, true),
-        HOME_SEARCH(true, true);
+        CONFIGURATION(R.string.configuration_title, false, false, true),
+        INFO(R.string.info_title, true, false, false),
+        KNOWLEDGE_BASE(R.string.knowledge_base_title, true, true, false),
+        CHAT(R.string.chat_title, true, false, false);
 
-
-        private final boolean showHomeButton;
+        private final int titleId;
+        private final boolean showBackButton;
         private final boolean showSearchButton;
+        private final boolean showInfoButton;
 
-        State(boolean showHomeButton, boolean showSearchButton) {
-            this.showHomeButton = showHomeButton;
+        State(int titleId, boolean showBackButton, boolean showSearchButton, boolean showInfoButton) {
+            this.titleId = titleId;
+            this.showBackButton = showBackButton;
             this.showSearchButton = showSearchButton;
-        }
-
-        public boolean isShowHomeButton() {
-            return showHomeButton;
-        }
-
-        public boolean isShowSearchButton() {
-            return showSearchButton;
+            this.showInfoButton = showInfoButton;
         }
     }
 }

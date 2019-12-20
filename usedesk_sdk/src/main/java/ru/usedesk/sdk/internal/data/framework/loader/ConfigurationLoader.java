@@ -60,17 +60,17 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
                 .putString(KEY_URL, configuration.getUrl())
                 .putString(KEY_OFFLINE_URL, configuration.getOfflineFormUrl())
                 .putString(KEY_EMAIL, configuration.getEmail())
-                .putString(KEY_NAME, configuration.getName());
+                .putString(KEY_NAME, configuration.getClientName());
 
-        Long additionalId = configuration.getAdditionalId();
+        Long additionalId = configuration.getClientAdditionalId();
         if (additionalId != null) {
-            editor.putLong(KEY_ADDITIONAL_ID, configuration.getAdditionalId());
+            editor.putLong(KEY_ADDITIONAL_ID, configuration.getClientAdditionalId());
         } else {
             editor.remove(KEY_ADDITIONAL_ID);
         }
-        Long phone = configuration.getPhone();
+        Long phone = configuration.getClientPhoneNumber();
         if (phone != null) {
-            editor.putLong(KEY_PHONE, configuration.getPhone());
+            editor.putLong(KEY_PHONE, configuration.getClientPhoneNumber());
         } else {
             editor.remove(KEY_PHONE);
         }

@@ -8,14 +8,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:orientation="vertical">
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_company_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <EditText
-                    android:id="@+id/company_id_edit_text"
+                    android:id="@+id/et_company_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
@@ -24,11 +27,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_email"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <EditText
-                    android:id="@+id/email_edit_text"
+                    android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
@@ -37,11 +41,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <EditText
-                    android:id="@+id/url_edit_text"
+                    android:id="@+id/et_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
@@ -50,11 +55,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_offline_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <EditText
-                    android:id="@+id/offline_url_edit_text"
+                    android:id="@+id/et_offline_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
@@ -63,6 +69,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_account_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -76,6 +83,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_token"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -89,6 +97,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_client_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -102,11 +111,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_client_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <EditText
-                    android:id="@+id/et_client_phone"
+                    android:id="@+id/et_client_phone_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
@@ -115,6 +125,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_client_additional_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -153,6 +164,14 @@
                 android:checked="true"
                 android:text="@string/knowledge_base"
                 android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btn_go_to_sdk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/button_go_to_sdk" />
         </LinearLayout>
     </ScrollView>
 

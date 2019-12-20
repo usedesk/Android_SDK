@@ -1,15 +1,15 @@
-package ru.usedesk.sample.ui.fragments.configure;
+package ru.usedesk.sample.ui.screens.configuration;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public class ConfigureModel {
+public class ConfigurationModel {
 
-    private Long companyId;
+    private String companyId;
     private String email;
     private String url;
     private String offlineFormUrl;
-    private Long accountId;
+    private String accountId;
     private String token;
     private String clientName;
     private String clientPhoneNumber;
@@ -18,7 +18,7 @@ public class ConfigureModel {
     private Boolean customViews;
     private Boolean withKnowledgeBase;
 
-    private ConfigureModel(@Nullable ConfigureModel model) {
+    private ConfigurationModel(@Nullable ConfigurationModel model) {
         if (model != null) {
             this.companyId = model.companyId;
             this.email = model.email;
@@ -35,148 +35,148 @@ public class ConfigureModel {
         }
     }
 
-    @Nullable
-    public Long getCompanyId() {
+    @NonNull
+    public String getCompanyId() {
         return companyId;
     }
 
-    @Nullable
+    @NonNull
     public String getEmail() {
         return email;
     }
 
-    @Nullable
+    @NonNull
     public String getUrl() {
         return url;
     }
 
-    @Nullable
+    @NonNull
     public String getOfflineFormUrl() {
         return offlineFormUrl;
     }
 
-    @Nullable
-    public Long getAccountId() {
+    @NonNull
+    public String getAccountId() {
         return accountId;
     }
 
-    @Nullable
+    @NonNull
     public String getToken() {
         return token;
     }
 
-    @Nullable
+    @NonNull
     public String getClientName() {
         return clientName;
     }
 
-    @Nullable
+    @NonNull
     public String getClientPhoneNumber() {
         return clientPhoneNumber;
     }
 
-    @Nullable
+    @NonNull
     public String getClientAdditionalId() {
         return clientAdditionalId;
     }
 
-    @Nullable
-    public Boolean getForegroundService() {
+    @NonNull
+    public Boolean isForegroundService() {
         return foregroundService;
     }
 
-    @Nullable
-    public Boolean getCustomViews() {
+    @NonNull
+    public Boolean isCustomViews() {
         return customViews;
     }
 
-    @Nullable
-    public Boolean getWithKnowledgeBase() {
+    @NonNull
+    public Boolean isWithKnowledgeBase() {
         return withKnowledgeBase;
     }
 
     public static class Builder {
-        private ConfigureModel configureModel;
+        private ConfigurationModel configurationModel;
 
-        public Builder(@Nullable ConfigureModel configureModel) {
-            this.configureModel = new ConfigureModel(configureModel);
+        public Builder(@Nullable ConfigurationModel configurationModel) {
+            this.configurationModel = new ConfigurationModel(configurationModel);
         }
 
         @NonNull
-        public Builder setCompanyId(@Nullable Long companyId) {
-            configureModel.companyId = companyId;
+        public Builder setCompanyId(@NonNull String companyId) {
+            configurationModel.companyId = companyId;
             return this;
         }
 
         @NonNull
-        public Builder setEmail(@Nullable String email) {
-            configureModel.email = email;
+        public Builder setEmail(@NonNull String email) {
+            configurationModel.email = email;
             return this;
         }
 
         @NonNull
-        public Builder setUrl(@Nullable String url) {
-            configureModel.url = url;
+        public Builder setUrl(@NonNull String url) {
+            configurationModel.url = url;
             return this;
         }
 
         @NonNull
-        public Builder setOfflineFormUrl(@Nullable String offlineFormUrl) {
-            configureModel.offlineFormUrl = offlineFormUrl;
+        public Builder setOfflineFormUrl(@NonNull String offlineFormUrl) {
+            configurationModel.offlineFormUrl = offlineFormUrl;
             return this;
         }
 
         @NonNull
-        public Builder setAccountId(@Nullable Long accountId) {
-            configureModel.accountId = accountId;
+        public Builder setAccountId(@NonNull String accountId) {
+            configurationModel.accountId = accountId;
             return this;
         }
 
         @NonNull
-        public Builder setToken(@Nullable String token) {
-            configureModel.token = token;
+        public Builder setToken(@NonNull String token) {
+            configurationModel.token = token;
             return this;
         }
 
         @NonNull
-        public Builder setClientName(@Nullable String clientName) {
-            configureModel.clientName = clientName;
+        public Builder setClientName(@NonNull String clientName) {
+            configurationModel.clientName = clientName;
             return this;
         }
 
         @NonNull
-        public Builder setClientPhoneNumber(@Nullable String clientPhoneNumber) {
-            configureModel.clientPhoneNumber = clientPhoneNumber;
+        public Builder setClientPhoneNumber(@NonNull String clientPhoneNumber) {
+            configurationModel.clientPhoneNumber = clientPhoneNumber;
             return this;
         }
 
         @NonNull
-        public Builder setClientAdditionalId(@Nullable String clientAdditionalId) {
-            configureModel.clientAdditionalId = clientAdditionalId;
+        public Builder setClientAdditionalId(@NonNull String clientAdditionalId) {
+            configurationModel.clientAdditionalId = clientAdditionalId;
             return this;
         }
 
         @NonNull
-        public Builder setForegroundService(@Nullable Boolean foregroundService) {
-            configureModel.foregroundService = foregroundService;
+        public Builder setForegroundService(@NonNull Boolean foregroundService) {
+            configurationModel.foregroundService = foregroundService;
             return this;
         }
 
         @NonNull
-        public Builder setCustomViews(@Nullable Boolean customViews) {
-            configureModel.customViews = customViews;
+        public Builder setCustomViews(@NonNull Boolean customViews) {
+            configurationModel.customViews = customViews;
             return this;
         }
 
         @NonNull
-        public Builder setWithKnowledgeBase(@Nullable Boolean withKnowledgeBase) {
-            configureModel.withKnowledgeBase = withKnowledgeBase;
+        public Builder setWithKnowledgeBase(@NonNull Boolean withKnowledgeBase) {
+            configurationModel.withKnowledgeBase = withKnowledgeBase;
             return this;
         }
 
         @NonNull
-        public ConfigureModel build() {
-            return new ConfigureModel(configureModel);
+        public ConfigurationModel build() {
+            return new ConfigurationModel(configurationModel);
         }
     }
 }

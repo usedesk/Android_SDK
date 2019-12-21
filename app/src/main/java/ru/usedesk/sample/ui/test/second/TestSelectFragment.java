@@ -14,6 +14,9 @@ import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.FragmentTestSelectBinding;
 import ru.usedesk.sample.ui._common.BaseFragment;
 import ru.usedesk.sample.ui.main.MainActivity;
+import ru.usedesk.sample.ui.test.TestModel;
+import ru.usedesk.sample.ui.test.TestModel.Intent;
+import ru.usedesk.sample.ui.test.TestModel.Key;
 import ru.usedesk.sample.ui.test.first.TestFragment;
 import ru.usedesk.sample.ui.test.first.TestViewModel;
 
@@ -33,9 +36,11 @@ public class TestSelectFragment extends BaseFragment {
         TestViewModel viewModel = ViewModelProviders.of(this)
                 .get(TestViewModel.class);
 
-        bindTextView(binding.tvEmail, () -> viewModel.getEmailLiveData().getTextLiveData());
-        bindTextView(binding.tvPhoneNumber, () -> viewModel.getPhoneNumberLiveData().getTextLiveData());
-        bindTextInput(binding.tilSelect, viewModel::getSelectLiveData);
+        TestModel testModel = viewModel.getTestModel();
+
+        bindTextView(binding.tvEmail, testModel, Key.EMAIL_TEXT);
+        bindTextView(binding.tvPhoneNumber, testModel, Key.PHONE_NUMBER_TEXT);
+        bindTextInput(binding.tilSelect, testModel, Key.SELECT_TEXT, Key.SELECT_ERROR, Intent.SELECT);
 
         binding.btnBack.setOnClickListener(v ->
                 ((MainActivity) getActivity()).switchFragment(TestFragment.newInstance()));

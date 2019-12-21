@@ -18,6 +18,7 @@ import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
+import ru.usedesk.sample.ui.test.TestFragment;
 import ru.usedesk.sample.utils.ToolbarHelper;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToConfigure() {
         toolbarHelper.update(this, ToolbarHelper.State.CONFIGURATION);
-        switchFragment(ConfigurationFragment.newInstance());
+        switchFragment(TestFragment.newInstance());
     }
 
     private void goToKnowledgeBase() {

@@ -19,9 +19,6 @@ public class TextInputBinder implements IUnbinder {
                             @NonNull IOnTextInputLiveData layoutLiveData) {
         EditText editText = layout.getEditText();
 
-        editText.setText("");
-        layout.setError("");
-
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

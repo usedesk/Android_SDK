@@ -1,4 +1,4 @@
-package ru.usedesk.sample.ui.test;
+package ru.usedesk.sample.ui.test.first;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.FragmentTestBinding;
 import ru.usedesk.sample.ui._common.BaseFragment;
+import ru.usedesk.sample.ui.main.MainActivity;
+import ru.usedesk.sample.ui.test.second.TestSelectFragment;
 
 public class TestFragment extends BaseFragment {
 
@@ -33,6 +35,10 @@ public class TestFragment extends BaseFragment {
 
         bindTextInput(binding.tilEmail, viewModel::getEmailLiveData);
         bindTextInput(binding.tilPhoneNumber, viewModel::getPhoneNumberLiveData);
+        bindTextView(binding.btnSelect, () -> viewModel.getSelectLiveData().getTextLiveData());
+
+        binding.btnSelect.setOnClickListener(v ->
+                ((MainActivity) getActivity()).switchFragment(TestSelectFragment.newInstance()));
 
         return binding.getRoot();
     }

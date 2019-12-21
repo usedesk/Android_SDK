@@ -18,7 +18,7 @@ import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
-import ru.usedesk.sample.ui.test.TestFragment;
+import ru.usedesk.sample.ui.test.first.TestFragment;
 import ru.usedesk.sample.utils.ToolbarHelper;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
@@ -231,8 +231,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-    private void switchFragment(Fragment fragment) {
+    public void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_frame_layout, fragment)
                 .commit();

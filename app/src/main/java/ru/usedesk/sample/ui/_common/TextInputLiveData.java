@@ -30,4 +30,8 @@ public class TextInputLiveData {
         postText(text);
         postError(error);
     }
+
+    public void setText(@NonNull String initValue) {
+        textLiveData.setValue(initValue);
+    }
 }

@@ -12,14 +12,14 @@ import android.view.MenuItem;
 
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
-import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
+import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
+import ru.usedesk.sample.ui._common.ToolbarHelper;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
 import ru.usedesk.sample.ui.test.first.TestFragment;
-import ru.usedesk.sample.utils.ToolbarHelper;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             goToConfigure();
-            withKnowledgeBase = new ConfigurationRepository().getConfigurationModel().isWithKnowledgeBase();
+            withKnowledgeBase = new ConfigurationRepository(appContext.getResources()).getConfiguration().isWithKnowledgeBase();
         }
     }
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void goToSdk() {
 
-        ConfigurationModel configurationModel = new ConfigurationRepository().getConfigurationModel();
+        Configuration configurationModel = new ConfigurationRepository(appContext.getResources()).getConfiguration();
 
         this.withKnowledgeBase = configurationModel.isWithKnowledgeBase();
 

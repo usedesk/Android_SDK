@@ -1,11 +1,9 @@
 package ru.usedesk.sample.model.configuration.repository;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import ru.usedesk.sample.App;
-import ru.usedesk.sample.model.configuration.entity.ConfigurationModel;
+import ru.usedesk.sample.model.configuration.entity.Configuration;
 
 public class ConfigurationRepository {
     private static final String COMPANY_ID_KEY = "companyIdKey";
@@ -21,56 +19,50 @@ public class ConfigurationRepository {
     private static final String CUSTOM_VIEWS_KEY = "customViewsKey";
     private static final String WITH_KNOWLEDGE_BASE_KEY = "withKnowledgeBaseKey";
 
-    private final ConfigurationModel defaultModel;
+    private final Configuration defaultModel;
 
     private final SharedPreferences sharedPreferences;
-    private ConfigurationModel configurationModel;
+    private Configuration configurationModel;
 
-    public ConfigurationRepository() {
-        this.sharedPreferences = App.getInstance()
-                .getApplicationContext()
-                .getSharedPreferences(getClass().getName(), Context.MODE_PRIVATE);
+    public ConfigurationRepository(@NonNull SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
 
         //TODO: Установите свои значения по умолчанию
-        defaultModel = new ConfigurationModel.Builder(null)
-                .setCompanyId("153712")
-                .setEmail("android_sdk@usedesk.ru")
-                .setUrl("https://pubsub.usedesk.ru:1992")
-                .setOfflineFormUrl("https://secure.usedesk.ru")
-                .setAccountId("4")
-                .setToken("11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75")
-                .setClientName("Иван Иванов")
-                .setClientPhoneNumber("88005553535")
-                .setClientAdditionalId("777")
-                .setForegroundService(false)
-                .setCustomViews(false)
-                .setWithKnowledgeBase(true)
-                .build();
+        defaultModel = new Configuration("153712",
+                "android_sdk@usedesk.ru",
+                "https://pubsub.usedesk.ru:1992",
+                "https://secure.usedesk.ru",
+                "4",
+                "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75",
+                "Иван Иванов",
+                "88005553535",
+                "777",
+                false,
+                false,
+                true);
     }
 
     @NonNull
     @SuppressWarnings("ConstantConditions")
-    public ConfigurationModel getConfigurationModel() {
+    public Configuration getConfiguration() {
         if (configurationModel == null) {
-            configurationModel = new ConfigurationModel.Builder(null)
-                    .setCompanyId(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()))
-                    .setEmail(sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()))
-                    .setUrl(sharedPreferences.getString(URL_KEY, defaultModel.getUrl()))
-                    .setOfflineFormUrl(sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()))
-                    .setAccountId(sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()))
-                    .setToken(sharedPreferences.getString(TOKEN_KEY, defaultModel.getToken()))
-                    .setClientName(sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()))
-                    .setClientPhoneNumber(sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()))
-                    .setClientAdditionalId(sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()))
-                    .setForegroundService(sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()))
-                    .setCustomViews(sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()))
-                    .setWithKnowledgeBase(sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()))
-                    .build();
+            configurationModel = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
+                    sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()),
+                    sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
+                    sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
+                    sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()),
+                    sharedPreferences.getString(TOKEN_KEY, defaultModel.getToken()),
+                    sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()),
+                    sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()),
+                    sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()),
+                    sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()),
+                    sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()),
+                    sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
         }
         return configurationModel;
     }
 
-    public void setConfigurationModel(@NonNull ConfigurationModel configurationModel) {
+    public void setConfiguration(@NonNull Configuration configurationModel) {
         this.configurationModel = configurationModel;
 
         sharedPreferences.edit()

@@ -1,4 +1,4 @@
-package ru.usedesk.sample.utils;
+package ru.usedesk.sample.ui._common;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,13 +10,11 @@ import ru.usedesk.sample.R;
 
 public class ToolbarHelper {
     private State state = State.CONFIGURATION;
-    private Toolbar toolbar;
 
     public ToolbarHelper() {
     }
 
     public void initToolbar(@NonNull AppCompatActivity activity, @NonNull Toolbar toolbar) {
-        this.toolbar = toolbar;
         activity.setSupportActionBar(toolbar);
         activity.invalidateOptionsMenu();
     }

@@ -16,7 +16,6 @@ import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 
 public class MainViewModel extends ViewModel {
 
-    private final Scheduler mainThreadScheduler;
     private final Scheduler workScheduler;
 
     private final ConfigurationRepository configurationRepository;
@@ -29,7 +28,6 @@ public class MainViewModel extends ViewModel {
     private Configuration configuration;
 
     public MainViewModel() {
-        mainThreadScheduler = DI.getInstance().getMainThreadScheduler();
         workScheduler = DI.getInstance().getWorkScheduler();
 
         configurationRepository = DI.getInstance().getConfigurationRepository();
@@ -55,14 +53,13 @@ public class MainViewModel extends ViewModel {
     void goSdk() {
         disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
                 .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler)
                 .subscribe(configuration -> {
                     this.configuration = configuration;
-                    configurationLiveData.setValue(configuration);
+                    configurationLiveData.postValue(configuration);
                     if (this.configuration.isWithKnowledgeBase()) {
-                        navigationLiveData.setValue(Navigation.SDK_KNOWLEDGE_BASE);
+                        navigationLiveData.postValue(Navigation.SDK_KNOWLEDGE_BASE);
                     } else {
-                        navigationLiveData.setValue(Navigation.SDK_CHAT);
+                        navigationLiveData.postValue(Navigation.SDK_CHAT);
                     }
                 }));
     }

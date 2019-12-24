@@ -22,7 +22,7 @@ public class ConfigurationRepository {
     private final Configuration defaultModel;
 
     private final SharedPreferences sharedPreferences;
-    private Configuration configurationModel;
+    private Configuration configuration;
 
     public ConfigurationRepository(@NonNull SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -45,8 +45,8 @@ public class ConfigurationRepository {
     @NonNull
     @SuppressWarnings("ConstantConditions")
     public Configuration getConfiguration() {
-        if (configurationModel == null) {
-            configurationModel = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
+        if (configuration == null) {
+            configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
                     sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()),
                     sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
                     sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
@@ -59,11 +59,11 @@ public class ConfigurationRepository {
                     sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()),
                     sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
         }
-        return configurationModel;
+        return configuration;
     }
 
     public void setConfiguration(@NonNull Configuration configurationModel) {
-        this.configurationModel = configurationModel;
+        this.configuration = configurationModel;
 
         sharedPreferences.edit()
                 .putString(COMPANY_ID_KEY, configurationModel.getCompanyId())

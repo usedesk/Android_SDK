@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationValidator;
@@ -41,11 +40,7 @@ public class DI {
         return configurationValidator;
     }
 
-    public Scheduler getMainThreadScheduler() {
-        return AndroidSchedulers.mainThread();
-    }
-
     public Scheduler getWorkScheduler() {
-        return Schedulers.io();
+        return Schedulers.computation();
     }
 }

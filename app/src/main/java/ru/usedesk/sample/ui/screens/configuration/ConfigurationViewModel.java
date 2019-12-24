@@ -19,7 +19,6 @@ import ru.usedesk.sample.ui._common.OneTimeEvent;
 
 public class ConfigurationViewModel extends ViewModel {
 
-    private final Scheduler mainThreadScheduler;
     private final Scheduler workScheduler;
 
     private final ConfigurationRepository configurationRepository;
@@ -32,21 +31,18 @@ public class ConfigurationViewModel extends ViewModel {
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     public ConfigurationViewModel() {
-        mainThreadScheduler = DI.getInstance().getMainThreadScheduler();
         workScheduler = DI.getInstance().getWorkScheduler();
         configurationRepository = DI.getInstance().getConfigurationRepository();
         configurationValidator = DI.getInstance().getConfigurationValidator();
 
         disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
                 .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler)
-                .subscribe(configuration::setValue));
+                .subscribe(configuration::postValue));
     }
 
     public void onGoSdkClick(@NonNull Configuration configuration) {
         disposables.add(Single.create((SingleOnSubscribe<ConfigurationValidation>) emitter -> emitter.onSuccess(configurationValidator.validate(configuration)))
                 .subscribeOn(workScheduler)
-                .observeOn(mainThreadScheduler)
                 .subscribe(configurationValidation -> {
                     if (configurationValidation.isSuccessed()) {
                         this.configuration.postValue(configuration);

@@ -38,6 +38,8 @@ public class ChatInteractor {
     private IUserInfoRepository userInfoRepository;
     private IApiRepository apiRepository;
 
+    private boolean needSetEmail = false;
+
     @Inject
     ChatInteractor(@NonNull Context context,
                    @NonNull IUserInfoRepository userInfoRepository,
@@ -142,7 +144,10 @@ public class ChatInteractor {
     }
 
     private void setUserEmail() {
-        apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail(), usedeskConfiguration.getClientName(), usedeskConfiguration.getClientPhoneNumber(), usedeskConfiguration.getClientAdditionalId());
+        apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail(),
+                usedeskConfiguration.getClientName(),
+                usedeskConfiguration.getClientPhoneNumber(),
+                usedeskConfiguration.getClientAdditionalId());
     }
 
     private void parseNewMessageResponse(Message message) {
@@ -206,7 +211,7 @@ public class ChatInteractor {
                     if (message != null && message.getPayloadAsObject() != null) {
                         Map map = (Map) message.getPayloadAsObject();
 
-                        Boolean noOperators = (Boolean) map.get("noOperators");
+                        Boolean noOperators = (Boolean) map.get("noOperators");//TODO: выпилить отсюда и впилить по доке (когда сервер начнёт отдавать что нужно)
 
                         if (noOperators != null && noOperators) {
                             onOfflineFormDialog();
@@ -227,6 +232,10 @@ public class ChatInteractor {
             @Override
             public void onInit(String token, Setup setup) {
                 parseInitResponse(token, setup);
+
+                if (needSetEmail) {
+                    setUserEmail();
+                }
             }
 
             @Override
@@ -260,8 +269,15 @@ public class ChatInteractor {
 
         try {
             UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
-            if (configuration.equals(usedeskConfiguration)) {
+            if (configuration.getEmail().equals(usedeskConfiguration.getEmail())
+                    && configuration.getCompanyId().equals(usedeskConfiguration.getCompanyId())) {
                 token = userInfoRepository.getToken();
+            }
+            if (token != null
+                    && (!configuration.getClientName().equals(usedeskConfiguration.getClientName())
+                    || !configuration.getClientPhoneNumber().equals(usedeskConfiguration.getClientPhoneNumber())
+                    || !configuration.getClientAdditionalId().equals(usedeskConfiguration.getClientAdditionalId()))) {
+                needSetEmail = true;
             }
         } catch (DataNotFoundException e) {
             e.printStackTrace();

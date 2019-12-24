@@ -36,7 +36,7 @@ public class ConfigurationViewModel extends ViewModel {
         configurationValidator = DI.getInstance().getConfigurationValidator();
     }
 
-    public void onGoSdkClick(@NonNull Configuration configuration) {
+    void onGoSdkClick(@NonNull Configuration configuration) {
         disposables.add(Single.create((SingleOnSubscribe<ConfigurationValidation>) emitter -> emitter.onSuccess(configurationValidator.validate(configuration)))
                 .subscribeOn(workScheduler)
                 .subscribe(configurationValidation -> {
@@ -60,12 +60,12 @@ public class ConfigurationViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<Event> getGoToSdkEvent() {
+    LiveData<Event> getGoToSdkEvent() {
         return goToSdkEvent;
     }
 
     @NonNull
-    public LiveData<ConfigurationValidation> getConfigurationValidation() {
+    LiveData<ConfigurationValidation> getConfigurationValidation() {
         return configurationValidation;
     }
 
@@ -76,7 +76,7 @@ public class ConfigurationViewModel extends ViewModel {
         disposables.dispose();
     }
 
-    public void setTempConfiguration(@NonNull Configuration configuration) {
+    void setTempConfiguration(@NonNull Configuration configuration) {
         this.configuration.setValue(configuration);
     }
 }

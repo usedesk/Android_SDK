@@ -114,18 +114,6 @@ dependencies {
 
 Попытка получить объект без инициализации или после освобожения вызовет исключение (RuntimeException).
 
-- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером:
-
-| Переменная     | Тип    | Описание                                 |
-|----------------|--------|------------------------------------------|
-| accountId      | String | ID базы знаний                           |
-| email          | String | Почта клиента                            |
-| url            | String | Адрес сервера с номером порта            |
-| offlineFormUrl | String | Адрес сервера для отправки оффлайн формы |
-| clientName | String | (Необязательно) Имя клиента |
-| clientPhoneNumber | Long | (Необязательно) Телефонный номер клиента|
-| clientAdditionalId | Long | (Необязательно) Дополнительный идентификатор клиента |
-
 - [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе:
 
 | Метод                    | Параметры     | Описание события                                 |

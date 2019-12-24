@@ -4,6 +4,8 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.sample.R;
+import ru.usedesk.sample.model.configuration.entity.Configuration;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
 
 public class ConfigurationValidator {
 
@@ -14,44 +16,54 @@ public class ConfigurationValidator {
     }
 
     @NonNull
-    public String validateCompanyId(@NonNull String companyId) {
+    private String validateCompanyId(@NonNull String companyId) {
         return companyId.isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : "";
     }
 
     @NonNull
-    public String validateEmail(@NonNull String email) {
+    private String validateEmail(@NonNull String email) {
         return email.isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : "";
     }
 
     @NonNull
-    public String validateUrl(@NonNull String url) {
+    private String validateUrl(@NonNull String url) {
         return url.isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : "";
     }
 
     @NonNull
-    public String validateOfflineFormUrl(@NonNull String offlineFormUrl) {
+    private String validateOfflineFormUrl(@NonNull String offlineFormUrl) {
         return offlineFormUrl.isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : "";
     }
 
     @NonNull
-    public String validateAccountId(@NonNull String accountId, @NonNull Boolean withKnowledgeBase) {
+    private String validateAccountId(@NonNull String accountId, @NonNull Boolean withKnowledgeBase) {
         return withKnowledgeBase && accountId.isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : "";
     }
 
     @NonNull
-    public String validateToken(@NonNull String token, @NonNull Boolean withKnowledgeBase) {
+    private String validateToken(@NonNull String token, @NonNull Boolean withKnowledgeBase) {
         return withKnowledgeBase && token.isEmpty()
                 ? resources.getString(R.string.validation_empty_error)
                 : "";
+    }
+
+    @NonNull
+    public ConfigurationValidation validate(@NonNull Configuration configuration) {
+        return new ConfigurationValidation(validateCompanyId(configuration.getCompanyId()),
+                validateEmail(configuration.getEmail()),
+                validateUrl(configuration.getUrl()),
+                validateOfflineFormUrl(configuration.getOfflineFormUrl()),
+                validateAccountId(configuration.getAccountId(), configuration.isWithKnowledgeBase()),
+                validateToken(configuration.getToken(), configuration.isWithKnowledgeBase()));
     }
 }

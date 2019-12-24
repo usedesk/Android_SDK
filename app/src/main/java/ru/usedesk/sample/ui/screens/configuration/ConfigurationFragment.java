@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.FragmentConfigureBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
-import ru.usedesk.sample.model.configuration.entity.ConfigurationModelo;
-import ru.usedesk.sample.model.configuration.entity.ConfigurationValidationModel;
+import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
+import ru.usedesk.sample.ui._common.Event;
 
 public class ConfigurationFragment extends Fragment {
 
@@ -33,18 +33,29 @@ public class ConfigurationFragment extends Fragment {
 
         viewModel = ViewModelProviders.of(this).get(ConfigurationViewModel.class);
 
-        ConfigurationModelo configurationModel = viewModel.getConfigurationModel();
+        viewModel.getConfiguration()
+                .observe(this, this::onNewConfigure);
 
-        binding.btnGoToSdk.setOnClickListener(v -> configurationModel.setIntent(ConfigurationModelo.IntentKey.EVENT_SET_CONFIGURATION, ""));
-        configurationModel.getData();
+        viewModel.getConfigurationValidation()
+                .observe(this, this::onNewConfigureValidation);
+
+        viewModel.getGoToSdkEvent()
+                .observe(this, this::onGoToSdkEvent);
+
+        binding.btnGoToSdk.setOnClickListener(v -> onGoToSdk());
 
         return binding.getRoot();
     }
 
-    private void onGoToSdk() {
-        renderValidationErrors(new ConfigurationValidationModel());
+    @SuppressWarnings("ConstantConditions")
+    private void onGoToSdkEvent(@NonNull Event event) {
+        if (!event.isProcessed()) {
+            ((IOnGoToSdkListener) getActivity()).goToSdk();
+        }
+    }
 
-        viewModel.onGoToSdk(binding.etCompanyId.getText().toString(),
+    private void onGoToSdk() {
+        viewModel.onGoSdkClick(new Configuration(binding.etCompanyId.getText().toString(),
                 binding.etEmail.getText().toString(),
                 binding.etUrl.getText().toString(),
                 binding.etOfflineUrl.getText().toString(),
@@ -55,53 +66,33 @@ public class ConfigurationFragment extends Fragment {
                 binding.etClientAdditionalId.getText().toString(),
                 binding.switchForeground.isChecked(),
                 binding.switchCustomViews.isChecked(),
-                binding.switchKnowledgeBase.isChecked());
+                binding.switchKnowledgeBase.isChecked()));
     }
 
-    private void onNewConfigureModel(@NonNull Configuration configurationModel) {
-        binding.etCompanyId.setText(toString(configurationModel.getCompanyId()));
-        binding.etEmail.setText(configurationModel.getEmail());
-        binding.etUrl.setText(configurationModel.getUrl());
-        binding.etOfflineUrl.setText(configurationModel.getOfflineFormUrl());
-        binding.etAccountId.setText(toString(configurationModel.getAccountId()));
-        binding.etToken.setText(configurationModel.getToken());
-        binding.etClientName.setText(configurationModel.getClientName());
-        binding.etClientPhoneNumber.setText(configurationModel.getClientPhoneNumber());
-        binding.etClientAdditionalId.setText(configurationModel.getClientAdditionalId());
-        binding.switchForeground.setChecked(toBoolean(configurationModel.isForegroundService()));
-        binding.switchCustomViews.setChecked(toBoolean(configurationModel.isCustomViews()));
-        binding.switchKnowledgeBase.setChecked(toBoolean(configurationModel.isWithKnowledgeBase()));
+    private void onNewConfigure(@NonNull Configuration configuration) {
+        binding.etCompanyId.setText(configuration.getCompanyId());
+        binding.etEmail.setText(configuration.getEmail());
+        binding.etUrl.setText(configuration.getUrl());
+        binding.etOfflineUrl.setText(configuration.getOfflineFormUrl());
+        binding.etAccountId.setText(configuration.getAccountId());
+        binding.etToken.setText(configuration.getToken());
+        binding.etClientName.setText(configuration.getClientName());
+        binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber());
+        binding.etClientAdditionalId.setText(configuration.getClientAdditionalId());
+        binding.switchForeground.setChecked(configuration.isForegroundService());
+        binding.switchCustomViews.setChecked(configuration.isCustomViews());
+        binding.switchKnowledgeBase.setChecked(configuration.isWithKnowledgeBase());
+
+        viewModel.getConfiguration().removeObservers(this);
     }
 
-    private void onNewConfigureValidateionModel(@NonNull ConfigurationValidationModel configurationValidationModel) {
-        if (configurationValidationModel.isSuccessed()) {
-            ((IOnGoToSdkListener) getActivity()).goToSdk();
-        } else {
-            renderValidationErrors(configurationValidationModel);
-        }
-    }
-
-    private void renderValidationErrors(@NonNull ConfigurationValidationModel configurationValidationModel) {
-        binding.etCompanyId.setError(configurationValidationModel.getCompanyIdError());
-        binding.etEmail.setError(configurationValidationModel.getEmailError());
-        binding.etUrl.setError(configurationValidationModel.getUrlError());
-        binding.etOfflineUrl.setError(configurationValidationModel.getOfflineFormUrlError());
-        binding.etAccountId.setError(configurationValidationModel.getAccountIdError());
-        binding.etToken.setError(configurationValidationModel.getTokenError());
-    }
-
-    @NonNull
-    private String toString(@Nullable Object value) {
-        return value == null
-                ? ""
-                : value.toString();
-    }
-
-    @NonNull
-    private Boolean toBoolean(@Nullable Boolean bool) {
-        return bool == null
-                ? false
-                : bool;
+    private void onNewConfigureValidation(@NonNull ConfigurationValidation configurationValidation) {
+        binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
+        binding.tilEmail.setError(configurationValidation.getEmailError());
+        binding.tilUrl.setError(configurationValidation.getUrlError());
+        binding.tilOfflineUrl.setError(configurationValidation.getOfflineFormUrlError());
+        binding.tilAccountId.setError(configurationValidation.getAccountIdError());
+        binding.tilToken.setError(configurationValidation.getTokenError());
     }
 
     public interface IOnGoToSdkListener {

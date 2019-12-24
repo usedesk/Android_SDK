@@ -2,7 +2,7 @@ package ru.usedesk.sample.model.configuration.entity;
 
 import android.support.annotation.Nullable;
 
-public class ConfigurationValidationModel {
+public class ConfigurationValidation {
     private String companyIdError;
     private String emailError;
     private String urlError;
@@ -10,15 +10,15 @@ public class ConfigurationValidationModel {
     private String accountIdError;
     private String tokenError;
 
-    public ConfigurationValidationModel() {
+    public ConfigurationValidation() {
     }
 
-    public ConfigurationValidationModel(@Nullable String companyIdError,
-                                        @Nullable String emailError,
-                                        @Nullable String urlError,
-                                        @Nullable String offlineFormUrlError,
-                                        @Nullable String accountIdError,
-                                        @Nullable String tokenError) {
+    public ConfigurationValidation(@Nullable String companyIdError,
+                                   @Nullable String emailError,
+                                   @Nullable String urlError,
+                                   @Nullable String offlineFormUrlError,
+                                   @Nullable String accountIdError,
+                                   @Nullable String tokenError) {
         this.companyIdError = companyIdError;
         this.emailError = emailError;
         this.urlError = urlError;

@@ -3,22 +3,27 @@ package ru.usedesk.sample;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationValidator;
-import ru.usedesk.sample.model.interactor.ConfigurationInteractor;
 
 public class DI {
-    public static DI instance;
+    private static DI instance = null;
 
     private final ConfigurationRepository configurationRepository;
     private final ConfigurationValidator configurationValidator;
-    private final ConfigurationInteractor configurationInteractor;
 
-    public DI(@NonNull Context appContext) {
+    private DI(@NonNull Context appContext) {
         configurationRepository = new ConfigurationRepository(appContext.getSharedPreferences(ConfigurationRepository.class.getName(), Context.MODE_PRIVATE));
         configurationValidator = new ConfigurationValidator(appContext.getResources());
+    }
 
-        configurationInteractor = new ConfigurationInteractor();
+    static void init(@NonNull Context appContext) {
+        if (instance == null) {
+            instance = new DI(appContext);
+        }
     }
 
     @NonNull
@@ -36,8 +41,11 @@ public class DI {
         return configurationValidator;
     }
 
-    @NonNull
-    public ConfigurationInteractor getConfigurationInteractor() {
-        return configurationInteractor;
+    public Scheduler getMainThreadScheduler() {
+        return AndroidSchedulers.mainThread();
+    }
+
+    public Scheduler getWorkScheduler() {
+        return Schedulers.io();
     }
 }

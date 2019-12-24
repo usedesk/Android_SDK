@@ -10,6 +10,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import ru.usedesk.sample.DI;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
@@ -19,7 +20,6 @@ import ru.usedesk.sample.service.CustomSimpleNotificationsService;
 import ru.usedesk.sample.ui._common.ToolbarHelper;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
-import ru.usedesk.sample.ui.test.first.TestFragment;
 import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
@@ -33,19 +33,22 @@ import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 public class MainActivity extends AppCompatActivity
         implements ConfigurationFragment.IOnGoToSdkListener, IOnUsedeskSupportClickListener {
 
+    private final ConfigurationRepository configurationRepository;//TODO: to viewmodel
+
     private ToolbarHelper toolbarHelper;
     private boolean withKnowledgeBase;
-    private ActivityMainBinding binding;
 
     public MainActivity() {
         toolbarHelper = new ToolbarHelper();
+
+        configurationRepository = DI.getInstance().getConfigurationRepository();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             goToConfigure();
-            withKnowledgeBase = new ConfigurationRepository(appContext.getResources()).getConfiguration().isWithKnowledgeBase();
+            withKnowledgeBase = configurationRepository.getConfiguration().isWithKnowledgeBase();
         }
     }
 
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToConfigure() {
         toolbarHelper.update(this, ToolbarHelper.State.CONFIGURATION);
-        switchFragment(TestFragment.newInstance());
+        switchFragment(ConfigurationFragment.newInstance());
     }
 
     private void goToKnowledgeBase() {
@@ -180,7 +183,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void goToSdk() {
 
-        Configuration configurationModel = new ConfigurationRepository(appContext.getResources()).getConfiguration();
+        Configuration configurationModel = configurationRepository.getConfiguration();
 
         this.withKnowledgeBase = configurationModel.isWithKnowledgeBase();
 

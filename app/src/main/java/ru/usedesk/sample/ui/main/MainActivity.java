@@ -20,7 +20,6 @@ import ru.usedesk.sample.service.CustomSimpleNotificationsService;
 import ru.usedesk.sample.ui._common.ToolbarHelper;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
-import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
@@ -86,20 +85,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initUsedeskConfiguration(@NonNull Configuration configuration) {
-        UsedeskConfiguration usedeskConfiguration = new UsedeskConfiguration(configuration.getCompanyId(),
+        UsedeskSdk.setUsedeskConfiguration(new UsedeskConfiguration(configuration.getCompanyId(),
                 configuration.getEmail(),
                 configuration.getUrl(),
                 configuration.getOfflineFormUrl(),
                 configuration.getClientName(),
                 getLong(configuration.getClientPhoneNumber()),
-                getLong(configuration.getClientAdditionalId()));
-
-        AppSession.startSession(usedeskConfiguration);
+                getLong(configuration.getClientAdditionalId())));
 
         if (configuration.isWithKnowledgeBase()) {
-            UsedeskSdk.initKnowledgeBase(this)
-                    .setConfiguration(new KnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
-            UsedeskSdk.releaseUsedeskKnowledgeBase();
+            UsedeskSdk.setKnowledgeBaseConfiguration(new KnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
         }
     }
 

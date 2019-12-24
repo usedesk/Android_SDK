@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
-import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
@@ -68,8 +67,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
             //nothing
         });
 
-        usedeskChat = UsedeskSdk.initChat(context,
-                AppSession.getSession().getUsedeskConfiguration(), actionListenerRx);
+        usedeskChat = UsedeskSdk.initChat(context, actionListenerRx);
     }
 
     void setUsedeskFiles(List<UsedeskFile> usedeskFiles) {

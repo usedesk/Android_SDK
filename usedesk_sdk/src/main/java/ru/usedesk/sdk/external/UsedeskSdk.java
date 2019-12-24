@@ -2,11 +2,13 @@ package ru.usedesk.sdk.external;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import javax.inject.Inject;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
 import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
 import ru.usedesk.sdk.internal.appdi.DependencyInjection;
@@ -16,18 +18,35 @@ import toothpick.Toothpick;
 
 public class UsedeskSdk {
 
-    private static UsedeskChatBox usedeskChatBox = null;
+    private static UsedeskChatBox usedeskChatBox;
     private static UsedeskKnowledgeBaseBox usedeskKnowledgeBaseBox;
+
     private static UsedeskNotificationsServiceFactory usedeskNotificationsServiceFactory;
     private static UsedeskViewCustomizer usedeskViewCustomizer = new UsedeskViewCustomizer();
 
+    private static UsedeskConfiguration usedeskConfiguration;
+    private static KnowledgeBaseConfiguration knowledgeBaseConfiguration;
+
     @NonNull
+    @Deprecated
     public static UsedeskChat initChat(@NonNull Context context,
                                        @NonNull UsedeskConfiguration usedeskConfiguration,
                                        @NonNull UsedeskActionListener usedeskActionListener) {
         if (usedeskChatBox == null) {
-            usedeskChatBox = new UsedeskChatBox(context,
-                    usedeskConfiguration, usedeskActionListener);
+            usedeskChatBox = new UsedeskChatBox(context, usedeskConfiguration, usedeskActionListener);
+        }
+
+        return usedeskChatBox.usedeskChat;
+    }
+
+    @NonNull
+    public static UsedeskChat initChat(@NonNull Context context,
+                                       @NonNull UsedeskActionListener usedeskActionListener) {
+        if (usedeskChatBox == null) {
+            if (usedeskConfiguration == null) {
+                throw new RuntimeException("Set UsedeskConfiguration before init");
+            }
+            usedeskChatBox = new UsedeskChatBox(context, usedeskConfiguration, usedeskActionListener);
         }
 
         return usedeskChatBox.usedeskChat;
@@ -57,6 +76,9 @@ public class UsedeskSdk {
     public static UsedeskKnowledgeBase initKnowledgeBase(@NonNull Context context) {
         if (usedeskKnowledgeBaseBox == null) {
             usedeskKnowledgeBaseBox = new UsedeskKnowledgeBaseBox(context);
+            if (knowledgeBaseConfiguration != null) {
+                usedeskKnowledgeBaseBox.usedeskKnowledgeBase.setKnowledgebaseConfiguration(knowledgeBaseConfiguration);
+            }
         }
 
         return usedeskKnowledgeBaseBox.usedeskKnowledgeBase;
@@ -86,6 +108,19 @@ public class UsedeskSdk {
 
     public static void setUsedeskNotificationsServiceFactory(UsedeskNotificationsServiceFactory usedeskNotificationsServiceFactory) {
         UsedeskSdk.usedeskNotificationsServiceFactory = usedeskNotificationsServiceFactory;
+    }
+
+    @Nullable
+    public static UsedeskConfiguration getUsedeskConfiguration() {
+        return usedeskConfiguration;
+    }
+
+    public static void setUsedeskConfiguration(@NonNull UsedeskConfiguration usedeskConfiguration) {
+        UsedeskSdk.usedeskConfiguration = usedeskConfiguration;
+    }
+
+    public static void setKnowledgeBaseConfiguration(@NonNull KnowledgeBaseConfiguration knowledgeBaseConfiguration) {
+        UsedeskSdk.knowledgeBaseConfiguration = knowledgeBaseConfiguration;
     }
 
     @SuppressWarnings("Injectable")

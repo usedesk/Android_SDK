@@ -43,8 +43,8 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
             return null;
         }
         final String name = sharedPreferences.getString(KEY_NAME, null);
-        final Long phone = sharedPreferences.contains(KEY_ADDITIONAL_ID)
-                ? sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0)
+        final Long phone = sharedPreferences.contains(KEY_PHONE)
+                ? sharedPreferences.getLong(KEY_PHONE, 0)
                 : null;
         final Long additionalId = sharedPreferences.contains(KEY_ADDITIONAL_ID)
                 ? sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0)

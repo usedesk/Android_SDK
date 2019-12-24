@@ -17,6 +17,7 @@ import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
+import ru.usedesk.sample.ui._common.Event;
 import ru.usedesk.sample.ui._common.ToolbarHelper;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
@@ -58,23 +59,26 @@ public class MainActivity extends AppCompatActivity
                 .observe(this, this::onConfiguration);
     }
 
-    private void onNavigation(@NonNull MainViewModel.Navigation navigation) {
-        switch (navigation) {
-            case EXIT:
-                finish();
-                break;
-            case INFO:
-                goToInfo();
-                break;
-            case CONFIGURATION:
-                goToConfiguration();
-                break;
-            case SDK_KNOWLEDGE_BASE:
-                goToKnowledgeBase();
-                break;
-            case SDK_CHAT:
-                goToChat();
-                break;
+    private void onNavigation(@NonNull Event<MainViewModel.Navigation> navigationEvent) {
+        if (!navigationEvent.isProcessed()) {
+            navigationEvent.onProcessed();
+            switch (navigationEvent.getData()) {
+                case EXIT:
+                    finish();
+                    break;
+                case INFO:
+                    goToInfo();
+                    break;
+                case CONFIGURATION:
+                    goToConfiguration();
+                    break;
+                case SDK_KNOWLEDGE_BASE:
+                    goToKnowledgeBase();
+                    break;
+                case SDK_CHAT:
+                    goToChat();
+                    break;
+            }
         }
     }
 

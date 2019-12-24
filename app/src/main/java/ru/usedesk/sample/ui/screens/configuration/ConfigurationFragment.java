@@ -47,6 +47,13 @@ public class ConfigurationFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        viewModel.setTempConfiguration(getConfiguration());
+    }
+
     @SuppressWarnings("ConstantConditions")
     private void onGoToSdkEvent(@NonNull Event event) {
         if (!event.isProcessed()) {
@@ -55,7 +62,11 @@ public class ConfigurationFragment extends Fragment {
     }
 
     private void onGoToSdk() {
-        viewModel.onGoSdkClick(new Configuration(binding.etCompanyId.getText().toString(),
+        viewModel.onGoSdkClick(getConfiguration());
+    }
+
+    private Configuration getConfiguration() {
+        return new Configuration(binding.etCompanyId.getText().toString(),
                 binding.etEmail.getText().toString(),
                 binding.etUrl.getText().toString(),
                 binding.etOfflineUrl.getText().toString(),
@@ -66,7 +77,7 @@ public class ConfigurationFragment extends Fragment {
                 binding.etClientAdditionalId.getText().toString(),
                 binding.switchForeground.isChecked(),
                 binding.switchCustomViews.isChecked(),
-                binding.switchKnowledgeBase.isChecked()));
+                binding.switchKnowledgeBase.isChecked());
     }
 
     private void onNewConfigure(@NonNull Configuration configuration) {

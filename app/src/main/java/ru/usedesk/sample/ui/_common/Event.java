@@ -1,7 +1,17 @@
 package ru.usedesk.sample.ui._common;
 
-public interface Event {
-    boolean isProcessed();
+public abstract class Event<DATA> {
+    private final DATA data;
 
-    void onProcessed();
+    public Event(DATA data) {
+        this.data = data;
+    }
+
+    public DATA getData() {
+        return data;
+    }
+
+    abstract public boolean isProcessed();
+
+    abstract public void onProcessed();
 }

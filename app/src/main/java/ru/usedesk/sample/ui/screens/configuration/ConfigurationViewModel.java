@@ -34,10 +34,6 @@ public class ConfigurationViewModel extends ViewModel {
         workScheduler = DI.getInstance().getWorkScheduler();
         configurationRepository = DI.getInstance().getConfigurationRepository();
         configurationValidator = DI.getInstance().getConfigurationValidator();
-
-        disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
-                .subscribeOn(workScheduler)
-                .subscribe(configuration::postValue));
     }
 
     public void onGoSdkClick(@NonNull Configuration configuration) {
@@ -47,7 +43,7 @@ public class ConfigurationViewModel extends ViewModel {
                     if (configurationValidation.isSuccessed()) {
                         this.configuration.postValue(configuration);
                         configurationRepository.setConfiguration(configuration);
-                        goToSdkEvent.postValue(new OneTimeEvent());
+                        goToSdkEvent.postValue(new OneTimeEvent<>(null));
                     } else {
                         this.configurationValidation.postValue(configurationValidation);
                     }
@@ -56,6 +52,10 @@ public class ConfigurationViewModel extends ViewModel {
 
     @NonNull
     public LiveData<Configuration> getConfiguration() {
+        disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
+                .subscribeOn(workScheduler)
+                .subscribe(configuration::postValue));
+
         return configuration;
     }
 
@@ -74,5 +74,9 @@ public class ConfigurationViewModel extends ViewModel {
         super.onCleared();
 
         disposables.dispose();
+    }
+
+    public void setTempConfiguration(@NonNull Configuration configuration) {
+        this.configuration.setValue(configuration);
     }
 }

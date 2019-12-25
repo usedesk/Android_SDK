@@ -14,7 +14,6 @@ import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.domain.interactor.ChatInteractor;
 
-@SuppressWarnings("Injectable")
 public class UsedeskChat {
 
     private ChatInteractor chatInteractor;

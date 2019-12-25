@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.service.notifications.view.UsedeskNotificationsService;
 
 public class UsedeskNotificationsServiceFactory {
+    @Deprecated
     public void startService(@NonNull Context context, @NonNull UsedeskConfiguration configuration) {
         Intent intent = new Intent(context, getServiceClass());
         configuration.serialize(intent);
@@ -22,5 +24,13 @@ public class UsedeskNotificationsServiceFactory {
     @NonNull
     protected Class<?> getServiceClass() {
         return UsedeskNotificationsService.class;
+    }
+
+    public void startService(@NonNull Context context) {
+        UsedeskConfiguration usedeskConfiguration = UsedeskSdk.getUsedeskConfiguration();
+        if (usedeskConfiguration == null) {
+            throw new RuntimeException("Need to set UsedeskConfiguration");
+        }
+        startService(context, usedeskConfiguration);
     }
 }

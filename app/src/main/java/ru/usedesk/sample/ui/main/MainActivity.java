@@ -1,9 +1,11 @@
 package ru.usedesk.sample.ui.main;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -11,102 +13,155 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sample.ui.fragments.home.HomeFragment;
-import ru.usedesk.sample.ui.fragments.info.InfoFragment;
-import ru.usedesk.sample.utils.ToolbarHelper;
+import ru.usedesk.sample.databinding.ActivityMainBinding;
+import ru.usedesk.sample.model.configuration.entity.Configuration;
+import ru.usedesk.sample.service.CustomForegroundNotificationsService;
+import ru.usedesk.sample.service.CustomSimpleNotificationsService;
+import ru.usedesk.sample.ui._common.Event;
+import ru.usedesk.sample.ui._common.ToolbarHelper;
+import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
+import ru.usedesk.sample.ui.screens.info.InfoFragment;
+import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
+import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
+import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
 import ru.usedesk.sdk.external.ui.chat.ChatFragment;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements BottomNavigationView.OnNavigationItemSelectedListener,
-        IOnUsedeskSupportClickListener {
+        implements ConfigurationFragment.IOnGoToSdkListener, IOnUsedeskSupportClickListener {
 
-    private ToolbarHelper toolbarHelper;
-    private BottomNavigationView bottomNavigationView;
-    private boolean knowledgeBase = true;
+    private final ToolbarHelper toolbarHelper;
+    private MainViewModel viewModel;
 
     public MainActivity() {
-        toolbarHelper = new ToolbarHelper(this);
+        toolbarHelper = new ToolbarHelper();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initBottomNavigation();
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
 
-        toolbarHelper.setToolbar();
+        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        toolbarHelper.initToolbar(this, binding.toolbar);
+
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        viewModel.getNavigationLiveData()
+                .observe(this, this::onNavigation);
+
+        viewModel.getConfigurationLiveData()
+                .observe(this, this::onConfiguration);
+    }
+
+    private void onNavigation(@NonNull Event<MainViewModel.Navigation> navigationEvent) {
+        if (!navigationEvent.isProcessed()) {
+            navigationEvent.onProcessed();
+            switch (navigationEvent.getData()) {
+                case EXIT:
+                    finish();
+                    break;
+                case INFO:
+                    goToInfo();
+                    break;
+                case CONFIGURATION:
+                    goToConfiguration();
+                    break;
+                case SDK_KNOWLEDGE_BASE:
+                    goToKnowledgeBase();
+                    break;
+                case SDK_CHAT:
+                    goToChat();
+                    break;
+            }
         }
+    }
+
+    private void onConfiguration(@NonNull Configuration configuration) {
+        initUsedeskConfiguration(configuration);
+        initUsedeskService(configuration);
+        initUsedeskCustomizer(configuration);
+    }
+
+    private void initUsedeskConfiguration(@NonNull Configuration configuration) {
+        UsedeskSdk.setUsedeskConfiguration(new UsedeskConfiguration(configuration.getCompanyId(),
+                configuration.getEmail(),
+                configuration.getUrl(),
+                configuration.getOfflineFormUrl(),
+                configuration.getClientName(),
+                getLong(configuration.getClientPhoneNumber()),
+                getLong(configuration.getClientAdditionalId())));
+
+        if (configuration.isWithKnowledgeBase()) {
+            UsedeskSdk.setKnowledgeBaseConfiguration(new KnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
+        }
+    }
+
+    private void initUsedeskCustomizer(@NonNull Configuration configuration) {
+        UsedeskViewCustomizer usedeskViewCustomizer = UsedeskSdk.getUsedeskViewCustomizer();
+        if (configuration.isCustomViews()) {
+            //Полная замена фрагментов кастомными
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.custom_item_category);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_section, R.layout.custom_item_section);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
+
+            //Применение кастомной темы к стандартным фрагментам
+            usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme_Custom);
+        } else {
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, ru.usedesk.sdk.R.layout.usedesk_item_category);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_section, ru.usedesk.sdk.R.layout.usedesk_item_section);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, ru.usedesk.sdk.R.layout.usedesk_item_article_info);
+
+            usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme);
+        }
+    }
+
+    private void initUsedeskService(@NonNull Configuration configuration) {
+        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+                .stopService(this);
+
+        UsedeskSdk.setUsedeskNotificationsServiceFactory(configuration.isForegroundService()
+                ? new CustomForegroundNotificationsService.Factory()
+                : new CustomSimpleNotificationsService.Factory());
     }
 
     private Fragment getCurrentFragment() {
         return getSupportFragmentManager().findFragmentById(R.id.container_frame_layout);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    private void goToConfiguration() {
+        toolbarHelper.update(this, ToolbarHelper.State.CONFIGURATION);
+        switchFragment(ConfigurationFragment.newInstance());
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                toolbarHelper.update(ToolbarHelper.State.BASE);
-                switchFragment(HomeFragment.newInstance());
-                break;
-            case R.id.navigation_base:
-                if (knowledgeBase) {
-                    toolbarHelper.update(ToolbarHelper.State.HOME_SEARCH);
-                    switchFragment(KnowledgeBaseFragment.newInstance());
-                } else {
-                    toolbarHelper.update(ToolbarHelper.State.HOME);
-                    switchFragment(ChatFragment.newInstance());
-                }
-                break;
-            case R.id.navigation_info:
-                toolbarHelper.update(ToolbarHelper.State.HOME);
-                switchFragment(InfoFragment.newInstance());
-                break;
-            default:
-                return false;
-        }
+    private void goToKnowledgeBase() {
+        toolbarHelper.update(this, ToolbarHelper.State.KNOWLEDGE_BASE);
+        switchFragment(KnowledgeBaseFragment.newInstance());
+    }
 
-        return true;
+    private void goToChat() {
+        toolbarHelper.update(this, ToolbarHelper.State.CHAT);
+        switchFragment(ChatFragment.newInstance());
+    }
+
+    private void goToInfo() {
+        toolbarHelper.update(this, ToolbarHelper.State.INFO);
+        switchFragment(InfoFragment.newInstance());
     }
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = getCurrentFragment();
-
-        if (fragment instanceof KnowledgeBaseFragment) {
-            if (!((KnowledgeBaseFragment) fragment).onBackPressed()) {
-                bottomNavigationView.setSelectedItemId(R.id.navigation_home);
-            }
-        } else if (fragment instanceof ChatFragment && knowledgeBase || fragment instanceof InfoFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.navigation_base);
-        } else {
-            super.onBackPressed();
-        }
+        viewModel.goBack();
     }
 
     @Override
     public void onSupportClick() {
-        toolbarHelper.update(ToolbarHelper.State.HOME);
-        switchFragment(ChatFragment.newInstance());
-    }
-
-    private void initBottomNavigation() {
-        bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        goToChat();
     }
 
     @Override
@@ -115,13 +170,16 @@ public class MainActivity extends AppCompatActivity
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.action_info:
+                viewModel.goInfo();
+                break;
         }
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu_with_search, menu);
+        toolbarHelper.onCreateOptionsMenu(getMenuInflater(), menu);
 
         setSearchQueryListener(menu);
 
@@ -130,7 +188,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        toolbarHelper.setSearchButton(menu.findItem(R.id.action_search));
+        toolbarHelper.onPrepareOptionsMenu(menu);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -164,11 +222,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void setKnowledgeBase(boolean knowledgeBase) {
-        this.knowledgeBase = knowledgeBase;
+    private Long getLong(@Nullable String value) {
+        return value == null || value.isEmpty()
+                ? null
+                : Long.valueOf(value);
     }
 
-    private void switchFragment(Fragment fragment) {
+    @Override
+    public void goToSdk() {
+        viewModel.goSdk();
+    }
+
+    public void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_frame_layout, fragment)
                 .commit();

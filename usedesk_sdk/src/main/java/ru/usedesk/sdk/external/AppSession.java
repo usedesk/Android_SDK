@@ -2,6 +2,7 @@ package ru.usedesk.sdk.external;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 
+@Deprecated
 public class AppSession {
 
     private static AppSession activeSession;

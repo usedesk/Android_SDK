@@ -71,8 +71,8 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void sendUserEmail(String token, String email) {
-        emitterAction(new SetEmailRequest(token, email));
+    public void sendUserEmail(String token, String email, String name, Long phone, Long additionalId) {
+        emitterAction(new SetEmailRequest(token, email, name, phone, additionalId));
     }
 
     @Override

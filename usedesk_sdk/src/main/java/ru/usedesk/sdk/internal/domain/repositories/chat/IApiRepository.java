@@ -30,5 +30,5 @@ public interface IApiRepository {
 
     void sendMessageRequest(String token, String text, UsedeskFile usedeskFile);
 
-    void sendUserEmail(String token, String email);
+    void sendUserEmail(String token, String email, String name, Long phone, Long additionalId);
 }

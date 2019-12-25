@@ -83,9 +83,9 @@ public abstract class UsedeskNotificationsService extends Service implements Mvi
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            UsedeskConfiguration usedeskConfiguration = UsedeskConfiguration.deserialize(intent);
+            UsedeskSdk.setUsedeskConfiguration(UsedeskConfiguration.deserialize(intent));
 
-            UsedeskSdk.initChat(this, usedeskConfiguration, notificationsPresenter.getActionListenerRx());
+            UsedeskSdk.initChat(this, notificationsPresenter.getActionListenerRx());
 
             messagesDisposable = notificationsPresenter.getModelObservable()
                     .subscribe(this::renderModel);

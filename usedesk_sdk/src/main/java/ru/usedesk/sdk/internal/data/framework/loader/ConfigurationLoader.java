@@ -19,6 +19,9 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
     private static final String KEY_URL = "url";
     private static final String KEY_OFFLINE_URL = "offlineUrl";
     private static final String KEY_EMAIL = "email";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_PHONE = "phone";
+    private static final String KEY_ADDITIONAL_ID = "additionalId";
 
     private final SharedPreferences sharedPreferences;
 
@@ -39,18 +42,39 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
         if (id == null || url == null || email == null || offlineUrl == null) {
             return null;
         }
+        final String name = sharedPreferences.getString(KEY_NAME, null);
+        final Long phone = sharedPreferences.contains(KEY_PHONE)
+                ? sharedPreferences.getLong(KEY_PHONE, 0)
+                : null;
+        final Long additionalId = sharedPreferences.contains(KEY_ADDITIONAL_ID)
+                ? sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0)
+                : null;
 
-        return new UsedeskConfiguration(id, email, url, offlineUrl);
+        return new UsedeskConfiguration(id, email, url, offlineUrl, name, phone, additionalId);
     }
 
     @Override
     protected void saveData(@NonNull UsedeskConfiguration configuration) {
-        sharedPreferences.edit()
+        SharedPreferences.Editor editor = sharedPreferences.edit()
                 .putString(KEY_ID, configuration.getCompanyId())
                 .putString(KEY_URL, configuration.getUrl())
                 .putString(KEY_OFFLINE_URL, configuration.getOfflineFormUrl())
                 .putString(KEY_EMAIL, configuration.getEmail())
-                .apply();
+                .putString(KEY_NAME, configuration.getClientName());
+
+        Long additionalId = configuration.getClientAdditionalId();
+        if (additionalId != null) {
+            editor.putLong(KEY_ADDITIONAL_ID, configuration.getClientAdditionalId());
+        } else {
+            editor.remove(KEY_ADDITIONAL_ID);
+        }
+        Long phone = configuration.getClientPhoneNumber();
+        if (phone != null) {
+            editor.putLong(KEY_PHONE, configuration.getClientPhoneNumber());
+        } else {
+            editor.remove(KEY_PHONE);
+        }
+        editor.apply();
     }
 
     @Override

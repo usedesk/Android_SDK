@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.usedesk.sdk.external.AppSession;
+import io.reactivex.Completable;
 import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
@@ -67,8 +67,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
             //nothing
         });
 
-        usedeskChat = UsedeskSdk.initChat(context,
-                AppSession.getSession().getUsedeskConfiguration(), actionListenerRx);
+        usedeskChat = UsedeskSdk.initChat(context, actionListenerRx);
     }
 
     void setUsedeskFiles(List<UsedeskFile> usedeskFiles) {
@@ -79,9 +78,9 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
 
     void sendMessage(String textMessage, List<UsedeskFile> usedeskFiles) {
         if (usedeskFiles != null && usedeskFiles.size() > 0) {
-            usedeskChat.sendMessage(textMessage, usedeskFiles);
+            asCompletable(() -> usedeskChat.sendMessage(textMessage, usedeskFiles));
         } else {
-            usedeskChat.sendTextMessage(textMessage);
+            asCompletable(() -> usedeskChat.sendTextMessage(textMessage));
         }
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFiles(new ArrayList<>())
@@ -89,7 +88,14 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
     }
 
     void sendFeedback(@NonNull Feedback feedback) {
-        usedeskChat.sendFeedbackMessage(feedback);
+        asCompletable(() -> usedeskChat.sendFeedbackMessage(feedback));
+    }
+
+    private void asCompletable(Runnable runnable) {
+        Completable.create(emitter -> {
+            runnable.run();
+            emitter.onComplete();
+        }).subscribe();
     }
 
     @Override

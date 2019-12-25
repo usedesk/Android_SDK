@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/company_id_edit_text"
+            android:id="@+id/et_company_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="?attr/usedesk_content_marginStart"
@@ -30,7 +30,7 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/email_edit_text"
+            android:id="@+id/et_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="?attr/usedesk_content_marginStart"

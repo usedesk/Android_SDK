@@ -6,6 +6,7 @@ public class InitChatResponse extends BaseResponse {
 
     private String token;
     private Setup setup;
+    private Boolean noOperators;
 
     public InitChatResponse() {
         super(TYPE);
@@ -15,15 +16,11 @@ public class InitChatResponse extends BaseResponse {
         return token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public Setup getSetup() {
         return setup;
     }
 
-    public void setSetup(Setup setup) {
-        this.setup = setup;
+    public Boolean getNoOperators() {
+        return noOperators;
     }
 }

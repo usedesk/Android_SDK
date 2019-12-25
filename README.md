@@ -1,14 +1,14 @@
-# Android Usedesk SDK
+# Android Usedesk SDK (v1.0.6)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
- - [Импорт модуля в проект](#implementation_import)
- - [Через Maven репозиторий](#implementation_maven)
+-- [Импорт модуля в проект](#implementation_import)
+-- [Через Maven репозиторий](#implementation_maven)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
- - [Настройка UsedeskChat](#base_setup)
- - [Методы взаимодействия с UsedeskChat](#base_manage)
+-- [Настройка UsedeskChat](#base_setup)
+-- [Методы взаимодействия с UsedeskChat](#base_manage)
 - [База знаний](#knowledge_base)
- - [Настройка UsedeskKnowledgeBase](#knowledge_base_setup)
- - [Методы взаимодействия с UsedeskKnowledgeBase](#knowledge_base_manage)
+-- [Настройка UsedeskKnowledgeBase](#knowledge_base_setup)
+-- [Методы взаимодействия с UsedeskKnowledgeBase](#knowledge_base_manage)
 - [UI базы знаний и чата](#ui)
 - [Локальные уведомления](#local_notifications)
 
@@ -59,7 +59,7 @@ allprojects {
 ```
 dependencies {
     ...
-    implementation 'ru.usedesk:usedesk_sdk:1.0.2'
+    implementation 'ru.usedesk:usedesk_sdk:1.0.6'
     ...
 }
 ```
@@ -77,17 +77,32 @@ dependencies {
 
 [UsedeskChat](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskChat.java) - класс работы с чатом.
 
-Перед началом работы его необходимо проинициализировать, вызвав метод initChat со следующими параметрами:
+Перед началом работы необходимо задать конфигурацию, вызвав метод setUsedeskConfiguration со следующими параметрами:
+
+| Переменная            | Тип                   | Описание                    |
+|-----------------------|-----------------------|-----------------------------|
+| companyId  | String  | Идентификатор компании |
+| clientEmail  | String  | Почта клиента |
+| apiUrl  | String  | Адрес API сервера |
+| offlineFormUrl  | String  | Адрес для отправки оффлайн формы |
+| clientName  | String  | Имя клиента |
+| clientPhone  | Long  | Телефонный номер клиента |
+| clientAdditionalId  | Long  | Дополнительный идентификатор клиента |
+
+Пример:
+
+    UsedeskSdk.setUsedeskConfiguration(new UsedeskConfiguration(companyId, clientEmail, apiUrl, offlineFormUrl, clientName, clientPhone, clientAdditionalId));
+
+После чего проинициализировать, вызвав метод initChat со следующими параметрами:
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
 | appContext            | Context               | Контекст приложения         |
-| usedeskConfiguration  | UsedeskConfiguration  | Конфигурация чата           |
 | usedeskActionListener | UsedeskActionListener | Слушатель возможных событий |
 
 Пример:
 
-    UsedeskChat usedeskChat = UsedeskSdk.initChat(context, usedeskConfiguration, usedeskActionListener);
+    UsedeskChat usedeskChat = UsedeskSdk.initChat(context, usedeskActionListener);
 
 После этого можно получить объект класса в любом месте:
 
@@ -98,15 +113,6 @@ dependencies {
     UsedeskSdk.releaseChat();
 
 Попытка получить объект без инициализации или после освобожения вызовет исключение (RuntimeException).
-
-- [UsedeskConfiguration](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskConfiguration.java) - конфигуратор, который содержит все необходимые поля для инициализации SDK с сервером:
-
-| Переменная     | Тип    | Описание                                 |
-|----------------|--------|------------------------------------------|
-| accountId      | String | ID базы знаний                           |
-| email          | String | Почта клиента                            |
-| url            | String | Адрес сервера с номером порта            |
-| offlineFormUrl | String | Адрес сервера для отправки оффлайн формы |
 
 - [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе:
 
@@ -186,23 +192,34 @@ dependencies {
 
 [UsedeskKnowledgeBase](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskKnowledgeBase.java) - класс работы с базой знаний.
 
-Перед началом работы его неоходимо проинициализировать:
-```
-UsedeskKnowledgeBase usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context);
-```
+Перед началом работы необходимо задать конфигурацию, вызвав метод setKnowledgeBaseConfiguration со следующими параметрами:
+
+| Переменная | Тип    | Описание               |
+|------------|--------|------------------------|
+| accountId  | String | Идентификатор Базы Знаний в системе |
+| token  | String | Токен доступа к API |
+
+Пример:
+
+    UsedeskSdk.setKnowledgeBaseConfiguration(new KnowledgeBaseConfiguration(accountId, token)
+
+После этого его неоходимо проинициализировать:
+
+    UsedeskKnowledgeBase usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context);
+
 После этого можно получить объект класса в любом месте:
-```
-UsedeskKnowledgeBase usedeskKnowledgeBase = UsedeskKnowledgeBase.getUsedeskKnowledgeBase();
-```
+
+    UsedeskKnowledgeBase usedeskKnowledgeBase = UsedeskKnowledgeBase.getUsedeskKnowledgeBase();
+
 Освободить объект:
-```
-UsedeskSdk.releaseUsedeskKnowledgeBase();
-```
+
+    UsedeskSdk.releaseUsedeskKnowledgeBase();
+
 Попытка получить объект без инициализации или после освобожения вызовет исключение.
 
 Для работы напрямую с API необходимо подключить библиотеку:
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
 <a name="knowledge_base_manage"></a>

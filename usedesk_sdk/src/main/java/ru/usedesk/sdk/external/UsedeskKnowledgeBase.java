@@ -25,7 +25,12 @@ public final class UsedeskKnowledgeBase {
         this.knowledgeBaseInteractor = knowledgeBaseInteractor;
     }
 
+    @Deprecated
     public void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
+        knowledgeBaseInteractor.setConfiguration(configuration);
+    }
+
+    void setKnowledgebaseConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
         knowledgeBaseInteractor.setConfiguration(configuration);
     }
 

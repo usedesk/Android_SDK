@@ -28,7 +28,6 @@ import java.util.List;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.AppSession;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
@@ -94,7 +93,7 @@ public class ChatFragment extends Fragment {
         super.onStop();
 
         UsedeskSdk.getUsedeskNotificationsServiceFactory()
-                .startService(getContext(), AppSession.getSession().getUsedeskConfiguration());
+                .startService(getContext());
     }
 
     @Override

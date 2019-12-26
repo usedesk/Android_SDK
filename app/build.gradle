@@ -8,8 +8,8 @@ android {
         applicationId 'ru.usedesk.sample'
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 19
-        versionName '1.0.6'
+        versionCode 20
+        versionName '1.0.7'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -38,7 +38,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation project(':usedesk_sdk')
-    //implementation 'ru.usedesk:sdk:1.0.6'
 
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation 'android.arch.lifecycle:reactivestreams:1.1.1'

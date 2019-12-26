@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
@@ -56,7 +55,7 @@ class FilePicker {
                 break;
             }
             case REQUEST_CODE_TAKE_PHOTO: {
-                return Arrays.asList(AttachmentUtils.getUsedeskFile(context, getTakePhotoUri(context)));
+                return AttachmentUtils.getUsedeskFile(context, getTakePhotoUri(context));
             }
         }
         return null;

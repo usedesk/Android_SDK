@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.webkit.MimeTypeMap;
@@ -14,9 +15,11 @@ import com.annimon.stream.Stream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
@@ -24,25 +27,38 @@ import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 public class AttachmentUtils {
 
     private static final String CONTENT_FORMAT = "data:%1s;base64,%2s";
+    private static final int MAX_FILE_SIZE = 10 * 1024 * 1024;
+    private static final int BUF_SIZE = 100 * 1024;
+
+    private static int transferTo(@NonNull InputStream inputStream, @NonNull OutputStream outputStream) throws IOException {
+        int bytesRead;
+        int offset = 0;
+        byte[] buffer = new byte[BUF_SIZE];
+        while ((bytesRead = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, bytesRead);
+            offset += bytesRead;
+        }
+        return offset;
+    }
 
     @NonNull
-    private static String convertToBase64(@NonNull Context context, @NonNull Uri uri) {
+    private static String convertToBase64(@NonNull Context context, @NonNull Uri uri) throws IOException {
         try (InputStream inputStream = context.getContentResolver().openInputStream(uri)) {
-            byte[] buffer = new byte[10240];//specify the size to allow
-            int bytesRead;
+            if (inputStream == null) {
+                throw new RuntimeException("Can't open file: " + uri.toString());
+            }
+            int size = inputStream.available();
+            if (size > MAX_FILE_SIZE) {
+                throw new RuntimeException("File size is bigger then " + MAX_FILE_SIZE);
+            }
+
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             Base64OutputStream output64 = new Base64OutputStream(output, Base64.DEFAULT);
 
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                output64.write(buffer, 0, bytesRead);
-            }
+            transferTo(inputStream, output64);
 
             return output.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return "";
     }
 
     @NonNull
@@ -60,7 +76,7 @@ public class AttachmentUtils {
             }
             return uriList;
         } else if (uri != null) {
-            return new ArrayList<>(Arrays.asList(uri));
+            return new ArrayList<>(Collections.singletonList(uri));
         }
         return new ArrayList<>();
     }
@@ -77,28 +93,40 @@ public class AttachmentUtils {
         }
     }
 
-    @NonNull
+    @Nullable
     private static UsedeskFile createUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
-        File file = new File(uri.getPath());
-        String mimeType = getMimeType(context, uri);
+        try {
+            File file = new File(uri.getPath());
+            String mimeType = getMimeType(context, uri);
 
-        UsedeskFile usedeskFile = new UsedeskFile();
-        usedeskFile.setName(file.getName());
-        usedeskFile.setContent(String.format(CONTENT_FORMAT, mimeType, convertToBase64(context, uri)));
-        usedeskFile.setType(mimeType);
+            UsedeskFile usedeskFile = new UsedeskFile();
+            usedeskFile.setName(file.getName());
+            usedeskFile.setContent(String.format(CONTENT_FORMAT, mimeType, convertToBase64(context, uri)));
+            usedeskFile.setType(mimeType);
 
-        return usedeskFile;
+            return usedeskFile;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @NonNull
     public static List<UsedeskFile> getUsedeskFiles(@NonNull Context context, @NonNull Intent data) {
         return Stream.of(getUriList(data))
                 .map(uri -> AttachmentUtils.createUsedeskFile(context, uri))
+                .filter(file -> file != null)
                 .toList();
     }
 
     @NonNull
-    public static UsedeskFile getUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
-        return AttachmentUtils.createUsedeskFile(context, uri);
+    public static List<UsedeskFile> getUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
+        UsedeskFile usedeskFile = AttachmentUtils.createUsedeskFile(context, uri);
+
+        ArrayList<UsedeskFile> usedeskFiles = new ArrayList<>(1);
+        if (usedeskFile != null) {
+            usedeskFiles.add(usedeskFile);
+        }
+        return usedeskFiles;
     }
 }

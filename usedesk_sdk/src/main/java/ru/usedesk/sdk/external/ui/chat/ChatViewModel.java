@@ -105,6 +105,12 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         UsedeskSdk.releaseChat();
     }
 
+    public void detachFile(@NonNull UsedeskFile usedeskFile) {
+        List<UsedeskFile> attachedFiles = new ArrayList<>(getLastModel().getUsedeskFiles());
+        attachedFiles.remove(usedeskFile);
+        setUsedeskFiles(attachedFiles);
+    }
+
     public static class Factory implements ViewModelProvider.Factory {
         private Context context;
 

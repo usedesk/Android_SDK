@@ -30,17 +30,15 @@
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <TextView
-                android:id="@+id/attachment_marker_text_view"
-                android:layout_width="match_parent"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_attached_files"
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/attachment_selected"
-                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/message_edit_text"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="8dp"
-                tools:visibility="visible" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/attach_file_image_view"
@@ -63,7 +61,7 @@
             <ImageButton
                 android:id="@+id/send_image_view"
                 style="?attr/usedesk_fragment_chat_send_style"
-                app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
+                app:layout_caonstraintBottom_toBottomOf="@+id/message_edit_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/message_edit_text"
                 tools:visibility="visible" />

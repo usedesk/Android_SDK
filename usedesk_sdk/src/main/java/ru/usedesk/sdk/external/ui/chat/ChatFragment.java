@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -44,9 +43,10 @@ public class ChatFragment extends Fragment {
     private RecyclerView messagesRecyclerView;
     private EditText messageEditText;
     private ImageButton sendImageButton;
-    private TextView attachmentMarkerTextView;
+    private RecyclerView recyclerViewAttachedFiles;
 
     private MessagesAdapter messagesAdapter;
+    private AttachedFilesAdapter attachedFilesAdapter;
 
     private FilePicker filePicker;
 
@@ -122,12 +122,7 @@ public class ChatFragment extends Fragment {
             }
         }
 
-        if (model.getUsedeskFiles().size() > 0) {
-            attachmentMarkerTextView.setVisibility(View.VISIBLE);
-            sendImageButton.setEnabled(true);
-        } else {
-            attachmentMarkerTextView.setVisibility(View.GONE);
-        }
+        attachedFilesAdapter.update(model.getUsedeskFiles());
 
         if (model.getUsedeskException() != null) {
             String message = model.getUsedeskException().getMessage();
@@ -167,7 +162,7 @@ public class ChatFragment extends Fragment {
         sendImageButton.setEnabled(false);
         sendImageButton.setOnClickListener(v -> attemptSend());
 
-        attachmentMarkerTextView = view.findViewById(R.id.attachment_marker_text_view);
+        attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
     }
 
     private void initList() {
@@ -210,7 +205,6 @@ public class ChatFragment extends Fragment {
         viewModel.sendMessage(textMessage, getLastModel().getUsedeskFiles());
 
         messageEditText.setText("");
-        attachmentMarkerTextView.setVisibility(View.GONE);
     }
 
     private void openAttachmentDialog() {

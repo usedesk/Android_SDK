@@ -16,5 +16,5 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_gravity="end|top"
-        app:srcCompat="@drawable/ic_attach_file_black" />
+        app:srcCompat="@drawable/ic_cancel" />
 </FrameLayout>

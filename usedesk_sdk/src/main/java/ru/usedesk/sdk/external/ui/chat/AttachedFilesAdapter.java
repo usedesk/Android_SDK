@@ -12,22 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
+import ru.usedesk.sdk.internal.utils.GlideApp;
 
 class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
 
     private final ChatViewModel chatViewModel;
-    private List<UsedeskFile> files = new ArrayList<>();
+    private List<UsedeskFileInfo> files = new ArrayList<>();
 
     AttachedFilesAdapter(@NonNull ChatViewModel chatViewModel,
                          @NonNull RecyclerView recyclerView) {
         this.chatViewModel = chatViewModel;
 
         recyclerView.setAdapter(this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
-    void update(@NonNull List<UsedeskFile> attachedFiles) {
+    void update(@NonNull List<UsedeskFileInfo> attachedFiles) {
         if (this.files != attachedFiles) {
             this.files = attachedFiles;
 
@@ -38,11 +39,8 @@ class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.Vie
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        ViewHolder viewHolder = new ViewHolder(LayoutInflater.from(viewGroup.getContext())
+        return new ViewHolder(LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.usedesk_item_chat_attached_file, viewGroup, false));
-
-
-        return viewHolder;
     }
 
     @Override
@@ -66,13 +64,13 @@ class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.Vie
             imageViewDetach = itemView.findViewById(R.id.iv_detach);
         }
 
-        private void bind(@NonNull UsedeskFile usedeskFile) {
-            if (usedeskFile.isImage()) {
-                imageViewPreview.setImageResource(R.drawable.ic_attachment_photo_black);
-            } else {
-                imageViewPreview.setImageResource(R.drawable.ic_attachment_document_black);
-            }
-            imageViewDetach.setOnClickListener(v -> chatViewModel.detachFile(usedeskFile));
+        private void bind(@NonNull UsedeskFileInfo usedeskFileInfo) {
+            GlideApp.with(imageViewPreview)
+                    .load(usedeskFileInfo.getUri())
+                    .centerCrop()
+                    .into(imageViewPreview);
+
+            imageViewDetach.setOnClickListener(v -> chatViewModel.detachFile(usedeskFileInfo));
         }
     }
 }

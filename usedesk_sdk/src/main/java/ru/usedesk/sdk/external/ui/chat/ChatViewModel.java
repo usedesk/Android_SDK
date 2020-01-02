@@ -13,7 +13,7 @@ import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.external.ui.mvi.MviViewModel;
 
 public class ChatViewModel extends MviViewModel<ChatModel> {
@@ -70,20 +70,9 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         usedeskChat = UsedeskSdk.initChat(context, actionListenerRx);
     }
 
-    void setUsedeskFiles(List<UsedeskFile> usedeskFiles) {
+    void setAttachedFileInfoList(List<UsedeskFileInfo> usedeskFileInfoList) {
         onNewModel(new ChatModel.Builder()
-                .setUsedeskFiles(usedeskFiles)
-                .build());
-    }
-
-    void sendMessage(String textMessage, List<UsedeskFile> usedeskFiles) {
-        if (usedeskFiles != null && usedeskFiles.size() > 0) {
-            asCompletable(() -> usedeskChat.sendMessage(textMessage, usedeskFiles));
-        } else {
-            asCompletable(() -> usedeskChat.sendTextMessage(textMessage));
-        }
-        onNewModel(new ChatModel.Builder()
-                .setUsedeskFiles(new ArrayList<>())
+                .setUsedeskFileInfoList(usedeskFileInfoList)
                 .build());
     }
 
@@ -105,10 +94,21 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         UsedeskSdk.releaseChat();
     }
 
-    public void detachFile(@NonNull UsedeskFile usedeskFile) {
-        List<UsedeskFile> attachedFiles = new ArrayList<>(getLastModel().getUsedeskFiles());
-        attachedFiles.remove(usedeskFile);
-        setUsedeskFiles(attachedFiles);
+    public void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {
+        List<UsedeskFileInfo> attachedFileInfoList = new ArrayList<>(getLastModel().getUsedeskFileInfoList());
+        attachedFileInfoList.remove(usedeskFileInfo);
+        setAttachedFileInfoList(attachedFileInfoList);
+    }
+
+    public void onSend(@NonNull String textMessage) {
+        asCompletable(() -> usedeskChat.sendTextMessage(textMessage));
+
+        List<UsedeskFileInfo> usedeskFileInfoList = getLastModel().getUsedeskFileInfoList();
+        asCompletable(() -> usedeskChat.sendFileMessages(usedeskFileInfoList));
+
+        onNewModel(new ChatModel.Builder()
+                .setUsedeskFileInfoList(new ArrayList<>())
+                .build());
     }
 
     public static class Factory implements ViewModelProvider.Factory {

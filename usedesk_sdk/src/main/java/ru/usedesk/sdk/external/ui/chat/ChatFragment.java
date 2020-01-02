@@ -28,13 +28,13 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
 public class ChatFragment extends Fragment {
 
-    private static final int MAX_MESSAGE_LENGTH = 10000;
+    //private static final int MAX_MESSAGE_LENGTH = 10000;
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
@@ -99,9 +99,9 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
-            if (selectedUsedeskFiles != null) {
-                viewModel.setUsedeskFiles(selectedUsedeskFiles);
+            List<UsedeskFileInfo> attachedFileInfoList = filePicker.onResult(getContext(), requestCode, data);
+            if (attachedFileInfoList != null) {
+                viewModel.setAttachedFileInfoList(attachedFileInfoList);
             }
         }
     }
@@ -122,7 +122,7 @@ public class ChatFragment extends Fragment {
             }
         }
 
-        attachedFilesAdapter.update(model.getUsedeskFiles());
+        attachedFilesAdapter.update(model.getUsedeskFileInfoList());
 
         if (model.getUsedeskException() != null) {
             String message = model.getUsedeskException().getMessage();
@@ -191,20 +191,7 @@ public class ChatFragment extends Fragment {
             return;
         }
 
-        String textMessage = messageEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(textMessage) && getLastModel().getUsedeskFiles().size() == 0) {
-            messageEditText.requestFocus();
-            return;
-        }
-
-        if (textMessage.length() > MAX_MESSAGE_LENGTH) {
-            showError(R.string.long_message);
-            return;
-        }
-
-        viewModel.sendMessage(textMessage, getLastModel().getUsedeskFiles());
-
-        messageEditText.setText("");
+        viewModel.onSend(messageEditText.getText().toString().trim());
     }
 
     private void openAttachmentDialog() {

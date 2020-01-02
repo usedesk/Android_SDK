@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 
 public class AttachmentUtils {
 
@@ -112,14 +113,26 @@ public class AttachmentUtils {
     }
 
     @NonNull
-    public static List<UsedeskFile> getUsedeskFiles(@NonNull Context context, @NonNull Intent data) {
+    public static List<UsedeskFileInfo> getUsedeskFiles(@NonNull Context context, @NonNull Intent data) {
+        return Stream.of(getUriList(data))
+                .map(UsedeskFileInfo::new)
+                .toList();
+    }
+
+    /*@NonNull
+    public static List<UsedeskFile> getUsedeskFileInfoList(@NonNull Context context, @NonNull Intent data) {
         return Stream.of(getUriList(data))
                 .map(uri -> AttachmentUtils.createUsedeskFile(context, uri))
                 .filter(file -> file != null)
                 .toList();
-    }
+    }*/
 
     @NonNull
+    public static List<UsedeskFileInfo> getUsedeskFile(@NonNull Uri uri) {
+        return Collections.singletonList(new UsedeskFileInfo(uri));
+    }
+
+    /*@NonNull
     public static List<UsedeskFile> getUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
         UsedeskFile usedeskFile = AttachmentUtils.createUsedeskFile(context, uri);
 
@@ -128,5 +141,5 @@ public class AttachmentUtils {
             usedeskFiles.add(usedeskFile);
         }
         return usedeskFiles;
-    }
+    }*/
 }

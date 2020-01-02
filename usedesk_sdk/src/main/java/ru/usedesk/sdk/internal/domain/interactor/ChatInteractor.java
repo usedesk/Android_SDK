@@ -20,6 +20,7 @@ import ru.usedesk.sdk.external.entity.chat.OfflineForm;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
@@ -33,7 +34,7 @@ public class ChatInteractor {
     private UsedeskConfiguration usedeskConfiguration;
     private UsedeskActionListener usedeskActionListener;
     private String token;
-    private Thread thread;
+    private Thread thread;//TODO: oh my god, убить
 
     private IUserInfoRepository userInfoRepository;
     private IApiRepository apiRepository;
@@ -58,6 +59,11 @@ public class ChatInteractor {
         }
     }
 
+    public void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo) {
+        //sendMessage(null, null);//TODO:
+    }
+
+    @Deprecated
     public void sendUserMessage(String text, UsedeskFile usedeskFile) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
@@ -68,6 +74,7 @@ public class ChatInteractor {
         sendMessage(text, usedeskFile);
     }
 
+    @Deprecated
     public void sendUserMessage(String text, List<UsedeskFile> usedeskFiles) {
         if (usedeskFiles == null || usedeskFiles.isEmpty()) {
             return;
@@ -89,6 +96,10 @@ public class ChatInteractor {
     }
 
     public void sendUserTextMessage(String text) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
@@ -98,6 +109,7 @@ public class ChatInteractor {
         sendMessage(text, null);
     }
 
+    @Deprecated
     public void sendUserFileMessage(UsedeskFile usedeskFile) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);

@@ -65,10 +65,17 @@ class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.Vie
         }
 
         private void bind(@NonNull UsedeskFileInfo usedeskFileInfo) {
-            GlideApp.with(imageViewPreview)
-                    .load(usedeskFileInfo.getUri())
-                    .centerCrop()
-                    .into(imageViewPreview);
+            if (usedeskFileInfo.getType().equals(UsedeskFileInfo.Type.IMAGE)) {
+                GlideApp.with(imageViewPreview)
+                        .load(usedeskFileInfo.getUri())
+                        .centerCrop()
+                        .error(R.drawable.ic_attachment_photo_black)
+                        .into(imageViewPreview);
+            } else {
+                GlideApp.with(imageViewPreview)
+                        .load(R.drawable.ic_document_black)
+                        .into(imageViewPreview);
+            }
 
             imageViewDetach.setOnClickListener(v -> chatViewModel.detachFile(usedeskFileInfo));
         }

@@ -34,8 +34,6 @@ import ru.usedesk.sdk.internal.utils.NetworkUtils;
 @RuntimePermissions
 public class ChatFragment extends Fragment {
 
-    //private static final int MAX_MESSAGE_LENGTH = 10000;
-
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
 
@@ -43,7 +41,6 @@ public class ChatFragment extends Fragment {
     private RecyclerView messagesRecyclerView;
     private EditText messageEditText;
     private ImageButton sendImageButton;
-    private RecyclerView recyclerViewAttachedFiles;
 
     private MessagesAdapter messagesAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
@@ -99,7 +96,8 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            List<UsedeskFileInfo> attachedFileInfoList = filePicker.onResult(getContext(), requestCode, data);
+            List<UsedeskFileInfo> attachedFileInfoList = filePicker.onResultInfo(getContext(),
+                    requestCode, data);
             if (attachedFileInfoList != null) {
                 viewModel.setAttachedFileInfoList(attachedFileInfoList);
             }
@@ -177,12 +175,6 @@ public class ChatFragment extends Fragment {
                         messagesRecyclerView.postDelayed(messagesAdapter::scrollToBottom, 100);
                     }
                 });
-    }
-
-    @NonNull
-    @SuppressWarnings("ConstantConditions")
-    private ChatModel getLastModel() {
-        return viewModel.getModelLiveData().getValue();
     }
 
     private void attemptSend() {

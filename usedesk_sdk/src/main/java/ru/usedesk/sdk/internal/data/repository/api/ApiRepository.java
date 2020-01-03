@@ -76,17 +76,16 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public boolean post(UsedeskConfiguration configuration, OfflineForm offlineForm) {
+    public void post(UsedeskConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException {
         try {
             URL url = new URL(configuration.getOfflineFormUrl());
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
-            return httpApi.post(postUrl, offlineForm);
-        } catch (UsedeskHttpException e) {
-            actionListener.onException(e);
+            if (!httpApi.post(postUrl, offlineForm)) {
+                throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR);
+            }
         } catch (IOException e) {
-            actionListener.onException(new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage()));
+            throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage());
         }
-        return false;
     }
 
     @Override

@@ -59,6 +59,16 @@ public class UsedeskChat {
         chatInteractor.sendUserFileMessage(usedeskFileInfoList);
     }
 
+    public void sendFileMessages(List<UsedeskFileInfo> usedeskFileInfoList) {
+        if (usedeskFileInfoList == null) {
+            return;
+        }
+
+        for (UsedeskFileInfo usedeskFileInfo : usedeskFileInfoList) {
+            sendFileMessage(usedeskFileInfo);
+        }
+    }
+
     public void sendFeedbackMessage(Feedback feedback) {
         chatInteractor.sendFeedbackMessage(feedback);
     }
@@ -73,15 +83,5 @@ public class UsedeskChat {
 
     public void onClickButtonWidget(@NonNull MessageButtons.MessageButton messageButton) {
         chatInteractor.onClickButtonWidget(messageButton);
-    }
-
-    public void sendFileMessages(List<UsedeskFileInfo> usedeskFileInfoList) {
-        if (usedeskFileInfoList == null || usedeskFileInfoList.size() == 0) {
-            return;
-        }
-
-        for (UsedeskFileInfo usedeskFileInfo : usedeskFileInfoList) {
-            sendFileMessage(usedeskFileInfo);
-        }
     }
 }

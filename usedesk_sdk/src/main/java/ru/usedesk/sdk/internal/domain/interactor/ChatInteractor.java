@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
@@ -22,6 +24,7 @@ import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
 import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
@@ -34,7 +37,6 @@ public class ChatInteractor {
     private UsedeskConfiguration usedeskConfiguration;
     private UsedeskActionListener usedeskActionListener;
     private String token;
-    private Thread thread;//TODO: oh my god, убить
 
     private IUserInfoRepository userInfoRepository;
     private IApiRepository apiRepository;
@@ -52,11 +54,6 @@ public class ChatInteractor {
 
     public void disconnect() {
         apiRepository.disconnect();
-
-        if (thread != null) {
-            thread.interrupt();
-            thread = null;
-        }
     }
 
     public void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo) {
@@ -131,16 +128,20 @@ public class ChatInteractor {
     }
 
     public void sendOfflineForm(final OfflineForm offlineForm) {
-        thread = new Thread(() -> postOfflineUrl(offlineForm));
-        thread.start();
-    }
+        Disposable d = Completable.create(emitter -> {
+            apiRepository.post(usedeskConfiguration, offlineForm);
 
-    private void postOfflineUrl(final OfflineForm offlineForm) {
-        boolean success = apiRepository.post(usedeskConfiguration, offlineForm);
-        if (success) {
+            emitter.onComplete();
+        }).subscribe(() -> {
             usedeskActionListener.onServiceMessageReceived(new Message(MessageType.SERVICE,
                     context.getString(R.string.message_offline_form_sent)));
-        }
+        }, throwable -> {
+            if (throwable instanceof UsedeskException) {
+                usedeskActionListener.onException((UsedeskException) throwable);
+            } else {
+                throwable.printStackTrace();
+            }
+        });
     }
 
     public UsedeskConfiguration getUsedeskConfiguration() {

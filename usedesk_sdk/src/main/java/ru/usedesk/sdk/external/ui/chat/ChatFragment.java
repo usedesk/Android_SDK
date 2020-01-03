@@ -11,9 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,24 +138,9 @@ public class ChatFragment extends Fragment {
         attachFileImageButton.setOnClickListener(view1 -> openAttachmentDialog());
 
         messageEditText = view.findViewById(R.id.message_edit_text);
-        messageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                sendImageButton.setEnabled(!TextUtils.isEmpty(editable));
-            }
-        });
 
         sendImageButton = view.findViewById(R.id.send_image_view);
-        sendImageButton.setEnabled(false);
-        sendImageButton.setOnClickListener(v -> attemptSend());
+        sendImageButton.setOnClickListener(v -> onSendClick());
 
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
     }
@@ -177,7 +159,7 @@ public class ChatFragment extends Fragment {
                 });
     }
 
-    private void attemptSend() {
+    private void onSendClick() {
         if (!NetworkUtils.isNetworkConnected(getContext())) {
             showError(R.string.no_connections);
             return;

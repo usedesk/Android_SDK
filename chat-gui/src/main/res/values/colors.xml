@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#d75358</color>
+    <color name="colorPrimaryDark">#ac4246</color>
+    <color name="colorAccent">#000</color>
+
+    <color name="messageDividerColor">#878585</color>
+    <color name="messageServiceColor">#797777</color>
+    <color name="messageLayoutBackground">#f4f3f3</color>
+    <color name="messageFileBorderColor">@color/colorPrimary</color>
+    <color name="messageButtonSelectedBackground">#878585</color>
+    <color name="messageButtonLikeBackground">#09be0c</color>
+    <color name="messageButtonDislikeBackground">@color/colorPrimary</color>
+</resources>

@@ -21,7 +21,6 @@ import ru.usedesk.sample.ui._common.Event;
 import ru.usedesk.sample.ui._common.ToolbarHelper;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
-import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;

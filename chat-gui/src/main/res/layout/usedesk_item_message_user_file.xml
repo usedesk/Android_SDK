@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="?attr/usedesk_item_message_user"
+    tools:theme="@style/Usedesk.Item.Message.User">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="?attr/usedesk_marginStart"
+        android:layout_marginTop="?attr/usedesk_marginTop"
+        android:layout_marginEnd="?attr/usedesk_marginEnd"
+        android:layout_marginBottom="?attr/usedesk_marginBottom"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/time_text_view"
+            style="?attr/usedesk_item_message_time_header_style"
+            tools:text="12:12" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:background="?attr/usedesk_item_message_user_background"
+            android:paddingStart="?attr/usedesk_item_message_paddingStart"
+            android:paddingTop="?attr/usedesk_item_message_paddingTop"
+            android:paddingEnd="?attr/usedesk_item_message_paddingEnd"
+            android:paddingBottom="?attr/usedesk_item_message_paddingBottom">
+
+            <ImageView
+                android:id="@+id/file_image_view"
+                android:layout_width="?attr/usedesk_item_message_image_width"
+                android:layout_height="?attr/usedesk_item_message_image_height"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/ic_home_black" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="?attr/listPreferredItemHeightSmall"
+                android:layout_height="?attr/listPreferredItemHeightSmall"
+                android:layout_gravity="center"
+                android:foregroundGravity="center" />
+        </FrameLayout>
+    </LinearLayout>
+</FrameLayout>

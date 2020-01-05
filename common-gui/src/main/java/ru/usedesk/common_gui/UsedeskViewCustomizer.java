@@ -9,15 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import javax.inject.Inject;
-
 public class UsedeskViewCustomizer {
 
     private final SparseIntArray layoutIds = new SparseIntArray();
 
     private int themeId = R.style.Usedesk_Theme;
 
-    @Inject
     public UsedeskViewCustomizer() {
     }
 

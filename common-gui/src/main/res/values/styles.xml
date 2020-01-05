@@ -80,7 +80,8 @@
     </style>
 
     <style name="Usedesk.Dialog.Attachment">
-        <item name="usedesk_dialog_attachment_document_title">@string/attachment_dialog_document</item>
+        <item name="usedesk_dialog_attachment_document_title">@string/attachment_dialog_document
+        </item>
         <item name="usedesk_dialog_attachment_photo_title">@string/attachment_dialog_photo</item>
         <item name="usedesk_dialog_attachment_camera_title">@string/attachment_dialog_camera</item>
         <item name="usedesk_dialog_attachment_icon_width">60dp</item>

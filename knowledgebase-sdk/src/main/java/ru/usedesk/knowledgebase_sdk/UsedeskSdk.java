@@ -11,9 +11,7 @@ import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
 import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
 import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
-import ru.usedesk.sdk.internal.appdi.DependencyInjection;
 import ru.usedesk.sdk.internal.appdi.ScopeChat;
-import toothpick.Toothpick;
 
 public class UsedeskSdk {
 
@@ -154,19 +152,6 @@ public class UsedeskSdk {
 
         IUsedeskChatBox(@NonNull Context context) {
             init(new ScopeChat(this, context));
-        }
-    }
-
-    static class InjectBox {
-        private DependencyInjection dependencyInjection;
-
-        void release() {
-            Toothpick.closeScope(dependencyInjection.getScope());
-        }
-
-        void init(@NonNull DependencyInjection dependencyInjection) {
-            this.dependencyInjection = dependencyInjection;
-            Toothpick.inject(this, dependencyInjection.getScope());
         }
     }
 }

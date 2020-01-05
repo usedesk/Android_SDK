@@ -1,4 +1,4 @@
-package ru.usedesk.common_gui;
+package ru.usedesk.common_gui.internal;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,18 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class UsedeskViewCustomizer {
+import javax.inject.Inject;
+
+import ru.usedesk.common_gui.R;
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
+
+public class ViewCustomizer implements IUsedeskViewCustomizer {
 
     private final SparseIntArray layoutIds = new SparseIntArray();
 
     private int themeId = R.style.Usedesk_Theme;
 
-    public UsedeskViewCustomizer() {
-    }
-
-    public View createView(@NonNull ViewGroup viewGroup, int defaultId) {
-        return createView(LayoutInflater.from(viewGroup.getContext()),
-                getLayoutId(defaultId), viewGroup, false);
+    @Inject
+    public ViewCustomizer() {
     }
 
     public int getLayoutId(int defaultId) {
@@ -33,6 +34,11 @@ public class UsedeskViewCustomizer {
 
     public void setThemeId(int themeId) {
         this.themeId = themeId;
+    }
+
+    public View createView(@NonNull ViewGroup viewGroup, int defaultId) {
+        return createView(LayoutInflater.from(viewGroup.getContext()),
+                getLayoutId(defaultId), viewGroup, false);
     }
 
     @NonNull

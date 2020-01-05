@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.internal.data.framework.info;
+package ru.usedesk.chat_sdk.internal.data.repository.configuration;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,9 +7,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
-import ru.usedesk.sdk.internal.domain.repositories.chat.IUserInfoRepository;
+import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
+import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
 
 @Singleton
 public class UserInfoRepository implements IUserInfoRepository {

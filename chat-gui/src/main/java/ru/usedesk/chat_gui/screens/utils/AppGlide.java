@@ -1,4 +1,4 @@
-package ru.usedesk.common_sdk.ui.utils;
+package ru.usedesk.chat_gui.screens.utils;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;

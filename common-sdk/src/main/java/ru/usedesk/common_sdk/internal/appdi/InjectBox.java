@@ -15,7 +15,7 @@ public abstract class InjectBox {
         Toothpick.inject(this, scope);
     }
 
-    void release() {
+    public void release() {
         if (scope != null) {
             Toothpick.closeScope(scope);
             scope = null;

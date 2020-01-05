@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.info;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
 
 public abstract class DataLoader<T> {
 

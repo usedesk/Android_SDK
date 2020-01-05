@@ -1,15 +1,16 @@
-package ru.usedesk.chat_sdk.external;
+package ru.usedesk.chat_sdk.internal.data.repository.api;
 
 import android.support.annotation.NonNull;
 
-import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
-import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
+import ru.usedesk.chat_sdk.external.entity.Feedback;
+import ru.usedesk.chat_sdk.external.entity.OfflineForm;
+import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
+
 
 public interface IApiRepository {
 

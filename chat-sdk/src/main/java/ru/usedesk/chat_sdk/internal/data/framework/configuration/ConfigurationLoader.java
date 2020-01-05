@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.internal.data.repository.user.info.DataLoader;
+import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 
 @Singleton
 public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {

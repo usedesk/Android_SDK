@@ -1,4 +1,4 @@
-package ru.usedesk.common_sdk.ui.mvi;
+package ru.usedesk.common_gui.internal.ui.mvi;
 
 import android.support.annotation.NonNull;
 

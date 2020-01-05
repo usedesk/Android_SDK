@@ -16,8 +16,8 @@ import java.net.URLEncoder;
 import javax.inject.Inject;
 import javax.net.ssl.HttpsURLConnection;
 
-import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.chat_sdk.external.entity.OfflineForm;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 
 public class HttpApi {//TODO retrofit
     private static final String ENCODING = "UTF-8";

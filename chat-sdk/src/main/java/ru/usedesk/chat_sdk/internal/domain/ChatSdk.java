@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.external;
+package ru.usedesk.chat_sdk.internal.domain;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,31 +7,30 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
-import io.reactivex.disposables.Disposable;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.MessageButtons;
-import ru.usedesk.sdk.external.entity.chat.MessageType;
-import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
-import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
-import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
+import ru.usedesk.chat_sdk.R;
+import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.Feedback;
+import ru.usedesk.chat_sdk.external.entity.Message;
+import ru.usedesk.chat_sdk.external.entity.MessageButtons;
+import ru.usedesk.chat_sdk.external.entity.MessageType;
+import ru.usedesk.chat_sdk.external.entity.OfflineForm;
+import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
+import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
+import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
+import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 
-public class ChatInteractor {
+public class ChatSdk implements IUsedeskChatSdk {
 
     private Context context;
     private UsedeskConfiguration usedeskConfiguration;
@@ -44,9 +43,9 @@ public class ChatInteractor {
     private boolean needSetEmail = false;
 
     @Inject
-    ChatInteractor(@NonNull Context context,
-                   @NonNull IUserInfoRepository userInfoRepository,
-                   @NonNull IApiRepository apiRepository) {
+    ChatSdk(@NonNull Context context,
+            @NonNull IUserInfoRepository userInfoRepository,
+            @NonNull IApiRepository apiRepository) {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;
@@ -130,6 +129,20 @@ public class ChatInteractor {
             return;
         }
         apiRepository.post(usedeskConfiguration, offlineForm);
+    }
+
+    @Override
+    public void onClickButtonWidget(MessageButtons.MessageButton messageButton) {
+        if (messageButton == null) {
+            return;
+        }
+        if (messageButton.getUrl().isEmpty()) {
+            sendMessage(messageButton.getText(), null);
+        } else {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO
+            browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(browserIntent);
+        }
     }
 
     public UsedeskConfiguration getUsedeskConfiguration() {
@@ -254,84 +267,10 @@ public class ChatInteractor {
         };
     }
 
-    private void onOfflineFormDialog() {
+    private void onOfflineFormDialog() {//TODO
         Message message = new Message(MessageType.SERVICE);
-        message.setText(context.getString(R.string.message_no_operators));//TODO
+        message.setText(context.getString(R.string.message_no_operators));
         usedeskActionListener.onServiceMessageReceived(message);
         usedeskActionListener.onOfflineFormExpected();
-    }
-
-    @Override
-    public void onClickButtonWidget(MessageButtons.MessageButton messageButton) {
-        if (messageButton == null) {
-            return;
-        }
-        if (messageButton.getUrl().isEmpty()) {
-            sendMessage(messageButton.getText(), null);
-        } else {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO
-            browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(browserIntent);
-        }
-    }
-
-    @Deprecated
-    public void sendOfflineFormSync(final OfflineForm offlineForm) {
-        Disposable d = Completable.create(emitter -> {
-            sendOfflineForm(offlineForm);
-            emitter.onComplete();
-        }).subscribe(() -> {
-            usedeskActionListener.onServiceMessageReceived(new Message(MessageType.SERVICE,
-                    context.getString(R.string.message_offline_form_sent)));
-        }, throwable -> {
-            if (throwable instanceof UsedeskException) {
-                usedeskActionListener.onException((UsedeskException) throwable);
-            } else {
-                throwable.printStackTrace();
-            }
-        });
-    }
-
-    @Deprecated
-    public void sendUserFileMessage(UsedeskFile usedeskFile) {
-        if (!apiRepository.isConnected()) {
-            usedeskActionListener.onError(R.string.message_disconnected);
-            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
-            return;
-        }
-
-        sendMessage(null, usedeskFile);
-    }
-
-    @Deprecated
-    public void sendUserMessage(String text, UsedeskFile usedeskFile) {
-        if (!apiRepository.isConnected()) {
-            usedeskActionListener.onError(R.string.message_disconnected);
-            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
-            return;
-        }
-
-        sendMessage(text, usedeskFile);
-    }
-
-    @Deprecated
-    public void sendUserMessage(String text, List<UsedeskFile> usedeskFiles) {
-        if (usedeskFiles == null || usedeskFiles.isEmpty()) {
-            return;
-        }
-
-        // checking for TEXT and ONE FILE
-        if (usedeskFiles.size() == 1) {
-            UsedeskFile usedeskFile = usedeskFiles.get(0);
-            sendUserMessage(text, usedeskFile);
-        } else {
-            // first - message with TEXT
-            sendUserTextMessage(text);
-
-            // than - FILES
-            for (UsedeskFile usedeskFile : usedeskFiles) {
-                sendUserFileMessage(usedeskFile);
-            }
-        }
     }
 }

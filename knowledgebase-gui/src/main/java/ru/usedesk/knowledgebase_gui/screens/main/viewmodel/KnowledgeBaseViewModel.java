@@ -7,7 +7,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.sdk.external.UsedeskSdk;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 
 public class KnowledgeBaseViewModel extends ViewModel {
 
@@ -17,7 +17,7 @@ public class KnowledgeBaseViewModel extends ViewModel {
     private DelayedQuery delayedQuery;
 
     private KnowledgeBaseViewModel(@NonNull Context context) {
-        UsedeskSdk.initKnowledgeBase(context);
+        UsedeskKnowledgeBaseSdk.init(context);
 
         delayedQuery = new DelayedQuery(searchQueryLiveData, SEARCH_DELAY);
     }
@@ -27,7 +27,7 @@ public class KnowledgeBaseViewModel extends ViewModel {
         super.onCleared();
 
         delayedQuery.dispose();
-        UsedeskSdk.releaseUsedeskKnowledgeBase();
+        UsedeskKnowledgeBaseSdk.release();
     }
 
     public void onSearchQuery(@NonNull String query) {

@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_sdk.internal.appdi.InjectBox;
 
+@SuppressWarnings("injectable")
 public class InstanceBox extends InjectBox {
     @Inject
     IUsedeskChatSdk usedeskChatSdk;

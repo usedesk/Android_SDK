@@ -33,9 +33,6 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         IOnArticleBodyClickListener,
         IUsedeskOnBackPressedListener, IUsedeskOnSearchQueryListener {
 
-    public KnowledgeBaseFragment() {
-    }
-
     public static KnowledgeBaseFragment newInstance() {
         return new KnowledgeBaseFragment();
     }
@@ -55,8 +52,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
                 .observe(this, this::showSearchQuery);
 
         if (savedInstanceState == null) {
-            FragmentSwitcher.switchFragment(this, SectionsFragment.newInstance(),
-                    R.id.container);
+            FragmentSwitcher.switchFragment(this, SectionsFragment.newInstance(), R.id.container);
         }
 
         return view;

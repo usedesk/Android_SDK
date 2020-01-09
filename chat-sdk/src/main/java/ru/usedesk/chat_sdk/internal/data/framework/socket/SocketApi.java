@@ -160,6 +160,14 @@ public class SocketApi {
         }
     }
 
+    public void emitterActionSafe(@NonNull BaseRequest baseRequest) {
+        try {
+            emitterAction(baseRequest);
+        } catch (UsedeskException e) {
+            actionListener.onException(e);
+        }
+    }
+
     private BaseResponse process(@NonNull String rawResponse) {
         try {
             BaseRequest baseRequest = gson.fromJson(rawResponse, BaseRequest.class);

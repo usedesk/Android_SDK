@@ -83,7 +83,7 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     @Override
-    public void disconnect() throws UsedeskException {
+    public void disconnect() {
         apiRepository.disconnect();
     }
 
@@ -147,7 +147,7 @@ public class ChatSdk implements IUsedeskChatSdk {
         }
     }
 
-    private void setUserEmail() throws UsedeskException {
+    private void setUserEmail() {
         apiRepository.send(token, configuration.getEmail(),
                 configuration.getClientName(),
                 configuration.getClientPhoneNumber(),
@@ -230,7 +230,7 @@ public class ChatSdk implements IUsedeskChatSdk {
 
             @Override
             public void onInitChat() {
-                initChat();
+                apiRepository.init(configuration, token);
             }
 
             @Override
@@ -238,7 +238,7 @@ public class ChatSdk implements IUsedeskChatSdk {
                 userInfoRepository.setToken(null);
                 token = null;
 
-                initChat();
+                apiRepository.init(configuration, token);
             }
         };
     }

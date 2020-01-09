@@ -21,5 +21,5 @@ public interface IUsedeskChatSdk {
 
     void onClickButtonWidget(MessageButtons.MessageButton messageButton) throws UsedeskException;
 
-    void disconnect() throws UsedeskException;
+    void disconnect();
 }

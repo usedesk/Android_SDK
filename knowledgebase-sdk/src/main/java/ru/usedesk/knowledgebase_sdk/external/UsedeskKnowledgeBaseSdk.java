@@ -9,11 +9,14 @@ import ru.usedesk.knowledgebase_sdk.internal.di.InstanceBox;
 public final class UsedeskKnowledgeBaseSdk {
 
     private static InstanceBox instanceBox;
+    private static KnowledgeBaseConfiguration configuration;
 
     @NonNull
-    public static IUsedeskKnowledgeBaseSdk init(@NonNull Context appContext,
-                                                @NonNull KnowledgeBaseConfiguration configuration) {
+    public static IUsedeskKnowledgeBaseSdk init(@NonNull Context appContext) {
         if (instanceBox == null) {
+            if (configuration == null) {
+                throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before");
+            }
             instanceBox = new InstanceBox(appContext, configuration);
         }
         return instanceBox.getKnowledgeBaseSdk();
@@ -25,6 +28,10 @@ public final class UsedeskKnowledgeBaseSdk {
             throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before");
         }
         return instanceBox.getKnowledgeBaseSdk();
+    }
+
+    public static void setConfiguration(@NonNull KnowledgeBaseConfiguration knowledgeBaseConfiguration) {
+        configuration = knowledgeBaseConfiguration;
     }
 
     @NonNull

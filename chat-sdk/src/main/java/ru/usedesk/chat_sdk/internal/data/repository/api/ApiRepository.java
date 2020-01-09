@@ -15,7 +15,6 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.internal.data.framework.retrofit.HttpApi;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.RequestMessage;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest;
@@ -36,11 +35,6 @@ public class ApiRepository implements IApiRepository {
         this.socketApi = socketApi;
         this.httpApi = httpApi;
     }
-
-    private void emitterAction(BaseRequest baseRequest) throws UsedeskException {
-        socketApi.emitterAction(baseRequest);
-    }
-
     private boolean isConnected() {
         return socketApi.isConnected();
     }
@@ -52,22 +46,22 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void init(@NonNull UsedeskChatConfiguration configuration, @NonNull String token) throws UsedeskException {
-        emitterAction(new InitChatRequest(token, configuration.getCompanyId(), configuration.getUrl()));
+    public void init(@NonNull UsedeskChatConfiguration configuration, @NonNull String token) {
+        socketApi.emitterActionSafe(new InitChatRequest(token, configuration.getCompanyId(), configuration.getUrl()));
     }
 
     @Override
     public void send(@NonNull String token, @NonNull Feedback feedback) throws UsedeskException {
         checkConnection();
 
-        emitterAction(new SendFeedbackRequest(token, feedback));
+        socketApi.emitterAction(new SendFeedbackRequest(token, feedback));
     }
 
     @Override
     public void send(@NonNull String token, @NonNull String text) throws UsedeskException {
         checkConnection();
 
-        emitterAction(new SendMessageRequest(token, new RequestMessage(text)));
+        socketApi.emitterAction(new SendMessageRequest(token, new RequestMessage(text)));
     }
 
     private void checkConnection() throws UsedeskSocketException {
@@ -82,12 +76,12 @@ public class ApiRepository implements IApiRepository {
 
         //TODO: convert fileInfo to file and send
 
-        //emitterAction(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
+        //socketApi.emitterAction(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
     }
 
     @Override
-    public void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException {
-        emitterAction(new SetEmailRequest(token, email, name, phone, additionalId));
+    public void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) {
+        socketApi.emitterActionSafe(new SetEmailRequest(token, email, name, phone, additionalId));
     }
 
     @Override
@@ -104,7 +98,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void disconnect() throws UsedeskException {
+    public void disconnect() {
         socketApi.disconnect();
     }
 }

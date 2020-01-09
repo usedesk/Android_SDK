@@ -2,7 +2,7 @@ package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
 public class ArticlesBodyPage {
     private int page;

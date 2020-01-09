@@ -15,6 +15,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
+import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.NotificationsPresenter;
 import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
@@ -28,10 +29,11 @@ import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoReposi
 import ru.usedesk.chat_sdk.internal.domain.ChatSdk;
 import toothpick.config.Module;
 
-public class MainModule extends Module {
+class MainModule extends Module {
 
-    public MainModule(@NonNull Context appContext) {
+    MainModule(@NonNull Context appContext, @NonNull UsedeskConfiguration usedeskConfiguration) {
         bind(Context.class).toInstance(appContext);
+        bind(UsedeskConfiguration.class).toInstance(usedeskConfiguration);
 
         bind(IUsedeskChatSdk.class).to(ChatSdk.class).singleton();
 

@@ -4,7 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
 
 public interface ApiRetrofit {
     @GET("{account_id}/list")

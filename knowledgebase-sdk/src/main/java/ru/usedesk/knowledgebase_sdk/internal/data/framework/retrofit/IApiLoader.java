@@ -1,13 +1,13 @@
-package ru.usedesk.knowledgebase_sdk.internal.data.repository;
+package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit;
 
 import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 
 public interface IApiLoader {
     @NonNull

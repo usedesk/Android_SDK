@@ -7,14 +7,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
-import ru.usedesk.sdk.internal.domain.repositories.knowledge.IKnowledgeBaseRepository;
+import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.Category;
+import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.IApiLoader;
 
 public class ApiRepository implements IKnowledgeBaseRepository {
 
@@ -98,7 +98,7 @@ public class ApiRepository implements IKnowledgeBaseRepository {
                     return category.getArticles();
                 }
         }
-        throw new DataNotFoundException("Can't found category with id " + categoryId);
+        throw new DataNotFoundException("Category with id(" + categoryId + ")");
     }
 
     @NonNull
@@ -108,6 +108,6 @@ public class ApiRepository implements IKnowledgeBaseRepository {
                 return section.getCategories();
             }
         }
-        throw new DataNotFoundException("Can't found section with id " + sectionId);
+        throw new DataNotFoundException("Section with id(" + sectionId + ")");
     }
 }

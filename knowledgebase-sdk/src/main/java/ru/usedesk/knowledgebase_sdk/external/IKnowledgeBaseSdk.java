@@ -6,14 +6,13 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
-import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.Category;
+import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 
-public interface IKnowledgeBaseInteractor {
+public interface IKnowledgeBaseSdk {
 
     @NonNull
     Single<List<Section>> getSectionsSingle();
@@ -32,8 +31,6 @@ public interface IKnowledgeBaseInteractor {
 
     @NonNull
     Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
-
-    void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration);
 
     @NonNull
     Completable addViewsCompletable(long articleId);

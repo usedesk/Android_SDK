@@ -1,30 +1,32 @@
 package ru.usedesk.chat_sdk.external;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
-import io.reactivex.annotations.NonNull;
+import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
 import ru.usedesk.chat_sdk.internal.di.InstanceBox;
 
 public class UsedeskChatSdk {
     private static InstanceBox instanceBox;
 
     @NonNull
-    public IUsedeskChatSdk initChat(@NonNull Context appContext) {
+    public IUsedeskChatSdk init(@NonNull Context appContext,
+                                @NonNull UsedeskConfiguration usedeskConfiguration) {
         if (instanceBox == null) {
-            instanceBox = new InstanceBox(appContext);
+            instanceBox = new InstanceBox(appContext, usedeskConfiguration);
         }
         return instanceBox.getUsedeskChatSdk();
     }
 
     @NonNull
-    public IUsedeskChatSdk getChat() {
+    public IUsedeskChatSdk getInstance() {
         if (instanceBox == null) {
             throw new RuntimeException("Must call UsedeskChatSdk.initChat(...) before");
         }
         return instanceBox.getUsedeskChatSdk();
     }
 
-    public void releaseChat() {
+    public void release() {
         if (instanceBox != null) {
             instanceBox.release();
             instanceBox = null;

@@ -1,70 +1,34 @@
 package ru.usedesk.knowledgebase_sdk.external;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
-import io.reactivex.Completable;
-import io.reactivex.Single;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
-import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
+import ru.usedesk.knowledgebase_sdk.internal.di.InstanceBox;
 
 public final class UsedeskKnowledgeBaseSdk {
 
-    private IKnowledgeBaseInteractor knowledgeBaseInteractor;
+    private InstanceBox instanceBox;
 
-    @Inject
-    UsedeskKnowledgeBaseSdk(@NonNull IKnowledgeBaseInteractor knowledgeBaseInteractor) {
-        this.knowledgeBaseInteractor = knowledgeBaseInteractor;
+    public IKnowledgeBaseSdk init(@NonNull Context appContext,
+                                  @NonNull KnowledgeBaseConfiguration configuration) {
+        if (instanceBox == null) {
+            instanceBox = new InstanceBox(appContext, configuration);
+        }
+        return instanceBox.getKnowledgeBaseSdk();
     }
 
-    @Deprecated
-    public void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
-        knowledgeBaseInteractor.setConfiguration(configuration);
+    public IKnowledgeBaseSdk getInstance() {
+        if (instanceBox == null) {
+            throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before");
+        }
+        return instanceBox.getKnowledgeBaseSdk();
     }
 
-    void setKnowledgebaseConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
-        knowledgeBaseInteractor.setConfiguration(configuration);
-    }
-
-    @NonNull
-    public Single<List<Section>> getSectionsSingle() {
-        return knowledgeBaseInteractor.getSectionsSingle();
-    }
-
-    @NonNull
-    public Single<ArticleBody> getArticleSingle(long articleId) {
-        return knowledgeBaseInteractor.getArticleSingle(articleId);
-    }
-
-    @NonNull
-    public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
-        return knowledgeBaseInteractor.getArticlesSingle(searchQuery);
-    }
-
-    @NonNull
-    public Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery) {
-        return knowledgeBaseInteractor.getArticlesSingle(searchQuery);
-    }
-
-    @NonNull
-    public Single<List<Category>> getCategoriesSingle(long sectionId) {
-        return knowledgeBaseInteractor.getCategoriesSingle(sectionId);
-    }
-
-    @NonNull
-    public Single<List<ArticleInfo>> getArticlesSingle(long categoryId) {
-        return knowledgeBaseInteractor.getArticlesSingle(categoryId);
-    }
-
-    @NonNull
-    public Completable addViews(long articleId) {
-        return knowledgeBaseInteractor.addViewsCompletable(articleId);
+    public void release() {
+        if (instanceBox != null) {
+            instanceBox.release();
+            instanceBox = null;
+        }
     }
 }

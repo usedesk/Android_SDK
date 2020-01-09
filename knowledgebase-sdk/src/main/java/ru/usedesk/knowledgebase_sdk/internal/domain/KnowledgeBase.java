@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_sdk.external;
+package ru.usedesk.knowledgebase_sdk.internal.domain;
 
 
 import android.support.annotation.NonNull;
@@ -13,36 +13,33 @@ import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
-import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
-import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
+import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.knowledgebase_sdk.external.IKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.Category;
+import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
+import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
 
-public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
+public class KnowledgeBase implements IKnowledgeBaseSdk {
 
-    private IKnowledgeBaseInfoRepository knowledgeBaseInfoRepository;
-    private IKnowledgeBaseRepository knowledgeRepository;
-    private Scheduler workScheduler;
-    private Scheduler mainThreadScheduler;
+    private final IKnowledgeBaseRepository knowledgeRepository;
+    private final Scheduler workScheduler;
+    private final Scheduler mainThreadScheduler;
+    private final KnowledgeBaseConfiguration configuration;
 
     @Inject
-    KnowledgeBaseInteractor(IKnowledgeBaseInfoRepository knowledgeBaseInfoRepository,
-                            IKnowledgeBaseRepository knowledgeRepository,
-                            @Named("work") Scheduler workScheduler,
-                            @Named("main") Scheduler mainThreadScheduler) {
-        this.knowledgeBaseInfoRepository = knowledgeBaseInfoRepository;
+    KnowledgeBase(@NonNull IKnowledgeBaseRepository knowledgeRepository,
+                  @NonNull @Named("work") Scheduler workScheduler,
+                  @NonNull @Named("main") Scheduler mainThreadScheduler,
+                  @NonNull KnowledgeBaseConfiguration configuration) {
         this.knowledgeRepository = knowledgeRepository;
         this.workScheduler = workScheduler;
         this.mainThreadScheduler = mainThreadScheduler;
-    }
-
-    @Override
-    public void setConfiguration(@NonNull KnowledgeBaseConfiguration configuration) {
-        knowledgeBaseInfoRepository.setConfiguration(configuration);
+        this.configuration = configuration;
     }
 
     private <T> Single<T> createSingle(SingleOnSubscribe<T> emitter) {
@@ -53,7 +50,7 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
 
     @Override
     @NonNull
-    public Single<List<Section>> getSectionsSingle() {
+    public Single<List<Section>> getSectionsSingle() {//TODO: Сделать доп методы без Rx
         return createSingle(emitter -> emitter.onSuccess(getSections()));
     }
 
@@ -93,54 +90,43 @@ public class KnowledgeBaseInteractor implements IKnowledgeBaseInteractor {
         return Completable.create(emitter -> {
             addViews(articleId);
             emitter.onComplete();
-        })
-                .subscribeOn(workScheduler)
+        }).subscribeOn(workScheduler)
                 .observeOn(mainThreadScheduler);
     }
 
     private void addViews(long articleId) throws DataNotFoundException, UsedeskHttpException {
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         knowledgeRepository.addViews(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @NonNull
     private List<Category> getCategories(long sectionId) throws DataNotFoundException, UsedeskHttpException {
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getCategories(configuration.getAccountId(), configuration.getToken(), sectionId);
     }
 
     @NonNull
-    private List<Section> getSections() throws DataNotFoundException, UsedeskHttpException {
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+    private List<Section> getSections() throws UsedeskHttpException {
         return knowledgeRepository.getSections(configuration.getAccountId(), configuration.getToken());
     }
 
     @NonNull
-    private ArticleBody getArticle(long articleId) throws DataNotFoundException,
-            UsedeskHttpException {
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+    private ArticleBody getArticle(long articleId) throws UsedeskHttpException {
         return knowledgeRepository.getArticleBody(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @NonNull
-    private List<ArticleBody> getArticles(@NonNull String searchQuery) throws DataNotFoundException,
-            UsedeskHttpException {
+    private List<ArticleBody> getArticles(@NonNull String searchQuery) throws UsedeskHttpException {
         SearchQuery query = new SearchQuery.Builder(searchQuery).build();
 
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), query);
     }
 
     @NonNull
-    private List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws DataNotFoundException,
-            UsedeskHttpException {
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
+    private List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws UsedeskHttpException {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), searchQuery);
     }
 
     @NonNull
     private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, UsedeskHttpException {
-        KnowledgeBaseConfiguration configuration = knowledgeBaseInfoRepository.getConfiguration();
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }
 

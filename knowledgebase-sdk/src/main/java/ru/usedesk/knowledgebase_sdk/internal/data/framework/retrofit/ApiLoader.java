@@ -13,14 +13,13 @@ import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Response;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity.ApiError;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity.ArticlesBodyPage;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity.ViewsAdded;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.entity.knowledgebase.SearchQuery;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
-import ru.usedesk.sdk.internal.data.repository.knowledgebase.IApiLoader;
 
 public class ApiLoader implements IApiLoader {
     private static final String SERVER_ERROR = "111";

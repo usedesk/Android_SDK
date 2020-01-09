@@ -7,29 +7,24 @@ import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public interface IApiRepository {
 
-    void setActionListener(@NonNull UsedeskActionListener actionListener);
+    void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
 
-    void post(UsedeskChatConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException;
+    void init(@NonNull UsedeskChatConfiguration configuration, @NonNull String token) throws UsedeskException;
 
-    void disconnect();
+    void send(@NonNull UsedeskChatConfiguration configuration, @NonNull OfflineForm offlineForm) throws UsedeskException;
 
-    boolean isConnected();
+    void send(@NonNull String token, @NonNull Feedback feedback) throws UsedeskException;
 
-    void setSocket(String url) throws UsedeskSocketException;
+    void send(@NonNull String token, @NonNull String text) throws UsedeskException;
 
-    void connect(OnMessageListener onMessageListener);
+    void send(@NonNull String token, @NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException;
 
-    void initChat(String token, UsedeskChatConfiguration usedeskChatConfiguration);
+    void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException;
 
-    void sendFeedbackMessage(String token, Feedback feedback);
-
-    void sendMessageRequest(String token, String text, UsedeskFile usedeskFile);
-
-    void sendUserEmail(String token, String email, String name, Long phone, Long additionalId);
+    void disconnect() throws UsedeskException;
 }

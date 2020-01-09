@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_gui.screens.utils.GlideApp;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
 

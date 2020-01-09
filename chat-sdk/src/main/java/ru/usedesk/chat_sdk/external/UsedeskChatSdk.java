@@ -1,16 +1,17 @@
 package ru.usedesk.chat_sdk.external;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
 import ru.usedesk.chat_sdk.internal.di.InstanceBox;
 
 public class UsedeskChatSdk {
     private static InstanceBox instanceBox;
     private static UsedeskChatConfiguration configuration;
+    private static UsedeskNotificationsServiceFactory notificationsServiceFactory;
 
     @NonNull
     public static IUsedeskChatSdk init(@NonNull Context appContext,
@@ -41,19 +42,22 @@ public class UsedeskChatSdk {
         configuration = usedeskChatConfiguration;
     }
 
-    public static void startService(@NonNull Context context, @NonNull Intent intent) {
+    public static void startService(@NonNull Context context) {
         checkConfiguration();
-        configuration.serialize(intent);
-        context.startService(intent);
+        notificationsServiceFactory.startService(context, configuration);
     }
 
-    public static void stopService(@NonNull Context context, @NonNull Intent intent) {
-        context.stopService(intent);
+    public static void stopService(@NonNull Context context) {
+        notificationsServiceFactory.stopService(context);
     }
 
     private static void checkConfiguration() {
         if (configuration == null) {
             throw new RuntimeException("Call UsedeskChatSdk.setConfiguration(...) before");
         }
+    }
+
+    public static void setNotificationsServiceFactory(@NonNull UsedeskNotificationsServiceFactory usedeskNotificationsServiceFactory) {
+        notificationsServiceFactory = usedeskNotificationsServiceFactory;
     }
 }

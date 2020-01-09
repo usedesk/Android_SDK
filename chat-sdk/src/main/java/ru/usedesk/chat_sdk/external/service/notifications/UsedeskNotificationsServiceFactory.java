@@ -4,14 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.view.UsedeskNotificationsService;
 
 public class UsedeskNotificationsServiceFactory {
 
     public void stopService(@NonNull Context context) {
         Intent intent = new Intent(context, getServiceClass());
-        UsedeskChatSdk.stopService(context, intent);
+        context.stopService(intent);
     }
 
     @NonNull
@@ -19,8 +19,9 @@ public class UsedeskNotificationsServiceFactory {
         return UsedeskNotificationsService.class;
     }
 
-    public void startService(@NonNull Context context) {
+    public void startService(@NonNull Context context, @NonNull UsedeskChatConfiguration usedeskChatConfiguration) {
         Intent intent = new Intent(context, getServiceClass());
-        UsedeskChatSdk.startService(context, intent);
+        usedeskChatConfiguration.serialize(intent);
+        context.startService(intent);
     }
 }

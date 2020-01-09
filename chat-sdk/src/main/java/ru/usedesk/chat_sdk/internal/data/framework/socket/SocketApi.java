@@ -26,6 +26,7 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitCh
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.NewMessageResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SendFeedbackResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SetEmailResponse;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -49,10 +50,10 @@ public class SocketApi {
     private Socket socket;
 
     private UsedeskActionListener actionListener;
+
     private final Emitter.Listener disconnectEmitterListener = args -> actionListener.onDisconnected();
-    private final Emitter.Listener connectErrorEmitterListener = args -> {
-        actionListener.onException(new UsedeskSocketException(DISCONNECTED));
-    };
+    private final Emitter.Listener connectErrorEmitterListener = args ->
+            actionListener.onException(new UsedeskSocketException(DISCONNECTED));
     private OnMessageListener onMessageListener;
     private final Emitter.Listener connectEmitterListener = args -> onMessageListener.onInitChat();
     private final Emitter.Listener baseEventEmitterListener = args -> {
@@ -108,17 +109,15 @@ public class SocketApi {
         return socket.connected();
     }
 
-    public void setSocket(@NonNull String url) throws UsedeskSocketException {
+    public void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener,
+                        @NonNull OnMessageListener onMessageListener) throws UsedeskException {
+        if (socket == null) {
+            return;
+        }
         try {
             socket = IO.socket(url);
         } catch (URISyntaxException e) {
             throw new UsedeskSocketException(IO_ERROR, e.getMessage());
-        }
-    }
-
-    public void connect(UsedeskActionListener actionListener, OnMessageListener onMessageListener) {
-        if (socket == null) {
-            return;
         }
 
         this.actionListener = actionListener;
@@ -147,7 +146,7 @@ public class SocketApi {
         socket.disconnect();
     }
 
-    public void emitterAction(BaseRequest baseRequest) throws UsedeskSocketException {
+    public void emitterAction(@NonNull BaseRequest baseRequest) throws UsedeskSocketException {
         if (socket == null) {
             return;
         }
@@ -161,7 +160,7 @@ public class SocketApi {
         }
     }
 
-    private BaseResponse process(String rawResponse) {
+    private BaseResponse process(@NonNull String rawResponse) {
         try {
             BaseRequest baseRequest = gson.fromJson(rawResponse, BaseRequest.class);
 

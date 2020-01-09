@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -20,20 +21,18 @@ import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
 import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatSdk implements IUsedeskChatSdk {
 
     private Context context;
-    private UsedeskChatConfiguration usedeskChatConfiguration;
-    private UsedeskActionListener usedeskActionListener;
+    private UsedeskChatConfiguration configuration;
+    private UsedeskActionListener actionListener;
     private String token;
 
     private IUserInfoRepository userInfoRepository;
@@ -43,98 +42,104 @@ public class ChatSdk implements IUsedeskChatSdk {
 
     @Inject
     ChatSdk(@NonNull Context context,
+            @NonNull UsedeskChatConfiguration configuration,
+            @NonNull UsedeskActionListener actionListener,
             @NonNull IUserInfoRepository userInfoRepository,
-            @NonNull IApiRepository apiRepository) {
+            @NonNull IApiRepository apiRepository) throws UsedeskException {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;
+
+        this.configuration = configuration;
+        this.actionListener = actionListener;
+
+        init();
     }
 
     private <T> boolean equals(@Nullable T a, @Nullable T b) {
         return (a == null && b == null) || (a != null && a.equals(b));
     }
 
-    @Override
-    public void init(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-                     @NonNull UsedeskActionListener usedeskActionListener) {
-        this.usedeskChatConfiguration = usedeskChatConfiguration;
-        this.usedeskActionListener = usedeskActionListener;
-
-        apiRepository.setActionListener(usedeskActionListener);
+    private void init() throws UsedeskException {
 
         try {
             UsedeskChatConfiguration configuration = userInfoRepository.getConfiguration();
-            if (usedeskChatConfiguration.getEmail().equals(configuration.getEmail())
-                    && usedeskChatConfiguration.getCompanyId().equals(configuration.getCompanyId())) {
+            if (this.configuration.getEmail().equals(configuration.getEmail())
+                    && this.configuration.getCompanyId().equals(configuration.getCompanyId())) {
                 token = userInfoRepository.getToken();
             }
-            if (token != null && (!equals(usedeskChatConfiguration.getClientName(), configuration.getClientName())
-                    || !equals(usedeskChatConfiguration.getClientPhoneNumber(), configuration.getClientPhoneNumber())
-                    || !equals(usedeskChatConfiguration.getClientAdditionalId(), configuration.getClientAdditionalId()))) {
+            if (token != null && (!equals(this.configuration.getClientName(), configuration.getClientName())
+                    || !equals(this.configuration.getClientPhoneNumber(), configuration.getClientPhoneNumber())
+                    || !equals(this.configuration.getClientAdditionalId(), configuration.getClientAdditionalId()))) {
                 needSetEmail = true;
             }
         } catch (DataNotFoundException e) {
             e.printStackTrace();
         }
 
-        userInfoRepository.setConfiguration(usedeskChatConfiguration);
+        userInfoRepository.setConfiguration(configuration);
 
-        setSocket();
-        connect();
+        apiRepository.connect(configuration.getUrl(), actionListener, getOnMessageListener());
     }
 
     @Override
-    public void disconnect() {
+    public void disconnect() throws UsedeskException {
         apiRepository.disconnect();
     }
 
     @Override
-    public void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo) {
-        //sendMessage(null, null);//TODO:
-    }
-
-    @Override
-    public void sendUserTextMessage(String text) {
+    public void sendMessage(String text) throws UsedeskException {
         if (text == null || text.isEmpty()) {
             return;
         }
 
-        if (!apiRepository.isConnected()) {
-            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
-            return;
-        }
-
-        sendMessage(text, null);
+        apiRepository.send(token, text);
     }
 
     @Override
-    public void sendFeedbackMessage(Feedback feedback) {
+    public void sendMessage(UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
+        if (usedeskFileInfo == null) {
+            return;
+        }
+
+        apiRepository.send(token, usedeskFileInfo);
+    }
+
+    @Override
+    public void sendMessage(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException {
+        if (usedeskFileInfoList == null) {
+            return;
+        }
+
+        for (UsedeskFileInfo usedeskFileInfo : usedeskFileInfoList) {
+            sendMessage(usedeskFileInfo);
+        }
+    }
+
+    @Override
+    public void sendFeedbackMessage(Feedback feedback) throws UsedeskException {
         if (feedback == null) {
             return;
         }
-        if (!apiRepository.isConnected()) {
-            usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
-            return;
-        }
 
-        apiRepository.sendFeedbackMessage(token, feedback);
+        apiRepository.send(token, feedback);
     }
 
     @Override
-    public void sendOfflineForm(OfflineForm offlineForm) throws UsedeskHttpException {
+    public void sendOfflineForm(OfflineForm offlineForm) throws UsedeskException {
         if (offlineForm == null) {
             return;
         }
-        apiRepository.post(usedeskChatConfiguration, offlineForm);
+        apiRepository.send(configuration, offlineForm);
     }
 
     @Override
-    public void onClickButtonWidget(MessageButtons.MessageButton messageButton) {
+    public void onClickButtonWidget(MessageButtons.MessageButton messageButton) throws UsedeskException {
         if (messageButton == null) {
             return;
         }
         if (messageButton.getUrl().isEmpty()) {
-            sendMessage(messageButton.getText(), null);
+            sendMessage(messageButton.getText());
         } else {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO
             browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -142,23 +147,11 @@ public class ChatSdk implements IUsedeskChatSdk {
         }
     }
 
-    public UsedeskChatConfiguration getUsedeskChatConfiguration() {
-        return usedeskChatConfiguration;
-    }
-
-    private void initChat() {
-        apiRepository.initChat(token, usedeskChatConfiguration);
-    }
-
-    private void sendMessage(String text, UsedeskFile usedeskFile) {
-        apiRepository.sendMessageRequest(token, text, usedeskFile);
-    }
-
-    private void setUserEmail() {
-        apiRepository.sendUserEmail(token, usedeskChatConfiguration.getEmail(),
-                usedeskChatConfiguration.getClientName(),
-                usedeskChatConfiguration.getClientPhoneNumber(),
-                usedeskChatConfiguration.getClientAdditionalId());
+    private void setUserEmail() throws UsedeskException {
+        apiRepository.send(token, configuration.getEmail(),
+                configuration.getClientName(),
+                configuration.getClientPhoneNumber(),
+                configuration.getClientAdditionalId());
     }
 
     private void parseNewMessageResponse(Message message) {
@@ -167,21 +160,21 @@ public class ChatSdk implements IUsedeskChatSdk {
             boolean hasFile = message.getUsedeskFile() != null;
 
             if (hasText || hasFile) {
-                usedeskActionListener.onMessageReceived(message);
+                actionListener.onMessageReceived(message);
             }
         }
     }
 
     private void parseFeedbackResponse() {
         Message message = new Message(MessageType.SERVICE);
-        usedeskActionListener.onServiceMessageReceived(message);
+        actionListener.onServiceMessageReceived(message);
     }
 
     private void parseInitResponse(String token, Setup setup) {
         this.token = token;
         userInfoRepository.setToken(token);
 
-        usedeskActionListener.onConnected();
+        actionListener.onConnected();
 
         if (setup != null) {
             if (setup.isWaitingEmail()) {
@@ -189,7 +182,7 @@ public class ChatSdk implements IUsedeskChatSdk {
             }
 
             if (setup.getMessages() != null && !setup.getMessages().isEmpty()) {
-                usedeskActionListener.onMessagesReceived(setup.getMessages());
+                actionListener.onMessagesReceived(setup.getMessages());
             }
 
             if (setup.isNoOperators()) {
@@ -198,18 +191,6 @@ public class ChatSdk implements IUsedeskChatSdk {
         } else {
             setUserEmail();
         }
-    }
-
-    private void setSocket() {
-        try {
-            apiRepository.setSocket(usedeskChatConfiguration.getUrl());
-        } catch (UsedeskSocketException e) {
-            usedeskActionListener.onException(e);
-        }
-    }
-
-    private void connect() {
-        apiRepository.connect(getOnMessageListener());
     }
 
     private OnMessageListener getOnMessageListener() {
@@ -264,7 +245,7 @@ public class ChatSdk implements IUsedeskChatSdk {
 
     private void onOfflineFormDialog() {//TODO
         Message message = new Message(MessageType.SERVICE);
-        usedeskActionListener.onServiceMessageReceived(message);
-        usedeskActionListener.onOfflineFormExpected();
+        actionListener.onServiceMessageReceived(message);
+        actionListener.onOfflineFormExpected();
     }
 }

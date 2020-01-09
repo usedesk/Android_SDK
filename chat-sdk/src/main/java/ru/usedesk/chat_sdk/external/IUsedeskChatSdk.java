@@ -1,28 +1,25 @@
 package ru.usedesk.chat_sdk.external;
 
-import android.support.annotation.NonNull;
+import java.util.List;
 
 import ru.usedesk.chat_sdk.external.entity.Feedback;
 import ru.usedesk.chat_sdk.external.entity.MessageButtons;
 import ru.usedesk.chat_sdk.external.entity.OfflineForm;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public interface IUsedeskChatSdk {
-    void init(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-              @NonNull UsedeskActionListener usedeskActionListener);
+    void sendMessage(String text) throws UsedeskException;
 
-    void disconnect();
+    void sendMessage(UsedeskFileInfo usedeskFileInfo) throws UsedeskException;
 
-    void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo);
+    void sendMessage(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException;
 
-    void sendUserTextMessage(String text);
+    void sendFeedbackMessage(Feedback feedback) throws UsedeskException;
 
-    void sendFeedbackMessage(Feedback feedback);
+    void sendOfflineForm(OfflineForm offlineForm) throws UsedeskException;
 
-    void sendOfflineForm(OfflineForm offlineForm) throws UsedeskHttpException;
+    void onClickButtonWidget(MessageButtons.MessageButton messageButton) throws UsedeskException;
 
-    void onClickButtonWidget(MessageButtons.MessageButton messageButton);
+    void disconnect() throws UsedeskException;
 }

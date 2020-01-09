@@ -22,4 +22,10 @@ public class InstanceBox extends InjectBox {
     public IUsedeskChatSdk getUsedeskChatSdk() {
         return usedeskChatSdk;
     }
+
+    @Override
+    public void release() {
+        usedeskChatSdk.disconnect();
+        super.release();
+    }
 }

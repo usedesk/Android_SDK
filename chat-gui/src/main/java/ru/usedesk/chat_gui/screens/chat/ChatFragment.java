@@ -79,16 +79,14 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        UsedeskChatSdk.getUsedeskNotificationsServiceFactory()
-                .stopService(getContext());
+        UsedeskChatSdk.stopService(getContext());
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        UsedeskChatSdk.getUsedeskNotificationsServiceFactory()
-                .startService(getContext());
+        UsedeskChatSdk.startService(getContext());
     }
 
     @Override

@@ -100,10 +100,10 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
     }
 
     public void onSend(@NonNull String textMessage) {
-        asCompletable(() -> usedeskChat.sendTextMessage(textMessage));
+        asCompletable(() -> usedeskChat.sendMessage(textMessage));
 
         List<UsedeskFileInfo> usedeskFileInfoList = getLastModel().getUsedeskFileInfoList();
-        asCompletable(() -> usedeskChat.sendFileMessages(usedeskFileInfoList));
+        asCompletable(() -> usedeskChat.sendMessage(usedeskFileInfoList);
 
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(new ArrayList<>())

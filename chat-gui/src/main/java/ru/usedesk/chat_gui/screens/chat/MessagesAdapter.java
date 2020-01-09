@@ -15,15 +15,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.ChatFeedbackListener;
-import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.MessageButtons;
-import ru.usedesk.sdk.internal.utils.DownloadUtils;
-import ru.usedesk.sdk.internal.utils.ImageUtils;
-import ru.usedesk.sdk.internal.utils.TimeUtils;
+import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_gui.screens.utils.DownloadUtils;
+import ru.usedesk.chat_gui.screens.utils.ImageUtils;
+import ru.usedesk.chat_gui.screens.utils.TimeUtils;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.ChatFeedbackListener;
+import ru.usedesk.chat_sdk.external.entity.Feedback;
+import ru.usedesk.chat_sdk.external.entity.Message;
+import ru.usedesk.chat_sdk.external.entity.MessageButtons;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -233,7 +233,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     button.setText(messageButton.getText());
                     button.setOnClickListener(v ->
-                            UsedeskSdk.getChat().onClickButtonWidget(messageButton));
+                            UsedeskChatSdk.getInstance().onClickButtonWidget(messageButton));
 
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

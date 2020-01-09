@@ -7,23 +7,22 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
-import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.OfflineForm;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
-import ru.usedesk.sdk.internal.data.framework.api.standard.HttpApi;
-import ru.usedesk.sdk.internal.data.framework.api.standard.SocketApi;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.BaseRequest;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.InitChatRequest;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.RequestMessage;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendFeedbackRequest;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SendMessageRequest;
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.request.SetEmailRequest;
-import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
-import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
+import ru.usedesk.chat_sdk.external.entity.Feedback;
+import ru.usedesk.chat_sdk.external.entity.OfflineForm;
+import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
+import ru.usedesk.chat_sdk.internal.data.framework.retrofit.HttpApi;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.RequestMessage;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 
 public class ApiRepository implements IApiRepository {
     private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/post";
@@ -48,13 +47,12 @@ public class ApiRepository implements IApiRepository {
         try {
             socketApi.emitterAction(baseRequest);
         } catch (UsedeskSocketException e) {
-            actionListener.onError(e);
             actionListener.onException(e);
         }
     }
 
     @Override
-    public void initChat(String token, UsedeskConfiguration usedeskConfiguration) {
+    public void initChat(String token, UsedeskChatConfiguration usedeskConfiguration) {
         emitterAction(new InitChatRequest(token, usedeskConfiguration.getCompanyId(),
                 usedeskConfiguration.getUrl()));
     }
@@ -76,7 +74,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void post(UsedeskConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException {
+    public void post(UsedeskChatConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException {
         try {
             URL url = new URL(configuration.getOfflineFormUrl());
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());

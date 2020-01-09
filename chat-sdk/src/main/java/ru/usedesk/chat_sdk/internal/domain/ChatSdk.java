@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import ru.usedesk.chat_sdk.R;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
 import ru.usedesk.chat_sdk.external.entity.Message;
@@ -101,7 +100,6 @@ public class ChatSdk implements IUsedeskChatSdk {
         }
 
         if (!apiRepository.isConnected()) {
-            usedeskActionListener.onError(R.string.message_disconnected);
             usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
             return;
         }
@@ -115,7 +113,6 @@ public class ChatSdk implements IUsedeskChatSdk {
             return;
         }
         if (!apiRepository.isConnected()) {
-            usedeskActionListener.onError(R.string.message_disconnected);
             usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
             return;
         }
@@ -177,7 +174,6 @@ public class ChatSdk implements IUsedeskChatSdk {
 
     private void parseFeedbackResponse() {
         Message message = new Message(MessageType.SERVICE);
-        message.setText(context.getString(R.string.message_feedback_sent));//TODO
         usedeskActionListener.onServiceMessageReceived(message);
     }
 
@@ -208,7 +204,6 @@ public class ChatSdk implements IUsedeskChatSdk {
         try {
             apiRepository.setSocket(usedeskChatConfiguration.getUrl());
         } catch (UsedeskSocketException e) {
-            usedeskActionListener.onError(e);
             usedeskActionListener.onException(e);
         }
     }
@@ -269,7 +264,6 @@ public class ChatSdk implements IUsedeskChatSdk {
 
     private void onOfflineFormDialog() {//TODO
         Message message = new Message(MessageType.SERVICE);
-        message.setText(context.getString(R.string.message_no_operators));
         usedeskActionListener.onServiceMessageReceived(message);
         usedeskActionListener.onOfflineFormExpected();
     }

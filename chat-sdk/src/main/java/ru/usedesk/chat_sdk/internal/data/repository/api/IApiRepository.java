@@ -11,7 +11,6 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 
-
 public interface IApiRepository {
 
     void setActionListener(@NonNull UsedeskActionListener actionListener);

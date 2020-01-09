@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class UsedeskActionListenerRx implements UsedeskActionListener {
 
@@ -120,20 +120,6 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
     @Override
     public void onDisconnected() {
         connectedSubject.onNext(EmptyItem.IGNORE_ME);
-    }
-
-    @Override
-    @Deprecated
-    public void onError(int errorResId) {
-        errorResIdSubject.onNext(errorResId);
-    }
-
-    @Override
-    @Deprecated
-    public void onError(Exception e) {
-        if (e != null) {
-            errorSubject.onError(e);
-        }
     }
 
     @Override

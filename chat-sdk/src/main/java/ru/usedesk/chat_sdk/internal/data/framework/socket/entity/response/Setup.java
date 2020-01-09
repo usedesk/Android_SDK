@@ -5,8 +5,8 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.usedesk.sdk.external.entity.chat.Client;
-import ru.usedesk.sdk.external.entity.chat.Message;
+import ru.usedesk.chat_sdk.external.entity.Client;
+import ru.usedesk.chat_sdk.external.entity.Message;
 
 public class Setup {
 

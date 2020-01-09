@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.external.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class OfflineForm {
+public class OfflineForm {//TODO: разбить на 2 сущности (1 без полей id, email), а другая для отправки запроса
     private static final String KEY_COMPANY_ID = "company_id";
 
     @SerializedName(KEY_COMPANY_ID)

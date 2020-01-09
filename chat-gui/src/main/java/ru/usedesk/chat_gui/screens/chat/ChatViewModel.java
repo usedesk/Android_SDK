@@ -9,16 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
-import ru.usedesk.sdk.external.UsedeskChat;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.Feedback;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListenerRx;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
-import ru.usedesk.sdk.external.ui.mvi.MviViewModel;
+import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.Feedback;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
 public class ChatViewModel extends MviViewModel<ChatModel> {
 
-    private UsedeskChat usedeskChat;
+    private IUsedeskChatSdk usedeskChat;
 
     private ChatViewModel(@NonNull Context context) {
         super(new ChatModel(true, false, new ArrayList<>(),
@@ -67,7 +66,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
             //nothing
         });
 
-        usedeskChat = UsedeskSdk.initChat(context, actionListenerRx);
+        usedeskChat = UsedeskChatSdk.init(context, actionListenerRx);
     }
 
     void setAttachedFileInfoList(List<UsedeskFileInfo> usedeskFileInfoList) {
@@ -91,7 +90,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
     protected void onCleared() {
         super.onCleared();
 
-        UsedeskSdk.releaseChat();
+        UsedeskChatSdk.release();
     }
 
     public void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {

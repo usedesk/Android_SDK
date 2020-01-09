@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
 
 public interface OnMessageListener {
 

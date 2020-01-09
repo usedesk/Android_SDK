@@ -11,9 +11,9 @@ import android.support.v4.app.Fragment;
 import java.io.File;
 import java.util.List;
 
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
-import ru.usedesk.sdk.internal.utils.AttachmentUtils;
+import ru.usedesk.chat_gui.screens.utils.AttachmentUtils;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
 class FilePicker {
 

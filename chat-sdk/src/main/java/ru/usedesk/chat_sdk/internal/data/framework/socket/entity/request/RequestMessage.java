@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 
 public class RequestMessage {
     private static final String KEY_FILE = "file";

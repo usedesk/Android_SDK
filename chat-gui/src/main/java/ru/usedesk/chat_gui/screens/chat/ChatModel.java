@@ -5,10 +5,9 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
-import ru.usedesk.sdk.external.ui.mvi.ReducibleModel;
+import ru.usedesk.chat_sdk.external.entity.Message;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatModel extends ReducibleModel<ChatModel> {
     private Boolean loading;

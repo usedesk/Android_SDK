@@ -17,6 +17,8 @@ import javax.inject.Inject;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.BaseResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.ErrorResponse;
@@ -24,21 +26,18 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitCh
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.NewMessageResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SendFeedbackResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SetEmailResponse;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
-import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.BAD_REQUEST_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.DISCONNECTED;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.FORBIDDEN_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.INTERNAL_SERVER_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.IO_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.JSON_ERROR;
-import static ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.BAD_REQUEST_ERROR;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.DISCONNECTED;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.FORBIDDEN_ERROR;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.INTERNAL_SERVER_ERROR;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.IO_ERROR;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.JSON_ERROR;
+import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR;
 
 public class SocketApi {
     private static final String EVENT_SERVER_ACTION = "dispatch";
@@ -52,7 +51,6 @@ public class SocketApi {
     private UsedeskActionListener actionListener;
     private final Emitter.Listener disconnectEmitterListener = args -> actionListener.onDisconnected();
     private final Emitter.Listener connectErrorEmitterListener = args -> {
-        actionListener.onError(R.string.message_connecting_error);
         actionListener.onException(new UsedeskSocketException(DISCONNECTED));
     };
     private OnMessageListener onMessageListener;

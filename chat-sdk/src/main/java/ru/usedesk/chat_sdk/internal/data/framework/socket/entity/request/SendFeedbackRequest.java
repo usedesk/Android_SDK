@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.sdk.external.entity.chat.Feedback;
+import ru.usedesk.chat_sdk.external.entity.Feedback;
 
 public class SendFeedbackRequest extends BaseRequest {
     public static final String TYPE = "@@server/chat/CALLBACK";

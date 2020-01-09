@@ -15,7 +15,7 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.knowledgebase_sdk.external.IKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 import ru.usedesk.knowledgebase_sdk.external.entity.Category;
@@ -24,7 +24,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
 import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
 
-public class KnowledgeBase implements IKnowledgeBaseSdk {
+public class KnowledgeBase implements IUsedeskKnowledgeBaseSdk {
 
     private final IKnowledgeBaseRepository knowledgeRepository;
     private final Scheduler workScheduler;

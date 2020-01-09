@@ -13,7 +13,7 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import ru.usedesk.knowledgebase_sdk.external.IKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.ApiLoader;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.ApiRetrofit;
@@ -32,7 +32,7 @@ class MainModule extends Module {
 
         bind(Gson.class).toInstance(gson());
 
-        bind(IKnowledgeBaseSdk.class).to(KnowledgeBase.class);
+        bind(IUsedeskKnowledgeBaseSdk.class).to(KnowledgeBase.class);
         bind(IKnowledgeBaseRepository.class).to(ApiRepository.class);
 
         bind(IApiLoader.class).to(ApiLoader.class);

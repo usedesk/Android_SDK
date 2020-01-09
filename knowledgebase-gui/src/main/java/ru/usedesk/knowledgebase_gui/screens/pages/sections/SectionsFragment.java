@@ -5,18 +5,19 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 
 public class SectionsFragment extends FragmentListView<Section, SectionsViewModel> {
 
-    private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
 
     public SectionsFragment() {
-        usedeskKnowledgeBase = UsedeskSdk.getUsedeskKnowledgeBase();
+        usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
     }
 
     public static SectionsFragment newInstance() {
@@ -25,7 +26,7 @@ public class SectionsFragment extends FragmentListView<Section, SectionsViewMode
 
     @Override
     protected ViewModelFactory<SectionsViewModel> getViewModelFactory() {
-        return new SectionsViewModel.Factory(usedeskKnowledgeBase);
+        return new SectionsViewModel.Factory(usedeskKnowledgeBaseSdk);
     }
 
     @Override
@@ -36,6 +37,6 @@ public class SectionsFragment extends FragmentListView<Section, SectionsViewMode
         }
 
         return new SectionsAdapter(list, (IOnSectionClickListener) getParentFragment(),
-                UsedeskSdk.getUsedeskViewCustomizer());
+                UsedeskViewCustomizer.getInstance());
     }
 }

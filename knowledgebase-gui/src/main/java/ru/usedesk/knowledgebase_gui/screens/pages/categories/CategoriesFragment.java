@@ -6,19 +6,20 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.Category;
 
 public class CategoriesFragment extends FragmentListView<Category, CategoriesViewModel> {
 
     public static final String SECTION_ID_KEY = "sectionIdKey";
-    private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
 
     public CategoriesFragment() {
-        usedeskKnowledgeBase = UsedeskSdk.getUsedeskKnowledgeBase();
+        usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
     }
 
     public static CategoriesFragment newInstance(long sectionId) {
@@ -34,7 +35,7 @@ public class CategoriesFragment extends FragmentListView<Category, CategoriesVie
     protected ViewModelFactory<CategoriesViewModel> getViewModelFactory() {
         long categoryId = getNonNullArguments().getLong(SECTION_ID_KEY);
 
-        return new CategoriesViewModel.Factory(usedeskKnowledgeBase, categoryId);
+        return new CategoriesViewModel.Factory(usedeskKnowledgeBaseSdk, categoryId);
     }
 
     @Override
@@ -45,6 +46,6 @@ public class CategoriesFragment extends FragmentListView<Category, CategoriesVie
         }
 
         return new CategoriesAdapter(list, (IOnCategoryClickListener) getParentFragment(),
-                UsedeskSdk.getUsedeskViewCustomizer());
+                UsedeskViewCustomizer.getInstance());
     }
 }

@@ -6,30 +6,29 @@ import java.util.List;
 
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.Category;
 
 class CategoriesViewModel extends DataViewModel<List<Category>> {
 
-
-    private CategoriesViewModel(@NonNull UsedeskKnowledgeBase usedeskKnowledgeBase, long sectionId) {
-        loadData(usedeskKnowledgeBase.getCategoriesSingle(sectionId));
+    private CategoriesViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long sectionId) {
+        loadData(usedeskKnowledgeBaseSdk.getCategoriesSingle(sectionId));
     }
 
     static class Factory extends ViewModelFactory<CategoriesViewModel> {
 
-        private UsedeskKnowledgeBase usedeskKnowledgeBase;
+        private IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
         private long sectionId;
 
-        public Factory(@NonNull UsedeskKnowledgeBase usedeskKnowledgeBase, long sectionId) {
-            this.usedeskKnowledgeBase = usedeskKnowledgeBase;
+        public Factory(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long sectionId) {
+            this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
             this.sectionId = sectionId;
         }
 
         @NonNull
         @Override
         protected CategoriesViewModel create() {
-            return new CategoriesViewModel(usedeskKnowledgeBase, sectionId);
+            return new CategoriesViewModel(usedeskKnowledgeBaseSdk, sectionId);
         }
 
         @NonNull

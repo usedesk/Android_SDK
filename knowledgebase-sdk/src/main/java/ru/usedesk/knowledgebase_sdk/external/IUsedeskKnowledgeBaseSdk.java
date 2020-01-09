@@ -12,7 +12,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.Category;
 import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
 import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 
-public interface IKnowledgeBaseSdk {
+public interface IUsedeskKnowledgeBaseSdk {
 
     @NonNull
     Single<List<Section>> getSectionsSingle();

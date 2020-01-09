@@ -7,7 +7,7 @@ public class UsedeskViewCustomizer {
     private static final InstanceBox instanceBox = new InstanceBox();
 
     @NonNull
-    public IUsedeskViewCustomizer getUsedeskViewCustomizer() {
+    public static IUsedeskViewCustomizer getInstance() {
         return instanceBox.getUsedeskViewCustomizer();
     }
 

@@ -8,19 +8,20 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.knowledgebase.Category;
-import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.R;
+import ru.usedesk.knowledgebase_sdk.external.entity.Category;
+
 
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder> {
 
     private final List<Category> categoryList;
     private final IOnCategoryClickListener onCategoryClickListener;
-    private final UsedeskViewCustomizer usedeskViewCustomizer;
+    private final IUsedeskViewCustomizer usedeskViewCustomizer;
 
     CategoriesAdapter(@NonNull List<Category> categoryList,
                       @NonNull IOnCategoryClickListener onCategoryClickListener,
-                      @NonNull UsedeskViewCustomizer usedeskViewCustomizer) {
+                      @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
         this.categoryList = categoryList;
         this.onCategoryClickListener = onCategoryClickListener;
         this.usedeskViewCustomizer = usedeskViewCustomizer;

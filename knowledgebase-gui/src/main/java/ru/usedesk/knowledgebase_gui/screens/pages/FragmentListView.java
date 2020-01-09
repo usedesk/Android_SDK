@@ -7,9 +7,9 @@ import android.view.View;
 
 import java.util.List;
 
+import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.FragmentDataView;
-import ru.usedesk.sdk.R;
 
 public abstract class FragmentListView<V, T extends DataViewModel<List<V>>>
         extends FragmentDataView<List<V>, T> {

@@ -6,20 +6,21 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 
 public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, ArticlesInfoViewModel> {
 
     public static final String CATEGORY_ID_KEY = "categoryIdKey";
 
-    private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
 
     public ArticlesInfoFragment() {
-        usedeskKnowledgeBase = UsedeskSdk.getUsedeskKnowledgeBase();
+        usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
     }
 
     public static ArticlesInfoFragment newInstance(long categoryId) {
@@ -35,7 +36,7 @@ public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, Articles
     protected ViewModelFactory<ArticlesInfoViewModel> getViewModelFactory() {
         long categoryId = getNonNullArguments().getLong(CATEGORY_ID_KEY);
 
-        return new ArticlesInfoViewModel.Factory(usedeskKnowledgeBase, categoryId);
+        return new ArticlesInfoViewModel.Factory(usedeskKnowledgeBaseSdk, categoryId);
     }
 
     @Override
@@ -46,6 +47,6 @@ public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, Articles
         }
 
         return new ArticlesInfoAdapter(list, (IOnArticleInfoClickListener) getParentFragment(),
-                UsedeskSdk.getUsedeskViewCustomizer());
+                UsedeskViewCustomizer.getInstance());
     }
 }

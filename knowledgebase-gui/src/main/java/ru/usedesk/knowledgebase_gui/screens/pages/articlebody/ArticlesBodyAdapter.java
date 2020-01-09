@@ -8,19 +8,19 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
-import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.R;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
 public class ArticlesBodyAdapter extends RecyclerView.Adapter<ArticlesBodyAdapter.ArticleViewHolder> {
 
     private final List<ArticleBody> articleInfoList;
     private final IOnArticleBodyClickListener onArticleClickListener;
-    private final UsedeskViewCustomizer usedeskViewCustomizer;
+    private final IUsedeskViewCustomizer usedeskViewCustomizer;
 
     ArticlesBodyAdapter(@NonNull List<ArticleBody> articleInfoList,
                         @NonNull IOnArticleBodyClickListener onArticleClickListener,
-                        @NonNull UsedeskViewCustomizer usedeskViewCustomizer) {
+                        @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
         this.articleInfoList = articleInfoList;
         this.onArticleClickListener = onArticleClickListener;
         this.usedeskViewCustomizer = usedeskViewCustomizer;

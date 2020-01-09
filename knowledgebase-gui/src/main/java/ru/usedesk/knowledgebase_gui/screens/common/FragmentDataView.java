@@ -8,9 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.entity.DataOrMessage;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.UsedeskSdk;
 
 public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends FragmentView<T> {
 
@@ -32,7 +32,7 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = UsedeskSdk.getUsedeskViewCustomizer()
+        View view = UsedeskViewCustomizer.getInstance()
                 .createView(inflater, layoutId, container, false);
 
         onView(view);

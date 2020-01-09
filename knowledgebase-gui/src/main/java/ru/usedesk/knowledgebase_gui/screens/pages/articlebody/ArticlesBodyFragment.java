@@ -7,20 +7,21 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.List;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
 public class ArticlesBodyFragment extends FragmentListView<ArticleBody, ArticlesBodyViewModel> {
 
     public static final String SEARCH_QUERY_KEY = "searchQueryKey";
 
-    private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
 
     public ArticlesBodyFragment() {
-        usedeskKnowledgeBase = UsedeskSdk.getUsedeskKnowledgeBase();
+        usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
     }
 
     public static ArticlesBodyFragment newInstance(@NonNull String searchQuery) {
@@ -36,7 +37,7 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
     protected ViewModelFactory<ArticlesBodyViewModel> getViewModelFactory() {
         String searchQuery = getNonNullArguments().getString(SEARCH_QUERY_KEY);
 
-        return new ArticlesBodyViewModel.Factory(usedeskKnowledgeBase, searchQuery);
+        return new ArticlesBodyViewModel.Factory(usedeskKnowledgeBaseSdk, searchQuery);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
                     IOnArticleBodyClickListener.class.getSimpleName());
         }
         return new ArticlesBodyAdapter(list, (IOnArticleBodyClickListener) getParentFragment(),
-                UsedeskSdk.getUsedeskViewCustomizer());
+                UsedeskViewCustomizer.getInstance());
     }
 
     public void onSearchQueryUpdate(@NonNull String searchQuery) {

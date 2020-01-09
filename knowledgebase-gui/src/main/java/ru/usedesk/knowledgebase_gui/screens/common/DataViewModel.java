@@ -10,8 +10,6 @@ import ru.usedesk.knowledgebase_gui.screens.entity.DataOrMessage;
 
 public class DataViewModel<T> extends ViewModel {
 
-    private static final String TAG = DataViewModel.class.getSimpleName();
-
     private MutableLiveData<DataOrMessage<T>> liveData = new MutableLiveData<>();
     private Disposable disposable;
 

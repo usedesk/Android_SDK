@@ -7,26 +7,27 @@ import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.common.FragmentDataView;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
 public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewModel> {
 
     private static final String ARTICLE_ID_KEY = "articleIdKey";
 
-    private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
 
     private TextView textViewTitle;
     private TextView textViewText;
 
     public ArticleFragment() {
-        super(UsedeskSdk.getUsedeskViewCustomizer().getLayoutId(R.layout.usedesk_fragment_article));
+        super(UsedeskViewCustomizer.getInstance().getLayoutId(R.layout.usedesk_fragment_article));
 
-        usedeskKnowledgeBase = UsedeskSdk.getUsedeskKnowledgeBase();
+        usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
     }
 
     public static ArticleFragment newInstance(long articleId) {
@@ -49,7 +50,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
     protected ViewModelFactory<ArticleViewModel> getViewModelFactory() {
         long articleId = getNonNullArguments().getLong(ARTICLE_ID_KEY);
 
-        return new ArticleViewModel.Factory(usedeskKnowledgeBase, articleId);
+        return new ArticleViewModel.Factory(usedeskKnowledgeBaseSdk, articleId);
     }
 
     @Override

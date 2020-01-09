@@ -6,19 +6,19 @@ import javax.inject.Inject;
 
 import io.reactivex.annotations.NonNull;
 import ru.usedesk.common_sdk.internal.appdi.InjectBox;
-import ru.usedesk.knowledgebase_sdk.external.IKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
 
 public class InstanceBox extends InjectBox {
 
     @Inject
-    IKnowledgeBaseSdk knowledgeBaseSdk;
+    IUsedeskKnowledgeBaseSdk knowledgeBaseSdk;
 
     public InstanceBox(@NonNull Context appContext, @NonNull KnowledgeBaseConfiguration knowledgeBaseConfiguration) {
         init(new MainModule(appContext, knowledgeBaseConfiguration));
     }
 
-    public IKnowledgeBaseSdk getKnowledgeBaseSdk() {
+    public IUsedeskKnowledgeBaseSdk getKnowledgeBaseSdk() {
         return knowledgeBaseSdk;
     }
 }

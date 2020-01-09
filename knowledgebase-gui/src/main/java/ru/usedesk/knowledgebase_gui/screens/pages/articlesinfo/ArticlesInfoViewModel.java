@@ -6,28 +6,28 @@ import java.util.List;
 
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.entity.knowledgebase.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 
 class ArticlesInfoViewModel extends DataViewModel<List<ArticleInfo>> {
 
-    private ArticlesInfoViewModel(@NonNull UsedeskKnowledgeBase usedeskKnowledgeBase, long categoryId) {
-        loadData(usedeskKnowledgeBase.getArticlesSingle(categoryId));
+    private ArticlesInfoViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long categoryId) {
+        loadData(usedeskKnowledgeBaseSdk.getArticlesSingle(categoryId));
     }
 
     static class Factory extends ViewModelFactory<ArticlesInfoViewModel> {
-        private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+        private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
         private final long categoryId;
 
-        public Factory(@NonNull UsedeskKnowledgeBase usedeskKnowledgeBase, long categoryId) {
-            this.usedeskKnowledgeBase = usedeskKnowledgeBase;
+        public Factory(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long categoryId) {
+            this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
             this.categoryId = categoryId;
         }
 
         @NonNull
         @Override
         protected ArticlesInfoViewModel create() {
-            return new ArticlesInfoViewModel(usedeskKnowledgeBase, categoryId);
+            return new ArticlesInfoViewModel(usedeskKnowledgeBaseSdk, categoryId);
         }
 
         @NonNull

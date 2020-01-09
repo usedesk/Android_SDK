@@ -11,19 +11,19 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
-import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.R;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 
 public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.SectionViewHolder> {
 
     private final List<Section> sectionList;
     private final IOnSectionClickListener onSectionClickListener;
-    private final UsedeskViewCustomizer usedeskViewCustomizer;
+    private final IUsedeskViewCustomizer usedeskViewCustomizer;
 
     SectionsAdapter(@NonNull List<Section> sectionList,
                     @NonNull IOnSectionClickListener onSectionClickListener,
-                    @NonNull UsedeskViewCustomizer usedeskViewCustomizer) {
+                    @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
         this.sectionList = sectionList;
         this.onSectionClickListener = onSectionClickListener;
         this.usedeskViewCustomizer = usedeskViewCustomizer;

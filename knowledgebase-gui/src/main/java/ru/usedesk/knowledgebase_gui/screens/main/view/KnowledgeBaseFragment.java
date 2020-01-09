@@ -10,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.IUsedeskOnBackPressedListener;
+import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener;
+import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.common.FragmentView;
 import ru.usedesk.knowledgebase_gui.screens.helper.FragmentSwitcher;
 import ru.usedesk.knowledgebase_gui.screens.main.IOnUsedeskSupportClickListener;
@@ -23,10 +27,6 @@ import ru.usedesk.knowledgebase_gui.screens.pages.categories.CategoriesFragment;
 import ru.usedesk.knowledgebase_gui.screens.pages.categories.IOnCategoryClickListener;
 import ru.usedesk.knowledgebase_gui.screens.pages.sections.IOnSectionClickListener;
 import ru.usedesk.knowledgebase_gui.screens.pages.sections.SectionsFragment;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.ui.IUsedeskOnBackPressedListener;
-import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
 
 public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
@@ -43,7 +43,7 @@ public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = UsedeskSdk.getUsedeskViewCustomizer()
+        View view = UsedeskViewCustomizer.getInstance()
                 .createView(inflater, R.layout.usedesk_fragment_knowledge_base, container, false);
 
         Button supportButton = view.findViewById(R.id.btn_support);

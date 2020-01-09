@@ -6,26 +6,26 @@ import java.util.List;
 
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.sdk.external.UsedeskKnowledgeBase;
-import ru.usedesk.sdk.external.entity.knowledgebase.Section;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 
 class SectionsViewModel extends DataViewModel<List<Section>> {
 
-    private SectionsViewModel(@NonNull UsedeskKnowledgeBase usedeskKnowledgeBase) {
-        loadData(usedeskKnowledgeBase.getSectionsSingle());
+    private SectionsViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk) {
+        loadData(usedeskKnowledgeBaseSdk.getSectionsSingle());
     }
 
     static class Factory extends ViewModelFactory<SectionsViewModel> {
-        private final UsedeskKnowledgeBase usedeskKnowledgeBase;
+        private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
 
-        public Factory(@NonNull UsedeskKnowledgeBase usedeskKnowledgeBase) {
-            this.usedeskKnowledgeBase = usedeskKnowledgeBase;
+        public Factory(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk) {
+            this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
         }
 
         @NonNull
         @Override
         protected SectionsViewModel create() {
-            return new SectionsViewModel(usedeskKnowledgeBase);
+            return new SectionsViewModel(usedeskKnowledgeBaseSdk);
         }
 
         @NonNull

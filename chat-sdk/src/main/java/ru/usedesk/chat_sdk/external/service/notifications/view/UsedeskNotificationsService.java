@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
@@ -12,29 +13,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
-import javax.inject.Inject;
-
 import io.reactivex.disposables.Disposable;
-import ru.usedesk.chat_sdk.external.service.notifications.presenter.NotificationsModel;
-import ru.usedesk.chat_sdk.external.service.notifications.presenter.NotificationsPresenter;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.internal.appdi.ScopeChat;
-import ru.usedesk.sdk.mvi.MviView;
-import toothpick.Toothpick;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsModel;
+import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
 
-public abstract class UsedeskNotificationsService extends Service implements MviView<NotificationsModel> {
+public abstract class UsedeskNotificationsService extends Service {
 
     private static final String NEW_MESSAGES_CHANNEL_ID = "newUsedeskMessages";
     private static final String MESSAGES_FROM_OPERATOR_CHANNEL_TITLE = "Messages from operator";
 
-    @Inject
-    NotificationsPresenter notificationsPresenter;
+    private final UsedeskNotificationsPresenter presenter;
 
     private NotificationManager notificationManager;
     private Disposable messagesDisposable;
 
     public UsedeskNotificationsService() {
+        presenter = new UsedeskNotificationsPresenter();
     }
 
     @Override
@@ -44,9 +40,6 @@ public abstract class UsedeskNotificationsService extends Service implements Mvi
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         registerNotification();
-
-        ScopeChat scopeChat = new ScopeChat(this, this);
-        Toothpick.inject(this, scopeChat.getScope());
     }
 
     private void registerNotification() {
@@ -83,19 +76,17 @@ public abstract class UsedeskNotificationsService extends Service implements Mvi
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            UsedeskSdk.setUsedeskConfiguration(UsedeskConfiguration.deserialize(intent));
+            UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent));
+            UsedeskChatSdk.init(this, presenter.getActionListener());
 
-            UsedeskSdk.initChat(this, notificationsPresenter.getActionListenerRx());
-
-            messagesDisposable = notificationsPresenter.getModelObservable()
+            messagesDisposable = presenter.getModelObservable()
                     .subscribe(this::renderModel);
         }
 
         return Service.START_STICKY;
     }
 
-    @Override
-    public void renderModel(@NonNull NotificationsModel model) {
+    private void renderModel(@NonNull UsedeskNotificationsModel model) {
         showNotification(createNotification(model));
     }
 
@@ -112,7 +103,7 @@ public abstract class UsedeskNotificationsService extends Service implements Mvi
     }
 
     @NonNull
-    protected Notification createNotification(@NonNull NotificationsModel model) {
+    protected Notification createNotification(@NonNull UsedeskNotificationsModel model) {
         String title = model.getMessage().getName();
         String text = model.getMessage().getText();
 
@@ -141,6 +132,6 @@ public abstract class UsedeskNotificationsService extends Service implements Mvi
             messagesDisposable.dispose();
         }
 
-        UsedeskSdk.releaseChat();
+        UsedeskChatSdk.release();
     }
 }

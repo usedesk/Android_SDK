@@ -11,9 +11,9 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
-import ru.usedesk.sdk.internal.utils.GlideApp;
+import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+
 
 class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
 

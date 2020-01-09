@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public interface UsedeskActionListener {
 
@@ -19,12 +19,6 @@ public interface UsedeskActionListener {
     void onOfflineFormExpected();
 
     void onDisconnected();
-
-    @Deprecated
-    void onError(int errorResId);
-
-    @Deprecated
-    void onError(Exception e);
 
     void onException(@NonNull UsedeskException usedeskException);
 }

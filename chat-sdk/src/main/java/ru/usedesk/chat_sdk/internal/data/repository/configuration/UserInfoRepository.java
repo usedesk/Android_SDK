@@ -7,19 +7,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
 
 @Singleton
 public class UserInfoRepository implements IUserInfoRepository {
 
-    private final DataLoader<UsedeskConfiguration> configurationDataLoader;
+    private final DataLoader<UsedeskChatConfiguration> configurationDataLoader;
     private final DataLoader<String> tokenDataLoader;
 
     @Inject
     UserInfoRepository(
-            @Named("configuration") DataLoader<UsedeskConfiguration> configurationDataLoader,
+            @Named("configuration") DataLoader<UsedeskChatConfiguration> configurationDataLoader,
             @Named("token") DataLoader<String> tokenDataLoader) {
         this.configurationDataLoader = configurationDataLoader;
         this.tokenDataLoader = tokenDataLoader;
@@ -42,12 +42,12 @@ public class UserInfoRepository implements IUserInfoRepository {
 
     @Override
     @NonNull
-    public UsedeskConfiguration getConfiguration() throws DataNotFoundException {
+    public UsedeskChatConfiguration getConfiguration() throws DataNotFoundException {
         return configurationDataLoader.getData();
     }
 
     @Override
-    public void setConfiguration(@Nullable UsedeskConfiguration configuration) {
+    public void setConfiguration(@Nullable UsedeskChatConfiguration configuration) {
         if (configuration == null) {
             configurationDataLoader.clearData();
         } else {

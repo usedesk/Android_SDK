@@ -10,10 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.UsedeskChat;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.OfflineForm;
+import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 
 public class OfflineFormDialog extends DialogFragment {
 
@@ -24,10 +24,7 @@ public class OfflineFormDialog extends DialogFragment {
     private EditText emailEditText;
     private EditText messageEditText;
 
-    private String companyId;
-    private String email;
-
-    private UsedeskChat usedeskChat;
+    private IUsedeskChatSdk usedeskChat;
 
     public OfflineFormDialog() {
     }
@@ -56,13 +53,8 @@ public class OfflineFormDialog extends DialogFragment {
         nameEditText = view.findViewById(R.id.name_edit_text);
         messageEditText = view.findViewById(R.id.message_edit_text);
 
-        usedeskChat = UsedeskSdk.getChat();
+        usedeskChat = UsedeskChatSdk.getInstance();
 
-        this.companyId = usedeskChat.getUsedeskConfiguration().getCompanyId();
-        this.email = usedeskChat.getUsedeskConfiguration().getEmail();
-
-        companyIdEditText.setText(companyId);
-        emailEditText.setText(email);
         if (getArguments() != null) {
             messageEditText.setText(getArguments().getString(KEY_MESSAGE, ""));
         }
@@ -73,8 +65,6 @@ public class OfflineFormDialog extends DialogFragment {
 
             if (companyIdEntered && emailEntered) {
                 OfflineForm offlineForm = new OfflineForm();
-                offlineForm.setCompanyId(companyId);
-                offlineForm.setEmail(email);
                 offlineForm.setName(nameEditText.getText().toString());
                 offlineForm.setMessage(messageEditText.getText().toString());
 

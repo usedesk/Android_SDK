@@ -20,7 +20,7 @@ import ru.usedesk.chat_sdk.external.entity.MessageType;
 import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
@@ -33,7 +33,7 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 public class ChatSdk implements IUsedeskChatSdk {
 
     private Context context;
-    private UsedeskConfiguration usedeskConfiguration;
+    private UsedeskChatConfiguration usedeskChatConfiguration;
     private UsedeskActionListener usedeskActionListener;
     private String token;
 
@@ -56,29 +56,29 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     @Override
-    public void init(@NonNull UsedeskConfiguration usedeskConfiguration,
+    public void init(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
                      @NonNull UsedeskActionListener usedeskActionListener) {
-        this.usedeskConfiguration = usedeskConfiguration;
+        this.usedeskChatConfiguration = usedeskChatConfiguration;
         this.usedeskActionListener = usedeskActionListener;
 
         apiRepository.setActionListener(usedeskActionListener);
 
         try {
-            UsedeskConfiguration configuration = userInfoRepository.getConfiguration();
-            if (usedeskConfiguration.getEmail().equals(configuration.getEmail())
-                    && usedeskConfiguration.getCompanyId().equals(configuration.getCompanyId())) {
+            UsedeskChatConfiguration configuration = userInfoRepository.getConfiguration();
+            if (usedeskChatConfiguration.getEmail().equals(configuration.getEmail())
+                    && usedeskChatConfiguration.getCompanyId().equals(configuration.getCompanyId())) {
                 token = userInfoRepository.getToken();
             }
-            if (token != null && (!equals(usedeskConfiguration.getClientName(), configuration.getClientName())
-                    || !equals(usedeskConfiguration.getClientPhoneNumber(), configuration.getClientPhoneNumber())
-                    || !equals(usedeskConfiguration.getClientAdditionalId(), configuration.getClientAdditionalId()))) {
+            if (token != null && (!equals(usedeskChatConfiguration.getClientName(), configuration.getClientName())
+                    || !equals(usedeskChatConfiguration.getClientPhoneNumber(), configuration.getClientPhoneNumber())
+                    || !equals(usedeskChatConfiguration.getClientAdditionalId(), configuration.getClientAdditionalId()))) {
                 needSetEmail = true;
             }
         } catch (DataNotFoundException e) {
             e.printStackTrace();
         }
 
-        userInfoRepository.setConfiguration(usedeskConfiguration);
+        userInfoRepository.setConfiguration(usedeskChatConfiguration);
 
         setSocket();
         connect();
@@ -128,7 +128,7 @@ public class ChatSdk implements IUsedeskChatSdk {
         if (offlineForm == null) {
             return;
         }
-        apiRepository.post(usedeskConfiguration, offlineForm);
+        apiRepository.post(usedeskChatConfiguration, offlineForm);
     }
 
     @Override
@@ -145,12 +145,12 @@ public class ChatSdk implements IUsedeskChatSdk {
         }
     }
 
-    public UsedeskConfiguration getUsedeskConfiguration() {
-        return usedeskConfiguration;
+    public UsedeskChatConfiguration getUsedeskChatConfiguration() {
+        return usedeskChatConfiguration;
     }
 
     private void initChat() {
-        apiRepository.initChat(token, usedeskConfiguration);
+        apiRepository.initChat(token, usedeskChatConfiguration);
     }
 
     private void sendMessage(String text, UsedeskFile usedeskFile) {
@@ -158,10 +158,10 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     private void setUserEmail() {
-        apiRepository.sendUserEmail(token, usedeskConfiguration.getEmail(),
-                usedeskConfiguration.getClientName(),
-                usedeskConfiguration.getClientPhoneNumber(),
-                usedeskConfiguration.getClientAdditionalId());
+        apiRepository.sendUserEmail(token, usedeskChatConfiguration.getEmail(),
+                usedeskChatConfiguration.getClientName(),
+                usedeskChatConfiguration.getClientPhoneNumber(),
+                usedeskChatConfiguration.getClientAdditionalId());
     }
 
     private void parseNewMessageResponse(Message message) {
@@ -206,7 +206,7 @@ public class ChatSdk implements IUsedeskChatSdk {
 
     private void setSocket() {
         try {
-            apiRepository.setSocket(usedeskConfiguration.getUrl());
+            apiRepository.setSocket(usedeskChatConfiguration.getUrl());
         } catch (UsedeskSocketException e) {
             usedeskActionListener.onError(e);
             usedeskActionListener.onException(e);

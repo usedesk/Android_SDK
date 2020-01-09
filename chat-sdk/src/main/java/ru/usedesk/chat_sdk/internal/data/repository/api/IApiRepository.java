@@ -6,7 +6,7 @@ import ru.usedesk.chat_sdk.external.entity.Feedback;
 import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
@@ -16,7 +16,7 @@ public interface IApiRepository {
 
     void setActionListener(@NonNull UsedeskActionListener actionListener);
 
-    void post(UsedeskConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException;
+    void post(UsedeskChatConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException;
 
     void disconnect();
 
@@ -26,7 +26,7 @@ public interface IApiRepository {
 
     void connect(OnMessageListener onMessageListener);
 
-    void initChat(String token, UsedeskConfiguration usedeskConfiguration);
+    void initChat(String token, UsedeskChatConfiguration usedeskChatConfiguration);
 
     void sendFeedbackMessage(String token, Feedback feedback);
 

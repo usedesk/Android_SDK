@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public class UsedeskConfiguration {
+public class UsedeskChatConfiguration {
     private static final String COMPANY_ID_KEY = "companyIdKey";
     private static final String EMAIL_KEY = "emailKey";
     private static final String URL_KEY = "urlKey";
@@ -22,14 +22,14 @@ public class UsedeskConfiguration {
     private final Long clientPhoneNumber;
     private final Long clientAdditionalId;
 
-    public UsedeskConfiguration(@NonNull String companyId, @NonNull String email,
-                                @NonNull String url, @NonNull String offlineFormUrl) {
+    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
+                                    @NonNull String url, @NonNull String offlineFormUrl) {
         this(companyId, email, url, offlineFormUrl, null, null, null);
     }
 
-    public UsedeskConfiguration(@NonNull String companyId, @NonNull String email,
-                                @NonNull String url, @NonNull String offlineFormUrl,
-                                @Nullable String clientName, @Nullable Long clientPhoneNumber, @Nullable Long clientAdditionalId) {
+    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
+                                    @NonNull String url, @NonNull String offlineFormUrl,
+                                    @Nullable String clientName, @Nullable Long clientPhoneNumber, @Nullable Long clientAdditionalId) {
         this.companyId = companyId;
         this.email = email;
         this.url = url;
@@ -40,14 +40,14 @@ public class UsedeskConfiguration {
     }
 
     @NonNull
-    public static UsedeskConfiguration deserialize(@NonNull Intent intent) {
+    public static UsedeskChatConfiguration deserialize(@NonNull Intent intent) {
         Long additionalId = null;
         Long phone = null;
         if (intent.getExtras() != null) {
             phone = intent.getExtras().getLong(PHONE_KEY);
             additionalId = intent.getExtras().getLong(ADDITIONAL_ID_KEY);
         }
-        return new UsedeskConfiguration(intent.getStringExtra(COMPANY_ID_KEY),
+        return new UsedeskChatConfiguration(intent.getStringExtra(COMPANY_ID_KEY),
                 intent.getStringExtra(EMAIL_KEY),
                 intent.getStringExtra(URL_KEY),
                 intent.getStringExtra(OFFLINE_FORM_URL_KEY),
@@ -68,8 +68,8 @@ public class UsedeskConfiguration {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UsedeskConfiguration) {
-            UsedeskConfiguration configuration = (UsedeskConfiguration) obj;
+        if (obj instanceof UsedeskChatConfiguration) {
+            UsedeskChatConfiguration configuration = (UsedeskChatConfiguration) obj;
             return equals(this.companyId, configuration.companyId) &&
                     equals(this.email, configuration.email) &&
                     equals(this.url, configuration.url) &&

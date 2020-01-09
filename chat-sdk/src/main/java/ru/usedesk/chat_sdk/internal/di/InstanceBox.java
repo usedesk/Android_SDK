@@ -6,15 +6,17 @@ import javax.inject.Inject;
 
 import io.reactivex.annotations.NonNull;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_sdk.internal.appdi.InjectBox;
 
 public class InstanceBox extends InjectBox {
     @Inject
     IUsedeskChatSdk usedeskChatSdk;
 
-    public InstanceBox(@NonNull Context appContext, UsedeskConfiguration usedeskConfiguration) {
-        init(new MainModule(appContext, usedeskConfiguration));
+    public InstanceBox(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
+                       @NonNull UsedeskActionListener actionListener) {
+        init(new MainModule(appContext, usedeskChatConfiguration, actionListener));
     }
 
     public IUsedeskChatSdk getUsedeskChatSdk() {

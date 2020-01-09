@@ -9,11 +9,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 
 @Singleton
-public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
+public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     private static final String PREF_NAME = "usedeskSdkConfiguration";
     private static final String KEY_ID = "id";
     private static final String KEY_URL = "url";
@@ -33,7 +33,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
 
     @Override
     @Nullable
-    protected UsedeskConfiguration loadData() {
+    protected UsedeskChatConfiguration loadData() {
         final String id = sharedPreferences.getString(KEY_ID, null);
         final String url = sharedPreferences.getString(KEY_URL, null);
         final String offlineUrl = sharedPreferences.getString(KEY_OFFLINE_URL, null);
@@ -50,11 +50,11 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
                 ? sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0)
                 : null;
 
-        return new UsedeskConfiguration(id, email, url, offlineUrl, name, phone, additionalId);
+        return new UsedeskChatConfiguration(id, email, url, offlineUrl, name, phone, additionalId);
     }
 
     @Override
-    protected void saveData(@NonNull UsedeskConfiguration configuration) {
+    protected void saveData(@NonNull UsedeskChatConfiguration configuration) {
         SharedPreferences.Editor editor = sharedPreferences.edit()
                 .putString(KEY_ID, configuration.getCompanyId())
                 .putString(KEY_URL, configuration.getUrl())

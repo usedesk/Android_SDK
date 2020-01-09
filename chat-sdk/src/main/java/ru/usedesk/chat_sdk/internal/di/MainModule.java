@@ -14,9 +14,10 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
-import ru.usedesk.chat_sdk.external.entity.UsedeskConfiguration;
-import ru.usedesk.chat_sdk.external.service.notifications.presenter.NotificationsPresenter;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
 import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.loader.TokenLoader;
@@ -31,9 +32,11 @@ import toothpick.config.Module;
 
 class MainModule extends Module {
 
-    MainModule(@NonNull Context appContext, @NonNull UsedeskConfiguration usedeskConfiguration) {
+    MainModule(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
+               @NonNull UsedeskActionListener actionListener) {
         bind(Context.class).toInstance(appContext);
-        bind(UsedeskConfiguration.class).toInstance(usedeskConfiguration);
+        bind(UsedeskChatConfiguration.class).toInstance(usedeskChatConfiguration);
+        bind(UsedeskActionListener.class).toInstance(actionListener);
 
         bind(IUsedeskChatSdk.class).to(ChatSdk.class).singleton();
 
@@ -52,7 +55,7 @@ class MainModule extends Module {
         bind(Scheduler.class).withName("main").toInstance(AndroidSchedulers.mainThread());
 
         //tmp for service
-        bind(NotificationsPresenter.class).to(NotificationsPresenter.class).singleton();
+        bind(UsedeskNotificationsPresenter.class).to(UsedeskNotificationsPresenter.class).singleton();
         bind(UsedeskActionListenerRx.class).to(UsedeskActionListenerRx.class).singleton();
     }
 

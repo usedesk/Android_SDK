@@ -23,10 +23,11 @@ import java.util.List;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
-import ru.usedesk.sdk.R;
-import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
-import ru.usedesk.sdk.internal.utils.NetworkUtils;
+import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_gui.screens.utils.NetworkUtils;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 
 @RuntimePermissions
 public class ChatFragment extends Fragment {
@@ -59,7 +60,7 @@ public class ChatFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = UsedeskSdk.getUsedeskViewCustomizer()
+        View view = UsedeskViewCustomizer.getInstance()
                 .createView(inflater, R.layout.usedesk_fragment_chat, container, false);
 
         viewModel = ViewModelProviders.of(this, new ChatViewModel.Factory(getContext()))
@@ -78,7 +79,7 @@ public class ChatFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+        UsedeskChatSdk.getUsedeskNotificationsServiceFactory()
                 .stopService(getContext());
     }
 
@@ -86,7 +87,7 @@ public class ChatFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-        UsedeskSdk.getUsedeskNotificationsServiceFactory()
+        UsedeskChatSdk.getUsedeskNotificationsServiceFactory()
                 .startService(getContext());
     }
 
@@ -170,7 +171,7 @@ public class ChatFragment extends Fragment {
 
     private void openAttachmentDialog() {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
-        View bottomSheetView = UsedeskSdk.getUsedeskViewCustomizer()
+        View bottomSheetView = UsedeskViewCustomizer.getInstance()
                 .createView(getActivity().getLayoutInflater(),
                         R.layout.usedesk_dialog_attachment, null, false);
 

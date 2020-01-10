@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
@@ -68,7 +70,10 @@ public class OfflineFormDialog extends DialogFragment {
                 offlineForm.setName(nameEditText.getText().toString());
                 offlineForm.setMessage(messageEditText.getText().toString());
 
-                usedeskChat.sendOfflineForm(offlineForm);
+                usedeskChat.sendRx(offlineForm)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe();
             }
 
             dismiss();

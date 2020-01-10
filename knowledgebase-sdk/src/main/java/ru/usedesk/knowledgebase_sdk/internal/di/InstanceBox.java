@@ -9,6 +9,7 @@ import ru.usedesk.common_sdk.internal.appdi.InjectBox;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
 
+@SuppressWarnings("injectable")
 public class InstanceBox extends InjectBox {
 
     @Inject

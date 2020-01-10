@@ -13,8 +13,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
-import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
@@ -50,43 +49,43 @@ public class KnowledgeBase implements IUsedeskKnowledgeBaseSdk {
 
     @Override
     @NonNull
-    public Single<List<Section>> getSectionsSingle() {//TODO: Сделать доп методы без Rx
+    public Single<List<Section>> getSectionsRx() {
         return createSingle(emitter -> emitter.onSuccess(getSections()));
     }
 
     @Override
     @NonNull
-    public Single<ArticleBody> getArticleSingle(long articleId) {
+    public Single<ArticleBody> getArticleRx(long articleId) {
         return createSingle(emitter -> emitter.onSuccess(getArticle(articleId)));
     }
 
     @NonNull
     @Override
-    public Single<List<Category>> getCategoriesSingle(long sectionId) {
+    public Single<List<Category>> getCategoriesRx(long sectionId) {
         return createSingle(emitter -> emitter.onSuccess(getCategories(sectionId)));
     }
 
     @NonNull
     @Override
-    public Single<List<ArticleInfo>> getArticlesSingle(long categoryId) {
+    public Single<List<ArticleInfo>> getArticlesRx(long categoryId) {
         return createSingle(emitter -> emitter.onSuccess(getArticles(categoryId)));
     }
 
     @Override
     @NonNull
-    public Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery) {
+    public Single<List<ArticleBody>> getArticlesRx(@NonNull String searchQuery) {
         return createSingle(emitter -> emitter.onSuccess(getArticles(searchQuery)));
     }
 
     @Override
     @NonNull
-    public Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery) {
+    public Single<List<ArticleBody>> getArticlesRx(@NonNull SearchQuery searchQuery) {
         return createSingle(emitter -> emitter.onSuccess(getArticles(searchQuery)));
     }
 
-    @NonNull
     @Override
-    public Completable addViewsCompletable(long articleId) {
+    @NonNull
+    public Completable addViewsRx(long articleId) {
         return Completable.create(emitter -> {
             addViews(articleId);
             emitter.onComplete();
@@ -94,39 +93,46 @@ public class KnowledgeBase implements IUsedeskKnowledgeBaseSdk {
                 .observeOn(mainThreadScheduler);
     }
 
-    private void addViews(long articleId) throws DataNotFoundException, UsedeskHttpException {
+    @Override
+    public void addViews(long articleId) throws UsedeskException {
         knowledgeRepository.addViews(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
+    @Override
     @NonNull
-    private List<Category> getCategories(long sectionId) throws DataNotFoundException, UsedeskHttpException {
+    public List<Category> getCategories(long sectionId) throws UsedeskException {
         return knowledgeRepository.getCategories(configuration.getAccountId(), configuration.getToken(), sectionId);
     }
 
+    @Override
     @NonNull
-    private List<Section> getSections() throws UsedeskHttpException {
+    public List<Section> getSections() throws UsedeskException {
         return knowledgeRepository.getSections(configuration.getAccountId(), configuration.getToken());
     }
 
+    @Override
     @NonNull
-    private ArticleBody getArticle(long articleId) throws UsedeskHttpException {
+    public ArticleBody getArticle(long articleId) throws UsedeskException {
         return knowledgeRepository.getArticleBody(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
+    @Override
     @NonNull
-    private List<ArticleBody> getArticles(@NonNull String searchQuery) throws UsedeskHttpException {
+    public List<ArticleBody> getArticles(@NonNull String searchQuery) throws UsedeskException {
         SearchQuery query = new SearchQuery.Builder(searchQuery).build();
 
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), query);
     }
 
+    @Override
     @NonNull
-    private List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws UsedeskHttpException {
+    public List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws UsedeskException {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), searchQuery);
     }
 
+    @Override
     @NonNull
-    private List<ArticleInfo> getArticles(long categoryId) throws DataNotFoundException, UsedeskHttpException {
+    public List<ArticleInfo> getArticles(long categoryId) throws UsedeskException {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }
 

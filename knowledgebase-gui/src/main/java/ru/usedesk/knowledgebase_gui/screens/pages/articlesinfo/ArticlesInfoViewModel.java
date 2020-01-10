@@ -12,7 +12,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 class ArticlesInfoViewModel extends DataViewModel<List<ArticleInfo>> {
 
     private ArticlesInfoViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long categoryId) {
-        loadData(usedeskKnowledgeBaseSdk.getArticlesSingle(categoryId));
+        loadData(usedeskKnowledgeBaseSdk.getArticlesRx(categoryId));
     }
 
     static class Factory extends ViewModelFactory<ArticlesInfoViewModel> {

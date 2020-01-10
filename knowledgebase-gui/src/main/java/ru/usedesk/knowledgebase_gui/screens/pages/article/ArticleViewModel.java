@@ -14,14 +14,15 @@ public class ArticleViewModel extends DataViewModel<ArticleBody> {
     private ArticleViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long articleId) {
         this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
 
-        loadData(usedeskKnowledgeBaseSdk.getArticleSingle(articleId));
+        loadData(usedeskKnowledgeBaseSdk.getArticleRx(articleId));
     }
 
     @Override
     protected void onData(ArticleBody data) {
         super.onData(data);
 
-        usedeskKnowledgeBaseSdk.addViews(data.getId()).subscribe();//TODO: вернуть
+        usedeskKnowledgeBaseSdk.addViewsRx(data.getId())
+                .subscribe();//TODO: вернуть
     }
 
     static class Factory extends ViewModelFactory<ArticleViewModel> {

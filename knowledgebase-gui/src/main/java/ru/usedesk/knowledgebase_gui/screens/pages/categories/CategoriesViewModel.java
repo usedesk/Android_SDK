@@ -12,7 +12,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.Category;
 class CategoriesViewModel extends DataViewModel<List<Category>> {
 
     private CategoriesViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long sectionId) {
-        loadData(usedeskKnowledgeBaseSdk.getCategoriesSingle(sectionId));
+        loadData(usedeskKnowledgeBaseSdk.getCategoriesRx(sectionId));
     }
 
     static class Factory extends ViewModelFactory<CategoriesViewModel> {

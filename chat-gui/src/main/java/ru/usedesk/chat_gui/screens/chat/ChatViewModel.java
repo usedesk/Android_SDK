@@ -8,7 +8,8 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
@@ -76,14 +77,10 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
     }
 
     void sendFeedback(@NonNull Feedback feedback) {
-        asCompletable(() -> usedeskChat.sendFeedbackMessage(feedback));
-    }
-
-    private void asCompletable(Runnable runnable) {
-        Completable.create(emitter -> {
-            runnable.run();
-            emitter.onComplete();
-        }).subscribe();
+        usedeskChat.sendRx(feedback)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
     @Override
@@ -100,10 +97,16 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
     }
 
     public void onSend(@NonNull String textMessage) {
-        asCompletable(() -> usedeskChat.sendMessage(textMessage));
+        usedeskChat.sendRx(textMessage)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
 
         List<UsedeskFileInfo> usedeskFileInfoList = getLastModel().getUsedeskFileInfoList();
-        asCompletable(() -> usedeskChat.sendMessage(usedeskFileInfoList);
+        usedeskChat.sendRx(usedeskFileInfoList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
 
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(new ArrayList<>())

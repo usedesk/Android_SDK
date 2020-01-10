@@ -12,6 +12,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
 import ru.usedesk.chat_sdk.external.entity.Message;
@@ -45,23 +48,21 @@ public class ChatSdk implements IUsedeskChatSdk {
             @NonNull UsedeskChatConfiguration configuration,
             @NonNull UsedeskActionListener actionListener,
             @NonNull IUserInfoRepository userInfoRepository,
-            @NonNull IApiRepository apiRepository) throws UsedeskException {
+            @NonNull IApiRepository apiRepository) {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;
 
         this.configuration = configuration;
         this.actionListener = actionListener;
-
-        init();
     }
 
     private <T> boolean equals(@Nullable T a, @Nullable T b) {
         return (a == null && b == null) || (a != null && a.equals(b));
     }
 
-    private void init() throws UsedeskException {
-
+    @Override
+    public void connect() throws UsedeskException {
         try {
             UsedeskChatConfiguration configuration = userInfoRepository.getConfiguration();
             if (this.configuration.getEmail().equals(configuration.getEmail())
@@ -88,16 +89,16 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     @Override
-    public void sendMessage(String text) throws UsedeskException {
-        if (text == null || text.isEmpty()) {
+    public void send(String textMessage) throws UsedeskException {
+        if (textMessage == null || textMessage.isEmpty()) {
             return;
         }
 
-        apiRepository.send(token, text);
+        apiRepository.send(token, textMessage);
     }
 
     @Override
-    public void sendMessage(UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
+    public void send(UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
         if (usedeskFileInfo == null) {
             return;
         }
@@ -106,18 +107,18 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     @Override
-    public void sendMessage(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException {
+    public void send(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException {
         if (usedeskFileInfoList == null) {
             return;
         }
 
         for (UsedeskFileInfo usedeskFileInfo : usedeskFileInfoList) {
-            sendMessage(usedeskFileInfo);
+            send(usedeskFileInfo);
         }
     }
 
     @Override
-    public void sendFeedbackMessage(Feedback feedback) throws UsedeskException {
+    public void send(Feedback feedback) throws UsedeskException {
         if (feedback == null) {
             return;
         }
@@ -126,7 +127,7 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     @Override
-    public void sendOfflineForm(OfflineForm offlineForm) throws UsedeskException {
+    public void send(OfflineForm offlineForm) throws UsedeskException {
         if (offlineForm == null) {
             return;
         }
@@ -134,12 +135,15 @@ public class ChatSdk implements IUsedeskChatSdk {
     }
 
     @Override
-    public void onClickButtonWidget(MessageButtons.MessageButton messageButton) throws UsedeskException {
+    public void send(MessageButtons.MessageButton messageButton) throws UsedeskException {
         if (messageButton == null) {
             return;
         }
         if (messageButton.getUrl().isEmpty()) {
-            sendMessage(messageButton.getText());
+            sendRx(messageButton.getText())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
         } else {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO
             browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -147,11 +151,81 @@ public class ChatSdk implements IUsedeskChatSdk {
         }
     }
 
-    private void setUserEmail() {
-        apiRepository.send(token, configuration.getEmail(),
-                configuration.getClientName(),
-                configuration.getClientPhoneNumber(),
-                configuration.getClientAdditionalId());
+    @NonNull
+    @Override
+    public Completable connectRx() {
+        return Completable.create(emitter -> {
+            connect();
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable sendRx(String textMessage) {
+        return Completable.create(emitter -> {
+            send(textMessage);
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable sendRx(UsedeskFileInfo usedeskFileInfo) {
+        return Completable.create(emitter -> {
+            send(usedeskFileInfo);
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable sendRx(List<UsedeskFileInfo> usedeskFileInfoList) {
+        return Completable.create(emitter -> {
+            send(usedeskFileInfoList);
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable sendRx(Feedback feedback) {
+        return Completable.create(emitter -> {
+            send(feedback);
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable sendRx(OfflineForm offlineForm) {
+        return Completable.create(emitter -> {
+            send(offlineForm);
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable sendRx(MessageButtons.MessageButton messageButton) {
+        return Completable.create(emitter -> {
+            send(messageButton);
+            emitter.onComplete();
+        });
+    }
+
+    @NonNull
+    @Override
+    public Completable disconnectRx() {
+        return Completable.create(emitter -> {
+            disconnect();
+            emitter.onComplete();
+        });
+    }
+
+    private void sendUserEmail() {
+        apiRepository.send(token, configuration.getEmail(), configuration.getClientName(),
+                configuration.getClientPhoneNumber(), configuration.getClientAdditionalId());
     }
 
     private void parseNewMessageResponse(Message message) {
@@ -178,7 +252,7 @@ public class ChatSdk implements IUsedeskChatSdk {
 
         if (setup != null) {
             if (setup.isWaitingEmail()) {
-                setUserEmail();
+                sendUserEmail();
             }
 
             if (setup.getMessages() != null && !setup.getMessages().isEmpty()) {
@@ -189,7 +263,7 @@ public class ChatSdk implements IUsedeskChatSdk {
                 onOfflineFormDialog();
             }
         } else {
-            setUserEmail();
+            sendUserEmail();
         }
     }
 
@@ -197,19 +271,15 @@ public class ChatSdk implements IUsedeskChatSdk {
         return new OnMessageListener() {
             @Override
             public void onNew(Message message) {
-                try {
-                    if (message != null && message.getPayloadAsObject() != null) {
-                        Map map = (Map) message.getPayloadAsObject();
+                if (message != null && message.getPayloadAsObject() != null && message.getPayloadAsObject() instanceof Map) {
+                    Map map = (Map) message.getPayloadAsObject();
 
-                        Boolean noOperators = (Boolean) map.get("noOperators");//TODO: выпилить отсюда и впилить по доке (когда сервер начнёт отдавать что нужно)
+                    Boolean noOperators = (Boolean) map.get("noOperators");//TODO: выпилить отсюда и впилить по доке (когда сервер начнёт отдавать что нужно)
 
-                        if (noOperators != null && noOperators) {
-                            onOfflineFormDialog();
-                            return;
-                        }
+                    if (noOperators != null && noOperators) {
+                        onOfflineFormDialog();
+                        return;
                     }
-                } catch (ClassCastException e) {
-                    //nothing
                 }
                 parseNewMessageResponse(message);
             }
@@ -224,7 +294,7 @@ public class ChatSdk implements IUsedeskChatSdk {
                 parseInitResponse(token, setup);
 
                 if (needSetEmail) {
-                    setUserEmail();
+                    sendUserEmail();
                 }
             }
 

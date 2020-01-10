@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 import ru.usedesk.knowledgebase_sdk.external.entity.Category;
@@ -15,23 +16,43 @@ import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 public interface IUsedeskKnowledgeBaseSdk {
 
     @NonNull
-    Single<List<Section>> getSectionsSingle();
+    List<Section> getSections() throws UsedeskException;
 
     @NonNull
-    Single<ArticleBody> getArticleSingle(long articleId);
+    ArticleBody getArticle(long articleId) throws UsedeskException;
 
     @NonNull
-    Single<List<ArticleBody>> getArticlesSingle(@NonNull String searchQuery);
+    List<ArticleBody> getArticles(String searchQuery) throws UsedeskException;
 
     @NonNull
-    Single<List<ArticleBody>> getArticlesSingle(@NonNull SearchQuery searchQuery);
+    List<ArticleBody> getArticles(SearchQuery searchQuery) throws UsedeskException;
 
     @NonNull
-    Single<List<Category>> getCategoriesSingle(long sectionId);
+    List<Category> getCategories(long sectionId) throws UsedeskException;
 
     @NonNull
-    Single<List<ArticleInfo>> getArticlesSingle(long categoryId);
+    List<ArticleInfo> getArticles(long categoryId) throws UsedeskException;
+
+    void addViews(long articleId) throws UsedeskException;
 
     @NonNull
-    Completable addViewsCompletable(long articleId);
+    Single<List<Section>> getSectionsRx();
+
+    @NonNull
+    Single<ArticleBody> getArticleRx(long articleId);
+
+    @NonNull
+    Single<List<ArticleBody>> getArticlesRx(String searchQuery);
+
+    @NonNull
+    Single<List<ArticleBody>> getArticlesRx(SearchQuery searchQuery);
+
+    @NonNull
+    Single<List<Category>> getCategoriesRx(long sectionId);
+
+    @NonNull
+    Single<List<ArticleInfo>> getArticlesRx(long categoryId);
+
+    @NonNull
+    Completable addViewsRx(long articleId);
 }

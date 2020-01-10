@@ -19,7 +19,7 @@ class ArticlesBodyViewModel extends DataViewModel<List<ArticleBody>> {
     }
 
     void onSearchQueryUpdate(@NonNull String searchQuery) {
-        loadData(usedeskKnowledgeBaseSdk.getArticlesSingle(searchQuery));
+        loadData(usedeskKnowledgeBaseSdk.getArticlesRx(searchQuery));
     }
 
     static class Factory extends ViewModelFactory<ArticlesBodyViewModel> {

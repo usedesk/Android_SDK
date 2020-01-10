@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_gui.screens.utils.DownloadUtils;
 import ru.usedesk.chat_gui.screens.utils.ImageUtils;
@@ -233,7 +235,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                     button.setText(messageButton.getText());
                     button.setOnClickListener(v ->
-                            UsedeskChatSdk.getInstance().onClickButtonWidget(messageButton));
+                            UsedeskChatSdk.getInstance().sendRx(messageButton)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe());
 
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

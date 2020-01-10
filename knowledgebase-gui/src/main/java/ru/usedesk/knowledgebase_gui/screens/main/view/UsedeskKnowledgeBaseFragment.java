@@ -28,13 +28,13 @@ import ru.usedesk.knowledgebase_gui.screens.pages.categories.IOnCategoryClickLis
 import ru.usedesk.knowledgebase_gui.screens.pages.sections.IOnSectionClickListener;
 import ru.usedesk.knowledgebase_gui.screens.pages.sections.SectionsFragment;
 
-public class KnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
+public class UsedeskKnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,
         IOnArticleBodyClickListener,
         IUsedeskOnBackPressedListener, IUsedeskOnSearchQueryListener {
 
-    public static KnowledgeBaseFragment newInstance() {
-        return new KnowledgeBaseFragment();
+    public static UsedeskKnowledgeBaseFragment newInstance() {
+        return new UsedeskKnowledgeBaseFragment();
     }
 
     @Override

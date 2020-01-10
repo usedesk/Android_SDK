@@ -4,7 +4,9 @@ import android.content.Context;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
@@ -26,7 +28,10 @@ public class InstanceBox extends InjectBox {
 
     @Override
     public void release() {
-        usedeskChatSdk.disconnect();
+        usedeskChatSdk.disconnectRx()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
         super.release();
     }
 }

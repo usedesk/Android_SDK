@@ -12,6 +12,16 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import ru.usedesk.chat_gui.screens.chat.UsedeskChatFragment;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener;
+import ru.usedesk.knowledgebase_gui.screens.main.IOnUsedeskSupportClickListener;
+import ru.usedesk.knowledgebase_gui.screens.main.view.UsedeskKnowledgeBaseFragment;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
@@ -21,13 +31,6 @@ import ru.usedesk.sample.ui._common.Event;
 import ru.usedesk.sample.ui._common.ToolbarHelper;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
-import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
-import ru.usedesk.sdk.external.entity.knowledgebase.KnowledgeBaseConfiguration;
-import ru.usedesk.sdk.external.ui.IUsedeskOnSearchQueryListener;
-import ru.usedesk.sdk.external.ui.UsedeskViewCustomizer;
-import ru.usedesk.sdk.external.ui.chat.ChatFragment;
-import ru.usedesk.sdk.external.ui.knowledgebase.main.IOnUsedeskSupportClickListener;
-import ru.usedesk.sdk.external.ui.knowledgebase.main.view.KnowledgeBaseFragment;
 
 public class MainActivity extends AppCompatActivity
         implements ConfigurationFragment.IOnGoToSdkListener, IOnUsedeskSupportClickListener {
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initUsedeskConfiguration(@NonNull Configuration configuration) {
-        UsedeskSdk.setUsedeskConfiguration(new UsedeskConfiguration(configuration.getCompanyId(),
+        UsedeskChatSdk.setConfiguration(new UsedeskChatConfiguration(configuration.getCompanyId(),
                 configuration.getEmail(),
                 configuration.getUrl(),
                 configuration.getOfflineFormUrl(),
@@ -97,34 +100,33 @@ public class MainActivity extends AppCompatActivity
                 getLong(configuration.getClientAdditionalId())));
 
         if (configuration.isWithKnowledgeBase()) {
-            UsedeskSdk.setKnowledgeBaseConfiguration(new KnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
+            UsedeskKnowledgeBaseSdk.setConfiguration(new KnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
         }
     }
 
     private void initUsedeskCustomizer(@NonNull Configuration configuration) {
-        UsedeskViewCustomizer usedeskViewCustomizer = UsedeskSdk.getUsedeskViewCustomizer();
+        IUsedeskViewCustomizer usedeskViewCustomizer = UsedeskViewCustomizer.getInstance();
         if (configuration.isCustomViews()) {
             //Полная замена фрагментов кастомными
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, R.layout.custom_item_category);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_section, R.layout.custom_item_section);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_category, R.layout.custom_item_category);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_section, R.layout.custom_item_section);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
 
             //Применение кастомной темы к стандартным фрагментам
             usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme_Custom);
         } else {
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_category, ru.usedesk.sdk.R.layout.usedesk_item_category);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_section, ru.usedesk.sdk.R.layout.usedesk_item_section);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.sdk.R.layout.usedesk_item_article_info, ru.usedesk.sdk.R.layout.usedesk_item_article_info);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_category, ru.usedesk.chat_gui.R.layout.usedesk_item_category);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_section, ru.usedesk.chat_gui.R.layout.usedesk_item_section);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_article_info, ru.usedesk.chat_gui.R.layout.usedesk_item_article_info);
 
             usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme);
         }
     }
 
     private void initUsedeskService(@NonNull Configuration configuration) {
-        UsedeskSdk.getUsedeskNotificationsServiceFactory()
-                .stopService(this);
+        UsedeskChatSdk.stopService(this);
 
-        UsedeskSdk.setUsedeskNotificationsServiceFactory(configuration.isForegroundService()
+        UsedeskChatSdk.setNotificationsServiceFactory(configuration.isForegroundService()
                 ? new CustomForegroundNotificationsService.Factory()
                 : new CustomSimpleNotificationsService.Factory());
     }
@@ -140,12 +142,12 @@ public class MainActivity extends AppCompatActivity
 
     private void goToKnowledgeBase() {
         toolbarHelper.update(this, ToolbarHelper.State.KNOWLEDGE_BASE);
-        switchFragment(KnowledgeBaseFragment.newInstance());
+        switchFragment(UsedeskKnowledgeBaseFragment.newInstance());
     }
 
     private void goToChat() {
         toolbarHelper.update(this, ToolbarHelper.State.CHAT);
-        switchFragment(ChatFragment.newInstance());
+        switchFragment(UsedeskChatFragment.newInstance());
     }
 
     private void goToInfo() {

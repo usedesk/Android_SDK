@@ -30,7 +30,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 
 @RuntimePermissions
-public class ChatFragment extends Fragment {
+public class UsedeskChatFragment extends Fragment {
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
@@ -47,8 +47,8 @@ public class ChatFragment extends Fragment {
 
     private ChatViewModel viewModel;
 
-    public static ChatFragment newInstance() {
-        return new ChatFragment();
+    public static UsedeskChatFragment newInstance() {
+        return new UsedeskChatFragment();
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            List<UsedeskFileInfo> attachedFileInfoList = filePicker.onResultInfo(getContext(),
+            List<UsedeskFileInfo> attachedFileInfoList = filePicker.onResult(getContext(),
                     requestCode, data);
             if (attachedFileInfoList != null) {
                 viewModel.setAttachedFileInfoList(attachedFileInfoList);
@@ -199,15 +199,15 @@ public class ChatFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        ChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     public void onPickPhotoClicked() {
-        ChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
+        UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
     }
 
     public void onTakePhotoClicked() {
-        ChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
+        UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
@@ -221,7 +221,7 @@ public class ChatFragment extends Fragment {
     }
 
     public void onPickDocumentClicked() {
-        ChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
+        UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})

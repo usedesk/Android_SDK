@@ -111,7 +111,7 @@ public class SocketApi {
 
     public void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener,
                         @NonNull OnMessageListener onMessageListener) throws UsedeskException {
-        if (socket == null) {
+        if (socket != null) {
             return;
         }
         try {

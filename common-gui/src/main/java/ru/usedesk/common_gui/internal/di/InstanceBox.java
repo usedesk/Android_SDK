@@ -10,6 +10,10 @@ public class InstanceBox extends InjectBox {
     @Inject
     IUsedeskViewCustomizer usedeskViewCustomizer;
 
+    public InstanceBox() {
+        init(new MainModule());
+    }
+
     @NonNull
     public IUsedeskViewCustomizer getUsedeskViewCustomizer() {
         return usedeskViewCustomizer;

@@ -1,8 +1,5 @@
 package ru.usedesk.chat_gui.screens.chat;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -20,11 +17,11 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
 
     private IUsedeskChatSdk usedeskChat;
 
-    private ChatViewModel(@NonNull Context context) {
+    ChatViewModel(@NonNull IUsedeskChatSdk usedeskChatSdk, @NonNull UsedeskActionListenerRx actionListenerRx) {
         super(new ChatModel(true, false, new ArrayList<>(),
                 0, new ArrayList<>(), null));
 
-        UsedeskActionListenerRx actionListenerRx = new UsedeskActionListenerRx();
+        this.usedeskChat = usedeskChatSdk;
 
         addModelObservable(actionListenerRx.getConnectedObservable()
                 .map(emptyItem -> new ChatModel.Builder()
@@ -67,10 +64,11 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
             //nothing
         });
 
-        usedeskChat = UsedeskChatSdk.init(context, actionListenerRx);
+        usedeskChat.connectRx()
+                .subscribe();
     }
 
-    void setAttachedFileInfoList(List<UsedeskFileInfo> usedeskFileInfoList) {
+    void setAttachedFileInfoList(@NonNull List<UsedeskFileInfo> usedeskFileInfoList) {
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(usedeskFileInfoList)
                 .build());
@@ -90,13 +88,13 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         UsedeskChatSdk.release();
     }
 
-    public void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {
+    void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {
         List<UsedeskFileInfo> attachedFileInfoList = new ArrayList<>(getLastModel().getUsedeskFileInfoList());
         attachedFileInfoList.remove(usedeskFileInfo);
         setAttachedFileInfoList(attachedFileInfoList);
     }
 
-    public void onSend(@NonNull String textMessage) {
+    void onSend(@NonNull String textMessage) {
         usedeskChat.sendRx(textMessage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -111,20 +109,5 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(new ArrayList<>())
                 .build());
-    }
-
-    public static class Factory implements ViewModelProvider.Factory {
-        private Context context;
-
-        public Factory(@NonNull Context context) {
-            this.context = context.getApplicationContext();
-        }
-
-        @NonNull
-        @Override
-        @SuppressWarnings("unchecked cast")
-        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new ChatViewModel(context);
-        }
     }
 }

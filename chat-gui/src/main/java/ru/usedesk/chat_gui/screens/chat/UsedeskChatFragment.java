@@ -63,7 +63,7 @@ public class UsedeskChatFragment extends Fragment {
         View view = UsedeskViewCustomizer.getInstance()
                 .createView(inflater, R.layout.usedesk_fragment_chat, container, false);
 
-        viewModel = ViewModelProviders.of(this, new ChatViewModel.Factory(getContext()))
+        viewModel = ViewModelProviders.of(this, new ChatViewModelFactory(getContext()))
                 .get(ChatViewModel.class);
 
         initUI(view);

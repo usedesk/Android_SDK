@@ -31,6 +31,20 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
         this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
+    @Nullable
+    private Long getLong(@Nullable String value) {
+        return value == null || value.isEmpty()
+                ? null
+                : Long.valueOf(value);
+    }
+
+    @Nullable
+    private String getString(@Nullable Long value) {
+        return value == null
+                ? null
+                : value.toString();
+    }
+
     @Override
     @Nullable
     protected UsedeskConfiguration loadData() {
@@ -42,39 +56,38 @@ public class ConfigurationLoader extends DataLoader<UsedeskConfiguration> {
         if (id == null || url == null || email == null || offlineUrl == null) {
             return null;
         }
-        final String name = sharedPreferences.getString(KEY_NAME, null);
-        final Long phone = sharedPreferences.contains(KEY_PHONE)
-                ? sharedPreferences.getLong(KEY_PHONE, 0)
-                : null;
-        final Long additionalId = sharedPreferences.contains(KEY_ADDITIONAL_ID)
-                ? sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0)
-                : null;
 
-        return new UsedeskConfiguration(id, email, url, offlineUrl, name, phone, additionalId);
+        String name = null;
+        String phone = null;
+        String additionalId = null;
+
+        try {
+            name = sharedPreferences.getString(KEY_NAME, null);
+            phone = sharedPreferences.getString(KEY_PHONE, null);
+            additionalId = sharedPreferences.getString(KEY_ADDITIONAL_ID, null);
+        } catch (ClassCastException e) {
+            try {
+                phone = String.valueOf(sharedPreferences.getLong(KEY_PHONE, 0));//Для миграции с версий, где хранился Long
+                additionalId = String.valueOf(sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0));
+            } catch (ClassCastException e1) {
+                e.printStackTrace();
+            }
+        }
+
+        return new UsedeskConfiguration(id, email, url, offlineUrl, name, getLong(phone), getLong(additionalId));
     }
 
     @Override
     protected void saveData(@NonNull UsedeskConfiguration configuration) {
-        SharedPreferences.Editor editor = sharedPreferences.edit()
+        sharedPreferences.edit()
                 .putString(KEY_ID, configuration.getCompanyId())
                 .putString(KEY_URL, configuration.getUrl())
                 .putString(KEY_OFFLINE_URL, configuration.getOfflineFormUrl())
                 .putString(KEY_EMAIL, configuration.getEmail())
-                .putString(KEY_NAME, configuration.getClientName());
-
-        Long additionalId = configuration.getClientAdditionalId();
-        if (additionalId != null) {
-            editor.putLong(KEY_ADDITIONAL_ID, configuration.getClientAdditionalId());
-        } else {
-            editor.remove(KEY_ADDITIONAL_ID);
-        }
-        Long phone = configuration.getClientPhoneNumber();
-        if (phone != null) {
-            editor.putLong(KEY_PHONE, configuration.getClientPhoneNumber());
-        } else {
-            editor.remove(KEY_PHONE);
-        }
-        editor.apply();
+                .putString(KEY_NAME, configuration.getClientName())
+                .putString(KEY_ADDITIONAL_ID, getString(configuration.getClientAdditionalId()))
+                .putString(KEY_PHONE, getString(configuration.getClientPhoneNumber()))
+                .apply();
     }
 
     @Override

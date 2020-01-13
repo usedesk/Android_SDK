@@ -11,7 +11,7 @@ import ru.usedesk.chat_sdk.internal.di.InstanceBox;
 public class UsedeskChatSdk {
     private static InstanceBox instanceBox;
     private static UsedeskChatConfiguration configuration;
-    private static UsedeskNotificationsServiceFactory notificationsServiceFactory;
+    private static UsedeskNotificationsServiceFactory notificationsServiceFactory = new UsedeskNotificationsServiceFactory();
 
     @NonNull
     public static IUsedeskChatSdk init(@NonNull Context appContext,

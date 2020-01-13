@@ -27,7 +27,7 @@ import ru.usedesk.chat_sdk.internal.data.repository.api.ApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoRepository;
-import ru.usedesk.chat_sdk.internal.domain.ChatSdk;
+import ru.usedesk.chat_sdk.internal.domain.ChatSdkInteractor;
 import toothpick.config.Module;
 
 class MainModule extends Module {
@@ -38,7 +38,7 @@ class MainModule extends Module {
         bind(UsedeskChatConfiguration.class).toInstance(usedeskChatConfiguration);
         bind(UsedeskActionListener.class).toInstance(actionListener);
 
-        bind(IUsedeskChatSdk.class).to(ChatSdk.class).singleton();
+        bind(IUsedeskChatSdk.class).to(ChatSdkInteractor.class).singleton();
 
         bind(IUserInfoRepository.class).to(UserInfoRepository.class).singleton();
         bind(IApiRepository.class).to(ApiRepository.class).singleton();

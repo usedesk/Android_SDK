@@ -31,7 +31,7 @@ import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepos
 import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-public class ChatSdk implements IUsedeskChatSdk {
+public class ChatSdkInteractor implements IUsedeskChatSdk {
 
     private Context context;
     private UsedeskChatConfiguration configuration;
@@ -44,11 +44,11 @@ public class ChatSdk implements IUsedeskChatSdk {
     private boolean needSetEmail = false;
 
     @Inject
-    ChatSdk(@NonNull Context context,
-            @NonNull UsedeskChatConfiguration configuration,
-            @NonNull UsedeskActionListener actionListener,
-            @NonNull IUserInfoRepository userInfoRepository,
-            @NonNull IApiRepository apiRepository) {
+    ChatSdkInteractor(@NonNull Context context,
+                      @NonNull UsedeskChatConfiguration configuration,
+                      @NonNull UsedeskActionListener actionListener,
+                      @NonNull IUserInfoRepository userInfoRepository,
+                      @NonNull IApiRepository apiRepository) {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;

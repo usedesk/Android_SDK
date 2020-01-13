@@ -23,7 +23,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
 import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
 
-public class KnowledgeBase implements IUsedeskKnowledgeBaseSdk {
+public class KnowledgeBaseSdkInteractor implements IUsedeskKnowledgeBaseSdk {
 
     private final IKnowledgeBaseRepository knowledgeRepository;
     private final Scheduler workScheduler;
@@ -31,10 +31,10 @@ public class KnowledgeBase implements IUsedeskKnowledgeBaseSdk {
     private final KnowledgeBaseConfiguration configuration;
 
     @Inject
-    KnowledgeBase(@NonNull IKnowledgeBaseRepository knowledgeRepository,
-                  @NonNull @Named("work") Scheduler workScheduler,
-                  @NonNull @Named("main") Scheduler mainThreadScheduler,
-                  @NonNull KnowledgeBaseConfiguration configuration) {
+    KnowledgeBaseSdkInteractor(@NonNull IKnowledgeBaseRepository knowledgeRepository,
+                               @NonNull @Named("work") Scheduler workScheduler,
+                               @NonNull @Named("main") Scheduler mainThreadScheduler,
+                               @NonNull KnowledgeBaseConfiguration configuration) {
         this.knowledgeRepository = knowledgeRepository;
         this.workScheduler = workScheduler;
         this.mainThreadScheduler = mainThreadScheduler;

@@ -21,7 +21,7 @@ import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.IApiLoader;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity.RetrofitEnumConverterFactory;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.ApiRepository;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
-import ru.usedesk.knowledgebase_sdk.internal.domain.KnowledgeBase;
+import ru.usedesk.knowledgebase_sdk.internal.domain.KnowledgeBaseSdkInteractor;
 import toothpick.config.Module;
 
 class MainModule extends Module {
@@ -32,7 +32,7 @@ class MainModule extends Module {
 
         bind(Gson.class).toInstance(gson());
 
-        bind(IUsedeskKnowledgeBaseSdk.class).to(KnowledgeBase.class);
+        bind(IUsedeskKnowledgeBaseSdk.class).to(KnowledgeBaseSdkInteractor.class);
         bind(IKnowledgeBaseRepository.class).to(ApiRepository.class);
 
         bind(IApiLoader.class).to(ApiLoader.class);

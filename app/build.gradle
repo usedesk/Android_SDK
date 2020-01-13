@@ -37,8 +37,14 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation "ru.usedesk:chat-gui:$project.version"
-    implementation "ru.usedesk:knowledgebase-gui:$project.version"
+    debugImplementation project(':common-sdk')
+    debugImplementation project(':common-gui')
+    debugImplementation project(':chat-sdk')
+    debugImplementation project(':chat-gui')
+    debugImplementation project(':knowledgebase-sdk')
+    debugImplementation project(':knowledgebase-gui')
+    releaseImplementation "ru.usedesk:chat-sdk:$project.version"
+    releaseImplementation "ru.usedesk:knowledgebase-sdk:$project.version"
 
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation 'android.arch.lifecycle:reactivestreams:1.1.1'

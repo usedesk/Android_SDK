@@ -19,8 +19,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    debugImplementation project(':common-sdk')
-    releaseImplementation "ru.usedesk:common-sdk:$project.version"
+    implementation project(':common-sdk')
+
+    //implementation "ru.usedesk:common-sdk:$project.version"
 
     implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'

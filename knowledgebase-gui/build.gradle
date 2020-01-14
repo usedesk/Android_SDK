@@ -19,11 +19,12 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    debugImplementation project(':common-sdk')
-    debugImplementation project(':knowledgebase-sdk')
-    debugImplementation project(':common-gui')
-    releaseImplementation "ru.usedesk:common-gui:$project.version"
-    releaseImplementation "ru.usedesk:knowledgebase-sdk:$project.version"
+    implementation project(':common-sdk')
+    implementation project(':knowledgebase-sdk')
+    implementation project(':common-gui')
+
+    //implementation "ru.usedesk:common-gui:$project.version"
+    //implementation "ru.usedesk:knowledgebase-sdk:$project.version"
 
     implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.android.support:support-vector-drawable:28.0.0'

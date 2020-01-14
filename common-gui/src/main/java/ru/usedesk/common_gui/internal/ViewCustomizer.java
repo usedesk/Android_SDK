@@ -18,10 +18,10 @@ public class ViewCustomizer implements IUsedeskViewCustomizer {
 
     private final SparseIntArray layoutIds = new SparseIntArray();
 
-    private int themeId = R.style.Usedesk_Theme;
+    private int themeId = R.style.Usedesk_Theme;//TODO: разбить на 2 темы для чата и БЗ
 
     @Inject
-    public ViewCustomizer() {
+    ViewCustomizer() {
     }
 
     public int getLayoutId(int defaultId) {

@@ -1,6 +1,7 @@
 package ru.usedesk.common_gui.external;
 
-import io.reactivex.annotations.NonNull;
+import android.support.annotation.NonNull;
+
 import ru.usedesk.common_gui.internal.di.InstanceBox;
 
 public class UsedeskViewCustomizer {

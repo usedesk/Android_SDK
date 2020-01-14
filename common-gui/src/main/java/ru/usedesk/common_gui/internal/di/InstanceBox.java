@@ -1,8 +1,9 @@
 package ru.usedesk.common_gui.internal.di;
 
+import android.support.annotation.NonNull;
+
 import javax.inject.Inject;
 
-import io.reactivex.annotations.NonNull;
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.common_sdk.internal.appdi.InjectBox;
 

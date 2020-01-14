@@ -12,7 +12,9 @@ import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.retrofit.HttpApi;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest;
@@ -29,12 +31,15 @@ public class ApiRepository implements IApiRepository {
 
     private final SocketApi socketApi;
     private final HttpApi httpApi;
+    private final IFileInfoLoader fileInfoLoader;
 
     @Inject
-    ApiRepository(@NonNull SocketApi socketApi, @NonNull HttpApi httpApi) {
+    ApiRepository(@NonNull SocketApi socketApi, @NonNull HttpApi httpApi, @NonNull IFileInfoLoader fileInfoLoader) {
         this.socketApi = socketApi;
         this.httpApi = httpApi;
+        this.fileInfoLoader = fileInfoLoader;
     }
+
     private boolean isConnected() {
         return socketApi.isConnected();
     }
@@ -74,9 +79,8 @@ public class ApiRepository implements IApiRepository {
     public void send(@NonNull String token, @NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
         checkConnection();
 
-        //TODO: convert fileInfo to file and send
-
-        //socketApi.emitterAction(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
+        UsedeskFile usedeskFile = fileInfoLoader.getFrom(usedeskFileInfo);
+        socketApi.emitterAction(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
     }
 
     @Override

@@ -19,6 +19,8 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
 import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader;
+import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.FileInfoLoader;
+import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.loader.TokenLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.retrofit.HttpApi;
@@ -48,6 +50,7 @@ class MainModule extends Module {
 
         bind(SocketApi.class).to(SocketApi.class).singleton();
         bind(HttpApi.class).to(HttpApi.class).singleton();
+        bind(IFileInfoLoader.class).to(FileInfoLoader.class).singleton();
 
         bind(Gson.class).toInstance(gson());
 

@@ -1,5 +1,7 @@
 package ru.usedesk.chat_sdk.external.entity;
 
+import android.support.annotation.NonNull;
+
 public class UsedeskFile {
 
     private static final String IMAGE_TYPE = "image/";
@@ -9,39 +11,27 @@ public class UsedeskFile {
     private String size;
     private String name;
 
-    public UsedeskFile() {
+    public UsedeskFile(@NonNull String content, @NonNull String type, @NonNull String size, @NonNull String name) {
+        this.content = content;
+        this.type = type;
+        this.size = size;
+        this.name = name;
     }
 
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getSize() {
         return size;
     }
 
-    public void setSize(String size) {
-        this.size = size;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isImage() {

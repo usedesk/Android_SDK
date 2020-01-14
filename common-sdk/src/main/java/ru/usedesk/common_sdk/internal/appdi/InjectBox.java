@@ -1,6 +1,7 @@
 package ru.usedesk.common_sdk.internal.appdi;
 
-import io.reactivex.annotations.NonNull;
+import android.support.annotation.NonNull;
+
 import toothpick.Scope;
 import toothpick.Toothpick;
 import toothpick.config.Module;

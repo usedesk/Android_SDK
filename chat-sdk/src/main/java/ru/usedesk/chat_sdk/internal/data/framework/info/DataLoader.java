@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.info;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 
 public abstract class DataLoader<T> {
 
@@ -15,11 +15,11 @@ public abstract class DataLoader<T> {
     protected abstract void saveData(@NonNull T data);
 
     @NonNull
-    public final T getData() throws DataNotFoundException {
+    public final T getData() throws UsedeskDataNotFoundException {
         if (data == null) {
             data = loadData();
             if (data == null) {
-                throw new DataNotFoundException("Data not found");
+                throw new UsedeskDataNotFoundException("Data not found");
             }
         }
         return data;

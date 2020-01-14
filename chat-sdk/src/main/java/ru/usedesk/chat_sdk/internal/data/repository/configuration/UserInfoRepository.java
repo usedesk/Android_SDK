@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
-import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 
 @Singleton
 public class UserInfoRepository implements IUserInfoRepository {
@@ -27,7 +27,7 @@ public class UserInfoRepository implements IUserInfoRepository {
 
     @Override
     @NonNull
-    public String getToken() throws DataNotFoundException {
+    public String getToken() throws UsedeskDataNotFoundException {
         return tokenDataLoader.getData();
     }
 
@@ -42,7 +42,7 @@ public class UserInfoRepository implements IUserInfoRepository {
 
     @Override
     @NonNull
-    public UsedeskChatConfiguration getConfiguration() throws DataNotFoundException {
+    public UsedeskChatConfiguration getConfiguration() throws UsedeskDataNotFoundException {
         return configurationDataLoader.getData();
     }
 

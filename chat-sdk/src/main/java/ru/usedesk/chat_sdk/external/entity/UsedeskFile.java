@@ -11,7 +11,7 @@ public class UsedeskFile {
     private String size;
     private String name;
 
-    public UsedeskFile(@NonNull String content, @NonNull String type, @NonNull String size, @NonNull String name) {
+    public UsedeskFile(@NonNull String content, @NonNull String type, String size, @NonNull String name) {
         this.content = content;
         this.type = type;
         this.size = size;

@@ -26,7 +26,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
-import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatSdkInteractor implements IUsedeskChatSdk {
@@ -72,7 +72,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                     || !equals(this.configuration.getClientAdditionalId(), configuration.getClientAdditionalId()))) {
                 needSetEmail = true;
             }
-        } catch (DataNotFoundException e) {
+        } catch (UsedeskDataNotFoundException e) {
             e.printStackTrace();
         }
 

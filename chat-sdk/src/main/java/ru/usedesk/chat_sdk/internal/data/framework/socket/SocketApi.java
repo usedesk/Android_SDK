@@ -137,13 +137,13 @@ public class SocketApi {
     }
 
     public void disconnect() {
-        for (String event : emitterListeners.keySet()) {
-            socket.off(event, emitterListeners.get(event));
+        if (socket != null) {
+            for (String event : emitterListeners.keySet()) {
+                socket.off(event, emitterListeners.get(event));
+            }
+            emitterListeners.clear();
+            socket.disconnect();
         }
-
-        emitterListeners.clear();
-
-        socket.disconnect();
     }
 
     public void emitterAction(@NonNull BaseRequest baseRequest) throws UsedeskSocketException {

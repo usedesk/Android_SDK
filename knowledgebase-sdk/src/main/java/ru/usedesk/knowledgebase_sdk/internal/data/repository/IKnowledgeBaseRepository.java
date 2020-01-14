@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import ru.usedesk.common_sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
@@ -23,10 +23,10 @@ public interface IKnowledgeBaseRepository {
     List<ArticleBody> getArticles(@NonNull String id, @NonNull String token, @NonNull SearchQuery searchQuery) throws UsedeskHttpException;
 
     @NonNull
-    List<Category> getCategories(@NonNull String id, @NonNull String token, long sectionId) throws UsedeskHttpException, DataNotFoundException;
+    List<Category> getCategories(@NonNull String id, @NonNull String token, long sectionId) throws UsedeskHttpException, UsedeskDataNotFoundException;
 
     @NonNull
-    List<ArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId) throws UsedeskHttpException, DataNotFoundException;
+    List<ArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId) throws UsedeskHttpException, UsedeskDataNotFoundException;
 
-    void addViews(@NonNull String accountId, @NonNull String token, long articleId) throws UsedeskHttpException, DataNotFoundException;
+    void addViews(@NonNull String accountId, @NonNull String token, long articleId) throws UsedeskHttpException, UsedeskDataNotFoundException;
 }

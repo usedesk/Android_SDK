@@ -108,16 +108,16 @@ public class MainActivity extends AppCompatActivity
         IUsedeskViewCustomizer usedeskViewCustomizer = UsedeskViewCustomizer.getInstance();
         if (configuration.isCustomViews()) {
             //Полная замена фрагментов кастомными
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_category, R.layout.custom_item_category);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_section, R.layout.custom_item_section);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category, R.layout.custom_item_category);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section, R.layout.custom_item_section);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
 
             //Применение кастомной темы к стандартным фрагментам
             usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme_Custom);
         } else {
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_category, ru.usedesk.chat_gui.R.layout.usedesk_item_category);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_section, ru.usedesk.chat_gui.R.layout.usedesk_item_section);
-            usedeskViewCustomizer.setLayoutId(ru.usedesk.chat_gui.R.layout.usedesk_item_article_info, ru.usedesk.chat_gui.R.layout.usedesk_item_article_info);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category, ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section, ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section);
+            usedeskViewCustomizer.setLayoutId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info, ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info);
 
             usedeskViewCustomizer.setThemeId(R.style.Usedesk_Theme);
         }

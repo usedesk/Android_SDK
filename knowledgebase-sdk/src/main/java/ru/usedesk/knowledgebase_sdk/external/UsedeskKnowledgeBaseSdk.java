@@ -34,7 +34,6 @@ public final class UsedeskKnowledgeBaseSdk {
         configuration = knowledgeBaseConfiguration;
     }
 
-    @NonNull
     public static void release() {
         if (instanceBox != null) {
             instanceBox.release();

@@ -13,8 +13,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
 import ru.usedesk.chat_sdk.external.entity.Message;
@@ -140,12 +138,9 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
             return;
         }
         if (messageButton.getUrl().isEmpty()) {
-            sendRx(messageButton.getText())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
+            send(messageButton.getText());
         } else {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO: сделать обработчик ссылок и перенести туда вызов
             browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(browserIntent);
         }

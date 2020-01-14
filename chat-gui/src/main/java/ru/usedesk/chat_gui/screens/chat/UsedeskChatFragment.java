@@ -165,6 +165,7 @@ public class UsedeskChatFragment extends Fragment {
         }
 
         viewModel.onSend(messageEditText.getText().toString().trim());
+        messageEditText.setText("");
     }
 
     private void openAttachmentDialog() {

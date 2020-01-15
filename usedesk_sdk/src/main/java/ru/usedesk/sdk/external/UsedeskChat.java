@@ -13,6 +13,7 @@ import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.sdk.internal.domain.interactor.ChatInteractor;
 
 public class UsedeskChat {
@@ -55,11 +56,11 @@ public class UsedeskChat {
         chatInteractor.sendUserFileMessage(usedeskFile);
     }
 
-    public void sendFileMessage(@NonNull UsedeskFileInfo usedeskFileInfoList) {
+    public void sendFileMessage(@NonNull UsedeskFileInfo usedeskFileInfoList) throws UsedeskException {
         chatInteractor.sendUserFileMessage(usedeskFileInfoList);
     }
 
-    public void sendFileMessages(List<UsedeskFileInfo> usedeskFileInfoList) {
+    public void sendFileMessages(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException {
         if (usedeskFileInfoList == null) {
             return;
         }

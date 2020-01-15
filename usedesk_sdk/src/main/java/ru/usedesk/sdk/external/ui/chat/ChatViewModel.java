@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.sdk.external.UsedeskChat;
 import ru.usedesk.sdk.external.UsedeskSdk;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
@@ -104,7 +106,12 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         asCompletable(() -> usedeskChat.sendTextMessage(textMessage));
 
         List<UsedeskFileInfo> usedeskFileInfoList = getLastModel().getUsedeskFileInfoList();
-        asCompletable(() -> usedeskChat.sendFileMessages(usedeskFileInfoList));
+        Completable.create(emitter -> {
+            usedeskChat.sendFileMessages(usedeskFileInfoList);
+            emitter.onComplete();
+        }).observeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe();
 
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(new ArrayList<>())

@@ -27,6 +27,7 @@ import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
+import ru.usedesk.sdk.internal.data.framework.fileinfo.IFileInfoRepository;
 import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IUserInfoRepository;
@@ -41,23 +42,28 @@ public class ChatInteractor {
     private IUserInfoRepository userInfoRepository;
     private IApiRepository apiRepository;
 
+    private IFileInfoRepository fileInfoRepository;
+
     private boolean needSetEmail = false;
 
     @Inject
     ChatInteractor(@NonNull Context context,
                    @NonNull IUserInfoRepository userInfoRepository,
-                   @NonNull IApiRepository apiRepository) {
+                   @NonNull IApiRepository apiRepository,
+                   @NonNull IFileInfoRepository fileInfoRepository) {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;
+        this.fileInfoRepository = fileInfoRepository;
     }
 
     public void disconnect() {
         apiRepository.disconnect();
     }
 
-    public void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo) {
-        //sendMessage(null, null);//TODO:
+    public void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
+        UsedeskFile usedeskFile = fileInfoRepository.getFrom(usedeskFileInfo);
+        sendMessage(null, usedeskFile);
     }
 
     @Deprecated

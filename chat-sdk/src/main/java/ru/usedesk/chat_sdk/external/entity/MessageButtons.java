@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageButtons {
-    private String messageText;
-    private List<MessageButton> messageButtons;
+    private final String messageText;
+    private final List<MessageButton> messageButtons;
 
     MessageButtons(String messageText) {
         this.messageButtons = new ArrayList<>();
@@ -45,10 +45,10 @@ public class MessageButtons {
     }
 
     public class MessageButton {
-        private String text;
-        private String url;
-        private String type;
-        private boolean show;
+        private final String text;
+        private final String url;
+        private final String type;
+        private final boolean show;
 
         MessageButton(@NonNull String messageButtonText) {
             String[] sections = messageButtonText.replace("{{button:", "")

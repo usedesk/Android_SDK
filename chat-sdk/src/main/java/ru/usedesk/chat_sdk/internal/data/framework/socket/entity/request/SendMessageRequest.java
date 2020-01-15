@@ -2,9 +2,9 @@ package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
 
 public class SendMessageRequest extends BaseRequest {
 
-    public static final String TYPE = "@@server/chat/SEND_MESSAGE";
+    private static final String TYPE = "@@server/chat/SEND_MESSAGE";
 
-    private RequestMessage message;
+    private final RequestMessage message;
 
     public SendMessageRequest(String token, RequestMessage requestMessage) {
         super(TYPE, token);

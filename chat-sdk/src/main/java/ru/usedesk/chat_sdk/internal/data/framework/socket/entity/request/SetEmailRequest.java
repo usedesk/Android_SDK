@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 public class SetEmailRequest extends BaseRequest {
 
-    public static final String TYPE = "@@server/chat/SET_EMAIL";
+    private static final String TYPE = "@@server/chat/SET_EMAIL";
 
     private final Payload payload;
     private final String email;

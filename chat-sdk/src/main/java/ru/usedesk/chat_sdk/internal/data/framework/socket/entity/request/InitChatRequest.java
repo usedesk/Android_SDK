@@ -3,16 +3,16 @@ package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
 import com.google.gson.annotations.SerializedName;
 
 public class InitChatRequest extends BaseRequest {
-    public static final String TYPE = "@@server/chat/INIT";
+    private static final String TYPE = "@@server/chat/INIT";
 
     private static final String KEY_COMPANY_ID = "company_id";
     private static final String VALUE_CURRENT_SDK = "android";
 
     @SerializedName(KEY_COMPANY_ID)
-    private String companyId;
+    private final String companyId;
 
-    private String url;
-    private Payload payload;
+    private final String url;
+    private final Payload payload;
 
     public InitChatRequest(String token, String companyId, String url) {
         super(TYPE, token);
@@ -27,16 +27,8 @@ public class InitChatRequest extends BaseRequest {
         return companyId;
     }
 
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
-    }
-
     public String getUrl() {
         return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public Payload getPayload() {

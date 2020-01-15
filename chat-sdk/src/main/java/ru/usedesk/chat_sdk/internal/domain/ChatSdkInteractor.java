@@ -31,13 +31,13 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatSdkInteractor implements IUsedeskChatSdk {
 
-    private Context context;
-    private UsedeskChatConfiguration configuration;
-    private UsedeskActionListener actionListener;
-    private String token;
+    private final Context context;
+    private final UsedeskChatConfiguration configuration;
+    private final UsedeskActionListener actionListener;
+    private final IUserInfoRepository userInfoRepository;
+    private final IApiRepository apiRepository;
 
-    private IUserInfoRepository userInfoRepository;
-    private IApiRepository apiRepository;
+    private String token;
 
     private boolean needSetEmail = false;
 

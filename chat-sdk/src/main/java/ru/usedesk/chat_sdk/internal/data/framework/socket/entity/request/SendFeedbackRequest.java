@@ -5,10 +5,11 @@ import com.google.gson.annotations.SerializedName;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
 
 public class SendFeedbackRequest extends BaseRequest {
-    public static final String TYPE = "@@server/chat/CALLBACK";
+    private static final String TYPE = "@@server/chat/CALLBACK";
+
     private static final String KEY_DATA = "data";
     private static final String VALUE_FEEDBACK_ACTION = "action";
-    private Payload payload;
+    private final Payload payload;
 
     public SendFeedbackRequest(String token, Feedback feedback) {
         super(TYPE, token);
@@ -17,12 +18,12 @@ public class SendFeedbackRequest extends BaseRequest {
 
     private class Payload {
 
-        private String type;
+        private final String type;
 
         @SerializedName(KEY_DATA)
-        private Feedback feedback;
+        private final Feedback feedback;
 
-        public Payload(Feedback feedback) {
+        Payload(Feedback feedback) {
             type = VALUE_FEEDBACK_ACTION;
             this.feedback = feedback;
         }

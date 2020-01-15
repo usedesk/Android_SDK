@@ -4,7 +4,7 @@ public abstract class BaseResponse {
 
     private String type;
 
-    public BaseResponse(String type) {
+    BaseResponse(String type) {
         this.type = type;
     }
 

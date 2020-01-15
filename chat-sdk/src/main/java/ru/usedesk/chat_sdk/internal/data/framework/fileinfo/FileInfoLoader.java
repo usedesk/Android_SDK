@@ -29,7 +29,7 @@ public class FileInfoLoader implements IFileInfoLoader {
     private final Context context;
 
     @Inject
-    public FileInfoLoader(@NonNull Context context) {
+    FileInfoLoader(@NonNull Context context) {
         this.context = context;
     }
 

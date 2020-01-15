@@ -6,10 +6,10 @@ public class UsedeskFile {
 
     private static final String IMAGE_TYPE = "image/";
 
-    private String content;
-    private String type;
-    private String size;
-    private String name;
+    private final String content;
+    private final String type;
+    private final String size;
+    private final String name;
 
     public UsedeskFile(@NonNull String content, @NonNull String type, String size, @NonNull String name) {
         this.content = content;
@@ -35,8 +35,7 @@ public class UsedeskFile {
     }
 
     public boolean isImage() {
-        return type != null && type.startsWith(IMAGE_TYPE) ||
-                name != null && endsLikeImage();
+        return type.startsWith(IMAGE_TYPE) || endsLikeImage();
     }
 
     private boolean endsLikeImage() {

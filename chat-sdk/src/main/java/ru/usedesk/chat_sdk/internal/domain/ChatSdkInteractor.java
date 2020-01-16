@@ -247,7 +247,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
 
         if (setup != null) {
             if (setup.isWaitingEmail()) {
-                sendUserEmail();
+                needSetEmail = true;
             }
 
             if (setup.getMessages() != null && !setup.getMessages().isEmpty()) {
@@ -258,6 +258,10 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                 actionListener.onOfflineFormExpected();
             }
         } else {
+            needSetEmail = true;
+        }
+
+        if (needSetEmail) {
             sendUserEmail();
         }
     }
@@ -278,9 +282,6 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
             public void onInit(String token, Setup setup) {
                 parseInitResponse(token, setup);
 
-                if (needSetEmail) {
-                    sendUserEmail();
-                }
             }
 
             @Override

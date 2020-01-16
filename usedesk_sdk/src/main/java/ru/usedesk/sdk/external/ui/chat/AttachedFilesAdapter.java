@@ -1,7 +1,6 @@
 package ru.usedesk.sdk.external.ui.chat;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +24,6 @@ class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.Vie
         this.chatViewModel = chatViewModel;
 
         recyclerView.setAdapter(this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     void update(@NonNull List<UsedeskFileInfo> attachedFiles) {

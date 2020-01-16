@@ -111,7 +111,9 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
             emitter.onComplete();
         }).observeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .subscribe(() -> {
+                    //nothing
+                }, Throwable::printStackTrace);
 
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(new ArrayList<>())

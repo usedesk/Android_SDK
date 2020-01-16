@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.Vie
         this.chatViewModel = chatViewModel;
 
         recyclerView.setAdapter(this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     void update(@NonNull List<UsedeskFileInfo> attachedFiles) {

@@ -1,8 +1,8 @@
 package ru.usedesk.knowledgebase_gui.screens.common;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;

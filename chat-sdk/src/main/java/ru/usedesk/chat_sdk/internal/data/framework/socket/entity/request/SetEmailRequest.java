@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class SetEmailRequest extends BaseRequest {
 

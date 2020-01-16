@@ -1,8 +1,8 @@
 package ru.usedesk.chat_gui.screens.chat;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;

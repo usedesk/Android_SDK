@@ -9,7 +9,7 @@
     android:theme="?attr/usedesk_dialog_offlineform"
     tools:theme="@style/Usedesk.Dialog.OfflineForm">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -23,9 +23,9 @@
             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_company_id_hint"
             android:inputType="text" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -39,9 +39,9 @@
             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_email_hint"
             android:inputType="textEmailAddress" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -55,9 +55,9 @@
             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_name_hint"
             android:inputType="text" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -71,5 +71,5 @@
             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:hint="@string/offline_form_message_hint"
             android:inputType="text" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

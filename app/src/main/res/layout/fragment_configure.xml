@@ -12,7 +12,7 @@
             android:paddingBottom="8dp"
             android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_company_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -24,9 +24,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/configuration_company_id_hint"
                     android:inputType="text" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_email"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -38,9 +38,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/configuration_email_hint"
                     android:inputType="textEmailAddress" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -52,9 +52,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/configuration_url_hint"
                     android:inputType="textUri" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_offline_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -66,9 +66,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/configuration_offline_url_hint"
                     android:inputType="textUri" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_account_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -80,9 +80,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/account_id"
                     android:inputType="textUri" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_token"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -94,9 +94,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/enter_token"
                     android:inputType="textUri" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_client_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -108,9 +108,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/client_name"
                     android:inputType="textUri" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_client_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -122,9 +122,9 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/client_phone"
                     android:inputType="number" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_client_additional_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -136,7 +136,7 @@
                     android:layout_margin="@dimen/dialog_configure_usedesk_margin"
                     android:hint="@string/client_additional_id"
                     android:inputType="number" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Switch
                 android:id="@+id/switch_foreground"

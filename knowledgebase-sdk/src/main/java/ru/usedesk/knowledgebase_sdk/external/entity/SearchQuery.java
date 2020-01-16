@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.external.entity;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

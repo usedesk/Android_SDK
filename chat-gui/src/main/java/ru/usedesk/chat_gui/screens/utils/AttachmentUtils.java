@@ -5,8 +5,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.NonNull;
 
 import com.annimon.stream.Stream;
 

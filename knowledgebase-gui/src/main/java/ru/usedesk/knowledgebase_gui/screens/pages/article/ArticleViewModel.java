@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screens.pages.article;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;

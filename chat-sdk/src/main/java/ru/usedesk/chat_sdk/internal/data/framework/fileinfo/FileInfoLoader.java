@@ -3,10 +3,11 @@ package ru.usedesk.chat_sdk.internal.data.framework.fileinfo;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

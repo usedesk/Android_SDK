@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.internal.data.framework.fileinfo;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;

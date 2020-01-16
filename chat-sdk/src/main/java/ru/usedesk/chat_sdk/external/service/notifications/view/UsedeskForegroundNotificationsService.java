@@ -1,8 +1,9 @@
 package ru.usedesk.chat_sdk.external.service.notifications.view;
 
 import android.app.Notification;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 
 public abstract class UsedeskForegroundNotificationsService extends UsedeskNotificationsService {
 

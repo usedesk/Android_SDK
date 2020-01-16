@@ -1,6 +1,6 @@
 package ru.usedesk.common_sdk.internal.appdi;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import toothpick.Scope;
 import toothpick.Toothpick;

@@ -1,6 +1,6 @@
 package ru.usedesk.chat_gui.screens.chat;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public abstract class ReducibleModel<T> {
 

@@ -2,7 +2,8 @@ package ru.usedesk.chat_sdk.external.service.notifications;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.view.UsedeskNotificationsService;

@@ -1,7 +1,8 @@
 package ru.usedesk.sample;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;

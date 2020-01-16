@@ -1,6 +1,6 @@
 package ru.usedesk.common_sdk.external.entity.exceptions;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.UNKNOWN_ERROR;
 

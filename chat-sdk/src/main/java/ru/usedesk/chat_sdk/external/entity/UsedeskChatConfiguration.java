@@ -1,8 +1,9 @@
 package ru.usedesk.chat_sdk.external.entity;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class UsedeskChatConfiguration {
     private static final String COMPANY_ID_KEY = "companyIdKey";

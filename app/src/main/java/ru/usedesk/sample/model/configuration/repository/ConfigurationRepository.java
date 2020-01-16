@@ -1,7 +1,8 @@
 package ru.usedesk.sample.model.configuration.repository;
 
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 

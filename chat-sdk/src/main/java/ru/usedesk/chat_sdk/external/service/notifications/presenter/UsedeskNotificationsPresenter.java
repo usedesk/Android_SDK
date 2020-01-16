@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.external.service.notifications.presenter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import javax.inject.Inject;
 

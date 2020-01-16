@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.internal.data.repository;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

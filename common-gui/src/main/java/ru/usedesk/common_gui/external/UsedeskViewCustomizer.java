@@ -1,6 +1,6 @@
 package ru.usedesk.common_gui.external;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import ru.usedesk.common_gui.internal.di.InstanceBox;
 

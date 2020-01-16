@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_gui.screens.main.viewmodel;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.concurrent.TimeUnit;
 

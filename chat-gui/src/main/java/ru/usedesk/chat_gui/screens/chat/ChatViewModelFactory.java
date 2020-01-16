@@ -1,9 +1,10 @@
 package ru.usedesk.chat_gui.screens.chat;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;

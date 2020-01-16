@@ -1,7 +1,8 @@
 package ru.usedesk.knowledgebase_sdk.external;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
 import ru.usedesk.knowledgebase_sdk.internal.di.InstanceBox;

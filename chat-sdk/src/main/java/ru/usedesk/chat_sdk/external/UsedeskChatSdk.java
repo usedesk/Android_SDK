@@ -1,7 +1,8 @@
 package ru.usedesk.chat_sdk.external;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;

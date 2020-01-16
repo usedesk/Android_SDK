@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.internal.data.repository.api;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.net.URL;

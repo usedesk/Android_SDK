@@ -2,8 +2,9 @@ package ru.usedesk.chat_sdk.internal.data.framework.loader;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Named;

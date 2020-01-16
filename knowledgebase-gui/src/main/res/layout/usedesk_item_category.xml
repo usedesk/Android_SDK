@@ -6,7 +6,7 @@
     android:theme="?attr/usedesk_item_category"
     tools:theme="@style/Usedesk.Item.Category">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="?attr/usedesk_marginStart"
@@ -23,5 +23,5 @@
             android:layout_marginEnd="?attr/usedesk_content_marginEnd"
             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
             android:textSize="?attr/usedesk_item_category_title_text_size" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

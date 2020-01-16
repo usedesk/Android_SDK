@@ -7,7 +7,7 @@
     android:theme="?attr/usedesk_item_articleinfo"
     tools:theme="@style/Usedesk.Item.ArticleInfo">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="?attr/usedesk_marginStart"
@@ -15,7 +15,7 @@
         android:layout_marginEnd="?attr/usedesk_marginEnd"
         android:layout_marginBottom="?attr/usedesk_marginBottom">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="?attr/usedesk_content_marginStart"
@@ -52,6 +52,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/tv_shows"
                 app:layout_constraintEnd_toStartOf="@+id/tv_shows"
                 app:layout_constraintTop_toTopOf="@+id/tv_shows" />
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screens.pages.categories;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

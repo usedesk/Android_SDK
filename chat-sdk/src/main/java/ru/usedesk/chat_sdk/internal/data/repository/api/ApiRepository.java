@@ -15,7 +15,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.retrofit.HttpApi;
+import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.RequestMessage;
@@ -30,13 +30,13 @@ public class ApiRepository implements IApiRepository {
     private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/post";
 
     private final SocketApi socketApi;
-    private final HttpApi httpApi;
+    private final IHttpApiLoader httpApiLoader;
     private final IFileInfoLoader fileInfoLoader;
 
     @Inject
-    ApiRepository(@NonNull SocketApi socketApi, @NonNull HttpApi httpApi, @NonNull IFileInfoLoader fileInfoLoader) {
+    ApiRepository(@NonNull SocketApi socketApi, @NonNull IHttpApiLoader httpApiLoader, @NonNull IFileInfoLoader fileInfoLoader) {
         this.socketApi = socketApi;
-        this.httpApi = httpApi;
+        this.httpApiLoader = httpApiLoader;
         this.fileInfoLoader = fileInfoLoader;
     }
 
@@ -51,7 +51,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void init(@NonNull UsedeskChatConfiguration configuration, @NonNull String token) {
+    public void init(@NonNull UsedeskChatConfiguration configuration, String token) {
         socketApi.emitterActionSafe(new InitChatRequest(token, configuration.getCompanyId(), configuration.getUrl()));
     }
 
@@ -93,9 +93,7 @@ public class ApiRepository implements IApiRepository {
         try {
             URL url = new URL(configuration.getOfflineFormUrl());
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
-            if (!httpApi.post(postUrl, offlineForm)) {
-                throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR);
-            }
+            httpApiLoader.post(postUrl, offlineForm);
         } catch (IOException e) {
             throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage());
         }

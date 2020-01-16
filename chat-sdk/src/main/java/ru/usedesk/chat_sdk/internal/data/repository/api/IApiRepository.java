@@ -14,7 +14,7 @@ public interface IApiRepository {
 
     void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
 
-    void init(@NonNull UsedeskChatConfiguration configuration, @NonNull String token);
+    void init(@NonNull UsedeskChatConfiguration configuration, String token);
 
     void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId);
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="offline_form_title">К сожалению, все наши операторы сейчас не в сети, но вы можете отправить нам заявку и мы её обязательно рассмотрим в ближайшее время.</string>
+    <string name="send">Отправить</string>
+</resources>

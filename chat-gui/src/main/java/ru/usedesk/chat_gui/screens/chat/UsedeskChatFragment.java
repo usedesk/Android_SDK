@@ -37,6 +37,8 @@ public class UsedeskChatFragment extends Fragment {
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
 
+    private ViewGroup messageLayout;
+    private ViewGroup offlineFormLayout;
     private ViewSwitcher contentViewSwitcher;
     private RecyclerView messagesRecyclerView;
     private EditText messageEditText;
@@ -112,10 +114,8 @@ public class UsedeskChatFragment extends Fragment {
         }
 
         if (model.isOfflineFormExpected()) {
-            if (getFragmentManager().findFragmentByTag(OfflineFormDialog.class.getSimpleName()) == null) {
-                OfflineFormDialog.newInstance(messageEditText.getText().toString())
-                        .show(getFragmentManager(), OfflineFormDialog.class.getSimpleName());
-            }
+            messageLayout.setVisibility(View.INVISIBLE);
+            offlineFormLayout.setVisibility(View.VISIBLE);
         }
 
         attachedFilesAdapter.update(model.getUsedeskFileInfoList());
@@ -142,6 +142,9 @@ public class UsedeskChatFragment extends Fragment {
 
         sendImageButton = view.findViewById(R.id.send_image_view);
         sendImageButton.setOnClickListener(v -> onSendClick());
+
+        messageLayout = view.findViewById(R.id.message_layout);
+        offlineFormLayout = view.findViewById(R.id.offline_form_layout);
 
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
     }

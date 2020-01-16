@@ -18,7 +18,95 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/message_layout"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/usedesk_item_message_user_text" />
+
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/offline_form_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_message_background"
+            android:minHeight="?attr/listPreferredItemHeight"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/offline_form_title" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:id="@+id/offline_form_email_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="?attr/usedesk_content_marginStart"
+                        android:layout_marginTop="?attr/usedesk_content_marginTop"
+                        android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+                        android:layout_marginBottom="?attr/usedesk_content_marginBottom"
+                        android:hint="@string/offline_form_email_hint"
+                        android:inputType="textEmailAddress" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:id="@+id/offline_form_name_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="?attr/usedesk_content_marginStart"
+                        android:layout_marginTop="?attr/usedesk_content_marginTop"
+                        android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+                        android:layout_marginBottom="?attr/usedesk_content_marginBottom"
+                        android:hint="@string/offline_form_name_hint"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:id="@+id/offline_form_message_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="?attr/usedesk_content_marginStart"
+                        android:layout_marginTop="?attr/usedesk_content_marginTop"
+                        android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+                        android:layout_marginBottom="?attr/usedesk_content_marginBottom"
+                        android:hint="@string/offline_form_message_hint"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/offline_form_send_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_margin="8dp"
+                    android:text="@string/send"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/message_edit_text"
+                    tools:visibility="visible" />
+            </LinearLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/message_layout"
@@ -28,7 +116,9 @@
             android:minHeight="?attr/listPreferredItemHeight"
             android:orientation="vertical"
             android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:visibility="invisible">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_attached_files"
@@ -36,22 +126,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/usedesk_item_chat_attached_file"
                 app:layout_constraintBottom_toTopOf="@+id/message_edit_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <TextView
-                android:id="@+id/attachment_marker_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/attachment_selected"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/message_edit_text"
-                app:layout_constraintTop_toTopOf="parent" /><!--TODO:remove-->
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/usedesk_item_chat_attached_file" />
 
             <ImageButton
                 android:id="@+id/attach_file_image_view"

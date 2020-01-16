@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -255,8 +254,8 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                 actionListener.onMessagesReceived(setup.getMessages());
             }
 
-            if (setup.isNoOperators()) {
-                onOfflineFormDialog();
+            if (true/*setup.isNoOperators()*/) {//TODO: debug
+                actionListener.onOfflineFormExpected();
             }
         } else {
             sendUserEmail();
@@ -267,16 +266,6 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
         return new OnMessageListener() {
             @Override
             public void onNew(Message message) {
-                if (message != null && message.getPayloadAsObject() != null && message.getPayloadAsObject() instanceof Map) {
-                    Map map = (Map) message.getPayloadAsObject();
-
-                    Boolean noOperators = (Boolean) map.get("noOperators");//TODO: выпилить отсюда и впилить по доке (когда сервер начнёт отдавать что нужно)
-
-                    if (noOperators != null && noOperators) {
-                        onOfflineFormDialog();
-                        return;
-                    }
-                }
                 parseNewMessageResponse(message);
             }
 
@@ -307,11 +296,5 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                 apiRepository.init(configuration, token);
             }
         };
-    }
-
-    private void onOfflineFormDialog() {//TODO
-        Message message = new Message(MessageType.SERVICE);
-        actionListener.onServiceMessageReceived(message);
-        actionListener.onOfflineFormExpected();
     }
 }

@@ -114,7 +114,7 @@ public class UsedeskActionListenerRx implements UsedeskActionListener {
 
     @Override
     public void onOfflineFormExpected() {
-        connectedSubject.onNext(EmptyItem.IGNORE_ME);
+        offlineFormExpectedSubject.onNext(EmptyItem.IGNORE_ME);
     }
 
     @Override

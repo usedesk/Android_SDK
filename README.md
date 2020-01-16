@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v1.0.7)
+# Android Usedesk SDK (v1.0.8)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
   - [Импорт модуля в проект](#implementation_import)

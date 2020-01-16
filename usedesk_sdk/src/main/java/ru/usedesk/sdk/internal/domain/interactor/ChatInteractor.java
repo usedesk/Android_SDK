@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.List;
@@ -279,6 +280,10 @@ public class ChatInteractor {
         usedeskActionListener.onOfflineFormExpected();
     }
 
+    private <T> boolean equals(@Nullable T a, @Nullable T b) {
+        return (a == null && b == null) || (a != null && a.equals(b));
+    }
+
     public void init(UsedeskConfiguration usedeskConfiguration,
                      UsedeskActionListener usedeskActionListener) {
         this.usedeskConfiguration = usedeskConfiguration;
@@ -293,10 +298,10 @@ public class ChatInteractor {
                 token = userInfoRepository.getToken();
             }
             if (token != null
-                    && (!configuration.getClientName().equals(usedeskConfiguration.getClientName())
-                    || !configuration.getClientPhoneNumber().equals(usedeskConfiguration.getClientPhoneNumber())
-                    || !configuration.getClientAdditionalId().equals(usedeskConfiguration.getClientAdditionalId()))) {
-                needSetEmail = true;
+                    && equals(configuration.getClientName(), usedeskConfiguration.getClientName())
+                    && equals(configuration.getClientPhoneNumber(), usedeskConfiguration.getClientPhoneNumber())
+                    && equals(configuration.getClientAdditionalId(), usedeskConfiguration.getClientAdditionalId())) {
+                needSetEmail = false;
             }
         } catch (DataNotFoundException e) {
             e.printStackTrace();

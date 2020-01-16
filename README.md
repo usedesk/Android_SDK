@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v1.0.8)
+# Android Usedesk SDK (v1.0.9)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
   - [Импорт модуля в проект](#implementation_import)
@@ -156,8 +156,8 @@ dependencies {
 
 ### 2. Методы взаимодействия с UsedeskChat
 
-- `sendMessage(String text, UsedeskFile usedeskFile)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно. Файлы отправляются по одному.
-[UsedeskFile](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskFile.java) - класс файла для отправки посредством SDK:
+- `sendMessage(String text, UsedeskFileInfo usedeskFileInfo)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно. Файлы отправляются по одному.
+[UsedeskFileInfo](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskFileInfo.java) - класс файла для отправки посредством SDK:
 
 | Переменная | Тип    | Описание                            |
 |------------|--------|-------------------------------------|
@@ -168,7 +168,7 @@ dependencies {
 
 - `sendTextMessage(String text)` - метод отправки текстовых сообщений.
  
-- `sendFileMessage(UsedeskFile usedeskFile)` - метод отправки файловых сообщений.
+- `sendFileMessage(UsedeskFileInfo usedeskFileInfo)` - метод отправки файловых сообщений.
 
 - `sendFeedbackMessage(Feedback feedback)` - метод отправки обратной формы, это форма для установки рейтинга ответа оператора (хорошо - LIKE,  плохо - DISLIKE).
 

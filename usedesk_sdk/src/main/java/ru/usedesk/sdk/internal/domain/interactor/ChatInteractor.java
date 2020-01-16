@@ -12,6 +12,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.disposables.Disposable;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.entity.chat.Feedback;
 import ru.usedesk.sdk.external.entity.chat.Message;
@@ -21,9 +23,12 @@ import ru.usedesk.sdk.external.entity.chat.OfflineForm;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.external.entity.exceptions.DataNotFoundException;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.data.framework.api.standard.entity.response.Setup;
+import ru.usedesk.sdk.internal.data.framework.fileinfo.IFileInfoRepository;
 import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IApiRepository;
 import ru.usedesk.sdk.internal.domain.repositories.chat.IUserInfoRepository;
@@ -34,31 +39,35 @@ public class ChatInteractor {
     private UsedeskConfiguration usedeskConfiguration;
     private UsedeskActionListener usedeskActionListener;
     private String token;
-    private Thread thread;
 
     private IUserInfoRepository userInfoRepository;
     private IApiRepository apiRepository;
 
-    private boolean needSetEmail = true;
+    private IFileInfoRepository fileInfoRepository;
+
+    private boolean needSetEmail = false;
 
     @Inject
     ChatInteractor(@NonNull Context context,
                    @NonNull IUserInfoRepository userInfoRepository,
-                   @NonNull IApiRepository apiRepository) {
+                   @NonNull IApiRepository apiRepository,
+                   @NonNull IFileInfoRepository fileInfoRepository) {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;
+        this.fileInfoRepository = fileInfoRepository;
     }
 
     public void disconnect() {
         apiRepository.disconnect();
-
-        if (thread != null) {
-            thread.interrupt();
-            thread = null;
-        }
     }
 
+    public void sendUserFileMessage(@NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
+        UsedeskFile usedeskFile = fileInfoRepository.getFrom(usedeskFileInfo);
+        sendMessage(null, usedeskFile);
+    }
+
+    @Deprecated
     public void sendUserMessage(String text, UsedeskFile usedeskFile) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
@@ -69,6 +78,7 @@ public class ChatInteractor {
         sendMessage(text, usedeskFile);
     }
 
+    @Deprecated
     public void sendUserMessage(String text, List<UsedeskFile> usedeskFiles) {
         if (usedeskFiles == null || usedeskFiles.isEmpty()) {
             return;
@@ -90,6 +100,10 @@ public class ChatInteractor {
     }
 
     public void sendUserTextMessage(String text) {
+        if (text == null || text.isEmpty()) {
+            return;
+        }
+
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
             usedeskActionListener.onException(new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED));
@@ -99,6 +113,7 @@ public class ChatInteractor {
         sendMessage(text, null);
     }
 
+    @Deprecated
     public void sendUserFileMessage(UsedeskFile usedeskFile) {
         if (!apiRepository.isConnected()) {
             usedeskActionListener.onError(R.string.message_disconnected);
@@ -120,16 +135,20 @@ public class ChatInteractor {
     }
 
     public void sendOfflineForm(final OfflineForm offlineForm) {
-        thread = new Thread(() -> postOfflineUrl(offlineForm));
-        thread.start();
-    }
+        Disposable d = Completable.create(emitter -> {
+            apiRepository.post(usedeskConfiguration, offlineForm);
 
-    private void postOfflineUrl(final OfflineForm offlineForm) {
-        boolean success = apiRepository.post(usedeskConfiguration, offlineForm);
-        if (success) {
+            emitter.onComplete();
+        }).subscribe(() -> {
             usedeskActionListener.onServiceMessageReceived(new Message(MessageType.SERVICE,
                     context.getString(R.string.message_offline_form_sent)));
-        }
+        }, throwable -> {
+            if (throwable instanceof UsedeskException) {
+                usedeskActionListener.onException((UsedeskException) throwable);
+            } else {
+                throwable.printStackTrace();
+            }
+        });
     }
 
     public UsedeskConfiguration getUsedeskConfiguration() {

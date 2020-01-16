@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.internal.utils.AttachmentUtils;
 
 class FilePicker {
@@ -56,6 +57,22 @@ class FilePicker {
             }
             case REQUEST_CODE_TAKE_PHOTO: {
                 return AttachmentUtils.getUsedeskFile(context, getTakePhotoUri(context));
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    List<UsedeskFileInfo> onResultInfo(@NonNull Context context, int requestCode, @Nullable Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PICK_FILE: {
+                if (data != null) {
+                    return AttachmentUtils.getUsedeskFileInfoList(context, data);
+                }
+                break;
+            }
+            case REQUEST_CODE_TAKE_PHOTO: {
+                return AttachmentUtils.getUsedeskFileInfo(context, getTakePhotoUri(context));
             }
         }
         return null;

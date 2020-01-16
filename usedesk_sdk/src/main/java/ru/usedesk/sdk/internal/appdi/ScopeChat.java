@@ -19,6 +19,8 @@ import ru.usedesk.sdk.internal.data.framework.api.retrofit.ApiLoader;
 import ru.usedesk.sdk.internal.data.framework.api.retrofit.ApiRetrofit;
 import ru.usedesk.sdk.internal.data.framework.api.standard.HttpApi;
 import ru.usedesk.sdk.internal.data.framework.api.standard.SocketApi;
+import ru.usedesk.sdk.internal.data.framework.fileinfo.FileInfoRepository;
+import ru.usedesk.sdk.internal.data.framework.fileinfo.IFileInfoRepository;
 import ru.usedesk.sdk.internal.data.framework.loader.ConfigurationLoader;
 import ru.usedesk.sdk.internal.data.framework.loader.TokenLoader;
 import ru.usedesk.sdk.internal.data.repository.api.ApiRepository;
@@ -56,6 +58,7 @@ public class ScopeChat extends DependencyInjection {
 
             bind(SocketApi.class).to(SocketApi.class);
             bind(HttpApi.class).to(HttpApi.class);
+            bind(IFileInfoRepository.class).to(FileInfoRepository.class);
 
             bind(Gson.class).toInstance(gson());
 

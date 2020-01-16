@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 
 public class AttachmentUtils {
 
@@ -32,13 +33,13 @@ public class AttachmentUtils {
 
     private static int transferTo(@NonNull InputStream inputStream, @NonNull OutputStream outputStream) throws IOException {
         int bytesRead;
-        int offset = 0;
+        int size = 0;
         byte[] buffer = new byte[BUF_SIZE];
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, bytesRead);
-            offset += bytesRead;
+            size += bytesRead;
         }
-        return offset;
+        return size;
     }
 
     @NonNull
@@ -93,6 +94,26 @@ public class AttachmentUtils {
         }
     }
 
+    @NonNull
+    public static List<UsedeskFileInfo> getUsedeskFileInfoList(@NonNull Context context, @NonNull Intent data) {
+        return Stream.of(getUriList(data))
+                .map(uri -> createUsedeskFileInfo(context, uri))
+                .toList();
+    }
+
+    @NonNull
+    public static List<UsedeskFileInfo> getUsedeskFileInfo(@NonNull Context context, @NonNull Uri uri) {
+        return Collections.singletonList(createUsedeskFileInfo(context, uri));
+    }
+
+    @NonNull
+    private static UsedeskFileInfo createUsedeskFileInfo(@NonNull Context context, @NonNull Uri uri) {
+        String mimeType = getMimeType(context, uri);
+        UsedeskFileInfo.Type type = UsedeskFileInfo.Type.getByMimeType(mimeType);
+        return new UsedeskFileInfo(uri, type);
+    }
+
+    @Deprecated
     @Nullable
     private static UsedeskFile createUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
         try {
@@ -111,22 +132,23 @@ public class AttachmentUtils {
         }
     }
 
+    @Deprecated
     @NonNull
     public static List<UsedeskFile> getUsedeskFiles(@NonNull Context context, @NonNull Intent data) {
         return Stream.of(getUriList(data))
-                .map(uri -> AttachmentUtils.createUsedeskFile(context, uri))
+                .map(uri -> createUsedeskFile(context, uri))
                 .filter(file -> file != null)
                 .toList();
     }
 
+    @Deprecated
     @NonNull
     public static List<UsedeskFile> getUsedeskFile(@NonNull Context context, @NonNull Uri uri) {
-        UsedeskFile usedeskFile = AttachmentUtils.createUsedeskFile(context, uri);
+        UsedeskFile usedeskFile = createUsedeskFile(context, uri);
 
-        ArrayList<UsedeskFile> usedeskFiles = new ArrayList<>(1);
         if (usedeskFile != null) {
-            usedeskFiles.add(usedeskFile);
+            return Collections.singletonList(usedeskFile);
         }
-        return usedeskFiles;
+        return new ArrayList<>();
     }
 }

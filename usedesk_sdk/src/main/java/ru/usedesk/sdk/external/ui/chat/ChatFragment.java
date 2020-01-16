@@ -11,15 +11,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -29,13 +25,11 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.sdk.R;
 import ru.usedesk.sdk.external.UsedeskSdk;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.internal.utils.NetworkUtils;
 
 @RuntimePermissions
 public class ChatFragment extends Fragment {
-
-    private static final int MAX_MESSAGE_LENGTH = 10000;
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
@@ -44,9 +38,9 @@ public class ChatFragment extends Fragment {
     private RecyclerView messagesRecyclerView;
     private EditText messageEditText;
     private ImageButton sendImageButton;
-    private TextView attachmentMarkerTextView;
 
     private MessagesAdapter messagesAdapter;
+    private AttachedFilesAdapter attachedFilesAdapter;
 
     private FilePicker filePicker;
 
@@ -99,9 +93,10 @@ public class ChatFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            List<UsedeskFile> selectedUsedeskFiles = filePicker.onResult(getContext(), requestCode, data);
-            if (selectedUsedeskFiles != null) {
-                viewModel.setUsedeskFiles(selectedUsedeskFiles);
+            List<UsedeskFileInfo> attachedFileInfoList = filePicker.onResultInfo(getContext(),
+                    requestCode, data);
+            if (attachedFileInfoList != null) {
+                viewModel.setAttachedFileInfoList(attachedFileInfoList);
             }
         }
     }
@@ -122,12 +117,7 @@ public class ChatFragment extends Fragment {
             }
         }
 
-        if (model.getUsedeskFiles().size() > 0) {
-            attachmentMarkerTextView.setVisibility(View.VISIBLE);
-            sendImageButton.setEnabled(true);
-        } else {
-            attachmentMarkerTextView.setVisibility(View.GONE);
-        }
+        attachedFilesAdapter.update(model.getUsedeskFileInfoList());
 
         if (model.getUsedeskException() != null) {
             String message = model.getUsedeskException().getMessage();
@@ -148,26 +138,11 @@ public class ChatFragment extends Fragment {
         attachFileImageButton.setOnClickListener(view1 -> openAttachmentDialog());
 
         messageEditText = view.findViewById(R.id.message_edit_text);
-        messageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                sendImageButton.setEnabled(!TextUtils.isEmpty(editable));
-            }
-        });
 
         sendImageButton = view.findViewById(R.id.send_image_view);
-        sendImageButton.setEnabled(false);
-        sendImageButton.setOnClickListener(v -> attemptSend());
+        sendImageButton.setOnClickListener(v -> onSendClick());
 
-        attachmentMarkerTextView = view.findViewById(R.id.attachment_marker_text_view);
+        attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
     }
 
     private void initList() {
@@ -184,33 +159,13 @@ public class ChatFragment extends Fragment {
                 });
     }
 
-    @NonNull
-    @SuppressWarnings("ConstantConditions")
-    private ChatModel getLastModel() {
-        return viewModel.getModelLiveData().getValue();
-    }
-
-    private void attemptSend() {
+    private void onSendClick() {
         if (!NetworkUtils.isNetworkConnected(getContext())) {
             showError(R.string.no_connections);
             return;
         }
 
-        String textMessage = messageEditText.getText().toString().trim();
-        if (TextUtils.isEmpty(textMessage) && getLastModel().getUsedeskFiles().size() == 0) {
-            messageEditText.requestFocus();
-            return;
-        }
-
-        if (textMessage.length() > MAX_MESSAGE_LENGTH) {
-            showError(R.string.long_message);
-            return;
-        }
-
-        viewModel.sendMessage(textMessage, getLastModel().getUsedeskFiles());
-
-        messageEditText.setText("");
-        attachmentMarkerTextView.setVisibility(View.GONE);
+        viewModel.onSend(messageEditText.getText().toString().trim());
     }
 
     private void openAttachmentDialog() {

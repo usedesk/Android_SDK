@@ -7,6 +7,7 @@ import ru.usedesk.sdk.external.entity.chat.OfflineForm;
 import ru.usedesk.sdk.external.entity.chat.UsedeskActionListener;
 import ru.usedesk.sdk.external.entity.chat.UsedeskConfiguration;
 import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskSocketException;
 import ru.usedesk.sdk.internal.domain.entity.chat.OnMessageListener;
 
@@ -14,7 +15,7 @@ public interface IApiRepository {
 
     void setActionListener(@NonNull UsedeskActionListener actionListener);
 
-    boolean post(UsedeskConfiguration configuration, OfflineForm offlineForm);
+    void post(UsedeskConfiguration configuration, OfflineForm offlineForm) throws UsedeskHttpException;
 
     void disconnect();
 

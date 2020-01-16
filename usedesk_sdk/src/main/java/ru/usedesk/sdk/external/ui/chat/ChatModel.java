@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import java.util.List;
 
 import ru.usedesk.sdk.external.entity.chat.Message;
-import ru.usedesk.sdk.external.entity.chat.UsedeskFile;
+import ru.usedesk.sdk.external.entity.chat.UsedeskFileInfo;
 import ru.usedesk.sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.sdk.external.ui.mvi.ReducibleModel;
 
@@ -18,7 +18,7 @@ public class ChatModel extends ReducibleModel<ChatModel> {
     private List<Message> messages;
     private Integer messagesCountDif = 0;
 
-    private List<UsedeskFile> usedeskFiles;
+    private List<UsedeskFileInfo> usedeskFileInfoList;
 
     private UsedeskException usedeskException;
 
@@ -27,12 +27,12 @@ public class ChatModel extends ReducibleModel<ChatModel> {
 
     public ChatModel(@NonNull Boolean loading, @NonNull Boolean offlineFormExpected,
                      @NonNull List<Message> messages, @NonNull Integer messagesCountDif,
-                     @NonNull List<UsedeskFile> usedeskFiles, @Nullable UsedeskException usedeskException) {
+                     @NonNull List<UsedeskFileInfo> usedeskFileInfoList, @Nullable UsedeskException usedeskException) {
         this.loading = loading;
         this.offlineFormExpected = offlineFormExpected;
         this.messages = messages;
         this.messagesCountDif = messagesCountDif;
-        this.usedeskFiles = usedeskFiles;
+        this.usedeskFileInfoList = usedeskFileInfoList;
         this.usedeskException = usedeskException;
     }
 
@@ -54,8 +54,8 @@ public class ChatModel extends ReducibleModel<ChatModel> {
     }
 
     @NonNull
-    public List<UsedeskFile> getUsedeskFiles() {
-        return usedeskFiles;
+    public List<UsedeskFileInfo> getUsedeskFileInfoList() {
+        return usedeskFileInfoList;
     }
 
     @Nullable
@@ -75,7 +75,7 @@ public class ChatModel extends ReducibleModel<ChatModel> {
                 .setOfflineFormExpected(newModel.offlineFormExpected)
                 .setMessages(reduce(this.messages, newModel.messages))
                 .setMessagesCountDif(newModel.messagesCountDif)
-                .setUsedeskFiles(reduce(this.usedeskFiles, newModel.usedeskFiles))
+                .setUsedeskFileInfoList(reduce(this.usedeskFileInfoList, newModel.usedeskFileInfoList))
                 .setUsedeskException(newModel.usedeskException)
                 .build();
     }
@@ -106,8 +106,8 @@ public class ChatModel extends ReducibleModel<ChatModel> {
             return this;
         }
 
-        public Builder setUsedeskFiles(List<UsedeskFile> usedeskFiles) {
-            chatModel.usedeskFiles = usedeskFiles;
+        public Builder setUsedeskFileInfoList(List<UsedeskFileInfo> usedeskFileInfoList) {
+            chatModel.usedeskFileInfoList = usedeskFileInfoList;
             return this;
         }
 

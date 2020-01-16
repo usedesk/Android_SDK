@@ -12,6 +12,13 @@ public class UsedeskFile {
     public UsedeskFile() {
     }
 
+    public UsedeskFile(String content, String type, String size, String name) {
+        this.content = content;
+        this.type = type;
+        this.size = size;
+        this.name = name;
+    }
+
     public String getContent() {
         return content;
     }

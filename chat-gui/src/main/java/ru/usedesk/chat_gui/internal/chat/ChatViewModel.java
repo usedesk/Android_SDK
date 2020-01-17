@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.internal.chat;
 
 import androidx.annotation.NonNull;
 
@@ -68,13 +68,13 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
                 .subscribe();
     }
 
-    void setAttachedFileInfoList(@NonNull List<UsedeskFileInfo> usedeskFileInfoList) {
+    public void setAttachedFileInfoList(@NonNull List<UsedeskFileInfo> usedeskFileInfoList) {
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(usedeskFileInfoList)
                 .build());
     }
 
-    void sendFeedback(@NonNull Feedback feedback) {
+    public void sendFeedback(@NonNull Feedback feedback) {
         usedeskChat.sendRx(feedback)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -94,7 +94,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         setAttachedFileInfoList(attachedFileInfoList);
     }
 
-    void onSend(@NonNull String textMessage) {
+    public void onSend(@NonNull String textMessage) {
         usedeskChat.sendRx(textMessage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

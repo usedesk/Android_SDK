@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.external;
 
 import android.Manifest;
 import android.app.Activity;
@@ -26,7 +26,13 @@ import java.util.List;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.chat_gui.R;
-import ru.usedesk.chat_gui.screens.utils.NetworkUtils;
+import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
+import ru.usedesk.chat_gui.internal.chat.ChatModel;
+import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
+import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
+import ru.usedesk.chat_gui.internal.chat.FilePicker;
+import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
+import ru.usedesk.chat_gui.internal.utils.NetworkUtils;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;

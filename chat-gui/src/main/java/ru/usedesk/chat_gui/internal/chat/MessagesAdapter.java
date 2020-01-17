@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.internal.chat;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -19,9 +19,9 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_gui.R;
-import ru.usedesk.chat_gui.screens.utils.DownloadUtils;
-import ru.usedesk.chat_gui.screens.utils.ImageUtils;
-import ru.usedesk.chat_gui.screens.utils.TimeUtils;
+import ru.usedesk.chat_gui.internal.utils.DownloadUtils;
+import ru.usedesk.chat_gui.internal.utils.ImageUtils;
+import ru.usedesk.chat_gui.internal.utils.TimeUtils;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.ChatFeedbackListener;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
@@ -46,9 +46,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private DownloadUtils downloadUtils;
     private RecyclerView recyclerView;
 
-    MessagesAdapter(@NonNull RecyclerView recyclerView,
-                    @NonNull List<Message> messages,
-                    @NonNull ChatFeedbackListener chatFeedbackListener) {
+    public MessagesAdapter(@NonNull RecyclerView recyclerView,
+                           @NonNull List<Message> messages,
+                           @NonNull ChatFeedbackListener chatFeedbackListener) {
         this.recyclerView = recyclerView;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
@@ -138,13 +138,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
+    public void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
         this.messages = messages;
         notifyItemInserted(messages.size() - messagesCountDif);
         scrollToBottom();
     }
 
-    void scrollToBottom() {
+    public void scrollToBottom() {
         if (!messages.isEmpty()) {
             recyclerView.post(() -> recyclerView.scrollToPosition(messages.size() - 1));
         }

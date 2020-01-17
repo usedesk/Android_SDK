@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import ru.usedesk.chat_gui.screens.chat.UsedeskChatFragment;
+import ru.usedesk.chat_gui.external.UsedeskChatFragment;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;

@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.internal.chat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +12,10 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.util.List;
 
-import ru.usedesk.chat_gui.screens.utils.AttachmentUtils;
+import ru.usedesk.chat_gui.internal.utils.AttachmentUtils;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
-class FilePicker {
+public class FilePicker {
 
     private static final int REQUEST_CODE_PICK_FILE = 38141;
     private static final int REQUEST_CODE_TAKE_PHOTO = 38142;
@@ -32,22 +32,22 @@ class FilePicker {
         fragment.startActivityForResult(intent, REQUEST_CODE_PICK_FILE);
     }
 
-    void pickImage(@NonNull Fragment fragment) {
+    public void pickImage(@NonNull Fragment fragment) {
         pickFile(fragment, MIME_TYPE_ALL_IMAGES);
     }
 
-    void pickDocument(@NonNull Fragment fragment) {
+    public void pickDocument(@NonNull Fragment fragment) {
         pickFile(fragment, MIME_TYPE_ALL_DOCS);
     }
 
-    void takePhoto(@NonNull Fragment fragment) {
+    public void takePhoto(@NonNull Fragment fragment) {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, getTakePhotoUri(fragment.getContext()));
         fragment.startActivityForResult(cameraIntent, REQUEST_CODE_TAKE_PHOTO);
     }
 
     @Nullable
-    List<UsedeskFileInfo> onResult(@NonNull Context context, int requestCode, @Nullable Intent data) {
+    public List<UsedeskFileInfo> onResult(@NonNull Context context, int requestCode, @Nullable Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_PICK_FILE: {
                 if (data != null) {

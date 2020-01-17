@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.internal.chat;
 
 import android.content.Context;
 

@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.utils;
+package ru.usedesk.chat_gui.internal.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

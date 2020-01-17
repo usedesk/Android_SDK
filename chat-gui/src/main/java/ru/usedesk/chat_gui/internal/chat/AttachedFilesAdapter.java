@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.internal.chat;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,23 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.usedesk.chat_gui.R;
-import ru.usedesk.chat_gui.screens.utils.GlideApp;
+import ru.usedesk.chat_gui.internal.utils.GlideApp;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
 
-class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
+public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
 
     private final ChatViewModel chatViewModel;
     private List<UsedeskFileInfo> files = new ArrayList<>();
 
-    AttachedFilesAdapter(@NonNull ChatViewModel chatViewModel,
-                         @NonNull RecyclerView recyclerView) {
+    public AttachedFilesAdapter(@NonNull ChatViewModel chatViewModel,
+                                @NonNull RecyclerView recyclerView) {
         this.chatViewModel = chatViewModel;
 
         recyclerView.setAdapter(this);
     }
 
-    void update(@NonNull List<UsedeskFileInfo> attachedFiles) {
+    public void update(@NonNull List<UsedeskFileInfo> attachedFiles) {
         if (this.files != attachedFiles) {
             this.files = attachedFiles;
 

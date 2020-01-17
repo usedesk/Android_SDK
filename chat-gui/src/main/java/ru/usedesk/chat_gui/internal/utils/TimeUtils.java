@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.utils;
+package ru.usedesk.chat_gui.internal.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

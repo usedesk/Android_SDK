@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.screens.chat;
+package ru.usedesk.chat_gui.internal.chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,11 +70,11 @@ public class ChatModel extends ReducibleModel<ChatModel> {
         }
 
         return new ChatModel.Builder()
-                .setLoading(ReducibleModel.reduce(this.loading, newModel.loading))
+                .setLoading(reduce(this.loading, newModel.loading))
                 .setOfflineFormExpected(newModel.offlineFormExpected)
-                .setMessages(ReducibleModel.reduce(this.messages, newModel.messages))
+                .setMessages(reduce(this.messages, newModel.messages))
                 .setMessagesCountDif(newModel.messagesCountDif)
-                .setUsedeskFileInfoList(ReducibleModel.reduce(this.usedeskFileInfoList, newModel.usedeskFileInfoList))
+                .setUsedeskFileInfoList(reduce(this.usedeskFileInfoList, newModel.usedeskFileInfoList))
                 .setUsedeskException(newModel.usedeskException)
                 .build();
     }

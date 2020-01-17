@@ -214,30 +214,30 @@ public class UsedeskChatFragment extends Fragment {
         UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    public void onPickPhotoClicked() {
+    private void onPickPhotoClicked() {
         UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
     }
 
-    public void onTakePhotoClicked() {
+    private void onTakePhotoClicked() {
         UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
     }
 
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public void pickPhoto() {
-        filePicker.pickImage(this);
-    }
-
-    @NeedsPermission({Manifest.permission.CAMERA})
-    public void takePhoto() {
-        filePicker.takePhoto(this);
-    }
-
-    public void onPickDocumentClicked() {
+    private void onPickDocumentClicked() {
         UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public void pickDocument() {
+    void pickPhoto() {
+        filePicker.pickImage(this);
+    }
+
+    @NeedsPermission({Manifest.permission.CAMERA})
+    void takePhoto() {
+        filePicker.takePhoto(this);
+    }
+
+    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void pickDocument() {
         filePicker.pickDocument(this);
     }
 

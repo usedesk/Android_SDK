@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.util.List;
 
-import ru.usedesk.chat_gui.internal.utils.AttachmentUtils;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
 public class FilePicker {

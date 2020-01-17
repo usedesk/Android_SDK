@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.message;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
 import ru.usedesk.chat_gui.internal.utils.GlideApp;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 

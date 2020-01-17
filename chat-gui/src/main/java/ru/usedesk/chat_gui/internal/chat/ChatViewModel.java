@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import ru.usedesk.chat_gui.internal.MviViewModel;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
@@ -88,7 +89,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         UsedeskChatSdk.release();
     }
 
-    void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {
+    public void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {
         List<UsedeskFileInfo> attachedFileInfoList = new ArrayList<>(getLastModel().getUsedeskFileInfoList());
         attachedFileInfoList.remove(usedeskFileInfo);
         setAttachedFileInfoList(attachedFileInfoList);

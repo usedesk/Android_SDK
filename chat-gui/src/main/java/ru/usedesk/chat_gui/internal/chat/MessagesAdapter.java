@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.messages;
+package ru.usedesk.chat_gui.internal.chat;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;

@@ -26,26 +26,25 @@ import java.util.List;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.chat_gui.R;
+import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
 import ru.usedesk.chat_gui.internal.chat.ChatModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
-import ru.usedesk.chat_gui.internal.message.AttachedFilesAdapter;
-import ru.usedesk.chat_gui.internal.messages.MessagesAdapter;
-import ru.usedesk.chat_gui.internal.utils.FilePicker;
+import ru.usedesk.chat_gui.internal.chat.FilePicker;
+import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
 import ru.usedesk.chat_gui.internal.utils.NetworkUtils;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 
 @RuntimePermissions
-public class UsedeskChatScreenFragment extends Fragment {
+public class UsedeskChatFragment extends Fragment {
 
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
 
     private ViewGroup messageLayout;
     private ViewGroup offlineFormLayout;
-
     private ViewSwitcher contentViewSwitcher;
     private RecyclerView messagesRecyclerView;
     private EditText messageEditText;
@@ -58,8 +57,8 @@ public class UsedeskChatScreenFragment extends Fragment {
 
     private ChatViewModel viewModel;
 
-    public static UsedeskChatScreenFragment newInstance() {
-        return new UsedeskChatScreenFragment();
+    public static UsedeskChatFragment newInstance() {
+        return new UsedeskChatFragment();
     }
 
     @Override
@@ -212,19 +211,19 @@ public class UsedeskChatScreenFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        UsedeskChatScreenFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     private void onPickPhotoClicked() {
-        UsedeskChatScreenFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
+        UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
     }
 
     private void onTakePhotoClicked() {
-        UsedeskChatScreenFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
+        UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
     }
 
     private void onPickDocumentClicked() {
-        UsedeskChatScreenFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
+        UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})

@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal;
+package ru.usedesk.chat_gui.internal.chat;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;

@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-import ru.usedesk.chat_gui.internal.ReducibleModel;
 import ru.usedesk.chat_sdk.external.entity.Message;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;

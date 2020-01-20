@@ -6,20 +6,6 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
 
-    <style name="Usedesk.TextStyle.Chat">
-
-    </style>
-
-    <style name="Usedesk.TextStyle.Chat.Massage">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
-
-    <style name="Usedesk.TextStyle.Chat.Time">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:gravity">center</item>
-    </style>
-
     <style name="Usedesk">
         <item name="usedesk_marginTop">4dp</item>
         <item name="usedesk_marginBottom">4dp</item>
@@ -38,29 +24,6 @@
 
     <style name="Usedesk.Fragment.Article">
 
-    </style>
-
-    <style name="Usedesk.Fragment.Chat.Button" parent="">
-        <item name="android:layout_width">40dp</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:background">#00000000</item>
-        <item name="android:scaleType">centerCrop</item>
-    </style>
-
-    <style name="Usedesk.Fragment.Chat.Button.Attachment">
-        <item name="android:src">@drawable/ic_attach_file_black</item>
-    </style>
-
-    <style name="Usedesk.Fragment.Chat.Button.Send">
-        <item name="android:src">@drawable/ic_send_black</item>
-    </style>
-
-    <style name="Usedesk.Fragment.Chat">
-        <item name="usedesk_fragment_chat_attachment_style">
-            @style/Usedesk.Fragment.Chat.Button.Attachment
-        </item>
-        <item name="usedesk_fragment_chat_send_style">@style/Usedesk.Fragment.Chat.Button.Send
-        </item>
     </style>
 
     <style name="Usedesk.Fragment.KnowledgeBase">
@@ -116,56 +79,12 @@
         <item name="usedesk_item_section_icon_height">60dp</item>
     </style>
 
-    <style name="Usedesk.Item.Message">
-        <item name="usedesk_item_message_time_header_style">@style/Usedesk.TextStyle.Chat.Time
-        </item>
-
-        <item name="usedesk_item_message_paddingTop">8dp</item>
-        <item name="usedesk_item_message_paddingBottom">8dp</item>
-        <item name="usedesk_item_message_paddingStart">8dp</item>
-        <item name="usedesk_item_message_paddingEnd">8dp</item>
-
-        <item name="usedesk_item_message_image_width">160dp</item>
-        <item name="usedesk_item_message_image_height">160dp</item>
-
-        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage</item>
-    </style>
-
-    <style name="Usedesk.Item.Message.Service">
-
-    </style>
-
-    <style name="Usedesk.Item.Message.Operator">
-        <item name="usedesk_item_message_operator_background">@drawable/operator_bubble</item>
-        <item name="usedesk_item_message_paddingStart">16dp</item>
-
-        <item name="usedesk_item_message_operator_icon_width">60dp</item>
-        <item name="usedesk_item_message_operator_icon_height">60dp</item>
-
-        <item name="usedesk_item_message_operator_feedback_button_width">40dp</item>
-        <item name="usedesk_item_message_operator_feedback_button_height">40dp</item>
-        <item name="usedesk_item_message_operator_feedback_button_marginStart">20dp</item>
-        <item name="usedesk_item_message_operator_feedback_button_marginEnd">20dp</item>
-        <item name="usedesk_item_message_operator_feedback_button_padding">8dp</item>
-    </style>
-
-    <style name="Usedesk.Item.Message.User">
-        <item name="usedesk_item_message_user_background">@drawable/user_bubble</item>
-        <item name="usedesk_item_message_paddingEnd">16dp</item>
-    </style>
-
     <style name="Usedesk.Theme" parent="">
         <item name="usedesk_fragment_article">@style/Usedesk.Fragment.Article</item>
-        <item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat</item>
         <item name="usedesk_fragment_knowledge_base">@style/Usedesk.Fragment.KnowledgeBase</item>
         <item name="usedesk_fragment_list">@style/Usedesk.Fragment.List</item>
-        <item name="usedesk_dialog_offlineform">@style/Usedesk.Dialog.OfflineForm</item>
-        <item name="usedesk_dialog_attachment">@style/Usedesk.Dialog.Attachment</item>
         <item name="usedesk_item_articleinfo">@style/Usedesk.Item.ArticleInfo</item>
         <item name="usedesk_item_category">@style/Usedesk.Item.Category</item>
         <item name="usedesk_item_section">@style/Usedesk.Item.Section</item>
-        <item name="usedesk_item_message_service">@style/Usedesk.Item.Message.Service</item>
-        <item name="usedesk_item_message_operator">@style/Usedesk.Item.Message.Operator</item>
-        <item name="usedesk_item_message_user">@style/Usedesk.Item.Message.User</item>
     </style>
 </resources>

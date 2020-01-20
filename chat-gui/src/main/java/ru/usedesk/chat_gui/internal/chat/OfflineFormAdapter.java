@@ -40,4 +40,8 @@ public class OfflineFormAdapter {
     public void show(boolean show) {
         rootView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
+    public void setMessage(@NonNull String message) {
+        messageEditText.setText(message);
+    }
 }

@@ -112,6 +112,7 @@ public class UsedeskChatFragment extends Fragment {
         }
 
         if (model.isOfflineFormExpected()) {
+            offlineFormAdapter.setMessage(messageAdapter.getMessage());
             messageAdapter.show(false);
             offlineFormAdapter.show(true);
         }

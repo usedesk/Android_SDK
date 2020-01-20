@@ -284,7 +284,6 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
             @Override
             public void onInit(String token, Setup setup) {
                 parseInitResponse(token, setup);
-
             }
 
             @Override

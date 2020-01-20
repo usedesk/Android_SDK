@@ -40,4 +40,9 @@ public class MessageAdapter {
     public void show(boolean show) {
         rootView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
+    @NonNull
+    public String getMessage() {
+        return messageEditText.getText().toString();
+    }
 }

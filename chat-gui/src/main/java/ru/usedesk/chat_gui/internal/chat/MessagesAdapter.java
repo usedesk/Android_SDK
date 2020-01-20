@@ -46,13 +46,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private DownloadUtils downloadUtils;
     private RecyclerView recyclerView;
 
-    public MessagesAdapter(@NonNull RecyclerView recyclerView,
+    public MessagesAdapter(@NonNull View parentView,
                            @NonNull List<Message> messages,
                            @NonNull ChatFeedbackListener chatFeedbackListener) {
-        this.recyclerView = recyclerView;
         this.messages = messages;
         this.chatFeedbackListener = chatFeedbackListener;
+
+        recyclerView = parentView.findViewById(R.id.messages_recycler_view);
         downloadUtils = new DownloadUtils(recyclerView.getContext());
+
+        recyclerView.setAdapter(this);
+        recyclerView.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    if (bottom < oldBottom) {
+                        recyclerView.postDelayed(this::scrollToBottom, 100);
+                    }
+                });
     }
 
     @Override
@@ -144,7 +153,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         scrollToBottom();
     }
 
-    public void scrollToBottom() {
+    private void scrollToBottom() {
         if (!messages.isEmpty()) {
             recyclerView.post(() -> recyclerView.scrollToPosition(messages.size() - 1));
         }

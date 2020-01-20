@@ -129,6 +129,9 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
         if (offlineForm == null) {
             return;
         }
+        if (offlineForm.getCompanyId() == null) {
+            offlineForm = new OfflineForm(configuration.getCompanyId(), offlineForm.getName(), offlineForm.getEmail(), offlineForm.getMessage());
+        }
         apiRepository.send(configuration, offlineForm);
     }
 

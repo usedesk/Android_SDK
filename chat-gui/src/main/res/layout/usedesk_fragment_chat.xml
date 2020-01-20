@@ -17,6 +17,8 @@
             android:id="@+id/messages_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/bottom_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +55,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/offline_form_name_edit_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="?attr/usedesk_content_marginStart"
+                                android:layout_marginTop="?attr/usedesk_content_marginTop"
+                                android:layout_marginEnd="?attr/usedesk_content_marginEnd"
+                                android:layout_marginBottom="?attr/usedesk_content_marginBottom"
+                                android:hint="@string/offline_form_name_hint"
+                                android:inputType="textPersonName|textCapWords" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/offline_form_email_edit_text"
                             android:layout_width="match_parent"
@@ -63,22 +81,6 @@
                             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
                             android:hint="@string/offline_form_email_hint"
                             android:inputType="textEmailAddress" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/offline_form_name_edit_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="?attr/usedesk_content_marginStart"
-                            android:layout_marginTop="?attr/usedesk_content_marginTop"
-                            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-                            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
-                            android:hint="@string/offline_form_name_hint"
-                            android:inputType="textPersonName|textCapWords" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout

@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.Feedback;
+import ru.usedesk.chat_sdk.external.entity.OfflineForm;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
@@ -39,26 +40,9 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
                         .build()));
 
         addModelObservable(actionListenerRx.getExceptionSubject()
-                .map(exception -> {
-                    /*if (exception instanceof UsedeskSocketException) {
-                        switch (((UsedeskSocketException) exception).getError()) {
-                            case DISCONNECTED:
-                                break;
-                            case FORBIDDEN_ERROR:
-                                break;
-                        }
-                    } else if (exception instanceof UsedeskHttpException) {
-                        switch (((UsedeskHttpException) exception).getError()) {
-                            case IO_ERROR:
-                                break;
-                            case JSON_ERROR:
-                                break;
-                        }
-                    }*/
-                    return new ChatModel.Builder()
-                            .setUsedeskException(exception)
-                            .build();
-                }));
+                .map(exception -> new ChatModel.Builder()
+                        .setUsedeskException(exception)
+                        .build()));
 
         initLiveData(throwable -> {
             //nothing
@@ -94,7 +78,7 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         setAttachedFileInfoList(attachedFileInfoList);
     }
 
-    public void onSend(@NonNull String textMessage) {
+    void onSend(@NonNull String textMessage) {
         usedeskChat.sendRx(textMessage)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -109,5 +93,12 @@ public class ChatViewModel extends MviViewModel<ChatModel> {
         onNewModel(new ChatModel.Builder()
                 .setUsedeskFileInfoList(new ArrayList<>())
                 .build());
+    }
+
+    void onSend(@NonNull String name, @NonNull String email, @NonNull String message) {
+        usedeskChat.sendRx(new OfflineForm(name, email, message))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 }

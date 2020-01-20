@@ -7,17 +7,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -31,8 +26,9 @@ import ru.usedesk.chat_gui.internal.chat.ChatModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
 import ru.usedesk.chat_gui.internal.chat.FilePicker;
+import ru.usedesk.chat_gui.internal.chat.MessageAdapter;
 import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
-import ru.usedesk.chat_gui.internal.utils.NetworkUtils;
+import ru.usedesk.chat_gui.internal.chat.OfflineFormAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
@@ -43,13 +39,10 @@ public class UsedeskChatFragment extends Fragment {
     private static final int SWITCHER_LOADING_STATE = 1;
     private static final int SWITCHER_LOADED_STATE = 0;
 
-    private ViewGroup messageLayout;
-    private ViewGroup offlineFormLayout;
     private ViewSwitcher contentViewSwitcher;
-    private RecyclerView messagesRecyclerView;
-    private EditText messageEditText;
-    private ImageButton sendImageButton;
 
+    private MessageAdapter messageAdapter;
+    private OfflineFormAdapter offlineFormAdapter;
     private MessagesAdapter messagesAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
 
@@ -77,7 +70,6 @@ public class UsedeskChatFragment extends Fragment {
                 .get(ChatViewModel.class);
 
         initUI(view);
-        initList();
 
         viewModel.getModelLiveData()
                 .observe(this, this::renderModel);
@@ -120,8 +112,8 @@ public class UsedeskChatFragment extends Fragment {
         }
 
         if (model.isOfflineFormExpected()) {
-            messageLayout.setVisibility(View.INVISIBLE);
-            offlineFormLayout.setVisibility(View.VISIBLE);
+            messageAdapter.show(false);
+            offlineFormAdapter.show(true);
         }
 
         attachedFilesAdapter.update(model.getUsedeskFileInfoList());
@@ -139,44 +131,10 @@ public class UsedeskChatFragment extends Fragment {
         contentViewSwitcher = view.findViewById(R.id.content_view_switcher);
         contentViewSwitcher.setDisplayedChild(SWITCHER_LOADING_STATE);
 
-        messagesRecyclerView = view.findViewById(R.id.messages_recycler_view);
-
-        ImageButton attachFileImageButton = view.findViewById(R.id.attach_file_image_view);
-        attachFileImageButton.setOnClickListener(view1 -> openAttachmentDialog());
-
-        messageEditText = view.findViewById(R.id.message_edit_text);
-
-        sendImageButton = view.findViewById(R.id.send_image_view);
-        sendImageButton.setOnClickListener(v -> onSendClick());
-
-        messageLayout = view.findViewById(R.id.message_layout);
-        offlineFormLayout = view.findViewById(R.id.offline_form_layout);
-
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
-    }
-
-    private void initList() {
-        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-
-        messagesAdapter = new MessagesAdapter(messagesRecyclerView, viewModel.getModelLiveData().getValue().getMessages(), viewModel::sendFeedback);
-        messagesRecyclerView.setAdapter(messagesAdapter);
-
-        messagesRecyclerView.addOnLayoutChangeListener(
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    if (bottom < oldBottom) {
-                        messagesRecyclerView.postDelayed(messagesAdapter::scrollToBottom, 100);
-                    }
-                });
-    }
-
-    private void onSendClick() {
-        if (!NetworkUtils.isNetworkConnected(getContext())) {
-            showError(R.string.no_connections);
-            return;
-        }
-
-        viewModel.onSend(messageEditText.getText().toString().trim());
-        messageEditText.setText("");
+        offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
+        messageAdapter = new MessageAdapter(view, viewModel, v -> openAttachmentDialog());
+        messagesAdapter = new MessagesAdapter(view, viewModel.getModelLiveData().getValue().getMessages(), viewModel::sendFeedback);
     }
 
     private void openAttachmentDialog() {
@@ -239,13 +197,5 @@ public class UsedeskChatFragment extends Fragment {
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
     void pickDocument() {
         filePicker.pickDocument(this);
-    }
-
-    private void showError(int messageResId) {
-        new AlertDialog.Builder(getContext())
-                .setTitle(R.string.error)
-                .setMessage(messageResId)
-                .setPositiveButton(android.R.string.ok, null)
-                .show();
     }
 }

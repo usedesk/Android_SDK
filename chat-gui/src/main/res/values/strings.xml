@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="offline_form_title">К сожалению, все наши операторы сейчас не в сети, но вы можете отправить нам заявку и мы её обязательно рассмотрим в ближайшее время.</string>
-    <string name="send">Отправить</string>
+    <!--OfflineForm-->
+    <string name="offline_form_title">Unfortunately, all our operators are currently offline, but you can send us a request and we will definitely consider it in the near future.</string>
+    <string name="offline_form_email_hint">Email</string>
+    <string name="offline_form_name_hint">Name</string>
+    <string name="offline_form_message_hint">Message</string>
+    <string name="offline_form_send">Send</string>
+    <!--MessagePanel-->
+    <string name="message_hint">Message</string>
+
 </resources>

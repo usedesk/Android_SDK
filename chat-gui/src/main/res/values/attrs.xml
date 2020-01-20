@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--OfflineForm-->
+    <attr name="offline_form_title" format="string" />
+    <attr name="offline_form_name_hint" format="string" />
+    <attr name="offline_form_email_hint" format="string" />
+    <attr name="offline_form_message_hint" format="string" />
+    <attr name="offline_form_send" format="string" />
+    <!--MessagePanel-->
+    <attr name="message_panel_form_send" format="string" />
+    <attr name="message_panel_attach_icon" format="reference" />
+    <attr name="message_panel_send_icon" format="reference" />
+    <attr name="message_panel_document_icon" format="reference" />
+    <attr name="message_panel_document_remove_icon" format="reference" />
+
+
     <attr name="usedesk_textstyle_chat_massage" format="reference" />
     <attr name="usedesk_textstyle_chat_time" format="reference" />
 

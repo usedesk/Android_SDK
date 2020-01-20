@@ -54,7 +54,7 @@ public class Message {
 
     public String getCreatedAt() {
         return createdAt;
-    }
+    }//TODO: remove setters
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;

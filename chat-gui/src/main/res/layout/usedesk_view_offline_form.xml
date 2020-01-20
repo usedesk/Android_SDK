@@ -8,13 +8,14 @@
     android:orientation="vertical"
     android:visibility="gone"
     tools:layout_gravity="bottom"
+    tools:theme="@style/Usedesk.Theme.Chat"
     tools:visibility="visible">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="@string/offline_form_title" />
+        tools:text="?attr/usedesk_offline_form_title" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -24,11 +25,8 @@
             android:id="@+id/offline_form_name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/usedesk_content_marginStart"
-            android:layout_marginTop="?attr/usedesk_content_marginTop"
-            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
-            android:hint="@string/offline_form_name_hint"
+            android:layout_margin="8dp"
+            android:hint="?attr/usedesk_offline_form_name_hint"
             android:inputType="textPersonName|textCapWords"
             android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -41,11 +39,8 @@
             android:id="@+id/offline_form_email_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/usedesk_content_marginStart"
-            android:layout_marginTop="?attr/usedesk_content_marginTop"
-            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
-            android:hint="@string/offline_form_email_hint"
+            android:layout_margin="8dp"
+            android:hint="?attr/usedesk_offline_form_email_hint"
             android:inputType="textEmailAddress"
             android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -58,11 +53,8 @@
             android:id="@+id/offline_form_message_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/usedesk_content_marginStart"
-            android:layout_marginTop="?attr/usedesk_content_marginTop"
-            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
-            android:hint="@string/offline_form_message_hint"
+            android:layout_margin="8dp"
+            android:hint="?attr/usedesk_offline_form_message_hint"
             android:inputType="textMultiLine|textCapSentences"
             android:maxLines="5"
             android:textSize="18sp" />
@@ -77,7 +69,7 @@
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:text="@string/send"
+        android:text="?attr/usedesk_offline_form_send"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
         app:layout_constraintEnd_toEndOf="parent"

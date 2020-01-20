@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:theme="@style/Usedesk.Theme.Chat">
 
     <ImageView
         android:id="@+id/iv_preview"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="8dp"
-        app:srcCompat="@drawable/ic_attachment_document_black" />
+        app:srcCompat="?attr/message_panel_document_icon" />
 
     <ImageView
         android:id="@+id/iv_detach"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_gravity="end|top"
-        app:srcCompat="@drawable/ic_cancel" />
+        app:srcCompat="?attr/message_panel_document_remove_icon" />
 </FrameLayout>

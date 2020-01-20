@@ -20,23 +20,7 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="Usedesk">
-        <item name="usedesk_marginTop">4dp</item>
-        <item name="usedesk_marginBottom">4dp</item>
-        <item name="usedesk_marginStart">4dp</item>
-        <item name="usedesk_marginEnd">4dp</item>
-
-        <item name="usedesk_content_marginTop">8dp</item>
-        <item name="usedesk_content_marginBottom">8dp</item>
-        <item name="usedesk_content_marginStart">8dp</item>
-        <item name="usedesk_content_marginEnd">8dp</item>
-    </style>
-
     <style name="Usedesk.Fragment">
-
-    </style>
-
-    <style name="Usedesk.Fragment.Article">
 
     </style>
 
@@ -63,14 +47,6 @@
         </item>
     </style>
 
-    <style name="Usedesk.Fragment.KnowledgeBase">
-        <item name="usedesk_fragment_knowledge_support_title">@string/chat_with_support</item>
-    </style>
-
-    <style name="Usedesk.Fragment.List">
-
-    </style>
-
     <style name="Usedesk.Dialog">
 
     </style>
@@ -90,30 +66,6 @@
 
     <style name="Usedesk.Item">
 
-    </style>
-
-    <style name="Usedesk.Item.ArticleInfo">
-        <item name="usedesk_item_article_info_title_marginTop">8dp</item>
-        <item name="usedesk_item_article_info_title_marginStart">8dp</item>
-
-        <item name="usedesk_item_article_info_shows_marginTop">8dp</item>
-        <item name="usedesk_item_article_info_shows_marginBottom">8dp</item>
-        <item name="usedesk_item_article_info_shows_marginEnd">8dp</item>
-
-        <item name="usedesk_item_article_info_shows_text">@string/shows_postfix</item>
-
-        <item name="usedesk_item_article_info_count_marginEnd">4dp</item>
-    </style>
-
-    <style name="Usedesk.Item.Category">
-        <item name="usedesk_item_category_title_text_size">20sp</item>
-    </style>
-
-    <style name="Usedesk.Item.Section">
-        <item name="usedesk_item_section_title_text_size">20sp</item>
-
-        <item name="usedesk_item_section_icon_width">60dp</item>
-        <item name="usedesk_item_section_icon_height">60dp</item>
     </style>
 
     <style name="Usedesk.Item.Message">
@@ -154,16 +106,10 @@
         <item name="usedesk_item_message_paddingEnd">16dp</item>
     </style>
 
-    <style name="Usedesk.Theme.Chat" parent="">
-        <item name="usedesk_fragment_article">@style/Usedesk.Fragment.Article</item>
+    <style name="Usedesk.Theme.Chat">
         <item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat</item>
-        <item name="usedesk_fragment_knowledge_base">@style/Usedesk.Fragment.KnowledgeBase</item>
-        <item name="usedesk_fragment_list">@style/Usedesk.Fragment.List</item>
         <item name="usedesk_dialog_offlineform">@style/Usedesk.Dialog.OfflineForm</item>
         <item name="usedesk_dialog_attachment">@style/Usedesk.Dialog.Attachment</item>
-        <item name="usedesk_item_articleinfo">@style/Usedesk.Item.ArticleInfo</item>
-        <item name="usedesk_item_category">@style/Usedesk.Item.Category</item>
-        <item name="usedesk_item_section">@style/Usedesk.Item.Section</item>
         <item name="usedesk_item_message_service">@style/Usedesk.Item.Message.Service</item>
         <item name="usedesk_item_message_operator">@style/Usedesk.Item.Message.Operator</item>
         <item name="usedesk_item_message_user">@style/Usedesk.Item.Message.User</item>

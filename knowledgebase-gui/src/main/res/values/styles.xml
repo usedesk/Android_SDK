@@ -1,23 +1,5 @@
 <resources>
 
-    <style name="Usedesk.TextStyle">
-        <item name="android:textSize">14sp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-    </style>
-
-    <style name="Usedesk">
-        <item name="usedesk_marginTop">4dp</item>
-        <item name="usedesk_marginBottom">4dp</item>
-        <item name="usedesk_marginStart">4dp</item>
-        <item name="usedesk_marginEnd">4dp</item>
-
-        <item name="usedesk_content_marginTop">8dp</item>
-        <item name="usedesk_content_marginBottom">8dp</item>
-        <item name="usedesk_content_marginStart">8dp</item>
-        <item name="usedesk_content_marginEnd">8dp</item>
-    </style>
-
     <style name="Usedesk.Fragment">
 
     </style>
@@ -32,23 +14,6 @@
 
     <style name="Usedesk.Fragment.List">
 
-    </style>
-
-    <style name="Usedesk.Dialog">
-
-    </style>
-
-    <style name="Usedesk.Dialog.OfflineForm">
-
-    </style>
-
-    <style name="Usedesk.Dialog.Attachment">
-        <item name="usedesk_dialog_attachment_document_title">@string/attachment_dialog_document
-        </item>
-        <item name="usedesk_dialog_attachment_photo_title">@string/attachment_dialog_photo</item>
-        <item name="usedesk_dialog_attachment_camera_title">@string/attachment_dialog_camera</item>
-        <item name="usedesk_dialog_attachment_icon_width">60dp</item>
-        <item name="usedesk_dialog_attachment_icon_height">60dp</item>
     </style>
 
     <style name="Usedesk.Item">
@@ -79,7 +44,7 @@
         <item name="usedesk_item_section_icon_height">60dp</item>
     </style>
 
-    <style name="Usedesk.Theme.KnowledgeBase" parent="">
+    <style name="Usedesk.Theme.KnowledgeBase">
         <item name="usedesk_fragment_article">@style/Usedesk.Fragment.Article</item>
         <item name="usedesk_fragment_knowledge_base">@style/Usedesk.Fragment.KnowledgeBase</item>
         <item name="usedesk_fragment_list">@style/Usedesk.Fragment.List</item>

@@ -78,7 +78,7 @@
                             android:layout_marginEnd="?attr/usedesk_content_marginEnd"
                             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
                             android:hint="@string/offline_form_name_hint"
-                            android:inputType="text" />
+                            android:inputType="textPersonName|textCapWords" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -94,7 +94,9 @@
                             android:layout_marginEnd="?attr/usedesk_content_marginEnd"
                             android:layout_marginBottom="?attr/usedesk_content_marginBottom"
                             android:hint="@string/offline_form_message_hint"
-                            android:inputType="text" />
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:maxLines="5"
+                            android:textSize="18sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
@@ -103,6 +105,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_margin="8dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:text="@string/send"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
@@ -115,9 +120,8 @@
                     android:id="@+id/message_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="?attr/listPreferredItemHeight"
+                    android:clipChildren="true"
                     android:padding="8dp"
-                    android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -137,6 +141,9 @@
                         style="?attr/usedesk_fragment_chat_attachment_style"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/rv_attached_files" />
@@ -147,10 +154,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
                         android:hint="@string/message"
-                        android:inputType="text"
+                        android:inputType="textMultiLine|textCapSentences"
                         android:maxLength="10000"
                         android:maxLines="5"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/send_image_view"
                         app:layout_constraintStart_toEndOf="@+id/attach_file_image_view" />
@@ -160,10 +167,12 @@
                         style="?attr/usedesk_fragment_chat_send_style"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
                         app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/message_edit_text"
-                        tools:visibility="visible" />
+                        app:layout_constraintTop_toTopOf="@+id/message_edit_text" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

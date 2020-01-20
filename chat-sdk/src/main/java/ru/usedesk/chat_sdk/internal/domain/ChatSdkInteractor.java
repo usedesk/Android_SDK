@@ -257,7 +257,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                 actionListener.onMessagesReceived(setup.getMessages());
             }
 
-            if (true/*setup.isNoOperators()*/) {//TODO: debug
+            if (setup.isNoOperators()) {
                 actionListener.onOfflineFormExpected();
             }
         } else {

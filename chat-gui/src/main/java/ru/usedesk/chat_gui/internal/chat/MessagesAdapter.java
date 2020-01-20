@@ -148,8 +148,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
+        int cur = this.messages.size();
         this.messages = messages;
-        notifyItemInserted(messages.size() - messagesCountDif);
+        notifyItemRangeChanged(cur, messagesCountDif);
         scrollToBottom();
     }
 

@@ -12,40 +12,38 @@ import androidx.annotation.Nullable;
 
 import javax.inject.Inject;
 
-import ru.usedesk.common_gui.R;
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 
 public class ViewCustomizer implements IUsedeskViewCustomizer {
 
     private final SparseIntArray layoutIds = new SparseIntArray();
 
-    private int themeId = R.style.Usedesk_Theme;//TODO: разбить на 2 темы для чата и БЗ
-
     @Inject
     ViewCustomizer() {
     }
 
-    public int getLayoutId(int defaultId) {
-        return layoutIds.get(defaultId, defaultId);
+    private int getId(int key) {
+        return layoutIds.get(key);
     }
 
-    public void setLayoutId(int defaultId, int customId) {
+    @Override
+    public void replaceId(int defaultId, int customId) {
         layoutIds.put(defaultId, customId);
     }
 
-    public void setThemeId(int themeId) {
-        this.themeId = themeId;
-    }
-
-    public View createView(@NonNull ViewGroup viewGroup, int defaultId) {
+    @Override
+    public View createView(@NonNull ViewGroup viewGroup, int defaultId, int themeId) {
         return createView(LayoutInflater.from(viewGroup.getContext()),
-                getLayoutId(defaultId), viewGroup, false);
+                getId(defaultId), viewGroup, false, themeId);
     }
 
+
+    @Override
     @NonNull
     public View createView(@NonNull LayoutInflater inflater, int layoutId,
-                           @Nullable ViewGroup viewGroup, boolean attachToRoot) {
-        Context contextThemeWrapper = new ContextThemeWrapper(inflater.getContext(), themeId);
+                           @Nullable ViewGroup viewGroup, boolean attachToRoot,
+                           int themeId) {
+        Context contextThemeWrapper = new ContextThemeWrapper(inflater.getContext(), getId(themeId));
         LayoutInflater layoutInflater = inflater.cloneInContext(contextThemeWrapper);
         return layoutInflater.inflate(layoutId, viewGroup, attachToRoot);
     }

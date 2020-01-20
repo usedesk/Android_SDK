@@ -42,7 +42,7 @@ public class UsedeskKnowledgeBaseFragment extends FragmentView<KnowledgeBaseView
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = UsedeskViewCustomizer.getInstance()
-                .createView(inflater, R.layout.usedesk_fragment_knowledge_base, container, false);
+                .createView(inflater, R.layout.usedesk_fragment_knowledge_base, container, false, R.style.Usedesk_Theme_KnowledgeBase);
 
         Button supportButton = view.findViewById(R.id.btn_support);
         supportButton.setOnClickListener(this::onSupportClick);

@@ -30,7 +30,7 @@ public class ArticlesInfoAdapter extends RecyclerView.Adapter<ArticlesInfoAdapte
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_article_info);
+        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_article_info, R.style.Usedesk_Theme_KnowledgeBase);
 
         return new ArticleViewHolder(view);
     }

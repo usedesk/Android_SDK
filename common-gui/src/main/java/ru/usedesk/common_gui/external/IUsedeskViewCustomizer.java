@@ -9,16 +9,13 @@ import androidx.annotation.Nullable;
 
 public interface IUsedeskViewCustomizer {
 
-    int getLayoutId(int defaultId);
-
-    void setLayoutId(int defaultId, int customId);
-
-    void setThemeId(int themeId);
+    void replaceId(int defaultId, int customId);
 
     @NonNull
-    View createView(@NonNull ViewGroup viewGroup, int defaultId);
+    View createView(@NonNull ViewGroup viewGroup, int defaultId, int themeId);
 
     @NonNull
     View createView(@NonNull LayoutInflater inflater, int layoutId,
-                    @Nullable ViewGroup viewGroup, boolean attachToRoot);
+                    @Nullable ViewGroup viewGroup, boolean attachToRoot,
+                    int themeId);
 }

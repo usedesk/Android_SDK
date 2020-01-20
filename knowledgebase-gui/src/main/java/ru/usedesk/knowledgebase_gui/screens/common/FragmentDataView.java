@@ -34,7 +34,7 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = UsedeskViewCustomizer.getInstance()
-                .createView(inflater, layoutId, container, false);
+                .createView(inflater, layoutId, container, false, R.style.Usedesk_Theme_KnowledgeBase);
 
         onView(view);
 

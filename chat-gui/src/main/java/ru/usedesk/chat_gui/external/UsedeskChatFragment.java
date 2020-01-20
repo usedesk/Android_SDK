@@ -64,7 +64,7 @@ public class UsedeskChatFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = UsedeskViewCustomizer.getInstance()
-                .createView(inflater, R.layout.usedesk_fragment_chat, container, false);
+                .createView(inflater, R.layout.usedesk_fragment_chat, container, false, R.style.Usedesk_Theme_Chat);
 
         viewModel = ViewModelProviders.of(this, new ChatViewModelFactory(getContext()))
                 .get(ChatViewModel.class);
@@ -142,7 +142,7 @@ public class UsedeskChatFragment extends Fragment {
         final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         View bottomSheetView = UsedeskViewCustomizer.getInstance()
                 .createView(getActivity().getLayoutInflater(),
-                        R.layout.usedesk_dialog_attachment, null, false);
+                        R.layout.usedesk_dialog_attachment, null, false, R.style.Usedesk_Theme_Chat);
 
         bottomSheetView.findViewById(R.id.pick_photo_button)
                 .setOnClickListener(view -> {

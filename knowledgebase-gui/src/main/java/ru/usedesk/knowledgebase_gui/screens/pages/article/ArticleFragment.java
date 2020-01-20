@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.common.FragmentDataView;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
@@ -26,7 +25,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
     private TextView textViewText;
 
     public ArticleFragment() {
-        super(UsedeskViewCustomizer.getInstance().getLayoutId(R.layout.usedesk_fragment_article));
+        super(R.layout.usedesk_fragment_article);
 
         usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
     }

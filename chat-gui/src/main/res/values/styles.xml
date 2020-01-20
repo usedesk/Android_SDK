@@ -154,7 +154,7 @@
         <item name="usedesk_item_message_paddingEnd">16dp</item>
     </style>
 
-    <style name="Usedesk.Theme" parent="">
+    <style name="Usedesk.Theme.Chat" parent="">
         <item name="usedesk_fragment_article">@style/Usedesk.Fragment.Article</item>
         <item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat</item>
         <item name="usedesk_fragment_knowledge_base">@style/Usedesk.Fragment.KnowledgeBase</item>

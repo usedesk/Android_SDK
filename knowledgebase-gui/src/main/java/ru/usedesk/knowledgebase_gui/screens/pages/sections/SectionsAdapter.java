@@ -33,7 +33,7 @@ public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.Sectio
     @NonNull
     @Override
     public SectionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_section);
+        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_section, R.style.Usedesk_Theme_KnowledgeBase);
 
         return new SectionViewHolder(view);
     }

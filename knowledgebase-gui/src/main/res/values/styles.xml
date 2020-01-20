@@ -79,7 +79,7 @@
         <item name="usedesk_item_section_icon_height">60dp</item>
     </style>
 
-    <style name="Usedesk.Theme" parent="">
+    <style name="Usedesk.Theme.KnowledgeBase" parent="">
         <item name="usedesk_fragment_article">@style/Usedesk.Fragment.Article</item>
         <item name="usedesk_fragment_knowledge_base">@style/Usedesk.Fragment.KnowledgeBase</item>
         <item name="usedesk_fragment_list">@style/Usedesk.Fragment.List</item>

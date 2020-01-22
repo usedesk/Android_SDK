@@ -1,27 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_category"
-    tools:theme="@style/Usedesk.Item.Category">
+    android:layout_margin="2dp"
+    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/usedesk_marginStart"
-        android:layout_marginTop="?attr/usedesk_marginTop"
-        android:layout_marginEnd="?attr/usedesk_marginEnd"
-        android:layout_marginBottom="?attr/usedesk_marginBottom">
-
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/usedesk_content_marginStart"
-            android:layout_marginTop="?attr/usedesk_content_marginTop"
-            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
-            android:textSize="?attr/usedesk_item_category_title_text_size" />
-    </androidx.cardview.widget.CardView>
-</FrameLayout>
+        android:layout_margin="8dp"
+        android:textSize="20sp"
+        tools:text="Category Title" />
+</androidx.cardview.widget.CardView>

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="usedesk_fragment_knowledge_support_title" format="string" />
+    <!--KnowledgeBaseFragment-->
+    <attr name="usedesk_knowledgebase_support_title" format="string" />
+    <!--ArticleInfoItem-->
+    <attr name="usedesk_article_info_item_shows_text" format="string" />
 
     <attr name="usedesk_item_section_icon_width" format="dimension" />
     <attr name="usedesk_item_section_icon_height" format="dimension" />
@@ -11,7 +14,6 @@
     <attr name="usedesk_item_article_info_shows_marginTop" format="dimension" />
     <attr name="usedesk_item_article_info_shows_marginBottom" format="dimension" />
     <attr name="usedesk_item_article_info_shows_marginEnd" format="dimension" />
-    <attr name="usedesk_item_article_info_shows_text" format="string" />
 
     <attr name="usedesk_item_article_info_count_marginEnd" format="dimension" />
 

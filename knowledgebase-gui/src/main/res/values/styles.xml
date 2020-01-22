@@ -1,55 +1,13 @@
 <resources>
 
-    <style name="Usedesk.Fragment">
-
-    </style>
-
-    <style name="Usedesk.Fragment.Article">
-
-    </style>
-
-    <style name="Usedesk.Fragment.KnowledgeBase">
-        <item name="usedesk_fragment_knowledge_support_title">@string/chat_with_support</item>
-    </style>
-
-    <style name="Usedesk.Fragment.List">
-
-    </style>
-
-    <style name="Usedesk.Item">
-
-    </style>
-
-    <style name="Usedesk.Item.ArticleInfo">
-        <item name="usedesk_item_article_info_title_marginTop">8dp</item>
-        <item name="usedesk_item_article_info_title_marginStart">8dp</item>
-
-        <item name="usedesk_item_article_info_shows_marginTop">8dp</item>
-        <item name="usedesk_item_article_info_shows_marginBottom">8dp</item>
-        <item name="usedesk_item_article_info_shows_marginEnd">8dp</item>
-
-        <item name="usedesk_item_article_info_shows_text">@string/shows_postfix</item>
-
-        <item name="usedesk_item_article_info_count_marginEnd">4dp</item>
-    </style>
-
-    <style name="Usedesk.Item.Category">
-        <item name="usedesk_item_category_title_text_size">20sp</item>
-    </style>
-
-    <style name="Usedesk.Item.Section">
-        <item name="usedesk_item_section_title_text_size">20sp</item>
-
-        <item name="usedesk_item_section_icon_width">60dp</item>
-        <item name="usedesk_item_section_icon_height">60dp</item>
-    </style>
-
     <style name="Usedesk.Theme.KnowledgeBase">
-        <item name="usedesk_fragment_article">@style/Usedesk.Fragment.Article</item>
-        <item name="usedesk_fragment_knowledge_base">@style/Usedesk.Fragment.KnowledgeBase</item>
-        <item name="usedesk_fragment_list">@style/Usedesk.Fragment.List</item>
-        <item name="usedesk_item_articleinfo">@style/Usedesk.Item.ArticleInfo</item>
-        <item name="usedesk_item_category">@style/Usedesk.Item.Category</item>
-        <item name="usedesk_item_section">@style/Usedesk.Item.Section</item>
+        <!--KnowledgeBaseFragment-->
+        <item name="usedesk_knowledgebase_support_title">
+            @string/usedesk_knowledgebase_support_title
+        </item>
+        <!--ArticleInfoItem-->
+        <item name="usedesk_article_info_item_shows_text">
+            @string/usedesk_article_info_item_shows_text
+        </item>
     </style>
 </resources>

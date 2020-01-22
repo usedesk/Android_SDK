@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="?attr/usedesk_fragment_list"
-    tools:theme="@style/Usedesk.Fragment.List">
+    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
 
     <TextView
         android:id="@+id/tv_message"
@@ -13,19 +12,15 @@
         android:layout_gravity="center"
         android:textSize="20sp" />
 
-    <FrameLayout
+    <ScrollView
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </ScrollView>
-    </FrameLayout>
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/usedesk_item_article_info" />
+    </ScrollView>
 </FrameLayout>

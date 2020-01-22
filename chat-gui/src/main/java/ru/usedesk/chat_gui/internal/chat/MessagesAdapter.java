@@ -139,8 +139,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private final ImageButton ivDislike;
         private final LinearLayout layoutButtons;
 
-        OperatorMessageHolder(@NonNull ViewGroup itemView) {
-            super(itemView, R.layout.usedesk_item_message_operator);
+        OperatorMessageHolder(@NonNull ViewGroup viewGroup) {
+            super(viewGroup, R.layout.usedesk_item_message_operator);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
             tvName = itemView.findViewById(R.id.tv_name);
@@ -155,7 +155,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void bind(@NonNull Message message) {
             super.bind(message);
 
-            tvName.setText(message.getName().replace(' ', '\n'));
+            tvName.setText(message.getName()/*.replace(' ', '\n')*/);
 
             ImageUtils.checkForDisplayImage(ivAvatar,
                     message.getPayload().getAvatar(),
@@ -206,8 +206,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private final TextView tvMessage;
         private final ImageView ivPreview;
 
-        MessageHolder(@NonNull ViewGroup itemView, int id) {
-            super(itemView, id);
+        MessageHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(viewGroup, id);
 
             tvMessage = itemView.findViewById(R.id.tv_message);
             ivPreview = itemView.findViewById(R.id.iv_preview);
@@ -223,9 +223,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 tvMessage.setText(message.getText());
             }
 
-            ImageUtils.checkForDisplayImage(ivPreview,
-                    message.getUsedeskFile().getContent(),
-                    R.drawable.ic_document_black);
+            if (message.getUsedeskFile() != null) {
+                ivPreview.setVisibility(View.VISIBLE);
+                ImageUtils.checkForDisplayImage(ivPreview,
+                        message.getUsedeskFile().getContent(),
+                        R.drawable.ic_document_black);
+            } else {
+                ivPreview.setVisibility(View.GONE);
+            }
 
             ivPreview.setOnClickListener(view -> {
                 if (message.getUsedeskFile() != null) {
@@ -240,8 +245,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private final TextView timeTextView;
 
-        TimeHolder(@NonNull ViewGroup itemView, int id) {
-            super(LayoutInflater.from(itemView.getContext()).inflate(id, itemView, false));
+        TimeHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
 
             timeTextView = itemView.findViewById(R.id.tv_time);
         }

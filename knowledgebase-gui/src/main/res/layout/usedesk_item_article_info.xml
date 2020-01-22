@@ -1,57 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_articleinfo"
-    tools:theme="@style/Usedesk.Item.ArticleInfo">
+    android:layout_margin="2dp"
+    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
 
-    <androidx.cardview.widget.CardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/usedesk_marginStart"
-        android:layout_marginTop="?attr/usedesk_marginTop"
-        android:layout_marginEnd="?attr/usedesk_marginEnd"
-        android:layout_marginBottom="?attr/usedesk_marginBottom">
+        android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/usedesk_content_marginStart"
-            android:layout_marginTop="?attr/usedesk_content_marginTop"
-            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-            android:layout_marginBottom="?attr/usedesk_content_marginBottom">
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="?attr/usedesk_item_article_info_title_marginStart"
-                android:layout_marginTop="?attr/usedesk_item_article_info_title_marginTop"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/tv_shows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="?attr/usedesk_article_info_item_shows_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-            <TextView
-                android:id="@+id/tv_shows"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="?attr/usedesk_item_article_info_shows_marginTop"
-                android:layout_marginEnd="?attr/usedesk_item_article_info_shows_marginEnd"
-                android:layout_marginBottom="?attr/usedesk_item_article_info_shows_marginBottom"
-                android:text="?attr/usedesk_item_article_info_shows_text"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
-
-            <TextView
-                android:id="@+id/tv_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="?attr/usedesk_item_article_info_count_marginEnd"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_shows"
-                app:layout_constraintEnd_toStartOf="@+id/tv_shows"
-                app:layout_constraintTop_toTopOf="@+id/tv_shows" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_shows"
+            app:layout_constraintEnd_toStartOf="@+id/tv_shows"
+            app:layout_constraintTop_toTopOf="@+id/tv_shows"
+            tools:text="115" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

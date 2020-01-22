@@ -1,7 +1,5 @@
 <resources>
 
-    <style name="Usedesk" />
-
-    <style name="Usedesk.Theme" />
+    <style name="Usedesk.Theme" parent="" />
 
 </resources>

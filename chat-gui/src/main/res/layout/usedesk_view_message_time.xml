@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textAppearance="textAppearanceSmall"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="16sp"
         tools:text="12:12" />
 

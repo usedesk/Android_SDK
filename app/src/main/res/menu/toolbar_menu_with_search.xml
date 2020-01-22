@@ -4,13 +4,13 @@
     <item
         android:id="@+id/action_info"
         android:icon="@drawable/ic_info_black"
-        android:title="@string/info"
+        android:title="@string/info_title"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/search"
+        android:title="@string/search_title"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
 </menu>

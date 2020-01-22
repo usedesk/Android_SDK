@@ -1,48 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_section"
-    tools:theme="@style/Usedesk.Item.Section">
+    android:layout_margin="2dp"
+    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/usedesk_marginStart"
-        android:layout_marginTop="?attr/usedesk_marginTop"
-        android:layout_marginEnd="?attr/usedesk_marginEnd"
-        android:layout_marginBottom="?attr/usedesk_marginBottom">
+        android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/iv_icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@android:drawable/btn_star_big_on" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="?attr/usedesk_content_marginStart"
-            android:layout_marginTop="?attr/usedesk_content_marginTop"
-            android:layout_marginEnd="?attr/usedesk_content_marginEnd"
-            android:layout_marginBottom="?attr/usedesk_content_marginBottom"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/iv_icon"
-                android:layout_width="?attr/usedesk_item_section_icon_width"
-                android:layout_height="?attr/usedesk_item_section_icon_height"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@android:drawable/btn_star_big_on" />
-
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="?attr/usedesk_content_marginStart"
-                android:textSize="?attr/usedesk_item_section_title_text_size"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iv_icon"
-                app:layout_constraintTop_toTopOf="parent" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</FrameLayout>
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/iv_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Section title" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

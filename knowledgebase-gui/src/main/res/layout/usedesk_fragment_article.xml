@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="?attr/usedesk_fragment_article"
-    tools:theme="@style/Usedesk.Fragment.Article">
+    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
 
     <TextView
         android:id="@+id/tv_message"

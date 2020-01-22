@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private Fragment getCurrentFragment() {
-        return getSupportFragmentManager().findFragmentById(R.id.container_frame_layout);
+        return getSupportFragmentManager().findFragmentById(R.id.container);
     }
 
     private void goToConfiguration() {
@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity
 
     public void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_frame_layout, fragment)
+                .replace(R.id.container, fragment)
                 .commit();
     }
 }

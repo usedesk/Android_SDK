@@ -1,17 +1,7 @@
 <resources>
-    <style name="Usedesk">
-        <item name="usedesk_marginTop">4dp</item>
-        <item name="usedesk_marginBottom">4dp</item>
-        <item name="usedesk_marginStart">4dp</item>
-        <item name="usedesk_marginEnd">4dp</item>
 
-        <item name="usedesk_content_marginTop">8dp</item>
-        <item name="usedesk_content_marginBottom">8dp</item>
-        <item name="usedesk_content_marginStart">8dp</item>
-        <item name="usedesk_content_marginEnd">8dp</item>
-    </style>
+    <style name="Usedesk" />
 
-    <style name="Usedesk.Theme">
+    <style name="Usedesk.Theme" />
 
-    </style>
 </resources>

@@ -40,7 +40,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:hint="@string/message_hint"
+        android:hint="@string/usedesk_message_panel_hint"
         android:inputType="textMultiLine|textCapSentences"
         android:maxLength="10000"
         android:maxLines="5"

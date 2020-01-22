@@ -15,60 +15,35 @@
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <style name="Usedesk.TextStyle.Chat.Time.Custom">
-        <item name="android:textColor">#000000</item>
-    </style>
-
-    <style name="Usedesk.TextStyle.Chat.Massage.Custom">
-        <item name="android:textColor">#000000</item>
-    </style>
-
-    <style name="Usedesk.Item.Message.Service.Custom">
-        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+    <style name="Usedesk.Theme.Chat.Custom">
+        <!--OfflineForm-->
+        <item name="usedesk_offline_form_title">@string/offline_form_title</item>
+        <!--MessagePanel-->
+        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attach_file</item>
+        <item name="usedesk_message_panel_send_icon">@drawable/ic_send</item>
+        <item name="usedesk_message_panel_document_icon">@drawable/ic_document</item>
+        <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
+        <!--MessageUser-->
+        <item name="usedesk_message_user_background">@drawable/user_bubble</item>
+        <!--MessageOperator-->
+        <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
+        <item name="usedesk_message_operator_like">@drawable/ic_like</item>
+        <item name="usedesk_message_operator_dislike">@drawable/ic_dislike</item>
+        <!--AttachmentPanel-->
+        <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo
         </item>
-        <item name="usedesk_item_message_time_header_style">
-            @style/Usedesk.TextStyle.Chat.Time.Custom
+        <item name="usedesk_attachment_panel_camera_icon">@drawable/ic_attachment_take_photo
         </item>
-    </style>
-
-    <style name="Usedesk.Item.Message.Operator.Custom">
-        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+        <item name="usedesk_attachment_panel_storage_icon">@drawable/ic_attachment_document
         </item>
-        <item name="usedesk_item_message_time_header_style">
-            @style/Usedesk.TextStyle.Chat.Time.Custom
+        <item name="usedesk_attachment_panel_gallery_title">
+            @string/attachment_panel_gallery_title
         </item>
-    </style>
-
-    <style name="Usedesk.Item.Message.User.Custom">
-        <item name="usedesk_item_message_text_style">@style/Usedesk.TextStyle.Chat.Massage.Custom
+        <item name="usedesk_attachment_panel_camera_title">
+            @string/attachment_panel_camera_title
         </item>
-        <item name="usedesk_item_message_time_header_style">
-            @style/Usedesk.TextStyle.Chat.Time.Custom
+        <item name="usedesk_attachment_panel_storage_title">
+            @string/attachment_panel_storage_title
         </item>
-    </style>
-
-    <style name="Usedesk.Fragment.Chat.Button.Send.Custom">
-        <item name="android:padding">8dp</item>
-    </style>
-
-    <style name="Usedesk.Fragment.Chat.Button.Attachment.Custom">
-        <item name="android:padding">8dp</item>
-    </style>
-
-    <style name="Usedesk.Fragment.Chat.Custom">
-        <item name="usedesk_fragment_chat_send_style">
-            @style/Usedesk.Fragment.Chat.Button.Send.Custom
-        </item>
-        <item name="usedesk_fragment_chat_attachment_style">
-            @style/Usedesk.Fragment.Chat.Button.Attachment.Custom
-        </item>
-    </style>
-
-    <style name="Usedesk.Theme.Custom">
-        <item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat.Custom</item>
-        <item name="usedesk_item_message_service">@style/Usedesk.Item.Message.Service.Custom</item>
-        <item name="usedesk_item_message_operator">@style/Usedesk.Item.Message.Operator.Custom
-        </item>
-        <item name="usedesk_item_message_user">@style/Usedesk.Item.Message.User.Custom</item>
     </style>
 </resources>

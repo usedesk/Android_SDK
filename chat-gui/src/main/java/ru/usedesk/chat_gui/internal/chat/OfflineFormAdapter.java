@@ -26,7 +26,7 @@ public class OfflineFormAdapter {
         nameEditText = parentView.findViewById(R.id.offline_form_name_edit_text);
         emailEditText = parentView.findViewById(R.id.offline_form_email_edit_text);
         messageEditText = parentView.findViewById(R.id.offline_form_message_edit_text);
-        sendTextView = parentView.findViewById(R.id.offline_form_send_image_view);
+        sendTextView = parentView.findViewById(R.id.usedesk_offline_form_send_image_view);
 
         sendTextView.setOnClickListener(v -> onSend());
     }

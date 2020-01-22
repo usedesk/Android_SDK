@@ -30,7 +30,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:src="?attr/message_panel_attach_icon"
+        android:src="?attr/usedesk_message_panel_attach_icon"
         app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rv_attached_files" />
@@ -56,7 +56,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        android:src="?attr/message_panel_send_icon"
+        android:src="?attr/usedesk_message_panel_send_icon"
         app:layout_constraintBottom_toBottomOf="@+id/message_edit_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/message_edit_text" />

@@ -1,36 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="?attr/usedesk_item_message_service"
-    tools:theme="@style/Usedesk.Item.Message.Service">
+    android:layout_margin="8dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:theme="@style/Usedesk.Theme.Chat">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <include layout="@layout/usedesk_view_message_time" />
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?attr/usedesk_marginStart"
-        android:layout_marginTop="?attr/usedesk_marginTop"
-        android:layout_marginEnd="?attr/usedesk_marginEnd"
-        android:layout_marginBottom="?attr/usedesk_marginBottom"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/time_text_view"
-            style="?attr/usedesk_item_message_time_header_style"
-            android:layout_gravity="center_vertical"
-            tools:text="12:12" />
-
-        <TextView
-            android:id="@+id/text_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/messageServiceColor"
-            android:textStyle="bold"
-            tools:text="Service message" />
-    </LinearLayout>
-</FrameLayout>
+        android:autoLink="web"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:text="Disconnected" />
+</LinearLayout>

@@ -108,17 +108,25 @@
 
     <style name="Usedesk.Theme.Chat">
         <!--OfflineForm-->
-        <item name="offline_form_title">@string/offline_form_title</item>
-        <item name="offline_form_name_hint">@string/offline_form_name_hint</item>
-        <item name="offline_form_email_hint">@string/offline_form_email_hint</item>
-        <item name="offline_form_message_hint">@string/offline_form_message_hint</item>
-        <item name="offline_form_send">@string/offline_form_send</item>
+        <item name="usedesk_offline_form_title">@string/usedesk_offline_form_title</item>
+        <item name="usedesk_offline_form_name_hint">@string/usedesk_offline_form_name_hint</item>
+        <item name="usedesk_offline_form_email_hint">@string/usedesk_offline_form_email_hint</item>
+        <item name="usedesk_offline_form_message_hint">@string/usedesk_offline_form_message_hint
+        </item>
+        <item name="usedesk_offline_form_send">@string/usedesk_offline_form_send</item>
         <!--MessagePanel-->
-        <item name="message_panel_form_send">@string/message_hint</item>
-        <item name="message_panel_attach_icon">@drawable/ic_attach_file_black</item>
-        <item name="message_panel_send_icon">@drawable/ic_send_black</item>
-        <item name="message_panel_document_icon">@drawable/ic_document_black</item>
-        <item name="message_panel_document_remove_icon">@drawable/ic_cancel</item>
+        <item name="usedesk_message_panel_form_send">@string/message_hint</item>
+        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attach_file_black</item>
+        <item name="usedesk_message_panel_send_icon">@drawable/ic_send_black</item>
+        <item name="usedesk_message_panel_document_icon">@drawable/ic_document_black</item>
+        <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
+        <!--MessageUser-->
+        <item name="usedesk_message_user_background">@drawable/user_bubble</item>
+        <!--MessageOperator-->
+        <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
+        <!--ChatFragment-->
+        <item name="usedesk_chat_fragment_loading_text">@string/usedesk_chat_fragment_loading_text
+        </item>
 
         <item name="usedesk_fragment_chat">@style/Usedesk.Fragment.Chat</item>
         <item name="usedesk_dialog_offlineform">@style/Usedesk.Dialog.OfflineForm</item>

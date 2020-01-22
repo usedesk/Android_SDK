@@ -135,7 +135,7 @@ public class UsedeskChatFragment extends Fragment {
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
         offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
         messageAdapter = new MessageAdapter(view, viewModel, v -> openAttachmentDialog());
-        messagesAdapter = new MessagesAdapter(view, viewModel.getModelLiveData().getValue().getMessages(), viewModel::sendFeedback);
+        messagesAdapter = new MessagesAdapter(view, viewModel.getModelLiveData().getValue().getMessages(), viewModel);
     }
 
     private void openAttachmentDialog() {

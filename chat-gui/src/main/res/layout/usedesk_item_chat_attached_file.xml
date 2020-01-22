@@ -11,12 +11,12 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="8dp"
-        app:srcCompat="?attr/message_panel_document_icon" />
+        app:srcCompat="?attr/usedesk_message_panel_document_icon" />
 
     <ImageView
         android:id="@+id/iv_detach"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_gravity="end|top"
-        app:srcCompat="?attr/message_panel_document_remove_icon" />
+        app:srcCompat="?attr/usedesk_message_panel_document_remove_icon" />
 </FrameLayout>

@@ -21,13 +21,12 @@ public class ImageUtils {
 
     public static void checkForDisplayImage(@NonNull ImageView imageImageView,
                                             @NonNull String pictureUrl, int errorResId) {
+        imageImageView.setImageResource(errorResId);
         if (!TextUtils.isEmpty(pictureUrl)) {
             GlideApp.with(imageImageView)
                     .load(pictureUrl)
                     .error(errorResId)
                     .into(imageImageView);
-        } else {
-            imageImageView.setImageResource(errorResId);
         }
     }
 

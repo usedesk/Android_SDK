@@ -14,16 +14,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginEnd="4dp"
+        android:textColor="#a5a5a5"
+        android:textSize="12sp"
         tools:text="12:54" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:background="@drawable/user_bub"
-        android:divider="@drawable/message_divider_v"
-        android:orientation="vertical"
+        android:background="@drawable/user_bubble"
+        android:divider="@drawable/message_divider"
         android:gravity="center_vertical"
+        android:orientation="vertical"
         android:paddingStart="8dp"
         android:paddingTop="8dp"
         android:paddingEnd="16dp"
@@ -35,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoLink="web"
+            android:includeFontPadding="false"
             android:textAppearance="?android:attr/textAppearanceMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +51,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_message"
-            tools:visibility="gone"
-            tools:srcCompat="@drawable/ic_home_black" />
+            tools:srcCompat="@drawable/ic_home_black"
+            tools:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

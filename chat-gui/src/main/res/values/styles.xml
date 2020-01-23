@@ -14,12 +14,12 @@
         <item name="usedesk_message_panel_document_icon">@drawable/ic_document_black</item>
         <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
         <!--MessageUser-->
-        <item name="usedesk_message_user_background">@drawable/user_bub</item>
+        <item name="usedesk_message_user_background">@drawable/user_bubble</item>
         <item name="usedesk_message_user_background_color">
             @color/usedesk_message_user_background_color
         </item>
         <!--MessageOperator-->
-        <item name="usedesk_message_operator_background">@drawable/operator_bub</item>
+        <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
         <item name="usedesk_message_operator_background_color">
             @color/usedesk_message_operator_background_color
         </item>

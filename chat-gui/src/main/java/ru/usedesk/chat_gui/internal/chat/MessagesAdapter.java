@@ -219,7 +219,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             } else {
                 tvMessage.setText(message.getText());
             }
-            tvMessage.setText("test text");
             if (tvMessage.getText().length() > 0) {
                 tvMessage.setVisibility(View.VISIBLE);
             } else {

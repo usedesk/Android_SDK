@@ -1,7 +1,5 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-import android.text.TextUtils;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -36,7 +34,7 @@ public class UsedeskPayload {
     }
 
     public boolean hasFeedback() {
-        return !TextUtils.isEmpty(userRating);
+        return feedbackButtons != null && (userRating == null || userRating.isEmpty());
     }
 
     public String getAvatar() {

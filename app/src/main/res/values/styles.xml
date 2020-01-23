@@ -1,4 +1,5 @@
 <resources>
+
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -24,9 +25,9 @@
         <item name="usedesk_message_panel_document_icon">@drawable/ic_document</item>
         <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
         <!--MessageUser-->
-        <item name="usedesk_message_user_background">@drawable/user_bubble</item>
+        <item name="usedesk_message_user_background_color">@color/message_user_color</item>
         <!--MessageOperator-->
-        <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
+        <item name="usedesk_message_operator_background_color">@color/message_operator_color</item>
         <item name="usedesk_message_operator_like">@drawable/ic_like</item>
         <item name="usedesk_message_operator_dislike">@drawable/ic_dislike</item>
         <!--AttachmentPanel-->

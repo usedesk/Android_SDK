@@ -30,7 +30,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static final int TYPE_USER_MESSAGE = 1;
     private static final int TYPE_OPERATOR_MESSAGE = 2;
-    private static final int TYPE_OPERATOR_FEEDBACK = 3;
     private static final int TYPE_SERVICE_TEXT = 4;
     private final ChatViewModel viewModel;
     private List<Message> messages;
@@ -86,13 +85,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case OPERATOR_TO_CLIENT:
             case BOT_TO_CLIENT:
-                boolean hasFeedbackButtons = message.getPayload().getFeedbackButtons() != null;
-
-                if (hasFeedbackButtons) {
-                    itemViewType = TYPE_OPERATOR_FEEDBACK;
-                } else {
-                    itemViewType = TYPE_OPERATOR_MESSAGE;
-                }
+                itemViewType = TYPE_OPERATOR_MESSAGE;
                 break;
             case SERVICE:
                 itemViewType = TYPE_SERVICE_TEXT;
@@ -135,9 +128,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private class OperatorMessageHolder extends MessageHolder {
         private final ImageView ivAvatar;
         private final TextView tvName;
+
+        private final LinearLayout ltButtons;
+
+        private final ViewGroup ltFeedback;
         private final ImageButton ivLike;
         private final ImageButton ivDislike;
-        private final LinearLayout layoutButtons;
 
         OperatorMessageHolder(@NonNull ViewGroup viewGroup) {
             super(viewGroup, R.layout.usedesk_item_message_operator);
@@ -145,8 +141,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
             tvName = itemView.findViewById(R.id.tv_name);
 
-            layoutButtons = itemView.findViewById(R.id.layout_buttons);
+            ltButtons = itemView.findViewById(R.id.lt_buttons);
 
+            ltFeedback = itemView.findViewById(R.id.lt_feedback);
             ivLike = itemView.findViewById(R.id.btn_like);
             ivDislike = itemView.findViewById(R.id.btn_dislike);
         }
@@ -162,11 +159,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     R.drawable.ic_operator_black);
 
             if (message.getPayload().hasFeedback()) {
-                ivLike.setVisibility(View.VISIBLE);
-                ivDislike.setVisibility(View.VISIBLE);
+                ltFeedback.setVisibility(View.VISIBLE);
             } else {
-                ivLike.setVisibility(View.GONE);
-                ivDislike.setVisibility(View.GONE);
+                ltFeedback.setVisibility(View.GONE);
 
                 ivLike.setOnClickListener(view -> {
                     viewModel.sendFeedback(Feedback.LIKE);
@@ -180,10 +175,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 });
             }
 
-            layoutButtons.removeAllViews();
-            if (message.getMessageButtons().getMessageText() != null) {
+            ltButtons.removeAllViews();
+            if (message.getMessageButtons().getMessageText() != null && message.getMessageButtons().getMessageButtons().size() > 0) {
+                ltButtons.setVisibility(View.VISIBLE);
                 for (MessageButtons.MessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
-                    Button button = new Button(layoutButtons.getContext());
+                    Button button = new Button(ltButtons.getContext());
 
                     button.setText(messageButton.getText());
                     button.setOnClickListener(v ->
@@ -195,9 +191,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                    layoutButtons.addView(button, layoutParams);
+                    ltButtons.addView(button, layoutParams);
                 }
-
+            } else {
+                ltButtons.setVisibility(View.GONE);
             }
         }
     }
@@ -221,6 +218,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 tvMessage.setText(message.getMessageButtons().getMessageText());
             } else {
                 tvMessage.setText(message.getText());
+            }
+            tvMessage.setText("test text");
+            if (tvMessage.getText().length() > 0) {
+                tvMessage.setVisibility(View.VISIBLE);
+            } else {
+                tvMessage.setVisibility(View.GONE);
             }
 
             if (message.getUsedeskFile() != null) {

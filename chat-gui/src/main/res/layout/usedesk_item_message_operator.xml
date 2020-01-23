@@ -2,98 +2,110 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:orientation="vertical"
+    android:layout_margin="4dp"
+    android:gravity="bottom"
+    android:orientation="horizontal"
     tools:theme="@style/Usedesk.Theme.Chat">
 
-    <include layout="@layout/usedesk_view_message_time" />
-
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:orientation="horizontal">
+        app:cardCornerRadius="8dp">
 
         <ImageView
             android:id="@+id/iv_avatar"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_operator_black" />
+    </androidx.cardview.widget.CardView>
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/operator_bub"
+        android:divider="@drawable/message_divider_v"
+        android:gravity="start"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:showDividers="middle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:background="?attr/usedesk_message_operator_background"
-            android:gravity="start"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
+            android:textStyle="bold"
+            tools:text="Ivanov Ivan Ivanovich" />
+
+        <TextView
+            android:id="@+id/tv_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="skjghskhd tsjkd" />
+
+        <ImageView
+            android:id="@+id/iv_preview"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             android:paddingTop="8dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="8dp">
+            android:scaleType="centerCrop"
+            tools:srcCompat="@drawable/ic_home_black"
+            tools:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:gravity="center"
-                tools:text="Ivanov Ivan Ivanovich" />
+        <LinearLayout
+            android:id="@+id/lt_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            tools:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tv_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                tools:text="skjghskhd tsjkdth sjdht kshdf jsdhfks dfjkshdfjh" />
+        <LinearLayout
+            android:id="@+id/lt_feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            tools:visibility="gone">
 
-            <ImageView
-                android:id="@+id/iv_preview"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:layout_marginTop="8dp"
-                android:scaleType="centerCrop"
-                tools:srcCompat="@drawable/ic_home_black" />
+            <ImageButton
+                android:id="@+id/btn_like"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="40dp"
+                android:background="@drawable/selector_chat_button_like"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_like" />
 
-            <LinearLayout
-                android:id="@+id/layout_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btn_like"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/selector_chat_button_like"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_like" />
-
-                <ImageButton
-                    android:id="@+id/btn_dislike"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/selector_chat_button_dislike"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_dislike" />
-            </LinearLayout>
-
+            <ImageButton
+                android:id="@+id/btn_dislike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/selector_chat_button_dislike"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_dislike" />
         </LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="4dp"
+        tools:text="12:54" />
+
 </LinearLayout>

@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_view_switcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:theme="@style/Usedesk.Theme.Chat">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/lt_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/messages_recycler_view"
+            android:id="@+id/rv_messages"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_layout"
+            app:layout_constraintBottom_toTopOf="@+id/lt_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/usedesk_item_message_user" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/bottom_layout"
+            android:id="@+id/lt_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -55,9 +54,9 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/loading_text_view"
+        android:id="@+id/tv_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="?attr/usedesk_chat_fragment_loading_text" />
-</ViewSwitcher>
+</FrameLayout>

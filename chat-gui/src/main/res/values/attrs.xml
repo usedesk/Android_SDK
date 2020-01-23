@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--OfflineForm-->
+    <!--UsedeskOfflineForm-->
     <attr name="usedesk_offline_form_title" format="string" />
     <attr name="usedesk_offline_form_name_hint" format="string" />
     <attr name="usedesk_offline_form_email_hint" format="string" />

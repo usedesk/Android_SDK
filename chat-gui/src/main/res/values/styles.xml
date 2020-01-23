@@ -1,6 +1,6 @@
 <resources>
     <style name="Usedesk.Theme.Chat">
-        <!--OfflineForm-->
+        <!--UsedeskOfflineForm-->
         <item name="usedesk_offline_form_title">@string/usedesk_offline_form_title</item>
         <item name="usedesk_offline_form_name_hint">@string/usedesk_offline_form_name_hint</item>
         <item name="usedesk_offline_form_email_hint">@string/usedesk_offline_form_email_hint</item>

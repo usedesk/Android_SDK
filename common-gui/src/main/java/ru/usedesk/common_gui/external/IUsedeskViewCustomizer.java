@@ -18,4 +18,6 @@ public interface IUsedeskViewCustomizer {
     View createView(@NonNull LayoutInflater inflater, int layoutId,
                     @Nullable ViewGroup viewGroup, boolean attachToRoot,
                     int themeId);
+
+    int getId(int defaultId);
 }

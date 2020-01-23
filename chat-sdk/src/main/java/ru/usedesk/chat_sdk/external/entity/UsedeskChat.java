@@ -1,16 +1,16 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-public class Chat {
+public class UsedeskChat {
 
     private String id;
     private String token;
     private String socketId;
     private String ticket;
-    private Client client;
+    private UsedeskClient client;
     private long connectedAt;
     private long disconnectedAt;
 
-    public Chat() {
+    public UsedeskChat() {
     }
 
     public String getId() {
@@ -61,11 +61,11 @@ public class Chat {
         this.disconnectedAt = disconnectedAt;
     }
 
-    public Client getClient() {
+    public UsedeskClient getClient() {
         return client;
     }
 
-    public void setClient(Client client) {
+    public void setClient(UsedeskClient client) {
         this.client = client;
     }
 }

@@ -14,124 +14,125 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class UsedeskActionListenerRx implements UsedeskActionListener {
 
-    private final Subject<EmptyItem> connectedSubject = BehaviorSubject.create();
-    private final Subject<Message> messageSubject = BehaviorSubject.create();
-    private final Subject<Message> newMessageSubject = BehaviorSubject.create();
-    private final Subject<EmptyItem> offlineFormExpectedSubject = BehaviorSubject.create();
-    private final Subject<EmptyItem> disconnectedSubject = BehaviorSubject.create();
-    private final Subject<Integer> errorResIdSubject = BehaviorSubject.create();
-    private final Subject<Exception> errorSubject = BehaviorSubject.create();
+    private final Subject<UsedeskSingleLifeEvent> connectedSubject = BehaviorSubject.create();
+    private final Subject<UsedeskSingleLifeEvent> offlineFormExpectedSubject = BehaviorSubject.create();
+    private final Subject<UsedeskSingleLifeEvent> disconnectedSubject = BehaviorSubject.create();
+    private final Subject<UsedeskSingleLifeEvent> feedbackSubject = BehaviorSubject.create();
+
+    private final Subject<UsedeskMessage> messageSubject = BehaviorSubject.create();
+    private final Subject<UsedeskMessage> newMessageSubject = BehaviorSubject.create();
     private final Subject<UsedeskException> exceptionSubject = BehaviorSubject.create();
 
-    private final Observable<List<Message>> messagesObservable;
+    private final Observable<List<UsedeskMessage>> messagesObservable;
 
     @Inject
     public UsedeskActionListenerRx() {
         messagesObservable = messageSubject.scan(new ArrayList<>(), (messages, message) -> {
-            List<Message> newMessages = new ArrayList<>(messages);
+            List<UsedeskMessage> newMessages = new ArrayList<>(messages.size() + 1);
+            newMessages.addAll(messages);
             newMessages.add(message);
             return newMessages;
         });
     }
 
-    private void onMessage(Message message) {
+    private void onMessage(UsedeskMessage message) {
         if (message != null) {
             messageSubject.onNext(message);
         }
     }
 
-    private void onNewMessage(Message message) {
+    private void onNewMessage(UsedeskMessage message) {
         if (message != null) {
             newMessageSubject.onNext(message);
         }
     }
 
-    public Observable<EmptyItem> getConnectedObservable() {
+    @NonNull
+    public Observable<UsedeskSingleLifeEvent> getConnectedObservable() {
         return connectedSubject;
     }
 
     /**
      * Все сообщения
      */
-    public Observable<Message> getMessageObservable() {
+    @NonNull
+    public Observable<UsedeskMessage> getMessageObservable() {
         return messageSubject;
     }
 
     /**
      * Только новые сообщения, генерируемые после подписки
      */
-    public Observable<Message> getNewMessageObservable() {
+    @NonNull
+    public Observable<UsedeskMessage> getNewMessageObservable() {
         return newMessageSubject;
     }
 
     /**
      * Полный список сообщений, генерируется с каждым сообщением
      */
-    public Observable<List<Message>> getMessagesObservable() {
+    @NonNull
+    public Observable<List<UsedeskMessage>> getMessagesObservable() {
         return messagesObservable;
     }
 
-    public Observable<EmptyItem> getOfflineFormExpectedObservable() {
+    @NonNull
+    public Observable<UsedeskSingleLifeEvent> getOfflineFormExpectedObservable() {
         return offlineFormExpectedSubject;
     }
 
-    public Observable<EmptyItem> getDisconnectedSubject() {
+    @NonNull
+    public Observable<UsedeskSingleLifeEvent> getDisconnectedObservable() {
         return disconnectedSubject;
     }
 
-    public Observable<Integer> getErrorResIdSubject() {
-        return errorResIdSubject;
+    @NonNull
+    public Observable<UsedeskException> getExceptionObservable() {
+        return exceptionSubject;
     }
 
-    public Observable<Exception> getErrorSubject() {
-        return errorSubject;
+    @NonNull
+    public Observable<UsedeskSingleLifeEvent> getFeedbackObservable() {
+        return feedbackSubject;
     }
 
     @Override
     public void onConnected() {
-        connectedSubject.onNext(EmptyItem.IGNORE_ME);
+        connectedSubject.onNext(new UsedeskSingleLifeEvent());
     }
 
     @Override
-    public void onMessageReceived(Message message) {
+    public void onMessageReceived(UsedeskMessage message) {
         onMessage(message);
         onNewMessage(message);
     }
 
     @Override
-    public void onMessagesReceived(List<Message> messages) {
+    public void onMessagesReceived(List<UsedeskMessage> messages) {
         if (messages != null) {
-            for (Message message : messages) {
+            for (UsedeskMessage message : messages) {
                 onMessage(message);
             }
         }
     }
 
     @Override
-    public void onServiceMessageReceived(Message message) {
-        onMessage(message);
+    public void onFeedbackReceived() {
+        feedbackSubject.onNext(new UsedeskSingleLifeEvent());
     }
 
     @Override
     public void onOfflineFormExpected() {
-        offlineFormExpectedSubject.onNext(EmptyItem.IGNORE_ME);
+        offlineFormExpectedSubject.onNext(new UsedeskSingleLifeEvent());
     }
 
     @Override
     public void onDisconnected() {
-        connectedSubject.onNext(EmptyItem.IGNORE_ME);
+        connectedSubject.onNext(new UsedeskSingleLifeEvent());
     }
 
     @Override
     public void onException(@NonNull UsedeskException usedeskException) {
         exceptionSubject.onNext(usedeskException);
-    }
-
-    public Subject<UsedeskException> getExceptionSubject() {
-        return exceptionSubject;
-    }
-
-    public enum EmptyItem {
-        IGNORE_ME
     }
 }

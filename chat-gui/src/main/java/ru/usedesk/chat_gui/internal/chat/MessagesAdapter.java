@@ -5,14 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -22,27 +23,28 @@ import ru.usedesk.chat_gui.internal.utils.DownloadUtils;
 import ru.usedesk.chat_gui.internal.utils.ImageUtils;
 import ru.usedesk.chat_gui.internal.utils.TimeUtils;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.Feedback;
-import ru.usedesk.chat_sdk.external.entity.Message;
-import ru.usedesk.chat_sdk.external.entity.MessageButtons;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButtons;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
     private static final int TYPE_USER_MESSAGE = 1;
     private static final int TYPE_OPERATOR_MESSAGE = 2;
-    private static final int TYPE_SERVICE_TEXT = 4;
+
     private final ChatViewModel viewModel;
-    private List<Message> messages;
+    private List<UsedeskMessage> messages;
     private DownloadUtils downloadUtils;
     private RecyclerView recyclerView;
 
     public MessagesAdapter(@NonNull View parentView,
-                           @NonNull List<Message> messages,
+                           @Nullable List<UsedeskMessage> messages,
                            @NonNull ChatViewModel viewModel) {
         this.viewModel = viewModel;
-        this.messages = messages;
+        this.messages = messages == null
+                ? new ArrayList<>()
+                : messages;
 
-        recyclerView = parentView.findViewById(R.id.messages_recycler_view);
+        recyclerView = parentView.findViewById(R.id.rv_messages);
         downloadUtils = new DownloadUtils(recyclerView.getContext());
 
         recyclerView.setAdapter(this);
@@ -59,13 +61,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_USER_MESSAGE:
-                return new UserMessageHolder(parent);
+                return new UserTextHolder(parent);
             case TYPE_OPERATOR_MESSAGE:
-                return new OperatorMessageHolder(parent);
-            case TYPE_SERVICE_TEXT:
-            default:
-                return new ItemServiceTextMessageHolder(parent);
+                return new OperatorTextHolder(parent);
         }
+        throw new RuntimeException("Unknown message type: " + viewType);
     }
 
     @Override
@@ -75,24 +75,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        int itemViewType = TYPE_SERVICE_TEXT;
-        Message message = messages.get(position);
+        UsedeskMessage message = messages.get(position);
 
-        switch (message.getType()) {
+        switch (messages.get(position).getType()) {
             case CLIENT_TO_OPERATOR:
             case CLIENT_TO_BOT:
-                itemViewType = TYPE_USER_MESSAGE;
-                break;
+                return TYPE_USER_MESSAGE;
             case OPERATOR_TO_CLIENT:
             case BOT_TO_CLIENT:
-                itemViewType = TYPE_OPERATOR_MESSAGE;
-                break;
-            case SERVICE:
-                itemViewType = TYPE_SERVICE_TEXT;
-                break;
+                return TYPE_OPERATOR_MESSAGE;
         }
 
-        return itemViewType;
+        throw new RuntimeException("Unknown message type: " + message.getType());
     }
 
     @Override
@@ -100,8 +94,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return messages.size();
     }
 
-    public void updateMessages(@NonNull List<Message> messages, int messagesCountDif) {
+    public void updateMessages(@NonNull List<UsedeskMessage> messages) {
         int cur = this.messages.size();
+        int messagesCountDif = messages.size() - cur;
         this.messages = messages;
         notifyItemRangeChanged(cur, messagesCountDif);
         scrollToBottom();
@@ -113,29 +108,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private class ItemServiceTextMessageHolder extends MessageHolder {
-        ItemServiceTextMessageHolder(@NonNull ViewGroup viewGroup) {
-            super(viewGroup, R.layout.usedesk_item_message_service_text);
-        }
-    }
-
-    private class UserMessageHolder extends MessageHolder {
-        UserMessageHolder(@NonNull ViewGroup viewGroup) {
+    private class UserTextHolder extends MessageHolder {
+        UserTextHolder(@NonNull ViewGroup viewGroup) {
             super(viewGroup, R.layout.usedesk_item_message_user);
         }
     }
 
-    private class OperatorMessageHolder extends MessageHolder {
+    private class OperatorTextHolder extends MessageHolder {
         private final ImageView ivAvatar;
         private final TextView tvName;
 
         private final LinearLayout ltButtons;
 
         private final ViewGroup ltFeedback;
-        private final ImageButton ivLike;
-        private final ImageButton ivDislike;
+        private final ImageView ivLike;
+        private final ImageView ivDislike;
 
-        OperatorMessageHolder(@NonNull ViewGroup viewGroup) {
+        OperatorTextHolder(@NonNull ViewGroup viewGroup) {
             super(viewGroup, R.layout.usedesk_item_message_operator);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
@@ -149,7 +138,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         @Override
-        void bind(@NonNull Message message) {
+        void bind(@NonNull UsedeskMessage message) {
             super.bind(message);
 
             tvName.setText(message.getName()/*.replace(' ', '\n')*/);
@@ -158,18 +147,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     message.getPayload().getAvatar(),
                     R.drawable.ic_operator_black);
 
-            if (message.getPayload().hasFeedback()) {
-                ltFeedback.setVisibility(View.VISIBLE);
-            } else {
+            if (!message.getPayload().hasFeedback()) {
                 ltFeedback.setVisibility(View.GONE);
+            } else {
+                ltFeedback.setVisibility(View.VISIBLE);
 
                 ivLike.setOnClickListener(view -> {
-                    viewModel.sendFeedback(Feedback.LIKE);
+                    viewModel.sendFeedback(UsedeskFeedback.LIKE);
                     ivLike.setEnabled(false);
                     ivDislike.setEnabled(false);
                 });
                 ivDislike.setOnClickListener(view -> {
-                    viewModel.sendFeedback(Feedback.DISLIKE);
+                    viewModel.sendFeedback(UsedeskFeedback.DISLIKE);
                     ivLike.setEnabled(false);
                     ivDislike.setEnabled(false);
                 });
@@ -178,7 +167,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ltButtons.removeAllViews();
             if (message.getMessageButtons().getMessageText() != null && message.getMessageButtons().getMessageButtons().size() > 0) {
                 ltButtons.setVisibility(View.VISIBLE);
-                for (MessageButtons.MessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
+                for (UsedeskMessageButtons.MessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
                     Button button = new Button(ltButtons.getContext());
 
                     button.setText(messageButton.getText());
@@ -211,7 +200,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         @Override
-        void bind(@NonNull Message message) {
+        void bind(@NonNull UsedeskMessage message) {
             super.bind(message);
 
             if (message.getMessageButtons().getMessageText() != null) {
@@ -253,7 +242,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             timeTextView = itemView.findViewById(R.id.tv_time);
         }
 
-        void bind(@NonNull Message message) {
+        void bind(@NonNull UsedeskMessage message) {
             if (message.getCreatedAt() != null) {
                 String time = TimeUtils.parseTime(message.getCreatedAt());
                 if (TextUtils.isEmpty(time)) {

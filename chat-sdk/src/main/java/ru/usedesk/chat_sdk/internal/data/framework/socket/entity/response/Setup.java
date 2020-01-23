@@ -5,15 +5,15 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.usedesk.chat_sdk.external.entity.Client;
-import ru.usedesk.chat_sdk.external.entity.Message;
+import ru.usedesk.chat_sdk.external.entity.UsedeskClient;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 
 public class Setup {
 
     private boolean waitingEmail;
     private boolean noOperators;
-    private Client client;
-    private List<Message> messages;
+    private UsedeskClient client;
+    private List<UsedeskMessage> messages;
 
     public Setup() {
         waitingEmail = true;
@@ -27,18 +27,18 @@ public class Setup {
         return noOperators;
     }
 
-    public Client getClient() {
+    public UsedeskClient getClient() {
         return client;
     }
 
-    public List<Message> getMessages() {
+    public List<UsedeskMessage> getMessages() {
         if (messages == null || messages.isEmpty()) {
             return messages;
         }
 
-        List<Message> filteredMessages = new ArrayList<>();
+        List<UsedeskMessage> filteredMessages = new ArrayList<>();
 
-        for (Message message : messages) {
+        for (UsedeskMessage message : messages) {
             if (message.getChat() != null
                     && (!TextUtils.isEmpty(message.getText()) || message.getUsedeskFile() != null)) {
                 filteredMessages.add(message);

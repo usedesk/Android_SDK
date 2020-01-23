@@ -4,8 +4,8 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import ru.usedesk.chat_sdk.external.entity.OfflineForm;
+import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 
 public interface IHttpApiLoader {
-    void post(@NonNull String baseUrl, @NonNull OfflineForm offlineForm) throws IOException;
+    void post(@NonNull String baseUrl, @NonNull UsedeskOfflineForm offlineForm) throws IOException;
 }

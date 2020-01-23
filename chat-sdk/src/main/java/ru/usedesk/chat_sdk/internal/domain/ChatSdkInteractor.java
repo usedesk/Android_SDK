@@ -14,18 +14,17 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.Feedback;
-import ru.usedesk.chat_sdk.external.entity.Message;
-import ru.usedesk.chat_sdk.external.entity.MessageButtons;
-import ru.usedesk.chat_sdk.external.entity.MessageType;
-import ru.usedesk.chat_sdk.external.entity.OfflineForm;
-import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButtons;
+import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
@@ -116,7 +115,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     }
 
     @Override
-    public void send(Feedback feedback) throws UsedeskException {
+    public void send(UsedeskFeedback feedback) throws UsedeskException {
         if (feedback == null) {
             return;
         }
@@ -125,18 +124,18 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     }
 
     @Override
-    public void send(OfflineForm offlineForm) throws UsedeskException {
+    public void send(UsedeskOfflineForm offlineForm) throws UsedeskException {
         if (offlineForm == null) {
             return;
         }
         if (offlineForm.getCompanyId() == null) {
-            offlineForm = new OfflineForm(configuration.getCompanyId(), offlineForm.getName(), offlineForm.getEmail(), offlineForm.getMessage());
+            offlineForm = new UsedeskOfflineForm(configuration.getCompanyId(), offlineForm.getName(), offlineForm.getEmail(), offlineForm.getMessage());
         }
         apiRepository.send(configuration, offlineForm);
     }
 
     @Override
-    public void send(MessageButtons.MessageButton messageButton) throws UsedeskException {
+    public void send(UsedeskMessageButtons.MessageButton messageButton) throws UsedeskException {
         if (messageButton == null) {
             return;
         }
@@ -187,7 +186,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
 
     @NonNull
     @Override
-    public Completable sendRx(Feedback feedback) {
+    public Completable sendRx(UsedeskFeedback feedback) {
         return Completable.create(emitter -> {
             send(feedback);
             emitter.onComplete();
@@ -196,7 +195,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
 
     @NonNull
     @Override
-    public Completable sendRx(OfflineForm offlineForm) {
+    public Completable sendRx(UsedeskOfflineForm offlineForm) {
         return Completable.create(emitter -> {
             send(offlineForm);
             emitter.onComplete();
@@ -205,7 +204,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
 
     @NonNull
     @Override
-    public Completable sendRx(MessageButtons.MessageButton messageButton) {
+    public Completable sendRx(UsedeskMessageButtons.MessageButton messageButton) {
         return Completable.create(emitter -> {
             send(messageButton);
             emitter.onComplete();
@@ -226,7 +225,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                 configuration.getClientPhoneNumber(), configuration.getClientAdditionalId());
     }
 
-    private void parseNewMessageResponse(Message message) {
+    private void parseNewMessageResponse(UsedeskMessage message) {
         if (message != null && message.getChat() != null) {
             boolean hasText = !TextUtils.isEmpty(message.getText());
             boolean hasFile = message.getUsedeskFile() != null;
@@ -235,11 +234,6 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
                 actionListener.onMessageReceived(message);
             }
         }
-    }
-
-    private void parseFeedbackResponse() {
-        Message message = new Message(MessageType.SERVICE);
-        actionListener.onServiceMessageReceived(message);
     }
 
     private void parseInitResponse(String token, Setup setup) {
@@ -272,13 +266,13 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     private OnMessageListener getOnMessageListener() {
         return new OnMessageListener() {
             @Override
-            public void onNew(Message message) {
+            public void onNew(UsedeskMessage message) {
                 parseNewMessageResponse(message);
             }
 
             @Override
             public void onFeedback() {
-                parseFeedbackResponse();
+                actionListener.onFeedbackReceived();
             }
 
             @Override

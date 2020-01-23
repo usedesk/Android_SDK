@@ -2,14 +2,13 @@ package ru.usedesk.chat_sdk.external.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class FeedbackButton {
-
+public class UsedeskFeedbackButton {
     private String type;
     private String title;
     private Icon icon;
     private String data;
 
-    public FeedbackButton() {
+    public UsedeskFeedbackButton() {
     }
 
     public String getType() {

@@ -10,11 +10,11 @@ public interface UsedeskActionListener {
 
     void onConnected();
 
-    void onMessageReceived(Message message);
+    void onMessageReceived(UsedeskMessage message);
 
-    void onMessagesReceived(List<Message> messages);
+    void onMessagesReceived(List<UsedeskMessage> messages);
 
-    void onServiceMessageReceived(Message message);
+    void onFeedbackReceived();
 
     void onOfflineFormExpected();
 

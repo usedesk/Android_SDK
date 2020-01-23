@@ -22,8 +22,8 @@ public class ViewCustomizer implements IUsedeskViewCustomizer {
     ViewCustomizer() {
     }
 
-    private int getId(int key) {
-        return layoutIds.get(key);
+    public int getId(int defaultId) {
+        return layoutIds.get(defaultId);
     }
 
     @Override
@@ -31,6 +31,7 @@ public class ViewCustomizer implements IUsedeskViewCustomizer {
         layoutIds.put(defaultId, customId);
     }
 
+    @NonNull
     @Override
     public View createView(@NonNull ViewGroup viewGroup, int defaultId, int themeId) {
         return createView(LayoutInflater.from(viewGroup.getContext()),
@@ -47,4 +48,5 @@ public class ViewCustomizer implements IUsedeskViewCustomizer {
         LayoutInflater layoutInflater = inflater.cloneInContext(contextThemeWrapper);
         return layoutInflater.inflate(layoutId, viewGroup, attachToRoot);
     }
+
 }

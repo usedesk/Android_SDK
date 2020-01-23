@@ -5,9 +5,9 @@ import androidx.annotation.NonNull;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import ru.usedesk.chat_sdk.external.entity.MessageType;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType;
 
 public class UsedeskNotificationsPresenter {
 
@@ -27,7 +27,7 @@ public class UsedeskNotificationsPresenter {
     @NonNull
     private Observable<UsedeskNotificationsModel> getNewModelObservable() {
         return actionListenerRx.getNewMessageObservable()
-                .filter(message -> message.getType() == MessageType.OPERATOR_TO_CLIENT)
+                .filter(message -> message.getType() == UsedeskMessageType.OPERATOR_TO_CLIENT)
                 .map(UsedeskNotificationsModel::new);
     }
 

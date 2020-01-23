@@ -5,11 +5,11 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageButtons {
+public class UsedeskMessageButtons {
     private final String messageText;
     private final List<MessageButton> messageButtons;
 
-    MessageButtons(String messageText) {
+    UsedeskMessageButtons(String messageText) {
         this.messageButtons = new ArrayList<>();
 
         if (messageText != null) {

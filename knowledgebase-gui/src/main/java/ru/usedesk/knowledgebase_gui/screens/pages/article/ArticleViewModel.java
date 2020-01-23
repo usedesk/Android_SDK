@@ -22,7 +22,8 @@ public class ArticleViewModel extends DataViewModel<ArticleBody> {
         super.onData(data);
 
         usedeskKnowledgeBaseSdk.addViewsRx(data.getId())
-                .subscribe();//TODO: вернуть
+                .subscribe(() -> {
+                }, Throwable::printStackTrace);
     }
 
     static class Factory extends ViewModelFactory<ArticleViewModel> {

@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-public enum Feedback {
+public enum UsedeskFeedback {
     LIKE,
     DISLIKE
 }

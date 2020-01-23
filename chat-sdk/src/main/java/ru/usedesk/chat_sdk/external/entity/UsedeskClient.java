@@ -1,12 +1,12 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-public class Client {
+public class UsedeskClient {
 
     private String token;
     private String email;
     private int chat;
 
-    public Client() {
+    public UsedeskClient() {
     }
 
     public String getToken() {

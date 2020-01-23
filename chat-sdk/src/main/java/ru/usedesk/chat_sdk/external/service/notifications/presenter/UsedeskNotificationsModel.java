@@ -2,26 +2,26 @@ package ru.usedesk.chat_sdk.external.service.notifications.presenter;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.chat_sdk.external.entity.Message;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 
 public class UsedeskNotificationsModel {
-    private final Message message;
+    private final UsedeskMessage message;
     private final int count;
 
     UsedeskNotificationsModel() {
         this(null, 0);
     }
 
-    UsedeskNotificationsModel(@NonNull Message message) {
+    UsedeskNotificationsModel(@NonNull UsedeskMessage message) {
         this(message, 1);
     }
 
-    UsedeskNotificationsModel(Message message, int count) {
+    UsedeskNotificationsModel(UsedeskMessage message, int count) {
         this.message = message;
         this.count = count;
     }
 
-    public Message getMessage() {
+    public UsedeskMessage getMessage() {
         return message;
     }
 

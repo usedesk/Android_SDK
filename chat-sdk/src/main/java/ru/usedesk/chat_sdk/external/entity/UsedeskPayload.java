@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Payload {
+public class UsedeskPayload {
     private static final String KEY_TICKET_ID = "ticket_id";
     private static final String KEY_FEEDBACK_BUTTONS = "buttons";
 
@@ -14,20 +14,20 @@ public class Payload {
     private long ticketId;
 
     @SerializedName(KEY_FEEDBACK_BUTTONS)
-    private List<FeedbackButton> feedbackButtons;
+    private List<UsedeskFeedbackButton> feedbackButtons;
 
     private boolean csi;
     private String userRating;
     private String avatar;
 
-    public Payload() {
+    public UsedeskPayload() {
     }
 
     public long getTicketId() {
         return ticketId;
     }
 
-    public List<FeedbackButton> getFeedbackButtons() {
+    public List<UsedeskFeedbackButton> getFeedbackButtons() {
         return feedbackButtons;
     }
 

@@ -7,10 +7,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -22,7 +23,6 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
-import ru.usedesk.chat_gui.internal.chat.ChatModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
 import ru.usedesk.chat_gui.internal.chat.FilePicker;
@@ -30,21 +30,21 @@ import ru.usedesk.chat_gui.internal.chat.MessageAdapter;
 import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
 import ru.usedesk.chat_gui.internal.chat.OfflineFormAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskEvent;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 @RuntimePermissions
 public class UsedeskChatFragment extends Fragment {
-
-    private static final int SWITCHER_LOADING_STATE = 1;
-    private static final int SWITCHER_LOADED_STATE = 0;
-
-    private ViewSwitcher contentViewSwitcher;
-
     private MessageAdapter messageAdapter;
     private OfflineFormAdapter offlineFormAdapter;
     private MessagesAdapter messagesAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
+
+    private TextView tvLoading;
+    private ViewGroup ltContent;
 
     private FilePicker filePicker;
 
@@ -66,15 +66,82 @@ public class UsedeskChatFragment extends Fragment {
         View view = UsedeskViewCustomizer.getInstance()
                 .createView(inflater, R.layout.usedesk_fragment_chat, container, false, R.style.Usedesk_Theme_Chat);
 
-        viewModel = ViewModelProviders.of(this, new ChatViewModelFactory(getContext()))
+        viewModel = ViewModelProviders.of(this, new ChatViewModelFactory(container.getContext()))
                 .get(ChatViewModel.class);
 
-        initUI(view);
-
-        viewModel.getModelLiveData()
-                .observe(this, this::renderModel);
+        initUi(view);
+        renderData();
+        observeData();
 
         return view;
+    }
+
+    private void observeData() {
+        viewModel.getMessagesLiveData()
+                .observe(this, this::onMessages);
+
+        viewModel.getFileInfoListLiveData()
+                .observe(this, this::onFileInfoList);
+
+        viewModel.getOfflineFormExpectedLiveData()
+                .observe(this, this::onOfflineFormExpected);
+
+        viewModel.getFeedbackReceivedLiveData()
+                .observe(this, this::onFeedbackReceived);
+
+        viewModel.getExceptionLiveData()
+                .observe(this, this::onException);
+    }
+
+    private void renderData() {
+
+    }
+
+    private void onException(UsedeskException exception) {
+        if (exception != null) {
+            String message = exception.getMessage();
+            if (message == null) {
+                message = exception.toString();
+            }
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onFeedbackReceived(@Nullable UsedeskEvent feedbackReceivedEvent) {
+        if (feedbackReceivedEvent != null && !feedbackReceivedEvent.isProcessed()) {
+            feedbackReceivedEvent.setProcessed();
+            int stringId = UsedeskViewCustomizer.getInstance().getId(R.string.usedesk_feedback_received_message);
+            Toast.makeText(getContext(), stringId, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onMessages(@Nullable List<UsedeskMessage> usedeskMessages) {
+        boolean isMessages = viewModel.getMessagesLiveData().getValue() != null;
+        tvLoading.setVisibility(isMessages
+                ? View.GONE
+                : View.VISIBLE);
+        ltContent.setVisibility(isMessages
+                ? View.VISIBLE
+                : View.GONE);
+
+        if (usedeskMessages != null) {
+            messagesAdapter.updateMessages(usedeskMessages);
+        }
+    }
+
+    private void onFileInfoList(@Nullable List<UsedeskFileInfo> usedeskFileInfoList) {
+        if (usedeskFileInfoList != null) {
+            attachedFilesAdapter.update(usedeskFileInfoList);
+        }
+    }
+
+    private void onOfflineFormExpected(@Nullable UsedeskEvent offlineFormExpectedEvent) {
+        if (offlineFormExpectedEvent != null && !offlineFormExpectedEvent.isProcessed()) {
+            offlineFormExpectedEvent.setProcessed();
+            offlineFormAdapter.setMessage(messageAdapter.getMessage());
+            messageAdapter.show(false);
+            offlineFormAdapter.show(true);
+        }
     }
 
     @Override
@@ -102,40 +169,14 @@ public class UsedeskChatFragment extends Fragment {
         }
     }
 
-    private void renderModel(@NonNull ChatModel model) {
-        if (!model.isLoading()) {
-            contentViewSwitcher.setDisplayedChild(SWITCHER_LOADED_STATE);
-        }
-
-        if (model.getMessagesCountDif() > 0) {
-            messagesAdapter.updateMessages(model.getMessages(), model.getMessagesCountDif());
-        }
-
-        if (model.isOfflineFormExpected()) {
-            offlineFormAdapter.setMessage(messageAdapter.getMessage());
-            messageAdapter.show(false);
-            offlineFormAdapter.show(true);
-        }
-
-        attachedFilesAdapter.update(model.getUsedeskFileInfoList());
-
-        if (model.getUsedeskException() != null) {
-            String message = model.getUsedeskException().getMessage();
-            if (message == null) {
-                message = model.getUsedeskException().toString();
-            }
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void initUI(View view) {
-        contentViewSwitcher = view.findViewById(R.id.content_view_switcher);
-        contentViewSwitcher.setDisplayedChild(SWITCHER_LOADING_STATE);
+    private void initUi(View view) {
+        tvLoading = view.findViewById(R.id.tv_loading);
+        ltContent = view.findViewById(R.id.lt_content);
 
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
         offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
         messageAdapter = new MessageAdapter(view, viewModel, v -> openAttachmentDialog());
-        messagesAdapter = new MessagesAdapter(view, viewModel.getModelLiveData().getValue().getMessages(), viewModel);
+        messagesAdapter = new MessagesAdapter(view, viewModel.getMessagesLiveData().getValue(), viewModel);
     }
 
     private void openAttachmentDialog() {

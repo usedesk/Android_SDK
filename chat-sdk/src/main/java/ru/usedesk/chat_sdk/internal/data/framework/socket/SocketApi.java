@@ -17,7 +17,6 @@ import javax.inject.Inject;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.BaseResponse;
@@ -26,6 +25,7 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitCh
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.NewMessageResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SendFeedbackResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SetEmailResponse;
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 

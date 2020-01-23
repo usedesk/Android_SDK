@@ -5,10 +5,10 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import io.reactivex.Completable;
-import ru.usedesk.chat_sdk.external.entity.Feedback;
-import ru.usedesk.chat_sdk.external.entity.MessageButtons;
-import ru.usedesk.chat_sdk.external.entity.OfflineForm;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButtons;
+import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public interface IUsedeskChatSdk {
@@ -22,11 +22,11 @@ public interface IUsedeskChatSdk {
 
     void send(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException;
 
-    void send(Feedback feedback) throws UsedeskException;
+    void send(UsedeskFeedback feedback) throws UsedeskException;
 
-    void send(OfflineForm offlineForm) throws UsedeskException;
+    void send(UsedeskOfflineForm offlineForm) throws UsedeskException;
 
-    void send(MessageButtons.MessageButton messageButton) throws UsedeskException;
+    void send(UsedeskMessageButtons.MessageButton messageButton) throws UsedeskException;
 
     @NonNull
     Completable connectRx();
@@ -44,11 +44,11 @@ public interface IUsedeskChatSdk {
     Completable sendRx(List<UsedeskFileInfo> usedeskFileInfoList);
 
     @NonNull
-    Completable sendRx(Feedback feedback);
+    Completable sendRx(UsedeskFeedback feedback);
 
     @NonNull
-    Completable sendRx(OfflineForm offlineForm);
+    Completable sendRx(UsedeskOfflineForm offlineForm);
 
     @NonNull
-    Completable sendRx(MessageButtons.MessageButton messageButton);
+    Completable sendRx(UsedeskMessageButtons.MessageButton messageButton);
 }

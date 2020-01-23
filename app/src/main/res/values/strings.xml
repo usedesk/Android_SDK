@@ -36,7 +36,7 @@
     <string name="knowledge_base_title">KnowledgeBase</string>
     <string name="chat_title">Chat</string>
 
-    <!--OfflineForm-->
+    <!--UsedeskOfflineForm-->
     <string name="offline_form_title">There is not anyone. Send us a request and we will consider it.</string>
     <!--AttachmentPanel-->
     <string name="attachment_panel_gallery_title">Gallery</string>

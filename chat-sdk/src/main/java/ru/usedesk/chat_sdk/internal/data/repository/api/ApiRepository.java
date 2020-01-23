@@ -7,13 +7,12 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
-import ru.usedesk.chat_sdk.external.entity.Feedback;
-import ru.usedesk.chat_sdk.external.entity.OfflineForm;
-import ru.usedesk.chat_sdk.external.entity.OnMessageListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
@@ -22,6 +21,7 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.Request
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest;
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
@@ -56,7 +56,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void send(@NonNull String token, @NonNull Feedback feedback) throws UsedeskException {
+    public void send(@NonNull String token, @NonNull UsedeskFeedback feedback) throws UsedeskException {
         checkConnection();
 
         socketApi.emitterAction(new SendFeedbackRequest(token, feedback));
@@ -89,7 +89,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void send(@NonNull UsedeskChatConfiguration configuration, @NonNull OfflineForm offlineForm) throws UsedeskException {
+    public void send(@NonNull UsedeskChatConfiguration configuration, @NonNull UsedeskOfflineForm offlineForm) throws UsedeskException {
         try {
             URL url = new URL(configuration.getOfflineFormUrl());
             String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());

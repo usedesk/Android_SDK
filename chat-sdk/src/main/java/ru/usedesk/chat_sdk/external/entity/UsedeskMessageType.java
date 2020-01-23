@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.external.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public enum MessageType {
+public enum UsedeskMessageType {
     @SerializedName("operator_to_client")
     OPERATOR_TO_CLIENT,
 
@@ -15,7 +15,6 @@ public enum MessageType {
     @SerializedName("bot_to_client")
     BOT_TO_CLIENT,
 
-    @Deprecated
     @SerializedName("service")
     SERVICE
 }

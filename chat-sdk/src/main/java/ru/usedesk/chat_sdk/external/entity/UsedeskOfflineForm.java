@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.external.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class OfflineForm {
+public class UsedeskOfflineForm {
     private static final String KEY_COMPANY_ID = "company_id";
 
     @SerializedName(KEY_COMPANY_ID)
@@ -11,14 +11,14 @@ public class OfflineForm {
     private final String email;
     private final String message;
 
-    public OfflineForm(String companyId, String name, String email, String message) {
+    public UsedeskOfflineForm(String companyId, String name, String email, String message) {
         this.companyId = companyId;
         this.name = name;
         this.email = email;
         this.message = message;
     }
 
-    public OfflineForm(String name, String email, String message) {
+    public UsedeskOfflineForm(String name, String email, String message) {
         this(null, name, email, message);
     }
 

@@ -1,7 +1,7 @@
 package ru.usedesk.common_gui.internal;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.SparseIntArray;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,20 +10,27 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 
 public class ViewCustomizer implements IUsedeskViewCustomizer {
 
-    private final SparseIntArray layoutIds = new SparseIntArray();
+    @SuppressLint("UseSparseArrays")
+    private final Map<Integer, Integer> layoutIds = new HashMap<>();
 
     @Inject
     ViewCustomizer() {
     }
 
     public int getId(int defaultId) {
-        return layoutIds.get(defaultId);
+        Integer id = layoutIds.get(defaultId);
+        return id == null
+                ? defaultId
+                : id;
     }
 
     @Override

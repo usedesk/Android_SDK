@@ -94,7 +94,9 @@ public class UsedeskChatFragment extends Fragment {
     }
 
     private void renderData() {
-
+        onMessages(viewModel.getMessagesLiveData().getValue());
+        onFileInfoList(viewModel.getFileInfoListLiveData().getValue());
+        onOfflineFormExpected(viewModel.getOfflineFormExpectedLiveData().getValue());
     }
 
     private void onException(UsedeskException exception) {
@@ -116,7 +118,7 @@ public class UsedeskChatFragment extends Fragment {
     }
 
     private void onMessages(@Nullable List<UsedeskMessage> usedeskMessages) {
-        boolean isMessages = viewModel.getMessagesLiveData().getValue() != null;
+        boolean isMessages = usedeskMessages != null;
         tvLoading.setVisibility(isMessages
                 ? View.GONE
                 : View.VISIBLE);

@@ -98,6 +98,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         int cur = this.messages.size();
         int messagesCountDif = messages.size() - cur;
         this.messages = messages;
+
         notifyItemRangeChanged(cur, messagesCountDif);
         scrollToBottom();
     }

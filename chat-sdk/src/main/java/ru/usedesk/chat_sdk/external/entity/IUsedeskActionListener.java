@@ -6,7 +6,7 @@ import java.util.List;
 
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-public interface UsedeskActionListener {
+public interface IUsedeskActionListener {
 
     void onConnected();
 

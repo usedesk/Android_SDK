@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -30,7 +32,7 @@ public class ChatViewModel extends ViewModel {
 
     private final CompositeDisposable disposables = new CompositeDisposable();
 
-    private final MutableLiveData<UsedeskEvent> feedbackReceivedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Set<Integer>> feedbacksLiveData = new MutableLiveData<>();
     private final MutableLiveData<UsedeskException> exceptionLiveData = new MutableLiveData<>();
     private final MutableLiveData<UsedeskEvent> offlineFormExpectedLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<UsedeskMessage>> messagesLiveData = new MutableLiveData<>();
@@ -44,7 +46,8 @@ public class ChatViewModel extends ViewModel {
         toLiveData(actionListenerRx.getMessagesObservable(), messagesLiveData);
         toLiveData(actionListenerRx.getOfflineFormExpectedObservable(), offlineFormExpectedLiveData);
         toLiveData(actionListenerRx.getExceptionObservable(), exceptionLiveData);
-        toLiveData(actionListenerRx.getFeedbackObservable(), feedbackReceivedLiveData);
+
+        feedbacksLiveData.setValue(new HashSet<>());
 
         justComplete(usedeskChat.connectRx());
     }
@@ -69,8 +72,8 @@ public class ChatViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<UsedeskEvent> getFeedbackReceivedLiveData() {
-        return feedbackReceivedLiveData;
+    public LiveData<Set<Integer>> getFeedbacksLiveData() {
+        return feedbacksLiveData;
     }
 
     @NonNull
@@ -98,7 +101,13 @@ public class ChatViewModel extends ViewModel {
         fileInfoListLiveData.postValue(usedeskFileInfoList);
     }
 
-    public void sendFeedback(@NonNull UsedeskFeedback feedback) {
+    @SuppressWarnings("ConstantConditions")
+    public void sendFeedback(int messageIndex, @NonNull UsedeskFeedback feedback) {
+        Set<Integer> feedbacks = new HashSet<>(feedbacksLiveData.getValue().size() + 1);
+        feedbacks.addAll(feedbacksLiveData.getValue());
+        feedbacks.add(messageIndex);
+        feedbacksLiveData.postValue(feedbacks);
+
         justComplete(usedeskChat.sendRx(feedback));
     }
 

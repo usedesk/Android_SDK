@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Usedesk.Theme.Chat">
         <!--UsedeskOfflineForm-->
         <item name="usedesk_offline_form_title">@string/usedesk_offline_form_title</item>
@@ -22,6 +23,9 @@
         <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
         <item name="usedesk_message_operator_background_color">
             @color/usedesk_message_operator_background_color
+        </item>
+        <item name="usedesk_message_operator_feedback_received">
+            @string/usedesk_message_operator_feedback_received
         </item>
         <item name="usedesk_message_operator_like">@drawable/ic_like</item>
         <item name="usedesk_message_operator_dislike">@drawable/ic_dislike</item>

@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.internal.data.repository.api;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
@@ -12,7 +12,7 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public interface IApiRepository {
 
-    void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
+    void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
 
     void init(@NonNull UsedeskChatConfiguration configuration, String token);
 

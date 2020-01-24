@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.SimpleMessage;
@@ -54,7 +54,7 @@ public class SocketApi {
 
     private Socket socket;
 
-    private UsedeskActionListener actionListener;
+    private IUsedeskActionListener actionListener;
 
     private final Emitter.Listener disconnectEmitterListener = args -> actionListener.onDisconnected();
     private final Emitter.Listener connectErrorEmitterListener = args ->
@@ -114,7 +114,7 @@ public class SocketApi {
         return socket.connected();
     }
 
-    public void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener,
+    public void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener,
                         @NonNull OnMessageListener onMessageListener) throws UsedeskException {
         if (socket != null) {
             return;

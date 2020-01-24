@@ -9,7 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
@@ -33,10 +33,10 @@ import toothpick.config.Module;
 class MainModule extends Module {
 
     MainModule(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-               @NonNull UsedeskActionListener actionListener) {
+               @NonNull IUsedeskActionListener actionListener) {
         bind(Context.class).toInstance(appContext);
         bind(UsedeskChatConfiguration.class).toInstance(usedeskChatConfiguration);
-        bind(UsedeskActionListener.class).toInstance(actionListener);
+        bind(IUsedeskActionListener.class).toInstance(actionListener);
 
         bind(IUsedeskChatSdk.class).to(ChatSdkInteractor.class).singleton();
 

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
 import ru.usedesk.chat_sdk.internal.di.InstanceBox;
@@ -16,7 +16,7 @@ public class UsedeskChatSdk {
 
     @NonNull
     public static IUsedeskChatSdk init(@NonNull Context appContext,
-                                       @NonNull UsedeskActionListener actionListener) {
+                                       @NonNull IUsedeskActionListener actionListener) {
         if (instanceBox == null) {
             checkConfiguration();
             instanceBox = new InstanceBox(appContext, configuration, actionListener);

@@ -12,7 +12,7 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-public class UsedeskActionListenerRx implements UsedeskActionListener {
+public class UsedeskActionListenerRx implements IUsedeskActionListener {
 
     private final Subject<UsedeskSingleLifeEvent> connectedSubject = BehaviorSubject.create();
     private final Subject<UsedeskSingleLifeEvent> offlineFormExpectedSubject = BehaviorSubject.create();

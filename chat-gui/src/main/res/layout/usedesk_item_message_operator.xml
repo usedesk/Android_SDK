@@ -67,6 +67,15 @@
             tools:srcCompat="@drawable/ic_home_black"
             tools:visibility="gone" />
 
+        <TextView
+            android:id="@+id/tv_feedback_answer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="?attr/usedesk_message_operator_feedback_received"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold" />
+
         <LinearLayout
             android:id="@+id/lt_buttons"
             android:layout_width="match_parent"

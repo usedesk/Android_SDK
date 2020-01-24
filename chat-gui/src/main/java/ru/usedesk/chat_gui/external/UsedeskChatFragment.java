@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.List;
+import java.util.Set;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
@@ -76,6 +77,24 @@ public class UsedeskChatFragment extends Fragment {
         return view;
     }
 
+    private void initUi(View view) {
+        tvLoading = view.findViewById(R.id.tv_loading);
+        ltContent = view.findViewById(R.id.lt_content);
+
+        attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
+        offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
+        messageAdapter = new MessageAdapter(view, viewModel, v -> openAttachmentDialog());
+        messagesAdapter = new MessagesAdapter(view, viewModel,
+                viewModel.getMessagesLiveData().getValue(),
+                viewModel.getFeedbacksLiveData().getValue());
+    }
+
+    private void renderData() {
+        onMessages(viewModel.getMessagesLiveData().getValue());
+        onFileInfoList(viewModel.getFileInfoListLiveData().getValue());
+        onOfflineFormExpected(viewModel.getOfflineFormExpectedLiveData().getValue());
+    }
+
     private void observeData() {
         viewModel.getMessagesLiveData()
                 .observe(this, this::onMessages);
@@ -86,17 +105,39 @@ public class UsedeskChatFragment extends Fragment {
         viewModel.getOfflineFormExpectedLiveData()
                 .observe(this, this::onOfflineFormExpected);
 
-        viewModel.getFeedbackReceivedLiveData()
-                .observe(this, this::onFeedbackReceived);
+        viewModel.getFeedbacksLiveData()
+                .observe(this, this::onFeedbacks);
 
         viewModel.getExceptionLiveData()
                 .observe(this, this::onException);
     }
 
-    private void renderData() {
-        onMessages(viewModel.getMessagesLiveData().getValue());
-        onFileInfoList(viewModel.getFileInfoListLiveData().getValue());
-        onOfflineFormExpected(viewModel.getOfflineFormExpectedLiveData().getValue());
+    private void openAttachmentDialog() {
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        View bottomSheetView = UsedeskViewCustomizer.getInstance()
+                .createView(getActivity().getLayoutInflater(),
+                        R.layout.usedesk_dialog_attachment, null, false, R.style.Usedesk_Theme_Chat);
+
+        bottomSheetView.findViewById(R.id.pick_photo_button)
+                .setOnClickListener(view -> {
+                    bottomSheetDialog.dismiss();
+                    onPickPhotoClicked();
+                });
+
+        bottomSheetView.findViewById(R.id.take_photo_button)
+                .setOnClickListener(view -> {
+                    bottomSheetDialog.dismiss();
+                    onTakePhotoClicked();
+                });
+
+        bottomSheetView.findViewById(R.id.pick_document_button)
+                .setOnClickListener(view -> {
+                    bottomSheetDialog.dismiss();
+                    onPickDocumentClicked();
+                });
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+        bottomSheetDialog.show();
     }
 
     private void onException(UsedeskException exception) {
@@ -109,11 +150,9 @@ public class UsedeskChatFragment extends Fragment {
         }
     }
 
-    private void onFeedbackReceived(@Nullable UsedeskEvent feedbackReceivedEvent) {
-        if (feedbackReceivedEvent != null && !feedbackReceivedEvent.isProcessed()) {
-            feedbackReceivedEvent.setProcessed();
-            int stringId = UsedeskViewCustomizer.getInstance().getId(R.string.usedesk_feedback_received_message);
-            Toast.makeText(getContext(), stringId, Toast.LENGTH_SHORT).show();
+    private void onFeedbacks(@Nullable Set<Integer> feedbacks) {
+        if (feedbacks != null) {
+            messagesAdapter.updateFeedbacks(feedbacks);
         }
     }
 
@@ -146,6 +185,25 @@ public class UsedeskChatFragment extends Fragment {
         }
     }
 
+    private void onPickPhotoClicked() {
+        UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
+    }
+
+    private void onTakePhotoClicked() {
+        UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
+    }
+
+    private void onPickDocumentClicked() {
+        UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -169,63 +227,6 @@ public class UsedeskChatFragment extends Fragment {
                 viewModel.setAttachedFileInfoList(attachedFileInfoList);
             }
         }
-    }
-
-    private void initUi(View view) {
-        tvLoading = view.findViewById(R.id.tv_loading);
-        ltContent = view.findViewById(R.id.lt_content);
-
-        attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
-        offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
-        messageAdapter = new MessageAdapter(view, viewModel, v -> openAttachmentDialog());
-        messagesAdapter = new MessagesAdapter(view, viewModel.getMessagesLiveData().getValue(), viewModel);
-    }
-
-    private void openAttachmentDialog() {
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
-        View bottomSheetView = UsedeskViewCustomizer.getInstance()
-                .createView(getActivity().getLayoutInflater(),
-                        R.layout.usedesk_dialog_attachment, null, false, R.style.Usedesk_Theme_Chat);
-
-        bottomSheetView.findViewById(R.id.pick_photo_button)
-                .setOnClickListener(view -> {
-                    bottomSheetDialog.dismiss();
-                    onPickPhotoClicked();
-                });
-
-        bottomSheetView.findViewById(R.id.take_photo_button)
-                .setOnClickListener(view -> {
-                    bottomSheetDialog.dismiss();
-                    onTakePhotoClicked();
-                });
-
-        bottomSheetView.findViewById(R.id.pick_document_button)
-                .setOnClickListener(view -> {
-                    bottomSheetDialog.dismiss();
-                    onPickDocumentClicked();
-                });
-
-        bottomSheetDialog.setContentView(bottomSheetView);
-        bottomSheetDialog.show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
-    private void onPickPhotoClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
-    }
-
-    private void onTakePhotoClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
-    }
-
-    private void onPickDocumentClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
     }
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})

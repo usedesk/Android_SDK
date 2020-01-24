@@ -16,7 +16,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
@@ -34,7 +34,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
 
     private final Context context;
     private final UsedeskChatConfiguration configuration;
-    private final UsedeskActionListener actionListener;
+    private final IUsedeskActionListener actionListener;
     private final IUserInfoRepository userInfoRepository;
     private final IApiRepository apiRepository;
 
@@ -47,7 +47,7 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     @Inject
     ChatSdkInteractor(@NonNull Context context,
                       @NonNull UsedeskChatConfiguration configuration,
-                      @NonNull UsedeskActionListener actionListener,
+                      @NonNull IUsedeskActionListener actionListener,
                       @NonNull IUserInfoRepository userInfoRepository,
                       @NonNull IApiRepository apiRepository) {
         this.context = context;

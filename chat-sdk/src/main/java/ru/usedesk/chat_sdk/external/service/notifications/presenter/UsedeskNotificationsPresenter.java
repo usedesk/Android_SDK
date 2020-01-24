@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType;
 
@@ -20,7 +20,7 @@ public class UsedeskNotificationsPresenter {
     }
 
     @NonNull
-    public UsedeskActionListener getActionListener() {
+    public IUsedeskActionListener getActionListener() {
         return actionListenerRx;
     }
 

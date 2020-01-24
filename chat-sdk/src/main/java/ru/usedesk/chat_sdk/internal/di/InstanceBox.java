@@ -8,7 +8,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_sdk.internal.appdi.InjectBox;
 
@@ -18,7 +18,7 @@ public class InstanceBox extends InjectBox {
     IUsedeskChatSdk usedeskChatSdk;
 
     public InstanceBox(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-                       @NonNull UsedeskActionListener actionListener) {
+                       @NonNull IUsedeskActionListener actionListener) {
         init(new MainModule(appContext, usedeskChatConfiguration, actionListener));
     }
 

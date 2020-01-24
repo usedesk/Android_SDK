@@ -14,7 +14,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -35,11 +37,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<UsedeskMessage> messages;
     private DownloadUtils downloadUtils;
     private RecyclerView recyclerView;
+    private Set<Integer> feedbacks;
 
-    public MessagesAdapter(@NonNull View parentView,
-                           @Nullable List<UsedeskMessage> messages,
-                           @NonNull ChatViewModel viewModel) {
+    public MessagesAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel,
+                           @Nullable List<UsedeskMessage> messages, @Nullable Set<Integer> feedbacks) {
         this.viewModel = viewModel;
+        this.feedbacks = feedbacks == null
+                ? new HashSet<>()
+                : feedbacks;
         this.messages = messages == null
                 ? new ArrayList<>()
                 : messages;
@@ -70,7 +75,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ((TimeHolder) holder).bind(messages.get(position));
+        ((TimeHolder) holder).bind(messages.get(position), position);
     }
 
     @Override
@@ -103,6 +108,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         scrollToBottom();
     }
 
+    public void updateFeedbacks(@NonNull Set<Integer> feedbacks) {
+        this.feedbacks = feedbacks;
+        for (Integer index : feedbacks) {
+            notifyItemChanged(index);
+        }
+    }
+
     private void scrollToBottom() {
         if (!messages.isEmpty()) {
             recyclerView.post(() -> recyclerView.scrollToPosition(messages.size() - 1));
@@ -121,6 +133,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private final LinearLayout ltButtons;
 
+        private final TextView tv_feedback_answer;
         private final ViewGroup ltFeedback;
         private final ImageView ivLike;
         private final ImageView ivDislike;
@@ -133,14 +146,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             ltButtons = itemView.findViewById(R.id.lt_buttons);
 
+            tv_feedback_answer = itemView.findViewById(R.id.tv_feedback_answer);
             ltFeedback = itemView.findViewById(R.id.lt_feedback);
             ivLike = itemView.findViewById(R.id.btn_like);
             ivDislike = itemView.findViewById(R.id.btn_dislike);
         }
 
         @Override
-        void bind(@NonNull UsedeskMessage message) {
-            super.bind(message);
+        void bind(@NonNull UsedeskMessage message, int position) {
+            super.bind(message, position);
+
+            boolean bFeedbackReceived = feedbacks.contains(position);
 
             tvName.setText(message.getName());
 
@@ -150,23 +166,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         message.getUsedeskPayload().getAvatar(),
                         R.drawable.ic_operator_black);
 
-                if (!message.getUsedeskPayload().hasFeedback()) {
+                if (!message.getUsedeskPayload().hasFeedback() || bFeedbackReceived) {
                     ltFeedback.setVisibility(View.GONE);
                 } else {
                     ltFeedback.setVisibility(View.VISIBLE);
 
-                    ivLike.setOnClickListener(view -> {
-                        viewModel.sendFeedback(UsedeskFeedback.LIKE);
-                        ivLike.setEnabled(false);
-                        ivDislike.setEnabled(false);
-                    });
-                    ivDislike.setOnClickListener(view -> {
-                        viewModel.sendFeedback(UsedeskFeedback.DISLIKE);
-                        ivLike.setEnabled(false);
-                        ivDislike.setEnabled(false);
-                    });
+                    ivLike.setOnClickListener(view -> viewModel.sendFeedback(position, UsedeskFeedback.LIKE));
+                    ivDislike.setOnClickListener(view -> viewModel.sendFeedback(position, UsedeskFeedback.DISLIKE));
                 }
             }
+
+            tv_feedback_answer.setVisibility(bFeedbackReceived
+                    ? View.VISIBLE
+                    : View.GONE);
+            tvMessage.setVisibility(!bFeedbackReceived
+                    ? View.VISIBLE
+                    : View.GONE);
 
             ltButtons.removeAllViews();
             if (message.getMessageButtons().getMessageText() != null && message.getMessageButtons().getMessageButtons().size() > 0) {
@@ -193,8 +208,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private abstract class MessageHolder extends TimeHolder {
-        private final TextView tvMessage;
-        private final ImageView ivPreview;
+        protected final TextView tvMessage;
+        protected final ImageView ivPreview;
 
         MessageHolder(@NonNull ViewGroup viewGroup, int id) {
             super(viewGroup, id);
@@ -204,8 +219,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         @Override
-        void bind(@NonNull UsedeskMessage message) {
-            super.bind(message);
+        void bind(@NonNull UsedeskMessage message, int position) {
+            super.bind(message, position);
 
             if (message.getMessageButtons().getMessageText() != null) {
                 tvMessage.setText(message.getMessageButtons().getMessageText());
@@ -238,7 +253,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private abstract class TimeHolder extends RecyclerView.ViewHolder {
 
-        private final TextView timeTextView;
+        protected final TextView timeTextView;
 
         TimeHolder(@NonNull ViewGroup viewGroup, int id) {
             super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
@@ -246,7 +261,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             timeTextView = itemView.findViewById(R.id.tv_time);
         }
 
-        void bind(@NonNull UsedeskMessage message) {
+        void bind(@NonNull UsedeskMessage message, int position) {
             if (message.getCreatedAt() != null) {
                 String time = TimeUtils.parseTime(message.getCreatedAt());
                 if (TextUtils.isEmpty(time)) {

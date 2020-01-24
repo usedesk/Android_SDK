@@ -7,7 +7,7 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
@@ -45,7 +45,7 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void connect(@NonNull String url, @NonNull UsedeskActionListener actionListener,
+    public void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener,
                         @NonNull OnMessageListener onMessageListener) throws UsedeskException {
         socketApi.connect(url, actionListener, onMessageListener);
     }

@@ -149,23 +149,23 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 ImageUtils.checkForDisplayImage(ivAvatar,
                         message.getUsedeskPayload().getAvatar(),
                         R.drawable.ic_operator_black);
-            }
 
-            if (!message.getUsedeskPayload().hasFeedback()) {
-                ltFeedback.setVisibility(View.GONE);
-            } else {
-                ltFeedback.setVisibility(View.VISIBLE);
+                if (!message.getUsedeskPayload().hasFeedback()) {
+                    ltFeedback.setVisibility(View.GONE);
+                } else {
+                    ltFeedback.setVisibility(View.VISIBLE);
 
-                ivLike.setOnClickListener(view -> {
-                    viewModel.sendFeedback(UsedeskFeedback.LIKE);
-                    ivLike.setEnabled(false);
-                    ivDislike.setEnabled(false);
-                });
-                ivDislike.setOnClickListener(view -> {
-                    viewModel.sendFeedback(UsedeskFeedback.DISLIKE);
-                    ivLike.setEnabled(false);
-                    ivDislike.setEnabled(false);
-                });
+                    ivLike.setOnClickListener(view -> {
+                        viewModel.sendFeedback(UsedeskFeedback.LIKE);
+                        ivLike.setEnabled(false);
+                        ivDislike.setEnabled(false);
+                    });
+                    ivDislike.setOnClickListener(view -> {
+                        viewModel.sendFeedback(UsedeskFeedback.DISLIKE);
+                        ivLike.setEnabled(false);
+                        ivDislike.setEnabled(false);
+                    });
+                }
             }
 
             ltButtons.removeAllViews();

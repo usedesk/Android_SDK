@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.viewmodel;
+package ru.usedesk.knowledgebase_gui.screens.main;
 
 import android.content.Context;
 

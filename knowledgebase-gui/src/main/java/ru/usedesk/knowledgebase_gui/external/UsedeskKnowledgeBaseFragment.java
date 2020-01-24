@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.view;
+package ru.usedesk.knowledgebase_gui.external;
 
 
 import android.os.Bundle;
@@ -12,13 +12,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
-import ru.usedesk.knowledgebase_gui.IUsedeskOnBackPressedListener;
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener;
 import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.common.FragmentView;
 import ru.usedesk.knowledgebase_gui.screens.helper.FragmentSwitcher;
 import ru.usedesk.knowledgebase_gui.screens.main.IOnUsedeskSupportClickListener;
-import ru.usedesk.knowledgebase_gui.screens.main.viewmodel.KnowledgeBaseViewModel;
+import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel;
 import ru.usedesk.knowledgebase_gui.screens.pages.article.ArticleFragment;
 import ru.usedesk.knowledgebase_gui.screens.pages.articlebody.ArticlesBodyFragment;
 import ru.usedesk.knowledgebase_gui.screens.pages.articlebody.IOnArticleBodyClickListener;

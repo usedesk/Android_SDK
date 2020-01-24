@@ -8,7 +8,9 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -39,6 +41,8 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     private String token;
 
     private boolean needSetEmail = false;
+
+    private Set<String> messageIds = new HashSet<>();
 
     @Inject
     ChatSdkInteractor(@NonNull Context context,
@@ -228,9 +232,10 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     private void parseNewMessageResponse(UsedeskMessage message) {
         if (message != null && message.getChat() != null) {
             boolean hasText = !TextUtils.isEmpty(message.getText());
-            boolean hasFile = message.getUsedeskFile() != null;
+            boolean hasFile = message.getFile() != null;
 
-            if (hasText || hasFile) {
+            if ((hasText || hasFile) && !messageIds.contains(message.getId())) {
+                messageIds.add(message.getId());
                 actionListener.onMessageReceived(message);
             }
         }

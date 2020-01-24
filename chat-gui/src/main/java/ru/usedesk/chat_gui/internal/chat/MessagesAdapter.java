@@ -141,13 +141,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void bind(@NonNull UsedeskMessage message) {
             super.bind(message);
 
-            tvName.setText(message.getName()/*.replace(' ', '\n')*/);
+            tvName.setText(message.getName());
 
-            ImageUtils.checkForDisplayImage(ivAvatar,
-                    message.getPayload().getAvatar(),
-                    R.drawable.ic_operator_black);
+            ivAvatar.setImageResource(R.drawable.ic_operator_black);
+            if (message.getUsedeskPayload() != null) {
+                ImageUtils.checkForDisplayImage(ivAvatar,
+                        message.getUsedeskPayload().getAvatar(),
+                        R.drawable.ic_operator_black);
+            }
 
-            if (!message.getPayload().hasFeedback()) {
+            if (!message.getUsedeskPayload().hasFeedback()) {
                 ltFeedback.setVisibility(View.GONE);
             } else {
                 ltFeedback.setVisibility(View.VISIBLE);
@@ -214,19 +217,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 tvMessage.setVisibility(View.GONE);
             }
 
-            if (message.getUsedeskFile() != null) {
+            if (message.getFile() != null) {
                 ivPreview.setVisibility(View.VISIBLE);
                 ImageUtils.checkForDisplayImage(ivPreview,
-                        message.getUsedeskFile().getContent(),
+                        message.getFile().getContent(),
                         R.drawable.ic_document_black);
             } else {
                 ivPreview.setVisibility(View.GONE);
             }
 
             ivPreview.setOnClickListener(view -> {
-                if (message.getUsedeskFile() != null) {
-                    downloadUtils.download(message.getUsedeskFile().getName(),
-                            message.getUsedeskFile().getContent());
+                if (message.getFile() != null) {
+                    downloadUtils.download(message.getFile().getName(),
+                            message.getFile().getContent());
                 }
             });
         }

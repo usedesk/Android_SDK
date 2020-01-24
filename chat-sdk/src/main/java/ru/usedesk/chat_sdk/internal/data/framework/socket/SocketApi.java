@@ -18,13 +18,18 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListener;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.SimpleMessage;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.BaseResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.ErrorResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitChatResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.NewMessageResponse;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.PayloadMessageResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SendFeedbackResponse;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SetEmailResponse;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SimpleMessageResponse;
 import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
@@ -179,7 +184,7 @@ public class SocketApi {
                     case ErrorResponse.TYPE:
                         return gson.fromJson(rawResponse, ErrorResponse.class);
                     case NewMessageResponse.TYPE:
-                        return gson.fromJson(rawResponse, NewMessageResponse.class);
+                        return new NewMessageResponse(getMessage(rawResponse));
                     case SendFeedbackResponse.TYPE:
                         return gson.fromJson(rawResponse, SendFeedbackResponse.class);
                     case SetEmailResponse.TYPE:
@@ -191,5 +196,17 @@ public class SocketApi {
         }
 
         return null;
+    }
+
+    private UsedeskMessage getMessage(@NonNull String rawResponse) throws JsonParseException {
+        try {
+            PayloadMessageResponse payloadMessageResponse = gson.fromJson(rawResponse, PayloadMessageResponse.class);
+            PayloadMessage payloadMessage = payloadMessageResponse.getMessage();
+            return new UsedeskMessage(payloadMessage, payloadMessage.getPayload(), null);
+        } catch (JsonParseException e) {
+            SimpleMessageResponse simpleMessageResponse = gson.fromJson(rawResponse, SimpleMessageResponse.class);
+            SimpleMessage simpleMessage = simpleMessageResponse.getMessage();
+            return new UsedeskMessage(simpleMessage, null, simpleMessage.getPayload());
+        }
     }
 }

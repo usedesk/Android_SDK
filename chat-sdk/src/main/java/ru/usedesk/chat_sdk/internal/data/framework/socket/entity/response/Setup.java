@@ -7,13 +7,14 @@ import java.util.List;
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskClient;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
 
 public class Setup {
 
     private boolean waitingEmail;
     private boolean noOperators;
     private UsedeskClient client;
-    private List<UsedeskMessage> messages;
+    private List<PayloadMessage> messages;
 
     public Setup() {
         waitingEmail = true;
@@ -32,16 +33,15 @@ public class Setup {
     }
 
     public List<UsedeskMessage> getMessages() {
-        if (messages == null || messages.isEmpty()) {
-            return messages;
+        if (messages == null) {
+            return null;
         }
 
-        List<UsedeskMessage> filteredMessages = new ArrayList<>();
-
-        for (UsedeskMessage message : messages) {
-            if (message.getChat() != null
-                    && (!TextUtils.isEmpty(message.getText()) || message.getUsedeskFile() != null)) {
-                filteredMessages.add(message);
+        List<UsedeskMessage> filteredMessages = new ArrayList<>(messages.size());
+        for (PayloadMessage payloadMessage : messages) {
+            if (payloadMessage.getChat() != null
+                    && (!TextUtils.isEmpty(payloadMessage.getText()) || payloadMessage.getFile() != null)) {
+                filteredMessages.add(new UsedeskMessage(payloadMessage, payloadMessage.getPayload(), null));
             }
         }
 

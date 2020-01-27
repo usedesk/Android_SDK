@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
 
 public class RequestMessage {
 

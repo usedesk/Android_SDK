@@ -2,7 +2,6 @@ package ru.usedesk.chat_sdk.internal.domain.entity;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType;
 
 public class BaseMessage {

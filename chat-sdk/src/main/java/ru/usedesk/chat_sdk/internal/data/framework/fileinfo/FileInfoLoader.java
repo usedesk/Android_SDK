@@ -17,8 +17,8 @@ import java.io.OutputStream;
 
 import javax.inject.Inject;
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 

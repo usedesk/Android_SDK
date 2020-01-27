@@ -21,7 +21,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButtons;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
@@ -139,7 +139,7 @@ public class ChatInteractor implements IUsedeskChat {
     }
 
     @Override
-    public void send(UsedeskMessageButtons.MessageButton messageButton) throws UsedeskException {
+    public void send(UsedeskMessageButton messageButton) throws UsedeskException {
         if (messageButton == null) {
             return;
         }
@@ -208,7 +208,7 @@ public class ChatInteractor implements IUsedeskChat {
 
     @NonNull
     @Override
-    public Completable sendRx(UsedeskMessageButtons.MessageButton messageButton) {
+    public Completable sendRx(UsedeskMessageButton messageButton) {
         return Completable.create(emitter -> {
             send(messageButton);
             emitter.onComplete();

@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFile;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
@@ -22,6 +21,7 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFee
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest;
 import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;

@@ -27,7 +27,7 @@ import ru.usedesk.chat_gui.internal.utils.TimeUtils;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButtons;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_USER_MESSAGE = 1;
@@ -186,7 +186,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ltButtons.removeAllViews();
             if (message.getMessageButtons().getMessageText() != null && message.getMessageButtons().getMessageButtons().size() > 0) {
                 ltButtons.setVisibility(View.VISIBLE);
-                for (UsedeskMessageButtons.MessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
+                for (UsedeskMessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
                     Button button = new Button(ltButtons.getContext());
 
                     button.setText(messageButton.getText());

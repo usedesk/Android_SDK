@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.external.entity;
+package ru.usedesk.chat_sdk.internal.domain.entity;
 
 import androidx.annotation.NonNull;
 

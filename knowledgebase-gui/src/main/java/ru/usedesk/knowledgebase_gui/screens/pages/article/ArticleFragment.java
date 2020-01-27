@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.screens.common.FragmentDataView;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
@@ -19,7 +19,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
 
     private static final String ARTICLE_ID_KEY = "articleIdKey";
 
-    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
+    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
     private TextView textViewTitle;
     private TextView textViewText;

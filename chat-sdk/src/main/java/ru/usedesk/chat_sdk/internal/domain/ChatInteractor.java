@@ -15,7 +15,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import io.reactivex.Completable;
-import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
@@ -30,7 +30,7 @@ import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-public class ChatSdkInteractor implements IUsedeskChatSdk {
+public class ChatInteractor implements IUsedeskChat {
 
     private final Context context;
     private final UsedeskChatConfiguration configuration;
@@ -45,11 +45,11 @@ public class ChatSdkInteractor implements IUsedeskChatSdk {
     private Set<String> messageIds = new HashSet<>();
 
     @Inject
-    ChatSdkInteractor(@NonNull Context context,
-                      @NonNull UsedeskChatConfiguration configuration,
-                      @NonNull IUsedeskActionListener actionListener,
-                      @NonNull IUserInfoRepository userInfoRepository,
-                      @NonNull IApiRepository apiRepository) {
+    ChatInteractor(@NonNull Context context,
+                   @NonNull UsedeskChatConfiguration configuration,
+                   @NonNull IUsedeskActionListener actionListener,
+                   @NonNull IUserInfoRepository userInfoRepository,
+                   @NonNull IApiRepository apiRepository) {
         this.context = context;
         this.userInfoRepository = userInfoRepository;
         this.apiRepository = apiRepository;

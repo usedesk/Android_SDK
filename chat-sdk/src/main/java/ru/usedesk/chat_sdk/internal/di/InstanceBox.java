@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
-import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_sdk.internal.appdi.InjectBox;
@@ -15,14 +15,14 @@ import ru.usedesk.common_sdk.internal.appdi.InjectBox;
 @SuppressWarnings("injectable")
 public class InstanceBox extends InjectBox {
     @Inject
-    IUsedeskChatSdk usedeskChatSdk;
+    IUsedeskChat usedeskChatSdk;
 
     public InstanceBox(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
                        @NonNull IUsedeskActionListener actionListener) {
         init(new MainModule(appContext, usedeskChatConfiguration, actionListener));
     }
 
-    public IUsedeskChatSdk getUsedeskChatSdk() {
+    public IUsedeskChat getUsedeskChatSdk() {
         return usedeskChatSdk;
     }
 

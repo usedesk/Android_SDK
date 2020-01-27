@@ -15,8 +15,8 @@ public class UsedeskChatSdk {
     private static UsedeskNotificationsServiceFactory notificationsServiceFactory = new UsedeskNotificationsServiceFactory();
 
     @NonNull
-    public static IUsedeskChatSdk init(@NonNull Context appContext,
-                                       @NonNull IUsedeskActionListener actionListener) {
+    public static IUsedeskChat init(@NonNull Context appContext,
+                                    @NonNull IUsedeskActionListener actionListener) {
         if (instanceBox == null) {
             checkConfiguration();
             instanceBox = new InstanceBox(appContext, configuration, actionListener);
@@ -25,7 +25,7 @@ public class UsedeskChatSdk {
     }
 
     @NonNull
-    public static IUsedeskChatSdk getInstance() {
+    public static IUsedeskChat getInstance() {
         if (instanceBox == null) {
             throw new RuntimeException("Must call UsedeskChatSdk.initChat(...) before");
         }

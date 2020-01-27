@@ -6,21 +6,21 @@ import java.util.List;
 
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.entity.Category;
 
 class CategoriesViewModel extends DataViewModel<List<Category>> {
 
-    private CategoriesViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long sectionId) {
+    private CategoriesViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, long sectionId) {
         loadData(usedeskKnowledgeBaseSdk.getCategoriesRx(sectionId));
     }
 
     static class Factory extends ViewModelFactory<CategoriesViewModel> {
 
-        private IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
+        private IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
         private long sectionId;
 
-        public Factory(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long sectionId) {
+        public Factory(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, long sectionId) {
             this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
             this.sectionId = sectionId;
         }

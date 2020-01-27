@@ -16,7 +16,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskEvent;
@@ -28,7 +28,7 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatViewModel extends ViewModel {
 
-    private final IUsedeskChatSdk usedeskChat;
+    private final IUsedeskChat usedeskChat;
 
     private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -38,7 +38,7 @@ public class ChatViewModel extends ViewModel {
     private final MutableLiveData<List<UsedeskMessage>> messagesLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<UsedeskFileInfo>> fileInfoListLiveData = new MutableLiveData<>();
 
-    ChatViewModel(@NonNull IUsedeskChatSdk usedeskChatSdk, @NonNull UsedeskActionListenerRx actionListenerRx) {
+    ChatViewModel(@NonNull IUsedeskChat usedeskChatSdk, @NonNull UsedeskActionListenerRx actionListenerRx) {
         this.usedeskChat = usedeskChatSdk;
 
         clearFileInfoList();

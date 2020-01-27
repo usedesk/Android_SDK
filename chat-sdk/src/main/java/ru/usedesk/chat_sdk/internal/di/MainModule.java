@@ -8,7 +8,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.schedulers.Schedulers;
-import ru.usedesk.chat_sdk.external.IUsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
@@ -27,7 +27,7 @@ import ru.usedesk.chat_sdk.internal.data.repository.api.ApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoRepository;
-import ru.usedesk.chat_sdk.internal.domain.ChatSdkInteractor;
+import ru.usedesk.chat_sdk.internal.domain.ChatInteractor;
 import toothpick.config.Module;
 
 class MainModule extends Module {
@@ -38,7 +38,7 @@ class MainModule extends Module {
         bind(UsedeskChatConfiguration.class).toInstance(usedeskChatConfiguration);
         bind(IUsedeskActionListener.class).toInstance(actionListener);
 
-        bind(IUsedeskChatSdk.class).to(ChatSdkInteractor.class).singleton();
+        bind(IUsedeskChat.class).to(ChatInteractor.class).singleton();
 
         bind(IUserInfoRepository.class).to(UserInfoRepository.class).singleton();
         bind(IApiRepository.class).to(ApiRepository.class).singleton();

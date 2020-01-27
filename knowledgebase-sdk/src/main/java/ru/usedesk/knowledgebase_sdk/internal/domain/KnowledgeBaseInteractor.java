@@ -14,7 +14,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 import ru.usedesk.knowledgebase_sdk.external.entity.Category;
@@ -23,7 +23,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
 import ru.usedesk.knowledgebase_sdk.external.entity.Section;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
 
-public class KnowledgeBaseSdkInteractor implements IUsedeskKnowledgeBaseSdk {
+public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
 
     private final IKnowledgeBaseRepository knowledgeRepository;
     private final Scheduler workScheduler;
@@ -31,10 +31,10 @@ public class KnowledgeBaseSdkInteractor implements IUsedeskKnowledgeBaseSdk {
     private final KnowledgeBaseConfiguration configuration;
 
     @Inject
-    KnowledgeBaseSdkInteractor(@NonNull IKnowledgeBaseRepository knowledgeRepository,
-                               @NonNull @Named("work") Scheduler workScheduler,
-                               @NonNull @Named("main") Scheduler mainThreadScheduler,
-                               @NonNull KnowledgeBaseConfiguration configuration) {
+    KnowledgeBaseInteractor(@NonNull IKnowledgeBaseRepository knowledgeRepository,
+                            @NonNull @Named("work") Scheduler workScheduler,
+                            @NonNull @Named("main") Scheduler mainThreadScheduler,
+                            @NonNull KnowledgeBaseConfiguration configuration) {
         this.knowledgeRepository = knowledgeRepository;
         this.workScheduler = workScheduler;
         this.mainThreadScheduler = mainThreadScheduler;

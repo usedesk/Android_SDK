@@ -11,7 +11,7 @@ import java.util.List;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
@@ -19,7 +19,7 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
 
     public static final String SEARCH_QUERY_KEY = "searchQueryKey";
 
-    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
+    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
     public ArticlesBodyFragment() {
         usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();

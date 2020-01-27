@@ -11,7 +11,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButtons;
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-public interface IUsedeskChatSdk {
+public interface IUsedeskChat {
     void connect() throws UsedeskException;
 
     void disconnect() throws UsedeskException;

@@ -4,14 +4,14 @@ import androidx.annotation.NonNull;
 
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
 
 public class ArticleViewModel extends DataViewModel<ArticleBody> {
 
-    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
+    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
-    private ArticleViewModel(@NonNull IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk, long articleId) {
+    private ArticleViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, long articleId) {
         this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
 
         loadData(usedeskKnowledgeBaseSdk.getArticleRx(articleId));
@@ -27,18 +27,18 @@ public class ArticleViewModel extends DataViewModel<ArticleBody> {
     }
 
     static class Factory extends ViewModelFactory<ArticleViewModel> {
-        private final IUsedeskKnowledgeBaseSdk iUsedeskKnowledgeBaseSdk;
+        private final IUsedeskKnowledgeBase iUsedeskKnowledgeBase;
         private final long articleId;
 
-        public Factory(@NonNull IUsedeskKnowledgeBaseSdk iUsedeskKnowledgeBaseSdk, long articleId) {
-            this.iUsedeskKnowledgeBaseSdk = iUsedeskKnowledgeBaseSdk;
+        public Factory(@NonNull IUsedeskKnowledgeBase iUsedeskKnowledgeBase, long articleId) {
+            this.iUsedeskKnowledgeBase = iUsedeskKnowledgeBase;
             this.articleId = articleId;
         }
 
         @NonNull
         @Override
         protected ArticleViewModel create() {
-            return new ArticleViewModel(iUsedeskKnowledgeBaseSdk, articleId);
+            return new ArticleViewModel(iUsedeskKnowledgeBase, articleId);
         }
 
         @NonNull

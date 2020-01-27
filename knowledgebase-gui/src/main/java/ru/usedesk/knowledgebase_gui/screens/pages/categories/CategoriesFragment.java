@@ -10,14 +10,14 @@ import java.util.List;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.Category;
 
 public class CategoriesFragment extends FragmentListView<Category, CategoriesViewModel> {
 
     public static final String SECTION_ID_KEY = "sectionIdKey";
-    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
+    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
     public CategoriesFragment() {
         usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();

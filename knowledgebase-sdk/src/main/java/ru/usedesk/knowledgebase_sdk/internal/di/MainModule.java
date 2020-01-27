@@ -14,7 +14,7 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.ApiLoader;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.ApiRetrofit;
@@ -22,7 +22,7 @@ import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.IApiLoader;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity.RetrofitEnumConverterFactory;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.ApiRepository;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
-import ru.usedesk.knowledgebase_sdk.internal.domain.KnowledgeBaseSdkInteractor;
+import ru.usedesk.knowledgebase_sdk.internal.domain.KnowledgeBaseInteractor;
 import toothpick.config.Module;
 
 class MainModule extends Module {
@@ -33,7 +33,7 @@ class MainModule extends Module {
 
         bind(Gson.class).toInstance(gson());
 
-        bind(IUsedeskKnowledgeBaseSdk.class).to(KnowledgeBaseSdkInteractor.class);
+        bind(IUsedeskKnowledgeBase.class).to(KnowledgeBaseInteractor.class);
         bind(IKnowledgeBaseRepository.class).to(ApiRepository.class);
 
         bind(IApiLoader.class).to(ApiLoader.class);

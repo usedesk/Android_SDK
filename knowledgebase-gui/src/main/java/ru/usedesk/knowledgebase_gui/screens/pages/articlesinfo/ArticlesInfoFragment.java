@@ -10,7 +10,7 @@ import java.util.List;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
 
@@ -18,7 +18,7 @@ public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, Articles
 
     public static final String CATEGORY_ID_KEY = "categoryIdKey";
 
-    private final IUsedeskKnowledgeBaseSdk usedeskKnowledgeBaseSdk;
+    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
     public ArticlesInfoFragment() {
         usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();

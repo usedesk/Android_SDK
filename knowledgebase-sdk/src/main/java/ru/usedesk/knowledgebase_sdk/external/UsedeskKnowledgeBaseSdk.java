@@ -13,7 +13,7 @@ public final class UsedeskKnowledgeBaseSdk {
     private static KnowledgeBaseConfiguration configuration;
 
     @NonNull
-    public static IUsedeskKnowledgeBaseSdk init(@NonNull Context appContext) {
+    public static IUsedeskKnowledgeBase init(@NonNull Context appContext) {
         if (instanceBox == null) {
             if (configuration == null) {
                 throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before");
@@ -24,7 +24,7 @@ public final class UsedeskKnowledgeBaseSdk {
     }
 
     @NonNull
-    public static IUsedeskKnowledgeBaseSdk getInstance() {
+    public static IUsedeskKnowledgeBase getInstance() {
         if (instanceBox == null) {
             throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before");
         }

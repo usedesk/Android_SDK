@@ -7,6 +7,7 @@
  - [2. Chat GUI](#base_chat_gui)
  - [3. Подключение к KnowledgeBase SDK](#base_knowledge_base_sdk)
  - [4. KnowledgeBase GUI](#base_knowledge_base_gui)
+- [Кастомизация готовых пользовательских интерфейсов](#custom_view)
 
 <a name="requires"></a>
 ## Требования к проекту
@@ -66,7 +67,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 
     UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration usedeskChatConfiguration);
 
-[**UsedeskChatConfiguration**](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskChatConfiguration.java) - конфигурация чата:
+[**UsedeskChatConfiguration**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskChatConfiguration.java) - конфигурация чата:
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
@@ -82,7 +83,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 
     IUsedeskChat usedeskChat = UsedeskChatSdk.init(Context appContext, IUsedeskActionListener actionListener);
 
-[IUsedeskActionListener](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/IUsedeskActionListener.java) - класс для прослушивания событий чата:
+[IUsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/IUsedeskActionListener.java) - класс для прослушивания событий чата:
 
 | Метод                    | Параметры     | Описание события                                 |
 |--------------------------|---------------|--------------------------------------------------|
@@ -102,7 +103,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 
     UsedeskChatSdk.release();
 
-[**IUsedeskChat**](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedeskChat.java) - основной класс для взаимодействия с чатом.
+[**IUsedeskChat**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedeskChat.java) - основной класс для взаимодействия с чатом.
 
 | Метод   | Параметры     | Описание события                                         |
 |--------------------------|------------------|------------------|
@@ -115,16 +116,16 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | send  | UsedeskOfflineForm offlineForm | Отправить оффлайн-форму |
 | send  | UsedeskMessageButton messageButton | Отправить готовый ответ на сообщение оператора |
 
--- [UsedeskFileInfo](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFileInfo.java):
+-- [UsedeskFileInfo](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFileInfo.java):
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
 | uri  | Uri  | Ссылка на файл |
 | type  | UsedeskFileInfo.Type  | MIME-тип файла |
 
--- [UsedeskFeedback](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFeedback.java) - может иметь значение `LIKE` или `DISLIKE`.
+-- [UsedeskFeedback](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFeedback.java) - может иметь значение `LIKE` или `DISLIKE`.
 
--- [UsedeskOfflineForm](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskOfflineForm.java):
+-- [UsedeskOfflineForm](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskOfflineForm.java):
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
@@ -133,11 +134,11 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | email  | String  | Email клиента |
 | message  | String  | Сообщение клиента |
 
--- [UsedeskMessageButton](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskMessageButton.java) - готовый ответ клиента на сообщение оператора.
+-- [UsedeskMessageButton](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskMessageButton.java) - готовый ответ клиента на сообщение оператора.
 
-Каждый метод может выбросить [UsedeskException](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java):
+Каждый метод может выбросить [UsedeskException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java):
 
-- [UsedeskSocketException](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskSocketException.java) - исключение, обработанное во время работы чата. Метод getError возвращает следующие значения:
+- [UsedeskSocketException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskSocketException.java) - исключение, обработанное во время работы чата. Метод getError возвращает следующие значения:
 
 | Тип ошибки                | Описание                         |
 |---------------------------|----------------------------------|
@@ -150,7 +151,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | UNKNOWN_FROM_SERVER_ERROR | Необработанная ошибка от сервера |
 | UNKNOWN_ERROR             | Необработанная ошибка            |
 
- -  [UsedeskHttpException](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskHttpException.java) - Исключение, обработанное во время работы базы знаний. Метод getError возвращает следующие значения:
+ -  [UsedeskHttpException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskHttpException.java) - Исключение, обработанное во время работы базы знаний. Метод getError возвращает следующие значения:
 
 | Тип ошибки    | Описание                  |
 |---------------|---------------------------|
@@ -164,7 +165,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 <a name="base_chat_sdk_notifications"></a>
 #### Локальные уведомления
 Для уведомления пользователей о новых сообщениях от оператора в чате можно использовать сервис локальных уведомлений. Для инициализации этого сервиса нужно создать 2 собственных класса:
-- Унаследованный от [UsedeskSimpleNotificationsService](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/service/notifications/view/UsedeskSimpleNotificationsService.java) (обычный сервис) или [UsedeskForegroundNotificationsService](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/service/notifications/view/UsedeskForegroundNotificationsService.java) (foreground сервис). Где можно переопределить некоторые методы:
+- Унаследованный от [UsedeskSimpleNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/service/notifications/view/UsedeskSimpleNotificationsService.java) (обычный сервис) или [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/service/notifications/view/UsedeskForegroundNotificationsService.java) (foreground сервис). Где можно переопределить некоторые методы:
 
 | Метод | Тип возвращаемого значения | Описание события |
 |--------------------------|------------------|------------------|
@@ -174,7 +175,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | getChannelTitle | String | Названия канала уведомления |
 | createNotification | Notification | Создание уведомления |
 
-- Унаследованный от [UsedeskNotificationsServiceFactory](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/service/notifications/UsedeskNotificationsServiceFactory.java) для переопределения метода:
+- Унаследованный от [UsedeskNotificationsServiceFactory](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/service/notifications/UsedeskNotificationsServiceFactory.java) для переопределения метода:
 
 | Метод | Тип возвращаемого значения | Описание события |
 |--------------------------|------------------|------------------|
@@ -198,7 +199,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 <a name="base_chat_gui"></a>
 ### 2. Chat GUI
 
-Для использования готового пользовательского интерфейса чата воспользуйтесь [UsedeskChatFragment](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-gui/src/main/java/ru/usedesk/chat_gui/external/UsedeskChatFragment.java), например:
+Для использования готового пользовательского интерфейса чата воспользуйтесь [UsedeskChatFragment](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/external/UsedeskChatFragment.java), например:
 
   ```
  getSupportFragmentManager().beginTransaction()
@@ -213,7 +214,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 
     UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration knowledgeBaseConfiguration);
 
-[UsedeskKnowledgeBaseConfiguration](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/UsedeskKnowledgeBaseConfiguration.java) - конфигурация Базы Знаний:
+[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/UsedeskKnowledgeBaseConfiguration.java) - конфигурация Базы Знаний:
 
 | Переменная | Тип    | Описание               |
 |------------|--------|------------------------|
@@ -234,7 +235,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 
 Попытка получить объект без инициализации или после освобожения вызовет исключение.
 
-[IUsedeskKnowledgeBase](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/UsedeskKnowledgeBaseSdk.java) - основной класс для работы с Базой Знаний:
+[IUsedeskKnowledgeBase](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/UsedeskKnowledgeBaseSdk.java) - основной класс для работы с Базой Знаний:
 
 | Метод   | Возвращаемый тип | Параметры | Описание события                                         |
 |--------------------------|--------------|----|------------------|
@@ -246,9 +247,9 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | getArticles  | List&lt;UsedeskArticleInfo&gt; | long categoryId | Получить заголовки статей |
 | addViews  | - | long articleId | Добавить просмотр статье |
 
-Каждый метод может выбросить [UsedeskException](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java).
+Каждый метод может выбросить [UsedeskException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java).
 
--- [UsedeskSection](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - секция Базы Знаний:
+-- [UsedeskSection](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - секция Базы Знаний:
  
 | Переменная | Тип        | Описание                     |
 |------------|------------|------------------------------|
@@ -257,7 +258,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | image      | String     | Ссылка на изображение секции |
 | categories | Category[] | Категории                    |
 
--- [UsedeskCategory](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - категория Базы Знаний:
+-- [UsedeskCategory](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - категория Базы Знаний:
  
 | Переменная | Тип           | Описание                       |
 |------------|---------------|--------------------------------|
@@ -265,7 +266,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | title      | String        | Название категории             |
 | articles   | ArticleInfo[] | Список с информацией о статьях |
 
--- [UsedeskArticleInfo](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleInfo.java) - заголовок статьи Базы Знаний:
+-- [UsedeskArticleInfo](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleInfo.java) - заголовок статьи Базы Знаний:
  
 | Переменная | Тип    | Описание              |
 |------------|--------|-----------------------|
@@ -273,7 +274,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | title      | String | Название статьи       |
 | views      | int    | Количество просмотров |
 
--- [ArticleBody](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleBody.java) - текст статьи Базы Знаний:
+-- [ArticleBody](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleBody.java) - текст статьи Базы Знаний:
  
 | Переменная | Тип    | Описание                             |
 |------------|--------|--------------------------------------|
@@ -286,7 +287,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 <a name="base_knowledge_base_gui"></a>
 ### 4. KnowledgeBase GUI
 
-Для использования готового пользовательского интерфейса воспользуйтесь [UsedeskKnowledgeBaseFragment](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/external/UsedeskKnowledgeBaseFragment.java), например:
+Для использования готового пользовательского интерфейса воспользуйтесь [UsedeskKnowledgeBaseFragment](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/external/UsedeskKnowledgeBaseFragment.java), например:
 
   ```
  getSupportFragmentManager().beginTransaction()
@@ -318,7 +319,7 @@ private void onQuery(String query) {
     }
 }
 ```
-3) Реализовать интерфейс [IUsedeskOnSupportClickListener](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/external/IUsedeskOnSupportClickListener.java) для реагирования на нажатие на кнопку "Чат с поддержкой", например:
+3) Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/external/IUsedeskOnSupportClickListener.java) для реагирования на нажатие на кнопку "Чат с поддержкой", например:
 ```
 @Override
 public void onSupportClick() {
@@ -326,16 +327,17 @@ public void onSupportClick() {
 }
 ```
 
+<a name="custom_view"></a>
 ## Кастомизация готовых пользовательских интерфейсов
 
-Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-gui/src/main/res/values/styles.xml) и [Usedesk.Theme.KnowledgeBase](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-gui/src/main/res/values/styles.xml), после чего указать её для использования:
+Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/values/styles.xml) и [Usedesk.Theme.KnowledgeBase](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/values/styles.xml), после чего указать её для использования:
 
   ```
 UsedeskViewCustomizer.getInstance()
     .replaceId(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat_Custom);
   ```
   
-Так же можно переопределить любой слой из [ресурсов Чата](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-gui/src/main/res/layout/)  и [ресурсов Базы Знаний](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/knowledgebase-gui/src/main/res/layout/):
+Так же можно переопределить любой слой из [ресурсов Чата](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/layout/)  и [ресурсов Базы Знаний](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/layout/):
 
   ```
 UsedeskViewCustomizer.getInstance()

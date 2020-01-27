@@ -2,11 +2,11 @@
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
- - [1. Chat SDK](#base_chat_sdk)
-   - [Локальные уведомления](#base_chat_sdk_notifications)
- - [2. Chat GUI](#base_chat_gui)
- - [3. Подключение к KnowledgeBase SDK](#base_knowledge_base_sdk)
- - [4. KnowledgeBase GUI](#base_knowledge_base_gui)
+  - [1. Chat SDK](#base_chat_sdk)
+    - [Локальные уведомления](#base_chat_sdk_notifications)
+  - [2. Chat GUI](#base_chat_gui)
+  - [3. Подключение к KnowledgeBase SDK](#base_knowledge_base_sdk)
+  - [4. KnowledgeBase GUI](#base_knowledge_base_gui)
 - [Кастомизация готовых пользовательских интерфейсов](#custom_view)
 
 <a name="requires"></a>

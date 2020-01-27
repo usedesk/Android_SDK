@@ -13,19 +13,19 @@ import androidx.fragment.app.FragmentActivity;
 
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_gui.screens.common.FragmentView;
-import ru.usedesk.knowledgebase_gui.screens.helper.FragmentSwitcher;
-import ru.usedesk.knowledgebase_gui.screens.main.IOnUsedeskSupportClickListener;
-import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel;
-import ru.usedesk.knowledgebase_gui.screens.pages.article.ArticleFragment;
-import ru.usedesk.knowledgebase_gui.screens.pages.articlebody.ArticlesBodyFragment;
-import ru.usedesk.knowledgebase_gui.screens.pages.articlebody.IOnArticleBodyClickListener;
-import ru.usedesk.knowledgebase_gui.screens.pages.articlesinfo.ArticlesInfoFragment;
-import ru.usedesk.knowledgebase_gui.screens.pages.articlesinfo.IOnArticleInfoClickListener;
-import ru.usedesk.knowledgebase_gui.screens.pages.categories.CategoriesFragment;
-import ru.usedesk.knowledgebase_gui.screens.pages.categories.IOnCategoryClickListener;
-import ru.usedesk.knowledgebase_gui.screens.pages.sections.IOnSectionClickListener;
-import ru.usedesk.knowledgebase_gui.screens.pages.sections.SectionsFragment;
+import ru.usedesk.knowledgebase_gui.internal.screens.common.FragmentView;
+import ru.usedesk.knowledgebase_gui.internal.screens.helper.FragmentSwitcher;
+import ru.usedesk.knowledgebase_gui.internal.screens.main.IOnUsedeskSupportClickListener;
+import ru.usedesk.knowledgebase_gui.internal.screens.main.KnowledgeBaseViewModel;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.article.ArticleFragment;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.articlebody.ArticlesBodyFragment;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.articlebody.IOnArticleBodyClickListener;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.articlesinfo.ArticlesInfoFragment;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.articlesinfo.IOnArticleInfoClickListener;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.categories.CategoriesFragment;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.categories.IOnCategoryClickListener;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.sections.IOnSectionClickListener;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.sections.SectionsFragment;
 
 public class UsedeskKnowledgeBaseFragment extends FragmentView<KnowledgeBaseViewModel>
         implements IOnSectionClickListener, IOnCategoryClickListener, IOnArticleInfoClickListener,

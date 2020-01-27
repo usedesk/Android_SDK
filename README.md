@@ -1,8 +1,6 @@
-# Android Usedesk SDK (v1.0.7)
+# Android Usedesk SDK (v2.0.0)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
-  - [Импорт модуля в проект](#implementation_import)
-  - [Через Maven репозиторий](#implementation_maven)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [Настройка UsedeskChat](#base_setup)
   - [Методы взаимодействия с UsedeskChat](#base_manage)
@@ -13,7 +11,6 @@
 - [Локальные уведомления](#local_notifications)
 
 <a name="requires"></a>
-
 ## Требования к API
 
 - compileSdkVersion = **28**
@@ -22,29 +19,18 @@
 - targetSdkVersion = **28**
 
 <a name="implementation"></a>
-
 ## Подключение к проекту
 
-**[Usedesk SDK](https://github.com/usedesk/Android_SDK/tree/master/usedesk_sdk)** - библиотека Usedesk.
+**[Chat SDK](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk)** - библиотека для работы с чатом.
 
-**[Usedesk Sample App](https://github.com/usedesk/Android_SDK/tree/master/app)** - пример использования библиотеки с использованием готовых фрагментов из sdk.
+**[Chat GUI](https://github.com/usedesk/Android_SDK/tree/master/chat-gui)** - библиотека для встраивания готовых элементов интерфейса чата (включает в себя **Chat SDK**).
 
+**[KnowledgeBase SDK](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk)** - библиотека для работы с Базой Знаний.
 
-<a name="implementation_import"></a>
+**[KnowledgeBase GUI](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui)** - библиотека для встраивания готовых элементов интерфейса чата (включает в себя **KnowledgeBase SDK**).
 
-### Импорт модуля в проект
-Перенесите модуль в проект и добавьте в `build.gradle` вашего модуля строку:
-```
-dependencies {
-    ...
-    implementation project(':usedesk_sdk')
-    ...
-}
-```
+**[Usedesk Sample App](https://github.com/usedesk/Android_SDK/tree/master/app)** - пример использования библиотеки.
 
-<a name="implementation_maven"></a>
-
-### Через Maven репозиторий
 Добавьте в `build.gradle` вашего проекта строку:
 ```
 allprojects {
@@ -55,29 +41,29 @@ allprojects {
 }
 ```
 
-Добавьте в `build.gradle` вашего модуля строку:
+Добавьте в dependencies `build.gradle` вашего модуля строки, для использования только SDK библиотек:
 ```
-dependencies {
-    ...
-    implementation 'ru.usedesk:usedesk_sdk:{last_version}'
-    ...
-}
+implementation 'ru.usedesk:chat-sdk:{last_version}'
+implementation 'ru.usedesk:knowledgebase-sdk:{last_version}'
+```
+
+Или для использования готовых элементов интерфейса:
+```
+implementation 'ru.usedesk:chat-gui:{last_version}'
+implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 ```
 
 <a name="base"></a>
-
 ## Основные этапы работы/взаимодействия с библиотекой
 
-[UsedeskSdk](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskSdk.java) - главный класс взаимодействия и настройки SDK. Позволяет проинициализировать, получить или освободить другие классы, необходимые для работы.
+<a name="base_chat_sdk"></a>
+### 1. Chat SDK
 
-<a name="base_setup"></a>
+Для работы с SDK чата необходимо сначала задать конфигурацию:
 
-### 1. Настройка UsedeskChat
+    UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration usedeskChatConfiguration);
 
-
-[UsedeskChat](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskChat.java) - класс работы с чатом.
-
-Перед началом работы необходимо задать конфигурацию, вызвав метод setUsedeskConfiguration со следующими параметрами:
+[**UsedeskChatConfiguration**](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskChatConfiguration.java) - класс конфигурации чата:
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
@@ -89,32 +75,11 @@ dependencies {
 | clientPhone  | Long  | Телефонный номер клиента |
 | clientAdditionalId  | Long  | Дополнительный идентификатор клиента |
 
-Пример:
+После этого нужно проинициализировать чат:
 
-    UsedeskSdk.setUsedeskConfiguration(new UsedeskConfiguration(companyId, clientEmail, apiUrl, offlineFormUrl, clientName, clientPhone, clientAdditionalId));
+    IUsedeskChat usedeskChat = UsedeskChatSdk.init(Context appContext, IUsedeskActionListener actionListener);
 
-После чего проинициализировать, вызвав метод initChat со следующими параметрами:
-
-| Переменная            | Тип                   | Описание                    |
-|-----------------------|-----------------------|-----------------------------|
-| appContext            | Context               | Контекст приложения         |
-| usedeskActionListener | UsedeskActionListener | Слушатель возможных событий |
-
-Пример:
-
-    UsedeskChat usedeskChat = UsedeskSdk.initChat(context, usedeskActionListener);
-
-После этого можно получить объект класса в любом месте:
-
-    UsedeskChat usedeskChat = UsedeskSdk.getChat();
-
-Освободить объект:
-
-    UsedeskSdk.releaseChat();
-
-Попытка получить объект без инициализации или после освобожения вызовет исключение (RuntimeException).
-
-- [UsedeskActionListener](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskActionListener.java) - список возможных событий, которые может возвратить SDK при работе:
+[IUsedeskActionListener](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/IUsedeskActionListener.java) - класс для прослушивания событий чата:
 
 | Метод                    | Параметры     | Описание события                                 |
 |--------------------------|---------------|--------------------------------------------------|
@@ -126,7 +91,48 @@ dependencies {
 | onDisconnected           | -             | Соединение разорвано                             |
 | onException                  | UsedeskException     | Возникшее исключение         |
 
-- [UsedeskException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskException.java) - исключение, обработанное SDK, может быть UsedeskSocketException и UsedeskHttpException.
+После инициализации можно получить экземпляр `IUsedeskChat` вызвав:
+
+    IUsedeskChat usedeskChat = UsedeskChatSdk.getInstance();
+
+После окончания работы с чатом для освобождения ресурсов необходимо вызвать метод:
+
+    UsedeskChatSdk.release();
+
+[**IUsedeskChat**](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedeskChat.java) - основной класс для взаимодействия с чатом.
+
+| Метод   | Параметры     | Описание события                                         |
+|--------------------------|------------------|------------------|
+| connect  | -                        | Подключение к серверу |
+| disconnect  | -                        | Отключение от сервера |
+| send  | String textMessage | Отправить текстовое сообщение |
+| send  | UsedeskFileInfo usedeskFileInfo | Отправить файл |
+| send  | List&lt;UsedeskFileInfo&gt; usedeskFileInfoList | Отправить список файлов  |
+| send  | UsedeskFeedback feedback | Отправить отзыв |
+| send  | UsedeskOfflineForm offlineForm | Отправить оффлайн-форму |
+| send  | UsedeskMessageButton messageButton | Отправить готовый ответ на сообщение оператора |
+
+[UsedeskFileInfo](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFileInfo.java):
+
+| Переменная            | Тип                   | Описание                    |
+|-----------------------|-----------------------|-----------------------------|
+| uri  | Uri  | Ссылка на файл |
+| type  | UsedeskFileInfo.Type  | MIME-тип файла |
+
+[UsedeskFeedback](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFeedback.java): - может иметь значение `LIKE` или `DISLIKE`.
+
+[UsedeskOfflineForm](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskOfflineForm.java):
+
+| Переменная            | Тип                   | Описание                    |
+|-----------------------|-----------------------|-----------------------------|
+| companyId  | String  | Идентификатор компании |
+| name  | String  | Имя клиента |
+| email  | String  | Email клиента |
+| message  | String  | Сообщение клиента |
+
+[UsedeskMessageButton](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskMessageButton.java) - готовый ответ клиента на сообщение оператора.
+
+Каждый метод может выбросить [UsedeskException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskException.java):
 
 - [UsedeskSocketException](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskSocketException.java) - исключение, обработанное во время работы чата. Метод getError возвращает следующие значения:
 
@@ -152,43 +158,41 @@ dependencies {
 | JSON_ERROR    | Ошибка обработки JSON     |
 | UNKNOWN_ERROR | Необработанная ошибка     |
 
-<a name="base_manage"></a>
+<a name="chat_gui"></a>
+### 2. Chat GUI
 
-### 2. Методы взаимодействия с UsedeskChat
+Для использования готового интерфейса чата воспользуйтесь [UsedeskChatFragment](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/exceptions/UsedeskHttpException.java), например:
 
-- `sendMessage(String text, UsedeskFile usedeskFile)` - универсальный метод отправки сообщений, он может принимать на вход только текст, текст и файл или оба параметра одновременно. Файлы отправляются по одному.
-[UsedeskFile](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/entity/chat/UsedeskFile.java) - класс файла для отправки посредством SDK:
+  ```
+ getSupportFragmentManager().beginTransaction()
+        .replace(R.id.container, UsedeskChatFragment.newInstance())
+        .commit();
+  ```
 
-| Переменная | Тип    | Описание                            |
-|------------|--------|-------------------------------------|
-| content    | String | Данные файла, кодированные в Base64 |
-| type       | String | MIME-тип                            |
-| size       | Long   | Размер файла                        |
-| name       | String | Имя файла                           |
+Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-gui/src/main/res/values/styles.xml), после чего указать её для использования:
 
-- `sendTextMessage(String text)` - метод отправки текстовых сообщений.
- 
-- `sendFileMessage(UsedeskFile usedeskFile)` - метод отправки файловых сообщений.
+  ```
+IUsedeskViewCustomizer usedeskViewCustomizer = UsedeskViewCustomizer.getInstance();
 
-- `sendFeedbackMessage(Feedback feedback)` - метод отправки обратной формы, это форма для установки рейтинга ответа оператора (хорошо - LIKE,  плохо - DISLIKE).
+usedeskViewCustomizer.replaceId(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat_Custom);
+  ```
+  
+Так же можно переопределить любой слой из [ресурсов](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-gui/src/main/res/layout/):
 
-- `sendOfflineForm(OfflineForm offlineForm)` - метод отправки оффлайн формы, это форма для отправки данных на сервер (для дальнейшей связи с пользователем) когда все операторы не в сети.
-Возможные поля для заполнения:
+  ```
+IUsedeskViewCustomizer usedeskViewCustomizer = UsedeskViewCustomizer.getInstance();
 
-| Переменная | Тип    | Описание               |
-|------------|--------|------------------------|
-| companyId  | String | ID компании            |
-| name       | String | Имя пользователя       |
-| email      | String | Почта пользователя     |
-| message    | String | Сообщение пользователя |
+usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category, R.layout.custom_item_category);
 
-<a name="knowledge_base"></a>
+usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section, R.layout.custom_item_section);
 
-## База знаний
+usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
+  ```
 
-<a name="knowledge_base_setup"></a>
+Главным критерием последнего способа является полное соответсвие идентификаторов элементов и их тип стандартному слою.
 
-### 1. Настройка UsedeskKnowledgeBase
+<a name="knowledge_base_sdk"></a>
+### 3. KnowledgeBase SDK
 
 [UsedeskKnowledgeBase](https://github.com/usedesk/Android_SDK/blob/master/usedesk_sdk/src/main/java/ru/usedesk/sdk/external/UsedeskKnowledgeBase.java) - класс работы с базой знаний.
 

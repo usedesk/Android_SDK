@@ -14,15 +14,15 @@ import java.util.List;
 
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 
 public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.SectionViewHolder> {
 
-    private final List<Section> sectionList;
+    private final List<UsedeskSection> sectionList;
     private final IOnSectionClickListener onSectionClickListener;
     private final IUsedeskViewCustomizer usedeskViewCustomizer;
 
-    SectionsAdapter(@NonNull List<Section> sectionList,
+    SectionsAdapter(@NonNull List<UsedeskSection> sectionList,
                     @NonNull IOnSectionClickListener onSectionClickListener,
                     @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
         this.sectionList = sectionList;
@@ -62,7 +62,7 @@ public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.Sectio
             textViewTitle = itemView.findViewById(R.id.tv_title);
         }
 
-        void bind(@NonNull final Section section) {
+        void bind(@NonNull final UsedeskSection section) {
             imageViewIcon.setImageBitmap(null);
             Glide.with(imageViewIcon)
                     .load(section.getImage())

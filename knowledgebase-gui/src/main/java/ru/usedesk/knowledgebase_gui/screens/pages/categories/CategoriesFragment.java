@@ -12,9 +12,9 @@ import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.Category;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
 
-public class CategoriesFragment extends FragmentListView<Category, CategoriesViewModel> {
+public class CategoriesFragment extends FragmentListView<UsedeskCategory, CategoriesViewModel> {
 
     public static final String SECTION_ID_KEY = "sectionIdKey";
     private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
@@ -40,7 +40,7 @@ public class CategoriesFragment extends FragmentListView<Category, CategoriesVie
     }
 
     @Override
-    protected RecyclerView.Adapter getAdapter(List<Category> list) {
+    protected RecyclerView.Adapter getAdapter(List<UsedeskCategory> list) {
         if (!(getParentFragment() instanceof IOnCategoryClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnCategoryClickListener.class.getSimpleName());

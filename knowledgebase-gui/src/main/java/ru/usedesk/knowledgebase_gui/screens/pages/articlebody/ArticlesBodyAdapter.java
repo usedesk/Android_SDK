@@ -11,15 +11,15 @@ import java.util.List;
 
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 
 public class ArticlesBodyAdapter extends RecyclerView.Adapter<ArticlesBodyAdapter.ArticleViewHolder> {
 
-    private final List<ArticleBody> articleInfoList;
+    private final List<UsedeskArticleBody> articleInfoList;
     private final IOnArticleBodyClickListener onArticleClickListener;
     private final IUsedeskViewCustomizer usedeskViewCustomizer;
 
-    ArticlesBodyAdapter(@NonNull List<ArticleBody> articleInfoList,
+    ArticlesBodyAdapter(@NonNull List<UsedeskArticleBody> articleInfoList,
                         @NonNull IOnArticleBodyClickListener onArticleClickListener,
                         @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
         this.articleInfoList = articleInfoList;
@@ -56,7 +56,7 @@ public class ArticlesBodyAdapter extends RecyclerView.Adapter<ArticlesBodyAdapte
             textViewCount = itemView.findViewById(R.id.tv_count);
         }
 
-        void bind(@NonNull final ArticleBody articleBody) {
+        void bind(@NonNull final UsedeskArticleBody articleBody) {
             textViewTitle.setText(articleBody.getTitle());
             textViewCount.setText(Integer.toString(articleBody.getViews()));
 

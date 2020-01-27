@@ -13,9 +13,9 @@ import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 
-public class ArticlesBodyFragment extends FragmentListView<ArticleBody, ArticlesBodyViewModel> {
+public class ArticlesBodyFragment extends FragmentListView<UsedeskArticleBody, ArticlesBodyViewModel> {
 
     public static final String SEARCH_QUERY_KEY = "searchQueryKey";
 
@@ -42,7 +42,7 @@ public class ArticlesBodyFragment extends FragmentListView<ArticleBody, Articles
     }
 
     @Override
-    protected RecyclerView.Adapter getAdapter(List<ArticleBody> list) {
+    protected RecyclerView.Adapter getAdapter(List<UsedeskArticleBody> list) {
         if (!(getParentFragment() instanceof IOnArticleBodyClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnArticleBodyClickListener.class.getSimpleName());

@@ -7,9 +7,9 @@ import java.util.List;
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 
-class SectionsViewModel extends DataViewModel<List<Section>> {
+class SectionsViewModel extends DataViewModel<List<UsedeskSection>> {
 
     private SectionsViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk) {
         loadData(usedeskKnowledgeBaseSdk.getSectionsRx());

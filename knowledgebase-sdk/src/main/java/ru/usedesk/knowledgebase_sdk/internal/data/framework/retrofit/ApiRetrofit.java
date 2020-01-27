@@ -4,7 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
 
 public interface ApiRetrofit {
     @GET("{account_id}/list")
@@ -25,9 +25,9 @@ public interface ApiRetrofit {
                                  @Query("category_ids") String categoryIds,
                                  @Query("article_ids") String articleIds,
                                  @Query("page") String page,
-                                 @Query("type") SearchQuery.Type type,
-                                 @Query("sort") SearchQuery.Sort sort,
-                                 @Query("order") SearchQuery.Order order);
+                                 @Query("type") UsedeskSearchQuery.Type type,
+                                 @Query("sort") UsedeskSearchQuery.Sort sort,
+                                 @Query("order") UsedeskSearchQuery.Order order);
 
     @GET("{account_id}/articles/{article_id}/add-views")
     Call<String> addViews(@Path(value = "account_id", encoded = true) String accountId,

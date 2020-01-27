@@ -2,7 +2,7 @@ package ru.usedesk.knowledgebase_sdk.external.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ArticleBody {
+public class UsedeskArticleBody {
     private long id;
     private String title;
     private String text;

@@ -15,12 +15,12 @@ import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
-import ru.usedesk.knowledgebase_sdk.external.entity.Category;
-import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
-import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
 import ru.usedesk.knowledgebase_sdk.internal.data.repository.IKnowledgeBaseRepository;
 
 public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
@@ -28,13 +28,13 @@ public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
     private final IKnowledgeBaseRepository knowledgeRepository;
     private final Scheduler workScheduler;
     private final Scheduler mainThreadScheduler;
-    private final KnowledgeBaseConfiguration configuration;
+    private final UsedeskKnowledgeBaseConfiguration configuration;
 
     @Inject
     KnowledgeBaseInteractor(@NonNull IKnowledgeBaseRepository knowledgeRepository,
                             @NonNull @Named("work") Scheduler workScheduler,
                             @NonNull @Named("main") Scheduler mainThreadScheduler,
-                            @NonNull KnowledgeBaseConfiguration configuration) {
+                            @NonNull UsedeskKnowledgeBaseConfiguration configuration) {
         this.knowledgeRepository = knowledgeRepository;
         this.workScheduler = workScheduler;
         this.mainThreadScheduler = mainThreadScheduler;
@@ -49,37 +49,37 @@ public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
 
     @Override
     @NonNull
-    public Single<List<Section>> getSectionsRx() {
+    public Single<List<UsedeskSection>> getSectionsRx() {
         return createSingle(emitter -> emitter.onSuccess(getSections()));
     }
 
     @Override
     @NonNull
-    public Single<ArticleBody> getArticleRx(long articleId) {
+    public Single<UsedeskArticleBody> getArticleRx(long articleId) {
         return createSingle(emitter -> emitter.onSuccess(getArticle(articleId)));
     }
 
     @NonNull
     @Override
-    public Single<List<Category>> getCategoriesRx(long sectionId) {
+    public Single<List<UsedeskCategory>> getCategoriesRx(long sectionId) {
         return createSingle(emitter -> emitter.onSuccess(getCategories(sectionId)));
     }
 
     @NonNull
     @Override
-    public Single<List<ArticleInfo>> getArticlesRx(long categoryId) {
+    public Single<List<UsedeskArticleInfo>> getArticlesRx(long categoryId) {
         return createSingle(emitter -> emitter.onSuccess(getArticles(categoryId)));
     }
 
     @Override
     @NonNull
-    public Single<List<ArticleBody>> getArticlesRx(@NonNull String searchQuery) {
+    public Single<List<UsedeskArticleBody>> getArticlesRx(@NonNull String searchQuery) {
         return createSingle(emitter -> emitter.onSuccess(getArticles(searchQuery)));
     }
 
     @Override
     @NonNull
-    public Single<List<ArticleBody>> getArticlesRx(@NonNull SearchQuery searchQuery) {
+    public Single<List<UsedeskArticleBody>> getArticlesRx(@NonNull UsedeskSearchQuery searchQuery) {
         return createSingle(emitter -> emitter.onSuccess(getArticles(searchQuery)));
     }
 
@@ -100,39 +100,39 @@ public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
 
     @Override
     @NonNull
-    public List<Category> getCategories(long sectionId) throws UsedeskException {
+    public List<UsedeskCategory> getCategories(long sectionId) throws UsedeskException {
         return knowledgeRepository.getCategories(configuration.getAccountId(), configuration.getToken(), sectionId);
     }
 
     @Override
     @NonNull
-    public List<Section> getSections() throws UsedeskException {
+    public List<UsedeskSection> getSections() throws UsedeskException {
         return knowledgeRepository.getSections(configuration.getAccountId(), configuration.getToken());
     }
 
     @Override
     @NonNull
-    public ArticleBody getArticle(long articleId) throws UsedeskException {
+    public UsedeskArticleBody getArticle(long articleId) throws UsedeskException {
         return knowledgeRepository.getArticleBody(configuration.getAccountId(), configuration.getToken(), articleId);
     }
 
     @Override
     @NonNull
-    public List<ArticleBody> getArticles(@NonNull String searchQuery) throws UsedeskException {
-        SearchQuery query = new SearchQuery.Builder(searchQuery).build();
+    public List<UsedeskArticleBody> getArticles(@NonNull String searchQuery) throws UsedeskException {
+        UsedeskSearchQuery query = new UsedeskSearchQuery.Builder(searchQuery).build();
 
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), query);
     }
 
     @Override
     @NonNull
-    public List<ArticleBody> getArticles(@NonNull SearchQuery searchQuery) throws UsedeskException {
+    public List<UsedeskArticleBody> getArticles(@NonNull UsedeskSearchQuery searchQuery) throws UsedeskException {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), searchQuery);
     }
 
     @Override
     @NonNull
-    public List<ArticleInfo> getArticles(long categoryId) throws UsedeskException {
+    public List<UsedeskArticleInfo> getArticles(long categoryId) throws UsedeskException {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }
 

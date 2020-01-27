@@ -13,9 +13,9 @@ import ru.usedesk.knowledgebase_gui.screens.common.FragmentDataView;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 
-public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewModel> {
+public class ArticleFragment extends FragmentDataView<UsedeskArticleBody, ArticleViewModel> {
 
     private static final String ARTICLE_ID_KEY = "articleIdKey";
 
@@ -54,7 +54,7 @@ public class ArticleFragment extends FragmentDataView<ArticleBody, ArticleViewMo
     }
 
     @Override
-    protected void setDataView(ArticleBody data) {
+    protected void setDataView(UsedeskArticleBody data) {
         textViewTitle.setText(data.getTitle());
         textViewText.setText(Html.fromHtml(data.getText()));
     }

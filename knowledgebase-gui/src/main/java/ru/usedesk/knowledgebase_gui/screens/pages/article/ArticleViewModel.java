@@ -5,9 +5,9 @@ import androidx.annotation.NonNull;
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 
-public class ArticleViewModel extends DataViewModel<ArticleBody> {
+public class ArticleViewModel extends DataViewModel<UsedeskArticleBody> {
 
     private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
@@ -18,7 +18,7 @@ public class ArticleViewModel extends DataViewModel<ArticleBody> {
     }
 
     @Override
-    protected void onData(ArticleBody data) {
+    protected void onData(UsedeskArticleBody data) {
         super.onData(data);
 
         usedeskKnowledgeBaseSdk.addViewsRx(data.getId())

@@ -2,7 +2,7 @@ package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 
 public class ArticlesBodyPage {
     private int page;
@@ -11,7 +11,7 @@ public class ArticlesBodyPage {
     private int count;
     @SerializedName("total-count")
     private int totalCount;
-    private ArticleBody[] articles;
+    private UsedeskArticleBody[] articles;
 
     public int getPage() {
         return page;
@@ -29,7 +29,7 @@ public class ArticlesBodyPage {
         return totalCount;
     }
 
-    public ArticleBody[] getArticles() {
+    public UsedeskArticleBody[] getArticles() {
         return articles;
     }
 }

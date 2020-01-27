@@ -11,16 +11,16 @@ import java.util.List;
 
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_sdk.external.entity.Category;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
 
 
 public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder> {
 
-    private final List<Category> categoryList;
+    private final List<UsedeskCategory> categoryList;
     private final IOnCategoryClickListener onCategoryClickListener;
     private final IUsedeskViewCustomizer usedeskViewCustomizer;
 
-    CategoriesAdapter(@NonNull List<Category> categoryList,
+    CategoriesAdapter(@NonNull List<UsedeskCategory> categoryList,
                       @NonNull IOnCategoryClickListener onCategoryClickListener,
                       @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
         this.categoryList = categoryList;
@@ -56,7 +56,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Se
             textViewTitle = itemView.findViewById(R.id.tv_title);
         }
 
-        void bind(@NonNull final Category category,
+        void bind(@NonNull final UsedeskCategory category,
                   @NonNull final IOnCategoryClickListener onCategoryClickListener) {
             textViewTitle.setText(category.getTitle());
 

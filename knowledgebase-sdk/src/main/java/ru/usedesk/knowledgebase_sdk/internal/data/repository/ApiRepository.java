@@ -9,18 +9,18 @@ import javax.inject.Inject;
 
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
-import ru.usedesk.knowledgebase_sdk.external.entity.Category;
-import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.IApiLoader;
 
 public class ApiRepository implements IKnowledgeBaseRepository {
 
     private IApiLoader apiLoader;
 
-    private List<Section> sectionList;
+    private List<UsedeskSection> sectionList;
 
     @Inject
     ApiRepository(IApiLoader apiLoader) {
@@ -29,7 +29,7 @@ public class ApiRepository implements IKnowledgeBaseRepository {
 
     @NonNull
     @Override
-    public List<Section> getSections(@NonNull String id, @NonNull String token) throws UsedeskHttpException {
+    public List<UsedeskSection> getSections(@NonNull String id, @NonNull String token) throws UsedeskHttpException {
         if (sectionList == null) {
             sectionList = Arrays.asList(apiLoader.getSections(id, token));
         }
@@ -38,20 +38,20 @@ public class ApiRepository implements IKnowledgeBaseRepository {
 
     @NonNull
     @Override
-    public ArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws UsedeskHttpException {
+    public UsedeskArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws UsedeskHttpException {
         return apiLoader.getArticle(id, Long.toString(articleId), token);
     }
 
     @NonNull
     @Override
-    public List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
-                                         @NonNull SearchQuery searchQuery) throws UsedeskHttpException {
+    public List<UsedeskArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
+                                                @NonNull UsedeskSearchQuery searchQuery) throws UsedeskHttpException {
         return apiLoader.getArticles(accountId, token, searchQuery);
     }
 
     @NonNull
     @Override
-    public List<Category> getCategories(@NonNull String id, @NonNull String token, long sectionId)
+    public List<UsedeskCategory> getCategories(@NonNull String id, @NonNull String token, long sectionId)
             throws UsedeskHttpException, UsedeskDataNotFoundException {
         if (sectionList == null) {
             getSections(id, token);
@@ -61,7 +61,7 @@ public class ApiRepository implements IKnowledgeBaseRepository {
 
     @NonNull
     @Override
-    public List<ArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId)
+    public List<UsedeskArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId)
             throws UsedeskHttpException, UsedeskDataNotFoundException {
         if (sectionList == null) {
             getSections(id, token);
@@ -78,10 +78,10 @@ public class ApiRepository implements IKnowledgeBaseRepository {
         getArticleInfo(articleId).setViews(views);
     }
 
-    private ArticleInfo getArticleInfo(long articleId) throws UsedeskDataNotFoundException {
-        for (Section section : sectionList) {
-            for (Category category : section.getCategories())
-                for (ArticleInfo articleInfo : category.getArticles()) {
+    private UsedeskArticleInfo getArticleInfo(long articleId) throws UsedeskDataNotFoundException {
+        for (UsedeskSection section : sectionList) {
+            for (UsedeskCategory category : section.getCategories())
+                for (UsedeskArticleInfo articleInfo : category.getArticles()) {
                     if (articleInfo.getId() == articleId) {
                         return articleInfo;
                     }
@@ -91,23 +91,23 @@ public class ApiRepository implements IKnowledgeBaseRepository {
     }
 
     @NonNull
-    private ArticleInfo[] getArticles(long categoryId) throws UsedeskDataNotFoundException {
-        for (Section section : sectionList) {
-            for (Category category : section.getCategories())
+    private UsedeskArticleInfo[] getArticles(long categoryId) throws UsedeskDataNotFoundException {
+        for (UsedeskSection section : sectionList) {
+            for (UsedeskCategory category : section.getCategories())
                 if (category.getId() == categoryId) {
                     return category.getArticles();
                 }
         }
-        throw new UsedeskDataNotFoundException("Category with id(" + categoryId + ")");
+        throw new UsedeskDataNotFoundException("UsedeskCategory with id(" + categoryId + ")");
     }
 
     @NonNull
-    private Category[] getCategories(long sectionId) throws UsedeskDataNotFoundException {
-        for (Section section : sectionList) {
+    private UsedeskCategory[] getCategories(long sectionId) throws UsedeskDataNotFoundException {
+        for (UsedeskSection section : sectionList) {
             if (section.getId() == sectionId) {
                 return section.getCategories();
             }
         }
-        throw new UsedeskDataNotFoundException("Section with id(" + sectionId + ")");
+        throw new UsedeskDataNotFoundException("UsedeskSection with id(" + sectionId + ")");
     }
 }

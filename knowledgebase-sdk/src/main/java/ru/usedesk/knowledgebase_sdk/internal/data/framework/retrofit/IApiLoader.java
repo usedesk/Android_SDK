@@ -5,21 +5,21 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 
 public interface IApiLoader {
     @NonNull
-    Section[] getSections(@NonNull String accountId, @NonNull String token) throws UsedeskHttpException;
+    UsedeskSection[] getSections(@NonNull String accountId, @NonNull String token) throws UsedeskHttpException;
 
     @NonNull
-    ArticleBody getArticle(@NonNull String accountId, @NonNull String articleId, @NonNull String token)
+    UsedeskArticleBody getArticle(@NonNull String accountId, @NonNull String articleId, @NonNull String token)
             throws UsedeskHttpException;
 
     @NonNull
-    List<ArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
-                                  @NonNull SearchQuery searchQuery)
+    List<UsedeskArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
+                                         @NonNull UsedeskSearchQuery searchQuery)
             throws UsedeskHttpException;
 
     int addViews(@NonNull String accountId, @NonNull String token, long articleId, int count)

@@ -4,13 +4,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.knowledgebase_sdk.internal.di.InstanceBox;
 
 public final class UsedeskKnowledgeBaseSdk {
 
     private static InstanceBox instanceBox;
-    private static KnowledgeBaseConfiguration configuration;
+    private static UsedeskKnowledgeBaseConfiguration configuration;
 
     @NonNull
     public static IUsedeskKnowledgeBase init(@NonNull Context appContext) {
@@ -31,7 +31,7 @@ public final class UsedeskKnowledgeBaseSdk {
         return instanceBox.getKnowledgeBaseSdk();
     }
 
-    public static void setConfiguration(@NonNull KnowledgeBaseConfiguration knowledgeBaseConfiguration) {
+    public static void setConfiguration(@NonNull UsedeskKnowledgeBaseConfiguration knowledgeBaseConfiguration) {
         configuration = knowledgeBaseConfiguration;
     }
 

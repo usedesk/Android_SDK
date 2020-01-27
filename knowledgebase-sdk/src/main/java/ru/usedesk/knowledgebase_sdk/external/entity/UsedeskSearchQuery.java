@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-public class SearchQuery {
+public class UsedeskSearchQuery {
     private final String searchQuery;
     private List<String> collectionIds;
     private List<String> categoryIds;
@@ -15,7 +15,7 @@ public class SearchQuery {
     private Sort sort;
     private Order order;
 
-    private SearchQuery(@NonNull String searchQuery) {
+    private UsedeskSearchQuery(@NonNull String searchQuery) {
         this.searchQuery = searchQuery;
     }
 
@@ -82,10 +82,10 @@ public class SearchQuery {
     }
 
     static public class Builder {
-        private final SearchQuery searchQuery;
+        private final UsedeskSearchQuery searchQuery;
 
         public Builder(@NonNull String searchQuery) {
-            this.searchQuery = new SearchQuery(searchQuery);
+            this.searchQuery = new UsedeskSearchQuery(searchQuery);
         }
 
         public Builder setCollectionIds(List<String> collectionIds) {
@@ -128,7 +128,7 @@ public class SearchQuery {
             return this;
         }
 
-        public SearchQuery build() {
+        public UsedeskSearchQuery build() {
             return searchQuery;
         }
     }

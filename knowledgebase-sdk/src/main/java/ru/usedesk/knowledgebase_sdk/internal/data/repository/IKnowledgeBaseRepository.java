@@ -6,27 +6,27 @@ import java.util.List;
 
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
-import ru.usedesk.knowledgebase_sdk.external.entity.Category;
-import ru.usedesk.knowledgebase_sdk.external.entity.SearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
 
 public interface IKnowledgeBaseRepository {
     @NonNull
-    List<Section> getSections(@NonNull String id, @NonNull String token) throws UsedeskHttpException;
+    List<UsedeskSection> getSections(@NonNull String id, @NonNull String token) throws UsedeskHttpException;
 
     @NonNull
-    ArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws UsedeskHttpException;
+    UsedeskArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws UsedeskHttpException;
 
     @NonNull
-    List<ArticleBody> getArticles(@NonNull String id, @NonNull String token, @NonNull SearchQuery searchQuery) throws UsedeskHttpException;
+    List<UsedeskArticleBody> getArticles(@NonNull String id, @NonNull String token, @NonNull UsedeskSearchQuery searchQuery) throws UsedeskHttpException;
 
     @NonNull
-    List<Category> getCategories(@NonNull String id, @NonNull String token, long sectionId) throws UsedeskHttpException, UsedeskDataNotFoundException;
+    List<UsedeskCategory> getCategories(@NonNull String id, @NonNull String token, long sectionId) throws UsedeskHttpException, UsedeskDataNotFoundException;
 
     @NonNull
-    List<ArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId) throws UsedeskHttpException, UsedeskDataNotFoundException;
+    List<UsedeskArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId) throws UsedeskHttpException, UsedeskDataNotFoundException;
 
     void addViews(@NonNull String accountId, @NonNull String token, long articleId) throws UsedeskHttpException, UsedeskDataNotFoundException;
 }

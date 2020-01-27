@@ -22,7 +22,7 @@ import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSearchQueryListener;
 import ru.usedesk.knowledgebase_gui.external.UsedeskKnowledgeBaseFragment;
 import ru.usedesk.knowledgebase_gui.screens.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
                 getLong(configuration.getClientAdditionalId())));
 
         if (configuration.isWithKnowledgeBase()) {
-            UsedeskKnowledgeBaseSdk.setConfiguration(new KnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
+            UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
         }
     }
 

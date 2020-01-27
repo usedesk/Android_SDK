@@ -12,9 +12,9 @@ import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
 
-public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, ArticlesInfoViewModel> {
+public class ArticlesInfoFragment extends FragmentListView<UsedeskArticleInfo, ArticlesInfoViewModel> {
 
     public static final String CATEGORY_ID_KEY = "categoryIdKey";
 
@@ -41,7 +41,7 @@ public class ArticlesInfoFragment extends FragmentListView<ArticleInfo, Articles
     }
 
     @Override
-    protected RecyclerView.Adapter getAdapter(List<ArticleInfo> list) {
+    protected RecyclerView.Adapter getAdapter(List<UsedeskArticleInfo> list) {
         if (!(getParentFragment() instanceof IOnArticleInfoClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnArticleInfoClickListener.class.getSimpleName());

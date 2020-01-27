@@ -10,9 +10,9 @@ import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_gui.screens.pages.FragmentListView;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.Section;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 
-public class SectionsFragment extends FragmentListView<Section, SectionsViewModel> {
+public class SectionsFragment extends FragmentListView<UsedeskSection, SectionsViewModel> {
 
     private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
@@ -30,7 +30,7 @@ public class SectionsFragment extends FragmentListView<Section, SectionsViewMode
     }
 
     @Override
-    protected RecyclerView.Adapter getAdapter(List<Section> list) {
+    protected RecyclerView.Adapter getAdapter(List<UsedeskSection> list) {
         if (!(getParentFragment() instanceof IOnSectionClickListener)) {
             throw new RuntimeException("Parent fragment must implement " +
                     IOnSectionClickListener.class.getSimpleName());

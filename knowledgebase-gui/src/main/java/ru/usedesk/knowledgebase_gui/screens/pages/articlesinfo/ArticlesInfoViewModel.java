@@ -7,9 +7,9 @@ import java.util.List;
 import ru.usedesk.knowledgebase_gui.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.ArticleInfo;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
 
-class ArticlesInfoViewModel extends DataViewModel<List<ArticleInfo>> {
+class ArticlesInfoViewModel extends DataViewModel<List<UsedeskArticleInfo>> {
 
     private ArticlesInfoViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, long categoryId) {
         loadData(usedeskKnowledgeBaseSdk.getArticlesRx(categoryId));

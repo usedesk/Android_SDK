@@ -2,15 +2,14 @@ package ru.usedesk.knowledgebase_sdk.external.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Section {
+public class UsedeskCategory {
 
     private long id;
     private String title;
     @SerializedName("public")
     private int access;
     private int order;
-    private String image;
-    private Category[] categories;
+    private UsedeskArticleInfo[] articles;
 
     public long getId() {
         return id;
@@ -28,11 +27,7 @@ public class Section {
         return order;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public Category[] getCategories() {
-        return categories;
+    public UsedeskArticleInfo[] getArticles() {
+        return articles;
     }
 }

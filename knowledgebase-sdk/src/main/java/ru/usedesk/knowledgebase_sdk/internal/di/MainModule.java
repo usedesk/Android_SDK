@@ -15,7 +15,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.KnowledgeBaseConfiguration;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.ApiLoader;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.ApiRetrofit;
 import ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.IApiLoader;
@@ -27,9 +27,9 @@ import toothpick.config.Module;
 
 class MainModule extends Module {
 
-    MainModule(@NonNull Context appContext, @NonNull KnowledgeBaseConfiguration knowledgeBaseConfiguration) {
+    MainModule(@NonNull Context appContext, @NonNull UsedeskKnowledgeBaseConfiguration knowledgeBaseConfiguration) {
         bind(Context.class).toInstance(appContext);
-        bind(KnowledgeBaseConfiguration.class).toInstance(knowledgeBaseConfiguration);
+        bind(UsedeskKnowledgeBaseConfiguration.class).toInstance(knowledgeBaseConfiguration);
 
         bind(Gson.class).toInstance(gson());
 

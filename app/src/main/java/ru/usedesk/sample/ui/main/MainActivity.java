@@ -19,8 +19,8 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSearchQueryListener;
+import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSupportClickListener;
 import ru.usedesk.knowledgebase_gui.external.UsedeskKnowledgeBaseFragment;
-import ru.usedesk.knowledgebase_gui.internal.screens.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.R;
@@ -34,7 +34,7 @@ import ru.usedesk.sample.ui.screens.configuration.ConfigurationFragment;
 import ru.usedesk.sample.ui.screens.info.InfoFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements ConfigurationFragment.IOnGoToSdkListener, IOnUsedeskSupportClickListener {
+        implements ConfigurationFragment.IOnGoToSdkListener, IUsedeskOnSupportClickListener {
 
     private final ToolbarHelper toolbarHelper;
     private MainViewModel viewModel;

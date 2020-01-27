@@ -15,7 +15,6 @@ import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_gui.internal.screens.common.FragmentView;
 import ru.usedesk.knowledgebase_gui.internal.screens.helper.FragmentSwitcher;
-import ru.usedesk.knowledgebase_gui.internal.screens.main.IOnUsedeskSupportClickListener;
 import ru.usedesk.knowledgebase_gui.internal.screens.main.KnowledgeBaseViewModel;
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.article.ArticleFragment;
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.articlebody.ArticlesBodyFragment;
@@ -69,8 +68,8 @@ public class UsedeskKnowledgeBaseFragment extends FragmentView<KnowledgeBaseView
 
     private void onSupportClick(View view) {
         FragmentActivity activity = getActivity();
-        if (activity instanceof IOnUsedeskSupportClickListener) {
-            ((IOnUsedeskSupportClickListener) activity).onSupportClick();
+        if (activity instanceof IUsedeskOnSupportClickListener) {
+            ((IUsedeskOnSupportClickListener) activity).onSupportClick();
         }
     }
 

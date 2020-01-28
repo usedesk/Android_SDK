@@ -85,15 +85,15 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 
 [IUsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/IUsedeskActionListener.java) - класс для прослушивания событий чата:
 
-| Метод                    | Параметры     | Описание события                                 |
+| Метод | Параметры | Описание события |
 |--------------------------|---------------|--------------------------------------------------|
-| onConnected              | -             | Успешное подключение к серверу                   |
-| onMessageReceived        | Message       | Новое сообщение                                  |
-| onMessagesReceived       | List&lt;Message&gt; | Список сообщений из в чата на момент подключения |
-| onServiceMessageReceived | Message       | Сервисное сообщение                              |
-| onOfflineFormExpected    | -             | Ожидается оффлайн форма                          |
-| onDisconnected           | -             | Соединение разорвано                             |
-| onException                  | UsedeskException     | Возникшее исключение         |
+| onConnected | - | Успешное подключение к серверу |
+| onMessageReceived | UsedeskMessage | Новое сообщение |
+| onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из в чата на момент подключения |
+| onServiceMessageReceived | UsedeskMessage | Сервисное сообщение |
+| onOfflineFormExpected | UsedeskChatConfiguration | Ожидается оффлайн форма |
+| onDisconnected | - | Соединение разорвано |
+| onException | UsedeskException | Возникшее исключение |
 
 После инициализации можно получить экземпляр `IUsedeskChat` вызвав:
 
@@ -109,12 +109,12 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 |--------------------------|------------------|------------------|
 | connect  | -                        | Подключение к серверу |
 | disconnect  | -                        | Отключение от сервера |
-| send  | String textMessage | Отправить текстовое сообщение |
-| send  | UsedeskFileInfo usedeskFileInfo | Отправить файл |
-| send  | List&lt;UsedeskFileInfo&gt; usedeskFileInfoList | Отправить список файлов  |
-| send  | UsedeskFeedback feedback | Отправить отзыв |
-| send  | UsedeskOfflineForm offlineForm | Отправить оффлайн-форму |
-| send  | UsedeskMessageButton messageButton | Отправить готовый ответ на сообщение оператора |
+| send  | String | Отправить текстовое сообщение |
+| send  | UsedeskFileInfo | Отправить файл |
+| send  | List&lt;UsedeskFileInfo&gt; | Отправить список файлов  |
+| send  | UsedeskFeedback | Отправить отзыв |
+| send  | UsedeskOfflineForm | Отправить оффлайн-форму |
+| send  | UsedeskMessageButton | Отправить готовый ответ на сообщение оператора |
 
 -- [UsedeskFileInfo](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFileInfo.java):
 
@@ -256,7 +256,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | id         | long       | Идентификатор секции         |
 | title      | String     | Название секции              |
 | image      | String     | Ссылка на изображение секции |
-| categories | Category[] | Категории                    |
+| categories | UsedeskCategory[] | Категории                    |
 
 -- [UsedeskCategory](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - категория Базы Знаний:
  
@@ -264,7 +264,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 |------------|---------------|--------------------------------|
 | id         | long          | Идентификатор категории        |
 | title      | String        | Название категории             |
-| articles   | ArticleInfo[] | Список с информацией о статьях |
+| articles   | UsedeskArticleInfo[] | Список с информацией о статьях |
 
 -- [UsedeskArticleInfo](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleInfo.java) - заголовок статьи Базы Знаний:
  

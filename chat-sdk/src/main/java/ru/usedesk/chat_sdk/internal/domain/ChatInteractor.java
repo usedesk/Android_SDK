@@ -146,7 +146,7 @@ public class ChatInteractor implements IUsedeskChat {
         if (messageButton.getUrl().isEmpty()) {
             send(messageButton.getText());
         } else {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));//TODO: сделать обработчик ссылок и перенести туда вызов
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));
             browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(browserIntent);
         }

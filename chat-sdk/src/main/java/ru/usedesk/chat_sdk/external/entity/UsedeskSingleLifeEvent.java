@@ -1,10 +1,16 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-public class UsedeskSingleLifeEvent extends UsedeskEvent {
+import androidx.annotation.Nullable;
+
+public class UsedeskSingleLifeEvent<DATA> extends UsedeskEvent<DATA> {
     private boolean processed = false;
 
     public UsedeskSingleLifeEvent() {
 
+    }
+
+    public UsedeskSingleLifeEvent(@Nullable DATA data) {
+        super(data);
     }
 
     @Override

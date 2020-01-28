@@ -18,6 +18,7 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
     private final Subject<UsedeskChatConfiguration> offlineFormExpectedSubject = BehaviorSubject.create();
     private final Subject<UsedeskSingleLifeEvent> disconnectedSubject = BehaviorSubject.create();
     private final Subject<UsedeskSingleLifeEvent> feedbackSubject = BehaviorSubject.create();
+    private final Subject<Boolean> connectedStateSubject = BehaviorSubject.createDefault(false);
 
     private final Subject<UsedeskMessage> messageSubject = BehaviorSubject.create();
     private final Subject<UsedeskMessage> newMessageSubject = BehaviorSubject.create();
@@ -45,6 +46,11 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
         if (message != null) {
             newMessageSubject.onNext(message);
         }
+    }
+
+    @NonNull
+    public Observable<Boolean> getConnectedStateSubject() {
+        return connectedStateSubject;
     }
 
     @NonNull
@@ -77,7 +83,7 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
     }
 
     @NonNull
-    public Observable<UsedeskSingleLifeEvent> getOfflineFormExpectedObservable() {
+    public Observable<UsedeskChatConfiguration> getOfflineFormExpectedObservable() {
         return offlineFormExpectedSubject;
     }
 
@@ -99,20 +105,19 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
     @Override
     public void onConnected() {
         connectedSubject.onNext(new UsedeskSingleLifeEvent());
+        connectedStateSubject.onNext(true);
     }
 
     @Override
-    public void onMessageReceived(UsedeskMessage message) {
+    public void onMessageReceived(@NonNull UsedeskMessage message) {
         onMessage(message);
         onNewMessage(message);
     }
 
     @Override
-    public void onMessagesReceived(List<UsedeskMessage> messages) {
-        if (messages != null) {
-            for (UsedeskMessage message : messages) {
-                onMessage(message);
-            }
+    public void onMessagesReceived(@NonNull List<UsedeskMessage> messages) {
+        for (UsedeskMessage message : messages) {
+            onMessage(message);
         }
     }
 
@@ -129,6 +134,7 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
     @Override
     public void onDisconnected() {
         connectedSubject.onNext(new UsedeskSingleLifeEvent());
+        connectedStateSubject.onNext(false);
     }
 
     @Override

@@ -15,7 +15,7 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 public class UsedeskActionListenerRx implements IUsedeskActionListener {
 
     private final Subject<UsedeskSingleLifeEvent> connectedSubject = BehaviorSubject.create();
-    private final Subject<UsedeskSingleLifeEvent> offlineFormExpectedSubject = BehaviorSubject.create();
+    private final Subject<UsedeskChatConfiguration> offlineFormExpectedSubject = BehaviorSubject.create();
     private final Subject<UsedeskSingleLifeEvent> disconnectedSubject = BehaviorSubject.create();
     private final Subject<UsedeskSingleLifeEvent> feedbackSubject = BehaviorSubject.create();
 
@@ -122,8 +122,8 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
     }
 
     @Override
-    public void onOfflineFormExpected() {
-        offlineFormExpectedSubject.onNext(new UsedeskSingleLifeEvent());
+    public void onOfflineFormExpected(@NonNull UsedeskChatConfiguration chatConfiguration) {
+        offlineFormExpectedSubject.onNext(chatConfiguration);
     }
 
     @Override

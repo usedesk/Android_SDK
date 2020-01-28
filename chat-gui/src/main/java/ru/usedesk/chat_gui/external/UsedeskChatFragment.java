@@ -31,7 +31,7 @@ import ru.usedesk.chat_gui.internal.chat.MessageAdapter;
 import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
 import ru.usedesk.chat_gui.internal.chat.OfflineFormAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskEvent;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
@@ -176,9 +176,10 @@ public class UsedeskChatFragment extends Fragment {
         }
     }
 
-    private void onOfflineFormExpected(@Nullable UsedeskEvent offlineFormExpectedEvent) {
-        if (offlineFormExpectedEvent != null && !offlineFormExpectedEvent.isProcessed()) {
-            offlineFormExpectedEvent.setProcessed();
+    private void onOfflineFormExpected(@Nullable UsedeskChatConfiguration chatConfiguration) {
+        if (chatConfiguration != null) {
+            offlineFormAdapter.setName(chatConfiguration.getClientName());
+            offlineFormAdapter.setEmail(chatConfiguration.getEmail());
             offlineFormAdapter.setMessage(messageAdapter.getMessage());
             messageAdapter.show(false);
             offlineFormAdapter.show(true);

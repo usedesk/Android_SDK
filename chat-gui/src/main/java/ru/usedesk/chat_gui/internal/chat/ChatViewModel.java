@@ -19,7 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
-import ru.usedesk.chat_sdk.external.entity.UsedeskEvent;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
@@ -34,7 +34,7 @@ public class ChatViewModel extends ViewModel {
 
     private final MutableLiveData<Set<Integer>> feedbacksLiveData = new MutableLiveData<>();
     private final MutableLiveData<UsedeskException> exceptionLiveData = new MutableLiveData<>();
-    private final MutableLiveData<UsedeskEvent> offlineFormExpectedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<UsedeskChatConfiguration> offlineFormExpectedLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<UsedeskMessage>> messagesLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<UsedeskFileInfo>> fileInfoListLiveData = new MutableLiveData<>();
 
@@ -82,7 +82,7 @@ public class ChatViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<UsedeskEvent> getOfflineFormExpectedLiveData() {
+    public LiveData<UsedeskChatConfiguration> getOfflineFormExpectedLiveData() {
         return offlineFormExpectedLiveData;
     }
 

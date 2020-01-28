@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import ru.usedesk.chat_gui.R;
 
@@ -43,5 +44,13 @@ public class OfflineFormAdapter {
 
     public void setMessage(@NonNull String message) {
         messageEditText.setText(message);
+    }
+
+    public void setName(@Nullable String clientName) {
+        nameEditText.setText(clientName);
+    }
+
+    public void setEmail(@Nullable String email) {
+        emailEditText.setText(email);
     }
 }

@@ -10,13 +10,13 @@ public interface IUsedeskActionListener {
 
     void onConnected();
 
-    void onMessageReceived(UsedeskMessage message);
+    void onMessageReceived(@NonNull UsedeskMessage message);
 
-    void onMessagesReceived(List<UsedeskMessage> messages);
+    void onMessagesReceived(@NonNull List<UsedeskMessage> messages);
 
     void onFeedbackReceived();
 
-    void onOfflineFormExpected();
+    void onOfflineFormExpected(@NonNull UsedeskChatConfiguration chatConfiguration);
 
     void onDisconnected();
 

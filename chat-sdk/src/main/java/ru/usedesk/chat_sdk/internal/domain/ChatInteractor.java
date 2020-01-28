@@ -257,7 +257,7 @@ public class ChatInteractor implements IUsedeskChat {
             }
 
             if (setup.isNoOperators()) {
-                actionListener.onOfflineFormExpected();
+                actionListener.onOfflineFormExpected(configuration);
             }
         } else {
             needSetEmail = true;

@@ -18,6 +18,7 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.knowledgebase_gui.external.IUsedeskOnBackPressedListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSearchQueryListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSupportClickListener;
 import ru.usedesk.knowledgebase_gui.external.UsedeskKnowledgeBaseFragment;
@@ -159,6 +160,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        Fragment fragment = getCurrentFragment();
+        if (fragment instanceof IUsedeskOnBackPressedListener
+                && ((IUsedeskOnBackPressedListener) fragment).onBackPressed()) {
+            return;
+        }
         viewModel.goBack();
     }
 

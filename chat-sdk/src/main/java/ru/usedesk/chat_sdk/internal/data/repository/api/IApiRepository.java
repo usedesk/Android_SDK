@@ -14,9 +14,9 @@ public interface IApiRepository {
 
     void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
 
-    void init(@NonNull UsedeskChatConfiguration configuration, String token);
+    void init(@NonNull UsedeskChatConfiguration configuration, String token) throws UsedeskException;
 
-    void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId);
+    void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException;
 
     void send(@NonNull UsedeskChatConfiguration configuration, @NonNull UsedeskOfflineForm offlineForm) throws UsedeskException;
 

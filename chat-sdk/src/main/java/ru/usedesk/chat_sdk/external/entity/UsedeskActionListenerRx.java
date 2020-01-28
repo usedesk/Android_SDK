@@ -3,6 +3,7 @@ package ru.usedesk.chat_sdk.external.entity;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,37 +16,30 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 public class UsedeskActionListenerRx implements IUsedeskActionListener {
 
     private final Subject<UsedeskSingleLifeEvent> connectedSubject = BehaviorSubject.create();
-    private final Subject<UsedeskChatConfiguration> offlineFormExpectedSubject = BehaviorSubject.create();
     private final Subject<UsedeskSingleLifeEvent> disconnectedSubject = BehaviorSubject.create();
-    private final Subject<UsedeskSingleLifeEvent> feedbackSubject = BehaviorSubject.create();
     private final Subject<Boolean> connectedStateSubject = BehaviorSubject.createDefault(false);
 
     private final Subject<UsedeskMessage> messageSubject = BehaviorSubject.create();
     private final Subject<UsedeskMessage> newMessageSubject = BehaviorSubject.create();
+    private final Subject<List<UsedeskMessage>> messagesSubject = BehaviorSubject.create();
+
+    private final Subject<UsedeskChatConfiguration> offlineFormExpectedSubject = BehaviorSubject.create();
+    private final Subject<UsedeskSingleLifeEvent> feedbackSubject = BehaviorSubject.create();
     private final Subject<UsedeskException> exceptionSubject = BehaviorSubject.create();
 
-    private final Observable<List<UsedeskMessage>> messagesObservable;
+    private List<UsedeskMessage> lastMessages = new ArrayList<>();
 
     @Inject
     public UsedeskActionListenerRx() {
-        messagesObservable = messageSubject.scan(new ArrayList<>(), (messages, message) -> {
-            List<UsedeskMessage> newMessages = new ArrayList<>(messages.size() + 1);
-            newMessages.addAll(messages);
-            newMessages.add(message);
-            return newMessages;
-        });
     }
 
-    private void onMessage(UsedeskMessage message) {
-        if (message != null) {
-            messageSubject.onNext(message);
-        }
-    }
+    private void onNewMessages(@NonNull List<UsedeskMessage> newMessages) {
+        List<UsedeskMessage> messages = new ArrayList<>(lastMessages.size() + newMessages.size());
+        messages.addAll(lastMessages);
+        messages.addAll(newMessages);
+        lastMessages = messages;
 
-    private void onNewMessage(UsedeskMessage message) {
-        if (message != null) {
-            newMessageSubject.onNext(message);
-        }
+        messagesSubject.onNext(messages);
     }
 
     @NonNull
@@ -59,7 +53,7 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
     }
 
     /**
-     * Все сообщения
+     * Каждое сообщение
      */
     @NonNull
     public Observable<UsedeskMessage> getMessageObservable() {
@@ -74,12 +68,8 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
         return newMessageSubject;
     }
 
-    /**
-     * Полный список сообщений, генерируется с каждым сообщением
-     */
-    @NonNull
     public Observable<List<UsedeskMessage>> getMessagesObservable() {
-        return messagesObservable;
+        return messagesSubject;
     }
 
     @NonNull
@@ -110,15 +100,18 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
 
     @Override
     public void onMessageReceived(@NonNull UsedeskMessage message) {
-        onMessage(message);
-        onNewMessage(message);
+        messageSubject.onNext(message);
+        newMessageSubject.onNext(message);
+        onNewMessages(Collections.singletonList(message));
     }
 
     @Override
     public void onMessagesReceived(@NonNull List<UsedeskMessage> messages) {
         for (UsedeskMessage message : messages) {
-            onMessage(message);
+            messageSubject.onNext(message);
         }
+
+        onNewMessages(messages);
     }
 
     @Override

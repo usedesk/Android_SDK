@@ -51,22 +51,22 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void init(@NonNull UsedeskChatConfiguration configuration, String token) {
-        socketApi.emitterActionSafe(new InitChatRequest(token, configuration.getCompanyId(), configuration.getUrl()));
+    public void init(@NonNull UsedeskChatConfiguration configuration, String token) throws UsedeskException {
+        socketApi.sendRequest(new InitChatRequest(token, configuration.getCompanyId(), configuration.getUrl()));
     }
 
     @Override
     public void send(@NonNull String token, @NonNull UsedeskFeedback feedback) throws UsedeskException {
         checkConnection();
 
-        socketApi.emitterAction(new SendFeedbackRequest(token, feedback));
+        socketApi.sendRequest(new SendFeedbackRequest(token, feedback));
     }
 
     @Override
     public void send(@NonNull String token, @NonNull String text) throws UsedeskException {
         checkConnection();
 
-        socketApi.emitterAction(new SendMessageRequest(token, new RequestMessage(text)));
+        socketApi.sendRequest(new SendMessageRequest(token, new RequestMessage(text)));
     }
 
     private void checkConnection() throws UsedeskSocketException {
@@ -80,12 +80,12 @@ public class ApiRepository implements IApiRepository {
         checkConnection();
 
         UsedeskFile usedeskFile = fileInfoLoader.getFrom(usedeskFileInfo);
-        socketApi.emitterAction(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
+        socketApi.sendRequest(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
     }
 
     @Override
-    public void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) {
-        socketApi.emitterActionSafe(new SetEmailRequest(token, email, name, phone, additionalId));
+    public void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException {
+        socketApi.sendRequest(new SetEmailRequest(token, email, name, phone, additionalId));
     }
 
     @Override

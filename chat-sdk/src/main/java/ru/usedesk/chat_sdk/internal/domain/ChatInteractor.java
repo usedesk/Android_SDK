@@ -226,8 +226,12 @@ public class ChatInteractor implements IUsedeskChat {
     }
 
     private void sendUserEmail() {
-        apiRepository.send(token, configuration.getEmail(), configuration.getClientName(),
-                configuration.getClientPhoneNumber(), configuration.getClientAdditionalId());
+        try {
+            apiRepository.send(token, configuration.getEmail(), configuration.getClientName(),
+                    configuration.getClientPhoneNumber(), configuration.getClientAdditionalId());
+        } catch (UsedeskException e) {
+            actionListener.onException(e);
+        }
     }
 
     private void parseNewMessageResponse(UsedeskMessage message) {
@@ -292,7 +296,11 @@ public class ChatInteractor implements IUsedeskChat {
 
             @Override
             public void onInitChat() {
-                apiRepository.init(configuration, token);
+                try {
+                    apiRepository.init(configuration, token);
+                } catch (UsedeskException e) {
+                    actionListener.onException(e);
+                }
             }
 
             @Override
@@ -300,7 +308,11 @@ public class ChatInteractor implements IUsedeskChat {
                 userInfoRepository.setToken(null);
                 token = null;
 
-                apiRepository.init(configuration, token);
+                try {
+                    apiRepository.init(configuration, token);
+                } catch (UsedeskException e) {
+                    actionListener.onException(e);
+                }
             }
         };
     }

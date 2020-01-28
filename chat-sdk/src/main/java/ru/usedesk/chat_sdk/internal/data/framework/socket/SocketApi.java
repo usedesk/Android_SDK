@@ -151,7 +151,7 @@ public class SocketApi {
         }
     }
 
-    public void emitterAction(@NonNull BaseRequest baseRequest) throws UsedeskSocketException {
+    public void sendRequest(@NonNull BaseRequest baseRequest) throws UsedeskSocketException {
         if (socket == null) {
             return;
         }
@@ -162,14 +162,6 @@ public class SocketApi {
             socket.emit(EVENT_SERVER_ACTION, jsonObject);
         } catch (JSONException e) {
             throw new UsedeskSocketException(JSON_ERROR, e.getMessage());
-        }
-    }
-
-    public void emitterActionSafe(@NonNull BaseRequest baseRequest) {
-        try {
-            emitterAction(baseRequest);
-        } catch (UsedeskException e) {
-            actionListener.onException(e);
         }
     }
 

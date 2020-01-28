@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -135,8 +136,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private final TextView tv_feedback_answer;
         private final ViewGroup ltFeedback;
-        private final ImageView ivLike;
-        private final ImageView ivDislike;
+        private final ImageButton ivLike;
+        private final ImageButton ivDislike;
 
         OperatorTextHolder(@NonNull ViewGroup viewGroup) {
             super(viewGroup, R.layout.usedesk_item_message_operator);

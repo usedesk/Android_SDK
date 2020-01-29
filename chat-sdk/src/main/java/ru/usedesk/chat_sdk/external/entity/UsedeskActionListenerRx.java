@@ -68,6 +68,9 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
         return newMessageSubject;
     }
 
+    /**
+     * Список всех сообщений (обновляется с каждым новым)
+     */
     public Observable<List<UsedeskMessage>> getMessagesObservable() {
         return messagesSubject;
     }
@@ -111,7 +114,9 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
             messageSubject.onNext(message);
         }
 
-        onNewMessages(messages);
+        if (lastMessages.size() == 0) {
+            onNewMessages(messages);
+        }
     }
 
     @Override

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 
 import ru.usedesk.chat_gui.R;
 
-public class MessageAdapter {
+public class MessagePanelAdapter {
 
     private final ViewGroup rootView;
     private final ImageButton attachFileImageButton;
@@ -18,7 +18,7 @@ public class MessageAdapter {
 
     private final ChatViewModel viewModel;
 
-    public MessageAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel, @NonNull View.OnClickListener onClickAttach) {
+    public MessagePanelAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel, @NonNull View.OnClickListener onClickAttach) {
         this.viewModel = viewModel;
 
         rootView = parentView.findViewById(R.id.message_layout);

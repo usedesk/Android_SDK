@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -39,9 +38,6 @@
             android:autoLink="web"
             android:includeFontPadding="false"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="ASDjashd asjk" />
 
         <ImageView
@@ -49,8 +45,6 @@
             android:layout_width="160dp"
             android:layout_height="160dp"
             android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_message"
             tools:srcCompat="@drawable/ic_home_black"
             tools:visibility="gone" />
     </LinearLayout>

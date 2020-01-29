@@ -27,7 +27,7 @@ import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
 import ru.usedesk.chat_gui.internal.chat.FilePicker;
-import ru.usedesk.chat_gui.internal.chat.MessageAdapter;
+import ru.usedesk.chat_gui.internal.chat.MessagePanelAdapter;
 import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
 import ru.usedesk.chat_gui.internal.chat.OfflineFormAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
@@ -39,7 +39,7 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 @RuntimePermissions
 public class UsedeskChatFragment extends Fragment {
-    private MessageAdapter messageAdapter;
+    private MessagePanelAdapter messagePanelAdapter;
     private OfflineFormAdapter offlineFormAdapter;
     private MessagesAdapter messagesAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
@@ -83,7 +83,7 @@ public class UsedeskChatFragment extends Fragment {
 
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
         offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
-        messageAdapter = new MessageAdapter(view, viewModel, v -> openAttachmentDialog());
+        messagePanelAdapter = new MessagePanelAdapter(view, viewModel, v -> openAttachmentDialog());
         messagesAdapter = new MessagesAdapter(view, viewModel,
                 viewModel.getMessagesLiveData().getValue(),
                 viewModel.getFeedbacksLiveData().getValue());
@@ -180,8 +180,8 @@ public class UsedeskChatFragment extends Fragment {
         if (chatConfiguration != null) {
             offlineFormAdapter.setName(chatConfiguration.getClientName());
             offlineFormAdapter.setEmail(chatConfiguration.getEmail());
-            offlineFormAdapter.setMessage(messageAdapter.getMessage());
-            messageAdapter.show(false);
+            offlineFormAdapter.setMessage(messagePanelAdapter.getMessage());
+            messagePanelAdapter.show(false);
             offlineFormAdapter.show(true);
         }
     }

@@ -47,9 +47,15 @@ public class ChatViewModel extends ViewModel {
         toLiveData(actionListenerRx.getOfflineFormExpectedObservable(), offlineFormExpectedLiveData);
         toLiveData(actionListenerRx.getExceptionObservable(), exceptionLiveData);
 
+        disposables.add(actionListenerRx.getConnectedStateSubject()
+                .subscribe(connected -> {
+                    if (!connected) {
+                        justComplete(usedeskChat.connectRx());
+                    }
+                }));
+
         feedbacksLiveData.setValue(new HashSet<>());
 
-        justComplete(usedeskChat.connectRx());
     }
 
     private void clearFileInfoList() {

@@ -116,16 +116,16 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | send  | UsedeskOfflineForm | Отправить оффлайн-форму |
 | send  | UsedeskMessageButton | Отправить готовый ответ на сообщение оператора |
 
--- [UsedeskFileInfo](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFileInfo.java):
+ - [UsedeskFileInfo](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFileInfo.java):
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
 | uri  | Uri  | Ссылка на файл |
 | type  | UsedeskFileInfo.Type  | MIME-тип файла |
 
--- [UsedeskFeedback](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFeedback.java) - может иметь значение `LIKE` или `DISLIKE`.
+- [UsedeskFeedback](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskFeedback.java) - может иметь значение `LIKE` или `DISLIKE`.
 
--- [UsedeskOfflineForm](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskOfflineForm.java):
+- [UsedeskOfflineForm](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskOfflineForm.java):
 
 | Переменная            | Тип                   | Описание                    |
 |-----------------------|-----------------------|-----------------------------|
@@ -134,7 +134,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | email  | String  | Email клиента |
 | message  | String  | Сообщение клиента |
 
--- [UsedeskMessageButton](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskMessageButton.java) - готовый ответ клиента на сообщение оператора.
+- [UsedeskMessageButton](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/entity/UsedeskMessageButton.java) - готовый ответ клиента на сообщение оператора.
 
 Каждый метод может выбросить [UsedeskException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java):
 
@@ -151,7 +151,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | UNKNOWN_FROM_SERVER_ERROR | Необработанная ошибка от сервера |
 | UNKNOWN_ERROR             | Необработанная ошибка            |
 
- -  [UsedeskHttpException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskHttpException.java) - Исключение, обработанное во время работы базы знаний. Метод getError возвращает следующие значения:
+-  [UsedeskHttpException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskHttpException.java) - Исключение, обработанное во время работы базы знаний. Метод getError возвращает следующие значения:
 
 | Тип ошибки    | Описание                  |
 |---------------|---------------------------|
@@ -249,7 +249,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 
 Каждый метод может выбросить [UsedeskException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java).
 
--- [UsedeskSection](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - секция Базы Знаний:
+ - [UsedeskSection](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - секция Базы Знаний:
  
 | Переменная | Тип        | Описание                     |
 |------------|------------|------------------------------|
@@ -258,7 +258,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | image      | String     | Ссылка на изображение секции |
 | categories | UsedeskCategory[] | Категории                    |
 
--- [UsedeskCategory](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - категория Базы Знаний:
+ - [UsedeskCategory](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - категория Базы Знаний:
  
 | Переменная | Тип           | Описание                       |
 |------------|---------------|--------------------------------|
@@ -266,7 +266,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | title      | String        | Название категории             |
 | articles   | UsedeskArticleInfo[] | Список с информацией о статьях |
 
--- [UsedeskArticleInfo](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleInfo.java) - заголовок статьи Базы Знаний:
+ - [UsedeskArticleInfo](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleInfo.java) - заголовок статьи Базы Знаний:
  
 | Переменная | Тип    | Описание              |
 |------------|--------|-----------------------|
@@ -274,7 +274,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | title      | String | Название статьи       |
 | views      | int    | Количество просмотров |
 
--- [ArticleBody](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleBody.java) - текст статьи Базы Знаний:
+ - [ArticleBody](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleBody.java) - текст статьи Базы Знаний:
  
 | Переменная | Тип    | Описание                             |
 |------------|--------|--------------------------------------|

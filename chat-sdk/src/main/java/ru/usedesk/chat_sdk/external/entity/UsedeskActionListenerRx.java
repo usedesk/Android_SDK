@@ -37,8 +37,11 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
         List<UsedeskMessage> messages = new ArrayList<>(lastMessages.size() + newMessages.size());
         messages.addAll(lastMessages);
         messages.addAll(newMessages);
-        lastMessages = messages;
+        postMessages(messages);
+    }
 
+    private void postMessages(List<UsedeskMessage> messages) {
+        lastMessages = messages;
         messagesSubject.onNext(messages);
     }
 
@@ -114,9 +117,7 @@ public class UsedeskActionListenerRx implements IUsedeskActionListener {
             messageSubject.onNext(message);
         }
 
-        if (lastMessages.size() == 0) {
-            onNewMessages(messages);
-        }
+        postMessages(messages);
     }
 
     @Override

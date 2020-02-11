@@ -1,0 +1,13 @@
+<resources>
+
+    <style name="Usedesk.Theme.KnowledgeBase">
+        <!--KnowledgeBaseFragment-->
+        <item name="usedesk_knowledgebase_support_title">
+            @string/usedesk_knowledgebase_support_title
+        </item>
+        <!--ArticleInfoItem-->
+        <item name="usedesk_article_info_item_shows_text">
+            @string/usedesk_article_info_item_shows_text
+        </item>
+    </style>
+</resources>

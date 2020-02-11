@@ -1,6 +1,6 @@
 package ru.usedesk.sample.model.configuration.entity;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class ConfigurationValidation {
     private String companyIdError;

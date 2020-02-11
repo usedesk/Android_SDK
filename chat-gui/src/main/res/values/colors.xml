@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="usedesk_message_user_background_color">#BAD2F1</color>
+    <color name="usedesk_message_operator_background_color">#70A8F1</color>
+</resources>

@@ -1,2 +1,1 @@
-include ':app'
-include ':usedesk_sdk'
+include ':app', ':knowledgebase-sdk', ':common-sdk', ':chat-sdk', ':chat-gui', ':common-gui', ':knowledgebase-gui'

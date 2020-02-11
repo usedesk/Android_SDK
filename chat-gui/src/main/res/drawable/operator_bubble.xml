@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="bottom|left">
+        <rotate
+            android:fromDegrees="45"
+            android:pivotX="0%"
+            android:pivotY="100%"
+            android:toDegrees="0">
+            <shape android:shape="rectangle">
+                <size
+                    android:width="12dp"
+                    android:height="12dp" />
+                <solid android:color="?attr/usedesk_message_operator_background_color" />
+            </shape>
+        </rotate>
+    </item>
+    <item android:left="8dp">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/usedesk_message_operator_background_color" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+</layer-list>

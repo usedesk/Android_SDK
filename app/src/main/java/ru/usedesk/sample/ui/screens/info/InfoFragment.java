@@ -1,10 +1,11 @@
 package ru.usedesk.sample.ui.screens.info;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 import ru.usedesk.sample.R;
 

@@ -8,7 +8,7 @@
     <string name="app_info_title">Usedesk — Perfect Tool for Customer Support and Communication.</string>
     <string name="app_info_content">Usedesk helps your team to effectively answer all of your customers’ requests. All incoming requests are taken into account while your specialized staff can consult each other using the system. Thus customers feel your attention, and appreciate the personal touch.</string>
     <string name="app_info_contacts">Contacts:\nhttp://usedesk.com/\nsupport@usedesk.com</string>
-    <string name="info_version">SDK v1.0.6</string>
+    <string name="info_version">SDK v2.0.2</string>
 
     <string name="configuration_no_configuration">No usedesk configuration,\nplease configure your email address first</string>
     <string name="configuration_dialog_title">Enter your data</string>
@@ -36,4 +36,12 @@
     <string name="knowledge_base_title">KnowledgeBase</string>
     <string name="chat_title">Chat</string>
 
+    <!--UsedeskOfflineForm-->
+    <string name="offline_form_title">There is not anyone. Send us a request and we will consider it.</string>
+    <!--AttachmentPanel-->
+    <string name="attachment_panel_gallery_title">Gallery</string>
+    <string name="attachment_panel_camera_title">Camera</string>
+    <string name="attachment_panel_storage_title">Storage</string>
+    <string name="search_title">Search</string>
+    <string name="account_id">Account ID</string>
 </resources>

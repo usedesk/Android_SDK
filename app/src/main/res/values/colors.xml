@@ -11,4 +11,7 @@
     <color name="messageButtonSelectedBackground">#878585</color>
     <color name="messageButtonLikeBackground">#09be0c</color>
     <color name="messageButtonDislikeBackground">@color/colorPrimary</color>
+
+    <color name="message_user_color">#FF6B6B</color>
+    <color name="message_operator_color">#FFC0C0</color>
 </resources>

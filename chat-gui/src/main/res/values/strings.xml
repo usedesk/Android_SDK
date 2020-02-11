@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--UsedeskOfflineForm-->
+    <string name="usedesk_offline_form_title">Unfortunately, all our operators are currently offline, but you can send us a request and we will definitely consider it in the near future.</string>
+    <string name="usedesk_offline_form_email_hint">Email</string>
+    <string name="usedesk_offline_form_name_hint">Name</string>
+    <string name="usedesk_offline_form_message_hint">Message</string>
+    <string name="usedesk_offline_form_send">Send</string>
+    <!--MessagePanel-->
+    <string name="usedesk_message_panel_hint">Message</string>
+    <!--MessageOperator-->
+    <string name="usedesk_message_operator_feedback_received">Thank you for your feedback</string>
+    <!--ChatFragment-->
+    <string name="usedesk_chat_fragment_loading_text">Loading…</string>
+    <!--AttachmentPanel-->
+    <string name="usedesk_attachment_panel_gallery_title">Photo</string>
+    <string name="usedesk_attachment_panel_camera_title">Camera</string>
+    <string name="usedesk_attachment_panel_storage_title">Document</string>
+</resources>

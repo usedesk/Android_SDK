@@ -2,12 +2,13 @@ package ru.usedesk.sample.service;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import ru.usedesk.chat_sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
+import ru.usedesk.chat_sdk.external.service.notifications.view.UsedeskForegroundNotificationsService;
 import ru.usedesk.sample.ui.main.MainActivity;
-import ru.usedesk.sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
-import ru.usedesk.sdk.external.service.notifications.view.UsedeskForegroundNotificationsService;
 
 public class CustomForegroundNotificationsService extends UsedeskForegroundNotificationsService {
 

@@ -27,7 +27,7 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
 
 public class ApiRepository implements IApiRepository {
-    private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/post";
+    private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/";
 
     private final SocketApi socketApi;
     private final IHttpApiLoader httpApiLoader;

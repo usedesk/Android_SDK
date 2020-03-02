@@ -34,7 +34,8 @@ public class ApiRepository implements IApiRepository {
     private final IFileInfoLoader fileInfoLoader;
 
     @Inject
-    ApiRepository(@NonNull SocketApi socketApi, @NonNull IHttpApiLoader httpApiLoader, @NonNull IFileInfoLoader fileInfoLoader) {
+    ApiRepository(@NonNull SocketApi socketApi, @NonNull IHttpApiLoader httpApiLoader,
+                  @NonNull IFileInfoLoader fileInfoLoader) {
         this.socketApi = socketApi;
         this.httpApiLoader = httpApiLoader;
         this.fileInfoLoader = fileInfoLoader;
@@ -51,8 +52,10 @@ public class ApiRepository implements IApiRepository {
     }
 
     @Override
-    public void init(@NonNull UsedeskChatConfiguration configuration, String token) throws UsedeskException {
-        socketApi.sendRequest(new InitChatRequest(token, configuration.getCompanyId(), configuration.getUrl()));
+    public void init(@NonNull UsedeskChatConfiguration configuration, String token)
+            throws UsedeskException {
+        socketApi.sendRequest(new InitChatRequest(token, configuration.getCompanyId(),
+                configuration.getUrl()));
     }
 
     @Override

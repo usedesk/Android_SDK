@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -29,9 +30,9 @@ import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
 import ru.usedesk.chat_gui.internal.chat.FilePicker;
 import ru.usedesk.chat_gui.internal.chat.MessagePanelAdapter;
 import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
-import ru.usedesk.chat_gui.internal.chat.OfflineFormAdapter;
+import ru.usedesk.chat_gui.internal.chat.OfflineFormExpectedAdapter;
+import ru.usedesk.chat_gui.internal.chat.OfflineFormSentAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
@@ -40,8 +41,9 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 @RuntimePermissions
 public class UsedeskChatFragment extends Fragment {
     private MessagePanelAdapter messagePanelAdapter;
-    private OfflineFormAdapter offlineFormAdapter;
     private MessagesAdapter messagesAdapter;
+    private OfflineFormExpectedAdapter offlineFormExpectedAdapter;
+    private OfflineFormSentAdapter offlineFormSentAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
 
     private TextView tvLoading;
@@ -72,18 +74,20 @@ public class UsedeskChatFragment extends Fragment {
 
         initUi(view);
         renderData();
-        observeData();
+        observeData(getViewLifecycleOwner());
 
         return view;
     }
 
-    private void initUi(View view) {
+    private void initUi(@NonNull View view) {
         tvLoading = view.findViewById(R.id.tv_loading);
         ltContent = view.findViewById(R.id.lt_content);
 
         attachedFilesAdapter = new AttachedFilesAdapter(viewModel, view.findViewById(R.id.rv_attached_files));
-        offlineFormAdapter = new OfflineFormAdapter(view, viewModel);
-        messagePanelAdapter = new MessagePanelAdapter(view, viewModel, v -> openAttachmentDialog());
+        messagePanelAdapter = new MessagePanelAdapter(view, viewModel, v -> openAttachmentDialog(),
+                getViewLifecycleOwner());
+        offlineFormExpectedAdapter = new OfflineFormExpectedAdapter(view, viewModel, getViewLifecycleOwner());
+        offlineFormSentAdapter = new OfflineFormSentAdapter(view, viewModel, getViewLifecycleOwner());
         messagesAdapter = new MessagesAdapter(view, viewModel,
                 viewModel.getMessagesLiveData().getValue(),
                 viewModel.getFeedbacksLiveData().getValue());
@@ -92,24 +96,20 @@ public class UsedeskChatFragment extends Fragment {
     private void renderData() {
         onMessages(viewModel.getMessagesLiveData().getValue());
         onFileInfoList(viewModel.getFileInfoListLiveData().getValue());
-        onOfflineFormExpected(viewModel.getOfflineFormExpectedLiveData().getValue());
     }
 
-    private void observeData() {
+    private void observeData(@NonNull LifecycleOwner lifecycleOwner) {
         viewModel.getMessagesLiveData()
-                .observe(this, this::onMessages);
+                .observe(lifecycleOwner, this::onMessages);
 
         viewModel.getFileInfoListLiveData()
-                .observe(this, this::onFileInfoList);
-
-        viewModel.getOfflineFormExpectedLiveData()
-                .observe(this, this::onOfflineFormExpected);
+                .observe(lifecycleOwner, this::onFileInfoList);
 
         viewModel.getFeedbacksLiveData()
-                .observe(this, this::onFeedbacks);
+                .observe(lifecycleOwner, this::onFeedbacks);
 
         viewModel.getExceptionLiveData()
-                .observe(this, this::onException);
+                .observe(lifecycleOwner, this::onException);
     }
 
     private void openAttachmentDialog() {
@@ -173,16 +173,6 @@ public class UsedeskChatFragment extends Fragment {
     private void onFileInfoList(@Nullable List<UsedeskFileInfo> usedeskFileInfoList) {
         if (usedeskFileInfoList != null) {
             attachedFilesAdapter.update(usedeskFileInfoList);
-        }
-    }
-
-    private void onOfflineFormExpected(@Nullable UsedeskChatConfiguration chatConfiguration) {
-        if (chatConfiguration != null) {
-            offlineFormAdapter.setName(chatConfiguration.getClientName());
-            offlineFormAdapter.setEmail(chatConfiguration.getEmail());
-            offlineFormAdapter.setMessage(messagePanelAdapter.getMessage());
-            messagePanelAdapter.show(false);
-            offlineFormAdapter.show(true);
         }
     }
 

@@ -21,7 +21,8 @@ public class OfflineFormSentAdapter {
     }
 
     private void onMessagePanelState(@Nullable MessagePanelState messagePanelState) {
-        boolean messagePanel = messagePanelState != null && messagePanelState.isOfflineFormReceivedPanel();
+        boolean messagePanel = messagePanelState != null
+                && messagePanelState.equals(MessagePanelState.OFFLINE_FORM_SENT);
         rootView.setVisibility(messagePanel
                 ? View.VISIBLE
                 : View.GONE);

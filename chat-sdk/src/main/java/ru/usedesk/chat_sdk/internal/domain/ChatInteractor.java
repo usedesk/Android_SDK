@@ -263,7 +263,7 @@ public class ChatInteractor implements IUsedeskChat {
                 actionListener.onMessagesReceived(messages);
             }
 
-            if (true || setup.isNoOperators()) {
+            if (setup.isNoOperators()) {
                 actionListener.onOfflineFormExpected(configuration);
             }
         } else {

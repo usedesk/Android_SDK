@@ -40,9 +40,7 @@ public class ChatInteractor implements IUsedeskChat {
     private final IApiRepository apiRepository;
 
     private String token;
-
     private boolean needSetEmail = false;
-
     private Set<String> messageIds = new HashSet<>();
 
     @Inject

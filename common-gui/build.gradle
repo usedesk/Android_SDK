@@ -19,7 +19,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation "ru.usedesk:common-sdk:$project.version"
+    implementation project(':common-sdk')
 
     implementation 'androidx.annotation:annotation:1.1.0'
 

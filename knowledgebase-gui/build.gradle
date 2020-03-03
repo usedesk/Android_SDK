@@ -19,8 +19,11 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation "ru.usedesk:common-gui:$project.version"
-    implementation "ru.usedesk:knowledgebase-sdk:$project.version"
+    implementation project(':common-sdk')
+    implementation project(':common-gui')
+    implementation project(':knowledgebase-sdk')
+    //implementation "ru.usedesk:common-gui:$project.version"
+    //implementation "ru.usedesk:knowledgebase-sdk:$project.version"
 
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'

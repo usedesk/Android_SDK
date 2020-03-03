@@ -19,8 +19,12 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation "ru.usedesk:chat-sdk:$project.version"
-    implementation "ru.usedesk:common-gui:$project.version"
+    implementation project(':common-sdk')
+    implementation project(':chat-sdk')
+    implementation project(':common-gui')
+
+    //implementation "ru.usedesk:chat-sdk:$project.version"
+    //implementation "ru.usedesk:common-gui:$project.version"
 
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'

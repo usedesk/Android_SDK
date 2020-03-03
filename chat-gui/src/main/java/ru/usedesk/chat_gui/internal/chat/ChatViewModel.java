@@ -19,7 +19,6 @@ import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
@@ -34,28 +33,39 @@ public class ChatViewModel extends ViewModel {
 
     private final MutableLiveData<Set<Integer>> feedbacksLiveData = new MutableLiveData<>();
     private final MutableLiveData<UsedeskException> exceptionLiveData = new MutableLiveData<>();
-    private final MutableLiveData<UsedeskChatConfiguration> offlineFormExpectedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MessagePanelState> messagePanelStateLiveData = new MutableLiveData<>(MessagePanelState.MESSAGE_PANEL);
     private final MutableLiveData<List<UsedeskMessage>> messagesLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<UsedeskFileInfo>> fileInfoListLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> messageLiveData = new MutableLiveData<>("");
+    private final MutableLiveData<String> nameLiveData = new MutableLiveData<>("");
+    private final MutableLiveData<String> emailLiveData = new MutableLiveData<>("");
 
-    ChatViewModel(@NonNull IUsedeskChat usedeskChatSdk, @NonNull UsedeskActionListenerRx actionListenerRx) {
-        this.usedeskChat = usedeskChatSdk;
+    ChatViewModel(@NonNull IUsedeskChat usedeskChat, @NonNull UsedeskActionListenerRx actionListenerRx) {
+        this.usedeskChat = usedeskChat;
 
         clearFileInfoList();
 
         toLiveData(actionListenerRx.getMessagesObservable(), messagesLiveData);
-        toLiveData(actionListenerRx.getOfflineFormExpectedObservable(), offlineFormExpectedLiveData);
+        toLiveData(actionListenerRx.getOfflineFormExpectedObservable()
+                .map(configuration -> {
+                    nameLiveData.postValue(configuration.getClientName());
+                    emailLiveData.postValue(configuration.getEmail());
+                    return MessagePanelState.OFFLINE_FORM_EXPECTED;
+                }), messagePanelStateLiveData);
         toLiveData(actionListenerRx.getExceptionObservable(), exceptionLiveData);
 
         disposables.add(actionListenerRx.getConnectedStateSubject()
                 .subscribe(connected -> {
                     if (!connected) {
-                        justComplete(usedeskChat.connectRx());
+                        justComplete(this.usedeskChat.connectRx());
                     }
                 }));
 
         feedbacksLiveData.setValue(new HashSet<>());
+    }
 
+    void onMessageChanged(@NonNull String message) {
+        messageLiveData.setValue(message);
     }
 
     private void clearFileInfoList() {
@@ -88,8 +98,23 @@ public class ChatViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<UsedeskChatConfiguration> getOfflineFormExpectedLiveData() {
-        return offlineFormExpectedLiveData;
+    LiveData<MessagePanelState> getMessagePanelStateLiveData() {
+        return messagePanelStateLiveData;
+    }
+
+    @NonNull
+    LiveData<String> getMessageLiveData() {
+        return messageLiveData;
+    }
+
+    @NonNull
+    LiveData<String> getNameLiveData() {
+        return nameLiveData;
+    }
+
+    @NonNull
+    LiveData<String> getEmailLiveData() {
+        return emailLiveData;
     }
 
     @NonNull
@@ -102,13 +127,12 @@ public class ChatViewModel extends ViewModel {
         return fileInfoListLiveData;
     }
 
-    @NonNull
     public void setAttachedFileInfoList(@NonNull List<UsedeskFileInfo> usedeskFileInfoList) {
         fileInfoListLiveData.postValue(usedeskFileInfoList);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void sendFeedback(int messageIndex, @NonNull UsedeskFeedback feedback) {
+    void sendFeedback(int messageIndex, @NonNull UsedeskFeedback feedback) {
         Set<Integer> feedbacks = new HashSet<>(feedbacksLiveData.getValue().size() + 1);
         feedbacks.addAll(feedbacksLiveData.getValue());
         feedbacks.add(messageIndex);
@@ -143,6 +167,15 @@ public class ChatViewModel extends ViewModel {
     }
 
     void onSend(@NonNull String name, @NonNull String email, @NonNull String message) {
-        justComplete(usedeskChat.sendRx(new UsedeskOfflineForm(name, email, message)));
+        justComplete(usedeskChat.sendRx(new UsedeskOfflineForm(name, email, message))
+                .doOnComplete(() -> messagePanelStateLiveData.postValue(MessagePanelState.OFFLINE_FORM_SENT)));
+    }
+
+    void onNameChanged(@NonNull String name) {
+        nameLiveData.setValue(name);
+    }
+
+    void onEmailChanged(@NonNull String email) {
+        emailLiveData.setValue(email);
     }
 }

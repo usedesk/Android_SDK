@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import retrofit2.Response;
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
 import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.HttpApiFactory;
-import ru.usedesk.chat_sdk.internal.data.framework.httpapi.entity.OfflineFormResponse;
 
 public class HttpApiLoader implements IHttpApiLoader {
     private final HttpApiFactory httpApiFactory;
@@ -22,11 +21,9 @@ public class HttpApiLoader implements IHttpApiLoader {
     @Override
     public void post(@NonNull String baseUrl, @NonNull UsedeskOfflineForm offlineForm) throws IOException {
         IHttpApi httpApi = httpApiFactory.getInstance(baseUrl);
-        Response<OfflineFormResponse> response = httpApi.postOfflineForm(offlineForm)
-                .execute();
+        Response<Object[]> response = httpApi.postOfflineForm(offlineForm).execute();
 
         if (response.isSuccessful() && response.body() != null) {
-            OfflineFormResponse offlineFormResponse = response.body();
             return;
         }
         throw new IOException("Server error: " + response.code());

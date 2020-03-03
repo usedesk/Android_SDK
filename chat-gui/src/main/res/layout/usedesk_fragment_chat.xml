@@ -39,10 +39,17 @@
                 <include
                     layout="@layout/usedesk_view_message_panel"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
                 <include
                     layout="@layout/usedesk_view_offline_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <include
+                    layout="@layout/usedesk_view_offline_form_sent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />

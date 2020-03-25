@@ -19,10 +19,6 @@ public class NetworkUtils {
             return true;
         }
 
-        if (mobile != null && mobile.isConnected()) {
-            return true;
-        }
-
-        return false;
+        return mobile != null && mobile.isConnected();
     }
 }

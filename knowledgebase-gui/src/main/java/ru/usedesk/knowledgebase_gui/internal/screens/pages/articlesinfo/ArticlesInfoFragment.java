@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
-import ru.usedesk.knowledgebase_gui.internal.screens.pages.FragmentListView;
 import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory;
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.FragmentListView;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;

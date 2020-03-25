@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.usedesk.chat_gui.R;
-import ru.usedesk.common_gui.internal.ImageUtils;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.common_gui.internal.ImageUtils;
 
 
 public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {

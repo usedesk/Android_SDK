@@ -16,7 +16,6 @@ import ru.usedesk.sample.databinding.FragmentConfigureBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
 import ru.usedesk.sample.ui._common.Event;
-import ru.usedesk.sample.ui._common.GlideApp;
 
 public class ConfigurationFragment extends Fragment {
 

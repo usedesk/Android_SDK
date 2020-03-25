@@ -9,8 +9,8 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 
 public interface IKnowledgeBaseRepository {
     @NonNull

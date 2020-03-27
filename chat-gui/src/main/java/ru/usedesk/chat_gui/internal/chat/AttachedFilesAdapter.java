@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.usedesk.chat_gui.R;
-import ru.usedesk.chat_gui.internal.utils.GlideApp;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.common_gui.internal.ImageUtils;
 
 
 public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
@@ -65,11 +65,7 @@ public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdap
         }
 
         private void bind(@NonNull UsedeskFileInfo usedeskFileInfo) {
-            GlideApp.with(imageViewPreview)
-                    .load(usedeskFileInfo.getUri())
-                    .centerCrop()
-                    .error(R.drawable.ic_document_black)
-                    .into(imageViewPreview);
+            ImageUtils.setImageCenter(imageViewPreview, usedeskFileInfo.getUri(), R.drawable.ic_document_black);
 
             imageViewDetach.setOnClickListener(v -> chatViewModel.detachFile(usedeskFileInfo));
         }

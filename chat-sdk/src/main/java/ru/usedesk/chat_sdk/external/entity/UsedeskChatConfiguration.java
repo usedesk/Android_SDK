@@ -23,6 +23,8 @@ public class UsedeskChatConfiguration {
     private final Long clientPhoneNumber;
     private final Long clientAdditionalId;
 
+    private final String initClientMessage;
+
     public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
                                     @NonNull String url, @NonNull String offlineFormUrl) {
         this(companyId, email, url, offlineFormUrl, null, null, null);
@@ -30,7 +32,15 @@ public class UsedeskChatConfiguration {
 
     public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
                                     @NonNull String url, @NonNull String offlineFormUrl,
-                                    @Nullable String clientName, @Nullable Long clientPhoneNumber, @Nullable Long clientAdditionalId) {
+                                    @Nullable String clientName, @Nullable Long clientPhoneNumber,
+                                    @Nullable Long clientAdditionalId) {
+        this(companyId, email, url, offlineFormUrl, clientName, clientPhoneNumber, clientAdditionalId, null);
+    }
+
+    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
+                                    @NonNull String url, @NonNull String offlineFormUrl,
+                                    @Nullable String clientName, @Nullable Long clientPhoneNumber,
+                                    @Nullable Long clientAdditionalId, @Nullable String initClientMessage) {
         this.companyId = companyId;
         this.email = email;
         this.url = url;
@@ -38,6 +48,7 @@ public class UsedeskChatConfiguration {
         this.clientName = clientName;
         this.clientPhoneNumber = clientPhoneNumber;
         this.clientAdditionalId = clientAdditionalId;
+        this.initClientMessage = initClientMessage;
     }
 
     @NonNull
@@ -77,7 +88,8 @@ public class UsedeskChatConfiguration {
                     equals(this.offlineFormUrl, configuration.offlineFormUrl) &&
                     equals(this.clientName, configuration.clientName) &&
                     equals(this.clientPhoneNumber, configuration.clientPhoneNumber) &&
-                    equals(this.clientAdditionalId, configuration.clientAdditionalId);
+                    equals(this.clientAdditionalId, configuration.clientAdditionalId) &&
+                    equals(this.initClientMessage, configuration.initClientMessage);
         }
         return false;
     }
@@ -115,6 +127,11 @@ public class UsedeskChatConfiguration {
     @Nullable
     public Long getClientAdditionalId() {
         return clientAdditionalId;
+    }
+
+    @Nullable
+    public String getInitClientMessage() {
+        return initClientMessage;
     }
 
     private boolean equals(@Nullable Object obj1, @Nullable Object obj2) {

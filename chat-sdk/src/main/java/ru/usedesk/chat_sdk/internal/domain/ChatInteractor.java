@@ -78,8 +78,6 @@ public class ChatInteractor implements IUsedeskChat {
             e.printStackTrace();
         }
 
-        userInfoRepository.setConfiguration(configuration);
-
         apiRepository.connect(configuration.getUrl(), actionListener, getOnMessageListener());
     }
 
@@ -132,7 +130,8 @@ public class ChatInteractor implements IUsedeskChat {
             return;
         }
         if (offlineForm.getCompanyId() == null) {
-            offlineForm = new UsedeskOfflineForm(configuration.getCompanyId(), offlineForm.getName(), offlineForm.getEmail(), offlineForm.getMessage());
+            offlineForm = new UsedeskOfflineForm(configuration.getCompanyId(), offlineForm.getName(),
+                    offlineForm.getEmail(), offlineForm.getMessage());
         }
         apiRepository.send(configuration, offlineForm);
     }
@@ -273,6 +272,21 @@ public class ChatInteractor implements IUsedeskChat {
         if (needSetEmail) {
             sendUserEmail();
         }
+
+        String initClientMessage;
+        try {
+            initClientMessage = userInfoRepository.getConfiguration().getInitClientMessage();
+        } catch (UsedeskException ignore) {
+            initClientMessage = null;
+        }
+        try {
+            if (!equals(initClientMessage, configuration.getInitClientMessage())) {
+                send(configuration.getInitClientMessage());
+            }
+        } catch (UsedeskException ignore) {
+
+        }
+        userInfoRepository.setConfiguration(configuration);
     }
 
     private OnMessageListener getOnMessageListener() {

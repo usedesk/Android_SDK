@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v2.0.4)
+# Android Usedesk SDK (v2.0.5)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)

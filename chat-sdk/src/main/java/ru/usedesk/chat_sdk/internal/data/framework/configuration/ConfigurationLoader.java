@@ -23,6 +23,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     private static final String KEY_NAME = "name";
     private static final String KEY_PHONE = "phone";
     private static final String KEY_ADDITIONAL_ID = "additionalId";
+    private static final String KEY_CLIENT_INIT_MESSAGE = "clientInitMessage";
 
     private final SharedPreferences sharedPreferences;
 
@@ -53,6 +54,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
         final String url = sharedPreferences.getString(KEY_URL, null);
         final String offlineUrl = sharedPreferences.getString(KEY_OFFLINE_URL, null);
         final String email = sharedPreferences.getString(KEY_EMAIL, null);
+        final String initClientMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null);
 
         if (id == null || url == null || email == null || offlineUrl == null) {
             return null;
@@ -75,7 +77,9 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
             }
         }
 
-        return new UsedeskChatConfiguration(id, email, url, offlineUrl, name, getLong(phone), getLong(additionalId));
+        return new UsedeskChatConfiguration(id, email, url, offlineUrl,
+                name, getLong(phone), getLong(additionalId),
+                initClientMessage);
     }
 
     @Override
@@ -87,6 +91,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
                 .putString(KEY_EMAIL, configuration.getEmail())
                 .putString(KEY_NAME, configuration.getClientName())
                 .putString(KEY_ADDITIONAL_ID, getString(configuration.getClientAdditionalId()))
+                .putString(KEY_CLIENT_INIT_MESSAGE, configuration.getInitClientMessage())
                 .putString(KEY_PHONE, getString(configuration.getClientPhoneNumber()))
                 .apply();
     }

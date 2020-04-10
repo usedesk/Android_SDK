@@ -16,6 +16,7 @@ public class ConfigurationRepository {
     private static final String CLIENT_NAME_KEY = "clientNameKey";
     private static final String CLIENT_PHONE_NUMBER_KEY = "clientPhoneNumberKey";
     private static final String CLIENT_ADDITIONAL_ID_KEY = "clientAdditionalIdKey";
+    private static final String INIT_CLIENT_MESSAGE_KEY = "initClientMessageKey";
     private static final String FOREGROUND_SERVICE_KEY = "foregroundServiceKey";
     private static final String CUSTOM_VIEWS_KEY = "customViewsKey";
     private static final String WITH_KNOWLEDGE_BASE_KEY = "withKnowledgeBaseKey";
@@ -38,6 +39,7 @@ public class ConfigurationRepository {
                 "Иван Иванов",
                 "88005553535",
                 "777",
+                "",
                 false,
                 false,
                 true);
@@ -56,6 +58,7 @@ public class ConfigurationRepository {
                     sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()),
                     sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()),
                     sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()),
+                    sharedPreferences.getString(INIT_CLIENT_MESSAGE_KEY, defaultModel.getInitClientMessage()),
                     sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()),
                     sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()),
                     sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
@@ -76,6 +79,7 @@ public class ConfigurationRepository {
                 .putString(CLIENT_NAME_KEY, configurationModel.getClientName())
                 .putString(CLIENT_PHONE_NUMBER_KEY, configurationModel.getClientPhoneNumber())
                 .putString(CLIENT_ADDITIONAL_ID_KEY, configurationModel.getClientAdditionalId())
+                .putString(INIT_CLIENT_MESSAGE_KEY, configurationModel.getInitClientMessage())
                 .putBoolean(FOREGROUND_SERVICE_KEY, configurationModel.isForegroundService())
                 .putBoolean(CUSTOM_VIEWS_KEY, configurationModel.isCustomViews())
                 .putBoolean(WITH_KNOWLEDGE_BASE_KEY, configurationModel.isWithKnowledgeBase())

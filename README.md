@@ -78,6 +78,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | clientName  | String  | Имя клиента |
 | clientPhone  | Long  | Телефонный номер клиента |
 | clientAdditionalId  | Long  | Дополнительный идентификатор клиента |
+| initClientMessage  | String  | Сообщение, автоматически отправляемое от клиента при открытии чата |
 
 После этого нужно проинициализировать чат:
 

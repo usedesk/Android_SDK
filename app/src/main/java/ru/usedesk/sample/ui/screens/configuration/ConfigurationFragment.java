@@ -12,14 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sample.databinding.FragmentConfigureBinding;
+import ru.usedesk.sample.databinding.FragmentConfigurationBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
 import ru.usedesk.sample.ui._common.Event;
 
 public class ConfigurationFragment extends Fragment {
 
-    private FragmentConfigureBinding binding;
+    private FragmentConfigurationBinding binding;
     private ConfigurationViewModel viewModel;
 
     @NonNull
@@ -30,18 +30,18 @@ public class ConfigurationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_configure, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration, container, false);
 
         viewModel = ViewModelProviders.of(this).get(ConfigurationViewModel.class);
 
         viewModel.getConfiguration()
-                .observe(this, this::onNewConfigure);
+                .observe(getViewLifecycleOwner(), this::onNewConfiguration);
 
         viewModel.getConfigurationValidation()
-                .observe(this, this::onNewConfigureValidation);
+                .observe(getViewLifecycleOwner(), this::onNewConfigurationValidation);
 
         viewModel.getGoToSdkEvent()
-                .observe(this, this::onGoToSdkEvent);
+                .observe(getViewLifecycleOwner(), this::onGoToSdkEvent);
 
         binding.btnGoToSdk.setOnClickListener(v -> onGoToSdk());
 
@@ -76,12 +76,13 @@ public class ConfigurationFragment extends Fragment {
                 binding.etClientName.getText().toString(),
                 binding.etClientPhoneNumber.getText().toString(),
                 binding.etClientAdditionalId.getText().toString(),
+                binding.etInitClientMessage.getText().toString(),
                 binding.switchForeground.isChecked(),
                 binding.switchCustomViews.isChecked(),
                 binding.switchKnowledgeBase.isChecked());
     }
 
-    private void onNewConfigure(@NonNull Configuration configuration) {
+    private void onNewConfiguration(@NonNull Configuration configuration) {
         binding.etCompanyId.setText(configuration.getCompanyId());
         binding.etEmail.setText(configuration.getEmail());
         binding.etUrl.setText(configuration.getUrl());
@@ -91,14 +92,15 @@ public class ConfigurationFragment extends Fragment {
         binding.etClientName.setText(configuration.getClientName());
         binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber());
         binding.etClientAdditionalId.setText(configuration.getClientAdditionalId());
+        binding.etInitClientMessage.setText(configuration.getInitClientMessage());
         binding.switchForeground.setChecked(configuration.isForegroundService());
         binding.switchCustomViews.setChecked(configuration.isCustomViews());
         binding.switchKnowledgeBase.setChecked(configuration.isWithKnowledgeBase());
 
-        viewModel.getConfiguration().removeObservers(this);
+        viewModel.getConfiguration().removeObservers(getViewLifecycleOwner());
     }
 
-    private void onNewConfigureValidation(@NonNull ConfigurationValidation configurationValidation) {
+    private void onNewConfigurationValidation(@NonNull ConfigurationValidation configurationValidation) {
         binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
         binding.tilEmail.setError(configurationValidation.getEmailError());
         binding.tilUrl.setError(configurationValidation.getUrlError());

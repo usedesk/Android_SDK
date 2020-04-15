@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v2.0.4)
+# Android Usedesk SDK (v2.0.5)
 - [Требования к API](#requires)
 - [Подключение к проекту](#implementation)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
@@ -78,6 +78,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 | clientName  | String  | Имя клиента |
 | clientPhone  | Long  | Телефонный номер клиента |
 | clientAdditionalId  | Long  | Дополнительный идентификатор клиента |
+| initClientMessage  | String  | Сообщение, автоматически отправляемое от клиента при открытии чата |
 
 После этого нужно проинициализировать чат:
 

@@ -14,6 +14,7 @@ public class Configuration {
     private String clientName;
     private String clientPhoneNumber;
     private String clientAdditionalId;
+    private String initClientMessage;
     private Boolean foregroundService;
     private Boolean customViews;
     private Boolean withKnowledgeBase;
@@ -27,6 +28,7 @@ public class Configuration {
                          @Nullable String clientName,
                          @Nullable String clientPhoneNumber,
                          @Nullable String clientAdditionalId,
+                         @Nullable String initClientMessage,
                          @Nullable Boolean foregroundService,
                          @Nullable Boolean customViews,
                          @Nullable Boolean withKnowledgeBase) {
@@ -42,6 +44,7 @@ public class Configuration {
         this.foregroundService = foregroundService;
         this.customViews = customViews;
         this.withKnowledgeBase = withKnowledgeBase;
+        this.initClientMessage = initClientMessage;
     }
 
     @NonNull
@@ -87,6 +90,11 @@ public class Configuration {
     @NonNull
     public String getClientAdditionalId() {
         return clientAdditionalId;
+    }
+
+    @NonNull
+    public String getInitClientMessage() {
+        return initClientMessage;
     }
 
     @NonNull

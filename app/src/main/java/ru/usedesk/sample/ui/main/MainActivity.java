@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity
                 configuration.getOfflineFormUrl(),
                 configuration.getClientName(),
                 getLong(configuration.getClientPhoneNumber()),
-                getLong(configuration.getClientAdditionalId())));
+                getLong(configuration.getClientAdditionalId()),
+                configuration.getInitClientMessage()));
 
         if (configuration.isWithKnowledgeBase()) {
             UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));

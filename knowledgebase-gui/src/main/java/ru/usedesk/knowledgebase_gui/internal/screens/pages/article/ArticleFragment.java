@@ -1,9 +1,10 @@
 package ru.usedesk.knowledgebase_gui.internal.screens.pages.article;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +23,7 @@ public class ArticleFragment extends FragmentDataView<UsedeskArticleBody, Articl
     private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
     private TextView textViewTitle;
-    private TextView textViewText;
+    private WebView contentWebView;
 
     public ArticleFragment() {
         super(R.layout.usedesk_fragment_article);
@@ -43,7 +44,8 @@ public class ArticleFragment extends FragmentDataView<UsedeskArticleBody, Articl
     protected void onView(@NonNull View view) {
         super.onView(view);
         textViewTitle = view.findViewById(R.id.tv_title);
-        textViewText = view.findViewById(R.id.tv_text);
+        contentWebView = view.findViewById(R.id.wv_content);
+        contentWebView.setBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class ArticleFragment extends FragmentDataView<UsedeskArticleBody, Articl
     @Override
     protected void setDataView(UsedeskArticleBody data) {
         textViewTitle.setText(data.getTitle());
-        textViewText.setText(Html.fromHtml(data.getText()));
+        contentWebView.loadData(data.getText(), "text/html", null);
     }
 
 }

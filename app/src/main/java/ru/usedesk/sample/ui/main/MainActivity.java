@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToChat() {
         toolbarHelper.update(this, ToolbarHelper.State.CHAT);
-        switchFragment(UsedeskChatFragment.newInstance());
+        switchFragment(UsedeskChatFragment.newInstance("Самый лучший агент на свете"));
     }
 
     private void goToInfo() {

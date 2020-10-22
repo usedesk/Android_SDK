@@ -39,9 +39,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private DownloadUtils downloadUtils;
     private RecyclerView recyclerView;
     private Set<Integer> feedbacks;
+    private String agentName;
 
     public MessagesAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel,
-                           @Nullable List<UsedeskMessage> messages, @Nullable Set<Integer> feedbacks) {
+                           @Nullable List<UsedeskMessage> messages, @Nullable Set<Integer> feedbacks,
+                           @Nullable String agentName) {
+        this.agentName = agentName;
         this.viewModel = viewModel;
         this.feedbacks = feedbacks == null
                 ? new HashSet<>()
@@ -122,6 +125,29 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
+    private abstract static class TimeHolder extends RecyclerView.ViewHolder {
+
+        protected final TextView timeTextView;
+
+        TimeHolder(@NonNull ViewGroup viewGroup, int id) {
+            super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
+
+            timeTextView = itemView.findViewById(R.id.tv_time);
+        }
+
+        void bind(@NonNull UsedeskMessage message, int position) {
+            if (message.getCreatedAt() != null) {
+                String time = TimeUtils.parseTime(message.getCreatedAt());
+                if (TextUtils.isEmpty(time)) {
+                    timeTextView.setVisibility(View.GONE);
+                } else {
+                    timeTextView.setVisibility(View.VISIBLE);
+                    timeTextView.setText(time);
+                }
+            }
+        }
+    }
+
     private class UserTextHolder extends MessageHolder {
         UserTextHolder(@NonNull ViewGroup viewGroup) {
             super(viewGroup, R.layout.usedesk_item_message_user);
@@ -159,7 +185,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             boolean bFeedbackReceived = feedbacks.contains(position);
 
-            tvName.setText(message.getName());
+            tvName.setText(agentName != null ? agentName : message.getName());
 
             ivAvatar.setImageResource(R.drawable.ic_operator_black);
             if (message.getUsedeskPayload() != null) {
@@ -249,29 +275,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             message.getFile().getContent());
                 }
             });
-        }
-    }
-
-    private abstract static class TimeHolder extends RecyclerView.ViewHolder {
-
-        protected final TextView timeTextView;
-
-        TimeHolder(@NonNull ViewGroup viewGroup, int id) {
-            super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
-
-            timeTextView = itemView.findViewById(R.id.tv_time);
-        }
-
-        void bind(@NonNull UsedeskMessage message, int position) {
-            if (message.getCreatedAt() != null) {
-                String time = TimeUtils.parseTime(message.getCreatedAt());
-                if (TextUtils.isEmpty(time)) {
-                    timeTextView.setVisibility(View.GONE);
-                } else {
-                    timeTextView.setVisibility(View.VISIBLE);
-                    timeTextView.setText(time);
-                }
-            }
         }
     }
 }

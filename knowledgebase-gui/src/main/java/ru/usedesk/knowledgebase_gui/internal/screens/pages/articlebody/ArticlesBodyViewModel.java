@@ -11,7 +11,7 @@ import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
 
 class ArticlesBodyViewModel extends DataViewModel<List<UsedeskArticleBody>> {
 
-    private IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
+    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
 
     private ArticlesBodyViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, @NonNull String searchQuery) {
         this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;

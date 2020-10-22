@@ -196,6 +196,8 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
         .commit();
   ```
 
+  Метод `newInstance` может принять параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
+
 <a name="base_knowledge_base_sdk"></a>
 ### 3. KnowledgeBase SDK
 

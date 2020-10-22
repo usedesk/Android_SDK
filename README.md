@@ -1,6 +1,5 @@
 # Android Usedesk SDK (v2.0.5)
 - [Требования к API](#requires)
-- [Подключение к проекту](#implementation)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [1. Chat SDK](#base_chat_sdk)
     - [Локальные уведомления](#base_chat_sdk_notifications)
@@ -10,20 +9,9 @@
 - [Кастомизация готовых пользовательских интерфейсов](#custom_view)
 
 <a name="requires"></a>
-## Требования к проекту
-
-- compileSdkVersion = **28**
-- buildToolsVersion = **"28.0.3"**
-- minSdkVersion = **19**
-- targetSdkVersion = **28**
-
-При использовании методов-обёрток RxJava:
-
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
-<a name="implementation"></a>
 ## Подключение к проекту
+
+Минимальная версия SDK - **19**
 
 **[Chat SDK](https://bitbucket.org/usedesk_mobile/android_sdk/src/separation_to_modules/chat-sdk/)** - библиотека для работы с чатом.
 

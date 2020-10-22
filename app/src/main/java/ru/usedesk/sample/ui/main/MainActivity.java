@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
 
     private final ToolbarHelper toolbarHelper;
     private MainViewModel viewModel;
+    private String customAgentName = null;
 
     public MainActivity() {
         toolbarHelper = new ToolbarHelper();
@@ -87,6 +88,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onConfiguration(@NonNull Configuration configuration) {
+        this.customAgentName = !configuration.getCustomAgentName().isEmpty()
+                ? configuration.getCustomAgentName()
+                : null;
         initUsedeskConfiguration(configuration);
         initUsedeskService(configuration);
         initUsedeskCustomizer(configuration);
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToChat() {
         toolbarHelper.update(this, ToolbarHelper.State.CHAT);
-        switchFragment(UsedeskChatFragment.newInstance("Самый лучший агент на свете"));
+        switchFragment(UsedeskChatFragment.newInstance(customAgentName));
     }
 
     private void goToInfo() {

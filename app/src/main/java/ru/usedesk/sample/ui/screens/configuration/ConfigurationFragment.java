@@ -77,6 +77,7 @@ public class ConfigurationFragment extends Fragment {
                 binding.etClientPhoneNumber.getText().toString(),
                 binding.etClientAdditionalId.getText().toString(),
                 binding.etInitClientMessage.getText().toString(),
+                binding.etCustomAgentName.getText().toString(),
                 binding.switchForeground.isChecked(),
                 binding.switchCustomViews.isChecked(),
                 binding.switchKnowledgeBase.isChecked());
@@ -93,6 +94,7 @@ public class ConfigurationFragment extends Fragment {
         binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber());
         binding.etClientAdditionalId.setText(configuration.getClientAdditionalId());
         binding.etInitClientMessage.setText(configuration.getInitClientMessage());
+        binding.etCustomAgentName.setText(configuration.getCustomAgentName());
         binding.switchForeground.setChecked(configuration.isForegroundService());
         binding.switchCustomViews.setChecked(configuration.isCustomViews());
         binding.switchKnowledgeBase.setChecked(configuration.isWithKnowledgeBase());

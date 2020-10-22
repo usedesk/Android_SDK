@@ -19,6 +19,7 @@
     <string name="client_phone">Client Phone Number</string>
     <string name="client_additional_id">Client Additional Id</string>
     <string name="init_client_message">Init Client Message</string>
+    <string name="custom_agent_name">Custom Agent Name</string>
     <string name="button_go_to_sdk">Go to sdk</string>
     <string name="validation_empty_error">Заполните поле</string>
     <string name="configuration_title">Configuration</string>

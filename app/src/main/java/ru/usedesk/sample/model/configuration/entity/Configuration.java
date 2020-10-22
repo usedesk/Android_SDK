@@ -1,23 +1,23 @@
 package ru.usedesk.sample.model.configuration.entity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class Configuration {
 
-    private String companyId;
-    private String email;
-    private String url;
-    private String offlineFormUrl;
-    private String accountId;
-    private String token;
-    private String clientName;
-    private String clientPhoneNumber;
-    private String clientAdditionalId;
-    private String initClientMessage;
-    private Boolean foregroundService;
-    private Boolean customViews;
-    private Boolean withKnowledgeBase;
+    private final String companyId;
+    private final String email;
+    private final String url;
+    private final String offlineFormUrl;
+    private final String accountId;
+    private final String token;
+    private final String clientName;
+    private final String clientPhoneNumber;
+    private final String clientAdditionalId;
+    private final String initClientMessage;
+    private final String customAgentName;
+    private final Boolean foregroundService;
+    private final Boolean customViews;
+    private final Boolean withKnowledgeBase;
 
     public Configuration(@NonNull String companyId,
                          @NonNull String email,
@@ -25,13 +25,14 @@ public class Configuration {
                          @NonNull String offlineFormUrl,
                          @NonNull String accountId,
                          @NonNull String token,
-                         @Nullable String clientName,
-                         @Nullable String clientPhoneNumber,
-                         @Nullable String clientAdditionalId,
-                         @Nullable String initClientMessage,
-                         @Nullable Boolean foregroundService,
-                         @Nullable Boolean customViews,
-                         @Nullable Boolean withKnowledgeBase) {
+                         @NonNull String clientName,
+                         @NonNull String clientPhoneNumber,
+                         @NonNull String clientAdditionalId,
+                         @NonNull String initClientMessage,
+                         @NonNull String customAgentName,
+                         @NonNull Boolean foregroundService,
+                         @NonNull Boolean customViews,
+                         @NonNull Boolean withKnowledgeBase) {
         this.companyId = companyId;
         this.email = email;
         this.url = url;
@@ -45,6 +46,7 @@ public class Configuration {
         this.customViews = customViews;
         this.withKnowledgeBase = withKnowledgeBase;
         this.initClientMessage = initClientMessage;
+        this.customAgentName = customAgentName;
     }
 
     @NonNull
@@ -95,6 +97,11 @@ public class Configuration {
     @NonNull
     public String getInitClientMessage() {
         return initClientMessage;
+    }
+
+    @NonNull
+    public String getCustomAgentName() {
+        return customAgentName;
     }
 
     @NonNull

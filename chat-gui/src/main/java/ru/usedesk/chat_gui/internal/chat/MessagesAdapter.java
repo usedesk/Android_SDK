@@ -252,7 +252,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private abstract class TimeHolder extends RecyclerView.ViewHolder {
+    private abstract static class TimeHolder extends RecyclerView.ViewHolder {
 
         protected final TextView timeTextView;
 

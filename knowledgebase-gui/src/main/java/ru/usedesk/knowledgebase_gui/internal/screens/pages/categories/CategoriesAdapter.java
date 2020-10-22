@@ -46,7 +46,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Se
         return categoryList.size();
     }
 
-    class SectionViewHolder extends RecyclerView.ViewHolder {
+    static class SectionViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textViewTitle;
 

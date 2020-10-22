@@ -35,7 +35,7 @@ public class InitChatRequest extends BaseRequest {
         return payload;
     }
 
-    private class Payload {
+    private static class Payload {
 
         private String sdk;
 

@@ -14,7 +14,7 @@ public class SendFeedbackResponse extends BaseResponse {
         return answer;
     }
 
-    private class Answer {
+    private static class Answer {
 
         private boolean status;
 

@@ -46,7 +46,6 @@ public class ConfigurationRepository {
     }
 
     @NonNull
-    @SuppressWarnings("ConstantConditions")
     public Configuration getConfiguration() {
         if (configuration == null) {
             configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),

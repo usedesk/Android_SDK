@@ -17,7 +17,7 @@ public class SetEmailRequest extends BaseRequest {
         this.payload = new Payload(email, name, phone, additionalId);
     }
 
-    class Payload {
+    static class Payload {
         private final String email;
         private final String name;
         private final Long phone;

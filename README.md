@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v2.0.5)
+# Android Usedesk SDK (v2.1.1)
 - [Подключение к проекту](#requires)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [1. Chat SDK](#base_chat_sdk)

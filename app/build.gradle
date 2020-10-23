@@ -43,8 +43,8 @@ dependencies {
     implementation project(':chat-gui')
     implementation project(':knowledgebase-sdk')
     implementation project(':knowledgebase-gui')
-    //implementation 'ru.usedesk:chat-gui:2.0.5'
-    //implementation 'ru.usedesk:knowledgebase-gui:2.0.5'
+    //implementation 'ru.usedesk:chat-gui:2.1.1'
+    //implementation 'ru.usedesk:knowledgebase-gui:2.1.1'
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'

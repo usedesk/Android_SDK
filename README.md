@@ -1,5 +1,5 @@
 # Android Usedesk SDK (v2.0.5)
-- [Требования к API](#requires)
+- [Подключение к проекту](#requires)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [1. Chat SDK](#base_chat_sdk)
     - [Локальные уведомления](#base_chat_sdk_notifications)

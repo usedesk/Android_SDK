@@ -9,6 +9,7 @@ public class SendFeedbackRequest extends BaseRequest {
 
     private static final String KEY_DATA = "data";
     private static final String VALUE_FEEDBACK_ACTION = "action";
+
     private final Payload payload;
 
     public SendFeedbackRequest(String token, UsedeskFeedback feedback) {
@@ -16,7 +17,7 @@ public class SendFeedbackRequest extends BaseRequest {
         payload = new Payload(feedback);
     }
 
-    private class Payload {
+    private static class Payload {
 
         private final String type;
 

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Locale;
 
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
@@ -58,7 +59,7 @@ public class ArticlesInfoAdapter extends RecyclerView.Adapter<ArticlesInfoAdapte
 
         void bind(@NonNull final UsedeskArticleInfo articleInfo) {
             textViewTitle.setText(articleInfo.getTitle());
-            textViewCount.setText(Integer.toString(articleInfo.getViews()));
+            textViewCount.setText(String.format(Locale.getDefault(), "%d", articleInfo.getViews()));
 
             itemView.setOnClickListener(v -> onArticleClickListener.onArticleInfoClick(articleInfo.getId()));
         }

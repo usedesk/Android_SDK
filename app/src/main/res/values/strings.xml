@@ -1,24 +1,14 @@
 <resources>
     <string name="app_name">UseDesk SDK</string>
 
-    <string name="navigation_title_home">Home</string>
-    <string name="navigation_title_chat">Chat</string>
-    <string name="navigation_title_info">Info</string>
-
     <string name="app_info_title">Usedesk — Perfect Tool for Customer Support and Communication.</string>
     <string name="app_info_content">Usedesk helps your team to effectively answer all of your customers’ requests. All incoming requests are taken into account while your specialized staff can consult each other using the system. Thus customers feel your attention, and appreciate the personal touch.</string>
     <string name="app_info_contacts">Contacts:\nhttp://usedesk.com/\nsupport@usedesk.com</string>
     <string name="info_version">SDK v2.0.5</string>
 
-    <string name="configuration_no_configuration">No usedesk configuration,\nplease configure your email address first</string>
-    <string name="configuration_dialog_title">Enter your data</string>
     <string name="configuration_company_id_hint">Enter company ID</string>
     <string name="configuration_email_hint">Enter email</string>
     <string name="configuration_url_hint">Enter url</string>
-    <string name="configuration_email">Email: %1s</string>
-    <string name="configuration_company_id">Company ID: %1s</string>
-    <string name="configuration_url">URL: %1s</string>
-    <string name="configuration_set_configuration">Set configuration</string>
     <string name="configuration_offline_url_hint">Enter offline form url</string>
     <string name="switch_hint">Foreground service</string>
 
@@ -29,6 +19,7 @@
     <string name="client_phone">Client Phone Number</string>
     <string name="client_additional_id">Client Additional Id</string>
     <string name="init_client_message">Init Client Message</string>
+    <string name="custom_agent_name">Custom Agent Name</string>
     <string name="button_go_to_sdk">Go to sdk</string>
     <string name="validation_empty_error">Заполните поле</string>
     <string name="configuration_title">Configuration</string>

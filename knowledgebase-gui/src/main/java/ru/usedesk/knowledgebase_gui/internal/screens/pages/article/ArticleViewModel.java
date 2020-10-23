@@ -2,6 +2,7 @@ package ru.usedesk.knowledgebase_gui.internal.screens.pages.article;
 
 import androidx.annotation.NonNull;
 
+import io.reactivex.disposables.Disposable;
 import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel;
 import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
@@ -21,7 +22,7 @@ public class ArticleViewModel extends DataViewModel<UsedeskArticleBody> {
     protected void onData(UsedeskArticleBody data) {
         super.onData(data);
 
-        usedeskKnowledgeBaseSdk.addViewsRx(data.getId())
+        Disposable ignored = usedeskKnowledgeBaseSdk.addViewsRx(data.getId())
                 .subscribe(() -> {
                 }, Throwable::printStackTrace);
     }

@@ -40,21 +40,30 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 @RuntimePermissions
 public class UsedeskChatFragment extends Fragment {
+    private static final String AGENT_NAME_KEY = "agentNameKey";
+
     private MessagePanelAdapter messagePanelAdapter;
     private MessagesAdapter messagesAdapter;
     private OfflineFormExpectedAdapter offlineFormExpectedAdapter;
     private OfflineFormSentAdapter offlineFormSentAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
-
     private TextView tvLoading;
     private ViewGroup ltContent;
-
     private FilePicker filePicker;
-
     private ChatViewModel viewModel;
 
     public static UsedeskChatFragment newInstance() {
-        return new UsedeskChatFragment();
+        return newInstance(null);
+    }
+
+    public static UsedeskChatFragment newInstance(@Nullable String agentName) {
+        Bundle args = new Bundle();
+        if (agentName != null) {
+            args.putString(AGENT_NAME_KEY, agentName);
+        }
+        UsedeskChatFragment fragment = new UsedeskChatFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -67,19 +76,26 @@ public class UsedeskChatFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = UsedeskViewCustomizer.getInstance()
-                .createView(inflater, R.layout.usedesk_fragment_chat, container, false, R.style.Usedesk_Theme_Chat);
+                .createView(inflater, R.layout.usedesk_fragment_chat, container, false,
+                        R.style.Usedesk_Theme_Chat);
+
+        String agentName = null;
+        Bundle args = getArguments();
+        if (args != null) {
+            agentName = args.getString(AGENT_NAME_KEY);
+        }
 
         viewModel = ViewModelProviders.of(this, new ChatViewModelFactory(container.getContext()))
                 .get(ChatViewModel.class);
 
-        initUi(view);
+        initUi(view, agentName);
         renderData();
         observeData(getViewLifecycleOwner());
 
         return view;
     }
 
-    private void initUi(@NonNull View view) {
+    private void initUi(@NonNull View view, @Nullable String agentName) {
         tvLoading = view.findViewById(R.id.tv_loading);
         ltContent = view.findViewById(R.id.lt_content);
 
@@ -90,7 +106,7 @@ public class UsedeskChatFragment extends Fragment {
         offlineFormSentAdapter = new OfflineFormSentAdapter(view, viewModel, getViewLifecycleOwner());
         messagesAdapter = new MessagesAdapter(view, viewModel,
                 viewModel.getMessagesLiveData().getValue(),
-                viewModel.getFeedbacksLiveData().getValue());
+                viewModel.getFeedbacksLiveData().getValue(), agentName);
     }
 
     private void renderData() {

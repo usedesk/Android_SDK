@@ -39,3 +39,4 @@ local.properties
 # project structure
 /build/
 */build
+/app/release/

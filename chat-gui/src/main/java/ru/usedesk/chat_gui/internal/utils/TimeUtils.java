@@ -8,7 +8,7 @@ public class TimeUtils {
     private static final String IN_TIME_FORMAT_1 = "yyyy-MM-dd'T'HH:mm:ssZ";
     private static final String IN_TIME_FORMAT_2 = "yyyy-MM-dd HH:mm:ss";
 
-    private static final String OUT_TIME_FORMAT = "hh:mm";
+    private static final String OUT_TIME_FORMAT = "HH:mm";
 
     private TimeUtils() {
     }

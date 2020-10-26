@@ -41,7 +41,7 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
         initViewModel(getViewModelFactory());
 
         getViewModel().getLiveData()
-                .observe(this, this::onData);
+                .observe(getViewLifecycleOwner(), this::onData);
 
         return view;
     }

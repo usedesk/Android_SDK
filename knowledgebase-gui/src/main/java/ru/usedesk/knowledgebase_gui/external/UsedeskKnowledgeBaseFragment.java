@@ -47,7 +47,7 @@ public class UsedeskKnowledgeBaseFragment extends FragmentView<KnowledgeBaseView
         initViewModel(new KnowledgeBaseViewModel.Factory(inflater.getContext()));
 
         getViewModel().getSearchQueryLiveData()
-                .observe(this, this::showSearchQuery);
+                .observe(getViewLifecycleOwner(), this::showSearchQuery);
 
         if (savedInstanceState == null) {
             FragmentSwitcher.switchFragment(this, SectionsFragment.newInstance(), R.id.container);

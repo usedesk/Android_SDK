@@ -17,6 +17,7 @@ public class ConfigurationRepository {
     private static final String CLIENT_PHONE_NUMBER_KEY = "clientPhoneNumberKey";
     private static final String CLIENT_ADDITIONAL_ID_KEY = "clientAdditionalIdKey";
     private static final String INIT_CLIENT_MESSAGE_KEY = "initClientMessageKey";
+    private static final String CUSTOM_AGENT_NAME_KEY = "customAgentNameKey";
     private static final String FOREGROUND_SERVICE_KEY = "foregroundServiceKey";
     private static final String CUSTOM_VIEWS_KEY = "customViewsKey";
     private static final String WITH_KNOWLEDGE_BASE_KEY = "withKnowledgeBaseKey";
@@ -40,13 +41,13 @@ public class ConfigurationRepository {
                 "88005553535",
                 "777",
                 "",
+                "",
                 false,
                 false,
                 true);
     }
 
     @NonNull
-    @SuppressWarnings("ConstantConditions")
     public Configuration getConfiguration() {
         if (configuration == null) {
             configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
@@ -59,6 +60,7 @@ public class ConfigurationRepository {
                     sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()),
                     sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()),
                     sharedPreferences.getString(INIT_CLIENT_MESSAGE_KEY, defaultModel.getInitClientMessage()),
+                    sharedPreferences.getString(CUSTOM_AGENT_NAME_KEY, defaultModel.getCustomAgentName()),
                     sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()),
                     sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()),
                     sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
@@ -80,6 +82,7 @@ public class ConfigurationRepository {
                 .putString(CLIENT_PHONE_NUMBER_KEY, configurationModel.getClientPhoneNumber())
                 .putString(CLIENT_ADDITIONAL_ID_KEY, configurationModel.getClientAdditionalId())
                 .putString(INIT_CLIENT_MESSAGE_KEY, configurationModel.getInitClientMessage())
+                .putString(CUSTOM_AGENT_NAME_KEY, configurationModel.getCustomAgentName())
                 .putBoolean(FOREGROUND_SERVICE_KEY, configurationModel.isForegroundService())
                 .putBoolean(CUSTOM_VIEWS_KEY, configurationModel.isCustomViews())
                 .putBoolean(WITH_KNOWLEDGE_BASE_KEY, configurationModel.isWithKnowledgeBase())

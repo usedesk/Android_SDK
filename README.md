@@ -1,6 +1,5 @@
-# Android Usedesk SDK (v2.0.5)
-- [Требования к API](#requires)
-- [Подключение к проекту](#implementation)
+# Android Usedesk SDK (v2.1.1)
+- [Подключение к проекту](#requires)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [1. Chat SDK](#base_chat_sdk)
     - [Локальные уведомления](#base_chat_sdk_notifications)
@@ -10,20 +9,9 @@
 - [Кастомизация готовых пользовательских интерфейсов](#custom_view)
 
 <a name="requires"></a>
-## Требования к проекту
-
-- compileSdkVersion = **28**
-- buildToolsVersion = **"28.0.3"**
-- minSdkVersion = **19**
-- targetSdkVersion = **28**
-
-При использовании методов-обёрток RxJava:
-
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-
-<a name="implementation"></a>
 ## Подключение к проекту
+
+Минимальная версия SDK - **19**
 
 **[Chat SDK](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/)** - библиотека для работы с чатом.
 
@@ -207,6 +195,8 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
         .replace(R.id.container, UsedeskChatFragment.newInstance())
         .commit();
   ```
+
+  Метод `newInstance` может принять параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
 
 <a name="base_knowledge_base_sdk"></a>
 ### 3. KnowledgeBase SDK

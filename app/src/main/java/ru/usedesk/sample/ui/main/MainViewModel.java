@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import ru.usedesk.sample.DI;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
@@ -18,8 +16,6 @@ import ru.usedesk.sample.ui._common.OneTimeEvent;
 
 
 public class MainViewModel extends ViewModel {
-
-    private final Scheduler workScheduler;
 
     private final ConfigurationRepository configurationRepository;
 
@@ -31,8 +27,6 @@ public class MainViewModel extends ViewModel {
     private Configuration configuration;
 
     public MainViewModel() {
-        workScheduler = DI.getInstance().getWorkScheduler();
-
         configurationRepository = DI.getInstance().getConfigurationRepository();
 
         setNavigation(Navigation.CONFIGURATION);
@@ -59,11 +53,9 @@ public class MainViewModel extends ViewModel {
 
     void goSdk() {
         disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
-                .subscribeOn(workScheduler)
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(configuration -> {
                     this.configuration = configuration;
-                    configurationLiveData.postValue(configuration);
+                    configurationLiveData.setValue(configuration);
                     if (this.configuration.isWithKnowledgeBase()) {
                         setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
                     } else {

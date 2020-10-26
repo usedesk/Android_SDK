@@ -136,7 +136,7 @@ public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
         return knowledgeRepository.getArticles(configuration.getAccountId(), configuration.getToken(), categoryId);
     }
 
-    class SafeSingleEmitter<T> implements SingleOnSubscribe<T> {
+    static class SafeSingleEmitter<T> implements SingleOnSubscribe<T> {
         private final SingleOnSubscribe<T> singleOnSubscribeSafe;
 
         SafeSingleEmitter(SingleOnSubscribe<T> singleOnSubscribeSafe) {
@@ -144,7 +144,7 @@ public class KnowledgeBaseInteractor implements IUsedeskKnowledgeBase {
         }
 
         @Override
-        public void subscribe(SingleEmitter<T> emitter) throws Exception {
+        public void subscribe(@NonNull SingleEmitter<T> emitter) throws Exception {
             try {
                 singleOnSubscribeSafe.subscribe(emitter);
             } catch (Exception e) {

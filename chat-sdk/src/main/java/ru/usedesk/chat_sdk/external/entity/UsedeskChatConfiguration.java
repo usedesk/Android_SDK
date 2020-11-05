@@ -92,7 +92,7 @@ public class UsedeskChatConfiguration {
                 ? clientPhoneNumber.toString()
                 : null;
         return Validators.isValidPhonePhone(phoneNumber)
-                && !Validators.isValidEmailNecessary(email);
+                && Validators.isValidEmailNecessary(email);
     }
 
     @Override

@@ -12,6 +12,11 @@ public class Validators {
         return text.isEmpty() || isValidEmailNecessary(text);
     }
 
+    public static Boolean isValidUrl(@Nullable String text) {
+        return text == null
+                || isValidUrlNecessary(text);
+    }
+
     public static Boolean isValidUrlNecessary(@Nullable String text) {
         return text != null
                 && Patterns.WEB_URL.matcher(text).matches();

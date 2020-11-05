@@ -48,7 +48,7 @@ public class MainViewModel extends ViewModel {
     }
 
     private void setNavigation(@NonNull Navigation navigation) {
-        navigationLiveData.setValue(new OneTimeEvent<>(navigation));
+        navigationLiveData.postValue(new OneTimeEvent<>(navigation));
     }
 
     void goInfo() {
@@ -70,7 +70,7 @@ public class MainViewModel extends ViewModel {
                         this.configuration = configuration;
                         initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
 
-                        configurationLiveData.setValue(configuration);
+                        configurationLiveData.postValue(configuration);
                         if (this.configuration.isWithKnowledgeBase()) {
                             setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
                         } else {

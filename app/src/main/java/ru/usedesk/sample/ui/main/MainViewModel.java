@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import io.reactivex.Single;
-import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
-import ru.usedesk.sample.DI;
+import ru.usedesk.sample.ServiceLocator;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.ui._common.Event;
@@ -27,7 +25,7 @@ public class MainViewModel extends ViewModel {
     private Configuration configuration;
 
     public MainViewModel() {
-        configurationRepository = DI.getInstance().getConfigurationRepository();
+        configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
 
         setNavigation(Navigation.CONFIGURATION);
     }
@@ -52,7 +50,7 @@ public class MainViewModel extends ViewModel {
     }
 
     void goSdk() {
-        disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
+        disposables.add(configurationRepository.getConfiguration()
                 .subscribe(configuration -> {
                     this.configuration = configuration;
                     configurationLiveData.setValue(configuration);

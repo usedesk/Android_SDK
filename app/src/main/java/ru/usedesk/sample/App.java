@@ -8,6 +8,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        DI.init(this);
+        ServiceLocator.init(this);
     }
 }

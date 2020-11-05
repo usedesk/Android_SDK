@@ -7,12 +7,7 @@ public class ReusableEvent<DATA> extends Event<DATA> {
     }
 
     @Override
-    public void onProcessed() {
-
-    }
-
-    @Override
-    public boolean isProcessed() {
-        return false;
+    public void doEvent(IDoIt<DATA> doIt) {
+        doIt.doId(getData());
     }
 }

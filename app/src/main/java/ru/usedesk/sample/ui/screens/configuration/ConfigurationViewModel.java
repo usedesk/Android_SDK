@@ -20,7 +20,7 @@ public class ConfigurationViewModel extends ViewModel {
     private final ConfigurationValidator configurationValidator;
 
     private final MutableLiveData<Configuration> configuration = new MutableLiveData<>();
-    private final MutableLiveData<Event> goToSdkEvent = new MutableLiveData<>();
+    private final MutableLiveData<Event<Object>> goToSdkEvent = new MutableLiveData<>();
     private final MutableLiveData<ConfigurationValidation> configurationValidation = new MutableLiveData<>();
 
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -51,7 +51,7 @@ public class ConfigurationViewModel extends ViewModel {
     }
 
     @NonNull
-    LiveData<Event> getGoToSdkEvent() {
+    LiveData<Event<Object>> getGoToSdkEvent() {
         return goToSdkEvent;
     }
 

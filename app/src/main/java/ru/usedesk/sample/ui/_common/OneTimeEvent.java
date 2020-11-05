@@ -8,12 +8,10 @@ public class OneTimeEvent<DATA> extends Event<DATA> {
     }
 
     @Override
-    public void onProcessed() {
-        processed = true;
-    }
-
-    @Override
-    public boolean isProcessed() {
-        return processed;
+    public void doEvent(IDoIt<DATA> doIt) {
+        if (!processed) {
+            processed = true;
+            doIt.doId(getData());
+        }
     }
 }

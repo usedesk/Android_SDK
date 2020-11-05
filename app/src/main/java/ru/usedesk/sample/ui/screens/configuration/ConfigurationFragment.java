@@ -56,10 +56,10 @@ public class ConfigurationFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void onGoToSdkEvent(@NonNull Event event) {
-        if (!event.isProcessed()) {
+    private void onGoToSdkEvent(@NonNull Event<Object> event) {
+        event.doEvent(obj -> {
             ((IOnGoToSdkListener) getActivity()).goToSdk();
-        }
+        });
     }
 
     private void onGoToSdk() {

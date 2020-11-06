@@ -45,6 +45,7 @@
         <item name="usedesk_chat_fragment_loading_text">@string/usedesk_chat_fragment_loading_text
         </item>
         <item name="usedesk_chat_fragment_background">@color/usedesk_chat_background_color</item>
+        <item name="usedesk_open_html_link">Open HTML</item>
         <!--AttachmentPanel-->
         <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo_black
         </item>

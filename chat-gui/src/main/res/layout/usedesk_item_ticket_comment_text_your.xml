@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layoutDirection="rtl"
+        android:orientation="horizontal"
+        android:paddingVertical="6dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="32dp">
+
+        <ImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="8dp"
+            app:srcCompat="@drawable/ic_avatar" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layoutDirection="ltr"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:ellipsize="end"
+                android:fontFamily="@font/sf_ui_display_regular"
+                android:singleLine="true"
+                android:textColor="@color/usedesk_gray_dark"
+                tools:text="Алена Ошева" />
+
+            <FrameLayout
+                android:id="@+id/l_your"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="@drawable/bubble_your">
+
+                <include
+                    android:id="@+id/content"
+                    layout="@layout/usedesk_item_ticket_comment_text" />
+
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

@@ -32,6 +32,7 @@
     <!--ChatFragment-->
     <attr name="usedesk_chat_fragment_loading_text" format="string" />
     <attr name="usedesk_chat_fragment_background" format="reference" />
+    <attr name="usedesk_open_html_link" format="string" />
     <!--AttachmentPanel-->
     <attr name="usedesk_attachment_panel_gallery_icon" format="reference" />
     <attr name="usedesk_attachment_panel_camera_icon" format="reference" />

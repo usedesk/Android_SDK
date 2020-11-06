@@ -1,14 +1,17 @@
 package ru.usedesk.sample.ui.main;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import io.reactivex.Single;
-import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.CompositeDisposable;
-import ru.usedesk.sample.DI;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
+import ru.usedesk.sample.ServiceLocator;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.ui._common.Event;
@@ -21,13 +24,14 @@ public class MainViewModel extends ViewModel {
 
     private final MutableLiveData<Event<Navigation>> navigationLiveData = new MutableLiveData<>();
     private final MutableLiveData<Configuration> configurationLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Event<String>> errorLiveData = new MutableLiveData<>();
 
     private final CompositeDisposable disposables = new CompositeDisposable();
 
     private Configuration configuration;
 
     public MainViewModel() {
-        configurationRepository = DI.getInstance().getConfigurationRepository();
+        configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
 
         setNavigation(Navigation.CONFIGURATION);
     }
@@ -44,7 +48,7 @@ public class MainViewModel extends ViewModel {
     }
 
     private void setNavigation(@NonNull Navigation navigation) {
-        navigationLiveData.setValue(new OneTimeEvent<>(navigation));
+        navigationLiveData.postValue(new OneTimeEvent<>(navigation));
     }
 
     void goInfo() {
@@ -52,16 +56,45 @@ public class MainViewModel extends ViewModel {
     }
 
     void goSdk() {
-        disposables.add(Single.create((SingleOnSubscribe<Configuration>) emitter -> emitter.onSuccess(configurationRepository.getConfiguration()))
+        disposables.add(configurationRepository.getConfiguration()
                 .subscribe(configuration -> {
-                    this.configuration = configuration;
-                    configurationLiveData.setValue(configuration);
-                    if (this.configuration.isWithKnowledgeBase()) {
-                        setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
+                    UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),
+                            configuration.getEmail(),
+                            configuration.getUrl(),
+                            configuration.getOfflineFormUrl(),
+                            configuration.getClientName(),
+                            getLong(configuration.getClientPhoneNumber()),
+                            getLong(configuration.getClientAdditionalId()),
+                            configuration.getInitClientMessage());
+                    if (usedeskChatConfiguration.isValid()) {
+                        this.configuration = configuration;
+                        initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
+
+                        configurationLiveData.postValue(configuration);
+                        if (this.configuration.isWithKnowledgeBase()) {
+                            setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
+                        } else {
+                            setNavigation(Navigation.SDK_CHAT);
+                        }
                     } else {
-                        setNavigation(Navigation.SDK_CHAT);
+                        errorLiveData.postValue(new OneTimeEvent<>("Invalid configuration"));
                     }
                 }));
+    }
+
+    private void initUsedeskConfiguration(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
+                                          boolean withKnowledgeBase) {
+        UsedeskChatSdk.setConfiguration(usedeskChatConfiguration);
+
+        if (withKnowledgeBase) {
+            UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
+        }
+    }
+
+    private Long getLong(@Nullable String value) {
+        return value == null || value.isEmpty()
+                ? null
+                : Long.valueOf(value);
     }
 
     @NonNull
@@ -72,6 +105,11 @@ public class MainViewModel extends ViewModel {
     @NonNull
     LiveData<Configuration> getConfigurationLiveData() {
         return configurationLiveData;
+    }
+
+    @NonNull
+    LiveData<Event<String>> getErrorLiveData() {
+        return errorLiveData;
     }
 
     @Override

@@ -27,7 +27,7 @@ public class UsedeskChatSdk {
     @NonNull
     public static IUsedeskChat getInstance() {
         if (instanceBox == null) {
-            throw new RuntimeException("Must call UsedeskChatSdk.initChat(...) before");
+            throw new RuntimeException("Must call UsedeskChatSdk.init(...) before");
         }
         return instanceBox.getUsedeskChatSdk();
     }
@@ -40,6 +40,9 @@ public class UsedeskChatSdk {
     }
 
     public static void setConfiguration(@NonNull UsedeskChatConfiguration usedeskChatConfiguration) {
+        if (!usedeskChatConfiguration.isValid()) {
+            throw new RuntimeException("Invalid configuration");
+        }
         configuration = usedeskChatConfiguration;
     }
 

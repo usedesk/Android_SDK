@@ -4,6 +4,10 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import io.reactivex.Completable;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.SingleOnSubscribe;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 
 public class ConfigurationRepository {
@@ -25,10 +29,13 @@ public class ConfigurationRepository {
     private final Configuration defaultModel;
 
     private final SharedPreferences sharedPreferences;
+    private final Scheduler workScheduler;
     private Configuration configuration;
 
-    public ConfigurationRepository(@NonNull SharedPreferences sharedPreferences) {
+    public ConfigurationRepository(@NonNull SharedPreferences sharedPreferences,
+                                   @NonNull Scheduler workScheduler) {
         this.sharedPreferences = sharedPreferences;
+        this.workScheduler = workScheduler;
 
         //TODO: Установите свои значения по умолчанию
         defaultModel = new Configuration("153712",
@@ -48,44 +55,50 @@ public class ConfigurationRepository {
     }
 
     @NonNull
-    public Configuration getConfiguration() {
-        if (configuration == null) {
-            configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
-                    sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()),
-                    sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
-                    sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
-                    sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()),
-                    sharedPreferences.getString(TOKEN_KEY, defaultModel.getToken()),
-                    sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()),
-                    sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()),
-                    sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()),
-                    sharedPreferences.getString(INIT_CLIENT_MESSAGE_KEY, defaultModel.getInitClientMessage()),
-                    sharedPreferences.getString(CUSTOM_AGENT_NAME_KEY, defaultModel.getCustomAgentName()),
-                    sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()),
-                    sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()),
-                    sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
-        }
-        return configuration;
+    public Single<Configuration> getConfiguration() {
+        return Single.create((SingleOnSubscribe<Configuration>) emitter -> {
+            if (configuration == null) {
+                configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
+                        sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()),
+                        sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
+                        sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
+                        sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()),
+                        sharedPreferences.getString(TOKEN_KEY, defaultModel.getToken()),
+                        sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()),
+                        sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()),
+                        sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()),
+                        sharedPreferences.getString(INIT_CLIENT_MESSAGE_KEY, defaultModel.getInitClientMessage()),
+                        sharedPreferences.getString(CUSTOM_AGENT_NAME_KEY, defaultModel.getCustomAgentName()),
+                        sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()),
+                        sharedPreferences.getBoolean(CUSTOM_VIEWS_KEY, defaultModel.isCustomViews()),
+                        sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
+            }
+            emitter.onSuccess(configuration);
+        }).subscribeOn(workScheduler);
     }
 
-    public void setConfiguration(@NonNull Configuration configurationModel) {
+    @NonNull
+    public Completable setConfiguration(@NonNull Configuration configurationModel) {
         this.configuration = configurationModel;
+        return Completable.create(emitter -> {
+            sharedPreferences.edit()
+                    .putString(COMPANY_ID_KEY, configurationModel.getCompanyId())
+                    .putString(EMAIL_KEY, configurationModel.getEmail())
+                    .putString(URL_KEY, configurationModel.getUrl())
+                    .putString(OFFLINE_FORM_URL_KEY, configurationModel.getOfflineFormUrl())
+                    .putString(ACCOUNT_ID_KEY, configurationModel.getAccountId())
+                    .putString(TOKEN_KEY, configurationModel.getToken())
+                    .putString(CLIENT_NAME_KEY, configurationModel.getClientName())
+                    .putString(CLIENT_PHONE_NUMBER_KEY, configurationModel.getClientPhoneNumber())
+                    .putString(CLIENT_ADDITIONAL_ID_KEY, configurationModel.getClientAdditionalId())
+                    .putString(INIT_CLIENT_MESSAGE_KEY, configurationModel.getInitClientMessage())
+                    .putString(CUSTOM_AGENT_NAME_KEY, configurationModel.getCustomAgentName())
+                    .putBoolean(FOREGROUND_SERVICE_KEY, configurationModel.isForegroundService())
+                    .putBoolean(CUSTOM_VIEWS_KEY, configurationModel.isCustomViews())
+                    .putBoolean(WITH_KNOWLEDGE_BASE_KEY, configurationModel.isWithKnowledgeBase())
+                    .apply();
 
-        sharedPreferences.edit()
-                .putString(COMPANY_ID_KEY, configurationModel.getCompanyId())
-                .putString(EMAIL_KEY, configurationModel.getEmail())
-                .putString(URL_KEY, configurationModel.getUrl())
-                .putString(OFFLINE_FORM_URL_KEY, configurationModel.getOfflineFormUrl())
-                .putString(ACCOUNT_ID_KEY, configurationModel.getAccountId())
-                .putString(TOKEN_KEY, configurationModel.getToken())
-                .putString(CLIENT_NAME_KEY, configurationModel.getClientName())
-                .putString(CLIENT_PHONE_NUMBER_KEY, configurationModel.getClientPhoneNumber())
-                .putString(CLIENT_ADDITIONAL_ID_KEY, configurationModel.getClientAdditionalId())
-                .putString(INIT_CLIENT_MESSAGE_KEY, configurationModel.getInitClientMessage())
-                .putString(CUSTOM_AGENT_NAME_KEY, configurationModel.getCustomAgentName())
-                .putBoolean(FOREGROUND_SERVICE_KEY, configurationModel.isForegroundService())
-                .putBoolean(CUSTOM_VIEWS_KEY, configurationModel.isCustomViews())
-                .putBoolean(WITH_KNOWLEDGE_BASE_KEY, configurationModel.isWithKnowledgeBase())
-                .apply();
+            emitter.onComplete();
+        }).subscribeOn(workScheduler);
     }
 }

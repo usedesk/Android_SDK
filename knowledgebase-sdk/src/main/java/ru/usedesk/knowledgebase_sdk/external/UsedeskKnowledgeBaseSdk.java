@@ -15,9 +15,7 @@ public final class UsedeskKnowledgeBaseSdk {
     @NonNull
     public static IUsedeskKnowledgeBase init(@NonNull Context appContext) {
         if (instanceBox == null) {
-            if (configuration == null) {
-                throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before");
-            }
+            checkConfiguration();
             instanceBox = new InstanceBox(appContext, configuration);
         }
         return instanceBox.getKnowledgeBaseSdk();
@@ -29,6 +27,12 @@ public final class UsedeskKnowledgeBaseSdk {
             throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before");
         }
         return instanceBox.getKnowledgeBaseSdk();
+    }
+
+    private static void checkConfiguration() {
+        if (configuration == null) {
+            throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before");
+        }
     }
 
     public static void setConfiguration(@NonNull UsedeskKnowledgeBaseConfiguration knowledgeBaseConfiguration) {

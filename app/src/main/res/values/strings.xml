@@ -34,5 +34,5 @@
     <string name="attachment_panel_camera_title">Camera</string>
     <string name="attachment_panel_storage_title">Storage</string>
     <string name="search_title">Search</string>
-    <string name="account_id">Account ID</string>
+    <string name="account_id">Knowledge Base ID</string>
 </resources>

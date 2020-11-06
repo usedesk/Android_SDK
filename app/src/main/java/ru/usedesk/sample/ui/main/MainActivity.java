@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.databinding.DataBindingUtil;
@@ -15,15 +15,12 @@ import androidx.lifecycle.ViewModelProviders;
 
 import ru.usedesk.chat_gui.external.UsedeskChatFragment;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnBackPressedListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSearchQueryListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSupportClickListener;
 import ru.usedesk.knowledgebase_gui.external.UsedeskKnowledgeBaseFragment;
-import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
@@ -62,11 +59,13 @@ public class MainActivity extends AppCompatActivity
 
         viewModel.getConfigurationLiveData()
                 .observe(this, this::onConfiguration);
+
+        viewModel.getErrorLiveData()
+                .observe(this, this::onError);
     }
 
     private void onNavigation(@NonNull Event<MainViewModel.Navigation> navigationEvent) {
-        if (!navigationEvent.isProcessed()) {
-            navigationEvent.onProcessed();
+        navigationEvent.doEvent(navigation -> {
             switch (navigationEvent.getData()) {
                 case EXIT:
                     finish();
@@ -84,31 +83,21 @@ public class MainActivity extends AppCompatActivity
                     goToChat();
                     break;
             }
-        }
+        });
+    }
+
+    private void onError(@NonNull Event<String> error) {
+        error.doEvent(data -> {
+            Toast.makeText(this, error.getData(), Toast.LENGTH_LONG).show();
+        });
     }
 
     private void onConfiguration(@NonNull Configuration configuration) {
         this.customAgentName = !configuration.getCustomAgentName().isEmpty()
                 ? configuration.getCustomAgentName()
                 : null;
-        initUsedeskConfiguration(configuration);
         initUsedeskService(configuration);
         initUsedeskCustomizer(configuration);
-    }
-
-    private void initUsedeskConfiguration(@NonNull Configuration configuration) {
-        UsedeskChatSdk.setConfiguration(new UsedeskChatConfiguration(configuration.getCompanyId(),
-                configuration.getEmail(),
-                configuration.getUrl(),
-                configuration.getOfflineFormUrl(),
-                configuration.getClientName(),
-                getLong(configuration.getClientPhoneNumber()),
-                getLong(configuration.getClientAdditionalId()),
-                configuration.getInitClientMessage()));
-
-        if (configuration.isWithKnowledgeBase()) {
-            UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
-        }
     }
 
     private void initUsedeskCustomizer(@NonNull Configuration configuration) {
@@ -234,12 +223,6 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
-    }
-
-    private Long getLong(@Nullable String value) {
-        return value == null || value.isEmpty()
-                ? null
-                : Long.valueOf(value);
     }
 
     @Override

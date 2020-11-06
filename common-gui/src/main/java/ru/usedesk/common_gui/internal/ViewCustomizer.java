@@ -55,5 +55,4 @@ public class ViewCustomizer implements IUsedeskViewCustomizer {
         LayoutInflater layoutInflater = inflater.cloneInContext(contextThemeWrapper);
         return layoutInflater.inflate(layoutId, viewGroup, attachToRoot);
     }
-
 }

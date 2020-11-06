@@ -9,6 +9,7 @@
     <string name="usedesk_offline_form_send">Send</string>
     <!--MessagePanel-->
     <string name="usedesk_message_panel_hint">Message</string>
+    <string name="usedesk_message_panel_input_hint">Write message…</string>
     <!--MessageOperator-->
     <string name="usedesk_message_operator_feedback_received">Thank you for your feedback</string>
     <!--ChatFragment-->

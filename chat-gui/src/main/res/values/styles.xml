@@ -1,6 +1,7 @@
 <resources>
-
     <style name="Usedesk.Theme.Chat">
+        <!--Common-->
+        <item name="usedesk_divider_color">@color/usedesk_divider_color</item>
         <!--UsedeskOfflineForm-->
         <item name="usedesk_offline_form_title">@string/usedesk_offline_form_title</item>
         <item name="usedesk_offline_form_sent_title">@string/usedesk_offline_form_sent_title</item>
@@ -10,11 +11,21 @@
         </item>
         <item name="usedesk_offline_form_send">@string/usedesk_offline_form_send</item>
         <!--MessagePanel-->
-        <item name="usedesk_message_panel_form_send">@string/usedesk_message_panel_hint</item>
-        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attach_file_black</item>
-        <item name="usedesk_message_panel_send_icon">@drawable/ic_send_black</item>
+        <item name="usedesk_message_panel_background">
+            @color/usedesk_message_panel_background_color
+        </item>
+        <item name="usedesk_message_panel_input_background">
+            @drawable/background_ticket_message_panel
+        </item>
+        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attachment</item>
+        <item name="usedesk_message_panel_send_icon">@drawable/ic_send</item>
         <item name="usedesk_message_panel_document_icon">@drawable/ic_document_black</item>
         <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
+        <item name="usedesk_message_panel_detach_icon">@drawable/ic_preview_detach</item>
+        <item name="usedesk_message_panel_input_font_family">@null</item>
+        <item name="usedesk_message_panel_form_send">@string/usedesk_message_panel_hint</item>
+        <item name="usedesk_message_panel_input_hint">@string/usedesk_message_panel_input_hint
+        </item>
         <!--MessageUser-->
         <item name="usedesk_message_user_background">@drawable/user_bubble</item>
         <item name="usedesk_message_user_background_color">
@@ -33,6 +44,7 @@
         <!--ChatFragment-->
         <item name="usedesk_chat_fragment_loading_text">@string/usedesk_chat_fragment_loading_text
         </item>
+        <item name="usedesk_chat_fragment_background">@color/usedesk_chat_background_color</item>
         <!--AttachmentPanel-->
         <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo_black
         </item>

@@ -46,6 +46,6 @@
             android:layout_height="160dp"
             android:scaleType="centerCrop"
             tools:srcCompat="@drawable/ic_home_black"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
     </LinearLayout>
 </LinearLayout>

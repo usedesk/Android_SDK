@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
-import ru.usedesk.common_gui.internal.ImageUtils;
 import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+
+import static ru.usedesk.common_gui.internal.ImageUtilsKt.setImage;
 
 public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.SectionViewHolder> {
 
@@ -64,7 +65,7 @@ public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.Sectio
         void bind(@NonNull final UsedeskSection section) {
             imageViewIcon.setImageBitmap(null);
             textViewTitle.setText(section.getTitle());
-            ImageUtils.setImage(imageViewIcon, section.getImage());
+            setImage(imageViewIcon, section.getImage());
 
             rootView.setOnClickListener(v -> onSectionClickListener.onSectionClick(section.getId()));
         }

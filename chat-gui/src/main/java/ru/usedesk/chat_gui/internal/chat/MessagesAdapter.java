@@ -28,18 +28,19 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
-import ru.usedesk.common_gui.internal.ImageUtils;
+
+import static ru.usedesk.common_gui.internal.ImageUtilsKt.setImage;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_USER_MESSAGE = 1;
     private static final int TYPE_OPERATOR_MESSAGE = 2;
 
     private final ChatViewModel viewModel;
+    private final DownloadUtils downloadUtils;
+    private final RecyclerView recyclerView;
+    private final String agentName;
     private List<UsedeskMessage> messages;
-    private DownloadUtils downloadUtils;
-    private RecyclerView recyclerView;
     private Set<Integer> feedbacks;
-    private String agentName;
 
     public MessagesAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel,
                            @Nullable List<UsedeskMessage> messages, @Nullable Set<Integer> feedbacks,
@@ -189,7 +190,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             ivAvatar.setImageResource(R.drawable.ic_operator_black);
             if (message.getUsedeskPayload() != null) {
-                ImageUtils.setImage(ivAvatar,
+                setImage(ivAvatar,
                         message.getUsedeskPayload().getAvatar(),
                         R.drawable.ic_operator_black);
 
@@ -211,7 +212,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     : View.GONE);
 
             ltButtons.removeAllViews();
-            if (message.getMessageButtons().getMessageText() != null && message.getMessageButtons().getMessageButtons().size() > 0) {
+            if (message.getMessageButtons().getMessageText() != null && !message.getMessageButtons().getMessageButtons().isEmpty()) {
                 ltButtons.setVisibility(View.VISIBLE);
                 for (UsedeskMessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
                     Button button = new Button(ltButtons.getContext());
@@ -262,7 +263,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (message.getFile() != null) {
                 ivPreview.setVisibility(View.VISIBLE);
-                ImageUtils.setImage(ivPreview,
+                setImage(ivPreview,
                         message.getFile().getContent(),
                         R.drawable.ic_document_black);
             } else {

@@ -28,8 +28,8 @@ import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModelFactory;
 import ru.usedesk.chat_gui.internal.chat.FilePicker;
+import ru.usedesk.chat_gui.internal.chat.ItemsAdapter;
 import ru.usedesk.chat_gui.internal.chat.MessagePanelAdapter;
-import ru.usedesk.chat_gui.internal.chat.MessagesAdapter;
 import ru.usedesk.chat_gui.internal.chat.OfflineFormExpectedAdapter;
 import ru.usedesk.chat_gui.internal.chat.OfflineFormSentAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
@@ -43,7 +43,7 @@ public class UsedeskChatFragment extends Fragment {
     private static final String AGENT_NAME_KEY = "agentNameKey";
 
     private MessagePanelAdapter messagePanelAdapter;
-    private MessagesAdapter messagesAdapter;
+    //private MessagesAdapter messagesAdapter;
     private OfflineFormExpectedAdapter offlineFormExpectedAdapter;
     private OfflineFormSentAdapter offlineFormSentAdapter;
     private AttachedFilesAdapter attachedFilesAdapter;
@@ -104,9 +104,12 @@ public class UsedeskChatFragment extends Fragment {
                 getViewLifecycleOwner());
         offlineFormExpectedAdapter = new OfflineFormExpectedAdapter(view, viewModel, getViewLifecycleOwner());
         offlineFormSentAdapter = new OfflineFormSentAdapter(view, viewModel, getViewLifecycleOwner());
-        messagesAdapter = new MessagesAdapter(view, viewModel,
+        /*messagesAdapter = new MessagesAdapter(view, viewModel,
                 viewModel.getMessagesLiveData().getValue(),
-                viewModel.getFeedbacksLiveData().getValue(), agentName);
+                viewModel.getFeedbacksLiveData().getValue(), agentName);*/
+        ItemsAdapter itemsAdapter = new ItemsAdapter(viewModel,
+                view.findViewById(R.id.rv_messages),
+                getViewLifecycleOwner());
     }
 
     private void renderData() {
@@ -167,9 +170,9 @@ public class UsedeskChatFragment extends Fragment {
     }
 
     private void onFeedbacks(@Nullable Set<Integer> feedbacks) {
-        if (feedbacks != null) {
+        /*if (feedbacks != null) {
             messagesAdapter.updateFeedbacks(feedbacks);
-        }
+        }*/
     }
 
     private void onMessages(@Nullable List<UsedeskMessage> usedeskMessages) {
@@ -181,9 +184,9 @@ public class UsedeskChatFragment extends Fragment {
                 ? View.VISIBLE
                 : View.GONE);
 
-        if (usedeskMessages != null) {
+        /*if (usedeskMessages != null) {
             messagesAdapter.updateMessages(usedeskMessages);
-        }
+        }*/
     }
 
     private void onFileInfoList(@Nullable List<UsedeskFileInfo> usedeskFileInfoList) {

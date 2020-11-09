@@ -13,7 +13,8 @@ import java.util.List;
 
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.common_gui.internal.ImageUtils;
+
+import static ru.usedesk.common_gui.internal.ImageUtilsKt.setImageCenter;
 
 
 public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
@@ -65,7 +66,7 @@ public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdap
         }
 
         private void bind(@NonNull UsedeskFileInfo usedeskFileInfo) {
-            ImageUtils.setImageCenter(imageViewPreview, usedeskFileInfo.getUri(), R.drawable.ic_document_black);
+            setImageCenter(imageViewPreview, usedeskFileInfo.getUri(), R.drawable.ic_document_black);
 
             imageViewDetach.setOnClickListener(v -> chatViewModel.detachFile(usedeskFileInfo));
         }

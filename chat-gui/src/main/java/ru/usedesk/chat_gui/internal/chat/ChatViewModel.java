@@ -23,6 +23,8 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
+import ru.usedesk.chat_sdk.external.entity.ticketitem.ChatItem;
+import ru.usedesk.chat_sdk.external.entity.ticketitem.MessageFile;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatViewModel extends ViewModel {
@@ -39,12 +41,14 @@ public class ChatViewModel extends ViewModel {
     private final MutableLiveData<String> messageLiveData = new MutableLiveData<>("");
     private final MutableLiveData<String> nameLiveData = new MutableLiveData<>("");
     private final MutableLiveData<String> emailLiveData = new MutableLiveData<>("");
+    private final MutableLiveData<List<ChatItem>> ticketItemsLiveData = new MutableLiveData<>();
 
     ChatViewModel(@NonNull IUsedeskChat usedeskChat, @NonNull UsedeskActionListenerRx actionListenerRx) {
         this.usedeskChat = usedeskChat;
 
         clearFileInfoList();
 
+        toLiveData(actionListenerRx.getTicketItemsObservable(), ticketItemsLiveData);
         toLiveData(actionListenerRx.getMessagesObservable(), messagesLiveData);
         toLiveData(actionListenerRx.getOfflineFormExpectedObservable()
                 .map(configuration -> {
@@ -118,6 +122,11 @@ public class ChatViewModel extends ViewModel {
     }
 
     @NonNull
+    LiveData<List<ChatItem>> getTicketItemsLiveData() {
+        return ticketItemsLiveData;
+    }
+
+    @NonNull
     public LiveData<List<UsedeskMessage>> getMessagesLiveData() {
         return messagesLiveData;
     }
@@ -125,6 +134,14 @@ public class ChatViewModel extends ViewModel {
     @NonNull
     public LiveData<List<UsedeskFileInfo>> getFileInfoListLiveData() {
         return fileInfoListLiveData;
+    }
+
+    void onClickFile(@NonNull MessageFile messageFile) {
+        //TODO:
+    }
+
+    void onShowHtmlClick(@NonNull String html) {
+        //TODO:
     }
 
     public void setAttachedFileInfoList(@NonNull List<UsedeskFileInfo> usedeskFileInfoList) {

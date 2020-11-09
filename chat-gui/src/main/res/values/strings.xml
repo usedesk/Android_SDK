@@ -18,4 +18,8 @@
     <string name="usedesk_attachment_panel_gallery_title">Photo</string>
     <string name="usedesk_attachment_panel_camera_title">Camera</string>
     <string name="usedesk_attachment_panel_storage_title">Document</string>
+
+    <!--TEMP-->
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
 </resources>

@@ -22,14 +22,14 @@ import java.util.Set;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_gui.R;
-import ru.usedesk.chat_gui.internal.utils.DownloadUtils;
-import ru.usedesk.chat_gui.internal.utils.TimeUtils;
+import ru.usedesk.chat_gui.internal._extra.utils.DownloadUtils;
+import ru.usedesk.chat_gui.internal._extra.utils.TimeUtils;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
 
-import static ru.usedesk.common_gui.internal.ImageUtilsKt.setImage;
+import static ru.usedesk.common_gui.internal.ImageUtilKt.setImage;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_USER_MESSAGE = 1;

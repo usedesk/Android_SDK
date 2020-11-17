@@ -14,7 +14,7 @@ import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
 
-import static ru.usedesk.common_gui.internal.ImageUtilsKt.setImage;
+import static ru.usedesk.common_gui.internal.ImageUtilKt.setImage;
 
 public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.SectionViewHolder> {
 

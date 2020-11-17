@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.utils;
+package ru.usedesk.chat_gui.internal._extra.utils;
 
 import android.app.DownloadManager;
 import android.content.Context;

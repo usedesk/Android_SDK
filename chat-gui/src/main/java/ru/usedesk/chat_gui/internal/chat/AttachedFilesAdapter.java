@@ -14,7 +14,7 @@ import java.util.List;
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
-import static ru.usedesk.common_gui.internal.ImageUtilsKt.setImageCenter;
+import static ru.usedesk.common_gui.internal.ImageUtilKt.setImageCenter;
 
 
 public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {

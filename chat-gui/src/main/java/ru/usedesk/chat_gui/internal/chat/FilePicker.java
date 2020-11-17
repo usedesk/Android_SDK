@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.util.List;
 
-import ru.usedesk.chat_gui.internal.utils.AttachmentUtils;
+import ru.usedesk.chat_gui.internal._extra.utils.AttachmentUtils;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 
 public class FilePicker {

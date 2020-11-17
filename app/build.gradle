@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -31,6 +32,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
     dataBinding {
         enabled = true
     }
@@ -52,7 +56,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-reactivestreams-ktx:2.2.0'
     implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.20'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

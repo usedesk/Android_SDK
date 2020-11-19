@@ -15,8 +15,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import ru.usedesk.chat_gui.external.UsedeskChatFragment;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
-import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnBackPressedListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSearchQueryListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSupportClickListener;
@@ -97,10 +95,10 @@ public class MainActivity extends AppCompatActivity
                 ? configuration.getCustomAgentName()
                 : null;
         initUsedeskService(configuration);
-        initUsedeskCustomizer(configuration);
+        //initUsedeskCustomizer(configuration);
     }
 
-    private void initUsedeskCustomizer(@NonNull Configuration configuration) {
+    /*private void initUsedeskCustomizer(@NonNull Configuration configuration) {
         IUsedeskViewCustomizer usedeskViewCustomizer = UsedeskViewCustomizer.getInstance();
         if (configuration.isCustomViews()) {
             //Полная замена фрагментов Базы Знаний кастомными (главный критерий - соответствие id элементов и их тип стандартному ресурсу)
@@ -118,7 +116,7 @@ public class MainActivity extends AppCompatActivity
 
             usedeskViewCustomizer.replaceId(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat);
         }
-    }
+    }*/
 
     private void initUsedeskService(@NonNull Configuration configuration) {
         UsedeskChatSdk.stopService(this);
@@ -144,7 +142,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToChat() {
         toolbarHelper.update(this, ToolbarHelper.State.CHAT);
-        switchFragment(UsedeskChatFragment.newInstance(customAgentName));
+        switchFragment(UsedeskChatFragment.newInstance(null, customAgentName));
     }
 
     private void goToInfo() {

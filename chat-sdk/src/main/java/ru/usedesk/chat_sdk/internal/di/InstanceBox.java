@@ -17,7 +17,8 @@ public class InstanceBox extends InjectBox {
     @Inject
     IUsedeskChat usedeskChatSdk;
 
-    public InstanceBox(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
+    public InstanceBox(@NonNull Context appContext,
+                       @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
                        @NonNull IUsedeskActionListener actionListener) {
         init(new MainModule(appContext, usedeskChatConfiguration, actionListener));
     }

@@ -2,6 +2,7 @@ package ru.usedesk.common_gui.internal
 
 import android.content.Context
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,20 +45,16 @@ fun <T> observe(lifecycleOwner: LifecycleOwner,
     liveData.observe(lifecycleOwner, Observer(lambda))
 }
 
-fun <T : ViewDataBinding> inflateItem(layoutId: Int,
-                                      parent: ViewGroup): T {
-    return inflateItem(LayoutInflater.from(parent.context),
-            layoutId,
-            parent)
+fun argsGetInt(arguments: Bundle?, key: String, default: Int): Int {
+    return arguments?.getInt(key, default) ?: default
 }
 
-fun <T : ViewDataBinding> inflateItem(inflater: LayoutInflater,
-                                      layoutId: Int,
-                                      container: ViewGroup?): T {
-    return DataBindingUtil.inflate(inflater,
-            layoutId,
-            container,
-            false)
+fun argsGetInt(arguments: Bundle?, key: String): Int? {
+    return if (arguments?.containsKey(key) == true) {
+        arguments.getInt(key)
+    } else {
+        null
+    }
 }
 
 fun argsGetLong(arguments: Bundle?, key: String, default: Long): Long {
@@ -163,4 +160,28 @@ fun formatSize(context: Context, size: Long?): String {
     }
     return String.format(Locale.getDefault(), "%d %s", sz,
             context.resources.getStringArray(R.array.size_postfixes)[rank])
+}
+
+fun <T : ViewDataBinding> inflateItem(layoutId: Int,
+                                      parent: ViewGroup): T {
+    return inflateItem(LayoutInflater.from(parent.context),
+            layoutId,
+            parent)
+}
+
+fun <T : ViewDataBinding> inflateItem(inflater: LayoutInflater,
+                                      layoutId: Int,
+                                      container: ViewGroup?): T {
+    return DataBindingUtil.inflate(inflater,
+            layoutId,
+            container,
+            false)
+}
+
+fun inflateFragment(inflater: LayoutInflater,
+                    container: ViewGroup?,
+                    themeId: Int,
+                    layoutId: Int): ViewGroup {
+    return inflater.cloneInContext(ContextThemeWrapper(inflater.context, themeId))
+            .inflate(layoutId, container, false) as ViewGroup
 }

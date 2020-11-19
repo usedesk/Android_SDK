@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 
 public class KnowledgeBaseViewModel extends ViewModel {
@@ -37,26 +36,5 @@ public class KnowledgeBaseViewModel extends ViewModel {
 
     public LiveData<String> getSearchQueryLiveData() {
         return searchQueryLiveData;
-    }
-
-    public static class Factory extends ViewModelFactory<KnowledgeBaseViewModel> {
-
-        private final Context context;
-
-        public Factory(@NonNull Context context) {
-            this.context = context;
-        }
-
-        @NonNull
-        @Override
-        protected KnowledgeBaseViewModel create() {
-            return new KnowledgeBaseViewModel(context);
-        }
-
-        @NonNull
-        @Override
-        protected Class<KnowledgeBaseViewModel> getClassType() {
-            return KnowledgeBaseViewModel.class;
-        }
     }
 }

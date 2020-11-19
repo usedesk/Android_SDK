@@ -83,7 +83,7 @@ class UsedeskActionListenerRx @Inject constructor() : IUsedeskActionListener {
         }
         val messageDate = Calendar.getInstance()
         return if (usedeskMessage.file != null) {
-            if (usedeskMessage.file.isImage) {
+            if (usedeskMessage.file.isImage()) {
                 if (fromClient) {
                     MessageClientImage(messageDate,
                             usedeskMessage.file,

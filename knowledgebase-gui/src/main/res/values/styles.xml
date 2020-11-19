@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Usedesk.Theme.KnowledgeBase">
+    <style name="Usedesk.Theme.KnowledgeBase" parent="">
         <!--KnowledgeBaseFragment-->
         <item name="usedesk_knowledgebase_support_title">
             @string/usedesk_knowledgebase_support_title

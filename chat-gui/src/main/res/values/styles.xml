@@ -1,5 +1,5 @@
 <resources>
-    <style name="Usedesk.Theme.Chat">
+    <style name="Usedesk.Theme.Chat" parent="">
         <!--Common-->
         <item name="usedesk_divider_color">@color/usedesk_divider_color</item>
         <!--UsedeskOfflineForm-->

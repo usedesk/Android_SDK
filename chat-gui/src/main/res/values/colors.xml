@@ -8,4 +8,11 @@
     <color name="usedesk_white_color">#FFFFFF</color>
     <color name="usedesk_gray_dark">#828282</color>
     <color name="usedesk_black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blackLightTransparent">#40000000</color>
+    <color name="blackDarkTransparent">#80000000</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="grayDark">#828282</color>
+    <color name="textGrayDark">#333333</color>
 </resources>

@@ -4,24 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.ImageView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.databinding.ScreenShowHtmlBinding
 import ru.usedesk.chat_gui.internal._extra.UsedeskFragment
-import ru.usedesk.common_gui.internal.inflateItem
-
+import ru.usedesk.common_gui.internal.argsGetInt
+import ru.usedesk.common_gui.internal.inflateFragment
 
 class ShowHtmlScreen : UsedeskFragment() {
-    private lateinit var binding: ScreenShowHtmlBinding
+    private lateinit var rootView: ViewGroup
+    private lateinit var wvContent: WebView
+    private lateinit var ivClose: ImageView
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        binding = inflateItem(inflater,
-                R.layout.screen_show_html,
-                container)
+        val themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_Chat)
+
+        rootView = inflateFragment(inflater, container, themeId, R.layout.usedesk_screen_show_html)
+
+        wvContent = rootView.findViewById(R.id.wv_content)
+        ivClose = rootView.findViewById(R.id.iv_close)
 
         if (savedInstanceState == null) {
-            binding.wvContent.apply {
+            wvContent.apply {
                 val htmlText = arguments?.getString(HTML_TEXT_KEY, "")
 
                 loadDataWithBaseURL(null,
@@ -39,22 +45,27 @@ class ShowHtmlScreen : UsedeskFragment() {
             }
         }
 
-        binding.ivClose.setOnClickListener {
+        ivClose.setOnClickListener {
             onBackPressed()
         }
 
-        return binding.root
+        return rootView
     }
 
     companion object {
         private const val HTML_TEXT_KEY = "htmlTextKey"
+        private const val THEME_ID_KEY = "themeIdKey"
 
-        fun newInstance(htmlText: String): ShowHtmlScreen {
-            val args = Bundle()
-            args.putString(HTML_TEXT_KEY, htmlText)
-            val fragment = ShowHtmlScreen()
-            fragment.arguments = args
-            return fragment
+        @JvmOverloads
+        fun newInstance(themeId: Int? = null, htmlText: String): ShowHtmlScreen {
+            return ShowHtmlScreen().apply {
+                arguments = Bundle().apply {
+                    if (themeId != null) {
+                        putInt(THEME_ID_KEY, themeId)
+                    }
+                    putString(HTML_TEXT_KEY, htmlText)
+                }
+            }
         }
     }
 }

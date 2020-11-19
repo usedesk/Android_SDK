@@ -8,7 +8,8 @@ import java.util.List;
 
 public class FragmentSwitcher {
 
-    public static void switchFragment(@Nullable Fragment parentFragment, @NonNull Fragment fragment,
+    public static void switchFragment(@Nullable Fragment parentFragment,
+                                      @NonNull Fragment fragment,
                                       int idContainer) {
         if (parentFragment != null) {
             parentFragment.getChildFragmentManager()

@@ -9,8 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lt_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/usedesk_chat_fragment_background">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_messages"
@@ -66,6 +65,5 @@
         android:id="@+id/tv_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="?attr/usedesk_chat_fragment_loading_text" />
+        android:layout_gravity="center" />
 </FrameLayout>

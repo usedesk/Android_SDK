@@ -2,6 +2,8 @@ package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +34,10 @@ public class Setup {
         return client;
     }
 
+    @NonNull
     public List<UsedeskMessage> getMessages() {
         if (messages == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         List<UsedeskMessage> filteredMessages = new ArrayList<>(messages.size());

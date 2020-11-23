@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -254,13 +253,7 @@ public class ChatInteractor implements IUsedeskChat {
                 needSetEmail = true;
             }
 
-            if (setup.getMessages() != null && !setup.getMessages().isEmpty()) {
-                List<UsedeskMessage> messages = setup.getMessages();
-                if (messages == null) {
-                    messages = new ArrayList<>();
-                }
-                actionListener.onMessagesReceived(messages);
-            }
+            actionListener.onMessagesReceived(setup.getMessages());
 
             if (setup.isNoOperators()) {
                 actionListener.onOfflineFormExpected(configuration);

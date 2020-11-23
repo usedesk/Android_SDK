@@ -1,9 +1,10 @@
 package ru.usedesk.chat_gui.external;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,12 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Set;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
@@ -36,11 +37,23 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.common_gui.internal.PermissionUtil;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-@RuntimePermissions
 public class UsedeskChatFragment extends Fragment {
     private static final String AGENT_NAME_KEY = "agentNameKey";
+
+    private final Runnable permissionDeniedAction = () -> {
+        Snackbar.make(getView(), R.string.need_permission, BaseTransientBottomBar.LENGTH_SHORT)
+                .setAction(R.string.settings, v -> {
+                    Uri uri = Uri.fromParts("package",
+                            getContext().getPackageName(),
+                            null);
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .setData(uri);
+                    getContext().startActivity(intent);
+                }).show();
+    };
 
     private MessagePanelAdapter messagePanelAdapter;
     private MessagesAdapter messagesAdapter;
@@ -193,22 +206,18 @@ public class UsedeskChatFragment extends Fragment {
     }
 
     private void onPickPhotoClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
+        PermissionUtil.needReadExternalPermission(getView(), () -> filePicker.pickImage(this),
+                permissionDeniedAction);
     }
 
     private void onTakePhotoClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
+        PermissionUtil.needCameraPermission(getView(), () -> filePicker.takePhoto(this),
+                permissionDeniedAction);
     }
 
     private void onPickDocumentClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        PermissionUtil.needReadExternalPermission(getView(), () -> filePicker.pickDocument(this),
+                permissionDeniedAction);
     }
 
     @Override
@@ -234,20 +243,5 @@ public class UsedeskChatFragment extends Fragment {
                 viewModel.setAttachedFileInfoList(attachedFileInfoList);
             }
         }
-    }
-
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void pickPhoto() {
-        filePicker.pickImage(this);
-    }
-
-    @NeedsPermission({Manifest.permission.CAMERA})
-    void takePhoto() {
-        filePicker.takePhoto(this);
-    }
-
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void pickDocument() {
-        filePicker.pickDocument(this);
     }
 }

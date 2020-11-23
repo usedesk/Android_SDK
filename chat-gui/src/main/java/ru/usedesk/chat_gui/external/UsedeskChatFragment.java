@@ -2,9 +2,7 @@ package ru.usedesk.chat_gui.external;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +16,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.Set;
@@ -42,18 +38,6 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class UsedeskChatFragment extends Fragment {
     private static final String AGENT_NAME_KEY = "agentNameKey";
-
-    private final Runnable permissionDeniedAction = () -> {
-        Snackbar.make(getView(), R.string.need_permission, BaseTransientBottomBar.LENGTH_SHORT)
-                .setAction(R.string.settings, v -> {
-                    Uri uri = Uri.fromParts("package",
-                            getContext().getPackageName(),
-                            null);
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData(uri);
-                    getContext().startActivity(intent);
-                }).show();
-    };
 
     private MessagePanelAdapter messagePanelAdapter;
     private MessagesAdapter messagesAdapter;
@@ -150,19 +134,28 @@ public class UsedeskChatFragment extends Fragment {
         bottomSheetView.findViewById(R.id.pick_photo_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
-                    onPickPhotoClicked();
+                    PermissionUtil.needReadExternalPermission(getView(),
+                            () -> filePicker.pickImage(this),
+                            R.string.need_permission,
+                            R.string.settings);
                 });
 
         bottomSheetView.findViewById(R.id.take_photo_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
-                    onTakePhotoClicked();
+                    PermissionUtil.needCameraPermission(getView(),
+                            () -> filePicker.takePhoto(this),
+                            R.string.need_permission,
+                            R.string.settings);
                 });
 
         bottomSheetView.findViewById(R.id.pick_document_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
-                    onPickDocumentClicked();
+                    PermissionUtil.needReadExternalPermission(getView(),
+                            () -> filePicker.pickDocument(this),
+                            R.string.need_permission,
+                            R.string.settings);
                 });
 
         bottomSheetDialog.setContentView(bottomSheetView);
@@ -203,21 +196,6 @@ public class UsedeskChatFragment extends Fragment {
         if (usedeskFileInfoList != null) {
             attachedFilesAdapter.update(usedeskFileInfoList);
         }
-    }
-
-    private void onPickPhotoClicked() {
-        PermissionUtil.needReadExternalPermission(getView(), () -> filePicker.pickImage(this),
-                permissionDeniedAction);
-    }
-
-    private void onTakePhotoClicked() {
-        PermissionUtil.needCameraPermission(getView(), () -> filePicker.takePhoto(this),
-                permissionDeniedAction);
-    }
-
-    private void onPickDocumentClicked() {
-        PermissionUtil.needReadExternalPermission(getView(), () -> filePicker.pickDocument(this),
-                permissionDeniedAction);
     }
 
     @Override

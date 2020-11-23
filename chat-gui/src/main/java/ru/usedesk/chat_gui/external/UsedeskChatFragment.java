@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.external;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,8 +20,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.util.List;
 import java.util.Set;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_gui.internal.chat.AttachedFilesAdapter;
 import ru.usedesk.chat_gui.internal.chat.ChatViewModel;
@@ -36,9 +33,9 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
+import ru.usedesk.common_gui.internal.PermissionUtil;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
-@RuntimePermissions
 public class UsedeskChatFragment extends Fragment {
     private static final String AGENT_NAME_KEY = "agentNameKey";
 
@@ -137,19 +134,28 @@ public class UsedeskChatFragment extends Fragment {
         bottomSheetView.findViewById(R.id.pick_photo_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
-                    onPickPhotoClicked();
+                    PermissionUtil.needReadExternalPermission(getView(),
+                            () -> filePicker.pickImage(this),
+                            R.string.need_permission,
+                            R.string.settings);
                 });
 
         bottomSheetView.findViewById(R.id.take_photo_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
-                    onTakePhotoClicked();
+                    PermissionUtil.needCameraPermission(getView(),
+                            () -> filePicker.takePhoto(this),
+                            R.string.need_permission,
+                            R.string.settings);
                 });
 
         bottomSheetView.findViewById(R.id.pick_document_button)
                 .setOnClickListener(view -> {
                     bottomSheetDialog.dismiss();
-                    onPickDocumentClicked();
+                    PermissionUtil.needReadExternalPermission(getView(),
+                            () -> filePicker.pickDocument(this),
+                            R.string.need_permission,
+                            R.string.settings);
                 });
 
         bottomSheetDialog.setContentView(bottomSheetView);
@@ -192,25 +198,6 @@ public class UsedeskChatFragment extends Fragment {
         }
     }
 
-    private void onPickPhotoClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.pickPhotoWithPermissionCheck(this);
-    }
-
-    private void onTakePhotoClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.takePhotoWithPermissionCheck(this);
-    }
-
-    private void onPickDocumentClicked() {
-        UsedeskChatFragmentPermissionsDispatcher.pickDocumentWithPermissionCheck(this);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        UsedeskChatFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -234,20 +221,5 @@ public class UsedeskChatFragment extends Fragment {
                 viewModel.setAttachedFileInfoList(attachedFileInfoList);
             }
         }
-    }
-
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void pickPhoto() {
-        filePicker.pickImage(this);
-    }
-
-    @NeedsPermission({Manifest.permission.CAMERA})
-    void takePhoto() {
-        filePicker.takePhoto(this);
-    }
-
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    void pickDocument() {
-        filePicker.pickDocument(this);
     }
 }

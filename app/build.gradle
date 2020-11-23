@@ -8,7 +8,7 @@ android {
         applicationId 'ru.usedesk.sample'
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 31
+        versionCode 32
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
     }
@@ -50,7 +50,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-reactivestreams:2.2.0'
     implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.20'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'

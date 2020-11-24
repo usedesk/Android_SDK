@@ -55,8 +55,6 @@ dependencies {
 
     implementation "com.eightbitlab:blurview:1.6.2"
     implementation "com.github.chrisbanes:PhotoView:2.3.0"
-
-    implementation "com.karumi:dexter:6.1.0"
 }
 
 uploadArchives {

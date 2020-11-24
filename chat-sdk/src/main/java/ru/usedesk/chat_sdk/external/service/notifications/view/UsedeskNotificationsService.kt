@@ -7,9 +7,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import io.reactivex.disposables.Disposable
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk.init
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk.release
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk.setConfiguration
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsModel
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter
@@ -46,8 +44,11 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        setConfiguration(UsedeskChatConfiguration.deserialize(intent))
-        init(this, presenter.actionListener)
+        UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent))
+        UsedeskChatSdk.init(this, presenter.actionListener)
+
+        presenter.init()
+
         messagesDisposable = presenter.modelObservable
                 .subscribe { model: UsedeskNotificationsModel -> renderModel(model) }
         return START_STICKY
@@ -83,6 +84,6 @@ abstract class UsedeskNotificationsService : Service() {
         if (messagesDisposable != null) {
             messagesDisposable!!.dispose()
         }
-        release()
+        UsedeskChatSdk.release()
     }
 }

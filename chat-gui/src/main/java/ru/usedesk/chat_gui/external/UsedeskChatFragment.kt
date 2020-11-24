@@ -12,15 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.internal._extra.permission.needReadExternalPermission
 import ru.usedesk.chat_gui.internal.chat.*
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
-import ru.usedesk.common_gui.internal.argsGetInt
-import ru.usedesk.common_gui.internal.argsGetString
-import ru.usedesk.common_gui.internal.inflateFragment
-import ru.usedesk.common_gui.internal.showInstead
+import ru.usedesk.common_gui.internal.*
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
 class UsedeskChatFragment : Fragment() {
@@ -101,18 +97,36 @@ class UsedeskChatFragment : Fragment() {
         bottomSheetView.findViewById<View>(R.id.pick_photo_button)
                 .setOnClickListener {
                     bottomSheetDialog.dismiss()
-                    onPickPhotoClicked()
+                    PermissionUtil.needReadExternalPermission(rootView,
+                            R.string.need_permission,
+                            R.string.settings
+                    ) {
+                        filePicker.pickImage(this)
+                    }
                 }
+
         bottomSheetView.findViewById<View>(R.id.take_photo_button)
                 .setOnClickListener {
                     bottomSheetDialog.dismiss()
-                    onTakePhotoClicked()
+                    PermissionUtil.needCameraPermission(rootView,
+                            R.string.need_permission,
+                            R.string.settings
+                    ) {
+                        filePicker.takePhoto(this)
+                    }
                 }
+
         bottomSheetView.findViewById<View>(R.id.pick_document_button)
                 .setOnClickListener {
                     bottomSheetDialog.dismiss()
-                    onPickDocumentClicked()
+                    PermissionUtil.needReadExternalPermission(rootView,
+                            R.string.need_permission,
+                            R.string.settings
+                    ) {
+                        filePicker.pickDocument(this)
+                    }
                 }
+
         bottomSheetDialog.setContentView(bottomSheetView)
         bottomSheetDialog.show()
     }
@@ -145,24 +159,6 @@ class UsedeskChatFragment : Fragment() {
     private fun onFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>?) {
         if (usedeskFileInfoList != null) {
             attachedFilesAdapter.update(usedeskFileInfoList)
-        }
-    }
-
-    private fun onPickPhotoClicked() {
-        needReadExternalPermission(rootView) {
-            filePicker.pickImage(this)
-        }
-    }
-
-    private fun onTakePhotoClicked() {
-        needReadExternalPermission(rootView) {
-            filePicker.takePhoto(this)
-        }
-    }
-
-    private fun onPickDocumentClicked() {
-        needReadExternalPermission(rootView) {
-            filePicker.pickDocument(this)
         }
     }
 

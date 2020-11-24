@@ -19,7 +19,6 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.external.UsedeskChatFragment.Companion.THEME_ID_KEY
 import ru.usedesk.chat_gui.internal._extra.UsedeskFragment
-import ru.usedesk.chat_gui.internal._extra.permission.needWriteExternalPermission
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.*
 
@@ -148,7 +147,9 @@ class ShowFileScreen : UsedeskFragment() {
 
     private fun onDownloadFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            needWriteExternalPermission(rootView) {
+            PermissionUtil.needWriteExternalPermission(rootView,
+                    R.string.need_permission,
+                    R.string.settings) {
                 try {
                     val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
                         setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "")

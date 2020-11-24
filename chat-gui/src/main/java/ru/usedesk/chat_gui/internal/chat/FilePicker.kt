@@ -1,69 +1,59 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.fragment.app.Fragment
+import ru.usedesk.chat_gui.internal.utils.AttachmentUtils
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import java.io.File
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import java.io.File;
-import java.util.List;
-
-import ru.usedesk.chat_gui.internal.utils.AttachmentUtils;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-
-public class FilePicker {
-
-    private static final int REQUEST_CODE_PICK_FILE = 38141;
-    private static final int REQUEST_CODE_TAKE_PHOTO = 38142;
-
-    private static final String MIME_TYPE_ALL_IMAGES = "image/*";
-    private static final String MIME_TYPE_ALL_DOCS = "*/*";
-
-    private void pickFile(@NonNull Fragment fragment, @NonNull String mimeType) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setType(mimeType);
-
-        fragment.startActivityForResult(intent, REQUEST_CODE_PICK_FILE);
+class FilePicker {
+    private fun pickFile(fragment: Fragment, mimeType: String) {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.type = mimeType
+        fragment.startActivityForResult(intent, REQUEST_CODE_PICK_FILE)
     }
 
-    public void pickImage(@NonNull Fragment fragment) {
-        pickFile(fragment, MIME_TYPE_ALL_IMAGES);
+    fun pickImage(fragment: Fragment) {
+        pickFile(fragment, MIME_TYPE_ALL_IMAGES)
     }
 
-    public void pickDocument(@NonNull Fragment fragment) {
-        pickFile(fragment, MIME_TYPE_ALL_DOCS);
+    fun pickDocument(fragment: Fragment) {
+        pickFile(fragment, MIME_TYPE_ALL_DOCS)
     }
 
-    public void takePhoto(@NonNull Fragment fragment) {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, getTakePhotoUri(fragment.getContext()));
-        fragment.startActivityForResult(cameraIntent, REQUEST_CODE_TAKE_PHOTO);
+    fun takePhoto(fragment: Fragment) {
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, getTakePhotoUri(fragment.context!!))
+        fragment.startActivityForResult(cameraIntent, REQUEST_CODE_TAKE_PHOTO)
     }
 
-    @Nullable
-    public List<UsedeskFileInfo> onResult(@NonNull Context context, int requestCode, @Nullable Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_PICK_FILE: {
+    fun onResult(context: Context, requestCode: Int, data: Intent?): List<UsedeskFileInfo>? {
+        when (requestCode) {
+            REQUEST_CODE_PICK_FILE -> {
                 if (data != null) {
-                    return AttachmentUtils.getUsedeskFileInfoList(context, data);
+                    return AttachmentUtils.getUsedeskFileInfoList(context, data)
                 }
-                break;
             }
-            case REQUEST_CODE_TAKE_PHOTO: {
-                return AttachmentUtils.getUsedeskFileInfo(context, getTakePhotoUri(context));
+            REQUEST_CODE_TAKE_PHOTO -> {
+                return AttachmentUtils.getUsedeskFileInfo(context, getTakePhotoUri(context))
             }
         }
-        return null;
+        return null
     }
 
-    @NonNull
-    private Uri getTakePhotoUri(@NonNull Context context) {
-        return Uri.fromFile(new File(context.getExternalCacheDir(), "camera.jpg"));
+    private fun getTakePhotoUri(context: Context): Uri {
+        return Uri.fromFile(File(context.externalCacheDir, "camera.jpg"))
+    }
+
+    companion object {
+        private const val REQUEST_CODE_PICK_FILE = 38141
+        private const val REQUEST_CODE_TAKE_PHOTO = 38142
+        private const val MIME_TYPE_ALL_IMAGES = "image/*"
+        private const val MIME_TYPE_ALL_DOCS = "*/*"
     }
 }

@@ -1,140 +1,98 @@
-package ru.usedesk.chat_sdk.external.service.notifications.view;
+package ru.usedesk.chat_sdk.external.service.notifications.view
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.os.IBinder;
+import android.R
+import android.app.*
+import android.content.Intent
+import android.os.Build
+import android.os.IBinder
+import androidx.core.app.NotificationCompat
+import io.reactivex.disposables.Disposable
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk.init
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk.release
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk.setConfiguration
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsModel
+import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-
-import io.reactivex.disposables.Disposable;
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsModel;
-import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
-
-public abstract class UsedeskNotificationsService extends Service {
-
-    private static final String NEW_MESSAGES_CHANNEL_ID = "newUsedeskMessages";
-    private static final String MESSAGES_FROM_OPERATOR_CHANNEL_TITLE = "Messages from operator";
-
-    private final UsedeskNotificationsPresenter presenter;
-
-    private NotificationManager notificationManager;
-    private Disposable messagesDisposable;
-
-    public UsedeskNotificationsService() {
-        presenter = new UsedeskNotificationsPresenter();
+abstract class UsedeskNotificationsService : Service() {
+    private val presenter: UsedeskNotificationsPresenter
+    protected var notificationManager: NotificationManager? = null
+        private set
+    private var messagesDisposable: Disposable? = null
+    override fun onCreate() {
+        super.onCreate()
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        registerNotification()
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        registerNotification();
-    }
-
-    private void registerNotification() {
+    private fun registerNotification() {
         if (Build.VERSION.SDK_INT >= 26) {
-            NotificationChannel notificationChannel = new NotificationChannel(getChannelId(),
-                    getChannelTitle(), NotificationManager.IMPORTANCE_DEFAULT);
-
-            notificationChannel.enableLights(true);
-            notificationChannel.enableVibration(true);
-
-            notificationManager.createNotificationChannel(notificationChannel);
+            val notificationChannel = NotificationChannel(channelId,
+                    channelTitle, NotificationManager.IMPORTANCE_DEFAULT)
+            notificationChannel.enableLights(true)
+            notificationChannel.enableVibration(true)
+            notificationManager!!.createNotificationChannel(notificationChannel)
         }
     }
 
-    protected NotificationManager getNotificationManager() {
-        return notificationManager;
+    override fun onBind(intent: Intent): IBinder? {
+        throw UnsupportedOperationException("Not yet implemented")
     }
 
-    @NonNull
-    protected String getChannelId() {
-        return NEW_MESSAGES_CHANNEL_ID;
-    }
-
-    @NonNull
-    protected String getChannelTitle() {
-        return MESSAGES_FROM_OPERATOR_CHANNEL_TITLE;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (intent != null) {
-            UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent));
-            UsedeskChatSdk.init(this, presenter.getActionListener());
-
-            presenter.init();
-
-            messagesDisposable = presenter.getModelObservable()
-                    .subscribe(this::renderModel);
+            setConfiguration(UsedeskChatConfiguration.deserialize(intent))
+            init(this, presenter.actionListener)
+            presenter.init()
+            messagesDisposable = presenter.modelObservable
+                    .subscribe { model: UsedeskNotificationsModel -> renderModel(model) }
         }
-
-        return Service.START_STICKY;
+        return START_STICKY
     }
 
-    private void renderModel(@NonNull UsedeskNotificationsModel model) {
-        showNotification(createNotification(model));
+    private fun renderModel(model: UsedeskNotificationsModel) {
+        showNotification(createNotification(model))
     }
 
-    protected abstract void showNotification(@NonNull Notification notification);
+    protected abstract fun showNotification(notification: Notification)
+    protected open val contentPendingIntent: PendingIntent?
+        protected get() = null
+    protected open val deletePendingIntent: PendingIntent?
+        protected get() = null
 
-    @Nullable
-    protected PendingIntent getContentPendingIntent() {
-        return null;
-    }
-
-    @Nullable
-    protected PendingIntent getDeletePendingIntent() {
-        return null;
-    }
-
-    @NonNull
-    protected Notification createNotification(@NonNull UsedeskNotificationsModel model) {
-        String title = model.getMessage().getName();
-        String text = model.getMessage().getText();
-
-        if (model.getCount() > 1) {
-            title += " (" + model.getCount() + ")";
+    protected fun createNotification(model: UsedeskNotificationsModel): Notification {
+        var title = model.message.name
+        val text = model.message.text
+        if (model.count > 1) {
+            title += " (" + model.count + ")"
         }
-
-        Notification notification = new NotificationCompat.Builder(this, getChannelId())
-                .setSmallIcon(android.R.drawable.ic_dialog_email)
+        val notification = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_dialog_email)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setContentIntent(getContentPendingIntent())
-                .setDeleteIntent(getDeletePendingIntent())
-                .build();
-
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        return notification;
+                .setContentIntent(contentPendingIntent)
+                .setDeleteIntent(deletePendingIntent)
+                .build()
+        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+        return notification
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
+    override fun onDestroy() {
+        super.onDestroy()
         if (messagesDisposable != null) {
-            messagesDisposable.dispose();
+            messagesDisposable!!.dispose()
         }
+        release()
+    }
 
-        UsedeskChatSdk.release();
+    companion object {
+        protected val channelId = "newUsedeskMessages"
+            protected get() = Companion.field
+        protected val channelTitle = "Messages from operator"
+            protected get() = Companion.field
+    }
+
+    init {
+        presenter = UsedeskNotificationsPresenter()
     }
 }

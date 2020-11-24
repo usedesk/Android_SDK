@@ -1,46 +1,26 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages.articlebody;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages.articlebody
 
-import androidx.annotation.NonNull;
+import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel
+import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody
 
-import java.util.List;
-
-import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel;
-import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
-
-class ArticlesBodyViewModel extends DataViewModel<List<UsedeskArticleBody>> {
-
-    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
-
-    private ArticlesBodyViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, @NonNull String searchQuery) {
-        this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
-        onSearchQueryUpdate(searchQuery);
+class ArticlesBodyViewModel private constructor(private val usedeskKnowledgeBaseSdk: IUsedeskKnowledgeBase, searchQuery: String) : DataViewModel<List<UsedeskArticleBody?>?>() {
+    fun onSearchQueryUpdate(searchQuery: String) {
+        loadData(usedeskKnowledgeBaseSdk.getArticlesRx(searchQuery))
     }
 
-    void onSearchQueryUpdate(@NonNull String searchQuery) {
-        loadData(usedeskKnowledgeBaseSdk.getArticlesRx(searchQuery));
+    internal class Factory(private val usedeskKnowledgeBaseSdk: IUsedeskKnowledgeBase, private val searchQuery: String) : ViewModelFactory<ArticlesBodyViewModel?>() {
+        override fun create(): ArticlesBodyViewModel {
+            return ArticlesBodyViewModel(usedeskKnowledgeBaseSdk, searchQuery)
+        }
+
+        override fun getClassType(): Class<ArticlesBodyViewModel?> {
+            return ArticlesBodyViewModel::class.java
+        }
     }
 
-    static class Factory extends ViewModelFactory<ArticlesBodyViewModel> {
-        private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
-        private final String searchQuery;
-
-        public Factory(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, String searchQuery) {
-            this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
-            this.searchQuery = searchQuery;
-        }
-
-        @NonNull
-        @Override
-        protected ArticlesBodyViewModel create() {
-            return new ArticlesBodyViewModel(usedeskKnowledgeBaseSdk, searchQuery);
-        }
-
-        @NonNull
-        @Override
-        protected Class<ArticlesBodyViewModel> getClassType() {
-            return ArticlesBodyViewModel.class;
-        }
+    init {
+        onSearchQueryUpdate(searchQuery)
     }
 }

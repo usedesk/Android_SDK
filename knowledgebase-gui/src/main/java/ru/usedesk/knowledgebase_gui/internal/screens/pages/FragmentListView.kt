@@ -1,37 +1,23 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages
 
-import android.view.View;
+import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel
+import ru.usedesk.knowledgebase_gui.internal.screens.common.FragmentDataView
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
-import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel;
-import ru.usedesk.knowledgebase_gui.internal.screens.common.FragmentDataView;
-
-public abstract class FragmentListView<V, T extends DataViewModel<List<V>>>
-        extends FragmentDataView<List<V>, T> {
-
-    private RecyclerView recyclerViewSections;
-
-    public FragmentListView() {
-        super(R.layout.usedesk_fragment_list);
+abstract class FragmentListView<V, T : DataViewModel<List<V>?>?> : FragmentDataView<List<V>?, T>(R.layout.usedesk_fragment_list) {
+    private var recyclerViewSections: RecyclerView? = null
+    override fun onView(view: View) {
+        super.onView(view)
+        recyclerViewSections = view.findViewById(R.id.rv_list)
     }
 
-    @Override
-    protected void onView(@NonNull View view) {
-        super.onView(view);
-        recyclerViewSections = view.findViewById(R.id.rv_list);
+    protected override fun setDataView(data: List<V>) {
+        recyclerViewSections!!.adapter = getAdapter(data)
+        recyclerViewSections!!.layoutManager = LinearLayoutManager(context)
     }
 
-    @Override
-    protected void setDataView(List<V> data) {
-        recyclerViewSections.setAdapter(getAdapter(data));
-        recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));
-    }
-
-    protected abstract RecyclerView.Adapter getAdapter(List<V> list);
+    protected abstract fun getAdapter(list: List<V>?): RecyclerView.Adapter<*>?
 }

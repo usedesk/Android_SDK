@@ -1,67 +1,42 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages.articlesinfo;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages.articlesinfo
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer
+import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-import java.util.Locale;
-
-import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
-import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
-
-public class ArticlesInfoAdapter extends RecyclerView.Adapter<ArticlesInfoAdapter.ArticleViewHolder> {
-
-    private final List<UsedeskArticleInfo> articleInfoList;
-    private final IOnArticleInfoClickListener onArticleClickListener;
-    private final IUsedeskViewCustomizer usedeskViewCustomizer;
-
-    ArticlesInfoAdapter(@NonNull List<UsedeskArticleInfo> articleInfoList,
-                        @NonNull IOnArticleInfoClickListener onArticleClickListener,
-                        @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
-        this.articleInfoList = articleInfoList;
-        this.onArticleClickListener = onArticleClickListener;
-        this.usedeskViewCustomizer = usedeskViewCustomizer;
+class ArticlesInfoAdapter internal constructor(private val articleInfoList: List<UsedeskArticleInfo>,
+                                               private val onArticleClickListener: IOnArticleInfoClickListener,
+                                               private val usedeskViewCustomizer: IUsedeskViewCustomizer) : RecyclerView.Adapter<ArticlesInfoAdapter.ArticleViewHolder>() {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
+        val view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_article_info, R.style.Usedesk_Theme_KnowledgeBase)
+        return ArticleViewHolder(view)
     }
 
-    @NonNull
-    @Override
-    public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_article_info, R.style.Usedesk_Theme_KnowledgeBase);
-
-        return new ArticleViewHolder(view);
+    override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
+        articleViewHolder.bind(articleInfoList[i])
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ArticleViewHolder articleViewHolder, int i) {
-        articleViewHolder.bind(articleInfoList.get(i));
+    override fun getItemCount(): Int {
+        return articleInfoList.size
     }
 
-    @Override
-    public int getItemCount() {
-        return articleInfoList.size();
-    }
-
-    class ArticleViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textViewTitle;
-        private final TextView textViewCount;
-
-        ArticleViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            textViewTitle = itemView.findViewById(R.id.tv_title);
-            textViewCount = itemView.findViewById(R.id.tv_count);
+    internal inner class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val textViewTitle: TextView
+        private val textViewCount: TextView
+        fun bind(articleInfo: UsedeskArticleInfo) {
+            textViewTitle.text = articleInfo.title
+            textViewCount.text = String.format(Locale.getDefault(), "%d", articleInfo.views)
+            itemView.setOnClickListener { v: View? -> onArticleClickListener.onArticleInfoClick(articleInfo.id) }
         }
 
-        void bind(@NonNull final UsedeskArticleInfo articleInfo) {
-            textViewTitle.setText(articleInfo.getTitle());
-            textViewCount.setText(String.format(Locale.getDefault(), "%d", articleInfo.getViews()));
-
-            itemView.setOnClickListener(v -> onArticleClickListener.onArticleInfoClick(articleInfo.getId()));
+        init {
+            textViewTitle = itemView.findViewById(R.id.tv_title)
+            textViewCount = itemView.findViewById(R.id.tv_count)
         }
     }
 }

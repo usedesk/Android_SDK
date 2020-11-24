@@ -1,67 +1,62 @@
-package ru.usedesk.chat_sdk.external;
+package ru.usedesk.chat_sdk.external
 
-import android.content.Context;
+import android.content.Context
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.service.notifications.UsedeskNotificationsServiceFactory
+import ru.usedesk.chat_sdk.internal.di.InstanceBox
 
-import androidx.annotation.NonNull;
-
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
-import ru.usedesk.chat_sdk.internal.di.InstanceBox;
-
-public class UsedeskChatSdk {
-    private static InstanceBox instanceBox;
-    private static UsedeskChatConfiguration configuration;
-    private static UsedeskNotificationsServiceFactory notificationsServiceFactory = new UsedeskNotificationsServiceFactory();
-
-    @NonNull
-    public static IUsedeskChat init(@NonNull Context appContext,
-                                    @NonNull IUsedeskActionListener actionListener) {
+object UsedeskChatSdk {
+    private var instanceBox: InstanceBox? = null
+    private var configuration: UsedeskChatConfiguration? = null
+    private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
+    fun init(appContext: Context,
+             actionListener: IUsedeskActionListener): IUsedeskChat {
         if (instanceBox == null) {
-            checkConfiguration();
-            instanceBox = new InstanceBox(appContext, configuration, actionListener);
+            checkConfiguration()
+            instanceBox = InstanceBox(appContext, configuration!!, actionListener)
         }
-        return instanceBox.getUsedeskChatSdk();
+        return instanceBox!!.usedeskChatSdk
     }
 
-    @NonNull
-    public static IUsedeskChat getInstance() {
-        if (instanceBox == null) {
-            throw new RuntimeException("Must call UsedeskChatSdk.init(...) before");
+    val instance: IUsedeskChat
+        get() {
+            if (instanceBox == null) {
+                throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
+            }
+            return instanceBox!!.usedeskChatSdk
         }
-        return instanceBox.getUsedeskChatSdk();
-    }
 
-    public static void release() {
+    fun release() {
         if (instanceBox != null) {
-            instanceBox.release();
-            instanceBox = null;
+            instanceBox!!.release()
+            instanceBox = null
         }
     }
 
-    public static void setConfiguration(@NonNull UsedeskChatConfiguration usedeskChatConfiguration) {
-        if (!usedeskChatConfiguration.isValid()) {
-            throw new RuntimeException("Invalid configuration");
+    fun setConfiguration(usedeskChatConfiguration: UsedeskChatConfiguration) {
+        if (!usedeskChatConfiguration.isValid) {
+            throw RuntimeException("Invalid configuration")
         }
-        configuration = usedeskChatConfiguration;
+        configuration = usedeskChatConfiguration
     }
 
-    public static void startService(@NonNull Context context) {
-        checkConfiguration();
-        notificationsServiceFactory.startService(context, configuration);
+    fun startService(context: Context) {
+        checkConfiguration()
+        notificationsServiceFactory.startService(context, configuration!!)
     }
 
-    public static void stopService(@NonNull Context context) {
-        notificationsServiceFactory.stopService(context);
+    fun stopService(context: Context) {
+        notificationsServiceFactory.stopService(context)
     }
 
-    private static void checkConfiguration() {
+    private fun checkConfiguration() {
         if (configuration == null) {
-            throw new RuntimeException("Call UsedeskChatSdk.setConfiguration(...) before");
+            throw RuntimeException("Call UsedeskChatSdk.setConfiguration(...) before")
         }
     }
 
-    public static void setNotificationsServiceFactory(@NonNull UsedeskNotificationsServiceFactory usedeskNotificationsServiceFactory) {
-        notificationsServiceFactory = usedeskNotificationsServiceFactory;
+    fun setNotificationsServiceFactory(usedeskNotificationsServiceFactory: UsedeskNotificationsServiceFactory) {
+        notificationsServiceFactory = usedeskNotificationsServiceFactory
     }
 }

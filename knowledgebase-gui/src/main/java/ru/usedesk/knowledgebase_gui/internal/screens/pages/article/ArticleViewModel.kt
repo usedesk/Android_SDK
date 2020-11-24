@@ -1,51 +1,28 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages.article;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages.article
 
-import androidx.annotation.NonNull;
+import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel
+import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody
 
-import io.reactivex.disposables.Disposable;
-import ru.usedesk.knowledgebase_gui.internal.screens.common.DataViewModel;
-import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
-
-public class ArticleViewModel extends DataViewModel<UsedeskArticleBody> {
-
-    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
-
-    private ArticleViewModel(@NonNull IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk, long articleId) {
-        this.usedeskKnowledgeBaseSdk = usedeskKnowledgeBaseSdk;
-
-        loadData(usedeskKnowledgeBaseSdk.getArticleRx(articleId));
+class ArticleViewModel private constructor(private val usedeskKnowledgeBaseSdk: IUsedeskKnowledgeBase, articleId: Long) : DataViewModel<UsedeskArticleBody?>() {
+    protected override fun onData(data: UsedeskArticleBody) {
+        super.onData(data)
+        val ignored = usedeskKnowledgeBaseSdk.addViewsRx(data.id)
+                .subscribe({}) { obj: Throwable -> obj.printStackTrace() }
     }
 
-    @Override
-    protected void onData(UsedeskArticleBody data) {
-        super.onData(data);
+    internal class Factory(private val iUsedeskKnowledgeBase: IUsedeskKnowledgeBase, private val articleId: Long) : ViewModelFactory<ArticleViewModel?>() {
+        override fun create(): ArticleViewModel {
+            return ArticleViewModel(iUsedeskKnowledgeBase, articleId)
+        }
 
-        Disposable ignored = usedeskKnowledgeBaseSdk.addViewsRx(data.getId())
-                .subscribe(() -> {
-                }, Throwable::printStackTrace);
+        override fun getClassType(): Class<ArticleViewModel?> {
+            return ArticleViewModel::class.java
+        }
     }
 
-    static class Factory extends ViewModelFactory<ArticleViewModel> {
-        private final IUsedeskKnowledgeBase iUsedeskKnowledgeBase;
-        private final long articleId;
-
-        public Factory(@NonNull IUsedeskKnowledgeBase iUsedeskKnowledgeBase, long articleId) {
-            this.iUsedeskKnowledgeBase = iUsedeskKnowledgeBase;
-            this.articleId = articleId;
-        }
-
-        @NonNull
-        @Override
-        protected ArticleViewModel create() {
-            return new ArticleViewModel(iUsedeskKnowledgeBase, articleId);
-        }
-
-        @NonNull
-        @Override
-        protected Class<ArticleViewModel> getClassType() {
-            return ArticleViewModel.class;
-        }
+    init {
+        loadData(usedeskKnowledgeBaseSdk.getArticleRx(articleId))
     }
 }

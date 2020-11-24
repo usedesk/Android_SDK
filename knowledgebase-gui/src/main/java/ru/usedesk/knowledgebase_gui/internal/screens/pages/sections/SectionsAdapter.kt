@@ -1,72 +1,44 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages.sections;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages.sections
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.external.IUsedeskViewCustomizer
+import ru.usedesk.common_gui.internal.ImageUtils
+import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
-import ru.usedesk.common_gui.external.IUsedeskViewCustomizer;
-import ru.usedesk.common_gui.internal.ImageUtils;
-import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
-
-public class SectionsAdapter extends RecyclerView.Adapter<SectionsAdapter.SectionViewHolder> {
-
-    private final List<UsedeskSection> sectionList;
-    private final IOnSectionClickListener onSectionClickListener;
-    private final IUsedeskViewCustomizer usedeskViewCustomizer;
-
-    SectionsAdapter(@NonNull List<UsedeskSection> sectionList,
-                    @NonNull IOnSectionClickListener onSectionClickListener,
-                    @NonNull IUsedeskViewCustomizer usedeskViewCustomizer) {
-        this.sectionList = sectionList;
-        this.onSectionClickListener = onSectionClickListener;
-        this.usedeskViewCustomizer = usedeskViewCustomizer;
+class SectionsAdapter internal constructor(private val sectionList: List<UsedeskSection>,
+                                           private val onSectionClickListener: IOnSectionClickListener,
+                                           private val usedeskViewCustomizer: IUsedeskViewCustomizer) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>() {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
+        val view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_section, R.style.Usedesk_Theme_KnowledgeBase)
+        return SectionViewHolder(view)
     }
 
-    @NonNull
-    @Override
-    public SectionViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = usedeskViewCustomizer.createView(viewGroup, R.layout.usedesk_item_section, R.style.Usedesk_Theme_KnowledgeBase);
-
-        return new SectionViewHolder(view);
+    override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
+        sectionViewHolder.bind(sectionList[i])
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull SectionViewHolder sectionViewHolder, int i) {
-        sectionViewHolder.bind(sectionList.get(i));
+    override fun getItemCount(): Int {
+        return sectionList.size
     }
 
-    @Override
-    public int getItemCount() {
-        return sectionList.size();
-    }
-
-    class SectionViewHolder extends RecyclerView.ViewHolder {
-
-        private final View rootView;
-        private final ImageView imageViewIcon;
-        private final TextView textViewTitle;
-
-        SectionViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            rootView = itemView;
-            imageViewIcon = itemView.findViewById(R.id.iv_icon);
-            textViewTitle = itemView.findViewById(R.id.tv_title);
+    internal inner class SectionViewHolder(private val rootView: View) : RecyclerView.ViewHolder(rootView) {
+        private val imageViewIcon: ImageView
+        private val textViewTitle: TextView
+        fun bind(section: UsedeskSection) {
+            imageViewIcon.setImageBitmap(null)
+            textViewTitle.text = section.title
+            ImageUtils.setImage(imageViewIcon, section.image)
+            rootView.setOnClickListener { v: View? -> onSectionClickListener.onSectionClick(section.id) }
         }
 
-        void bind(@NonNull final UsedeskSection section) {
-            imageViewIcon.setImageBitmap(null);
-            textViewTitle.setText(section.getTitle());
-            ImageUtils.setImage(imageViewIcon, section.getImage());
-
-            rootView.setOnClickListener(v -> onSectionClickListener.onSectionClick(section.getId()));
+        init {
+            imageViewIcon = itemView.findViewById(R.id.iv_icon)
+            textViewTitle = itemView.findViewById(R.id.tv_title)
         }
     }
 }

@@ -1,143 +1,100 @@
-package ru.usedesk.chat_sdk.external.entity;
+package ru.usedesk.chat_sdk.external.entity
 
-import androidx.annotation.NonNull;
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.Subject
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
+import java.util.*
+import javax.inject.Inject
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.Subject;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-
-public class UsedeskActionListenerRx implements IUsedeskActionListener {
-
-    private final Subject<UsedeskSingleLifeEvent> connectedSubject = BehaviorSubject.create();
-    private final Subject<UsedeskSingleLifeEvent> disconnectedSubject = BehaviorSubject.create();
-    private final Subject<Boolean> connectedStateSubject = BehaviorSubject.createDefault(false);
-
-    private final Subject<UsedeskMessage> messageSubject = BehaviorSubject.create();
-    private final Subject<UsedeskMessage> newMessageSubject = BehaviorSubject.create();
-    private final Subject<List<UsedeskMessage>> messagesSubject = BehaviorSubject.create();
-
-    private final Subject<UsedeskChatConfiguration> offlineFormExpectedSubject = BehaviorSubject.create();
-    private final Subject<UsedeskSingleLifeEvent> feedbackSubject = BehaviorSubject.create();
-    private final Subject<UsedeskException> exceptionSubject = BehaviorSubject.create();
-
-    private List<UsedeskMessage> lastMessages = new ArrayList<>();
-
-    @Inject
-    public UsedeskActionListenerRx() {
+class UsedeskActionListenerRx @Inject constructor() : IUsedeskActionListener {
+    private val connectedSubject: Subject<UsedeskSingleLifeEvent<*>> = BehaviorSubject.create()
+    private val disconnectedSubject: Subject<UsedeskSingleLifeEvent<*>> = BehaviorSubject.create()
+    private val connectedStateSubject: Subject<Boolean> = BehaviorSubject.createDefault(false)
+    private val messageSubject: Subject<UsedeskMessage> = BehaviorSubject.create()
+    private val newMessageSubject: Subject<UsedeskMessage> = BehaviorSubject.create()
+    private val messagesSubject: Subject<List<UsedeskMessage>> = BehaviorSubject.create()
+    private val offlineFormExpectedSubject: Subject<UsedeskChatConfiguration> = BehaviorSubject.create()
+    private val feedbackSubject: Subject<UsedeskSingleLifeEvent<*>> = BehaviorSubject.create()
+    private val exceptionSubject: Subject<UsedeskException> = BehaviorSubject.create()
+    private var lastMessages: List<UsedeskMessage> = ArrayList()
+    private fun onNewMessages(newMessages: List<UsedeskMessage>) {
+        val messages: MutableList<UsedeskMessage> = ArrayList(lastMessages.size + newMessages.size)
+        messages.addAll(lastMessages)
+        messages.addAll(newMessages)
+        postMessages(messages)
     }
 
-    private void onNewMessages(@NonNull List<UsedeskMessage> newMessages) {
-        List<UsedeskMessage> messages = new ArrayList<>(lastMessages.size() + newMessages.size());
-        messages.addAll(lastMessages);
-        messages.addAll(newMessages);
-        postMessages(messages);
+    private fun postMessages(messages: List<UsedeskMessage>) {
+        lastMessages = messages
+        messagesSubject.onNext(messages)
     }
 
-    private void postMessages(List<UsedeskMessage> messages) {
-        lastMessages = messages;
-        messagesSubject.onNext(messages);
+    fun getConnectedStateSubject(): Observable<Boolean> {
+        return connectedStateSubject
     }
 
-    @NonNull
-    public Observable<Boolean> getConnectedStateSubject() {
-        return connectedStateSubject;
-    }
-
-    @NonNull
-    public Observable<UsedeskSingleLifeEvent> getConnectedObservable() {
-        return connectedSubject;
-    }
+    val connectedObservable: Observable<UsedeskSingleLifeEvent<*>>
+        get() = connectedSubject
 
     /**
      * Каждое сообщение
      */
-    @NonNull
-    public Observable<UsedeskMessage> getMessageObservable() {
-        return messageSubject;
-    }
+    val messageObservable: Observable<UsedeskMessage>
+        get() = messageSubject
 
     /**
      * Только новые сообщения, генерируемые после подписки
      */
-    @NonNull
-    public Observable<UsedeskMessage> getNewMessageObservable() {
-        return newMessageSubject;
-    }
+    val newMessageObservable: Observable<UsedeskMessage>
+        get() = newMessageSubject
 
     /**
      * Список всех сообщений (обновляется с каждым новым)
      */
-    public Observable<List<UsedeskMessage>> getMessagesObservable() {
-        return messagesSubject;
+    val messagesObservable: Observable<List<UsedeskMessage>>
+        get() = messagesSubject
+    val offlineFormExpectedObservable: Observable<UsedeskChatConfiguration>
+        get() = offlineFormExpectedSubject
+    val disconnectedObservable: Observable<UsedeskSingleLifeEvent<*>>
+        get() = disconnectedSubject
+    val exceptionObservable: Observable<UsedeskException>
+        get() = exceptionSubject
+    val feedbackObservable: Observable<UsedeskSingleLifeEvent<*>>
+        get() = feedbackSubject
+
+    override fun onConnected() {
+        connectedSubject.onNext(UsedeskSingleLifeEvent<Any?>())
+        connectedStateSubject.onNext(true)
     }
 
-    @NonNull
-    public Observable<UsedeskChatConfiguration> getOfflineFormExpectedObservable() {
-        return offlineFormExpectedSubject;
+    override fun onMessageReceived(message: UsedeskMessage) {
+        messageSubject.onNext(message)
+        newMessageSubject.onNext(message)
+        onNewMessages(listOf(message))
     }
 
-    @NonNull
-    public Observable<UsedeskSingleLifeEvent> getDisconnectedObservable() {
-        return disconnectedSubject;
-    }
-
-    @NonNull
-    public Observable<UsedeskException> getExceptionObservable() {
-        return exceptionSubject;
-    }
-
-    @NonNull
-    public Observable<UsedeskSingleLifeEvent> getFeedbackObservable() {
-        return feedbackSubject;
-    }
-
-    @Override
-    public void onConnected() {
-        connectedSubject.onNext(new UsedeskSingleLifeEvent());
-        connectedStateSubject.onNext(true);
-    }
-
-    @Override
-    public void onMessageReceived(@NonNull UsedeskMessage message) {
-        messageSubject.onNext(message);
-        newMessageSubject.onNext(message);
-        onNewMessages(Collections.singletonList(message));
-    }
-
-    @Override
-    public void onMessagesReceived(@NonNull List<UsedeskMessage> messages) {
-        for (UsedeskMessage message : messages) {
-            messageSubject.onNext(message);
+    override fun onMessagesReceived(messages: List<UsedeskMessage>) {
+        for (message in messages) {
+            messageSubject.onNext(message)
         }
-
-        postMessages(messages);
+        postMessages(messages)
     }
 
-    @Override
-    public void onFeedbackReceived() {
-        feedbackSubject.onNext(new UsedeskSingleLifeEvent());
+    override fun onFeedbackReceived() {
+        feedbackSubject.onNext(UsedeskSingleLifeEvent<Any?>())
     }
 
-    @Override
-    public void onOfflineFormExpected(@NonNull UsedeskChatConfiguration chatConfiguration) {
-        offlineFormExpectedSubject.onNext(chatConfiguration);
+    override fun onOfflineFormExpected(chatConfiguration: UsedeskChatConfiguration) {
+        offlineFormExpectedSubject.onNext(chatConfiguration)
     }
 
-    @Override
-    public void onDisconnected() {
-        connectedSubject.onNext(new UsedeskSingleLifeEvent());
-        connectedStateSubject.onNext(false);
+    override fun onDisconnected() {
+        connectedSubject.onNext(UsedeskSingleLifeEvent<Any?>())
+        connectedStateSubject.onNext(false)
     }
 
-    @Override
-    public void onException(@NonNull UsedeskException usedeskException) {
-        exceptionSubject.onNext(usedeskException);
+    override fun onException(usedeskException: UsedeskException) {
+        exceptionSubject.onNext(usedeskException)
     }
 }

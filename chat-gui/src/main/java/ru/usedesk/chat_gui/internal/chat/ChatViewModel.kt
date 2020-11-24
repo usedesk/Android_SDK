@@ -1,181 +1,145 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import ru.usedesk.chat_sdk.external.IUsedeskChat
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk.release
+import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
+import java.util.*
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import ru.usedesk.chat_sdk.external.IUsedeskChat;
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-
-public class ChatViewModel extends ViewModel {
-
-    private final IUsedeskChat usedeskChat;
-
-    private final CompositeDisposable disposables = new CompositeDisposable();
-
-    private final MutableLiveData<Set<Integer>> feedbacksLiveData = new MutableLiveData<>();
-    private final MutableLiveData<UsedeskException> exceptionLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MessagePanelState> messagePanelStateLiveData = new MutableLiveData<>(MessagePanelState.MESSAGE_PANEL);
-    private final MutableLiveData<List<UsedeskMessage>> messagesLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<UsedeskFileInfo>> fileInfoListLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> messageLiveData = new MutableLiveData<>("");
-    private final MutableLiveData<String> nameLiveData = new MutableLiveData<>("");
-    private final MutableLiveData<String> emailLiveData = new MutableLiveData<>("");
-
-    ChatViewModel(@NonNull IUsedeskChat usedeskChat, @NonNull UsedeskActionListenerRx actionListenerRx) {
-        this.usedeskChat = usedeskChat;
-
-        clearFileInfoList();
-
-        toLiveData(actionListenerRx.getMessagesObservable(), messagesLiveData);
-        toLiveData(actionListenerRx.getOfflineFormExpectedObservable()
-                .map(configuration -> {
-                    nameLiveData.postValue(configuration.getClientName());
-                    emailLiveData.postValue(configuration.getEmail());
-                    return MessagePanelState.OFFLINE_FORM_EXPECTED;
-                }), messagePanelStateLiveData);
-        toLiveData(actionListenerRx.getExceptionObservable(), exceptionLiveData);
-
-        disposables.add(actionListenerRx.getConnectedStateSubject()
-                .subscribe(connected -> {
-                    if (!connected) {
-                        justComplete(this.usedeskChat.connectRx());
-                    }
-                }));
-
-        feedbacksLiveData.setValue(new HashSet<>());
+class ChatViewModel internal constructor(private val usedeskChat: IUsedeskChat, actionListenerRx: UsedeskActionListenerRx) : ViewModel() {
+    private val disposables = CompositeDisposable()
+    private val feedbacksLiveData = MutableLiveData<Set<Int>>()
+    private val exceptionLiveData = MutableLiveData<UsedeskException>()
+    private val messagePanelStateLiveData = MutableLiveData(MessagePanelState.MESSAGE_PANEL)
+    private val messagesLiveData = MutableLiveData<List<UsedeskMessage>>()
+    private val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
+    private val messageLiveData = MutableLiveData("")
+    private val nameLiveData = MutableLiveData("")
+    private val emailLiveData = MutableLiveData("")
+    fun onMessageChanged(message: String) {
+        messageLiveData.value = message
     }
 
-    void onMessageChanged(@NonNull String message) {
-        messageLiveData.setValue(message);
+    private fun clearFileInfoList() {
+        fileInfoListLiveData.value = ArrayList()
     }
 
-    private void clearFileInfoList() {
-        fileInfoListLiveData.setValue(new ArrayList<>());
-    }
-
-    private void justComplete(@NonNull Completable completable) {
+    private fun justComplete(completable: Completable) {
         addDisposable(completable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                }, Throwable::printStackTrace));
+                .subscribe({}) { obj: Throwable -> obj.printStackTrace() })
     }
 
-    private <OUT extends IN, IN> void toLiveData(@NonNull Observable<OUT> observable, @NonNull MutableLiveData<IN> liveData) {
-        addDisposable(observable.subscribe(liveData::postValue, Throwable::printStackTrace));
+    private fun <OUT : IN?, IN> toLiveData(observable: Observable<OUT>, liveData: MutableLiveData<IN>) {
+        addDisposable(observable.subscribe({ value: OUT -> liveData.postValue(value) }) { obj: Throwable -> obj.printStackTrace() })
     }
 
-    private void addDisposable(@NonNull Disposable disposable) {
-        disposables.add(disposable);
+    private fun addDisposable(disposable: Disposable) {
+        disposables.add(disposable)
     }
 
-    @NonNull
-    public LiveData<Set<Integer>> getFeedbacksLiveData() {
-        return feedbacksLiveData;
+    fun getFeedbacksLiveData(): LiveData<Set<Int>> {
+        return feedbacksLiveData
     }
 
-    @NonNull
-    public LiveData<UsedeskException> getExceptionLiveData() {
-        return exceptionLiveData;
+    fun getExceptionLiveData(): LiveData<UsedeskException> {
+        return exceptionLiveData
     }
 
-    @NonNull
-    LiveData<MessagePanelState> getMessagePanelStateLiveData() {
-        return messagePanelStateLiveData;
+    fun getMessagePanelStateLiveData(): LiveData<MessagePanelState> {
+        return messagePanelStateLiveData
     }
 
-    @NonNull
-    LiveData<String> getMessageLiveData() {
-        return messageLiveData;
+    fun getMessageLiveData(): LiveData<String> {
+        return messageLiveData
     }
 
-    @NonNull
-    LiveData<String> getNameLiveData() {
-        return nameLiveData;
+    fun getNameLiveData(): LiveData<String?> {
+        return nameLiveData
     }
 
-    @NonNull
-    LiveData<String> getEmailLiveData() {
-        return emailLiveData;
+    fun getEmailLiveData(): LiveData<String> {
+        return emailLiveData
     }
 
-    @NonNull
-    public LiveData<List<UsedeskMessage>> getMessagesLiveData() {
-        return messagesLiveData;
+    fun getMessagesLiveData(): LiveData<List<UsedeskMessage>> {
+        return messagesLiveData
     }
 
-    @NonNull
-    public LiveData<List<UsedeskFileInfo>> getFileInfoListLiveData() {
-        return fileInfoListLiveData;
+    fun getFileInfoListLiveData(): LiveData<List<UsedeskFileInfo>> {
+        return fileInfoListLiveData
     }
 
-    public void setAttachedFileInfoList(@NonNull List<UsedeskFileInfo> usedeskFileInfoList) {
-        fileInfoListLiveData.postValue(usedeskFileInfoList);
+    fun setAttachedFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>) {
+        fileInfoListLiveData.postValue(usedeskFileInfoList)
     }
 
-    @SuppressWarnings("ConstantConditions")
-    void sendFeedback(int messageIndex, @NonNull UsedeskFeedback feedback) {
-        Set<Integer> feedbacks = new HashSet<>(feedbacksLiveData.getValue().size() + 1);
-        feedbacks.addAll(feedbacksLiveData.getValue());
-        feedbacks.add(messageIndex);
-        feedbacksLiveData.postValue(feedbacks);
-
-        justComplete(usedeskChat.sendRx(feedback));
+    fun sendFeedback(messageIndex: Int, feedback: UsedeskFeedback) {
+        val feedbacks: MutableSet<Int> = HashSet(feedbacksLiveData.value!!.size + 1)
+        feedbacks.addAll(feedbacksLiveData.value!!)
+        feedbacks.add(messageIndex)
+        feedbacksLiveData.postValue(feedbacks)
+        justComplete(usedeskChat.sendRx(feedback))
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        if (!disposables.isDisposed()) {
-            disposables.dispose();
+    override fun onCleared() {
+        super.onCleared()
+        if (!disposables.isDisposed) {
+            disposables.dispose()
         }
-
-        UsedeskChatSdk.release();
+        release()
     }
 
-    @SuppressWarnings("ConstantConditions")
-    void detachFile(@NonNull UsedeskFileInfo usedeskFileInfo) {
-        List<UsedeskFileInfo> attachedFileInfoList = new ArrayList<>(fileInfoListLiveData.getValue());
-        attachedFileInfoList.remove(usedeskFileInfo);
-        setAttachedFileInfoList(attachedFileInfoList);
+    fun detachFile(usedeskFileInfo: UsedeskFileInfo) {
+        val attachedFileInfoList: MutableList<UsedeskFileInfo> = ArrayList(fileInfoListLiveData.getValue())
+        attachedFileInfoList.remove(usedeskFileInfo)
+        setAttachedFileInfoList(attachedFileInfoList)
     }
 
-    void onSend(@NonNull String textMessage) {
-        justComplete(usedeskChat.sendRx(textMessage));
-        justComplete(usedeskChat.sendRx(fileInfoListLiveData.getValue()));
-
-        clearFileInfoList();
+    fun onSend(textMessage: String) {
+        justComplete(usedeskChat.sendRx(textMessage))
+        justComplete(usedeskChat.sendRx(fileInfoListLiveData.value))
+        clearFileInfoList()
     }
 
-    void onSend(@NonNull String name, @NonNull String email, @NonNull String message) {
-        justComplete(usedeskChat.sendRx(new UsedeskOfflineForm(name, email, message))
-                .doOnComplete(() -> messagePanelStateLiveData.postValue(MessagePanelState.OFFLINE_FORM_SENT)));
+    fun onSend(name: String, email: String, message: String) {
+        justComplete(usedeskChat.sendRx(UsedeskOfflineForm(name, email, message))
+                .doOnComplete { messagePanelStateLiveData.postValue(MessagePanelState.OFFLINE_FORM_SENT) })
     }
 
-    void onNameChanged(@NonNull String name) {
-        nameLiveData.setValue(name);
+    fun onNameChanged(name: String) {
+        nameLiveData.value = name
     }
 
-    void onEmailChanged(@NonNull String email) {
-        emailLiveData.setValue(email);
+    fun onEmailChanged(email: String) {
+        emailLiveData.value = email
+    }
+
+    init {
+        clearFileInfoList()
+        toLiveData(actionListenerRx.messagesObservable, messagesLiveData)
+        toLiveData(actionListenerRx.offlineFormExpectedObservable
+                .map { configuration: UsedeskChatConfiguration ->
+                    nameLiveData.postValue(configuration.clientName)
+                    emailLiveData.postValue(configuration.email)
+                    MessagePanelState.OFFLINE_FORM_EXPECTED
+                }, messagePanelStateLiveData)
+        toLiveData(actionListenerRx.exceptionObservable, exceptionLiveData)
+        disposables.add(actionListenerRx.getConnectedStateSubject()
+                .subscribe { connected: Boolean? ->
+                    if (!connected!!) {
+                        justComplete(usedeskChat.connectRx())
+                    }
+                })
+        feedbacksLiveData.value = HashSet()
     }
 }

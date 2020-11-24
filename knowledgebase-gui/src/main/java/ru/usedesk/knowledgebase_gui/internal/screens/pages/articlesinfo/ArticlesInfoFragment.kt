@@ -1,53 +1,42 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages.articlesinfo;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages.articlesinfo
 
+import android.os.Bundle
+import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer
+import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory
+import ru.usedesk.knowledgebase_gui.internal.screens.pages.FragmentListView
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk.instance
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo
 
-import android.os.Bundle;
-
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
-import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
-import ru.usedesk.knowledgebase_gui.internal.screens.common.ViewModelFactory;
-import ru.usedesk.knowledgebase_gui.internal.screens.pages.FragmentListView;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
-
-public class ArticlesInfoFragment extends FragmentListView<UsedeskArticleInfo, ArticlesInfoViewModel> {
-
-    public static final String CATEGORY_ID_KEY = "categoryIdKey";
-
-    private final IUsedeskKnowledgeBase usedeskKnowledgeBaseSdk;
-
-    public ArticlesInfoFragment() {
-        usedeskKnowledgeBaseSdk = UsedeskKnowledgeBaseSdk.getInstance();
+class ArticlesInfoFragment : FragmentListView<UsedeskArticleInfo?, ArticlesInfoViewModel?>() {
+    private val usedeskKnowledgeBaseSdk: IUsedeskKnowledgeBase
+    override fun getViewModelFactory(): ViewModelFactory<ArticlesInfoViewModel?>? {
+        val categoryId = nonNullArguments.getLong(CATEGORY_ID_KEY)
+        return ArticlesInfoViewModel.Factory(usedeskKnowledgeBaseSdk, categoryId)
     }
 
-    public static ArticlesInfoFragment newInstance(long categoryId) {
-        Bundle args = new Bundle();
-        args.putLong(CATEGORY_ID_KEY, categoryId);
-
-        ArticlesInfoFragment articlesInfoFragment = new ArticlesInfoFragment();
-        articlesInfoFragment.setArguments(args);
-        return articlesInfoFragment;
-    }
-
-    @Override
-    protected ViewModelFactory<ArticlesInfoViewModel> getViewModelFactory() {
-        long categoryId = getNonNullArguments().getLong(CATEGORY_ID_KEY);
-
-        return new ArticlesInfoViewModel.Factory(usedeskKnowledgeBaseSdk, categoryId);
-    }
-
-    @Override
-    protected RecyclerView.Adapter getAdapter(List<UsedeskArticleInfo> list) {
-        if (!(getParentFragment() instanceof IOnArticleInfoClickListener)) {
-            throw new RuntimeException("Parent fragment must implement " +
-                    IOnArticleInfoClickListener.class.getSimpleName());
+    protected fun getAdapter(list: List<UsedeskArticleInfo>?): RecyclerView.Adapter<*> {
+        if (parentFragment !is IOnArticleInfoClickListener) {
+            throw RuntimeException("Parent fragment must implement " +
+                    IOnArticleInfoClickListener::class.java.simpleName)
         }
+        return ArticlesInfoAdapter(list!!, (parentFragment as IOnArticleInfoClickListener?)!!,
+                UsedeskViewCustomizer.getInstance())
+    }
 
-        return new ArticlesInfoAdapter(list, (IOnArticleInfoClickListener) getParentFragment(),
-                UsedeskViewCustomizer.getInstance());
+    companion object {
+        const val CATEGORY_ID_KEY = "categoryIdKey"
+        fun newInstance(categoryId: Long): ArticlesInfoFragment {
+            val args = Bundle()
+            args.putLong(CATEGORY_ID_KEY, categoryId)
+            val articlesInfoFragment = ArticlesInfoFragment()
+            articlesInfoFragment.arguments = args
+            return articlesInfoFragment
+        }
+    }
+
+    init {
+        usedeskKnowledgeBaseSdk = instance
     }
 }

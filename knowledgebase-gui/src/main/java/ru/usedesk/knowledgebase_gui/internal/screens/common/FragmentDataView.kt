@@ -1,81 +1,52 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.common;
+package ru.usedesk.knowledgebase_gui.internal.screens.common
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer
+import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
-import ru.usedesk.knowledgebase_gui.R;
-import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage;
-
-public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends FragmentView<T> {
-
-    private final int layoutId;
-
-    private TextView textViewMessage;
-
-    private View container;
-
-    public FragmentDataView(int layoutId) {
-        this.layoutId = layoutId;
+abstract class FragmentDataView<V, T : DataViewModel<V>?>(private val layoutId: Int) : FragmentView<T>() {
+    private var textViewMessage: TextView? = null
+    private var container: View? = null
+    protected abstract fun setDataView(data: V)
+    protected abstract val viewModelFactory: ViewModelFactory<T>?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val view = UsedeskViewCustomizer.getInstance()
+                .createView(inflater, layoutId, container, false, R.style.Usedesk_Theme_KnowledgeBase)
+        onView(view)
+        initViewModel(viewModelFactory!!)
+        viewModel!!.liveData
+                .observe(viewLifecycleOwner, { dataOrMessage: DataOrMessage<V> -> this.onData(dataOrMessage) })
+        return view
     }
 
-    protected abstract void setDataView(V data);
-
-    protected abstract ViewModelFactory<T> getViewModelFactory();
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = UsedeskViewCustomizer.getInstance()
-                .createView(inflater, layoutId, container, false, R.style.Usedesk_Theme_KnowledgeBase);
-
-        onView(view);
-
-        initViewModel(getViewModelFactory());
-
-        getViewModel().getLiveData()
-                .observe(getViewLifecycleOwner(), this::onData);
-
-        return view;
+    protected open fun onView(view: View) {
+        textViewMessage = view.findViewById(R.id.tv_message)
+        container = view.findViewById(R.id.container)
     }
 
-    protected void onView(@NonNull View view) {
-        textViewMessage = view.findViewById(R.id.tv_message);
-        container = view.findViewById(R.id.container);
-    }
-
-    protected void onData(DataOrMessage<V> dataOrMessage) {
-        switch (dataOrMessage.getMessage()) {
-            case LOADING:
-                onMessage(R.string.loading_title);
-                break;
-            case ERROR:
-                onMessage(R.string.loading_error);
-                break;
-            default:
-                onData(dataOrMessage.getData());
-                break;
+    protected fun onData(dataOrMessage: DataOrMessage<V>) {
+        when (dataOrMessage.message) {
+            DataOrMessage.Message.LOADING -> onMessage(R.string.loading_title)
+            DataOrMessage.Message.ERROR -> onMessage(R.string.loading_error)
+            else -> onData(dataOrMessage.data)
         }
     }
 
-    protected void onData(V data) {
-        setDataView(data);
-
-        textViewMessage.setVisibility(View.GONE);
-        container.setVisibility(View.VISIBLE);
+    protected fun onData(data: V) {
+        setDataView(data)
+        textViewMessage!!.visibility = View.GONE
+        container!!.visibility = View.VISIBLE
     }
 
-    private void onMessage(int resourceId) {
-        textViewMessage.setText(resourceId);
-
-        textViewMessage.setVisibility(View.VISIBLE);
-        container.setVisibility(View.GONE);
+    private fun onMessage(resourceId: Int) {
+        textViewMessage!!.setText(resourceId)
+        textViewMessage!!.visibility = View.VISIBLE
+        container!!.visibility = View.GONE
     }
 }

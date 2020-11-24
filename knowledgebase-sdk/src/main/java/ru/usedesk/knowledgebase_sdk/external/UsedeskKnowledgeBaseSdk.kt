@@ -1,48 +1,42 @@
-package ru.usedesk.knowledgebase_sdk.external;
+package ru.usedesk.knowledgebase_sdk.external
 
-import android.content.Context;
+import android.content.Context
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration
+import ru.usedesk.knowledgebase_sdk.internal.di.InstanceBox
 
-import androidx.annotation.NonNull;
-
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
-import ru.usedesk.knowledgebase_sdk.internal.di.InstanceBox;
-
-public final class UsedeskKnowledgeBaseSdk {
-
-    private static InstanceBox instanceBox;
-    private static UsedeskKnowledgeBaseConfiguration configuration;
-
-    @NonNull
-    public static IUsedeskKnowledgeBase init(@NonNull Context appContext) {
+object UsedeskKnowledgeBaseSdk {
+    private var instanceBox: InstanceBox? = null
+    private var configuration: UsedeskKnowledgeBaseConfiguration? = null
+    fun init(appContext: Context): IUsedeskKnowledgeBase {
         if (instanceBox == null) {
-            checkConfiguration();
-            instanceBox = new InstanceBox(appContext, configuration);
+            checkConfiguration()
+            instanceBox = InstanceBox(appContext, configuration!!)
         }
-        return instanceBox.getKnowledgeBaseSdk();
+        return instanceBox!!.knowledgeBaseSdk
     }
 
-    @NonNull
-    public static IUsedeskKnowledgeBase getInstance() {
-        if (instanceBox == null) {
-            throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before");
+    val instance: IUsedeskKnowledgeBase
+        get() {
+            if (instanceBox == null) {
+                throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
+            }
+            return instanceBox!!.knowledgeBaseSdk
         }
-        return instanceBox.getKnowledgeBaseSdk();
-    }
 
-    private static void checkConfiguration() {
+    private fun checkConfiguration() {
         if (configuration == null) {
-            throw new RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before");
+            throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
         }
     }
 
-    public static void setConfiguration(@NonNull UsedeskKnowledgeBaseConfiguration knowledgeBaseConfiguration) {
-        configuration = knowledgeBaseConfiguration;
+    fun setConfiguration(knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration) {
+        configuration = knowledgeBaseConfiguration
     }
 
-    public static void release() {
+    fun release() {
         if (instanceBox != null) {
-            instanceBox.release();
-            instanceBox = null;
+            instanceBox!!.release()
+            instanceBox = null
         }
     }
 }

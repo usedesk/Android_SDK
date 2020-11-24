@@ -1,27 +1,20 @@
-package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit;
+package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit
 
-import androidx.annotation.NonNull;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection
 
-import java.util.List;
+interface IApiLoader {
+    @Throws(UsedeskHttpException::class)
+    fun getSections(accountId: String, token: String): Array<UsedeskSection>
 
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+    @Throws(UsedeskHttpException::class)
+    fun getArticle(accountId: String, articleId: String, token: String): UsedeskArticleBody
 
-public interface IApiLoader {
-    @NonNull
-    UsedeskSection[] getSections(@NonNull String accountId, @NonNull String token) throws UsedeskHttpException;
+    @Throws(UsedeskHttpException::class)
+    fun getArticles(accountId: String, token: String, searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody>
 
-    @NonNull
-    UsedeskArticleBody getArticle(@NonNull String accountId, @NonNull String articleId, @NonNull String token)
-            throws UsedeskHttpException;
-
-    @NonNull
-    List<UsedeskArticleBody> getArticles(@NonNull String accountId, @NonNull String token,
-                                         @NonNull UsedeskSearchQuery searchQuery)
-            throws UsedeskHttpException;
-
-    int addViews(@NonNull String accountId, @NonNull String token, long articleId, int count)
-            throws UsedeskHttpException;
+    @Throws(UsedeskHttpException::class)
+    fun addViews(accountId: String, token: String, articleId: Long, count: Int): Int
 }

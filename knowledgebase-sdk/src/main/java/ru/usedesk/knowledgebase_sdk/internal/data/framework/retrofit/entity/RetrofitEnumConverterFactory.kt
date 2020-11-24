@@ -1,26 +1,17 @@
-package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity;
+package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity
 
-import androidx.annotation.NonNull;
+import retrofit2.Converter
+import retrofit2.Retrofit
+import java.lang.reflect.Type
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import retrofit2.Converter;
-import retrofit2.Retrofit;
-
-public class RetrofitEnumConverterFactory extends Converter.Factory {
-    @Override
-    public Converter<?, String> stringConverter(@NonNull Type type,
-                                                @NonNull Annotation[] annotations,
-                                                @NonNull Retrofit retrofit) {
-        if (type instanceof Class && ((Class<?>) type).isEnum()) {
-            return (Converter<Object, String>) value -> {
-                if (value != null) {
-                    return value.toString().toLowerCase();
-                }
-                return null;
-            };
-        }
-        return null;
+class RetrofitEnumConverterFactory : Converter.Factory() {
+    override fun stringConverter(type: Type,
+                                 annotations: Array<Annotation>,
+                                 retrofit: Retrofit): Converter<*, String>? {
+        return if (type is Class<*> && type.isEnum) {
+            Converter<Any, String> {
+                it.toString().toLowerCase()
+            }
+        } else null
     }
 }

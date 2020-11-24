@@ -1,32 +1,25 @@
-package ru.usedesk.knowledgebase_sdk.internal.data.repository;
+package ru.usedesk.knowledgebase_sdk.internal.data.repository
 
-import androidx.annotation.NonNull;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException
+import ru.usedesk.knowledgebase_sdk.external.entity.*
 
-import java.util.List;
+interface IKnowledgeBaseRepository {
+    @Throws(UsedeskHttpException::class)
+    fun getSections(accountId: String, token: String): List<UsedeskSection>
 
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+    @Throws(UsedeskHttpException::class)
+    fun getArticleBody(accountId: String, token: String, articleId: Long): UsedeskArticleBody
 
-public interface IKnowledgeBaseRepository {
-    @NonNull
-    List<UsedeskSection> getSections(@NonNull String id, @NonNull String token) throws UsedeskHttpException;
+    @Throws(UsedeskHttpException::class)
+    fun getArticles(accountId: String, token: String, searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody>
 
-    @NonNull
-    UsedeskArticleBody getArticleBody(@NonNull String id, @NonNull String token, long articleId) throws UsedeskHttpException;
+    @Throws(UsedeskHttpException::class, UsedeskDataNotFoundException::class)
+    fun getCategories(accountId: String, token: String, sectionId: Long): List<UsedeskCategory>
 
-    @NonNull
-    List<UsedeskArticleBody> getArticles(@NonNull String id, @NonNull String token, @NonNull UsedeskSearchQuery searchQuery) throws UsedeskHttpException;
+    @Throws(UsedeskHttpException::class, UsedeskDataNotFoundException::class)
+    fun getArticles(accountId: String, token: String, categoryId: Long): List<UsedeskArticleInfo>
 
-    @NonNull
-    List<UsedeskCategory> getCategories(@NonNull String id, @NonNull String token, long sectionId) throws UsedeskHttpException, UsedeskDataNotFoundException;
-
-    @NonNull
-    List<UsedeskArticleInfo> getArticles(@NonNull String id, @NonNull String token, long categoryId) throws UsedeskHttpException, UsedeskDataNotFoundException;
-
-    void addViews(@NonNull String accountId, @NonNull String token, long articleId) throws UsedeskHttpException, UsedeskDataNotFoundException;
+    @Throws(UsedeskHttpException::class, UsedeskDataNotFoundException::class)
+    fun addViews(accountId: String, token: String, articleId: Long)
 }

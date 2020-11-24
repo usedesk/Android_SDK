@@ -1,25 +1,19 @@
-package ru.usedesk.knowledgebase_sdk.internal.di;
+package ru.usedesk.knowledgebase_sdk.internal.di
 
-import android.content.Context;
+import android.content.Context
+import ru.usedesk.common_sdk.internal.appdi.InjectBox
+import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration
+import toothpick.ktp.delegate.inject
 
-import javax.inject.Inject;
+class InstanceBox(
+        appContext: Context, knowledgeBaseConfiguration:
+        UsedeskKnowledgeBaseConfiguration
+) : InjectBox() {
 
-import io.reactivex.annotations.NonNull;
-import ru.usedesk.common_sdk.internal.appdi.InjectBox;
-import ru.usedesk.knowledgebase_sdk.external.IUsedeskKnowledgeBase;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
+    val knowledgeBaseSdk: IUsedeskKnowledgeBase by inject()
 
-@SuppressWarnings("injectable")
-public class InstanceBox extends InjectBox {
-
-    @Inject
-    IUsedeskKnowledgeBase knowledgeBaseSdk;
-
-    public InstanceBox(@NonNull Context appContext, @NonNull UsedeskKnowledgeBaseConfiguration knowledgeBaseConfiguration) {
-        init(new MainModule(appContext, knowledgeBaseConfiguration));
-    }
-
-    public IUsedeskKnowledgeBase getKnowledgeBaseSdk() {
-        return knowledgeBaseSdk;
+    init {
+        init(MainModule(appContext, knowledgeBaseConfiguration))
     }
 }

@@ -1,37 +1,38 @@
-package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit;
+package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Path;
-import retrofit2.http.Query;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery.Order
 
-public interface ApiRetrofit {
+interface ApiRetrofit {
     @GET("{account_id}/list")
-    Call<String> getSections(@Path(value = "account_id", encoded = true) String accountId,
-                             @Query("api_token") String token);
+    fun getSections(@Path(value = "account_id", encoded = true) accountId: String,
+                    @Query("api_token") token: String): Call<String>
 
     @GET("{account_id}/articles/{article_id}")
-    Call<String> getArticleBody(@Path(value = "account_id", encoded = true) String accountId,
-                                @Path(value = "article_id", encoded = true) String articleId,
-                                @Query("api_token") String token);
+    fun getArticleBody(@Path(value = "account_id", encoded = true) accountId: String,
+                       @Path(value = "article_id", encoded = true) articleId: String,
+                       @Query("api_token") token: String): Call<String>
 
     @GET("{account_id}/articles/list")
-    Call<String> getArticlesBody(@Path(value = "account_id", encoded = true) String accountId,
-                                 @Query("api_token") String token,
-                                 @Query("query") String searchQuery,
-                                 @Query("count") String count,
-                                 @Query("collection_ids") String collectionIds,
-                                 @Query("category_ids") String categoryIds,
-                                 @Query("article_ids") String articleIds,
-                                 @Query("page") String page,
-                                 @Query("type") UsedeskSearchQuery.Type type,
-                                 @Query("sort") UsedeskSearchQuery.Sort sort,
-                                 @Query("order") UsedeskSearchQuery.Order order);
+    fun getArticlesBody(@Path(value = "account_id", encoded = true) accountId: String,
+                        @Query("api_token") token: String,
+                        @Query("query") searchQuery: String,
+                        @Query("count") count: String,
+                        @Query("collection_ids") collectionIds: String,
+                        @Query("category_ids") categoryIds: String,
+                        @Query("article_ids") articleIds: String,
+                        @Query("page") page: String,
+                        @Query("type") type: UsedeskSearchQuery.Type,
+                        @Query("sort") sort: UsedeskSearchQuery.Sort,
+                        @Query("order") order: Order): Call<String>
 
     @GET("{account_id}/articles/{article_id}/add-views")
-    Call<String> addViews(@Path(value = "account_id", encoded = true) String accountId,
-                          @Path(value = "article_id", encoded = true) long articleId,
-                          @Query("api_token") String token,
-                          @Query("count") int count);
+    fun addViews(@Path(value = "account_id", encoded = true) accountId: String,
+                 @Path(value = "article_id", encoded = true) articleId: Long,
+                 @Query("api_token") token: String,
+                 @Query("count") count: Int): Call<String>
 }

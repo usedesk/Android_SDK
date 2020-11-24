@@ -1,35 +1,18 @@
-package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity;
+package ru.usedesk.knowledgebase_sdk.internal.data.framework.retrofit.entity
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
+import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody
 
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
+class ArticlesBodyPage {
+    val page = 0
 
-public class ArticlesBodyPage {
-    private int page;
     @SerializedName("last-page")
-    private int lastPage;
-    private int count;
+    val lastPage = 0
+
+    val count = 0
+
     @SerializedName("total-count")
-    private int totalCount;
-    private UsedeskArticleBody[] articles;
+    val totalCount = 0
 
-    public int getPage() {
-        return page;
-    }
-
-    public int getLastPage() {
-        return lastPage;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public UsedeskArticleBody[] getArticles() {
-        return articles;
-    }
+    val articles: Array<UsedeskArticleBody>? = null
 }

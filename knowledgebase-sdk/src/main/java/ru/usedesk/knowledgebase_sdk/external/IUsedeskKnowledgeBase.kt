@@ -1,58 +1,43 @@
-package ru.usedesk.knowledgebase_sdk.external;
+package ru.usedesk.knowledgebase_sdk.external
 
-import androidx.annotation.NonNull;
+import io.reactivex.Completable
+import io.reactivex.Single
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
+import ru.usedesk.knowledgebase_sdk.external.entity.*
 
-import java.util.List;
+interface IUsedeskKnowledgeBase {
+    @Throws(UsedeskException::class)
+    fun getSections(): List<UsedeskSection>
 
-import io.reactivex.Completable;
-import io.reactivex.Single;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleBody;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskArticleInfo;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskCategory;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSearchQuery;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection;
+    @Throws(UsedeskException::class)
+    fun getArticle(articleId: Long): UsedeskArticleBody
 
-public interface IUsedeskKnowledgeBase {
+    @Throws(UsedeskException::class)
+    fun getArticles(searchQuery: String): List<UsedeskArticleBody>
 
-    @NonNull
-    List<UsedeskSection> getSections() throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody>
 
-    @NonNull
-    UsedeskArticleBody getArticle(long articleId) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun getCategories(sectionId: Long): List<UsedeskCategory>
 
-    @NonNull
-    List<UsedeskArticleBody> getArticles(String searchQuery) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun getArticles(categoryId: Long): List<UsedeskArticleInfo>
 
-    @NonNull
-    List<UsedeskArticleBody> getArticles(UsedeskSearchQuery searchQuery) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun addViews(articleId: Long)
 
-    @NonNull
-    List<UsedeskCategory> getCategories(long sectionId) throws UsedeskException;
+    fun getSectionsRx(): Single<List<UsedeskSection>>
 
-    @NonNull
-    List<UsedeskArticleInfo> getArticles(long categoryId) throws UsedeskException;
+    fun getArticleRx(articleId: Long): Single<UsedeskArticleBody>
 
-    void addViews(long articleId) throws UsedeskException;
+    fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBody>>
 
-    @NonNull
-    Single<List<UsedeskSection>> getSectionsRx();
+    fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleBody>>
 
-    @NonNull
-    Single<UsedeskArticleBody> getArticleRx(long articleId);
+    fun getCategoriesRx(sectionId: Long): Single<List<UsedeskCategory>>
 
-    @NonNull
-    Single<List<UsedeskArticleBody>> getArticlesRx(String searchQuery);
+    fun getArticlesRx(categoryId: Long): Single<List<UsedeskArticleInfo>>
 
-    @NonNull
-    Single<List<UsedeskArticleBody>> getArticlesRx(UsedeskSearchQuery searchQuery);
-
-    @NonNull
-    Single<List<UsedeskCategory>> getCategoriesRx(long sectionId);
-
-    @NonNull
-    Single<List<UsedeskArticleInfo>> getArticlesRx(long categoryId);
-
-    @NonNull
-    Completable addViewsRx(long articleId);
+    fun addViewsRx(articleId: Long): Completable
 }

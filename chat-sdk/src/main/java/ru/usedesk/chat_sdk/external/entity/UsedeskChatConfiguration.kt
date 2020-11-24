@@ -1,153 +1,71 @@
-package ru.usedesk.chat_sdk.external.entity;
+package ru.usedesk.chat_sdk.external.entity
 
-import android.content.Intent;
+import android.content.Intent
+import ru.usedesk.common_sdk.external.entity.exceptions.Validators.isValidEmailNecessary
+import ru.usedesk.common_sdk.external.entity.exceptions.Validators.isValidPhonePhone
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+data class UsedeskChatConfiguration @JvmOverloads constructor(
+        val companyId: String,
+        val email: String,
+        val url: String,
+        val offlineFormUrl: String,
+        val clientName: String? = null,
+        val clientPhoneNumber: Long? = null,
+        val clientAdditionalId: Long? = null,
+        val initClientMessage: String? = null
+) {
 
-import ru.usedesk.common_sdk.external.entity.exceptions.Validators;
-
-public class UsedeskChatConfiguration {
-    private static final String COMPANY_ID_KEY = "companyIdKey";
-    private static final String EMAIL_KEY = "emailKey";
-    private static final String URL_KEY = "urlKey";
-    private static final String OFFLINE_FORM_URL_KEY = "offlineFormUrlKey";
-    private static final String NAME_KEY = "nameKey";
-    private static final String PHONE_KEY = "phoneKey";
-    private static final String ADDITIONAL_ID_KEY = "additionalIdKey";
-
-    private final String companyId;
-    private final String email;
-    private final String url;
-    private final String offlineFormUrl;
-
-    private final String clientName;
-    private final Long clientPhoneNumber;
-    private final Long clientAdditionalId;
-
-    private final String initClientMessage;
-
-    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
-                                    @NonNull String url, @NonNull String offlineFormUrl) {
-        this(companyId, email, url, offlineFormUrl, null, null, null);
+    fun serialize(intent: Intent) {
+        intent.putExtra(COMPANY_ID_KEY, companyId)
+        intent.putExtra(EMAIL_KEY, email)
+        intent.putExtra(URL_KEY, url)
+        intent.putExtra(OFFLINE_FORM_URL_KEY, offlineFormUrl)
+        intent.putExtra(NAME_KEY, clientName)
+        intent.putExtra(PHONE_KEY, clientPhoneNumber)
+        intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId)
     }
 
-    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
-                                    @NonNull String url, @NonNull String offlineFormUrl,
-                                    @Nullable String clientName, @Nullable Long clientPhoneNumber,
-                                    @Nullable Long clientAdditionalId) {
-        this(companyId, email, url, offlineFormUrl, clientName, clientPhoneNumber, clientAdditionalId, null);
+    fun isValid(): Boolean {
+        val phoneNumber = clientPhoneNumber?.toString()
+        return isValidPhonePhone(phoneNumber) && isValidEmailNecessary(email)
     }
 
-    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
-                                    @NonNull String url, @NonNull String offlineFormUrl,
-                                    @Nullable String clientName, @Nullable Long clientPhoneNumber,
-                                    @Nullable Long clientAdditionalId, @Nullable String initClientMessage) {
-        this.companyId = companyId;
-        this.email = email;
-        this.url = url;
-        this.offlineFormUrl = offlineFormUrl;
-        this.clientName = clientName;
-        this.clientPhoneNumber = clientPhoneNumber;
-        this.clientAdditionalId = clientAdditionalId;
-        this.initClientMessage = initClientMessage;
-    }
+    companion object {
+        private const val COMPANY_ID_KEY = "companyIdKey"
+        private const val EMAIL_KEY = "emailKey"
+        private const val URL_KEY = "urlKey"
+        private const val OFFLINE_FORM_URL_KEY = "offlineFormUrlKey"
+        private const val NAME_KEY = "nmeKey"
+        private const val PHONE_KEY = "phoneKey"
+        private const val ADDITIONAL_ID_KEY = "additionalIdKey"
 
-    @NonNull
-    public static UsedeskChatConfiguration deserialize(@NonNull Intent intent) {
-        Long additionalId = null;
-        Long phone = null;
-        if (intent.getExtras() != null) {
-            phone = intent.getExtras().getLong(PHONE_KEY);
-            additionalId = intent.getExtras().getLong(ADDITIONAL_ID_KEY);
+        @JvmOverloads
+        @JvmStatic
+        fun deserialize(intent: Intent,
+                        keyPrefix: String = "usedesk"): UsedeskChatConfiguration? {
+            val additionalId = intent.getLongExtra(keyPrefix + ADDITIONAL_ID_KEY, 0)
+            val phone = intent.getLongExtra(keyPrefix + PHONE_KEY, 0)
+            val companyId = intent.getStringExtra(keyPrefix + COMPANY_ID_KEY)
+            val email = intent.getStringExtra(keyPrefix + EMAIL_KEY)
+            val url = intent.getStringExtra(keyPrefix + URL_KEY)
+            val offlineFormUrl = intent.getStringExtra(keyPrefix + OFFLINE_FORM_URL_KEY)
+            val name = intent.getStringExtra(keyPrefix + NAME_KEY)
+
+            return if (companyId != null
+                    && email != null
+                    && url != null
+                    && offlineFormUrl != null
+                    && name != null) {
+                UsedeskChatConfiguration(companyId,
+                        email,
+                        url,
+                        offlineFormUrl,
+                        name,
+                        phone,
+                        additionalId)
+            } else {
+                null
+            }
         }
-        return new UsedeskChatConfiguration(intent.getStringExtra(COMPANY_ID_KEY),
-                intent.getStringExtra(EMAIL_KEY),
-                intent.getStringExtra(URL_KEY),
-                intent.getStringExtra(OFFLINE_FORM_URL_KEY),
-                intent.getStringExtra(NAME_KEY),
-                phone,
-                additionalId);
-    }
-
-    private static boolean equals(@Nullable Object obj1, @Nullable Object obj2) {
-        if (obj1 != null && obj2 != null) {
-            return obj1.equals(obj2);
-        }
-        return obj1 == obj2;
-    }
-
-    public void serialize(@NonNull Intent intent) {
-        intent.putExtra(COMPANY_ID_KEY, companyId);
-        intent.putExtra(EMAIL_KEY, email);
-        intent.putExtra(URL_KEY, url);
-        intent.putExtra(OFFLINE_FORM_URL_KEY, offlineFormUrl);
-        intent.putExtra(NAME_KEY, clientName);
-        intent.putExtra(PHONE_KEY, clientPhoneNumber);
-        intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId);
-    }
-
-    public boolean isValid() {
-        String phoneNumber = clientPhoneNumber != null
-                ? clientPhoneNumber.toString()
-                : null;
-        return Validators.isValidPhonePhone(phoneNumber)
-                && Validators.isValidEmailNecessary(email);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof UsedeskChatConfiguration) {
-            UsedeskChatConfiguration configuration = (UsedeskChatConfiguration) obj;
-            return equals(this.companyId, configuration.companyId) &&
-                    equals(this.email, configuration.email) &&
-                    equals(this.url, configuration.url) &&
-                    equals(this.offlineFormUrl, configuration.offlineFormUrl) &&
-                    equals(this.clientName, configuration.clientName) &&
-                    equals(this.clientPhoneNumber, configuration.clientPhoneNumber) &&
-                    equals(this.clientAdditionalId, configuration.clientAdditionalId) &&
-                    equals(this.initClientMessage, configuration.initClientMessage);
-        }
-        return false;
-    }
-
-    @NonNull
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    @NonNull
-    public String getEmail() {
-        return email;
-    }
-
-    @NonNull
-    public String getUrl() {
-        return url;
-    }
-
-    @NonNull
-    public String getOfflineFormUrl() {
-        return offlineFormUrl;
-    }
-
-    @Nullable
-    public String getClientName() {
-        return clientName;
-    }
-
-    @Nullable
-    public Long getClientPhoneNumber() {
-        return clientPhoneNumber;
-    }
-
-    @Nullable
-    public Long getClientAdditionalId() {
-        return clientAdditionalId;
-    }
-
-    @Nullable
-    public String getInitClientMessage() {
-        return initClientMessage;
     }
 }

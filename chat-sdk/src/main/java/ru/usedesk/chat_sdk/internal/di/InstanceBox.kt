@@ -1,38 +1,31 @@
-package ru.usedesk.chat_sdk.internal.di;
+package ru.usedesk.chat_sdk.internal.di
 
-import android.content.Context;
+import android.content.Context
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import ru.usedesk.chat_sdk.external.IUsedeskChat
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.common_sdk.internal.appdi.InjectBox
+import toothpick.ktp.delegate.inject
 
-import javax.inject.Inject;
+class InstanceBox(
+        appContext: Context,
+        usedeskChatConfiguration: UsedeskChatConfiguration,
+        actionListener: IUsedeskActionListener
+) : InjectBox() {
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.schedulers.Schedulers;
-import ru.usedesk.chat_sdk.external.IUsedeskChat;
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.common_sdk.internal.appdi.InjectBox;
+    val usedeskChatSdk: IUsedeskChat by inject()
 
-@SuppressWarnings("injectable")
-public class InstanceBox extends InjectBox {
-    @Inject
-    IUsedeskChat usedeskChatSdk;
-
-    public InstanceBox(@NonNull Context appContext,
-                       @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-                       @NonNull IUsedeskActionListener actionListener) {
-        init(new MainModule(appContext, usedeskChatConfiguration, actionListener));
+    init {
+        init(MainModule(appContext, usedeskChatConfiguration, actionListener))
     }
 
-    public IUsedeskChat getUsedeskChatSdk() {
-        return usedeskChatSdk;
-    }
-
-    @Override
-    public void release() {
+    override fun release() {
         usedeskChatSdk.disconnectRx()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
-        super.release();
+                .subscribe()
+        super.release()
     }
 }

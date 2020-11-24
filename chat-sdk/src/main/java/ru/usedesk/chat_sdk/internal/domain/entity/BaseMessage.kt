@@ -1,62 +1,26 @@
-package ru.usedesk.chat_sdk.internal.domain.entity;
+package ru.usedesk.chat_sdk.internal.domain.entity
 
-import androidx.annotation.NonNull;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType;
+abstract class BaseMessage(
+        val id: String? = null,
+        val type: UsedeskMessageType? = null,
+        open val text: String? = null,
+        val operator: String? = null,
+        val createdAt: String? = null,
+        val name: String? = null,
+        val chat: Any? = null,
+        val file: UsedeskFile? = null
+) {
 
-public class BaseMessage {
-    private String id;
-    private UsedeskMessageType type;
-    private String text;
-    private String operator;
-    private String createdAt;
-    private String name;
-    private Object chat;
-    private UsedeskFile file;
-
-    public BaseMessage() {
-    }
-
-    public BaseMessage(@NonNull BaseMessage baseMessage) {
-        this.id = baseMessage.getId();
-        this.type = baseMessage.getType();
-        this.text = baseMessage.getText();
-        this.operator = baseMessage.getOperator();
-        this.createdAt = baseMessage.getCreatedAt();
-        this.name = baseMessage.getName();
-        this.chat = baseMessage.getChat();
-        this.file = baseMessage.getFile();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public UsedeskMessageType getType() {
-        return type;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Object getChat() {
-        return chat;
-    }
-
-    public UsedeskFile getFile() {
-        return file;
-    }
+    constructor(baseMessage: BaseMessage) : this(
+            baseMessage.id,
+            baseMessage.type,
+            baseMessage.text,
+            baseMessage.operator,
+            baseMessage.createdAt,
+            baseMessage.name,
+            baseMessage.chat,
+            baseMessage.file
+    )
 }

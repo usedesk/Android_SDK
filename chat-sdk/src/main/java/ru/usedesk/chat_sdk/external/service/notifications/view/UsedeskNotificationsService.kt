@@ -30,8 +30,11 @@ abstract class UsedeskNotificationsService : Service() {
 
     private fun registerNotification() {
         if (Build.VERSION.SDK_INT >= 26) {
-            val notificationChannel = NotificationChannel(channelId,
-                    channelTitle, NotificationManager.IMPORTANCE_DEFAULT).apply {
+            val notificationChannel = NotificationChannel(
+                    channelId,
+                    channelTitle,
+                    NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
                 enableLights(true)
                 enableVibration(true)
             }
@@ -44,13 +47,21 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent))
-        UsedeskChatSdk.init(this, presenter.actionListener)
+        val usedeskChatConfiguration = UsedeskChatConfiguration.deserialize(intent)
 
-        presenter.init()
+        if (usedeskChatConfiguration == null) {
+            stopSelf(startId)
+        } else {
+            UsedeskChatSdk.setConfiguration(usedeskChatConfiguration)
+            UsedeskChatSdk.init(this, presenter.actionListener)
 
-        messagesDisposable = presenter.modelObservable
-                .subscribe { model: UsedeskNotificationsModel -> renderModel(model) }
+            presenter.init()
+
+            messagesDisposable = presenter.modelObservable.subscribe {
+                renderModel(it)
+            }
+        }
+
         return START_STICKY
     }
 

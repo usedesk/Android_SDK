@@ -1,109 +1,86 @@
-package ru.usedesk.chat_sdk.internal.data.repository.api;
+package ru.usedesk.chat_sdk.internal.data.repository.api
 
-import androidx.annotation.NonNull;
+import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader
+import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader
+import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.*
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException
+import toothpick.InjectConstructor
+import java.io.IOException
+import java.net.URL
 
-import java.io.IOException;
-import java.net.URL;
+@InjectConstructor
+class ApiRepository(
+        private val socketApi: SocketApi,
+        private val httpApiLoader: IHttpApiLoader,
+        private val fileInfoLoader: IFileInfoLoader
+) : IApiRepository {
 
-import javax.inject.Inject;
+    private fun isConnected() = socketApi.isConnected
 
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
-import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.RequestMessage;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest;
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
-import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
-
-public class ApiRepository implements IApiRepository {
-    private static final String OFFLINE_FORM_PATH = "https://%1s/widget.js/";
-
-    private final SocketApi socketApi;
-    private final IHttpApiLoader httpApiLoader;
-    private final IFileInfoLoader fileInfoLoader;
-
-    @Inject
-    ApiRepository(@NonNull SocketApi socketApi, @NonNull IHttpApiLoader httpApiLoader,
-                  @NonNull IFileInfoLoader fileInfoLoader) {
-        this.socketApi = socketApi;
-        this.httpApiLoader = httpApiLoader;
-        this.fileInfoLoader = fileInfoLoader;
+    @Throws(UsedeskException::class)
+    override fun connect(url: String, actionListener: IUsedeskActionListener,
+                         onMessageListener: OnMessageListener) {
+        socketApi.connect(url, actionListener, onMessageListener)
     }
 
-    private boolean isConnected() {
-        return socketApi.isConnected();
+    @Throws(UsedeskException::class)
+    override fun init(configuration: UsedeskChatConfiguration, token: String) {
+        socketApi.sendRequest(InitChatRequest(token, configuration.companyId,
+                configuration.url))
     }
 
-    @Override
-    public void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener,
-                        @NonNull OnMessageListener onMessageListener) throws UsedeskException {
-        socketApi.connect(url, actionListener, onMessageListener);
+    @Throws(UsedeskException::class)
+    override fun send(token: String, feedback: UsedeskFeedback) {
+        checkConnection()
+        socketApi.sendRequest(SendFeedbackRequest(token, feedback))
     }
 
-    @Override
-    public void init(@NonNull UsedeskChatConfiguration configuration, String token)
-            throws UsedeskException {
-        socketApi.sendRequest(new InitChatRequest(token, configuration.getCompanyId(),
-                configuration.getUrl()));
+    @Throws(UsedeskException::class)
+    override fun send(token: String, text: String) {
+        checkConnection()
+        socketApi.sendRequest(SendMessageRequest(token, RequestMessage(text)))
     }
 
-    @Override
-    public void send(@NonNull String token, @NonNull UsedeskFeedback feedback) throws UsedeskException {
-        checkConnection();
-
-        socketApi.sendRequest(new SendFeedbackRequest(token, feedback));
-    }
-
-    @Override
-    public void send(@NonNull String token, @NonNull String text) throws UsedeskException {
-        checkConnection();
-
-        socketApi.sendRequest(new SendMessageRequest(token, new RequestMessage(text)));
-    }
-
-    private void checkConnection() throws UsedeskSocketException {
+    @Throws(UsedeskSocketException::class)
+    private fun checkConnection() {
         if (!isConnected()) {
-            throw new UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED);
+            throw UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED)
         }
     }
 
-    @Override
-    public void send(@NonNull String token, @NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
-        checkConnection();
-
-        UsedeskFile usedeskFile = fileInfoLoader.getFrom(usedeskFileInfo);
-        socketApi.sendRequest(new SendMessageRequest(token, new RequestMessage(usedeskFile)));
+    @Throws(UsedeskException::class)
+    override fun send(token: String, usedeskFileInfo: UsedeskFileInfo) {
+        checkConnection()
+        val usedeskFile = fileInfoLoader.getFrom(usedeskFileInfo)
+        socketApi.sendRequest(SendMessageRequest(token, RequestMessage(usedeskFile)))
     }
 
-    @Override
-    public void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException {
-        socketApi.sendRequest(new SetEmailRequest(token, email, name, phone, additionalId));
+    @Throws(UsedeskException::class)
+    override fun send(token: String, email: String, name: String?, phone: Long?, additionalId: Long?) {
+        socketApi.sendRequest(SetEmailRequest(token, email, name, phone, additionalId))
     }
 
-    @Override
-    public void send(@NonNull UsedeskChatConfiguration configuration, @NonNull UsedeskOfflineForm offlineForm) throws UsedeskException {
+    @Throws(UsedeskException::class)
+    override fun send(configuration: UsedeskChatConfiguration, offlineForm: UsedeskOfflineForm) {
         try {
-            URL url = new URL(configuration.getOfflineFormUrl());
-            String postUrl = String.format(OFFLINE_FORM_PATH, url.getHost());
-            httpApiLoader.post(postUrl, offlineForm);
-        } catch (IOException e) {
-            throw new UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.getMessage());
+            val url = URL(configuration.offlineFormUrl)
+            val postUrl = String.format(OFFLINE_FORM_PATH, url.host)
+            httpApiLoader.post(postUrl, offlineForm)
+        } catch (e: IOException) {
+            throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
 
-    @Override
-    public void disconnect() {
-        socketApi.disconnect();
+    override fun disconnect() {
+        socketApi.disconnect()
+    }
+
+    companion object {
+        private const val OFFLINE_FORM_PATH = "https://%1s/widget.js/"
     }
 }

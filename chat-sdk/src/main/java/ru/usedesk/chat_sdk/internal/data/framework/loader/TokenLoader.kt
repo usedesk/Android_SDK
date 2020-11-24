@@ -1,49 +1,40 @@
-package ru.usedesk.chat_sdk.internal.data.framework.loader;
+package ru.usedesk.chat_sdk.internal.data.framework.loader
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Context
+import android.content.SharedPreferences
+import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader
+import toothpick.InjectConstructor
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+@InjectConstructor
+class TokenLoader(
+        context: Context
+) : DataLoader<String>() {
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
+            PREF_NAME,
+            Context.MODE_PRIVATE
+    )
 
-import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 
-@Singleton
-public class TokenLoader extends DataLoader<String> {
-    private static final String PREF_NAME = "usedeskSdkToken";
-    private static final String KEY_TOKEN = "token";
-
-    private final SharedPreferences sharedPreferences;
-
-    @Inject
-    @Named("token")
-    TokenLoader(@NonNull Context context) {
-        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    override fun loadData(): String? {
+        return sharedPreferences.getString(KEY_TOKEN, null)
     }
 
-    @Nullable
-    @Override
-    protected String loadData() {
-        return sharedPreferences.getString(KEY_TOKEN, null);
-    }
-
-    @Override
-    protected void saveData(@NonNull String token) {
+    override fun saveData(data: String) {
         sharedPreferences.edit()
-                .putString(KEY_TOKEN, token)
-                .apply();
+                .putString(KEY_TOKEN, data)
+                .apply()
     }
 
-    @Override
-    public void clearData() {
-        super.clearData();
-
+    override fun clearData() {
+        super.clearData()
         sharedPreferences.edit()
                 .remove(KEY_TOKEN)
-                .apply();
+                .apply()
+    }
+
+    companion object {
+        private const val PREF_NAME = "usedeskSdkToken"
+        private const val KEY_TOKEN = "token"
     }
 }

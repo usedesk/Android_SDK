@@ -1,67 +1,61 @@
-package ru.usedesk.chat_sdk.internal.di;
+package ru.usedesk.chat_sdk.internal.di
 
-import android.content.Context;
+import android.content.Context
+import com.google.gson.Gson
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import ru.usedesk.chat_sdk.external.IUsedeskChat
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter
+import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.HttpApiFactory
+import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.IHttpApiFactory
+import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader
+import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.FileInfoLoader
+import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader
+import ru.usedesk.chat_sdk.internal.data.framework.httpapi.HttpApiLoader
+import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader
+import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader
+import ru.usedesk.chat_sdk.internal.data.framework.loader.TokenLoader
+import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi
+import ru.usedesk.chat_sdk.internal.data.repository.api.ApiRepository
+import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoRepository
+import ru.usedesk.chat_sdk.internal.domain.ChatInteractor
+import toothpick.config.Module
 
-import com.google.gson.Gson;
+internal class MainModule(
+        appContext: Context,
+        usedeskChatConfiguration: UsedeskChatConfiguration,
+        actionListener: IUsedeskActionListener
+) : Module() {
 
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.schedulers.Schedulers;
-import ru.usedesk.chat_sdk.external.IUsedeskChat;
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
-import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.HttpApiFactory;
-import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.IHttpApiFactory;
-import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.FileInfoLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.httpapi.HttpApiLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.loader.TokenLoader;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi;
-import ru.usedesk.chat_sdk.internal.data.repository.api.ApiRepository;
-import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
-import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
-import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoRepository;
-import ru.usedesk.chat_sdk.internal.domain.ChatInteractor;
-import toothpick.config.Module;
-
-class MainModule extends Module {
-
-    MainModule(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-               @NonNull IUsedeskActionListener actionListener) {
-        bind(Context.class).toInstance(appContext);
-        bind(UsedeskChatConfiguration.class).toInstance(usedeskChatConfiguration);
-        bind(IUsedeskActionListener.class).toInstance(actionListener);
-
-        bind(IUsedeskChat.class).to(ChatInteractor.class).singleton();
-
-        bind(IUserInfoRepository.class).to(UserInfoRepository.class).singleton();
-        bind(IApiRepository.class).to(ApiRepository.class).singleton();
-
-        bind(DataLoader.class).withName("configuration").to(ConfigurationLoader.class).singleton();
-        bind(DataLoader.class).withName("token").to(TokenLoader.class).singleton();
-
-        bind(SocketApi.class).to(SocketApi.class).singleton();
-        bind(IFileInfoLoader.class).to(FileInfoLoader.class).singleton();
-        bind(IHttpApiLoader.class).to(HttpApiLoader.class).singleton();
-
-        bind(IHttpApiFactory.class).to(HttpApiFactory.class).singleton();
-        bind(Gson.class).toInstance(gson());
-
-        bind(Scheduler.class).withName("work").toInstance(Schedulers.io());
-        bind(Scheduler.class).withName("main").toInstance(AndroidSchedulers.mainThread());
+    init {
+        bind(Context::class.java).toInstance(appContext)
+        bind(UsedeskChatConfiguration::class.java).toInstance(usedeskChatConfiguration)
+        bind(IUsedeskActionListener::class.java).toInstance(actionListener)
+        bind(IUsedeskChat::class.java).to(ChatInteractor::class.java).singleton()
+        bind(IUserInfoRepository::class.java).to(UserInfoRepository::class.java).singleton()
+        bind(IApiRepository::class.java).to(ApiRepository::class.java).singleton()
+        bind(DataLoader::class.java).withName("configuration").to(ConfigurationLoader::class.java).singleton()
+        bind(DataLoader::class.java).withName("token").to(TokenLoader::class.java).singleton()
+        bind(SocketApi::class.java).to(SocketApi::class.java).singleton()//TODO: начиная отсюда преобразовывать дальше в KT и InjectConstructor пихать
+        bind(IFileInfoLoader::class.java).to(FileInfoLoader::class.java).singleton()
+        bind(IHttpApiLoader::class.java).to(HttpApiLoader::class.java).singleton()
+        bind(IHttpApiFactory::class.java).to(HttpApiFactory::class.java).singleton()
+        bind(Gson::class.java).toInstance(gson())
+        bind(Scheduler::class.java).withName("work").toInstance(Schedulers.io())
+        bind(Scheduler::class.java).withName("main").toInstance(AndroidSchedulers.mainThread())
 
         //tmp for service
-        bind(UsedeskNotificationsPresenter.class).to(UsedeskNotificationsPresenter.class).singleton();
-        bind(UsedeskActionListenerRx.class).to(UsedeskActionListenerRx.class).singleton();
+        bind(UsedeskNotificationsPresenter::class.java).to(UsedeskNotificationsPresenter::class.java).singleton()
+        bind(UsedeskActionListenerRx::class.java).to(UsedeskActionListenerRx::class.java).singleton()
     }
 
-    private Gson gson() {
-        return new Gson();
+    private fun gson(): Gson {
+        return Gson()
     }
 }

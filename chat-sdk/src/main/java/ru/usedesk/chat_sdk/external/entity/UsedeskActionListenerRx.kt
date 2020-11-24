@@ -5,9 +5,8 @@ import io.reactivex.subjects.BehaviorSubject
 import ru.usedesk.chat_sdk.external.entity.ticketitem.*
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import java.util.*
-import javax.inject.Inject
 
-class UsedeskActionListenerRx @Inject constructor() : IUsedeskActionListener {
+class UsedeskActionListenerRx : IUsedeskActionListener {
     private val connectedSubject = BehaviorSubject.create<UsedeskSingleLifeEvent<*>>()
     private val disconnectedSubject = BehaviorSubject.create<UsedeskSingleLifeEvent<*>>()
     private val connectedStateSubject = BehaviorSubject.createDefault(false)
@@ -91,8 +90,8 @@ class UsedeskActionListenerRx @Inject constructor() : IUsedeskActionListener {
                 } else {
                     MessageAgentImage(messageDate,
                             usedeskMessage.file,
-                            usedeskMessage.name,
-                            usedeskMessage.usedeskPayload.avatar)
+                            usedeskMessage.name ?: "",
+                            usedeskMessage.usedeskPayload?.avatar ?: "")
                 }
             } else {
                 if (fromClient) {
@@ -102,8 +101,8 @@ class UsedeskActionListenerRx @Inject constructor() : IUsedeskActionListener {
                 } else {
                     MessageAgentFile(messageDate,
                             usedeskMessage.file,
-                            usedeskMessage.name,
-                            usedeskMessage.usedeskPayload.avatar)
+                            usedeskMessage.name ?: "",
+                            usedeskMessage.usedeskPayload?.avatar ?: "")
                 }
             }
         } else {
@@ -114,8 +113,8 @@ class UsedeskActionListenerRx @Inject constructor() : IUsedeskActionListener {
             } else {
                 MessageAgentText(messageDate,
                         usedeskMessage.text,
-                        usedeskMessage.name,
-                        usedeskMessage.usedeskPayload.avatar)
+                        usedeskMessage.name ?: "",
+                        usedeskMessage.usedeskPayload?.avatar ?: "")
             }
         }
     }

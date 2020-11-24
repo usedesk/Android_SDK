@@ -1,110 +1,91 @@
-package ru.usedesk.chat_sdk.internal.data.framework.configuration;
+package ru.usedesk.chat_sdk.internal.data.framework.configuration
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Context
+import android.content.SharedPreferences
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader
+import toothpick.InjectConstructor
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+@InjectConstructor
+class ConfigurationLoader(
+        context: Context
+) : DataLoader<UsedeskChatConfiguration>() {
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
+            PREF_NAME,
+            Context.MODE_PRIVATE
+    )
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
-
-@Singleton
-public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
-    private static final String PREF_NAME = "usedeskSdkConfiguration";
-    private static final String KEY_ID = "id";
-    private static final String KEY_URL = "url";
-    private static final String KEY_OFFLINE_URL = "offlineUrl";
-    private static final String KEY_EMAIL = "email";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_PHONE = "phone";
-    private static final String KEY_ADDITIONAL_ID = "additionalId";
-    private static final String KEY_CLIENT_INIT_MESSAGE = "clientInitMessage";
-
-    private final SharedPreferences sharedPreferences;
-
-    @Inject
-    @Named("configuration")
-    ConfigurationLoader(@NonNull Context context) {
-        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    private fun getString(value: Long?): String? {
+        return value?.toString()
     }
 
-    @Nullable
-    private Long getLong(@Nullable String value) {
-        return value == null || value.isEmpty()
-                ? null
-                : Long.valueOf(value);
-    }
-
-    @Nullable
-    private String getString(@Nullable Long value) {
-        return value == null
-                ? null
-                : value.toString();
-    }
-
-    @Override
-    @Nullable
-    protected UsedeskChatConfiguration loadData() {
-        final String id = sharedPreferences.getString(KEY_ID, null);
-        final String url = sharedPreferences.getString(KEY_URL, null);
-        final String offlineUrl = sharedPreferences.getString(KEY_OFFLINE_URL, null);
-        final String email = sharedPreferences.getString(KEY_EMAIL, null);
-        final String initClientMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null);
-
+    override fun loadData(): UsedeskChatConfiguration? {
+        val id = sharedPreferences.getString(KEY_ID, null)
+        val url = sharedPreferences.getString(KEY_URL, null)
+        val offlineUrl = sharedPreferences.getString(KEY_OFFLINE_URL, null)
+        val email = sharedPreferences.getString(KEY_EMAIL, null)
+        val initClientMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
         if (id == null || url == null || email == null || offlineUrl == null) {
-            return null;
+            return null
         }
-
-        String name = null;
-        String phone = null;
-        String additionalId = null;
-
+        var name: String? = null
+        var phone: String? = null
+        var additionalId: String? = null
         try {
-            name = sharedPreferences.getString(KEY_NAME, null);
-            phone = sharedPreferences.getString(KEY_PHONE, null);
-            additionalId = sharedPreferences.getString(KEY_ADDITIONAL_ID, null);
-        } catch (ClassCastException e) {
+            name = sharedPreferences.getString(KEY_NAME, null)
+            phone = sharedPreferences.getString(KEY_PHONE, null)
+            additionalId = sharedPreferences.getString(KEY_ADDITIONAL_ID, null)
+        } catch (e: ClassCastException) {
             try {
-                phone = String.valueOf(sharedPreferences.getLong(KEY_PHONE, 0));//Для миграции с версий, где хранился Long
-                additionalId = String.valueOf(sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0));
-            } catch (ClassCastException e1) {
-                e.printStackTrace();
+                phone = sharedPreferences.getLong(KEY_PHONE, 0).toString() //Для миграции с версий, где хранился Long
+                additionalId = sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0).toString()
+            } catch (e1: ClassCastException) {
+                e.printStackTrace()
             }
         }
-
-        return new UsedeskChatConfiguration(id, email, url, offlineUrl,
-                name, getLong(phone), getLong(additionalId),
-                initClientMessage);
+        return UsedeskChatConfiguration(id,
+                email,
+                url,
+                offlineUrl,
+                name,
+                phone?.toLongOrNull(),
+                additionalId?.toLongOrNull(),
+                initClientMessage)
     }
 
-    @Override
-    protected void saveData(@NonNull UsedeskChatConfiguration configuration) {
+    override fun saveData(configuration: UsedeskChatConfiguration) {
         sharedPreferences.edit()
-                .putString(KEY_ID, configuration.getCompanyId())
-                .putString(KEY_URL, configuration.getUrl())
-                .putString(KEY_OFFLINE_URL, configuration.getOfflineFormUrl())
-                .putString(KEY_EMAIL, configuration.getEmail())
-                .putString(KEY_NAME, configuration.getClientName())
-                .putString(KEY_ADDITIONAL_ID, getString(configuration.getClientAdditionalId()))
-                .putString(KEY_CLIENT_INIT_MESSAGE, configuration.getInitClientMessage())
-                .putString(KEY_PHONE, getString(configuration.getClientPhoneNumber()))
-                .apply();
+                .putString(KEY_ID, configuration.companyId)
+                .putString(KEY_URL, configuration.url)
+                .putString(KEY_OFFLINE_URL, configuration.offlineFormUrl)
+                .putString(KEY_EMAIL, configuration.email)
+                .putString(KEY_NAME, configuration.clientName)
+                .putString(KEY_ADDITIONAL_ID, getString(configuration.clientAdditionalId))
+                .putString(KEY_CLIENT_INIT_MESSAGE, configuration.initClientMessage)
+                .putString(KEY_PHONE, getString(configuration.clientPhoneNumber))
+                .apply()
     }
 
-    @Override
-    public void clearData() {
-        super.clearData();
-
+    override fun clearData() {
+        super.clearData()
         sharedPreferences.edit()
                 .remove(KEY_ID)
                 .remove(KEY_URL)
                 .remove(KEY_OFFLINE_URL)
                 .remove(KEY_EMAIL)
-                .apply();
+                .apply()
+    }
+
+    companion object {
+        private const val PREF_NAME = "usedeskSdkConfiguration"
+        private const val KEY_ID = "id"
+        private const val KEY_URL = "url"
+        private const val KEY_OFFLINE_URL = "offlineUrl"
+        private const val KEY_EMAIL = "email"
+        private const val KEY_NAME = "name"
+        private const val KEY_PHONE = "phone"
+        private const val KEY_ADDITIONAL_ID = "additionalId"
+        private const val KEY_CLIENT_INIT_MESSAGE = "clientInitMessage"
     }
 }

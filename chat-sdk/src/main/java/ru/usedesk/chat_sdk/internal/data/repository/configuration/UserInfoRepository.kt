@@ -1,57 +1,42 @@
-package ru.usedesk.chat_sdk.internal.data.repository.configuration;
+package ru.usedesk.chat_sdk.internal.data.repository.configuration
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
+import toothpick.InjectConstructor
+import javax.inject.Named
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+@InjectConstructor
+class UserInfoRepository(
+        @Named("configuration")
+        private val configurationDataLoader: DataLoader<UsedeskChatConfiguration>,
+        @Named("token")
+        private val tokenDataLoader: DataLoader<String>
+) : IUserInfoRepository {
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
-
-@Singleton
-public class UserInfoRepository implements IUserInfoRepository {
-
-    private final DataLoader<UsedeskChatConfiguration> configurationDataLoader;
-    private final DataLoader<String> tokenDataLoader;
-
-    @Inject
-    UserInfoRepository(
-            @Named("configuration") DataLoader<UsedeskChatConfiguration> configurationDataLoader,
-            @Named("token") DataLoader<String> tokenDataLoader) {
-        this.configurationDataLoader = configurationDataLoader;
-        this.tokenDataLoader = tokenDataLoader;
+    @Throws(UsedeskDataNotFoundException::class)
+    override fun getToken(): String {
+        return tokenDataLoader.data
     }
 
-    @Override
-    @NonNull
-    public String getToken() throws UsedeskDataNotFoundException {
-        return tokenDataLoader.getData();
-    }
-
-    @Override
-    public void setToken(@Nullable String token) {
+    override fun setToken(token: String?) {
         if (token == null) {
-            tokenDataLoader.clearData();
+            tokenDataLoader.clearData()
         } else {
-            tokenDataLoader.setData(token);
+            tokenDataLoader.setData(token)
         }
     }
 
-    @Override
-    @NonNull
-    public UsedeskChatConfiguration getConfiguration() throws UsedeskDataNotFoundException {
-        return configurationDataLoader.getData();
+    @Throws(UsedeskDataNotFoundException::class)
+    override fun getConfiguration(): UsedeskChatConfiguration {
+        return configurationDataLoader.data
     }
 
-    @Override
-    public void setConfiguration(@Nullable UsedeskChatConfiguration configuration) {
+    override fun setConfiguration(configuration: UsedeskChatConfiguration?) {
         if (configuration == null) {
-            configurationDataLoader.clearData();
+            configurationDataLoader.clearData()
         } else {
-            configurationDataLoader.setData(configuration);
+            configurationDataLoader.setData(configuration)
         }
     }
 }

@@ -1,40 +1,10 @@
-package ru.usedesk.chat_sdk.external.entity;
+package ru.usedesk.chat_sdk.external.entity
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
 
-public class UsedeskOfflineForm {
-    private static final String KEY_COMPANY_ID = "company_id";
-
-    @SerializedName(KEY_COMPANY_ID)
-    private final String companyId;
-    private final String name;
-    private final String email;
-    private final String message;
-
-    public UsedeskOfflineForm(String companyId, String name, String email, String message) {
-        this.companyId = companyId;
-        this.name = name;
-        this.email = email;
-        this.message = message;
-    }
-
-    public UsedeskOfflineForm(String name, String email, String message) {
-        this(null, name, email, message);
-    }
-
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-}
+data class UsedeskOfflineForm(
+        @SerializedName("company_id")
+        val companyId: String?,
+        val name: String?,
+        val email: String?,
+        val message: String?)

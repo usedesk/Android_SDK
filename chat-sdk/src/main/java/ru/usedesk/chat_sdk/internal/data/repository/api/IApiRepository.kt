@@ -1,30 +1,41 @@
-package ru.usedesk.chat_sdk.internal.data.repository.api;
+package ru.usedesk.chat_sdk.internal.data.repository.api
 
-import androidx.annotation.NonNull;
+import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
+interface IApiRepository {
+    @Throws(UsedeskException::class)
+    fun connect(url: String,
+                actionListener: IUsedeskActionListener,
+                onMessageListener: OnMessageListener)
 
-public interface IApiRepository {
+    @Throws(UsedeskException::class)
+    fun init(configuration: UsedeskChatConfiguration,
+             token: String)
 
-    void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(token: String,
+             email: String,
+             name: String?,
+             phone: Long?,
+             additionalId: Long?)
 
-    void init(@NonNull UsedeskChatConfiguration configuration, String token) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(configuration: UsedeskChatConfiguration,
+             offlineForm: UsedeskOfflineForm)
 
-    void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(token: String,
+             feedback: UsedeskFeedback)
 
-    void send(@NonNull UsedeskChatConfiguration configuration, @NonNull UsedeskOfflineForm offlineForm) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(token: String,
+             text: String)
 
-    void send(@NonNull String token, @NonNull UsedeskFeedback feedback) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(token: String,
+             usedeskFileInfo: UsedeskFileInfo)
 
-    void send(@NonNull String token, @NonNull String text) throws UsedeskException;
-
-    void send(@NonNull String token, @NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException;
-
-    void disconnect();
+    fun disconnect()
 }

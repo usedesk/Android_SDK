@@ -1,36 +1,33 @@
-package ru.usedesk.chat_sdk.internal.data.framework.info;
+package ru.usedesk.chat_sdk.internal.data.framework.info
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
 
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
+abstract class DataLoader<T> {
 
-public abstract class DataLoader<T> {
+    private var data: T? = null
 
-    private T data;
+    protected abstract fun loadData(): T?
 
-    @Nullable
-    protected abstract T loadData();
+    protected abstract fun saveData(data: T)
 
-    protected abstract void saveData(@NonNull T data);
-
-    @NonNull
-    public final T getData() throws UsedeskDataNotFoundException {
+    @Throws(UsedeskDataNotFoundException::class)
+    fun getData(): T {
         if (data == null) {
-            data = loadData();
-            if (data == null) {
-                throw new UsedeskDataNotFoundException("Data not found");
-            }
+            data = loadData()
         }
-        return data;
+        return data ?: throw UsedeskDataNotFoundException("Data not found")
     }
 
-    public final void setData(@Nullable T data) {
-        this.data = data;
-        saveData(data);
+    fun setData(data: T?) {
+        this.data = data
+        if (data != null) {
+            saveData(data)
+        } else {
+            clearData()
+        }
     }
 
-    public void clearData() {
-        data = null;
+    open fun clearData() {
+        data = null
     }
 }

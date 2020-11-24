@@ -1,33 +1,27 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+class SetEmailRequest(
+        token: String,
+        private val email: String,
+        name: String?,
+        phone: Long?,
+        additionalId: Long?
+) : BaseRequest(TYPE, token) {
 
-public class SetEmailRequest extends BaseRequest {
+    private val payload: Payload
 
-    private static final String TYPE = "@@server/chat/SET_EMAIL";
-
-    private final Payload payload;
-    private final String email;
-
-    public SetEmailRequest(@NonNull String token, @NonNull String email, @Nullable String name,
-                           @Nullable Long phone, @Nullable Long additionalId) {
-        super(TYPE, token);
-        this.email = email;
-        this.payload = new Payload(email, name, phone, additionalId);
+    init {
+        payload = Payload(email, name, phone, additionalId)
     }
 
-    static class Payload {
-        private final String email;
-        private final String name;
-        private final Long phone;
-        private final Long additionalId;
-
-        Payload(@NonNull String email, @Nullable String name, @Nullable Long phone, @Nullable Long additionalId) {
-            this.email = email;
-            this.name = name;
-            this.phone = phone;
-            this.additionalId = additionalId;
-        }
+    companion object {
+        private const val TYPE = "@@server/chat/SET_EMAIL"
     }
+
+    class Payload(
+            private val email: String,
+            private val name: String?,
+            private val phone: Long?,
+            private val additionalId: Long?
+    )
 }

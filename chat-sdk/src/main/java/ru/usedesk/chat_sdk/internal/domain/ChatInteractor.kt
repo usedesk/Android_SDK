@@ -1,324 +1,240 @@
-package ru.usedesk.chat_sdk.internal.domain;
+package ru.usedesk.chat_sdk.internal.domain
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.text.TextUtils;
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.text.TextUtils
+import io.reactivex.Completable
+import io.reactivex.CompletableEmitter
+import ru.usedesk.chat_sdk.external.IUsedeskChat
+import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup
+import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
+import toothpick.InjectConstructor
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+@InjectConstructor
+class ChatInteractor(
+        private val context: Context,
+        private val configuration: UsedeskChatConfiguration,
+        private val actionListener: IUsedeskActionListener,
+        private val userInfoRepository: IUserInfoRepository,
+        private val apiRepository: IApiRepository
+) : IUsedeskChat {
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+    private lateinit var token: String
+    private var needSetEmail = false
+    private val messageIds: MutableSet<String> = HashSet()
 
-import javax.inject.Inject;
-
-import io.reactivex.Completable;
-import ru.usedesk.chat_sdk.external.IUsedeskChat;
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
-import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository;
-import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository;
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-
-public class ChatInteractor implements IUsedeskChat {
-
-    private final Context context;
-    private final UsedeskChatConfiguration configuration;
-    private final IUsedeskActionListener actionListener;
-    private final IUserInfoRepository userInfoRepository;
-    private final IApiRepository apiRepository;
-
-    private String token;
-    private boolean needSetEmail = false;
-    private Set<String> messageIds = new HashSet<>();
-
-    @Inject
-    ChatInteractor(@NonNull Context context,
-                   @NonNull UsedeskChatConfiguration configuration,
-                   @NonNull IUsedeskActionListener actionListener,
-                   @NonNull IUserInfoRepository userInfoRepository,
-                   @NonNull IApiRepository apiRepository) {
-        this.context = context;
-        this.userInfoRepository = userInfoRepository;
-        this.apiRepository = apiRepository;
-
-        this.configuration = configuration;
-        this.actionListener = actionListener;
+    private fun <T> equals(a: T?, b: T?): Boolean {
+        return a == null && b == null || a != null && a == b
     }
 
-    private <T> boolean equals(@Nullable T a, @Nullable T b) {
-        return (a == null && b == null) || (a != null && a.equals(b));
-    }
-
-    @Override
-    public void connect() throws UsedeskException {
+    @Throws(UsedeskException::class)
+    override fun connect() {
         try {
-            UsedeskChatConfiguration configuration = userInfoRepository.getConfiguration();
-            if (this.configuration.getEmail().equals(configuration.getEmail())
-                    && this.configuration.getCompanyId().equals(configuration.getCompanyId())) {
-                token = userInfoRepository.getToken();
+            val configuration = userInfoRepository.getConfiguration()
+            if (this.configuration.email == configuration.email && this.configuration.companyId == configuration.companyId) {
+                token = userInfoRepository.getToken()
             }
-            if (token != null && (!equals(this.configuration.getClientName(), configuration.getClientName())
-                    || !equals(this.configuration.getClientPhoneNumber(), configuration.getClientPhoneNumber())
-                    || !equals(this.configuration.getClientAdditionalId(), configuration.getClientAdditionalId()))) {
-                needSetEmail = true;
+            if (!equals(this.configuration.clientName, configuration.clientName)
+                    || !equals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
+                    || !equals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)) {
+                needSetEmail = true
             }
-        } catch (UsedeskDataNotFoundException e) {
-            e.printStackTrace();
+        } catch (e: UsedeskDataNotFoundException) {
+            e.printStackTrace()
         }
-
-        apiRepository.connect(configuration.getUrl(), actionListener, getOnMessageListener());
+        apiRepository.connect(configuration.url, actionListener, onMessageListener)
     }
 
-    @Override
-    public void disconnect() {
-        apiRepository.disconnect();
+    override fun disconnect() {
+        apiRepository.disconnect()
     }
 
-    @Override
-    public void send(String textMessage) throws UsedeskException {
-        if (textMessage == null || textMessage.isEmpty()) {
-            return;
+    @Throws(UsedeskException::class)
+    override fun send(textMessage: String) {
+        if (textMessage.isEmpty()) {
+            return
         }
-
-        apiRepository.send(token, textMessage);
+        apiRepository.send(token!!, textMessage)
     }
 
-    @Override
-    public void send(UsedeskFileInfo usedeskFileInfo) throws UsedeskException {
-        if (usedeskFileInfo == null) {
-            return;
-        }
-
-        apiRepository.send(token, usedeskFileInfo);
+    @Throws(UsedeskException::class)
+    override fun send(usedeskFileInfo: UsedeskFileInfo) {
+        apiRepository.send(token!!, usedeskFileInfo)
     }
 
-    @Override
-    public void send(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException {
-        if (usedeskFileInfoList == null) {
-            return;
-        }
-
-        for (UsedeskFileInfo usedeskFileInfo : usedeskFileInfoList) {
-            send(usedeskFileInfo);
+    @Throws(UsedeskException::class)
+    override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
+        for (usedeskFileInfo in usedeskFileInfoList) {
+            send(usedeskFileInfo)
         }
     }
 
-    @Override
-    public void send(UsedeskFeedback feedback) throws UsedeskException {
-        if (feedback == null) {
-            return;
-        }
-
-        apiRepository.send(token, feedback);
+    @Throws(UsedeskException::class)
+    override fun send(feedback: UsedeskFeedback) {
+        apiRepository.send(token!!, feedback)
     }
 
-    @Override
-    public void send(UsedeskOfflineForm offlineForm) throws UsedeskException {
-        if (offlineForm == null) {
-            return;
-        }
-        if (offlineForm.getCompanyId() == null) {
-            offlineForm = new UsedeskOfflineForm(configuration.getCompanyId(), offlineForm.getName(),
-                    offlineForm.getEmail(), offlineForm.getMessage());
-        }
-        apiRepository.send(configuration, offlineForm);
+    @Throws(UsedeskException::class)
+    override fun send(offlineForm: UsedeskOfflineForm) {
+        apiRepository.send(configuration, offlineForm.copy(companyId = offlineForm.companyId
+                ?: configuration.companyId))
     }
 
-    @Override
-    public void send(UsedeskMessageButton messageButton) throws UsedeskException {
-        if (messageButton == null) {
-            return;
-        }
-        if (messageButton.getUrl().isEmpty()) {
-            send(messageButton.getText());
+    @Throws(UsedeskException::class)
+    override fun send(messageButton: UsedeskMessageButton) {
+        if (messageButton.url.isEmpty()) {
+            send(messageButton.text)
         } else {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.getUrl()));
-            browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(browserIntent);
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.url))
+            browserIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            context.startActivity(browserIntent)
         }
     }
 
-    @NonNull
-    @Override
-    public Completable connectRx() {
-        return Completable.create(emitter -> {
-            connect();
-            emitter.onComplete();
-        });
+    override fun connectRx(): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            connect()
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable sendRx(String textMessage) {
-        return Completable.create(emitter -> {
-            send(textMessage);
-            emitter.onComplete();
-        });
+    override fun sendRx(textMessage: String): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            send(textMessage)
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable sendRx(UsedeskFileInfo usedeskFileInfo) {
-        return Completable.create(emitter -> {
-            send(usedeskFileInfo);
-            emitter.onComplete();
-        });
+    override fun sendRx(usedeskFileInfo: UsedeskFileInfo): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            send(usedeskFileInfo)
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable sendRx(List<UsedeskFileInfo> usedeskFileInfoList) {
-        return Completable.create(emitter -> {
-            send(usedeskFileInfoList);
-            emitter.onComplete();
-        });
+    override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            send(usedeskFileInfoList)
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable sendRx(UsedeskFeedback feedback) {
-        return Completable.create(emitter -> {
-            send(feedback);
-            emitter.onComplete();
-        });
+    override fun sendRx(feedback: UsedeskFeedback): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            send(feedback)
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable sendRx(UsedeskOfflineForm offlineForm) {
-        return Completable.create(emitter -> {
-            send(offlineForm);
-            emitter.onComplete();
-        });
+    override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            send(offlineForm)
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable sendRx(UsedeskMessageButton messageButton) {
-        return Completable.create(emitter -> {
-            send(messageButton);
-            emitter.onComplete();
-        });
+    override fun sendRx(messageButton: UsedeskMessageButton): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            send(messageButton)
+            emitter.onComplete()
+        }
     }
 
-    @NonNull
-    @Override
-    public Completable disconnectRx() {
-        return Completable.create(emitter -> {
-            disconnect();
-            emitter.onComplete();
-        });
+    override fun disconnectRx(): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            disconnect()
+            emitter.onComplete()
+        }
     }
 
-    private void sendUserEmail() {
+    private fun sendUserEmail() {
         try {
-            apiRepository.send(token, configuration.getEmail(), configuration.getClientName(),
-                    configuration.getClientPhoneNumber(), configuration.getClientAdditionalId());
-        } catch (UsedeskException e) {
-            actionListener.onException(e);
+            apiRepository.send(token!!, configuration.email, configuration.clientName,
+                    configuration.clientPhoneNumber, configuration.clientAdditionalId)
+        } catch (e: UsedeskException) {
+            actionListener.onException(e)
         }
     }
 
-    private void parseNewMessageResponse(UsedeskMessage message) {
-        if (message != null && message.getChat() != null) {
-            boolean hasText = !TextUtils.isEmpty(message.getText());
-            boolean hasFile = message.getFile() != null;
-
-            if ((hasText || hasFile) && !messageIds.contains(message.getId())) {
-                messageIds.add(message.getId());
-                actionListener.onMessageReceived(message);
+    private fun parseNewMessageResponse(message: UsedeskMessage?) {
+        if (message?.chat != null) {
+            val hasText = !TextUtils.isEmpty(message.text)
+            val hasFile = message.file != null
+            if ((hasText || hasFile) && !messageIds.contains(message.id) && message.id != null) {
+                messageIds.add(message.id)
+                actionListener.onMessageReceived(message)
             }
         }
     }
 
-    private void parseInitResponse(String token, Setup setup) {
-        this.token = token;
-        userInfoRepository.setToken(token);
-
-        actionListener.onConnected();
-
+    private fun parseInitResponse(token: String, setup: Setup?) {
+        this.token = token
+        userInfoRepository.setToken(token)
+        actionListener.onConnected()
         if (setup != null) {
-            if (setup.isWaitingEmail()) {
-                needSetEmail = true;
+            if (setup.isWaitingEmail) {
+                needSetEmail = true
             }
-
-            actionListener.onMessagesReceived(setup.getMessages());
-
-            if (setup.isNoOperators()) {
-                actionListener.onOfflineFormExpected(configuration);
+            actionListener.onMessagesReceived(setup.messages)
+            if (setup.isNoOperators) {
+                actionListener.onOfflineFormExpected(configuration)
             }
         } else {
-            needSetEmail = true;
+            needSetEmail = true
         }
-
         if (needSetEmail) {
-            sendUserEmail();
+            sendUserEmail()
         }
-
-        String initClientMessage;
-        try {
-            initClientMessage = userInfoRepository.getConfiguration().getInitClientMessage();
-        } catch (UsedeskException ignore) {
-            initClientMessage = null;
+        val initClientMessage = try {
+            userInfoRepository.getConfiguration().initClientMessage
+        } catch (ignore: UsedeskException) {
+            null
         }
         try {
-            if (!equals(initClientMessage, configuration.getInitClientMessage())) {
-                send(configuration.getInitClientMessage());
+            if (!equals(initClientMessage, configuration.initClientMessage)) {
+                send(configuration.initClientMessage!!)
             }
-        } catch (UsedeskException ignore) {
-
+        } catch (ignore: UsedeskException) {
         }
-        userInfoRepository.setConfiguration(configuration);
+        userInfoRepository.setConfiguration(configuration)
     }
 
-    private OnMessageListener getOnMessageListener() {
-        return new OnMessageListener() {
-            @Override
-            public void onNew(UsedeskMessage message) {
-                parseNewMessageResponse(message);
+    private val onMessageListener: OnMessageListener
+        get() = object : OnMessageListener {
+            override fun onNew(message: UsedeskMessage) {
+                parseNewMessageResponse(message)
             }
 
-            @Override
-            public void onFeedback() {
-                actionListener.onFeedbackReceived();
+            override fun onFeedback() {
+                actionListener.onFeedbackReceived()
             }
 
-            @Override
-            public void onInit(String token, Setup setup) {
-                parseInitResponse(token, setup);
+            override fun onInit(token: String, setup: Setup) {
+                parseInitResponse(token, setup)
             }
 
-            @Override
-            public void onInitChat() {
+            override fun onInitChat() {
                 try {
-                    apiRepository.init(configuration, token);
-                } catch (UsedeskException e) {
-                    actionListener.onException(e);
+                    apiRepository.init(configuration, token)
+                } catch (e: UsedeskException) {
+                    actionListener.onException(e)
                 }
             }
 
-            @Override
-            public void onTokenError() {
-                userInfoRepository.setToken(null);
-                token = null;
-
+            override fun onTokenError() {
+                userInfoRepository.setToken(null)
                 try {
-                    apiRepository.init(configuration, token);
-                } catch (UsedeskException e) {
-                    actionListener.onException(e);
+                    apiRepository.init(configuration, token)
+                } catch (e: UsedeskException) {
+                    actionListener.onException(e)
                 }
             }
-        };
-    }
+        }
 }

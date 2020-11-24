@@ -1,62 +1,49 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageButton
+import androidx.lifecycle.LifecycleOwner
+import ru.usedesk.chat_gui.R
+import ru.usedesk.common_gui.internal.visibleGone
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwner;
+class MessagePanelAdapter(parentView: View,
+                          private val viewModel: ChatViewModel,
+                          onClickAttach: View.OnClickListener,
+                          lifecycleOwner: LifecycleOwner) {
 
-import ru.usedesk.chat_gui.R;
+    private val rootView: ViewGroup = parentView.findViewById(R.id.message_layout)
+    private val messageEditText: EditText = parentView.findViewById(R.id.message_edit_text)
+    private val attachFileImageButton: ImageButton = parentView.findViewById(R.id.attach_file_image_view)
+    private val sendImageButton: ImageButton = parentView.findViewById(R.id.send_image_view)
 
-public class MessagePanelAdapter {
-
-    private final ViewGroup rootView;
-    private final EditText messageEditText;
-    private final ImageButton attachFileImageButton;
-    private final ImageButton sendImageButton;
-
-    private final ChatViewModel viewModel;
-
-    public MessagePanelAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel,
-                               @NonNull View.OnClickListener onClickAttach,
-                               @NonNull LifecycleOwner lifecycleOwner) {
-        this.viewModel = viewModel;
-
-        rootView = parentView.findViewById(R.id.message_layout);
-
-        attachFileImageButton = parentView.findViewById(R.id.attach_file_image_view);
-        attachFileImageButton.setOnClickListener(onClickAttach);
-
-        messageEditText = parentView.findViewById(R.id.message_edit_text);
-
-        sendImageButton = parentView.findViewById(R.id.send_image_view);
-        sendImageButton.setOnClickListener(v -> onSendClick());
-
-        onMessagePanelState(viewModel.getMessagePanelStateLiveData().getValue());
-        viewModel.getMessagePanelStateLiveData().observe(lifecycleOwner, this::onMessagePanelState);
-
-        messageEditText.setText(viewModel.getMessageLiveData().getValue());
-        messageEditText.addTextChangedListener(new TextChangeListener(viewModel::onMessageChanged));
+    init {
+        attachFileImageButton.setOnClickListener(onClickAttach)
+        sendImageButton.setOnClickListener {
+            onSendClick()
+        }
+        onMessagePanelState(viewModel.messagePanelStateLiveData.value)
+        viewModel.messagePanelStateLiveData.observe(lifecycleOwner) {
+            onMessagePanelState(it)
+        }
+        messageEditText.setText(viewModel.messageLiveData.value)
+        messageEditText.addTextChangedListener(TextChangeListener {
+            viewModel.onMessageChanged(it)
+        })
     }
 
-    private void onMessagePanelState(@Nullable MessagePanelState messagePanelState) {
-        boolean messagePanel = messagePanelState != null
-                && messagePanelState.equals(MessagePanelState.MESSAGE_PANEL);
-
-        rootView.setVisibility(messagePanel
-                ? View.VISIBLE
-                : View.GONE);
-
+    private fun onMessagePanelState(messagePanelState: MessagePanelState?) {
+        val messagePanel = (messagePanelState != null
+                && messagePanelState == MessagePanelState.MESSAGE_PANEL)
+        rootView.visibility = visibleGone(messagePanel)
         if (messagePanel) {
-            messageEditText.setText(viewModel.getMessageLiveData().getValue());
+            messageEditText.setText(viewModel.messageLiveData.value)
         }
     }
 
-    private void onSendClick() {
-        viewModel.onSend(messageEditText.getText().toString().trim());
-        messageEditText.setText("");
+    private fun onSendClick() {
+        viewModel.onSend(messageEditText.text.toString().trim { it <= ' ' })
+        messageEditText.setText("")
     }
 }

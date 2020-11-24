@@ -22,7 +22,7 @@ fun <T> singleIo(lambda: () -> T): Single<T> {
 }
 
 fun <T> singleThis(lambda: () -> T): Single<T> {
-    return Single.create { emitter -> emitter.onSuccess(lambda()) }
+    return Single.create { it.onSuccess(lambda()) }
 }
 
 fun completableThis(lambda: () -> Unit): Completable {

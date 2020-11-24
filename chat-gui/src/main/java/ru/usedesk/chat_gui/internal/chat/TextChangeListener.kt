@@ -1,34 +1,17 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.Editable
+import android.text.TextWatcher
 
-import androidx.annotation.NonNull;
+internal class TextChangeListener(
+        private val onTextChanged: (String) -> Unit
+) : TextWatcher {
 
-class TextChangeListener implements TextWatcher {
+    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-    private final TextChangedAction textChangedAction;
-
-    TextChangeListener(@NonNull TextChangedAction textChangedAction) {
-        this.textChangedAction = textChangedAction;
+    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+        onTextChanged(s.toString())
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        textChangedAction.onTextChanged(s.toString());
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-
-    }
-
-    interface TextChangedAction {
-        void onTextChanged(@NonNull String text);
-    }
+    override fun afterTextChanged(s: Editable) {}
 }

@@ -1,74 +1,50 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.databinding.UsedeskItemChatAttachedFileBinding
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import ru.usedesk.common_gui.internal.inflateItem
+import ru.usedesk.common_gui.internal.setImageCenter
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+class AttachedFilesAdapter(
+        private val chatViewModel: ChatViewModel,
+        recyclerView: RecyclerView
+) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>() {
 
-import java.util.ArrayList;
-import java.util.List;
+    private var files: List<UsedeskFileInfo> = listOf()
 
-import ru.usedesk.chat_gui.R;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-
-import static ru.usedesk.common_gui.internal.ImageUtilKt.setImageCenter;
-
-
-public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder> {
-
-    private final ChatViewModel chatViewModel;
-    private List<UsedeskFileInfo> files = new ArrayList<>();
-
-    public AttachedFilesAdapter(@NonNull ChatViewModel chatViewModel,
-                                @NonNull RecyclerView recyclerView) {
-        this.chatViewModel = chatViewModel;
-
-        recyclerView.setAdapter(this);
+    init {
+        recyclerView.adapter = this
     }
 
-    public void update(@NonNull List<UsedeskFileInfo> attachedFiles) {
-        if (this.files != attachedFiles) {
-            this.files = attachedFiles;
-
-            notifyDataSetChanged();
+    fun update(attachedFiles: List<UsedeskFileInfo>) {
+        if (files !== attachedFiles) {
+            files = attachedFiles
+            notifyDataSetChanged()
         }
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.usedesk_item_chat_attached_file, viewGroup, false));
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
+        return ViewHolder(inflateItem(R.layout.usedesk_item_chat_attached_file, viewGroup))
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.bind(files.get(i));
+    override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
+        viewHolder.bind(files[i])
     }
 
-    @Override
-    public int getItemCount() {
-        return files.size();
-    }
+    override fun getItemCount() = files.size
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView imageViewPreview;
-        private final ImageView imageViewDetach;
+    inner class ViewHolder(
+            private val binding: UsedeskItemChatAttachedFileBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        private ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            imageViewPreview = itemView.findViewById(R.id.iv_preview);
-            imageViewDetach = itemView.findViewById(R.id.iv_detach);
-        }
-
-        private void bind(@NonNull UsedeskFileInfo usedeskFileInfo) {
-            setImageCenter(imageViewPreview, usedeskFileInfo.getUri(), R.drawable.ic_document_black);
-
-            imageViewDetach.setOnClickListener(v -> chatViewModel.detachFile(usedeskFileInfo));
+        fun bind(usedeskFileInfo: UsedeskFileInfo) {
+            setImageCenter(binding.ivPreview, usedeskFileInfo.uri, R.drawable.ic_document_black)
+            binding.ivDetach.setOnClickListener {
+                chatViewModel.detachFile(usedeskFileInfo)
+            }
         }
     }
 }

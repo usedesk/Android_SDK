@@ -1,86 +1,85 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import android.util.Patterns;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.util.Patterns
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
+import ru.usedesk.chat_gui.R
+import ru.usedesk.common_gui.internal.visibleGone
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwner;
+class OfflineFormExpectedAdapter(parentView: View, private val viewModel: ChatViewModel,
+                                 lifecycleOwner: LifecycleOwner) {
+    private val rootView: ViewGroup = parentView.findViewById(R.id.offline_form_layout)
+    private val nameEditText: EditText = parentView.findViewById(R.id.offline_form_name_edit_text)
+    private val emailEditText: EditText = parentView.findViewById(R.id.offline_form_email_edit_text)
+    private val messageEditText: EditText = parentView.findViewById(R.id.offline_form_message_edit_text)
+    private val sendTextView: TextView = parentView.findViewById(R.id.usedesk_offline_form_send_image_view)
 
-import ru.usedesk.chat_gui.R;
+    init {
+        sendTextView.setOnClickListener {
+            onSend()
+        }
 
-public class OfflineFormExpectedAdapter {
-    private final ViewGroup rootView;
-    private final EditText emailEditText;
-    private final EditText nameEditText;
-    private final EditText messageEditText;
-    private final TextView sendTextView;
+        updateFields()
 
-    private final ChatViewModel viewModel;
+        onMessagePanelState(viewModel.messagePanelStateLiveData.value)
 
+        viewModel.messagePanelStateLiveData.observe(lifecycleOwner) {
+            onMessagePanelState(it)
+        }
+        viewModel.messageLiveData.observe(lifecycleOwner) {
+            validateFields()
+        }
+        viewModel.nameLiveData.observe(lifecycleOwner) {
+            validateFields()
+        }
+        viewModel.emailLiveData.observe(lifecycleOwner) {
+            validateFields()
+        }
 
-    public OfflineFormExpectedAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel,
-                                      @NonNull LifecycleOwner lifecycleOwner) {
-        this.viewModel = viewModel;
-
-        rootView = parentView.findViewById(R.id.offline_form_layout);
-        nameEditText = parentView.findViewById(R.id.offline_form_name_edit_text);
-        emailEditText = parentView.findViewById(R.id.offline_form_email_edit_text);
-        messageEditText = parentView.findViewById(R.id.offline_form_message_edit_text);
-        sendTextView = parentView.findViewById(R.id.usedesk_offline_form_send_image_view);
-
-        sendTextView.setOnClickListener(v -> onSend());
-
-        updateFields();
-
-        onMessagePanelState(viewModel.getMessagePanelStateLiveData().getValue());
-        viewModel.getMessagePanelStateLiveData().observe(lifecycleOwner, this::onMessagePanelState);
-        viewModel.getMessageLiveData().observe(lifecycleOwner, message -> validateFields());
-        viewModel.getNameLiveData().observe(lifecycleOwner, name -> validateFields());
-        viewModel.getEmailLiveData().observe(lifecycleOwner, email -> validateFields());
-
-        messageEditText.addTextChangedListener(new TextChangeListener(viewModel::onMessageChanged));
-        nameEditText.addTextChangedListener(new TextChangeListener(viewModel::onNameChanged));
-        emailEditText.addTextChangedListener(new TextChangeListener(viewModel::onEmailChanged));
+        messageEditText.addTextChangedListener(TextChangeListener {
+            viewModel.onMessageChanged(it)
+        })
+        nameEditText.addTextChangedListener(TextChangeListener {
+            viewModel.onNameChanged(it)
+        })
+        emailEditText.addTextChangedListener(TextChangeListener {
+            viewModel.onEmailChanged(it)
+        })
     }
 
-    private void validateFields() {
-        String name = nameEditText.getText().toString();
-        String email = emailEditText.getText().toString();
-        String message = messageEditText.getText().toString();
+    private fun validateFields() {
+        val name = nameEditText.text.toString()
+        val email = emailEditText.text.toString()
+        val message = messageEditText.text.toString()
 
-        boolean nameCorrect = !name.isEmpty();
-        boolean emailCorrect = Patterns.EMAIL_ADDRESS.matcher(email).matches();
-        boolean messageCorrect = !message.isEmpty();
+        val nameCorrect = name.isNotEmpty()
+        val emailCorrect = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val messageCorrect = message.isNotEmpty()
 
-        sendTextView.setEnabled(nameCorrect && emailCorrect && messageCorrect);
+        sendTextView.isEnabled = nameCorrect && emailCorrect && messageCorrect
     }
 
-    private void onMessagePanelState(@Nullable MessagePanelState messagePanelState) {
-        boolean offlineFormExpected = messagePanelState != null
-                && messagePanelState.equals(MessagePanelState.OFFLINE_FORM_EXPECTED);
-
-        rootView.setVisibility(offlineFormExpected
-                ? View.VISIBLE
-                : View.GONE);
-
+    private fun onMessagePanelState(messagePanelState: MessagePanelState?) {
+        val offlineFormExpected = (messagePanelState != null
+                && messagePanelState == MessagePanelState.OFFLINE_FORM_EXPECTED)
+        rootView.visibility = visibleGone(offlineFormExpected)
         if (offlineFormExpected) {
-            updateFields();
+            updateFields()
         }
     }
 
-    private void updateFields() {
-        messageEditText.setText(viewModel.getMessageLiveData().getValue());
-        nameEditText.setText(viewModel.getNameLiveData().getValue());
-        emailEditText.setText(viewModel.getEmailLiveData().getValue());
+    private fun updateFields() {
+        messageEditText.setText(viewModel.messageLiveData.value)
+        nameEditText.setText(viewModel.nameLiveData.value)
+        emailEditText.setText(viewModel.emailLiveData.value)
     }
 
-    private void onSend() {
-        viewModel.onSend(nameEditText.getText().toString(),
-                emailEditText.getText().toString(),
-                messageEditText.getText().toString());
+    private fun onSend() {
+        viewModel.onSend(nameEditText.text.toString(),
+                emailEditText.text.toString(),
+                messageEditText.text.toString())
     }
 }

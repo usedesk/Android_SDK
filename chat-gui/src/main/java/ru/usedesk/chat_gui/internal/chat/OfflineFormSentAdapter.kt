@@ -1,30 +1,27 @@
-package ru.usedesk.chat_gui.internal.chat;
+package ru.usedesk.chat_gui.internal.chat
 
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import ru.usedesk.chat_gui.R
+import ru.usedesk.common_gui.internal.visibleGone
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LifecycleOwner;
+class OfflineFormSentAdapter(parentView: View,
+                             viewModel: ChatViewModel,
+                             lifecycleOwner: LifecycleOwner) {
 
-import ru.usedesk.chat_gui.R;
+    private val rootView: ViewGroup = parentView.findViewById(R.id.offline_form_sent_layout)
 
-public class OfflineFormSentAdapter {
-    private final ViewGroup rootView;
-
-    public OfflineFormSentAdapter(@NonNull View parentView, @NonNull ChatViewModel viewModel,
-                                  @NonNull LifecycleOwner lifecycleOwner) {
-        this.rootView = parentView.findViewById(R.id.offline_form_sent_layout);
-
-        onMessagePanelState(viewModel.getMessagePanelStateLiveData().getValue());
-        viewModel.getMessagePanelStateLiveData().observe(lifecycleOwner, this::onMessagePanelState);
+    private fun onMessagePanelState(messagePanelState: MessagePanelState?) {
+        val messagePanel = messagePanelState != null
+                && messagePanelState == MessagePanelState.OFFLINE_FORM_SENT
+        rootView.visibility = visibleGone(messagePanel)
     }
 
-    private void onMessagePanelState(@Nullable MessagePanelState messagePanelState) {
-        boolean messagePanel = messagePanelState != null
-                && messagePanelState.equals(MessagePanelState.OFFLINE_FORM_SENT);
-        rootView.setVisibility(messagePanel
-                ? View.VISIBLE
-                : View.GONE);
+    init {
+        onMessagePanelState(viewModel.messagePanelStateLiveData.value)
+        viewModel.messagePanelStateLiveData.observe(lifecycleOwner) {
+            onMessagePanelState(it)
+        }
     }
 }

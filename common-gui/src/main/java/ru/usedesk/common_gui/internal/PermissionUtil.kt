@@ -1,90 +1,85 @@
-package ru.usedesk.common_gui.internal;
+package ru.usedesk.common_gui.internal
 
-import android.Manifest;
-import android.view.View;
+import android.Manifest
+import android.view.View
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
+import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
-
-public class PermissionUtil {
-
-    public static void needWriteExternalPermission(View view,
-                                                   int errorTitleId,
-                                                   int errorButtonId,
-                                                   Runnable permissionListener) {
+object PermissionUtil {
+    fun needWriteExternalPermission(view: View,
+                                    errorTitleId: Int,
+                                    errorButtonId: Int,
+                                    onGranted: () -> Unit) {
         needPermission(view,
                 errorTitleId,
                 errorButtonId,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                permissionListener);
+                onGranted)
     }
 
-    public static void needReadExternalPermission(View view,
-                                                  int errorTitleId,
-                                                  int errorButtonId,
-                                                  Runnable permissionListener) {
+    fun needReadExternalPermission(view: View,
+                                   errorTitleId: Int,
+                                   errorButtonId: Int,
+                                   onGranted: () -> Unit) {
         needPermission(view,
                 errorTitleId,
                 errorButtonId,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                permissionListener);
+                onGranted)
     }
 
-    public static void needCameraPermission(View view,
-                                            int errorTitleId,
-                                            int errorButtonId,
-                                            Runnable permissionListener) {
+    fun needCameraPermission(view: View,
+                             errorTitleId: Int,
+                             errorButtonId: Int,
+                             onGranted: () -> Unit) {
         needPermission(view,
                 errorTitleId,
                 errorButtonId,
-                Manifest.permission.CAMERA, permissionListener);
+                Manifest.permission.CAMERA, onGranted)
     }
 
-    public static void needPermission(View view,
-                                      int errorTitleId,
-                                      int errorButtonId,
-                                      String permission,
-                                      Runnable permissionListener) {
-        Dexter.withContext(view.getContext())
+    fun needPermission(view: View,
+                       errorTitleId: Int,
+                       errorButtonId: Int,
+                       permission: String?,
+                       onGranted: () -> Unit) {
+        Dexter.withContext(view.context)
                 .withPermission(permission)
-                .withListener(new SnackbarPermissionListener(view, errorTitleId, errorButtonId, permissionListener))
-                .check();
+                .withListener(SnackbarPermissionListener(view, errorTitleId, errorButtonId, onGranted))
+                .check()
     }
 
-    private static class SnackbarPermissionListener implements PermissionListener {
-        private final PermissionListener permissionListener;
-        private final Runnable onGranted;
+    private class SnackbarPermissionListener(view: View,
+                                             errorTitleId: Int,
+                                             errorButtonId: Int,
+                                             onGranted: () -> Unit) : PermissionListener {
+        private val permissionListener: PermissionListener
+        private val onGranted: () -> Unit
 
-        SnackbarPermissionListener(View view,
-                                   int errorTitleId,
-                                   int errorButtonId,
-                                   Runnable onGranted) {
-            this.permissionListener = SnackbarOnDeniedPermissionListener.Builder
+        init {
+            permissionListener = SnackbarOnDeniedPermissionListener.Builder
                     .with(view, errorTitleId)
-                    .withOpenSettingsButton(errorButtonId).build();
-            this.onGranted = onGranted;
+                    .withOpenSettingsButton(errorButtonId).build()
+            this.onGranted = onGranted
         }
 
-        @Override
-        public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-            permissionListener.onPermissionGranted(permissionGrantedResponse);
-            onGranted.run();
+        override fun onPermissionGranted(permissionGrantedResponse: PermissionGrantedResponse) {
+            permissionListener.onPermissionGranted(permissionGrantedResponse)
+            onGranted()
         }
 
-        @Override
-        public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-            permissionListener.onPermissionDenied(permissionDeniedResponse);
+        override fun onPermissionDenied(permissionDeniedResponse: PermissionDeniedResponse) {
+            permissionListener.onPermissionDenied(permissionDeniedResponse)
         }
 
-        @Override
-        public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest,
-                                                       PermissionToken permissionToken) {
-            permissionListener.onPermissionRationaleShouldBeShown(permissionRequest, permissionToken);
+        override fun onPermissionRationaleShouldBeShown(permissionRequest: PermissionRequest,
+                                                        permissionToken: PermissionToken) {
+            permissionListener.onPermissionRationaleShouldBeShown(permissionRequest, permissionToken)
         }
     }
 }

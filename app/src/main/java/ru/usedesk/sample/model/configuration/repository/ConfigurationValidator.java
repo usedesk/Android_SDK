@@ -26,29 +26,29 @@ public class ConfigurationValidator {
 
     @NonNull
     private String validateEmail(@NonNull String email) {
-        return email.isEmpty()
-                ? resources.getString(R.string.validation_empty_error)
+        return !Validators.isValidEmailNecessary(email)
+                ? resources.getString(R.string.validation_email_error)
                 : "";
     }
 
     @NonNull
     private String validatePhoneNumber(@NonNull String phoneNumber) {
         return !Validators.isValidPhonePhone(phoneNumber)
-                ? resources.getString(R.string.validation_empty_error)
+                ? resources.getString(R.string.validation_phone_error)
                 : "";
     }
 
     @NonNull
     private String validateUrl(@NonNull String url) {
         return !Validators.isValidUrlNecessary(url)
-                ? resources.getString(R.string.validation_empty_error)
+                ? resources.getString(R.string.validation_url_error)
                 : "";
     }
 
     @NonNull
     private String validateOfflineFormUrl(@NonNull String offlineFormUrl) {
         return !Validators.isValidUrl(offlineFormUrl)
-                ? resources.getString(R.string.validation_empty_error)
+                ? resources.getString(R.string.validation_url_error)
                 : "";
     }
 

@@ -5,26 +5,16 @@ import android.util.Patterns;
 import androidx.annotation.Nullable;
 
 public class Validators {
-    public static Boolean isValidEmail(@Nullable String text) {
-        if (text == null) {
-            return true;
-        }
-        return text.isEmpty() || isValidEmailNecessary(text);
-    }
-
     public static Boolean isValidUrl(@Nullable String text) {
-        return text == null
-                || isValidUrlNecessary(text);
+        return text == null || isValidUrlNecessary(text);
     }
 
     public static Boolean isValidUrlNecessary(@Nullable String text) {
-        return text != null
-                && Patterns.WEB_URL.matcher(text).matches();
+        return text != null && Patterns.WEB_URL.matcher(text).matches();
     }
 
     public static Boolean isValidEmailNecessary(@Nullable String text) {
-        return text != null
-                && Patterns.EMAIL_ADDRESS.matcher(text).matches();
+        return text != null && Patterns.EMAIL_ADDRESS.matcher(text).matches();
     }
 
     public static Boolean isValidPhonePhone(@Nullable String text) {

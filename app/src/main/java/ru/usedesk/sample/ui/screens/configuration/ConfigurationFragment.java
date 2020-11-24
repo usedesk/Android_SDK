@@ -29,8 +29,10 @@ public class ConfigurationFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration,
+                container, false);
 
         viewModel = ViewModelProviders.of(this).get(ConfigurationViewModel.class);
 
@@ -57,9 +59,7 @@ public class ConfigurationFragment extends Fragment {
 
     @SuppressWarnings("ConstantConditions")
     private void onGoToSdkEvent(@NonNull Event<Object> event) {
-        event.doEvent(obj -> {
-            ((IOnGoToSdkListener) getActivity()).goToSdk();
-        });
+        event.doEvent(obj -> ((IOnGoToSdkListener) getActivity()).goToSdk());
     }
 
     private void onGoToSdk() {

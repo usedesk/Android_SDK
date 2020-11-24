@@ -1,10 +1,8 @@
-package ru.usedesk.common_sdk.external.entity.exceptions;
+package ru.usedesk.common_sdk.external.entity.exceptions
 
-public class UsedeskDataNotFoundException extends UsedeskException {
-    public UsedeskDataNotFoundException() {
-    }
+class UsedeskDataNotFoundException : UsedeskException {
 
-    public UsedeskDataNotFoundException(String message) {
-        super(message);
-    }
+    constructor()
+
+    constructor(message: String?) : super(message)
 }

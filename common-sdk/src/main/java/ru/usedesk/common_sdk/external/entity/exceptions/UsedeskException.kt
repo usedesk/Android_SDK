@@ -1,15 +1,10 @@
-package ru.usedesk.common_sdk.external.entity.exceptions;
+package ru.usedesk.common_sdk.external.entity.exceptions
 
-public abstract class UsedeskException extends Exception {
-    public UsedeskException() {
-    }
+abstract class UsedeskException : Exception {
 
-    public UsedeskException(String message) {
-        super(message);
-    }
+    constructor()
 
-    @Override
-    public String toString() {
-        return getClass().getName();
-    }
+    constructor(message: String?) : super(message)
+
+    override fun toString() = javaClass.name
 }

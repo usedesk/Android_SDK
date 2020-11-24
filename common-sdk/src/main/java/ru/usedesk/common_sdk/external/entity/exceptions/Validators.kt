@@ -1,44 +1,36 @@
-package ru.usedesk.common_sdk.external.entity.exceptions;
+package ru.usedesk.common_sdk.external.entity.exceptions
 
-import android.util.Patterns;
+import android.util.Patterns
 
-import androidx.annotation.Nullable;
-
-public class Validators {
-    public static Boolean isValidUrl(@Nullable String text) {
-        return text == null || isValidUrlNecessary(text);
+object Validators {
+    fun isValidUrl(text: String?): Boolean {
+        return text == null || isValidUrlNecessary(text)
     }
 
-    public static Boolean isValidUrlNecessary(@Nullable String text) {
-        return text != null && Patterns.WEB_URL.matcher(text).matches();
+    fun isValidUrlNecessary(text: String?): Boolean {
+        return text != null && Patterns.WEB_URL.matcher(text).matches()
     }
 
-    public static Boolean isValidEmailNecessary(@Nullable String text) {
-        return text != null && Patterns.EMAIL_ADDRESS.matcher(text).matches();
+    fun isValidEmailNecessary(text: String?): Boolean {
+        return text != null && Patterns.EMAIL_ADDRESS.matcher(text).matches()
     }
 
-    public static Boolean isValidPhonePhone(@Nullable String text) {
+    fun isValidPhonePhone(text: String?): Boolean {
+        return text == null
+                || text.isEmpty()
+                || text == "+" || isValidPhoneNecessary(text)
+    }
+
+    fun isValidPhoneNecessary(text: String?): Boolean {
         if (text == null) {
-            return true;
+            return false
         }
-        return text.isEmpty()
-                || (text.equals("+")
-                || isValidPhoneNecessary(text));
-    }
-
-    public static Boolean isValidPhoneNecessary(@Nullable String text) {
-        if (text == null) {
-            return false;
-        }
-        String phone = text.replace(" ", "")
+        val phone = text.replace(" ", "")
                 .replace("-", "")
                 .replace("(", "")
-                .replace(")", "");
-
-        return phone.length() >= 7
-                && phone.length() <= 13
-                && Patterns.PHONE
+                .replace(")", "")
+        return phone.length in 7..13 && Patterns.PHONE
                 .matcher(phone)
-                .matches();
+                .matches()
     }
 }

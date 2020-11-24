@@ -1,25 +1,23 @@
-package ru.usedesk.common_sdk.internal.appdi;
+package ru.usedesk.common_sdk.internal.appdi
 
-import androidx.annotation.NonNull;
+import toothpick.Scope
+import toothpick.Toothpick
+import toothpick.config.Module
 
-import toothpick.Scope;
-import toothpick.Toothpick;
-import toothpick.config.Module;
+abstract class InjectBox {
+    private var scope: Scope? = null
 
-public abstract class InjectBox {
-    private Scope scope;
-
-    protected void init(@NonNull Module... modules) {
-        scope = Toothpick.openScope(this);
-        scope.installModules(modules);
-
-        Toothpick.inject(this, scope);
+    protected fun init(vararg modules: Module) {
+        scope = Toothpick.openScope(this).apply {
+            installModules(*modules)
+        }
+        Toothpick.inject(this, scope)
     }
 
-    public void release() {
+    open fun release() {
         if (scope != null) {
-            Toothpick.closeScope(scope);
-            scope = null;
+            Toothpick.closeScope(scope)
+            scope = null
         }
     }
 }

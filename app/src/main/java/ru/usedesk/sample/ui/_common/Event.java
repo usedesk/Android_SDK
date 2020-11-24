@@ -11,7 +11,9 @@ public abstract class Event<DATA> {
         return data;
     }
 
-    abstract public boolean isProcessed();
+    abstract public void doEvent(IDoIt<DATA> doIt);
 
-    abstract public void onProcessed();
+    public interface IDoIt<DATA> {
+        void doId(DATA data);
+    }
 }

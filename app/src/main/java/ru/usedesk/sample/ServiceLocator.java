@@ -9,25 +9,26 @@ import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationValidator;
 
-public class DI {
-    private static DI instance = null;
+public class ServiceLocator {
+    private static ServiceLocator instance = null;
 
     private final ConfigurationRepository configurationRepository;
     private final ConfigurationValidator configurationValidator;
 
-    private DI(@NonNull Context appContext) {
-        configurationRepository = new ConfigurationRepository(appContext.getSharedPreferences(ConfigurationRepository.class.getName(), Context.MODE_PRIVATE));
+    private ServiceLocator(@NonNull Context appContext) {
+        configurationRepository = new ConfigurationRepository(appContext.getSharedPreferences(ConfigurationRepository.class.getName(), Context.MODE_PRIVATE),
+                getWorkScheduler());
         configurationValidator = new ConfigurationValidator(appContext.getResources());
     }
 
     static void init(@NonNull Context appContext) {
         if (instance == null) {
-            instance = new DI(appContext);
+            instance = new ServiceLocator(appContext);
         }
     }
 
     @NonNull
-    public static DI getInstance() {
+    public static ServiceLocator getInstance() {
         return instance;
     }
 
@@ -42,6 +43,6 @@ public class DI {
     }
 
     public Scheduler getWorkScheduler() {
-        return Schedulers.computation();
+        return Schedulers.io();
     }
 }

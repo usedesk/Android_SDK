@@ -1,10 +1,15 @@
 package ru.usedesk.chat_sdk.external.service.notifications.presenter;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType;
@@ -43,5 +48,21 @@ public class UsedeskNotificationsPresenter {
                 this.model == null
                         ? model
                         : reduce(this.model, model));
+    }
+
+    @SuppressLint("CheckResult")
+    public void init() {
+        actionListenerRx.getDisconnectedObservable()
+                .delay(5, TimeUnit.SECONDS)
+                .subscribe(event -> {
+                    connect();
+                });
+
+        connect();
+    }
+
+    private void connect() {
+        UsedeskChatSdk.getInstance().connectRx()
+                .subscribe();
     }
 }

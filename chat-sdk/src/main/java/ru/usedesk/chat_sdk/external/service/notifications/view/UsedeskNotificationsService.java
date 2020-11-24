@@ -80,6 +80,8 @@ public abstract class UsedeskNotificationsService extends Service {
             UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent));
             UsedeskChatSdk.init(this, presenter.getActionListener());
 
+            presenter.init();
+
             messagesDisposable = presenter.getModelObservable()
                     .subscribe(this::renderModel);
         }

@@ -5,6 +5,8 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import ru.usedesk.common_sdk.external.entity.exceptions.Validators;
+
 public class UsedeskChatConfiguration {
     private static final String COMPANY_ID_KEY = "companyIdKey";
     private static final String EMAIL_KEY = "emailKey";
@@ -68,6 +70,13 @@ public class UsedeskChatConfiguration {
                 additionalId);
     }
 
+    private static boolean equals(@Nullable Object obj1, @Nullable Object obj2) {
+        if (obj1 != null && obj2 != null) {
+            return obj1.equals(obj2);
+        }
+        return obj1 == obj2;
+    }
+
     public void serialize(@NonNull Intent intent) {
         intent.putExtra(COMPANY_ID_KEY, companyId);
         intent.putExtra(EMAIL_KEY, email);
@@ -76,6 +85,14 @@ public class UsedeskChatConfiguration {
         intent.putExtra(NAME_KEY, clientName);
         intent.putExtra(PHONE_KEY, clientPhoneNumber);
         intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId);
+    }
+
+    public boolean isValid() {
+        String phoneNumber = clientPhoneNumber != null
+                ? clientPhoneNumber.toString()
+                : null;
+        return Validators.isValidPhonePhone(phoneNumber)
+                && Validators.isValidEmailNecessary(email);
     }
 
     @Override
@@ -132,12 +149,5 @@ public class UsedeskChatConfiguration {
     @Nullable
     public String getInitClientMessage() {
         return initClientMessage;
-    }
-
-    private boolean equals(@Nullable Object obj1, @Nullable Object obj2) {
-        if (obj1 != null && obj2 != null) {
-            return obj1.equals(obj2);
-        }
-        return obj1 == obj2;
     }
 }

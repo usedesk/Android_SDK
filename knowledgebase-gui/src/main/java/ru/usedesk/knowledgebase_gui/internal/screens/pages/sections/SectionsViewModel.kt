@@ -7,6 +7,6 @@ import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskSection
 internal class SectionsViewModel : DataViewModel<List<UsedeskSection>>() {
 
     init {
-        loadData(UsedeskKnowledgeBaseSdk.getInstance().sectionsRx)
+        loadData(UsedeskKnowledgeBaseSdk.getInstance().getSectionsRx())
     }
 }

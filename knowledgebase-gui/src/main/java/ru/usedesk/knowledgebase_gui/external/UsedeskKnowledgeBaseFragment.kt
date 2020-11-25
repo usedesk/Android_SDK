@@ -20,6 +20,7 @@ import ru.usedesk.knowledgebase_gui.internal.screens.pages.categories.Categories
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.categories.IOnCategoryClickListener
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.sections.IOnSectionClickListener
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.sections.SectionsFragment
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk
 
 class UsedeskKnowledgeBaseFragment : Fragment(),
         IOnSectionClickListener,
@@ -43,6 +44,8 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         rootView.findViewById<View>(R.id.btn_support).setOnClickListener {
             onSupportClick()
         }
+
+        UsedeskKnowledgeBaseSdk.init(requireContext())
 
         viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
             showSearchQuery(it)

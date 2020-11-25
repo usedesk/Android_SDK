@@ -9,7 +9,7 @@ import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 
 open class DataViewModel<T> protected constructor() : ViewModel() {
 
-    private val liveData = MutableLiveData<DataOrMessage<T>>()
+    val liveData = MutableLiveData<DataOrMessage<T>>()
     private var disposable: Disposable? = null
 
     init {
@@ -35,7 +35,7 @@ open class DataViewModel<T> protected constructor() : ViewModel() {
         }
     }
 
-    protected fun setData(DataOrMessage: DataOrMessage<T>) {
+    private fun setData(DataOrMessage: DataOrMessage<T>) {
         liveData.value = DataOrMessage
     }
 

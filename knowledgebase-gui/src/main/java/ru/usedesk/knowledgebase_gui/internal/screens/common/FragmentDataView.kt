@@ -56,10 +56,12 @@ abstract class FragmentDataView<DATA>(
         }
     }
 
-    private fun onData(data: DATA) {
-        setDataView(data)
-        textViewMessage.visibility = View.GONE
-        container.visibility = View.VISIBLE
+    private fun onData(data: DATA?) {
+        if (data != null) {
+            setDataView(data)
+            textViewMessage.visibility = View.GONE
+            container.visibility = View.VISIBLE
+        }
     }
 
     private fun onMessage(resourceId: Int) {

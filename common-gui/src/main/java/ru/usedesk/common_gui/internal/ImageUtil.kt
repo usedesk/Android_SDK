@@ -30,10 +30,14 @@ fun setImageCenter(target: ImageView, uri: Uri, errorId: Int) {
             .into(target)
 }
 
-fun setImage(target: ImageView, path: String) {
-    Glide.with(target)
-            .load(path)
-            .into(target)
+fun setImage(target: ImageView, path: String?) {
+    if (path != null) {
+        Glide.with(target)
+                .load(path)
+                .into(target)
+    } else {
+        target.setImageDrawable(null)
+    }
 }
 
 

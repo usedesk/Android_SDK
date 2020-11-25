@@ -1,33 +1,13 @@
-package ru.usedesk.knowledgebase_sdk.external.entity;
+package ru.usedesk.knowledgebase_sdk.external.entity
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
 
-public class UsedeskCategory {
+class UsedeskCategory {
+    val id: Long = 0
+    val title: String? = null
 
-    private long id;
-    private String title;
     @SerializedName("public")
-    private int access;
-    private int order;
-    private UsedeskArticleInfo[] articles;
-
-    public long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getAccess() {
-        return access;
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
-    public UsedeskArticleInfo[] getArticles() {
-        return articles;
-    }
+    val access = 0
+    val order = 0
+    var articles: Array<UsedeskArticleInfo>? = null
 }

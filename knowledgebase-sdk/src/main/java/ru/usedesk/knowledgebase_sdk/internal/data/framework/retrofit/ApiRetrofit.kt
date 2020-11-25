@@ -21,14 +21,14 @@ interface ApiRetrofit {
     fun getArticlesBody(@Path(value = "account_id", encoded = true) accountId: String,
                         @Query("api_token") token: String,
                         @Query("query") searchQuery: String,
-                        @Query("count") count: String,
-                        @Query("collection_ids") collectionIds: String,
-                        @Query("category_ids") categoryIds: String,
-                        @Query("article_ids") articleIds: String,
-                        @Query("page") page: String,
-                        @Query("type") type: UsedeskSearchQuery.Type,
-                        @Query("sort") sort: UsedeskSearchQuery.Sort,
-                        @Query("order") order: Order): Call<String>
+                        @Query("count") count: String?,
+                        @Query("collection_ids") collectionIds: String?,
+                        @Query("category_ids") categoryIds: String?,
+                        @Query("article_ids") articleIds: String?,
+                        @Query("page") page: String?,
+                        @Query("type") type: UsedeskSearchQuery.Type?,
+                        @Query("sort") sort: UsedeskSearchQuery.Sort?,
+                        @Query("order") order: Order?): Call<String>
 
     @GET("{account_id}/articles/{article_id}/add-views")
     fun addViews(@Path(value = "account_id", encoded = true) accountId: String,

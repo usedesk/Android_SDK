@@ -58,33 +58,34 @@ class ApiRepository(
 
     @Throws(UsedeskDataNotFoundException::class)
     private fun getArticleInfo(articleId: Long): UsedeskArticleInfo {
-        for (section in sectionList!!) {
-            for (category in section.categories) for (articleInfo in category.articles) {
-                if (articleInfo.id == articleId) {
-                    return articleInfo
-                }
-            }
-        }
-        throw UsedeskDataNotFoundException()
+        return sectionList?.asSequence()?.mapNotNull { section ->
+            section.categories
+        }?.flatMap { categories ->
+            categories.asSequence()
+        }?.mapNotNull { category ->
+            category.articles
+        }?.flatMap { articles ->
+            articles.asSequence()
+        }?.first { article ->
+            article.id == articleId
+        } ?: throw UsedeskDataNotFoundException("UsedeskArticleInfo with id($articleId)")
     }
 
     @Throws(UsedeskDataNotFoundException::class)
     private fun getArticles(categoryId: Long): Array<UsedeskArticleInfo> {
-        for (section in sectionList!!) {
-            for (category in section.categories) if (category.id == categoryId) {
-                return category.articles
-            }
-        }
-        throw UsedeskDataNotFoundException("UsedeskCategory with id($categoryId)")
+        return sectionList?.mapNotNull { section ->
+            section.categories
+        }?.flatMap { categories ->
+            categories.asSequence()
+        }?.firstOrNull { category ->
+            category.id == categoryId
+        }?.articles ?: throw UsedeskDataNotFoundException("UsedeskCategory with id($categoryId)")
     }
 
     @Throws(UsedeskDataNotFoundException::class)
     private fun getCategories(sectionId: Long): Array<UsedeskCategory> {
-        for (section in sectionList!!) {
-            if (section.id == sectionId) {
-                return section.categories
-            }
-        }
-        throw UsedeskDataNotFoundException("UsedeskSection with id($sectionId)")
+        return sectionList?.first { section ->
+            section.id == sectionId
+        }?.categories ?: throw UsedeskDataNotFoundException("UsedeskSection with id($sectionId)")
     }
 }

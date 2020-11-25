@@ -1,135 +1,108 @@
-package ru.usedesk.knowledgebase_sdk.external.entity;
+package ru.usedesk.knowledgebase_sdk.external.entity
 
-import androidx.annotation.NonNull;
+class UsedeskSearchQuery private constructor(
+        val searchQuery: String
+) {
+    private var collectionIds: List<String>? = null
+    private var categoryIds: List<String>? = null
+    private var articleIds: List<String>? = null
 
-import java.util.List;
+    var count: String? = null
+        private set
+    var page: String? = null
+        private set
+    var type: Type? = null
+        private set
+    var sort: Sort? = null
+        private set
+    var order: Order? = null
+        private set
 
-public class UsedeskSearchQuery {
-    private final String searchQuery;
-    private List<String> collectionIds;
-    private List<String> categoryIds;
-    private List<String> articleIds;
-    private String count;
-    private String page;
-    private Type type;
-    private Sort sort;
-    private Order order;
-
-    private UsedeskSearchQuery(@NonNull String searchQuery) {
-        this.searchQuery = searchQuery;
+    fun getCollectionIds(): String? {
+        return collectionAsString(collectionIds)
     }
 
-    private static String collectionAsString(final List<String> list) {
-        if (list != null && !list.isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-            for (String item : list) {
-                builder.append(item);
-                builder.append(',');
-            }
-            builder.deleteCharAt(builder.length() - 1);
-            return builder.toString();
-        }
-        return null;
+    fun getCategoryIds(): String? {
+        return collectionAsString(categoryIds)
     }
 
-    @NonNull
-    public String getSearchQuery() {
-        return searchQuery;
+    fun getArticleIds(): String? {
+        return collectionAsString(articleIds)
     }
 
-    public String getCollectionIds() {
-        return collectionAsString(collectionIds);
-    }
-
-    public String getCategoryIds() {
-        return collectionAsString(categoryIds);
-    }
-
-    public String getArticleIds() {
-        return collectionAsString(articleIds);
-    }
-
-    public String getCount() {
-        return count;
-    }
-
-    public String getPage() {
-        return page;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public Sort getSort() {
-        return sort;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public enum Type {
+    enum class Type {
         PUBLIC, PRIVATE
     }
 
-    public enum Sort {
+    enum class Sort {
         ID, TITLE, CATEGORY_ID, PUBLIC, CREATED_AT
     }
 
-    public enum Order {
+    enum class Order {
         ASCENDING, DESCENDING
     }
 
-    static public class Builder {
-        private final UsedeskSearchQuery searchQuery;
+    class Builder(searchQuery: String) {
+        private val searchQuery: UsedeskSearchQuery = UsedeskSearchQuery(searchQuery)
 
-        public Builder(@NonNull String searchQuery) {
-            this.searchQuery = new UsedeskSearchQuery(searchQuery);
+        fun setCollectionIds(collectionIds: List<String>?): Builder {
+            searchQuery.collectionIds = collectionIds
+            return this
         }
 
-        public Builder setCollectionIds(List<String> collectionIds) {
-            searchQuery.collectionIds = collectionIds;
-            return this;
+        fun setCategoryIds(categoryIds: List<String>?): Builder {
+            searchQuery.categoryIds = categoryIds
+            return this
         }
 
-        public Builder setCategoryIds(List<String> categoryIds) {
-            searchQuery.categoryIds = categoryIds;
-            return this;
+        fun setArticleIds(articleIds: List<String>?): Builder {
+            searchQuery.articleIds = articleIds
+            return this
         }
 
-        public Builder setArticleIds(List<String> articleIds) {
-            searchQuery.articleIds = articleIds;
-            return this;
+        fun setCount(count: Int): Builder {
+            searchQuery.count = count.toString()
+            return this
         }
 
-        public Builder setCount(int count) {
-            searchQuery.count = Integer.toString(count);
-            return this;
+        fun setPage(page: Int): Builder {
+            searchQuery.page = page.toString()
+            return this
         }
 
-        public Builder setPage(int page) {
-            searchQuery.page = Integer.toString(page);
-            return this;
+        fun setType(type: Type?): Builder {
+            searchQuery.type = type
+            return this
         }
 
-        public Builder setType(Type type) {
-            searchQuery.type = type;
-            return this;
+        fun setSort(sort: Sort?): Builder {
+            searchQuery.sort = sort
+            return this
         }
 
-        public Builder setSort(Sort sort) {
-            searchQuery.sort = sort;
-            return this;
+        fun setOrder(order: Order?): Builder {
+            searchQuery.order = order
+            return this
         }
 
-        public Builder setOrder(Order order) {
-            searchQuery.order = order;
-            return this;
+        fun build(): UsedeskSearchQuery {
+            return searchQuery
         }
 
-        public UsedeskSearchQuery build() {
-            return searchQuery;
+    }
+
+    companion object {
+        private fun collectionAsString(list: List<String>?): String? {
+            if (list != null && list.isNotEmpty()) {
+                val builder = StringBuilder()
+                for (item in list) {
+                    builder.append(item)
+                    builder.append(',')
+                }
+                builder.deleteCharAt(builder.length - 1)
+                return builder.toString()
+            }
+            return null
         }
     }
 }

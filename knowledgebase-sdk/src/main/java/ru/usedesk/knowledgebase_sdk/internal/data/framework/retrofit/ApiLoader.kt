@@ -34,11 +34,17 @@ class ApiLoader constructor(
     override fun getArticles(accountId: String, token: String,
                              searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
         return executeRequest(ArticlesBodyPage::class.java,
-                apiRetrofit.getArticlesBody(accountId, token,
-                        searchQuery.searchQuery, searchQuery.count,
-                        searchQuery.collectionIds, searchQuery.categoryIds,
-                        searchQuery.articleIds, searchQuery.page, searchQuery.type,
-                        searchQuery.sort, searchQuery.order))
+                apiRetrofit.getArticlesBody(accountId,
+                        token,
+                        searchQuery.searchQuery,
+                        searchQuery.count,
+                        searchQuery.getCollectionIds(),
+                        searchQuery.getCategoryIds(),
+                        searchQuery.getArticleIds(),
+                        searchQuery.page,
+                        searchQuery.type,
+                        searchQuery.sort,
+                        searchQuery.order))
                 .articles?.toList()
                 ?: listOf()
     }

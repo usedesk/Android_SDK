@@ -1,5 +1,5 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.pages.sections;
+package ru.usedesk.knowledgebase_gui.internal.screens.pages.sections
 
-public interface IOnSectionClickListener {
-    void onSectionClick(long sectionId);
+interface IOnSectionClickListener {
+    fun onSectionClick(sectionId: Long)
 }

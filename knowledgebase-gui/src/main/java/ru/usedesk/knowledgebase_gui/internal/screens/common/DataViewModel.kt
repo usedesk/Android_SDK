@@ -1,48 +1,49 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.common;
+package ru.usedesk.knowledgebase_gui.internal.screens.common
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import io.reactivex.Single
+import io.reactivex.disposables.Disposable
+import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 
-import io.reactivex.Single;
-import io.reactivex.disposables.Disposable;
-import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage;
+open class DataViewModel<T> protected constructor() : ViewModel() {
 
-public class DataViewModel<T> extends ViewModel {
+    private val liveData = MutableLiveData<DataOrMessage<T>>()
+    private var disposable: Disposable? = null
 
-    private MutableLiveData<DataOrMessage<T>> liveData = new MutableLiveData<>();
-    private Disposable disposable;
-
-    protected DataViewModel() {
-        setData(new DataOrMessage<>(DataOrMessage.Message.LOADING));
+    init {
+        setData(DataOrMessage(DataOrMessage.Message.LOADING))
     }
 
-    public LiveData<DataOrMessage<T>> getLiveData() {
-        return liveData;
+    fun getLiveData(): LiveData<DataOrMessage<T>> {
+        return liveData
     }
 
-    protected void loadData(Single<T> single) {
-        disposable = single.subscribe(this::onData, this::onThrowable);
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
+    protected fun loadData(single: Single<T>) {
+        disposable = single.subscribe({
+            onData(it)
+        }) {
+            onThrowable(it)
         }
     }
 
-    protected void setData(DataOrMessage<T> DataOrMessage) {
-        liveData.setValue(DataOrMessage);
+    override fun onCleared() {
+        super.onCleared()
+        if (disposable?.isDisposed != true) {
+            disposable?.dispose()
+        }
     }
 
-    protected void onData(T data) {
-        setData(new DataOrMessage<>(data));
+    protected fun setData(DataOrMessage: DataOrMessage<T>) {
+        liveData.value = DataOrMessage
     }
 
-    private void onThrowable(Throwable throwable) {
-        setData(new DataOrMessage<>(DataOrMessage.Message.ERROR));
+    protected open fun onData(data: T) {
+        setData(DataOrMessage(data))
+    }
+
+    private fun onThrowable(throwable: Throwable) {
+        setData(DataOrMessage(DataOrMessage.Message.ERROR))
     }
 }

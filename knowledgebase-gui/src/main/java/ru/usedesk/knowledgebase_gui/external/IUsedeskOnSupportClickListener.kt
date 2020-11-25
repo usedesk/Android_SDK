@@ -1,5 +1,5 @@
-package ru.usedesk.knowledgebase_gui.external;
+package ru.usedesk.knowledgebase_gui.external
 
-public interface IUsedeskOnSupportClickListener {
-    void onSupportClick();
+interface IUsedeskOnSupportClickListener {
+    fun onSupportClick()
 }

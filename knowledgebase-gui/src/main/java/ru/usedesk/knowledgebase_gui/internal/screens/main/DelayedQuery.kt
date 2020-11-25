@@ -1,27 +1,28 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.main;
+package ru.usedesk.knowledgebase_gui.internal.screens.main
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MutableLiveData
+import io.reactivex.disposables.Disposable
+import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 
-import java.util.concurrent.TimeUnit;
+internal class DelayedQuery(
+        searchQueryLiveData: MutableLiveData<String>,
+        delayMilliseconds: Int
+) {
 
-import io.reactivex.disposables.Disposable;
-import io.reactivex.subjects.PublishSubject;
-
-class DelayedQuery {
-    private final PublishSubject<String> queryPublishSubject = PublishSubject.create();
-    private final Disposable disposable;
-
-    DelayedQuery(@NonNull final MutableLiveData<String> searchQueryLiveData, int delayMilliseconds) {
-        disposable = queryPublishSubject.debounce(delayMilliseconds, TimeUnit.MILLISECONDS)
-                .subscribe(searchQueryLiveData::postValue);
+    private val queryPublishSubject = PublishSubject.create<String>()
+    private val disposable: Disposable = queryPublishSubject.debounce(
+            delayMilliseconds.toLong(),
+            TimeUnit.MILLISECONDS
+    ).subscribe {
+        searchQueryLiveData.postValue(it)
     }
 
-    void dispose() {
-        disposable.dispose();
+    fun dispose() {
+        disposable.dispose()
     }
 
-    void onNext(String query) {
-        queryPublishSubject.onNext(query);
+    fun onNext(query: String) {
+        queryPublishSubject.onNext(query)
     }
 }

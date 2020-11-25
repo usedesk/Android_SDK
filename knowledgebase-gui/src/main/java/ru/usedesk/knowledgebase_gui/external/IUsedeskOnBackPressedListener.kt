@@ -1,5 +1,5 @@
-package ru.usedesk.knowledgebase_gui.external;
+package ru.usedesk.knowledgebase_gui.external
 
-public interface IUsedeskOnBackPressedListener {
-    boolean onBackPressed();
+interface IUsedeskOnBackPressedListener {
+    fun onBackPressed(): Boolean
 }

@@ -1,27 +1,21 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.entity;
+package ru.usedesk.knowledgebase_gui.internal.screens.entity
 
-public class DataOrMessage<T> {
-    private T data;
-    private Message messageState;
+class DataOrMessage<T> {
+    var data: T? = null
+        private set
+    var message: Message
+        private set
 
-    public DataOrMessage(T data) {
-        this.data = data;
-        this.messageState = Message.NONE;
+    constructor(data: T) {
+        this.data = data
+        message = Message.NONE
     }
 
-    public DataOrMessage(Message messageState) {
-        this.messageState = messageState;
+    constructor(messageState: Message) {
+        message = messageState
     }
 
-    public T getData() {
-        return data;
-    }
-
-    public Message getMessage() {
-        return messageState;
-    }
-
-    public enum Message {
+    enum class Message {
         LOADING, ERROR, NONE
     }
 }

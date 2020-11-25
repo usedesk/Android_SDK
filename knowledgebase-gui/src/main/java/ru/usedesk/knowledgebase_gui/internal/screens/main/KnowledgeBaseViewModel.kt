@@ -1,40 +1,25 @@
-package ru.usedesk.knowledgebase_gui.internal.screens.main;
+package ru.usedesk.knowledgebase_gui.internal.screens.main
 
-import android.content.Context;
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk.release
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+class KnowledgeBaseViewModel : ViewModel() {
 
-import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
+    val searchQueryLiveData = MutableLiveData<String>()
+    private val delayedQuery: DelayedQuery = DelayedQuery(searchQueryLiveData, SEARCH_DELAY)
 
-public class KnowledgeBaseViewModel extends ViewModel {
-
-    private static final int SEARCH_DELAY = 500;
-
-    private MutableLiveData<String> searchQueryLiveData = new MutableLiveData<>();
-    private DelayedQuery delayedQuery;
-
-    private KnowledgeBaseViewModel(@NonNull Context context) {
-        UsedeskKnowledgeBaseSdk.init(context);
-
-        delayedQuery = new DelayedQuery(searchQueryLiveData, SEARCH_DELAY);
+    override fun onCleared() {
+        super.onCleared()
+        delayedQuery.dispose()
+        release()
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        delayedQuery.dispose();
-        UsedeskKnowledgeBaseSdk.release();
+    fun onSearchQuery(query: String) {
+        delayedQuery.onNext(query)
     }
 
-    public void onSearchQuery(@NonNull String query) {
-        delayedQuery.onNext(query);
-    }
-
-    public LiveData<String> getSearchQueryLiveData() {
-        return searchQueryLiveData;
+    companion object {
+        private const val SEARCH_DELAY = 500
     }
 }

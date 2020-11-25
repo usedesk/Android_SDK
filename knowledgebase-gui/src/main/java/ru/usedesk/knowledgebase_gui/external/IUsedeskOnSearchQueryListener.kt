@@ -1,5 +1,5 @@
-package ru.usedesk.knowledgebase_gui.external;
+package ru.usedesk.knowledgebase_gui.external
 
-public interface IUsedeskOnSearchQueryListener {
-    void onSearchQuery(String s);
+interface IUsedeskOnSearchQueryListener {
+    fun onSearchQuery(query: String)
 }

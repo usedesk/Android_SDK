@@ -9,7 +9,7 @@ import toothpick.InjectConstructor
 @InjectConstructor
 class ConfigurationLoader(
         context: Context
-) : DataLoader<UsedeskChatConfiguration>() {
+) : DataLoader<UsedeskChatConfiguration>(), IConfigurationLoader {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
             PREF_NAME,

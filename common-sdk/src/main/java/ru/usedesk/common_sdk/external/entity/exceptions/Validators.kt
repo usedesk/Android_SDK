@@ -3,24 +3,29 @@ package ru.usedesk.common_sdk.external.entity.exceptions
 import android.util.Patterns
 
 object Validators {
+    @JvmStatic
     fun isValidUrl(text: String?): Boolean {
         return text == null || isValidUrlNecessary(text)
     }
 
+    @JvmStatic
     fun isValidUrlNecessary(text: String?): Boolean {
         return text != null && Patterns.WEB_URL.matcher(text).matches()
     }
 
+    @JvmStatic
     fun isValidEmailNecessary(text: String?): Boolean {
         return text != null && Patterns.EMAIL_ADDRESS.matcher(text).matches()
     }
 
+    @JvmStatic
     fun isValidPhonePhone(text: String?): Boolean {
         return text == null
                 || text.isEmpty()
                 || text == "+" || isValidPhoneNecessary(text)
     }
 
+    @JvmStatic
     fun isValidPhoneNecessary(text: String?): Boolean {
         if (text == null) {
             return false

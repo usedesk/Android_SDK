@@ -1,204 +1,175 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket;
+package ru.usedesk.chat_sdk.internal.data.framework.socket
 
-import androidx.annotation.NonNull;
+import com.google.gson.Gson
+import com.google.gson.JsonParseException
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
+import org.json.JSONException
+import org.json.JSONObject
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.*
+import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException
+import toothpick.InjectConstructor
+import java.net.HttpURLConnection
+import java.net.URISyntaxException
+import java.util.*
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
+@InjectConstructor
+class SocketApi(
+        private val gson: Gson
+) {
 
-import org.json.JSONException;
-import org.json.JSONObject;
+    private val emitterListeners: MutableMap<String, Emitter.Listener> = HashMap(5)
+    private var socket: Socket? = null
+    private var actionListener: IUsedeskActionListener? = null
+    private var onMessageListener: OnMessageListener? = null
 
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
+    private val disconnectEmitterListener = Emitter.Listener {
+        onDisconnected()
+    }
 
-import javax.inject.Inject;
+    private val connectErrorEmitterListener = Emitter.Listener {
+        onConnectError()
+    }
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.SimpleMessage;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.BaseResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.ErrorResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitChatResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.NewMessageResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.PayloadMessageResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SendFeedbackResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SetEmailResponse;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.SimpleMessageResponse;
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
+    private val connectEmitterListener = Emitter.Listener {
+        onConnect()
+    }
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.BAD_REQUEST_ERROR;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.DISCONNECTED;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.FORBIDDEN_ERROR;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.INTERNAL_SERVER_ERROR;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.IO_ERROR;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.JSON_ERROR;
-import static ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR;
+    private val baseEventEmitterListener = Emitter.Listener {
+        onResponse(it[0].toString())
+    }
 
-public class SocketApi {
-    private static final String EVENT_SERVER_ACTION = "dispatch";
+    private fun onDisconnected() {
+        actionListener?.onDisconnected()
+    }
 
-    private final Map<String, Emitter.Listener> emitterListeners = new HashMap<>(5);
+    private fun onConnectError() {
+        actionListener?.onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))
+    }
 
-    private final Gson gson;
+    private fun onConnect() {
+        onMessageListener?.onInitChat()
+    }
 
-    private Socket socket;
-
-    private IUsedeskActionListener actionListener;
-
-    private final Emitter.Listener disconnectEmitterListener = args -> actionListener.onDisconnected();
-    private final Emitter.Listener connectErrorEmitterListener = args ->
-            actionListener.onException(new UsedeskSocketException(DISCONNECTED));
-    private OnMessageListener onMessageListener;
-    private final Emitter.Listener connectEmitterListener = args -> onMessageListener.onInitChat();
-    private final Emitter.Listener baseEventEmitterListener = args -> {
-        String rawResponse = args[0].toString();
-
-        BaseResponse response = process(rawResponse);
-
+    private fun onResponse(rawResponse: String) {
+        val response = process(rawResponse)
         if (response != null) {
-            switch (response.getType()) {
-                case ErrorResponse.TYPE:
-                    ErrorResponse errorResponse = (ErrorResponse) response;
-                    UsedeskSocketException usedeskSocketException;
-                    switch (errorResponse.getCode()) {
-                        case HTTP_FORBIDDEN:
-                            onMessageListener.onTokenError();
-                            usedeskSocketException = new UsedeskSocketException(FORBIDDEN_ERROR, errorResponse.getMessage());
-                            break;
-                        case HTTP_BAD_REQUEST:
-                            usedeskSocketException = new UsedeskSocketException(BAD_REQUEST_ERROR, errorResponse.getMessage());
-                            break;
-                        case HTTP_INTERNAL_ERROR:
-                            usedeskSocketException = new UsedeskSocketException(INTERNAL_SERVER_ERROR, errorResponse.getMessage());
-                            break;
-                        default:
-                            usedeskSocketException = new UsedeskSocketException(UNKNOWN_FROM_SERVER_ERROR, errorResponse.getMessage());
-                            break;
+            when (response.type) {
+                ErrorResponse.TYPE -> {
+                    val errorResponse = response as ErrorResponse
+                    val usedeskSocketException: UsedeskSocketException
+                    usedeskSocketException = when (errorResponse.code) {
+                        HttpURLConnection.HTTP_FORBIDDEN -> {
+                            onMessageListener?.onTokenError()
+                            UsedeskSocketException(UsedeskSocketException.Error.FORBIDDEN_ERROR, errorResponse.message)
+                        }
+                        HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(UsedeskSocketException.Error.BAD_REQUEST_ERROR, errorResponse.message)
+                        HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(UsedeskSocketException.Error.INTERNAL_SERVER_ERROR, errorResponse.message)
+                        else -> UsedeskSocketException(UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR, errorResponse.message)
                     }
-                    actionListener.onException(usedeskSocketException);
-                    break;
-                case InitChatResponse.TYPE:
-                    InitChatResponse initChatResponse = (InitChatResponse) response;
-                    onMessageListener.onInit(initChatResponse.getToken(), initChatResponse.getSetup());
-                    break;
-                case SetEmailResponse.TYPE:
-                    break;
-                case NewMessageResponse.TYPE:
-                    NewMessageResponse newMessageResponse = (NewMessageResponse) response;
-                    onMessageListener.onNew(newMessageResponse.getMessage());
-                    break;
-                case SendFeedbackResponse.TYPE:
-                    onMessageListener.onFeedback();
-                    break;
+                    actionListener?.onException(usedeskSocketException)
+                }
+                InitChatResponse.TYPE -> {
+                    val initChatResponse = response as InitChatResponse
+                    onMessageListener?.onInit(initChatResponse.token, initChatResponse.setup)
+                }
+                SetEmailResponse.TYPE -> {
+                }
+                NewMessageResponse.TYPE -> {
+                    val newMessageResponse = response as NewMessageResponse
+                    onMessageListener?.onNew(newMessageResponse.message)
+                }
+                SendFeedbackResponse.TYPE -> onMessageListener?.onFeedback()
             }
         }
-    };
-
-    @Inject
-    SocketApi(Gson gson) {
-        this.gson = gson;
     }
 
-    public boolean isConnected() {
-        return socket.connected();
+    fun isConnected(): Boolean {
+        return socket?.connected() == true
     }
 
-    public void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener,
-                        @NonNull OnMessageListener onMessageListener) throws UsedeskException {
+    @Throws(UsedeskException::class)
+    fun connect(url: String, actionListener: IUsedeskActionListener,
+                onMessageListener: OnMessageListener) {
         if (socket != null) {
-            return;
+            return
         }
-        try {
-            socket = IO.socket(url);
-        } catch (URISyntaxException e) {
-            throw new UsedeskSocketException(IO_ERROR, e.getMessage());
+        socket = try {
+            IO.socket(url)
+        } catch (e: URISyntaxException) {
+            throw UsedeskSocketException(UsedeskSocketException.Error.IO_ERROR, e.message)
         }
+        this.actionListener = actionListener
+        this.onMessageListener = onMessageListener
 
-        this.actionListener = actionListener;
-        this.onMessageListener = onMessageListener;
+        emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
+        emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
+        emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
+        emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
+        emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
 
-        emitterListeners.put(EVENT_SERVER_ACTION, baseEventEmitterListener);
-        emitterListeners.put(Socket.EVENT_CONNECT_ERROR, connectErrorEmitterListener);
-        emitterListeners.put(Socket.EVENT_CONNECT_TIMEOUT, connectErrorEmitterListener);
-        emitterListeners.put(Socket.EVENT_DISCONNECT, disconnectEmitterListener);
-        emitterListeners.put(Socket.EVENT_CONNECT, connectEmitterListener);
-
-        for (String event : emitterListeners.keySet()) {
-            socket.on(event, emitterListeners.get(event));
+        for (event in emitterListeners.keys) {
+            socket?.on(event, emitterListeners[event])
         }
-
-        socket.connect();
+        socket?.connect()
     }
 
-    public void disconnect() {
-        if (socket != null) {
-            for (String event : emitterListeners.keySet()) {
-                socket.off(event, emitterListeners.get(event));
-            }
-            emitterListeners.clear();
-            socket.disconnect();
+    fun disconnect() {
+        for (event in emitterListeners.keys) {
+            socket?.off(event, emitterListeners[event])
         }
+        emitterListeners.clear()
+        socket?.disconnect()
     }
 
-    public void sendRequest(@NonNull BaseRequest baseRequest) throws UsedeskSocketException {
-        if (socket == null) {
-            return;
-        }
-
+    @Throws(UsedeskSocketException::class)
+    fun sendRequest(baseRequest: BaseRequest) {
         try {
-            JSONObject jsonObject = new JSONObject(gson.toJson(baseRequest));
-
-            socket.emit(EVENT_SERVER_ACTION, jsonObject);
-        } catch (JSONException e) {
-            throw new UsedeskSocketException(JSON_ERROR, e.getMessage());
+            val jsonObject = JSONObject(gson.toJson(baseRequest))
+            socket?.emit(EVENT_SERVER_ACTION, jsonObject)
+        } catch (e: JSONException) {
+            throw UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message)
         }
     }
 
-    private BaseResponse process(@NonNull String rawResponse) {
+    private fun process(rawResponse: String): BaseResponse? {
         try {
-            BaseRequest baseRequest = gson.fromJson(rawResponse, BaseRequest.class);
-
-            if (baseRequest != null && baseRequest.getType() != null) {
-                switch (baseRequest.getType()) {
-                    case InitChatResponse.TYPE:
-                        return gson.fromJson(rawResponse, InitChatResponse.class);
-                    case ErrorResponse.TYPE:
-                        return gson.fromJson(rawResponse, ErrorResponse.class);
-                    case NewMessageResponse.TYPE:
-                        return new NewMessageResponse(getMessage(rawResponse));
-                    case SendFeedbackResponse.TYPE:
-                        return gson.fromJson(rawResponse, SendFeedbackResponse.class);
-                    case SetEmailResponse.TYPE:
-                        return gson.fromJson(rawResponse, SetEmailResponse.class);
+            val baseRequest = gson.fromJson(rawResponse, BaseRequest::class.java)
+            if (baseRequest?.type != null) {
+                when (baseRequest.type) {
+                    InitChatResponse.TYPE -> return gson.fromJson(rawResponse, InitChatResponse::class.java)
+                    ErrorResponse.TYPE -> return gson.fromJson(rawResponse, ErrorResponse::class.java)
+                    NewMessageResponse.TYPE -> return NewMessageResponse(getMessage(rawResponse))
+                    SendFeedbackResponse.TYPE -> return gson.fromJson(rawResponse, SendFeedbackResponse::class.java)
+                    SetEmailResponse.TYPE -> return gson.fromJson(rawResponse, SetEmailResponse::class.java)
                 }
             }
-        } catch (JsonParseException e) {
-            actionListener.onException(new UsedeskSocketException(JSON_ERROR, e.getMessage()));
+        } catch (e: JsonParseException) {
+            actionListener?.onException(UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message))
         }
-
-        return null;
+        return null
     }
 
-    private UsedeskMessage getMessage(@NonNull String rawResponse) throws JsonParseException {
-        try {
-            PayloadMessageResponse payloadMessageResponse = gson.fromJson(rawResponse, PayloadMessageResponse.class);
-            PayloadMessage payloadMessage = payloadMessageResponse.getMessage();
-            return new UsedeskMessage(payloadMessage, payloadMessage.getPayload(), null);
-        } catch (JsonParseException e) {
-            SimpleMessageResponse simpleMessageResponse = gson.fromJson(rawResponse, SimpleMessageResponse.class);
-            SimpleMessage simpleMessage = simpleMessageResponse.getMessage();
-            return new UsedeskMessage(simpleMessage, null, simpleMessage.getPayload());
+    @Throws(JsonParseException::class)
+    private fun getMessage(rawResponse: String): UsedeskMessage {
+        return try {
+            val payloadMessageResponse = gson.fromJson(rawResponse, PayloadMessageResponse::class.java)
+            val payloadMessage = payloadMessageResponse.message
+            UsedeskMessage(payloadMessage, payloadMessage.payload, null)
+        } catch (e: JsonParseException) {
+            val simpleMessageResponse = gson.fromJson(rawResponse, SimpleMessageResponse::class.java)
+            val simpleMessage = simpleMessageResponse.message
+            UsedeskMessage(simpleMessage, null, simpleMessage.payload)
         }
+    }
+
+    companion object {
+        private const val EVENT_SERVER_ACTION = "dispatch"
     }
 }

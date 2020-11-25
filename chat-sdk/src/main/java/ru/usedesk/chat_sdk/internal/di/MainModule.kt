@@ -13,13 +13,14 @@ import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotif
 import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.HttpApiFactory
 import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.IHttpApiFactory
 import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader
+import ru.usedesk.chat_sdk.internal.data.framework.configuration.IConfigurationLoader
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.FileInfoLoader
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.HttpApiLoader
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader
-import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader
-import ru.usedesk.chat_sdk.internal.data.framework.loader.TokenLoader
 import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi
+import ru.usedesk.chat_sdk.internal.data.framework.token.ITokenLoader
+import ru.usedesk.chat_sdk.internal.data.framework.token.TokenLoader
 import ru.usedesk.chat_sdk.internal.data.repository.api.ApiRepository
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
@@ -37,22 +38,25 @@ internal class MainModule(
         bind(Context::class.java).toInstance(appContext)
         bind(UsedeskChatConfiguration::class.java).toInstance(usedeskChatConfiguration)
         bind(IUsedeskActionListener::class.java).toInstance(actionListener)
-        bind(IUsedeskChat::class.java).to(ChatInteractor::class.java).singleton()
-        bind(IUserInfoRepository::class.java).to(UserInfoRepository::class.java).singleton()
-        bind(IApiRepository::class.java).to(ApiRepository::class.java).singleton()
-        bind(DataLoader::class.java).withName("configuration").to(ConfigurationLoader::class.java).singleton()
-        bind(DataLoader::class.java).withName("token").to(TokenLoader::class.java).singleton()
-        bind(SocketApi::class.java).to(SocketApi::class.java).singleton()//TODO: начиная отсюда преобразовывать дальше в KT и InjectConstructor пихать
-        bind(IFileInfoLoader::class.java).to(FileInfoLoader::class.java).singleton()
-        bind(IHttpApiLoader::class.java).to(HttpApiLoader::class.java).singleton()
-        bind(IHttpApiFactory::class.java).to(HttpApiFactory::class.java).singleton()
-        bind(Gson::class.java).toInstance(gson())
         bind(Scheduler::class.java).withName("work").toInstance(Schedulers.io())
         bind(Scheduler::class.java).withName("main").toInstance(AndroidSchedulers.mainThread())
+        bind(Gson::class.java).toInstance(gson())
+
+        bind(SocketApi::class.java).to(SocketApi::class.java).singleton()
+        bind(IConfigurationLoader::class.java).to(ConfigurationLoader::class.java).singleton()
+        bind(ITokenLoader::class.java).to(TokenLoader::class.java).singleton()
+        bind(IFileInfoLoader::class.java).to(FileInfoLoader::class.java).singleton()
+        bind(IHttpApiLoader::class.java).to(HttpApiLoader::class.java).singleton()
+
+        bind(IUserInfoRepository::class.java).to(UserInfoRepository::class.java).singleton()
+        bind(IApiRepository::class.java).to(ApiRepository::class.java).singleton()
+        bind(IHttpApiFactory::class.java).to(HttpApiFactory::class.java).singleton()
+
+        bind(IUsedeskChat::class.java).to(ChatInteractor::class.java).singleton()
 
         //tmp for service
         bind(UsedeskNotificationsPresenter::class.java).to(UsedeskNotificationsPresenter::class.java).singleton()
-        bind(UsedeskActionListenerRx::class.java).to(UsedeskActionListenerRx::class.java).singleton()
+        bind(UsedeskActionListenerRx::class.java).toInstance(UsedeskActionListenerRx())
     }
 
     private fun gson(): Gson {

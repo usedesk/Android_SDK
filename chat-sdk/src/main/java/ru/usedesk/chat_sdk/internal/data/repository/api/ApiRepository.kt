@@ -20,7 +20,7 @@ class ApiRepository(
         private val fileInfoLoader: IFileInfoLoader
 ) : IApiRepository {
 
-    private fun isConnected() = socketApi.isConnected
+    private fun isConnected() = socketApi.isConnected()
 
     @Throws(UsedeskException::class)
     override fun connect(url: String, actionListener: IUsedeskActionListener,

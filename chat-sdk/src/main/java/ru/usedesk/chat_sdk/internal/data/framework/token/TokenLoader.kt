@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.internal.data.framework.loader
+package ru.usedesk.chat_sdk.internal.data.framework.token
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -8,13 +8,12 @@ import toothpick.InjectConstructor
 @InjectConstructor
 class TokenLoader(
         context: Context
-) : DataLoader<String>() {
+) : DataLoader<String>(), ITokenLoader {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
             PREF_NAME,
             Context.MODE_PRIVATE
     )
-
 
     override fun loadData(): String? {
         return sharedPreferences.getString(KEY_TOKEN, null)

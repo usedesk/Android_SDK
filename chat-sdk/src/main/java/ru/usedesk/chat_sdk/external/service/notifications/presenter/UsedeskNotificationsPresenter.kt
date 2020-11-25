@@ -1,67 +1,52 @@
-package ru.usedesk.chat_sdk.external.service.notifications.presenter;
+package ru.usedesk.chat_sdk.external.service.notifications.presenter
 
-import android.annotation.SuppressLint;
+import android.annotation.SuppressLint
+import io.reactivex.Observable
+import ru.usedesk.chat_sdk.external.UsedeskChatSdk.getInstance
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType
+import toothpick.InjectConstructor
+import java.util.concurrent.TimeUnit
 
-import androidx.annotation.NonNull;
+@InjectConstructor
+class UsedeskNotificationsPresenter(
+        private val actionListenerRx: UsedeskActionListenerRx
+) {
+    private var model: UsedeskNotificationsModel? = null
 
-import java.util.concurrent.TimeUnit;
+    val actionListener: IUsedeskActionListener = actionListenerRx
 
-import javax.inject.Inject;
-
-import io.reactivex.Observable;
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType;
-
-public class UsedeskNotificationsPresenter {
-
-    private final UsedeskActionListenerRx actionListenerRx;
-    private UsedeskNotificationsModel model;
-
-    @Inject
-    public UsedeskNotificationsPresenter() {
-        this.actionListenerRx = new UsedeskActionListenerRx();
+    private val newModelObservable: Observable<UsedeskNotificationsModel> = actionListenerRx.newMessageObservable.filter {
+        it.type == UsedeskMessageType.OPERATOR_TO_CLIENT
+    }.map {
+        UsedeskNotificationsModel(it)
     }
 
-    @NonNull
-    public IUsedeskActionListener getActionListener() {
-        return actionListenerRx;
+    val modelObservable = newModelObservable.map {
+        val model = this.model
+        this.model = if (model == null) {
+            it
+        } else {
+            reduce(model, it)
+        }
+        model
     }
 
-    @NonNull
-    private Observable<UsedeskNotificationsModel> getNewModelObservable() {
-        return actionListenerRx.getNewMessageObservable()
-                .filter(message -> message.getType() == UsedeskMessageType.OPERATOR_TO_CLIENT)
-                .map(UsedeskNotificationsModel::new);
+    private fun reduce(previousModel: UsedeskNotificationsModel,
+                       newModel: UsedeskNotificationsModel): UsedeskNotificationsModel {
+        return UsedeskNotificationsModel(previousModel.message, previousModel.count + 1)
     }
 
-    @NonNull
-    private UsedeskNotificationsModel reduce(@NonNull UsedeskNotificationsModel previousModel,
-                                             @NonNull UsedeskNotificationsModel newModel) {
-        return new UsedeskNotificationsModel(previousModel.getMessage(), previousModel.getCount() + 1);
-    }
-
-    @NonNull
-    public Observable<UsedeskNotificationsModel> getModelObservable() {
-        return getNewModelObservable().map(model -> this.model =
-                this.model == null
-                        ? model
-                        : reduce(this.model, model));
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @SuppressLint("CheckResult")
-    public void init() {
-        actionListenerRx.getDisconnectedObservable()
-                .delay(5, TimeUnit.SECONDS)
-                .subscribe(event -> connect());
-
-        connect();
+    fun init() {
+        actionListenerRx.disconnectedObservable.delay(5, TimeUnit.SECONDS).subscribe {
+            connect()
+        }
+        connect()
     }
 
-    private void connect() {
-        UsedeskChatSdk.getInstance().connectRx()
-                .subscribe();
+    private fun connect() {
+        getInstance().connectRx().subscribe()
     }
 }

@@ -1,22 +1,20 @@
 package ru.usedesk.chat_sdk.internal.data.repository.configuration
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader
+import ru.usedesk.chat_sdk.internal.data.framework.configuration.IConfigurationLoader
+import ru.usedesk.chat_sdk.internal.data.framework.token.ITokenLoader
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
 import toothpick.InjectConstructor
-import javax.inject.Named
 
 @InjectConstructor
 class UserInfoRepository(
-        @Named("configuration")
-        private val configurationDataLoader: DataLoader<UsedeskChatConfiguration>,
-        @Named("token")
-        private val tokenDataLoader: DataLoader<String>
+        private val configurationDataLoader: IConfigurationLoader,
+        private val tokenDataLoader: ITokenLoader
 ) : IUserInfoRepository {
 
     @Throws(UsedeskDataNotFoundException::class)
     override fun getToken(): String {
-        return tokenDataLoader.data
+        return tokenDataLoader.getData()
     }
 
     override fun setToken(token: String?) {
@@ -29,7 +27,7 @@ class UserInfoRepository(
 
     @Throws(UsedeskDataNotFoundException::class)
     override fun getConfiguration(): UsedeskChatConfiguration {
-        return configurationDataLoader.data
+        return configurationDataLoader.getData()
     }
 
     override fun setConfiguration(configuration: UsedeskChatConfiguration?) {

@@ -61,12 +61,12 @@ class ChatInteractor(
         if (textMessage.isEmpty()) {
             return
         }
-        apiRepository.send(token!!, textMessage)
+        apiRepository.send(token, textMessage)
     }
 
     @Throws(UsedeskException::class)
     override fun send(usedeskFileInfo: UsedeskFileInfo) {
-        apiRepository.send(token!!, usedeskFileInfo)
+        apiRepository.send(token, usedeskFileInfo)
     }
 
     @Throws(UsedeskException::class)
@@ -78,7 +78,7 @@ class ChatInteractor(
 
     @Throws(UsedeskException::class)
     override fun send(feedback: UsedeskFeedback) {
-        apiRepository.send(token!!, feedback)
+        apiRepository.send(token, feedback)
     }
 
     @Throws(UsedeskException::class)
@@ -156,7 +156,7 @@ class ChatInteractor(
 
     private fun sendUserEmail() {
         try {
-            apiRepository.send(token!!, configuration.email, configuration.clientName,
+            apiRepository.send(token, configuration.email, configuration.clientName,
                     configuration.clientPhoneNumber, configuration.clientAdditionalId)
         } catch (e: UsedeskException) {
             actionListener.onException(e)
@@ -206,18 +206,17 @@ class ChatInteractor(
         userInfoRepository.setConfiguration(configuration)
     }
 
-    private val onMessageListener: OnMessageListener
-        get() = object : OnMessageListener {
-            override fun onNew(message: UsedeskMessage) {
-                parseNewMessageResponse(message)
-            }
+    private val onMessageListener = object : OnMessageListener {
+        override fun onNew(message: UsedeskMessage) {
+            parseNewMessageResponse(message)
+        }
 
-            override fun onFeedback() {
-                actionListener.onFeedbackReceived()
-            }
+        override fun onFeedback() {
+            actionListener.onFeedbackReceived()
+        }
 
-            override fun onInit(token: String, setup: Setup) {
-                parseInitResponse(token, setup)
+        override fun onInit(token: String, setup: Setup) {
+            parseInitResponse(token, setup)
             }
 
             override fun onInitChat() {

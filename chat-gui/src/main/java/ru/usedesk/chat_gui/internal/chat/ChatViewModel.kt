@@ -117,7 +117,7 @@ class ChatViewModel : ViewModel() {
     }
 
     fun onSend(name: String, email: String, message: String) {
-        justComplete(usedeskChat.sendRx(UsedeskOfflineForm(name, email, message)).doOnComplete {
+        justComplete(usedeskChat.sendRx(UsedeskOfflineForm(null, name, email, message)).doOnComplete {
             messagePanelStateLiveData.postValue(MessagePanelState.OFFLINE_FORM_SENT)
         })
     }

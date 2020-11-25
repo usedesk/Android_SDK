@@ -11,9 +11,10 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsModel
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter
+import toothpick.ktp.delegate.inject
 
 abstract class UsedeskNotificationsService : Service() {
-    private val presenter: UsedeskNotificationsPresenter = UsedeskNotificationsPresenter()
+    private val presenter: UsedeskNotificationsPresenter by inject()
 
     lateinit var notificationManager: NotificationManager
         private set
@@ -65,8 +66,10 @@ abstract class UsedeskNotificationsService : Service() {
         return START_STICKY
     }
 
-    private fun renderModel(model: UsedeskNotificationsModel) {
-        showNotification(createNotification(model))
+    private fun renderModel(model: UsedeskNotificationsModel?) {
+        if (model != null) {
+            showNotification(createNotification(model))
+        }
     }
 
     protected abstract fun showNotification(notification: Notification)

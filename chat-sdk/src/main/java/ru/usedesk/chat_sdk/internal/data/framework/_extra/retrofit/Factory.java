@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-abstract class Factory<K, T> {
+public abstract class Factory<K, T> {
     private final Map<K, T> instanceMap = new HashMap<>();
 
     @NonNull

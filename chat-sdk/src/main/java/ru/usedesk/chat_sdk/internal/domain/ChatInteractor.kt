@@ -26,7 +26,7 @@ class ChatInteractor(
         private val apiRepository: IApiRepository
 ) : IUsedeskChat {
 
-    private lateinit var token: String
+    private var token: String? = null
     private var needSetEmail = false
     private val messageIds: MutableSet<String> = HashSet()
 
@@ -61,12 +61,16 @@ class ChatInteractor(
         if (textMessage.isEmpty()) {
             return
         }
-        apiRepository.send(token, textMessage)
+        token?.also {
+            apiRepository.send(it, textMessage)
+        }
     }
 
     @Throws(UsedeskException::class)
     override fun send(usedeskFileInfo: UsedeskFileInfo) {
-        apiRepository.send(token, usedeskFileInfo)
+        token?.also {
+            apiRepository.send(it, usedeskFileInfo)
+        }
     }
 
     @Throws(UsedeskException::class)
@@ -78,7 +82,9 @@ class ChatInteractor(
 
     @Throws(UsedeskException::class)
     override fun send(feedback: UsedeskFeedback) {
-        apiRepository.send(token, feedback)
+        token?.also {
+            apiRepository.send(it, feedback)
+        }
     }
 
     @Throws(UsedeskException::class)
@@ -156,8 +162,13 @@ class ChatInteractor(
 
     private fun sendUserEmail() {
         try {
-            apiRepository.send(token, configuration.email, configuration.clientName,
-                    configuration.clientPhoneNumber, configuration.clientAdditionalId)
+            token?.also {
+                apiRepository.send(it,
+                        configuration.email,
+                        configuration.clientName,
+                        configuration.clientPhoneNumber,
+                        configuration.clientAdditionalId)
+            }
         } catch (e: UsedeskException) {
             actionListener.onException(e)
         }
@@ -217,23 +228,27 @@ class ChatInteractor(
 
         override fun onInit(token: String, setup: Setup) {
             parseInitResponse(token, setup)
-            }
+        }
 
-            override fun onInitChat() {
-                try {
-                    apiRepository.init(configuration, token)
-                } catch (e: UsedeskException) {
-                    actionListener.onException(e)
+        override fun onInitChat() {
+            try {
+                token?.also {
+                    apiRepository.init(configuration, it)
                 }
-            }
-
-            override fun onTokenError() {
-                userInfoRepository.setToken(null)
-                try {
-                    apiRepository.init(configuration, token)
-                } catch (e: UsedeskException) {
-                    actionListener.onException(e)
-                }
+            } catch (e: UsedeskException) {
+                actionListener.onException(e)
             }
         }
+
+        override fun onTokenError() {
+            userInfoRepository.setToken(null)
+            try {
+                token?.also {
+                    apiRepository.init(configuration, it)
+                }
+            } catch (e: UsedeskException) {
+                actionListener.onException(e)
+            }
+        }
+    }
 }

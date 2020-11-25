@@ -35,7 +35,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_KnowledgeBase)
 
         val rootView = inflateFragment(inflater, container, themeId, R.layout.usedesk_fragment_knowledge_base)
@@ -51,7 +51,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         if (savedInstanceState == null) {
             switchFragment(SectionsFragment.newInstance(themeId))
         }
-        return view
+        return rootView
     }
 
     private fun showSearchQuery(query: String) {

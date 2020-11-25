@@ -39,7 +39,7 @@ class ShowFileScreen : UsedeskFragment() {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         val themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_Chat)
         val json = argsGetString(arguments, FILE_URL_KEY)
 

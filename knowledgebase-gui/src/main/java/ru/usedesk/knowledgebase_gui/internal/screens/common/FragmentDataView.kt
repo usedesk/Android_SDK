@@ -24,7 +24,7 @@ abstract class FragmentDataView<DATA>(
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         val themeId = argsGetInt(arguments, THEME_ID_KEY, defaultThemeId)
         rootView = inflateFragment(inflater, container, themeId, layoutId)
 

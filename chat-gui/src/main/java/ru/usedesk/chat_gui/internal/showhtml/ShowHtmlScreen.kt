@@ -18,7 +18,7 @@ class ShowHtmlScreen : UsedeskFragment() {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         val themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_Chat)
 
         rootView = inflateFragment(inflater, container, themeId, R.layout.usedesk_screen_show_html)

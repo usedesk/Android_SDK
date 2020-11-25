@@ -34,7 +34,7 @@ class UsedeskChatFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         themeId = argsGetInt(arguments, THEME_ID_KEY, themeId)
         val agentName: String? = argsGetString(arguments, AGENT_NAME_KEY)
 
@@ -47,7 +47,7 @@ class UsedeskChatFragment : Fragment() {
         }
 
         init(agentName)
-        return view
+        return rootView
     }
 
     private fun init(agentName: String?) {

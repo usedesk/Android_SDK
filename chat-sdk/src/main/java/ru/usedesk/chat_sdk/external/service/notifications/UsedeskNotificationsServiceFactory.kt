@@ -1,28 +1,21 @@
-package ru.usedesk.chat_sdk.external.service.notifications;
+package ru.usedesk.chat_sdk.external.service.notifications
 
-import android.content.Context;
-import android.content.Intent;
+import android.content.Context
+import android.content.Intent
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.service.notifications.view.UsedeskNotificationsService
 
-import androidx.annotation.NonNull;
-
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.external.service.notifications.view.UsedeskNotificationsService;
-
-public class UsedeskNotificationsServiceFactory {
-
-    public void stopService(@NonNull Context context) {
-        Intent intent = new Intent(context, getServiceClass());
-        context.stopService(intent);
+open class UsedeskNotificationsServiceFactory {
+    fun stopService(context: Context) {
+        val intent = Intent(context, serviceClass)
+        context.stopService(intent)
     }
 
-    @NonNull
-    protected Class<?> getServiceClass() {
-        return UsedeskNotificationsService.class;
-    }
+    protected open val serviceClass: Class<*> = UsedeskNotificationsService::class.java
 
-    public void startService(@NonNull Context context, @NonNull UsedeskChatConfiguration usedeskChatConfiguration) {
-        Intent intent = new Intent(context, getServiceClass());
-        usedeskChatConfiguration.serialize(intent);
-        context.startService(intent);
+    fun startService(context: Context, usedeskChatConfiguration: UsedeskChatConfiguration) {
+        val intent = Intent(context, serviceClass)
+        usedeskChatConfiguration.serialize(intent)
+        context.startService(intent)
     }
 }

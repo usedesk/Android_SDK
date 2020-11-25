@@ -1,17 +1,16 @@
-package ru.usedesk.chat_sdk.internal.domain.entity;
+package ru.usedesk.chat_sdk.internal.domain.entity
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup;
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup
 
-public interface OnMessageListener {
+interface OnMessageListener {
+    fun onInit(token: String, setup: Setup)
 
-    void onInit(String token, Setup setup);
+    fun onInitChat()
 
-    void onInitChat();
+    fun onNew(message: UsedeskMessage)
 
-    void onNew(UsedeskMessage message);
+    fun onFeedback()
 
-    void onFeedback();
-
-    void onTokenError();
+    fun onTokenError()
 }

@@ -1,54 +1,50 @@
-package ru.usedesk.chat_sdk.external;
+package ru.usedesk.chat_sdk.external
 
-import androidx.annotation.NonNull;
+import io.reactivex.Completable
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton
+import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm
+import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
-import java.util.List;
+interface IUsedeskChat {
+    @Throws(UsedeskException::class)
+    fun connect()
 
-import io.reactivex.Completable;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
+    @Throws(UsedeskException::class)
+    fun disconnect()
 
-public interface IUsedeskChat {
-    void connect() throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(textMessage: String)
 
-    void disconnect() throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(usedeskFileInfo: UsedeskFileInfo)
 
-    void send(String textMessage) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(usedeskFileInfoList: List<UsedeskFileInfo>)
 
-    void send(UsedeskFileInfo usedeskFileInfo) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(feedback: UsedeskFeedback)
 
-    void send(List<UsedeskFileInfo> usedeskFileInfoList) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(offlineForm: UsedeskOfflineForm)
 
-    void send(UsedeskFeedback feedback) throws UsedeskException;
+    @Throws(UsedeskException::class)
+    fun send(messageButton: UsedeskMessageButton)
 
-    void send(UsedeskOfflineForm offlineForm) throws UsedeskException;
+    fun connectRx(): Completable
 
-    void send(UsedeskMessageButton messageButton) throws UsedeskException;
+    fun disconnectRx(): Completable
 
-    @NonNull
-    Completable connectRx();
+    fun sendRx(textMessage: String): Completable
 
-    @NonNull
-    Completable disconnectRx();
+    fun sendRx(usedeskFileInfo: UsedeskFileInfo): Completable
 
-    @NonNull
-    Completable sendRx(String textMessage);
+    fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable
 
-    @NonNull
-    Completable sendRx(UsedeskFileInfo usedeskFileInfo);
+    fun sendRx(feedback: UsedeskFeedback): Completable
 
-    @NonNull
-    Completable sendRx(List<UsedeskFileInfo> usedeskFileInfoList);
+    fun sendRx(offlineForm: UsedeskOfflineForm): Completable
 
-    @NonNull
-    Completable sendRx(UsedeskFeedback feedback);
-
-    @NonNull
-    Completable sendRx(UsedeskOfflineForm offlineForm);
-
-    @NonNull
-    Completable sendRx(UsedeskMessageButton messageButton);
+    fun sendRx(messageButton: UsedeskMessageButton): Completable
 }

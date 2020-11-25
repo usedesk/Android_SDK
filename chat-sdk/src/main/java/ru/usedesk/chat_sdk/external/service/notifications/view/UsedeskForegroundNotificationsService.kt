@@ -1,39 +1,31 @@
-package ru.usedesk.chat_sdk.external.service.notifications.view;
+package ru.usedesk.chat_sdk.external.service.notifications.view
 
-import android.app.Notification;
+import android.R
+import android.app.Notification
+import androidx.core.app.NotificationCompat
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-
-public abstract class UsedeskForegroundNotificationsService extends UsedeskNotificationsService {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        startForeground(getForegroundId(), createStartNotification());
+abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsService() {
+    override fun onCreate() {
+        super.onCreate()
+        startForeground(foregroundId, createStartNotification())
     }
 
-    @Override
-    protected void showNotification(@NonNull Notification notification) {
-        stopForeground(true);
-        startForeground(getForegroundId(), notification);
+    override fun showNotification(notification: Notification) {
+        stopForeground(true)
+        startForeground(foregroundId, notification)
     }
 
-    protected abstract int getForegroundId();
+    protected abstract val foregroundId: Int
 
-    protected Notification createStartNotification() {
-        String title = "Чат с оператором";
-
-        Notification notification = new NotificationCompat.Builder(this, getChannelId())
-                .setSmallIcon(android.R.drawable.ic_dialog_email)
+    protected open fun createStartNotification(): Notification {
+        val title = "Чат с оператором"
+        val notification = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_dialog_email)
                 .setContentTitle(title)
-                .setContentIntent(getContentPendingIntent())
-                .setDeleteIntent(getDeletePendingIntent())
-                .build();
-
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        return notification;
+                .setContentIntent(contentPendingIntent)
+                .setDeleteIntent(deletePendingIntent)
+                .build()
+        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+        return notification
     }
 }

@@ -7,14 +7,14 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import java.util.*
 
 class UsedeskActionListenerRx : IUsedeskActionListener {
-    private val connectedSubject = BehaviorSubject.create<UsedeskSingleLifeEvent<*>>()
-    private val disconnectedSubject = BehaviorSubject.create<UsedeskSingleLifeEvent<*>>()
+    private val connectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    private val disconnectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val connectedStateSubject = BehaviorSubject.createDefault(false)
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
     private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
-    private val feedbackSubject = BehaviorSubject.create<UsedeskSingleLifeEvent<*>>()
+    private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<UsedeskException>()
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -30,39 +30,31 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
         messagesSubject.onNext(messages)
     }
 
-    fun getConnectedStateSubject(): Observable<Boolean> {
-        return connectedStateSubject
-    }
+    val connectedStateObservable: Observable<Boolean> = connectedStateSubject
 
-    val connectedObservable: Observable<UsedeskSingleLifeEvent<*>>
-        get() = connectedSubject
+    val connectedObservable: Observable<UsedeskEvent<Any?>> = connectedSubject
 
     /**
      * Каждое сообщение
      */
-    val messageObservable: Observable<UsedeskMessage>
-        get() = messageSubject
+    val messageObservable: Observable<UsedeskMessage> = messageSubject
 
     /**
      * Только новые сообщения, генерируемые после подписки
      */
-    val newMessageObservable: Observable<UsedeskMessage>
-        get() = newMessageSubject
+    val newMessageObservable: Observable<UsedeskMessage> = newMessageSubject
 
     /**
      * Список всех сообщений (обновляется с каждым новым сообщением)
      */
-    val messagesObservable: Observable<List<UsedeskMessage>>
-        get() = messagesSubject
+    val messagesObservable: Observable<List<UsedeskMessage>> = messagesSubject
 
     /**
      * Список всех сообщений в виде TicketItem (обновляется с каждым новым сообщением)
      */
-    fun getTicketItemsObservable(): Observable<List<ChatItem>> {
-        return messagesSubject.map { messages ->
-            messages.mapNotNull { message ->
-                convert(message)
-            }
+    val ticketItemsObservable: Observable<List<ChatItem>> = messagesSubject.map { messages ->
+        messages.mapNotNull { message ->
+            convert(message)
         }
     }
 
@@ -119,20 +111,16 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
         }
     }
 
-    val offlineFormExpectedObservable: Observable<UsedeskChatConfiguration>
-        get() = offlineFormExpectedSubject
+    val offlineFormExpectedObservable: Observable<UsedeskChatConfiguration> = offlineFormExpectedSubject
 
-    val disconnectedObservable: Observable<UsedeskSingleLifeEvent<*>>
-        get() = disconnectedSubject
+    val disconnectedObservable: Observable<UsedeskEvent<Any?>> = disconnectedSubject
 
-    val exceptionObservable: Observable<UsedeskException>
-        get() = exceptionSubject
+    val exceptionObservable: Observable<UsedeskException> = exceptionSubject
 
-    val feedbackObservable: Observable<UsedeskSingleLifeEvent<*>>
-        get() = feedbackSubject
+    val feedbackObservable: Observable<UsedeskEvent<Any?>> = feedbackSubject
 
     override fun onConnected() {
-        connectedSubject.onNext(UsedeskSingleLifeEvent<Any?>())
+        connectedSubject.onNext(UsedeskSingleLifeEvent(null))
         connectedStateSubject.onNext(true)
     }
 
@@ -150,7 +138,7 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
     }
 
     override fun onFeedbackReceived() {
-        feedbackSubject.onNext(UsedeskSingleLifeEvent<Any?>())
+        feedbackSubject.onNext(UsedeskSingleLifeEvent(null))
     }
 
     override fun onOfflineFormExpected(chatConfiguration: UsedeskChatConfiguration) {
@@ -158,7 +146,7 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
     }
 
     override fun onDisconnected() {
-        connectedSubject.onNext(UsedeskSingleLifeEvent<Any?>())
+        connectedSubject.onNext(UsedeskSingleLifeEvent(null))
         connectedStateSubject.onNext(false)
     }
 

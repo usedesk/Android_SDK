@@ -1,8 +1,8 @@
-package ru.usedesk.chat_sdk.external.entity;
+package ru.usedesk.chat_sdk.external.entity
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
 
-public enum UsedeskMessageType {
+enum class UsedeskMessageType {
     @SerializedName("operator_to_client")
     OPERATOR_TO_CLIENT,
 

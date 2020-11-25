@@ -6,7 +6,9 @@ import ru.usedesk.chat_sdk.internal.domain.entity.BaseMessage
 class UsedeskMessage(//TODO: сделать прослойку, чтобы из repository возвращались уже объекты с проверенными полями, иначе хуйня получается
         baseMessage: BaseMessage,
         val usedeskPayload: UsedeskPayload?,
-        val stringPayload: String?) : BaseMessage(baseMessage) {
+        val stringPayload: String?
+) : BaseMessage(baseMessage) {
+
     val messageButtons: UsedeskMessageButtons
 
     init {
@@ -14,6 +16,5 @@ class UsedeskMessage(//TODO: сделать прослойку, чтобы из 
         messageButtons = UsedeskMessageButtons(Html.fromHtml(Html.fromHtml(text).toString()).toString())
     }
 
-    override val text: String
-        get() = messageButtons.messageText
+    override val text: String = messageButtons.messageText
 }

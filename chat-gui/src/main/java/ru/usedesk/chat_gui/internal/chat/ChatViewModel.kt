@@ -37,7 +37,7 @@ class ChatViewModel : ViewModel() {
         usedeskChat = UsedeskChatSdk.getInstance()
 
         clearFileInfoList()
-        toLiveData(actionListenerRx.getTicketItemsObservable(), ticketItemsLiveData)
+        toLiveData(actionListenerRx.ticketItemsObservable, ticketItemsLiveData)
         toLiveData(actionListenerRx.messagesObservable, messagesLiveData)
         toLiveData(actionListenerRx.offlineFormExpectedObservable.map {
             nameLiveData.postValue(it.clientName)
@@ -45,7 +45,7 @@ class ChatViewModel : ViewModel() {
             MessagePanelState.OFFLINE_FORM_EXPECTED
         }, messagePanelStateLiveData)
         toLiveData(actionListenerRx.exceptionObservable, exceptionLiveData)
-        disposables.add(actionListenerRx.getConnectedStateSubject().subscribe {
+        disposables.add(actionListenerRx.connectedStateObservable.subscribe {
             if (!it) {
                 justComplete(usedeskChat.connectRx())
             }
@@ -112,7 +112,9 @@ class ChatViewModel : ViewModel() {
 
     fun onSend(textMessage: String) {
         justComplete(usedeskChat.sendRx(textMessage))
-        justComplete(usedeskChat.sendRx(fileInfoListLiveData.value))
+        fileInfoListLiveData.value?.also {
+            justComplete(usedeskChat.sendRx(it))
+        }
         clearFileInfoList()
     }
 

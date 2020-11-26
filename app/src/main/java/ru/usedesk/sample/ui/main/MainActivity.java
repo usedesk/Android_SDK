@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import ru.usedesk.chat_gui.external.UsedeskChatFragment;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
+import ru.usedesk.common_gui.external.UsedeskStyleManager;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnBackPressedListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSearchQueryListener;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSupportClickListener;
@@ -95,28 +96,18 @@ public class MainActivity extends AppCompatActivity
                 ? configuration.getCustomAgentName()
                 : null;
         initUsedeskService(configuration);
-        //initUsedeskCustomizer(configuration);
+        initUsedeskStyleManager(configuration);
     }
 
-    /*private void initUsedeskCustomizer(@NonNull Configuration configuration) {
-        IUsedeskViewCustomizer usedeskViewCustomizer = UsedeskViewCustomizer.getInstance();
+    private void initUsedeskStyleManager(@NonNull Configuration configuration) {
         if (configuration.isCustomViews()) {
-            //Полная замена фрагментов Базы Знаний кастомными (главный критерий - соответствие id элементов и их тип стандартному ресурсу)
-            usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category, R.layout.custom_item_category);
-            usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section, R.layout.custom_item_section);
-            usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info, R.layout.custom_item_article_info);
-
             //Применение кастомной темы к стандартным фрагментам Чата
-            usedeskViewCustomizer.replaceId(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat_Custom);
+            UsedeskStyleManager.replaceStyle(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat_Custom);
         } else {
             //Сброс к стандартному gui
-            usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category, ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_category);
-            usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section, ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_section);
-            usedeskViewCustomizer.replaceId(ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info, ru.usedesk.knowledgebase_gui.R.layout.usedesk_item_article_info);
-
-            usedeskViewCustomizer.replaceId(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat);
+            UsedeskStyleManager.replaceStyle(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat);
         }
-    }*/
+    }
 
     private void initUsedeskService(@NonNull Configuration configuration) {
         UsedeskChatSdk.stopService(this);
@@ -142,7 +133,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToChat() {
         toolbarHelper.update(this, ToolbarHelper.State.CHAT);
-        switchFragment(UsedeskChatFragment.newInstance(null, customAgentName));
+        switchFragment(UsedeskChatFragment.newInstance(customAgentName));
     }
 
     private void goToInfo() {

@@ -41,13 +41,9 @@ class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody>(
     companion object {
         private const val SEARCH_QUERY_KEY = "searchQueryKey"
 
-        @JvmOverloads
-        fun newInstance(themeId: Int? = null, searchQuery: String): ArticlesBodyFragment {
+        fun newInstance(searchQuery: String): ArticlesBodyFragment {
             return ArticlesBodyFragment().apply {
                 arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
                     putString(SEARCH_QUERY_KEY, searchQuery)
                 }
             }

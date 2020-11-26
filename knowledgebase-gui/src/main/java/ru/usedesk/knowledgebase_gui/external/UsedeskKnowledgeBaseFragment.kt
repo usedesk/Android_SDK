@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import ru.usedesk.common_gui.internal.argsGetInt
 import ru.usedesk.common_gui.internal.inflateFragment
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.internal.screens.helper.FragmentSwitcher
@@ -32,14 +31,13 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
-    private var themeId: Int = R.style.Usedesk_Theme_KnowledgeBase
-
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_KnowledgeBase)
-
-        val rootView = inflateFragment(inflater, container, themeId, R.layout.usedesk_fragment_knowledge_base)
+        val rootView = inflateFragment(inflater,
+                container,
+                R.layout.usedesk_fragment_knowledge_base,
+                R.style.Usedesk_Theme_KnowledgeBase)
 
         rootView.findViewById<View>(R.id.btn_support).setOnClickListener {
             onSupportClick()
@@ -52,7 +50,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         })
 
         if (savedInstanceState == null) {
-            switchFragment(SectionsFragment.newInstance(themeId))
+            switchFragment(SectionsFragment.newInstance())
         }
         return rootView
     }
@@ -62,7 +60,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         if (fragment is ArticlesBodyFragment) {
             fragment.onSearchQueryUpdate(query)
         } else {
-            switchFragment(ArticlesBodyFragment.newInstance(null, query))
+            switchFragment(ArticlesBodyFragment.newInstance(query))
         }
     }
 
@@ -78,19 +76,19 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
     }
 
     override fun onArticleInfoClick(articleId: Long) {
-        switchFragment(ArticleFragment.newInstance(themeId, articleId))
+        switchFragment(ArticleFragment.newInstance(articleId))
     }
 
     override fun onArticleBodyClick(articleId: Long) {
-        switchFragment(ArticleFragment.newInstance(themeId, articleId))
+        switchFragment(ArticleFragment.newInstance(articleId))
     }
 
     override fun onCategoryClick(categoryId: Long) {
-        switchFragment(ArticlesInfoFragment.newInstance(themeId, categoryId))
+        switchFragment(ArticlesInfoFragment.newInstance(categoryId))
     }
 
     override fun onSectionClick(sectionId: Long) {
-        switchFragment(CategoriesFragment.newInstance(themeId, sectionId))
+        switchFragment(CategoriesFragment.newInstance(sectionId))
     }
 
     override fun onSearchQuery(query: String) {
@@ -104,18 +102,9 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
     }
 
     companion object {
-        private const val THEME_ID_KEY = "themeIdKey"
-
-        @JvmOverloads
         @JvmStatic
-        fun newInstance(themeId: Int? = null): UsedeskKnowledgeBaseFragment {
-            return UsedeskKnowledgeBaseFragment().apply {
-                arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
-                }
-            }
+        fun newInstance(): UsedeskKnowledgeBaseFragment {
+            return UsedeskKnowledgeBaseFragment()
         }
     }
 }

@@ -10,8 +10,8 @@ import ru.usedesk.common_gui.internal.visibleGone
 
 class MessagePanelAdapter(parentView: View,
                           private val viewModel: ChatViewModel,
-                          onClickAttach: View.OnClickListener,
-                          lifecycleOwner: LifecycleOwner) {
+                          lifecycleOwner: LifecycleOwner,
+                          onClickAttach: View.OnClickListener) {
 
     private val rootView: ViewGroup = parentView.findViewById(R.id.message_layout)
     private val messageEditText: EditText = parentView.findViewById(R.id.message_edit_text)

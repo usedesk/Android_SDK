@@ -7,14 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import ru.usedesk.common_gui.internal.argsGetInt
 import ru.usedesk.common_gui.internal.inflateFragment
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 
 abstract class FragmentDataView<DATA>(
         private val layoutId: Int,
-        private val defaultThemeId: Int
+        private val defaultStyleId: Int
 ) : Fragment() {
     private lateinit var textViewMessage: TextView
     private lateinit var rootView: ViewGroup
@@ -25,8 +24,7 @@ abstract class FragmentDataView<DATA>(
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val themeId = argsGetInt(arguments, THEME_ID_KEY, defaultThemeId)
-        rootView = inflateFragment(inflater, container, themeId, layoutId)
+        rootView = inflateFragment(inflater, container, layoutId, defaultStyleId)
 
         onView(rootView)
 
@@ -68,9 +66,5 @@ abstract class FragmentDataView<DATA>(
         textViewMessage.setText(resourceId)
         textViewMessage.visibility = View.VISIBLE
         container.visibility = View.GONE
-    }
-
-    companion object {
-        internal const val THEME_ID_KEY = "themeIdKey"
     }
 }

@@ -23,6 +23,7 @@ import java.util.*
 internal class ItemsAdapter(
         private val viewModel: ChatViewModel,
         private val recyclerView: RecyclerView,
+        private val customAgentName: String?,
         owner: LifecycleOwner
 ) : RecyclerView.Adapter<ItemsAdapter.ChatItemViewHolder>() {
 

@@ -12,7 +12,7 @@ class UsedeskMessageButton(
     init {
         val sections = messageButtonText.replace("{{button:", "")
                 .replace("}}", "")
-                .split(";").toTypedArray()
+                .split(";")
         if (sections.size == 4) {
             text = sections[0]
             url = sections[1]

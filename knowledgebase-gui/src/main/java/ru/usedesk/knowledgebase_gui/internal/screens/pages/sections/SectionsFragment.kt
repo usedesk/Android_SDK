@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.internal.screens.pages.sections
 
-import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -26,15 +25,8 @@ class SectionsFragment : FragmentListView<UsedeskSection>(
     }
 
     companion object {
-        @JvmOverloads
-        fun newInstance(themeId: Int? = null): SectionsFragment {
-            return SectionsFragment().apply {
-                arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
-                }
-            }
+        fun newInstance(): SectionsFragment {
+            return SectionsFragment()
         }
     }
 }

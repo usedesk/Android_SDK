@@ -49,13 +49,9 @@ class ArticleFragment : FragmentDataView<UsedeskArticleBody>(
     companion object {
         private const val ARTICLE_ID_KEY = "articleIdKey"
 
-        @JvmOverloads
-        fun newInstance(themeId: Int? = null, articleId: Long): ArticleFragment {
+        fun newInstance(articleId: Long): ArticleFragment {
             return ArticleFragment().apply {
                 arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
                     putLong(ARTICLE_ID_KEY, articleId)
                 }
             }

@@ -8,7 +8,6 @@ import android.webkit.WebView
 import android.widget.ImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.internal._extra.UsedeskFragment
-import ru.usedesk.common_gui.internal.argsGetInt
 import ru.usedesk.common_gui.internal.inflateFragment
 
 class ShowHtmlScreen : UsedeskFragment() {
@@ -19,9 +18,10 @@ class ShowHtmlScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_Chat)
-
-        rootView = inflateFragment(inflater, container, themeId, R.layout.usedesk_screen_show_html)
+        rootView = inflateFragment(inflater,
+                container,
+                R.layout.usedesk_screen_show_html,
+                R.style.Usedesk_Theme_Chat)
 
         wvContent = rootView.findViewById(R.id.wv_content)
         ivClose = rootView.findViewById(R.id.iv_close)
@@ -54,15 +54,10 @@ class ShowHtmlScreen : UsedeskFragment() {
 
     companion object {
         private const val HTML_TEXT_KEY = "htmlTextKey"
-        private const val THEME_ID_KEY = "themeIdKey"
 
-        @JvmOverloads
-        fun newInstance(themeId: Int? = null, htmlText: String): ShowHtmlScreen {
+        fun newInstance(htmlText: String): ShowHtmlScreen {
             return ShowHtmlScreen().apply {
                 arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
                     putString(HTML_TEXT_KEY, htmlText)
                 }
             }

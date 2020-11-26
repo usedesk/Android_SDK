@@ -17,7 +17,6 @@ import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.external.UsedeskChatFragment.Companion.THEME_ID_KEY
 import ru.usedesk.chat_gui.internal._extra.UsedeskFragment
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.*
@@ -40,10 +39,12 @@ class ShowFileScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val themeId = argsGetInt(arguments, THEME_ID_KEY, R.style.Usedesk_Theme_Chat)
         val json = argsGetString(arguments, FILE_URL_KEY)
 
-        rootView = inflateFragment(inflater, container, themeId, R.layout.usedesk_screen_show_file)
+        rootView = inflateFragment(inflater,
+                container,
+                R.layout.usedesk_screen_show_file,
+                R.style.Usedesk_Theme_Chat)
 
         if (json != null) {
             val fileUrl = UsedeskFile.deserialize(json)
@@ -177,13 +178,9 @@ class ShowFileScreen : UsedeskFragment() {
     companion object {
         private const val FILE_URL_KEY = "fileUrlKey"
 
-        @JvmOverloads
-        fun newInstance(themeId: Int? = null, usedeskFile: UsedeskFile): ShowFileScreen {
+        fun newInstance(usedeskFile: UsedeskFile): ShowFileScreen {
             return ShowFileScreen().apply {
                 arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
                     putString(FILE_URL_KEY, usedeskFile.serialize())
                 }
             }

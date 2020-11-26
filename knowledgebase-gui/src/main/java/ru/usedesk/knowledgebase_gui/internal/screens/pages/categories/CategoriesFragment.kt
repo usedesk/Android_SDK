@@ -37,13 +37,9 @@ class CategoriesFragment : FragmentListView<UsedeskCategory>(
     companion object {
         private const val SECTION_ID_KEY = "sectionIdKey"
 
-        @JvmOverloads
-        fun newInstance(themeId: Int? = null, sectionId: Long): CategoriesFragment {
+        fun newInstance(sectionId: Long): CategoriesFragment {
             return CategoriesFragment().apply {
                 arguments = Bundle().apply {
-                    if (themeId != null) {
-                        putInt(THEME_ID_KEY, themeId)
-                    }
                     putLong(SECTION_ID_KEY, sectionId)
                 }
             }

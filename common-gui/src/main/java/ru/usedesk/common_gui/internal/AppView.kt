@@ -14,6 +14,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import ru.usedesk.common_gui.R
+import ru.usedesk.common_gui.external.UsedeskStyleManager
 import java.util.*
 
 fun <T> initAndObserve(lifecycleOwner: LifecycleOwner,
@@ -180,8 +181,9 @@ fun <T : ViewDataBinding> inflateItem(inflater: LayoutInflater,
 
 fun inflateFragment(inflater: LayoutInflater,
                     container: ViewGroup?,
-                    themeId: Int,
-                    layoutId: Int): ViewGroup {
-    return inflater.cloneInContext(ContextThemeWrapper(inflater.context, themeId))
+                    layoutId: Int,
+                    defaultStyleId: Int): ViewGroup {
+    val customStyleId = UsedeskStyleManager.getStyle(defaultStyleId)
+    return inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
             .inflate(layoutId, container, false) as ViewGroup
 }

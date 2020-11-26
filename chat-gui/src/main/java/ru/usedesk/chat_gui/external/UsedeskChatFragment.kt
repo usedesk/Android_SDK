@@ -6,85 +6,69 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.databinding.UsedeskDialogAttachmentBinding
+import ru.usedesk.chat_gui.databinding.UsedeskFragmentChatBinding
 import ru.usedesk.chat_gui.internal.chat.*
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
 import ru.usedesk.common_gui.internal.PermissionUtil
 import ru.usedesk.common_gui.internal.argsGetString
-import ru.usedesk.common_gui.internal.inflateFragment
+import ru.usedesk.common_gui.internal.inflateBinding
 import ru.usedesk.common_gui.internal.showInstead
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
 class UsedeskChatFragment : Fragment() {
 
     private val viewModel: ChatViewModel by viewModels()
-    private lateinit var rootView: ViewGroup
-    private lateinit var tvLoading: TextView
-    private lateinit var ltContent: ViewGroup
 
-    private lateinit var filePicker: FilePicker
+    private val filePicker: FilePicker = FilePicker()
 
     private lateinit var attachedFilesAdapter: AttachedFilesAdapter
+
+    private lateinit var binding: UsedeskFragmentChatBinding
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         val agentName: String? = argsGetString(arguments, AGENT_NAME_KEY)
 
-        rootView = inflateFragment(inflater,
+        binding = inflateBinding(inflater,
                 container,
                 R.layout.usedesk_fragment_chat,
                 R.style.Usedesk_Theme_Chat)
 
-        filePicker = FilePicker()
-
         if (savedInstanceState == null) {
-            UsedeskChatSdk.init(requireContext().applicationContext, viewModel.actionListenerRx)
+            init(agentName)
         }
 
-        init(agentName)
-        return rootView
+        return binding.root
     }
 
     private fun init(agentName: String?) {
+        UsedeskChatSdk.init(requireContext(), viewModel.actionListenerRx)
+
         viewModel.init()
 
-        tvLoading = rootView.findViewById(R.id.tv_loading)
-        ltContent = rootView.findViewById(R.id.lt_content)
-
-        attachedFilesAdapter = AttachedFilesAdapter(viewModel, rootView.findViewById(R.id.rv_attached_files))
-        MessagePanelAdapter(rootView, viewModel, viewLifecycleOwner) {
+        attachedFilesAdapter = AttachedFilesAdapter(viewModel, binding.rvMessages)
+        MessagePanelAdapter(binding.root, viewModel, viewLifecycleOwner) {
             openAttachmentDialog()
         }
 
-        OfflineFormExpectedAdapter(rootView, viewModel, viewLifecycleOwner)
-        OfflineFormSentAdapter(rootView, viewModel, viewLifecycleOwner)
+        OfflineFormExpectedAdapter(binding.root, viewModel, viewLifecycleOwner)
+        OfflineFormSentAdapter(binding.root, viewModel, viewLifecycleOwner)
 
         ItemsAdapter(viewModel,
-                rootView.findViewById(R.id.rv_messages),
+                binding.rvMessages,
                 agentName,
                 viewLifecycleOwner)
 
-        renderData()
-        observeData()
-    }
-
-    private fun renderData() {
-        onMessages(viewModel.messagesLiveData.value)
         onFileInfoList(viewModel.fileInfoListLiveData.value)
-    }
 
-    private fun observeData() {
-        viewModel.messagesLiveData.observe(viewLifecycleOwner, {
-            onMessages(it)
-        })
         viewModel.fileInfoListLiveData.observe(viewLifecycleOwner, {
             onFileInfoList(it)
         })
@@ -98,40 +82,44 @@ class UsedeskChatFragment : Fragment() {
 
     private fun openAttachmentDialog() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())//TODO: сделать отдельным файлом
-        val bottomSheetView = layoutInflater.inflate(R.layout.usedesk_dialog_attachment, rootView, false)
+        val bottomSheetBinding = inflateBinding<UsedeskDialogAttachmentBinding>(layoutInflater,
+                binding.lRoot,
+                R.layout.usedesk_dialog_attachment,
+                R.style.Usedesk_Theme_Chat).apply {
 
-        bottomSheetView.findViewById<View>(R.id.pick_photo_button).setOnClickListener {
-            bottomSheetDialog.dismiss()
-            PermissionUtil.needReadExternalPermission(rootView,
-                    R.string.need_permission,
-                    R.string.settings
-            ) {
-                filePicker.pickImage(this)
+            pickPhotoButton.setOnClickListener {
+                bottomSheetDialog.dismiss()
+                PermissionUtil.needReadExternalPermission(binding.root,
+                        R.string.need_permission,
+                        R.string.settings
+                ) {
+                    filePicker.pickImage(this@UsedeskChatFragment)
+                }
             }
-        }
 
-        bottomSheetView.findViewById<View>(R.id.take_photo_button).setOnClickListener {
-            bottomSheetDialog.dismiss()
-            PermissionUtil.needCameraPermission(rootView,
-                    R.string.need_permission,
-                    R.string.settings
-            ) {
-                filePicker.takePhoto(this)
+            takePhotoButton.setOnClickListener {
+                bottomSheetDialog.dismiss()
+                PermissionUtil.needCameraPermission(binding.root,
+                        R.string.need_permission,
+                        R.string.settings
+                ) {
+                    filePicker.takePhoto(this@UsedeskChatFragment)
+                }
             }
-        }
 
-        bottomSheetView.findViewById<View>(R.id.pick_document_button).setOnClickListener {
-            bottomSheetDialog.dismiss()
-            PermissionUtil.needReadExternalPermission(rootView,
-                    R.string.need_permission,
-                    R.string.settings
-            ) {
-                filePicker.pickDocument(this)
+            pickDocumentButton.setOnClickListener {
+                bottomSheetDialog.dismiss()
+                PermissionUtil.needReadExternalPermission(binding.root,
+                        R.string.need_permission,
+                        R.string.settings
+                ) {
+                    filePicker.pickDocument(this@UsedeskChatFragment)
+                }
             }
-        }
 
-        bottomSheetDialog.setContentView(bottomSheetView)
-        bottomSheetDialog.show()
+            bottomSheetDialog.setContentView(root)
+            bottomSheetDialog.show()
+        }
     }
 
     private fun onException(exception: UsedeskException?) {
@@ -150,16 +138,8 @@ class UsedeskChatFragment : Fragment() {
         }*/
     }
 
-    private fun onMessages(usedeskMessages: List<UsedeskMessage>?) {
-        val isMessages = usedeskMessages != null
-        showInstead(ltContent, tvLoading, isMessages)
-
-        /*if (usedeskMessages != null) {
-            messagesAdapter.updateMessages(usedeskMessages);
-        }*/
-    }
-
     private fun onFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>?) {
+        showInstead(binding.ltContent, binding.tvLoading, usedeskFileInfoList != null)
         if (usedeskFileInfoList != null) {
             attachedFilesAdapter.update(usedeskFileInfoList)
         }

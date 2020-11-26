@@ -10,10 +10,9 @@ import toothpick.InjectConstructor
 import java.util.concurrent.TimeUnit
 
 @InjectConstructor
-class UsedeskNotificationsPresenter(
-        private val actionListenerRx: UsedeskActionListenerRx
-) {
+class UsedeskNotificationsPresenter {
     private var model: UsedeskNotificationsModel? = null
+    private val actionListenerRx = UsedeskActionListenerRx()
 
     val actionListener: IUsedeskActionListener = actionListenerRx
 

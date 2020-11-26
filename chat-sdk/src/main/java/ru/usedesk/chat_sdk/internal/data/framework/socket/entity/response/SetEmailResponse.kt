@@ -1,21 +1,10 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response
 
-public class SetEmailResponse extends BaseResponse {
+class SetEmailResponse : BaseResponse(TYPE) {
+    val state: State? = null
+    val isReset = false
 
-    public static final String TYPE = "@@chat/current/SET";
-
-    private State state;
-    private boolean reset;
-
-    public SetEmailResponse() {
-        super(TYPE);
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public boolean isReset() {
-        return reset;
+    companion object {
+        const val TYPE = "@@chat/current/SET"
     }
 }

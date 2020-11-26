@@ -1,85 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:baselineAligned="true"
-    android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    tools:theme="@style/Usedesk.Theme.Chat">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
-        android:id="@+id/pick_photo_button"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:baselineAligned="true"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        tools:theme="@style/Usedesk.Theme.Chat">
 
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:duplicateParentState="true"
-            app:srcCompat="?attr/usedesk_attachment_panel_gallery_icon" />
+        <LinearLayout
+            android:id="@+id/pick_photo_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:text="?attr/usedesk_attachment_panel_gallery_title" />
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:duplicateParentState="true"
+                app:srcCompat="?attr/usedesk_attachment_panel_gallery_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:duplicateParentState="true"
+                android:text="?attr/usedesk_attachment_panel_gallery_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/take_photo_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:duplicateParentState="true"
+                app:srcCompat="?attr/usedesk_attachment_panel_camera_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:duplicateParentState="true"
+                android:text="?attr/usedesk_attachment_panel_camera_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pick_document_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:duplicateParentState="true"
+                app:srcCompat="?attr/usedesk_attachment_panel_storage_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:duplicateParentState="true"
+                android:text="?attr/usedesk_attachment_panel_storage_title" />
+        </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/take_photo_button"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:duplicateParentState="true"
-            app:srcCompat="?attr/usedesk_attachment_panel_camera_icon" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:text="?attr/usedesk_attachment_panel_camera_title" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/pick_document_button"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:duplicateParentState="true"
-            app:srcCompat="?attr/usedesk_attachment_panel_storage_icon" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:text="?attr/usedesk_attachment_panel_storage_title" />
-    </LinearLayout>
-</LinearLayout>
+</layout>

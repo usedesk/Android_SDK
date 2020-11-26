@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import ru.usedesk.common_gui.internal.inflateFragment
+import ru.usedesk.common_gui.internal.inflateBinding
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.databinding.UsedeskFragmentKnowledgeBaseBinding
 import ru.usedesk.knowledgebase_gui.internal.screens.helper.FragmentSwitcher
 import ru.usedesk.knowledgebase_gui.internal.screens.main.KnowledgeBaseViewModel
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.article.ArticleFragment
@@ -31,15 +32,17 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
+    private lateinit var binding: UsedeskFragmentKnowledgeBaseBinding
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val rootView = inflateFragment(inflater,
+        binding = inflateBinding(inflater,
                 container,
                 R.layout.usedesk_fragment_knowledge_base,
                 R.style.Usedesk_Theme_KnowledgeBase)
 
-        rootView.findViewById<View>(R.id.btn_support).setOnClickListener {
+        binding.btnSupport.setOnClickListener {
             onSupportClick()
         }
 
@@ -52,7 +55,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         if (savedInstanceState == null) {
             switchFragment(SectionsFragment.newInstance())
         }
-        return rootView
+        return binding.root
     }
 
     private fun showSearchQuery(query: String) {

@@ -29,7 +29,7 @@ class ApiRepository(
     }
 
     @Throws(UsedeskException::class)
-    override fun init(configuration: UsedeskChatConfiguration, token: String) {
+    override fun init(configuration: UsedeskChatConfiguration, token: String?) {
         socketApi.sendRequest(InitChatRequest(token, configuration.companyId,
                 configuration.url))
     }

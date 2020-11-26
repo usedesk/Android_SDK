@@ -1,10 +1,10 @@
 package ru.usedesk.chat_sdk.internal.domain.entity
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitChatResponse
 
 interface OnMessageListener {
-    fun onInit(token: String, setup: Setup)
+    fun onInit(initChatResponse: InitChatResponse)
 
     fun onInitChat()
 

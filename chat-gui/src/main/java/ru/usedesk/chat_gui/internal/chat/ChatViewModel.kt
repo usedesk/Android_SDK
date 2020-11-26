@@ -1,33 +1,28 @@
 package ru.usedesk.chat_gui.internal.chat
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
-import ru.usedesk.chat_sdk.external.entity.*
-import ru.usedesk.chat_sdk.external.entity.ticketitem.ChatItem
-import ru.usedesk.chat_sdk.external.entity.ticketitem.MessageFile
+import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.external.entity.chat.UsedeskChatItem
+import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageFile
+import ru.usedesk.common_gui.internal.UsedeskViewModel
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import java.util.*
 
-class ChatViewModel : ViewModel() {
+class ChatViewModel : UsedeskViewModel() {
 
-    private val disposables = CompositeDisposable()
     val feedbacksLiveData = MutableLiveData<Set<Int>>()
     val exceptionLiveData = MutableLiveData<UsedeskException>()
     val messagePanelStateLiveData = MutableLiveData(MessagePanelState.MESSAGE_PANEL)
-    val messagesLiveData = MutableLiveData<List<UsedeskMessage>>()
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")
     val nameLiveData = MutableLiveData("")
     val emailLiveData = MutableLiveData("")
-    val ticketItemsLiveData = MutableLiveData<List<ChatItem>>()
+    val ticketItemsLiveData = MutableLiveData<List<UsedeskChatItem>>()
 
     val actionListenerRx = UsedeskActionListenerRx()
 
@@ -37,17 +32,20 @@ class ChatViewModel : ViewModel() {
         usedeskChat = UsedeskChatSdk.getInstance()
 
         clearFileInfoList()
-        toLiveData(actionListenerRx.ticketItemsObservable, ticketItemsLiveData)
-        toLiveData(actionListenerRx.messagesObservable, messagesLiveData)
-        toLiveData(actionListenerRx.offlineFormExpectedObservable.map {
+        addDisposable(actionListenerRx.ticketItemsObservable.subscribe {
+            ticketItemsLiveData.postValue(it.reversed())
+        })
+        addDisposable(actionListenerRx.offlineFormExpectedObservable.subscribe {
             nameLiveData.postValue(it.clientName)
             emailLiveData.postValue(it.email)
-            MessagePanelState.OFFLINE_FORM_EXPECTED
-        }, messagePanelStateLiveData)
-        toLiveData(actionListenerRx.exceptionObservable, exceptionLiveData)
-        disposables.add(actionListenerRx.connectedStateObservable.subscribe {
+            messagePanelStateLiveData.postValue(MessagePanelState.OFFLINE_FORM_EXPECTED)
+        })
+        addDisposable(actionListenerRx.exceptionObservable.subscribe {
+            exceptionLiveData.postValue(it)
+        })
+        addDisposable(actionListenerRx.connectedStateObservable.subscribe {
             if (!it) {
-                justComplete(usedeskChat.connectRx())
+                doIt(usedeskChat.connectRx())
             }
         })
         feedbacksLiveData.value = HashSet()
@@ -58,25 +56,11 @@ class ChatViewModel : ViewModel() {
     }
 
     private fun clearFileInfoList() {
-        fileInfoListLiveData.value = ArrayList()
+        fileInfoListLiveData.value = listOf()
     }
 
-    private fun justComplete(completable: Completable) {
-        addDisposable(completable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({}) { it.printStackTrace() })
-    }
+    fun onClickFile(messageFile: UsedeskMessageFile) {
 
-    private fun <OUT : IN?, IN> toLiveData(observable: Observable<OUT>, liveData: MutableLiveData<IN>) {
-        addDisposable(observable.subscribe({ liveData.postValue(it) }) { it.printStackTrace() })
-    }
-
-    private fun addDisposable(disposable: Disposable) {
-        disposables.add(disposable)
-    }
-
-    fun onClickFile(messageFile: MessageFile) {
-        //TODO:
     }
 
     fun onShowHtmlClick(html: String) {
@@ -92,14 +76,11 @@ class ChatViewModel : ViewModel() {
         feedbacks.addAll(feedbacksLiveData.value!!)
         feedbacks.add(messageIndex)
         feedbacksLiveData.postValue(feedbacks)
-        justComplete(usedeskChat.sendRx(feedback))
+        doIt(usedeskChat.sendRx(feedback))
     }
 
     override fun onCleared() {
         super.onCleared()
-        if (!disposables.isDisposed) {
-            disposables.dispose()
-        }
         UsedeskChatSdk.release()
     }
 
@@ -111,15 +92,15 @@ class ChatViewModel : ViewModel() {
     }
 
     fun onSend(textMessage: String) {
-        justComplete(usedeskChat.sendRx(textMessage))
+        doIt(usedeskChat.sendRx(textMessage))
         fileInfoListLiveData.value?.also {
-            justComplete(usedeskChat.sendRx(it))
+            doIt(usedeskChat.sendRx(it))
         }
         clearFileInfoList()
     }
 
     fun onSend(name: String, email: String, message: String) {
-        justComplete(usedeskChat.sendRx(UsedeskOfflineForm(null, name, email, message)).doOnComplete {
+        doIt(usedeskChat.sendRx(UsedeskOfflineForm(null, name, email, message)).doOnComplete {
             messagePanelStateLiveData.postValue(MessagePanelState.OFFLINE_FORM_SENT)
         })
     }

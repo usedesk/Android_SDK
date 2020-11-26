@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal._extra
+package ru.usedesk.common_gui.internal
 
 import androidx.fragment.app.Fragment
 

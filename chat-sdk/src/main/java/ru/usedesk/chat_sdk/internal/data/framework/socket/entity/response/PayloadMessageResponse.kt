@@ -1,18 +1,11 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response
 
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage
 
-public class PayloadMessageResponse extends BaseResponse {
+class PayloadMessageResponse : BaseResponse(TYPE) {
+    val message: PayloadMessage? = null
 
-    public static final String TYPE = "@@chat/current/ADD_MESSAGE";
-
-    private PayloadMessage message;
-
-    public PayloadMessageResponse() {
-        super(TYPE);
-    }
-
-    public PayloadMessage getMessage() {
-        return message;
+    companion object {
+        const val TYPE = "@@chat/current/ADD_MESSAGE"
     }
 }

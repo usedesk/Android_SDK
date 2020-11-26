@@ -17,6 +17,8 @@ import ru.usedesk.common_gui.R
 import ru.usedesk.common_gui.external.UsedeskStyleManager
 import java.util.*
 
+//TODO: переименовать все подобные файлы
+
 fun <T> initAndObserve(lifecycleOwner: LifecycleOwner,
                        liveData: LiveData<T?>,
                        lambda: (T?) -> (Unit)) {
@@ -179,11 +181,11 @@ fun <T : ViewDataBinding> inflateItem(inflater: LayoutInflater,
             false)
 }
 
-fun inflateFragment(inflater: LayoutInflater,
-                    container: ViewGroup?,
-                    layoutId: Int,
-                    defaultStyleId: Int): ViewGroup {
+fun <T : ViewDataBinding> inflateBinding(inflater: LayoutInflater,
+                                         container: ViewGroup?,
+                                         layoutId: Int,
+                                         defaultStyleId: Int): T {
     val customStyleId = UsedeskStyleManager.getStyle(defaultStyleId)
-    return inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
-            .inflate(layoutId, container, false) as ViewGroup
+    val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
+    return DataBindingUtil.inflate(localInflater, layoutId, container, false)
 }

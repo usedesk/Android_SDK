@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal._extra
+package ru.usedesk.common_gui.internal
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
@@ -7,12 +7,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import ru.usedesk.chat_gui.internal._extra.utils.dispose
-import ru.usedesk.chat_gui.internal._extra.utils.throwable
-import java.util.*
 
 open class UsedeskViewModel : ViewModel() {
-    private val disposables: MutableList<Disposable> = LinkedList()
+    private val disposables: MutableList<Disposable> = mutableListOf()
     private var inited = false
 
     protected fun doInit(init: () -> Unit) {
@@ -22,7 +19,7 @@ open class UsedeskViewModel : ViewModel() {
         }
     }
 
-    private fun addDisposable(disposable: Disposable) {
+    protected fun addDisposable(disposable: Disposable) {
         disposables.add(disposable)
     }
 
@@ -78,10 +75,15 @@ open class UsedeskViewModel : ViewModel() {
                 .subscribe(onResult, onThrowable)
     }
 
+    private fun throwable(throwable: Throwable) {
+        throwable.printStackTrace()
+    }
+
     override fun onCleared() {
         super.onCleared()
-        for (disposable in disposables) {
-            dispose(disposable)
+
+        disposables.forEach {
+            it.dispose()
         }
     }
 }

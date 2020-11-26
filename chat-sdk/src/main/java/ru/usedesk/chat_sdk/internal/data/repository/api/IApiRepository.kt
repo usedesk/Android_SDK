@@ -12,7 +12,7 @@ interface IApiRepository {
 
     @Throws(UsedeskException::class)
     fun init(configuration: UsedeskChatConfiguration,
-             token: String)
+             token: String?)
 
     @Throws(UsedeskException::class)
     fun send(token: String,

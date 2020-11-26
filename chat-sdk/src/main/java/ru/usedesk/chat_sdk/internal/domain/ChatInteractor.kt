@@ -8,6 +8,7 @@ import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitChatResponse
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
@@ -174,14 +175,12 @@ class ChatInteractor(
         }
     }
 
-    private fun parseNewMessageResponse(message: UsedeskMessage?) {
-        if (message?.chat != null) {
-            val hasText = !TextUtils.isEmpty(message.text)
-            val hasFile = message.file != null
-            if ((hasText || hasFile) && !messageIds.contains(message.id) && message.id != null) {
-                messageIds.add(message.id)
-                actionListener.onMessageReceived(message)
-            }
+    private fun parseNewMessageResponse(message: UsedeskMessage) {
+        val hasText = !TextUtils.isEmpty(message.text)
+        val hasFile = message.file != null
+        if ((hasText || hasFile) && !messageIds.contains(message.id) && message.id != null) {
+            messageIds.add(message.id)
+            actionListener.onMessageReceived(message)
         }
     }
 
@@ -190,10 +189,10 @@ class ChatInteractor(
         userInfoRepository.setToken(token)
         actionListener.onConnected()
         if (setup != null) {
-            if (setup.isWaitingEmail) {
+            if (setup.waitingEmail) {
                 needSetEmail = true
             }
-            actionListener.onMessagesReceived(setup.messages)
+            actionListener.onMessagesReceived(setup.getMessages())
             if (setup.isNoOperators) {
                 actionListener.onOfflineFormExpected(configuration)
             }
@@ -226,15 +225,15 @@ class ChatInteractor(
             actionListener.onFeedbackReceived()
         }
 
-        override fun onInit(token: String, setup: Setup) {
-            parseInitResponse(token, setup)
+        override fun onInit(initChatResponse: InitChatResponse) {
+            if (initChatResponse.token != null && initChatResponse.setup != null) {
+                parseInitResponse(initChatResponse.token, initChatResponse.setup)
+            }
         }
 
         override fun onInitChat() {
             try {
-                token?.also {
-                    apiRepository.init(configuration, it)
-                }
+                apiRepository.init(configuration, token)
             } catch (e: UsedeskException) {
                 actionListener.onException(e)
             }

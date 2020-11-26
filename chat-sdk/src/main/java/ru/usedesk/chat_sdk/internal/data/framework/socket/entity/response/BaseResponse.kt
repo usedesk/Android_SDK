@@ -1,14 +1,5 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response
 
-public abstract class BaseResponse {
-
-    private String type;
-
-    BaseResponse(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-}
+abstract class BaseResponse internal constructor(
+        val type: String
+)

@@ -32,9 +32,29 @@
             android:focusable="true"
             app:srcCompat="@drawable/ic_error" />
 
-        <include
-            android:id="@+id/time"
-            layout="@layout/usedesk_item_ticket_comment_time" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="2dp"
+            android:background="@drawable/time_background_dark"
+            android:paddingHorizontal="8dp">
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="@drawable/time_background_light"
+                android:fontFamily="@font/sf_ui_display_regular"
+                android:includeFontPadding="false"
+                android:paddingStart="0dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="4dp"
+                android:textColor="#CCFFFFFF"
+                android:textSize="13sp"
+                tools:text="12:06" />
+        </FrameLayout>
     </FrameLayout>
 
 </layout>

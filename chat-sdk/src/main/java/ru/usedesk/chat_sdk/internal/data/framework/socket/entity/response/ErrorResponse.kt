@@ -1,29 +1,10 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response
 
-public class ErrorResponse extends BaseResponse {
+class ErrorResponse : BaseResponse(TYPE) {
+    var message: String? = null
+    var code = 0
 
-    public static final String TYPE = "@@redbone/ERROR";
-
-    private String message;
-    private int code;
-
-    public ErrorResponse() {
-        super(TYPE);
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
+    companion object {
+        const val TYPE = "@@redbone/ERROR"
     }
 }

@@ -1,8 +1,8 @@
-package ru.usedesk.chat_sdk.external.entity.ticketitem
+package ru.usedesk.chat_sdk.external.entity.chat
 
 import java.util.*
 
-abstract class ChatItem(
+abstract class UsedeskChatItem(
         val calendar: Calendar
 ) {
     abstract val type: Type

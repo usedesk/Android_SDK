@@ -7,7 +7,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter
 import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.HttpApiFactory
@@ -56,7 +55,6 @@ internal class MainModule(
 
         //tmp for service
         bind(UsedeskNotificationsPresenter::class.java).to(UsedeskNotificationsPresenter::class.java).singleton()
-        bind(UsedeskActionListenerRx::class.java).toInstance(UsedeskActionListenerRx())
     }
 
     private fun gson(): Gson {

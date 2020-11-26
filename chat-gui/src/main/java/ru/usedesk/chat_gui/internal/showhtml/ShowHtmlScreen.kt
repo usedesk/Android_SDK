@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.ImageView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.internal._extra.UsedeskFragment
-import ru.usedesk.common_gui.internal.inflateFragment
+import ru.usedesk.common_gui.internal.UsedeskFragment
+import ru.usedesk.common_gui.internal.inflateBinding
 
 class ShowHtmlScreen : UsedeskFragment() {
     private lateinit var rootView: ViewGroup
@@ -18,7 +18,7 @@ class ShowHtmlScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        rootView = inflateFragment(inflater,
+        rootView = inflateBinding(inflater,
                 container,
                 R.layout.usedesk_screen_show_html,
                 R.style.Usedesk_Theme_Chat)

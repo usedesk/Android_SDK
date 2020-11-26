@@ -42,10 +42,10 @@
                 tools:text="Алена Ошева" />
 
             <FrameLayout
-                android:id="@+id/l_other"
+                android:id="@+id/l_agent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bubble_other">
+                android:background="@drawable/bubble_agent">
 
                 <include
                     android:id="@+id/content"

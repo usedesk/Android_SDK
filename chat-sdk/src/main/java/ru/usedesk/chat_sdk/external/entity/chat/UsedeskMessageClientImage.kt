@@ -1,12 +1,12 @@
-package ru.usedesk.chat_sdk.external.entity.ticketitem
+package ru.usedesk.chat_sdk.external.entity.chat
 
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import java.util.*
 
-class MessageClientImage(
+class UsedeskMessageClientImage(
         calendar: Calendar,
         usedeskFile: UsedeskFile,
         override val received: Boolean
-) : MessageFile(calendar, usedeskFile), MessageClient {
+) : UsedeskMessageImage(calendar, usedeskFile), UsedeskMessageClient {
     override val type: Type = Type.TYPE_CLIENT_IMAGE
 }

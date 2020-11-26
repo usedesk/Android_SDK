@@ -1,32 +1,29 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
+class SendFeedbackRequest(
+        token: String,
+        feedback: UsedeskFeedback
+) : BaseRequest(TYPE, token) {
 
-public class SendFeedbackRequest extends BaseRequest {
-    private static final String TYPE = "@@server/chat/CALLBACK";
+    private val payload: Payload
 
-    private static final String KEY_DATA = "data";
-    private static final String VALUE_FEEDBACK_ACTION = "action";
-
-    private final Payload payload;
-
-    public SendFeedbackRequest(String token, UsedeskFeedback feedback) {
-        super(TYPE, token);
-        payload = new Payload(feedback);
-    }
-
-    private static class Payload {
-
-        private final String type;
+    private class Payload internal constructor(feedback: UsedeskFeedback) {
+        private val type: String = VALUE_FEEDBACK_ACTION
 
         @SerializedName(KEY_DATA)
-        private final UsedeskFeedback feedback;
+        private val feedback: UsedeskFeedback = feedback
+    }
 
-        Payload(UsedeskFeedback feedback) {
-            type = VALUE_FEEDBACK_ACTION;
-            this.feedback = feedback;
-        }
+    companion object {
+        private const val TYPE = "@@server/chat/CALLBACK"
+        private const val KEY_DATA = "data"
+        private const val VALUE_FEEDBACK_ACTION = "action"
+    }
+
+    init {
+        payload = Payload(feedback)
     }
 }

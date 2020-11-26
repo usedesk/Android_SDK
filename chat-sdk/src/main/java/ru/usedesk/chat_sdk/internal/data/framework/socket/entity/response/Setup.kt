@@ -1,53 +1,29 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response
 
-import android.text.TextUtils;
+import android.text.TextUtils
+import ru.usedesk.chat_sdk.external.entity.UsedeskClient
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage
+import java.util.*
 
-import androidx.annotation.NonNull;
+class Setup {
+    val waitingEmail = true
+    val isNoOperators = false
+    val client: UsedeskClient? = null
 
-import java.util.ArrayList;
-import java.util.List;
+    private val messages: List<PayloadMessage>? = null
 
-import ru.usedesk.chat_sdk.external.entity.UsedeskClient;
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
-
-public class Setup {
-
-    private boolean waitingEmail;
-    private boolean noOperators;
-    private UsedeskClient client;
-    private List<PayloadMessage> messages;
-
-    public Setup() {
-        waitingEmail = true;
-    }
-
-    public boolean isWaitingEmail() {
-        return waitingEmail || (client != null && client.getEmail() == null);
-    }
-
-    public boolean isNoOperators() {
-        return noOperators;
-    }
-
-    public UsedeskClient getClient() {
-        return client;
-    }
-
-    @NonNull
-    public List<UsedeskMessage> getMessages() {
+    fun getMessages(): List<UsedeskMessage> {
         if (messages == null) {
-            return new ArrayList<>();
+            return ArrayList()
         }
-
-        List<UsedeskMessage> filteredMessages = new ArrayList<>(messages.size());
-        for (PayloadMessage payloadMessage : messages) {
-            if (payloadMessage.getChat() != null
-                    && (!TextUtils.isEmpty(payloadMessage.getText()) || payloadMessage.getFile() != null)) {
-                filteredMessages.add(new UsedeskMessage(payloadMessage, payloadMessage.getPayload(), null));
+        val filteredMessages: MutableList<UsedeskMessage> = ArrayList(messages.size)
+        for (payloadMessage in messages) {
+            if (payloadMessage.chat != null
+                    && (!TextUtils.isEmpty(payloadMessage.text) || payloadMessage.file != null)) {
+                filteredMessages.add(UsedeskMessage(payloadMessage, payloadMessage.payload, null))
             }
         }
-
-        return filteredMessages;
+        return filteredMessages
     }
 }

@@ -1,8 +1,8 @@
 package ru.usedesk.chat_gui.internal.showfile
 
 import androidx.lifecycle.MutableLiveData
-import ru.usedesk.chat_gui.internal._extra.UsedeskViewModel
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
+import ru.usedesk.common_gui.internal.UsedeskViewModel
 
 class ShowFileViewModel : UsedeskViewModel() {
 

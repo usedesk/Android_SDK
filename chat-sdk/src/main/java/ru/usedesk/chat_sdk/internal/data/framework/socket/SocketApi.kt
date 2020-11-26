@@ -17,14 +17,13 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
-import java.util.*
 
 @InjectConstructor
 class SocketApi(
         private val gson: Gson
 ) {
 
-    private val emitterListeners: MutableMap<String, Emitter.Listener> = HashMap(5)
+    private val emitterListeners: MutableMap<String, Emitter.Listener> = hashMapOf()
     private var socket: Socket? = null
     private var actionListener: IUsedeskActionListener? = null
     private var onMessageListener: OnMessageListener? = null
@@ -76,8 +75,7 @@ class SocketApi(
                     actionListener?.onException(usedeskSocketException)
                 }
                 InitChatResponse.TYPE -> {
-                    val initChatResponse = response as InitChatResponse
-                    onMessageListener?.onInit(initChatResponse.token, initChatResponse.setup)
+                    onMessageListener?.onInit(response as InitChatResponse)
                 }
                 SetEmailResponse.TYPE -> {
                 }
@@ -159,13 +157,13 @@ class SocketApi(
     @Throws(JsonParseException::class)
     private fun getMessage(rawResponse: String): UsedeskMessage {
         return try {
-            val payloadMessageResponse = gson.fromJson(rawResponse, PayloadMessageResponse::class.java)
+            val payloadMessageResponse = gson.fromJson(rawResponse, PayloadMessageResponse::class.java)//TODO: эту всю дрочь перенести в Response с var? полями, её проверять и из неё уже делать нормальные null-безопасные объекты, с формализованными данными, а не Payload и прочую срань, тьфу...
             val payloadMessage = payloadMessageResponse.message
-            UsedeskMessage(payloadMessage, payloadMessage.payload, null)
+            UsedeskMessage(payloadMessage!!, payloadMessage.payload, null)
         } catch (e: JsonParseException) {
             val simpleMessageResponse = gson.fromJson(rawResponse, SimpleMessageResponse::class.java)
             val simpleMessage = simpleMessageResponse.message
-            UsedeskMessage(simpleMessage, null, simpleMessage.payload)
+            UsedeskMessage(simpleMessage!!, null, simpleMessage.payload)
         }
     }
 

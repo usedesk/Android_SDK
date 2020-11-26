@@ -17,7 +17,6 @@ import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.internal._extra.UsedeskFragment
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.*
 
@@ -41,7 +40,7 @@ class ShowFileScreen : UsedeskFragment() {
                               savedInstanceState: Bundle?): View {
         val json = argsGetString(arguments, FILE_URL_KEY)
 
-        rootView = inflateFragment(inflater,
+        rootView = inflateBinding(inflater,
                 container,
                 R.layout.usedesk_screen_show_file,
                 R.style.Usedesk_Theme_Chat)

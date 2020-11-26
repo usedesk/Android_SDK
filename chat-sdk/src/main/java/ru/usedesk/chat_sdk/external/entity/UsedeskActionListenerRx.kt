@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.external.entity
 
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
-import ru.usedesk.chat_sdk.external.entity.ticketitem.*
+import ru.usedesk.chat_sdk.external.entity.chat.*
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import java.util.*
 
@@ -19,10 +19,7 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
     private var lastMessages = listOf<UsedeskMessage>()
 
     private fun onNewMessages(newMessages: List<UsedeskMessage>) {
-        val messages: MutableList<UsedeskMessage> = ArrayList(lastMessages.size + newMessages.size)
-        messages.addAll(lastMessages)
-        messages.addAll(newMessages)
-        postMessages(messages)
+        postMessages(lastMessages + newMessages)
     }
 
     private fun postMessages(messages: List<UsedeskMessage>) {
@@ -52,13 +49,13 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
     /**
      * Список всех сообщений в виде TicketItem (обновляется с каждым новым сообщением)
      */
-    val ticketItemsObservable: Observable<List<ChatItem>> = messagesSubject.map { messages ->
+    val ticketItemsObservable: Observable<List<UsedeskChatItem>> = messagesSubject.map { messages ->
         messages.mapNotNull { message ->
             convert(message)
         }
     }
 
-    private fun convert(usedeskMessage: UsedeskMessage): ChatItem? {
+    private fun convert(usedeskMessage: UsedeskMessage): UsedeskChatItem? {
         val fromClient: Boolean = when (usedeskMessage.type) {
             UsedeskMessageType.CLIENT_TO_OPERATOR,
             UsedeskMessageType.CLIENT_TO_BOT -> {
@@ -76,22 +73,22 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
         return if (usedeskMessage.file != null) {
             if (usedeskMessage.file.isImage()) {
                 if (fromClient) {
-                    MessageClientImage(messageDate,
+                    UsedeskMessageClientImage(messageDate,
                             usedeskMessage.file,
                             true)
                 } else {
-                    MessageAgentImage(messageDate,
+                    UsedeskMessageAgentImage(messageDate,
                             usedeskMessage.file,
                             usedeskMessage.name ?: "",
                             usedeskMessage.usedeskPayload?.avatar ?: "")
                 }
             } else {
                 if (fromClient) {
-                    MessageClientFile(messageDate,
+                    UsedeskMessageClientFile(messageDate,
                             usedeskMessage.file,
                             true)
                 } else {
-                    MessageAgentFile(messageDate,
+                    UsedeskMessageAgentFile(messageDate,
                             usedeskMessage.file,
                             usedeskMessage.name ?: "",
                             usedeskMessage.usedeskPayload?.avatar ?: "")
@@ -99,11 +96,11 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
             }
         } else {
             if (fromClient) {
-                MessageClientText(messageDate,
+                UsedeskMessageClientText(messageDate,
                         usedeskMessage.text,
                         true)
             } else {
-                MessageAgentText(messageDate,
+                UsedeskMessageAgentText(messageDate,
                         usedeskMessage.text,
                         usedeskMessage.name ?: "",
                         usedeskMessage.usedeskPayload?.avatar ?: "")

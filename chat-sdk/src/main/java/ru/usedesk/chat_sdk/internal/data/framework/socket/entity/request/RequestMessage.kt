@@ -1,29 +1,18 @@
-package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request;
+package ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request
 
-import androidx.annotation.NonNull;
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 
-import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
+class RequestMessage {
+    val text: String?
+    private val usedeskFile: UsedeskFile?
 
-public class RequestMessage {
-
-    private final String text;
-    private final UsedeskFile file;
-
-    public RequestMessage(@NonNull String text) {
-        this.text = text;
-        this.file = null;
+    constructor(text: String) {
+        this.text = text
+        usedeskFile = null
     }
 
-    public RequestMessage(@NonNull UsedeskFile usedeskFile) {
-        this.text = null;
-        this.file = usedeskFile;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public UsedeskFile getUsedeskFile() {
-        return file;
+    constructor(usedeskFile: UsedeskFile) {
+        text = null
+        this.usedeskFile = usedeskFile
     }
 }

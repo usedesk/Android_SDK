@@ -39,7 +39,7 @@
                 tools:text="Алена Ошева" />
 
             <FrameLayout
-                android:id="@+id/l_your"
+                android:id="@+id/l_client"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"

@@ -1,22 +1,15 @@
-package ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit;
+package ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit
 
-import androidx.annotation.NonNull;
+import java.util.*
 
-import java.util.HashMap;
-import java.util.Map;
+abstract class Factory<K, T> {
+    private val instanceMap: MutableMap<K, T?> = HashMap()
 
-public abstract class Factory<K, T> {
-    private final Map<K, T> instanceMap = new HashMap<>();
-
-    @NonNull
-    public final T getInstance(@NonNull K key) {
-        T instance = instanceMap.get(key);
-        if (instance == null) {
-            instance = createInstance(key);
-            instanceMap.put(key, instance);
+    fun getInstance(key: K): T {
+        return instanceMap[key] ?: createInstance(key).also {
+            instanceMap[key] = it
         }
-        return instance;
     }
 
-    protected abstract T createInstance(@NonNull K key);
+    protected abstract fun createInstance(key: K): T
 }

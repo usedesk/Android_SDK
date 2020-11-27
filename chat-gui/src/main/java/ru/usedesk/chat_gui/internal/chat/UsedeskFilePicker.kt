@@ -10,7 +10,7 @@ import ru.usedesk.chat_gui.internal._extra.getUsedeskFileInfoList
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
 import java.io.File
 
-class FilePicker {
+class UsedeskFilePicker {
     private fun pickFile(fragment: Fragment, mimeType: String) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)

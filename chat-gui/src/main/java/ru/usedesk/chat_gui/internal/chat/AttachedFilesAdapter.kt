@@ -20,10 +20,8 @@ class AttachedFilesAdapter(
     }
 
     fun update(attachedFiles: List<UsedeskFileInfo>) {
-        if (files !== attachedFiles) {
-            files = attachedFiles
-            notifyDataSetChanged()
-        }
+        files = attachedFiles
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {

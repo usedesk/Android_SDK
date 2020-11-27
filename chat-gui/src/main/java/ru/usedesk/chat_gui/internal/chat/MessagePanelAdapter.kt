@@ -1,49 +1,59 @@
 package ru.usedesk.chat_gui.internal.chat
 
 import android.view.View
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
 import androidx.lifecycle.LifecycleOwner
-import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.databinding.UsedeskViewMessagePanelBinding
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.internal.visibleGone
 
-class MessagePanelAdapter(parentView: View,
-                          private val viewModel: ChatViewModel,
-                          lifecycleOwner: LifecycleOwner,
-                          onClickAttach: View.OnClickListener) {
+class MessagePanelAdapter(
+        private val binding: UsedeskViewMessagePanelBinding,
+        private val viewModel: ChatViewModel,
+        lifecycleOwner: LifecycleOwner,
+        onClickAttach: View.OnClickListener
+) {
 
-    private val rootView: ViewGroup = parentView.findViewById(R.id.message_layout)
-    private val messageEditText: EditText = parentView.findViewById(R.id.message_edit_text)
-    private val attachFileImageButton: ImageButton = parentView.findViewById(R.id.attach_file_image_view)
-    private val sendImageButton: ImageButton = parentView.findViewById(R.id.send_image_view)
+    private val attachedFilesAdapter: AttachedFilesAdapter
 
     init {
-        attachFileImageButton.setOnClickListener(onClickAttach)
-        sendImageButton.setOnClickListener {
+        binding.attachFileImageView.setOnClickListener(onClickAttach)
+        binding.sendImageView.setOnClickListener {
             onSendClick()
         }
         onMessagePanelState(viewModel.messagePanelStateLiveData.value)
         viewModel.messagePanelStateLiveData.observe(lifecycleOwner) {
             onMessagePanelState(it)
         }
-        messageEditText.setText(viewModel.messageLiveData.value)
-        messageEditText.addTextChangedListener(TextChangeListener {
+        binding.messageEditText.setText(viewModel.messageLiveData.value)
+        binding.messageEditText.addTextChangedListener(TextChangeListener {
             viewModel.onMessageChanged(it)
         })
+        attachedFilesAdapter = AttachedFilesAdapter(viewModel, binding.rvAttachedFiles)
+
+        onFileInfoList(viewModel.fileInfoListLiveData.value)
+
+        viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
+            onFileInfoList(it)
+        }
     }
 
     private fun onMessagePanelState(messagePanelState: MessagePanelState?) {
         val messagePanel = (messagePanelState != null
                 && messagePanelState == MessagePanelState.MESSAGE_PANEL)
-        rootView.visibility = visibleGone(messagePanel)
+        binding.root.visibility = visibleGone(messagePanel)
         if (messagePanel) {
-            messageEditText.setText(viewModel.messageLiveData.value)
+            binding.messageEditText.setText(viewModel.messageLiveData.value)
         }
     }
 
     private fun onSendClick() {
-        viewModel.onSend(messageEditText.text.toString().trim { it <= ' ' })
-        messageEditText.setText("")
+        viewModel.onSend(binding.messageEditText.text.toString().trim { it <= ' ' })
+        binding.messageEditText.setText("")
+    }
+
+    private fun onFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>?) {
+        if (usedeskFileInfoList != null) {
+            attachedFilesAdapter.update(usedeskFileInfoList)
+        }
     }
 }

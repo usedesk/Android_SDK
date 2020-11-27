@@ -39,7 +39,7 @@ internal class ItemsAdapter(
             reverseLayout = true
         }
         recyclerView.adapter = this
-        viewModel.ticketItemsLiveData.observe(owner) {
+        viewModel.chatItemsLiveData.observe(owner) {
             this.items = it ?: listOf()
             notifyDataSetChanged()
         }

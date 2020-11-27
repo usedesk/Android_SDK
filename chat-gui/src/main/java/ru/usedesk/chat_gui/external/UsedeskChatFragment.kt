@@ -15,7 +15,6 @@ import ru.usedesk.chat_gui.databinding.UsedeskDialogAttachmentBinding
 import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
 import ru.usedesk.chat_gui.internal.chat.*
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.external.UsedeskToolbar
 import ru.usedesk.common_gui.internal.*
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
@@ -23,9 +22,8 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
     private val viewModel: ChatViewModel by viewModels()
-    private val filePicker: FilePicker = FilePicker()
+    private val filePicker: UsedeskFilePicker = UsedeskFilePicker()
 
-    private lateinit var attachedFilesAdapter: AttachedFilesAdapter
     private lateinit var binding: UsedeskScreenChatBinding
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -58,8 +56,7 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
         viewModel.init()
 
-        attachedFilesAdapter = AttachedFilesAdapter(viewModel, binding.rvMessages)
-        MessagePanelAdapter(binding.root, viewModel, viewLifecycleOwner) {
+        MessagePanelAdapter(binding.messagePanel, viewModel, viewLifecycleOwner) {
             openAttachmentDialog()
         }
 
@@ -76,18 +73,15 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
                 }
             }
         }
-
-        onFileInfoList(viewModel.fileInfoListLiveData.value)
-
-        viewModel.fileInfoListLiveData.observe(viewLifecycleOwner, {
-            onFileInfoList(it)
-        })
-        viewModel.feedbacksLiveData.observe(viewLifecycleOwner, {
+        viewModel.feedbacksLiveData.observe(viewLifecycleOwner) {
             onFeedbacks(it)
-        })
-        viewModel.exceptionLiveData.observe(viewLifecycleOwner, {
+        }
+        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
             onException(it)
-        })
+        }
+        viewModel.chatItemsLiveData.observe(viewLifecycleOwner) {
+            showInstead(binding.ltContent, binding.tvLoading, it != null)
+        }
     }
 
     private fun openAttachmentDialog() {
@@ -146,13 +140,6 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         /*if (feedbacks != null) {
             messagesAdapter.updateFeedbacks(feedbacks);
         }*/
-    }
-
-    private fun onFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>?) {
-        showInstead(binding.ltContent, binding.tvLoading, usedeskFileInfoList != null)
-        if (usedeskFileInfoList != null) {
-            attachedFilesAdapter.update(usedeskFileInfoList)
-        }
     }
 
     override fun onStart() {

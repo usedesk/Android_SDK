@@ -1,86 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/message_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    tools:theme="@style/Usedesk.Theme.Chat">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.cardview.widget.CardView
+        android:id="@+id/message_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/usedesk_message_panel_background"
-        android:clipChildren="true"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_gravity="bottom"
+        tools:theme="@style/Usedesk.Theme.Chat">
 
-        <include layout="@layout/usedesk_view_divider_h" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="4dp"
-            android:paddingVertical="2dp">
+            android:background="?attr/usedesk_message_panel_background"
+            android:clipChildren="true"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageButton
-                android:id="@+id/attach_file_image_view"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="?attr/usedesk_message_panel_attach_icon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <include layout="@layout/usedesk_view_divider_h" />
 
-            <EditText
-                android:id="@+id/message_edit_text"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/usedesk_message_panel_input_background"
-                android:fontFamily="?attr/usedesk_message_panel_input_font_family"
-                android:hint="?attr/usedesk_message_panel_input_hint"
-                android:includeFontPadding="false"
-                android:inputType="textCapSentences"
-                android:maxLines="5"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="8dp"
-                android:textSize="17sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/send_image_view"
-                app:layout_constraintStart_toEndOf="@+id/attach_file_image_view"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp">
 
-            <ImageButton
-                android:id="@+id/send_image_view"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="?attr/usedesk_message_panel_send_icon"
+                <ImageButton
+                    android:id="@+id/attach_file_image_view"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="?attr/usedesk_message_panel_attach_icon"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/message_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/usedesk_message_panel_input_background"
+                    android:fontFamily="?attr/usedesk_message_panel_input_font_family"
+                    android:hint="?attr/usedesk_message_panel_input_hint"
+                    android:includeFontPadding="false"
+                    android:inputType="textCapSentences"
+                    android:maxLines="5"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="8dp"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/send_image_view"
+                    app:layout_constraintStart_toEndOf="@+id/attach_file_image_view"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/send_image_view"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="?attr/usedesk_message_panel_send_icon"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_attached_files"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_attached_files"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="4dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:itemCount="4"
-            tools:listitem="@layout/usedesk_item_chat_attached_file" />
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+                app:layout_constraintStart_toStartOf="parent"
+                tools:itemCount="4"
+                tools:listitem="@layout/usedesk_item_chat_attached_file" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

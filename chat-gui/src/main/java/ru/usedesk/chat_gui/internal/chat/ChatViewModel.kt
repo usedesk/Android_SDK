@@ -21,7 +21,7 @@ class ChatViewModel : UsedeskViewModel() {
     val messageLiveData = MutableLiveData("")
     val nameLiveData = MutableLiveData("")
     val emailLiveData = MutableLiveData("")
-    val ticketItemsLiveData = MutableLiveData<List<UsedeskChatItem>>()
+    val chatItemsLiveData = MutableLiveData<List<UsedeskChatItem>>()
 
     val actionListenerRx = UsedeskActionListenerRx()
 
@@ -32,7 +32,7 @@ class ChatViewModel : UsedeskViewModel() {
 
         clearFileInfoList()
         addDisposable(actionListenerRx.ticketItemsObservable.subscribe {
-            ticketItemsLiveData.postValue(it.reversed())
+            chatItemsLiveData.postValue(it.reversed())
         })
         addDisposable(actionListenerRx.offlineFormExpectedObservable.subscribe {
             nameLiveData.postValue(it.clientName)

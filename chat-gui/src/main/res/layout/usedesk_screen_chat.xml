@@ -14,6 +14,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <FrameLayout
+                android:id="@+id/l_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <include
+                    android:id="@+id/toolbar"
+                    layout="@layout/usedesk_view_toolbar" />
+            </FrameLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_messages"
                 android:layout_width="match_parent"
@@ -23,7 +36,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/lt_bottom"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/l_toolbar"
                 tools:listitem="@layout/usedesk_item_ticket_comment_text_client" />
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout

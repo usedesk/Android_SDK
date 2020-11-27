@@ -8,7 +8,6 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.external.entity.chat.UsedeskChatItem
-import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageFile
 import ru.usedesk.common_gui.internal.UsedeskViewModel
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import java.util.*
@@ -57,10 +56,6 @@ class ChatViewModel : UsedeskViewModel() {
 
     private fun clearFileInfoList() {
         fileInfoListLiveData.value = listOf()
-    }
-
-    fun onClickFile(messageFile: UsedeskMessageFile) {
-
     }
 
     fun onShowHtmlClick(html: String) {

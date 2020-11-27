@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.showhtml
+package ru.usedesk.chat_gui.external.showhtml
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.internal.UsedeskFragment
 import ru.usedesk.common_gui.internal.inflateBinding
 
-class ShowHtmlScreen : UsedeskFragment() {
+class UsedeskShowHtmlFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
     private lateinit var rootView: ViewGroup
     private lateinit var wvContent: WebView
     private lateinit var ivClose: ImageView
@@ -21,7 +21,7 @@ class ShowHtmlScreen : UsedeskFragment() {
         rootView = inflateBinding(inflater,
                 container,
                 R.layout.usedesk_screen_show_html,
-                R.style.Usedesk_Theme_Chat)
+                defaultStyleId)
 
         wvContent = rootView.findViewById(R.id.wv_content)
         ivClose = rootView.findViewById(R.id.iv_close)
@@ -55,8 +55,9 @@ class ShowHtmlScreen : UsedeskFragment() {
     companion object {
         private const val HTML_TEXT_KEY = "htmlTextKey"
 
-        fun newInstance(htmlText: String): ShowHtmlScreen {
-            return ShowHtmlScreen().apply {
+        @JvmStatic
+        fun newInstance(htmlText: String): UsedeskShowHtmlFragment {
+            return UsedeskShowHtmlFragment().apply {
                 arguments = Bundle().apply {
                     putString(HTML_TEXT_KEY, htmlText)
                 }

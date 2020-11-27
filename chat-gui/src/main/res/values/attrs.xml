@@ -40,4 +40,7 @@
     <attr name="usedesk_attachment_panel_gallery_title" format="string" />
     <attr name="usedesk_attachment_panel_camera_title" format="string" />
     <attr name="usedesk_attachment_panel_storage_title" format="string" />
+
+    <!--Styled attrs-->
+    <attr name="usedesk_screen_chat_title" format="string" />
 </resources>

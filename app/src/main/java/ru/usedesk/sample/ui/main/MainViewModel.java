@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import io.reactivex.disposables.CompositeDisposable;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
 import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.ServiceLocator;
@@ -22,40 +23,36 @@ public class MainViewModel extends ViewModel {
 
     private final ConfigurationRepository configurationRepository;
 
-    private final MutableLiveData<Event<Navigation>> navigationLiveData = new MutableLiveData<>();
     private final MutableLiveData<Configuration> configurationLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> errorLiveData = new MutableLiveData<>();
 
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private MainNavigation mainNavigation;
 
     private Configuration configuration;
 
     public MainViewModel() {
         configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
-
-        setNavigation(Navigation.CONFIGURATION);
     }
 
-    void goBack() {
-        Navigation currentNavigation = navigationLiveData.getValue().getData();
-        if (currentNavigation == Navigation.CONFIGURATION) {
-            setNavigation(Navigation.EXIT);
-        } else if (currentNavigation == Navigation.SDK_CHAT && configuration.isWithKnowledgeBase()) {
-            setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
-        } else {
-            setNavigation(Navigation.CONFIGURATION);
-        }
-    }
-
-    private void setNavigation(@NonNull Navigation navigation) {
-        navigationLiveData.postValue(new OneTimeEvent<>(navigation));
+    void init(MainNavigation mainNavigation) {
+        this.mainNavigation = mainNavigation;
+        mainNavigation.goConfiguration();
     }
 
     void goInfo() {
-        setNavigation(Navigation.INFO);
+        mainNavigation.goInfo();
     }
 
-    void goSdk() {
+    void goShowFile(@NonNull UsedeskFile usedeskFile) {
+        mainNavigation.goShowFile(usedeskFile);
+    }
+
+    void goShowHtml(@NonNull String htmlText) {
+        mainNavigation.goShowHtml(htmlText);
+    }
+
+    void goSdk(@Nullable String customAgentName) {
         disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
             UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),
                     configuration.getEmail(),
@@ -71,14 +68,22 @@ public class MainViewModel extends ViewModel {
 
                 configurationLiveData.postValue(configuration);
                 if (this.configuration.isWithKnowledgeBase()) {
-                    setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
+                    mainNavigation.goKnowledgeBase();
                 } else {
-                    setNavigation(Navigation.SDK_CHAT);
+                    mainNavigation.goChat(customAgentName);
                 }
             } else {
                 errorLiveData.postValue(new OneTimeEvent<>("Invalid configuration"));
             }
         }));
+    }
+
+    public void goChat(@Nullable String customAgentName) {
+        mainNavigation.goChat(customAgentName);
+    }
+
+    void onBackPressed() {
+        mainNavigation.onBackPressed();
     }
 
     private void initUsedeskConfiguration(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
@@ -97,11 +102,6 @@ public class MainViewModel extends ViewModel {
     }
 
     @NonNull
-    LiveData<Event<Navigation>> getNavigationLiveData() {
-        return navigationLiveData;
-    }
-
-    @NonNull
     LiveData<Configuration> getConfigurationLiveData() {
         return configurationLiveData;
     }
@@ -116,13 +116,5 @@ public class MainViewModel extends ViewModel {
         super.onCleared();
 
         disposables.dispose();
-    }
-
-    public enum Navigation {
-        CONFIGURATION,
-        SDK_KNOWLEDGE_BASE,
-        SDK_CHAT,
-        INFO,
-        EXIT
     }
 }

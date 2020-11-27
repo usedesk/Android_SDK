@@ -11,19 +11,23 @@ import androidx.fragment.app.Fragment;
 
 import ru.usedesk.sample.BuildConfig;
 import ru.usedesk.sample.R;
-import ru.usedesk.sample.databinding.FragmentInfoBinding;
+import ru.usedesk.sample.databinding.ScreenInfoBinding;
 
-public class InfoFragment extends Fragment {
+public class InfoScreen extends Fragment {
 
-    public static InfoFragment newInstance() {
-        return new InfoFragment();
+    public static InfoScreen newInstance() {
+        return new InfoScreen();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        FragmentInfoBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_info,
+        ScreenInfoBinding binding = DataBindingUtil.inflate(inflater, R.layout.screen_info,
                 container, false);
+
+        binding.ivBack.setOnClickListener(v -> {
+            requireActivity().onBackPressed();
+        });
 
         binding.tvSdkVer.setText("SDK v" + BuildConfig.VERSION_NAME);
 

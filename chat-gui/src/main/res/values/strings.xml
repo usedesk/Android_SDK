@@ -28,4 +28,7 @@
     <string name="yesterday">Yesterday</string>
     <string name="download_started">Download started</string>
     <string name="download_failed">Download failed</string>
+
+    <!--New Styled Values-->
+    <string name="usedesk_screen_chat_title">Chat</string>
 </resources>

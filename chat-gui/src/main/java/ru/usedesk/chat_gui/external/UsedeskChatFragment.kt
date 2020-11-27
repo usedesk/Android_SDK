@@ -7,43 +7,47 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.databinding.UsedeskDialogAttachmentBinding
-import ru.usedesk.chat_gui.databinding.UsedeskFragmentChatBinding
+import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
 import ru.usedesk.chat_gui.internal.chat.*
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.internal.PermissionUtil
-import ru.usedesk.common_gui.internal.argsGetString
-import ru.usedesk.common_gui.internal.inflateBinding
-import ru.usedesk.common_gui.internal.showInstead
+import ru.usedesk.common_gui.external.UsedeskToolbar
+import ru.usedesk.common_gui.internal.*
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
-class UsedeskChatFragment : Fragment() {
+class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
     private val viewModel: ChatViewModel by viewModels()
-
     private val filePicker: FilePicker = FilePicker()
 
     private lateinit var attachedFilesAdapter: AttachedFilesAdapter
-
-    private lateinit var binding: UsedeskFragmentChatBinding
+    private lateinit var binding: UsedeskScreenChatBinding
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val agentName: String? = argsGetString(arguments, AGENT_NAME_KEY)
+        doInit {
+            val agentName: String? = argsGetString(arguments, AGENT_NAME_KEY)
 
-        binding = inflateBinding(inflater,
-                container,
-                R.layout.usedesk_fragment_chat,
-                R.style.Usedesk_Theme_Chat)
+            binding = inflateBinding(inflater,
+                    container,
+                    R.layout.usedesk_screen_chat,
+                    defaultStyleId)
 
-        if (savedInstanceState == null) {
+            val title = getStringFromStyle(R.attr.usedesk_screen_chat_title)
+
             init(agentName)
+            UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+                setTitle(title)
+                setBackButton {
+                    requireActivity().onBackPressed()
+                }
+            }
         }
 
         return binding.root
@@ -65,7 +69,13 @@ class UsedeskChatFragment : Fragment() {
         ItemsAdapter(viewModel,
                 binding.rvMessages,
                 agentName,
-                viewLifecycleOwner)
+                viewLifecycleOwner) { file ->
+            requireActivity().also {
+                if (it is IUsedeskOnFileClickListener) {
+                    it.onFileClick(file)
+                }
+            }
+        }
 
         onFileInfoList(viewModel.fileInfoListLiveData.value)
 
@@ -81,7 +91,7 @@ class UsedeskChatFragment : Fragment() {
     }
 
     private fun openAttachmentDialog() {
-        val bottomSheetDialog = BottomSheetDialog(requireContext())//TODO: сделать отдельным файлом
+        val bottomSheetDialog = BottomSheetDialog(requireContext())//TODO: сделать отдельным файлом, + сделать кастомизируемым
         val bottomSheetBinding = inflateBinding<UsedeskDialogAttachmentBinding>(layoutInflater,
                 binding.lRoot,
                 R.layout.usedesk_dialog_attachment,

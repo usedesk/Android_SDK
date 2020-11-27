@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Usedesk.Theme.Chat" parent="">
         <!--Common-->
         <item name="usedesk_divider_color">@color/usedesk_divider_color</item>
@@ -62,5 +63,8 @@
         <item name="usedesk_attachment_panel_storage_title">
             @string/usedesk_attachment_panel_storage_title
         </item>
+
+        <!--new styled values-->
+        <item name="usedesk_screen_chat_title">@string/usedesk_screen_chat_title</item>
     </style>
 </resources>

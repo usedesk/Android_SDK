@@ -9,29 +9,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import ru.usedesk.sample.R;
-import ru.usedesk.sample.databinding.FragmentConfigurationBinding;
+import ru.usedesk.sample.databinding.ScreenConfigurationBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
 import ru.usedesk.sample.ui._common.Event;
 
-public class ConfigurationFragment extends Fragment {
+public class ConfigurationScreen extends Fragment {
 
-    private FragmentConfigurationBinding binding;
+    private ScreenConfigurationBinding binding;
     private ConfigurationViewModel viewModel;
 
     @NonNull
-    public static ConfigurationFragment newInstance() {
-        return new ConfigurationFragment();
+    public static ConfigurationScreen newInstance() {
+        return new ConfigurationScreen();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_configuration,
+        binding = DataBindingUtil.inflate(inflater, R.layout.screen_configuration,
                 container, false);
 
         viewModel = ViewModelProviders.of(this).get(ConfigurationViewModel.class);
@@ -46,6 +47,13 @@ public class ConfigurationFragment extends Fragment {
                 .observe(getViewLifecycleOwner(), this::onGoToSdkEvent);
 
         binding.btnGoToSdk.setOnClickListener(v -> onGoToSdk());
+
+        binding.ivInfo.setOnClickListener(v -> {
+            FragmentActivity activity = requireActivity();
+            if (activity instanceof IOnInfoClickListener) {
+                ((IOnInfoClickListener) activity).onInfoClick();
+            }
+        });
 
         return binding.getRoot();
     }

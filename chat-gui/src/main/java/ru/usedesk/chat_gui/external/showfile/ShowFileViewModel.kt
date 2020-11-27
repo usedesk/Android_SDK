@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.showfile
+package ru.usedesk.chat_gui.external.showfile
 
 import androidx.lifecycle.MutableLiveData
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile

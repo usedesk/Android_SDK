@@ -28,8 +28,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation project(':common-sdk')
-    implementation project(':chat-sdk')
     implementation project(':common-gui')
+    implementation project(':chat-sdk')
     //implementation "ru.usedesk:chat-sdk:$project.version"
     //implementation "ru.usedesk:common-gui:$project.version"
 

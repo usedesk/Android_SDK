@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import ru.usedesk.common_gui.internal.inflateBinding
@@ -16,7 +17,7 @@ abstract class FragmentDataView<DATA>(
         private val defaultStyleId: Int
 ) : Fragment() {
     private lateinit var textViewMessage: TextView
-    private lateinit var rootView: ViewGroup
+    private lateinit var binding: ViewDataBinding
     private lateinit var container: View
 
     protected abstract fun setDataView(data: DATA)
@@ -24,9 +25,9 @@ abstract class FragmentDataView<DATA>(
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        rootView = inflateBinding(inflater, container, layoutId, defaultStyleId)
+        binding = inflateBinding(inflater, container, layoutId, defaultStyleId)
 
-        onView(rootView)
+        onView(binding.root)
 
         init()
 
@@ -34,7 +35,7 @@ abstract class FragmentDataView<DATA>(
             this.onData(it)
         })
 
-        return rootView
+        return binding.root
     }
 
     open fun init() {}

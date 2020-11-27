@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.internal.showfile
+package ru.usedesk.chat_gui.external.showfile
 
 import android.app.DownloadManager
 import android.content.Context.DOWNLOAD_SERVICE
@@ -8,42 +8,30 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.databinding.UsedeskScreenShowFileBinding
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.*
 
-class ShowFileScreen : UsedeskFragment() {
+class UsedeskShowFileFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
     private val viewModel: ShowFileViewModel by viewModels()
 
-    private lateinit var rootView: ViewGroup
-    private lateinit var lToolbar: BlurView
-    private lateinit var lBottom: BlurView
-    private lateinit var lFile: View
-    private lateinit var lImage: View
-    private lateinit var ivError: ImageView
-    private lateinit var ivImage: ImageView
-    private lateinit var tvTitle: TextView
-    private lateinit var tvFileName: TextView
-    private lateinit var tvFileSize: TextView
-    private lateinit var pbLoading: ProgressBar
+    private lateinit var binding: UsedeskScreenShowFileBinding
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         val json = argsGetString(arguments, FILE_URL_KEY)
 
-        rootView = inflateBinding(inflater,
+        binding = inflateBinding(inflater,
                 container,
                 R.layout.usedesk_screen_show_file,
-                R.style.Usedesk_Theme_Chat)
+                defaultStyleId)
 
         if (json != null) {
             val fileUrl = UsedeskFile.deserialize(json)
@@ -53,35 +41,24 @@ class ShowFileScreen : UsedeskFragment() {
 
         init()
 
-        return rootView
+        return binding.root
     }
 
     private fun init() {
-        lToolbar = rootView.findViewById(R.id.l_toolbar)
-        lBottom = rootView.findViewById(R.id.l_bottom)
-        lFile = rootView.findViewById(R.id.l_file)
-        lImage = rootView.findViewById(R.id.l_image)
-        ivError = rootView.findViewById(R.id.iv_error)
-        ivImage = rootView.findViewById(R.id.iv_image)
-        tvTitle = rootView.findViewById(R.id.tv_title)
-        tvFileName = rootView.findViewById(R.id.tv_file_name)
-        tvFileSize = rootView.findViewById(R.id.tv_file_size)
-        pbLoading = rootView.findViewById(R.id.pb_loading)
-
-        rootView.findViewById<View>(R.id.iv_back).setOnClickListener {
+        binding.ivBack.setOnClickListener {
             onBackPressed()
         }
 
-        rootView.findViewById<View>(R.id.iv_share).setOnClickListener {
+        binding.ivShare.setOnClickListener {
             onShareFile(viewModel.fileUrlLiveData.value)
         }
 
-        rootView.findViewById<View>(R.id.iv_download).setOnClickListener {
+        binding.ivDownload.setOnClickListener {
             onDownloadFile(viewModel.fileUrlLiveData.value)
         }
 
-        setBlur(lToolbar)
-        setBlur(lBottom)
+        setBlur(binding.lToolbar)
+        setBlur(binding.lBottom)
 
         initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
             onFileUrl(it)
@@ -92,13 +69,13 @@ class ShowFileScreen : UsedeskFragment() {
         }
 
         initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {
-            lToolbar.visibility = visibleGone(it == true)
-            lBottom.visibility = visibleGone(it == true)
+            binding.lToolbar.visibility = visibleGone(it == true)
+            binding.lBottom.visibility = visibleGone(it == true)
         }
     }
 
     private fun setBlur(blurView: BlurView) {
-        blurView.setupWith(rootView)
+        blurView.setupWith(binding.lRoot)
                 .setFrameClearDrawable(blurView.background)
                 .setBlurAlgorithm(RenderScriptBlur(context))
                 .setBlurRadius(16f)
@@ -106,30 +83,30 @@ class ShowFileScreen : UsedeskFragment() {
     }
 
     private fun onError(error: Boolean?) {
-        showInstead(ivError, ivImage, error == true)
+        showInstead(binding.ivError, binding.ivImage, error == true)
     }
 
     private fun onFileUrl(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            if (usedeskFile.type.startsWith("image")) {
-                showInstead(lImage, lFile, true)
+            if (usedeskFile.isImage()) {
+                showInstead(binding.lImage, binding.lFile, true)
 
-                tvTitle.text = usedeskFile.name
-                ivImage.setOnClickListener {
+                binding.tvTitle.text = usedeskFile.name
+                binding.ivImage.setOnClickListener {
                     viewModel.onImageClick()
                 }
-                showImage(ivImage,
+                showImage(binding.ivImage,
                         R.drawable.ic_image_loading,
                         usedeskFile.content,
-                        pbLoading,
-                        ivError,
+                        binding.pbLoading,
+                        binding.ivError,
                         { viewModel.onLoaded(true) },
                         { viewModel.onLoaded(false) })
             } else {
-                showInstead(lImage, lFile, false)
+                showInstead(binding.lImage, binding.lFile, false)
 
-                tvFileName.text = usedeskFile.name
-                tvFileSize.text = usedeskFile.size//formatSize(binding.root.context, usedeskFile.size)
+                binding.tvFileName.text = usedeskFile.name
+                binding.tvFileSize.text = usedeskFile.size//formatSize(binding.root.context, usedeskFile.size)
                 viewModel.onLoaded(true)
             }
         }
@@ -147,7 +124,7 @@ class ShowFileScreen : UsedeskFragment() {
 
     private fun onDownloadFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            PermissionUtil.needWriteExternalPermission(rootView,
+            PermissionUtil.needWriteExternalPermission(binding.root,
                     R.string.need_permission,
                     R.string.settings) {
                 try {
@@ -177,8 +154,9 @@ class ShowFileScreen : UsedeskFragment() {
     companion object {
         private const val FILE_URL_KEY = "fileUrlKey"
 
-        fun newInstance(usedeskFile: UsedeskFile): ShowFileScreen {
-            return ShowFileScreen().apply {
+        @JvmStatic
+        fun newInstance(usedeskFile: UsedeskFile): UsedeskShowFileFragment {
+            return UsedeskShowFileFragment().apply {
                 arguments = Bundle().apply {
                     putString(FILE_URL_KEY, usedeskFile.serialize())
                 }

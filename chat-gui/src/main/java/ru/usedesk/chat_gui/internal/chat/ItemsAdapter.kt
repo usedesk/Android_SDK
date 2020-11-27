@@ -14,6 +14,7 @@ import ru.usedesk.chat_sdk.external.entity.chat.UsedeskChatItem
 import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageAgent
 import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageFile
 import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageText
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.formatSize
 import ru.usedesk.common_gui.internal.inflateItem
 import ru.usedesk.common_gui.internal.showImage
@@ -26,7 +27,8 @@ internal class ItemsAdapter(
         private val viewModel: ChatViewModel,
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
-        owner: LifecycleOwner
+        owner: LifecycleOwner,
+        private val onClickFile: (UsedeskFile) -> Unit
 ) : RecyclerView.Adapter<ItemsAdapter.ChatItemViewHolder>() {
 
     private val colorBlack: Int = recyclerView.resources.getColor(R.color.usedesk_black)
@@ -199,7 +201,7 @@ internal class ItemsAdapter(
             val size = messageFile.file.size.toLongOrNull() ?: 0L
             binding.tvFileSize.text = formatSize(recyclerView.context, size)
             binding.lRoot.setOnClickListener {
-                viewModel.onClickFile(messageFile)
+                onClickFile(messageFile.file)
             }
         }
     }
@@ -223,7 +225,7 @@ internal class ItemsAdapter(
                     binding.pbLoading,
                     binding.ivError, {
                 binding.ivPreview.setOnClickListener {
-                    viewModel.onClickFile(messageFile)
+                    onClickFile(messageFile.file)
                 }
             }, {
                 binding.ivError.setOnClickListener {

@@ -1,6 +1,7 @@
 package ru.usedesk.common_gui.external
 
-public object UsedeskStyleManager {
+
+object UsedeskStyleManager {
     private val styleMap = hashMapOf<Int, Int>()
 
     @JvmStatic

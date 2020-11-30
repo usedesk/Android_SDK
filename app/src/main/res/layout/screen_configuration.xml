@@ -29,34 +29,18 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tv_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:ellipsize="end"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:singleLine="true"
-                        android:text="@string/configuration_title"
-                        android:textColor="#333333"
-                        android:textSize="17sp" />
-
-                    <ImageView
-                        android:id="@+id/iv_info"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:padding="16dp"
-                        app:srcCompat="@drawable/ic_info" />
-                </FrameLayout>
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:singleLine="true"
+                    android:text="@string/configuration_title"
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
 
                 <include layout="@layout/usedesk_view_divider_h" />
             </LinearLayout>
@@ -263,6 +247,13 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:text="@string/button_go_to_sdk" />
+
+                <TextView
+                    android:id="@+id/tv_version"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:gravity="center" />
             </LinearLayout>
         </ScrollView>
     </androidx.appcompat.widget.LinearLayoutCompat>

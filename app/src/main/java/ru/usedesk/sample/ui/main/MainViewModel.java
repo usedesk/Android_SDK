@@ -40,10 +40,6 @@ public class MainViewModel extends ViewModel {
         mainNavigation.goConfiguration();
     }
 
-    void goInfo() {
-        mainNavigation.goInfo();
-    }
-
     void goShowFile(@NonNull UsedeskFile usedeskFile) {
         mainNavigation.goShowFile(usedeskFile);
     }

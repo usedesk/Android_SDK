@@ -1,5 +1,6 @@
 package ru.usedesk.sample.ui.screens.configuration;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import ru.usedesk.sample.R;
@@ -48,12 +48,13 @@ public class ConfigurationScreen extends Fragment {
 
         binding.btnGoToSdk.setOnClickListener(v -> onGoToSdk());
 
-        binding.ivInfo.setOnClickListener(v -> {
-            FragmentActivity activity = requireActivity();
-            if (activity instanceof IOnInfoClickListener) {
-                ((IOnInfoClickListener) activity).onInfoClick();
-            }
-        });
+        try {
+            String version = requireContext().getPackageManager()
+                    .getPackageInfo(requireContext().getPackageName(), 0).versionName;
+            binding.tvVersion.setText("v" + version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
         return binding.getRoot();
     }

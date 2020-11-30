@@ -12,7 +12,6 @@ import ru.usedesk.chat_gui.external.showhtml.UsedeskShowHtmlFragment;
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
 import ru.usedesk.knowledgebase_gui.external.UsedeskKnowledgeBaseFragment;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
-import ru.usedesk.sample.ui.screens.info.InfoScreen;
 
 public class MainNavigation {
 
@@ -34,10 +33,6 @@ public class MainNavigation {
 
     void goConfiguration() {
         switchFragment(ConfigurationScreen.newInstance());
-    }
-
-    void goInfo() {
-        switchFragment(InfoScreen.newInstance());
     }
 
     void goChat(@Nullable String customAgentName) {

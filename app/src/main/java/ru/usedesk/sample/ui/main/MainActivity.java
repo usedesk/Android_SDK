@@ -24,11 +24,9 @@ import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
 import ru.usedesk.sample.ui._common.Event;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
-import ru.usedesk.sample.ui.screens.configuration.IOnInfoClickListener;
 
 public class MainActivity extends AppCompatActivity
-        implements IOnInfoClickListener,
-        ConfigurationScreen.IOnGoToSdkListener,
+        implements ConfigurationScreen.IOnGoToSdkListener,
         IUsedeskOnSupportClickListener,
         IUsedeskOnFileClickListener {
 
@@ -117,10 +115,5 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void goToSdk() {
         viewModel.goSdk(customAgentName);
-    }
-
-    @Override
-    public void onInfoClick() {
-        viewModel.goInfo();
     }
 }

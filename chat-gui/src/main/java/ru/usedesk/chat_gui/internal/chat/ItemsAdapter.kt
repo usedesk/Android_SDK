@@ -27,7 +27,8 @@ internal class ItemsAdapter(
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
         owner: LifecycleOwner,
-        private val onClickFile: (UsedeskFile) -> Unit
+        private val onFileClick: (UsedeskFile) -> Unit,
+        private val onHtmlClick: (String) -> Unit
 ) : RecyclerView.Adapter<ItemsAdapter.ChatItemViewHolder>() {
 
     private val colorBlack: Int = recyclerView.resources.getColor(R.color.usedesk_black)
@@ -52,25 +53,25 @@ internal class ItemsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatItemViewHolder {
         return when (viewType) {
             UsedeskChatItem.Type.TYPE_AGENT_TEXT.value -> {
-                MessageTextAgentViewHolder(inflateItem(R.layout.usedesk_item_ticket_comment_text_agent, parent))
+                MessageTextAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_text_agent, parent))
             }
             UsedeskChatItem.Type.TYPE_AGENT_FILE.value -> {
-                MessageFileAgentViewHolder(inflateItem(R.layout.usedesk_item_ticket_comment_file_agent, parent))
+                MessageFileAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_file_agent, parent))
             }
             UsedeskChatItem.Type.TYPE_AGENT_IMAGE.value -> {
-                MessageImageAgentViewHolder(inflateItem(R.layout.usedesk_item_ticket_comment_image_agent, parent))
+                MessageImageAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_image_agent, parent))
             }
             UsedeskChatItem.Type.TYPE_CLIENT_TEXT.value -> {
-                MessageTextClientViewHolder(inflateItem(R.layout.usedesk_item_ticket_comment_text_client, parent))
+                MessageTextClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_text_client, parent))
             }
             UsedeskChatItem.Type.TYPE_CLIENT_FILE.value -> {
-                MessageFileClientViewHolder(inflateItem(R.layout.usedesk_item_ticket_comment_file_client, parent))
+                MessageFileClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_file_client, parent))
             }
             UsedeskChatItem.Type.TYPE_CLIENT_IMAGE.value -> {
-                MessageImageClientViewHolder(inflateItem(R.layout.usedesk_item_ticket_comment_image_client, parent))
+                MessageImageClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_image_client, parent))
             }
             UsedeskChatItem.Type.TYPE_DATE.value -> {
-                DateViewHolder(inflateItem(R.layout.usedesk_item_ticket_date, parent))
+                DateViewHolder(inflateItem(R.layout.usedesk_item_chat_date, parent))
             }
             else -> {
                 throw RuntimeException("Unknown view type:$viewType")
@@ -115,7 +116,7 @@ internal class ItemsAdapter(
             bubble.setBackgroundResource(R.drawable.bubble_agent)
             tvText?.setTextColor(colorBlack)
 
-            tvName.text = messageAgent.name
+            tvName.text = customAgentName ?: messageAgent.name
             val initials = messageAgent.name.split(' ')
                     .filter { it.isNotEmpty() }
                     .take(2)
@@ -132,7 +133,7 @@ internal class ItemsAdapter(
 
     internal abstract inner class MessageTextViewHolder(
             itemView: View,
-            private val binding: UsedeskItemTicketCommentTextBinding)
+            private val binding: UsedeskItemChatMessageTextBinding)
         : MessageViewHolder(itemView, binding.tvTime) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {
@@ -141,44 +142,18 @@ internal class ItemsAdapter(
         }
 
         private fun bindText(messageText: UsedeskMessageText) {
-            val text: String
-            val html: String
+            binding.tvText.text = Html.fromHtml(messageText.text)
 
-
-            val divIndex = messageText.text.indexOf("<div")
-
-            if (divIndex >= 0) {
-                text = messageText.text.substring(0, divIndex)
-
-                html = messageText.text
-                        .removePrefix(text)
-            } else {
-                text = messageText.text
-                html = ""
-            }
-
-            binding.tvText.visibility = visibleGone(text.isNotEmpty())
-            val convertedText = text
-                    .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
-                    .replace("</strong>", "</b>")
-                    .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
-                    .replace("</em>", "</i>")
-                    .replace("</p>", "")
-                    .removePrefix("<p>")
-                    .trim()
-
-            binding.tvText.text = Html.fromHtml(convertedText.trim())
-
-            binding.tvLink.visibility = visibleGone(html.isNotEmpty())
+            binding.tvLink.visibility = visibleGone(messageText.html.isNotEmpty())
             binding.tvLink.setOnClickListener {
-                viewModel.onShowHtmlClick(html)
+                onHtmlClick(messageText.html)
             }
         }
     }
 
     internal abstract inner class MessageFileViewHolder(
             itemView: View,
-            private val binding: UsedeskItemTicketCommentFileBinding
+            private val binding: UsedeskItemChatMessageFileBinding
     ) : MessageViewHolder(itemView, binding.tvTime) {
 
         override fun bind(chatItem: UsedeskChatItem,
@@ -199,14 +174,14 @@ internal class ItemsAdapter(
             }
             binding.tvFileSize.text = messageFile.file.size
             binding.lRoot.setOnClickListener {
-                onClickFile(messageFile.file)
+                onFileClick(messageFile.file)
             }
         }
     }
 
     internal abstract inner class MessageImageViewHolder(
             itemView: View,
-            private val binding: UsedeskItemTicketCommentImageBinding
+            private val binding: UsedeskItemChatMessageImageBinding
     ) : MessageViewHolder(itemView, binding.tvTime) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {
@@ -223,7 +198,7 @@ internal class ItemsAdapter(
                     binding.pbLoading,
                     binding.ivError, {
                 binding.ivPreview.setOnClickListener {
-                    onClickFile(messageFile.file)
+                    onFileClick(messageFile.file)
                 }
             }, {
                 binding.ivError.setOnClickListener {
@@ -234,7 +209,7 @@ internal class ItemsAdapter(
     }
 
     internal inner class DateViewHolder(
-            private val binding: UsedeskItemTicketDateBinding
+            private val binding: UsedeskItemChatDateBinding
     ) : ChatItemViewHolder(binding.root) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {
@@ -255,11 +230,11 @@ internal class ItemsAdapter(
     }
 
     internal inner class MessageTextClientViewHolder(
-            binding: UsedeskItemTicketCommentTextClientBinding
+            binding: UsedeskItemChatMessageTextClientBinding
     ) : MessageTextViewHolder(binding.root, binding.content)
 
     internal inner class MessageFileClientViewHolder(
-            private val binding: UsedeskItemTicketCommentFileClientBinding
+            private val binding: UsedeskItemChatMessageFileClientBinding
     ) : MessageFileViewHolder(binding.root, binding.content) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {
@@ -271,11 +246,11 @@ internal class ItemsAdapter(
     }
 
     internal inner class MessageImageClientViewHolder(
-            binding: UsedeskItemTicketCommentImageClientBinding
+            binding: UsedeskItemChatMessageImageClientBinding
     ) : MessageImageViewHolder(binding.root, binding.content)
 
     internal inner class MessageTextAgentViewHolder(
-            private val binding: UsedeskItemTicketCommentTextAgentBinding
+            private val binding: UsedeskItemChatMessageTextAgentBinding
     ) : MessageTextViewHolder(binding.root, binding.content) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {
@@ -289,7 +264,7 @@ internal class ItemsAdapter(
     }
 
     internal inner class MessageFileAgentViewHolder(
-            private val binding: UsedeskItemTicketCommentFileAgentBinding
+            private val binding: UsedeskItemChatMessageFileAgentBinding
     ) : MessageFileViewHolder(binding.root, binding.content) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {
@@ -305,7 +280,7 @@ internal class ItemsAdapter(
     }
 
     internal inner class MessageImageAgentViewHolder(
-            private val binding: UsedeskItemTicketCommentImageAgentBinding
+            private val binding: UsedeskItemChatMessageImageAgentBinding
     ) : MessageImageViewHolder(binding.root, binding.content) {
 
         override fun bind(chatItem: UsedeskChatItem, position: Int) {

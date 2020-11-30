@@ -2,6 +2,7 @@ package ru.usedesk.chat_sdk.external.entity
 
 import com.google.gson.annotations.SerializedName
 
+@Deprecated("Use new data class UsedeskChatItem")
 class UsedeskPayload {
     @SerializedName(KEY_TICKET_ID)
     val ticketId: Long = 0

@@ -49,7 +49,7 @@
 
                 <include
                     android:id="@+id/content"
-                    layout="@layout/usedesk_item_ticket_comment_text" />
+                    layout="@layout/usedesk_item_chat_message_text" />
 
             </FrameLayout>
 

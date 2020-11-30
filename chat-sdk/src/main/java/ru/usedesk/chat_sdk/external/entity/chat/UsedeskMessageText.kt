@@ -4,5 +4,6 @@ import java.util.*
 
 abstract class UsedeskMessageText(
         calendar: Calendar,
-        val text: String
+        val text: String,
+        val html: String
 ) : UsedeskChatItem(calendar)

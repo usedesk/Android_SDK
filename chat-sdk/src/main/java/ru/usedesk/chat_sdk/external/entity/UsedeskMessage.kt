@@ -3,7 +3,8 @@ package ru.usedesk.chat_sdk.external.entity
 import android.text.Html
 import ru.usedesk.chat_sdk.internal.domain.entity.BaseMessage
 
-class UsedeskMessage(//TODO: сделать прослойку, чтобы из repository возвращались уже объекты с проверенными полями, иначе хуйня получается
+@Deprecated("Use new data class UsedeskChatItem")
+class UsedeskMessage(
         baseMessage: BaseMessage,
         val usedeskPayload: UsedeskPayload?,
         val stringPayload: String?

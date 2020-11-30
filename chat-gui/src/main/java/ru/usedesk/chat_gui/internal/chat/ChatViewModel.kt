@@ -31,7 +31,7 @@ class ChatViewModel : UsedeskViewModel() {
         usedeskChat = UsedeskChatSdk.getInstance()
 
         clearFileInfoList()
-        addDisposable(actionListenerRx.ticketItemsObservable.subscribe {
+        addDisposable(actionListenerRx.chatItemsObservable.subscribe {
             chatItemsLiveData.postValue(it.reversed())
         })
         addDisposable(actionListenerRx.offlineFormExpectedObservable.subscribe {
@@ -56,10 +56,6 @@ class ChatViewModel : UsedeskViewModel() {
 
     private fun clearFileInfoList() {
         fileInfoListLiveData.value = listOf()
-    }
-
-    fun onShowHtmlClick(html: String) {
-        //TODO:
     }
 
     fun setAttachedFiles(usedeskFileInfoList: List<UsedeskFileInfo>) {

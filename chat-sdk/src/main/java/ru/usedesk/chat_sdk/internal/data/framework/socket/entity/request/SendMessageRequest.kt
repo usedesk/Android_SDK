@@ -4,7 +4,7 @@ import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 
 class SendMessageRequest(
         token: String,
-        text: String? = null,
+        text: String? = " ",
         usedeskFile: UsedeskFile? = null
 ) : BaseRequest(TYPE, token) {
 
@@ -15,7 +15,7 @@ class SendMessageRequest(
     }
 
     private class RequestMessage(
-            private val text: String? = null,
-            private val usedeskFile: UsedeskFile? = null
+            private val text: String?,
+            private val usedeskFile: UsedeskFile?
     )
 }

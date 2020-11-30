@@ -5,56 +5,41 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="6dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="bottom"
-            android:fontFamily="@font/sf_ui_display_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            tools:background="@drawable/background_avatar_dark"
-            tools:text="AB" />
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingVertical="6dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="8dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layoutDirection="ltr"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="start"
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:singleLine="true"
-                android:textColor="@color/usedesk_gray_dark"
+                android:textColor="@color/grayDark"
                 tools:text="Алена Ошева" />
 
             <FrameLayout
-                android:id="@+id/l_agent"
+                android:id="@+id/l_client"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bubble_agent"
-                android:padding="2dp">
+                android:layout_gravity="end"
+                android:background="@drawable/bubble_your">
 
                 <include
                     android:id="@+id/content"
-                    layout="@layout/usedesk_item_ticket_comment_image" />
+                    layout="@layout/usedesk_item_chat_message_text" />
 
             </FrameLayout>
-
         </LinearLayout>
     </LinearLayout>
-
 </layout>

@@ -5,8 +5,7 @@ import java.util.*
 
 class UsedeskMessageClientFile(
         calendar: Calendar,
-        file: UsedeskFile,
-        override val received: Boolean
+        file: UsedeskFile
 ) : UsedeskMessageFile(calendar, file), UsedeskMessageClient {
     override val type: Type = Type.TYPE_CLIENT_FILE
 }

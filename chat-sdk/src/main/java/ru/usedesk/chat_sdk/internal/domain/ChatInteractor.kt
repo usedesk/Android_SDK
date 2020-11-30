@@ -8,6 +8,7 @@ import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.chat_sdk.external.entity.chat.*
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitChatResponse
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
@@ -181,6 +182,92 @@ class ChatInteractor(
         if ((hasText || hasFile) && !messageIds.contains(message.id) && message.id != null) {
             messageIds.add(message.id)
             actionListener.onMessageReceived(message)
+            convertAll(listOf(message)).forEach {
+                actionListener.onChatItemReceived(it)
+            }
+        }
+    }
+
+    private fun convertAll(usedeskMessages: List<UsedeskMessage>): List<UsedeskChatItem> {
+        return usedeskMessages.mapNotNull {
+            convert(it)
+        }
+    }
+
+    private fun convert(usedeskMessage: UsedeskMessage): UsedeskChatItem? {//TODO: перенести это в interactor
+        val fromClient: Boolean = when (usedeskMessage.type) {
+            UsedeskMessageType.CLIENT_TO_OPERATOR,
+            UsedeskMessageType.CLIENT_TO_BOT -> {
+                true
+            }
+            UsedeskMessageType.OPERATOR_TO_CLIENT,
+            UsedeskMessageType.BOT_TO_CLIENT -> {
+                false
+            }
+            else -> {
+                return null
+            }
+        }
+        val messageDate = Calendar.getInstance()
+        return if (usedeskMessage.file != null) {
+            if (usedeskMessage.file.isImage()) {
+                if (fromClient) {
+                    UsedeskMessageClientImage(messageDate,
+                            usedeskMessage.file)
+                } else {
+                    UsedeskMessageAgentImage(messageDate,
+                            usedeskMessage.file,
+                            usedeskMessage.name ?: "",
+                            usedeskMessage.usedeskPayload?.avatar ?: "")
+                }
+            } else {
+                if (fromClient) {
+                    UsedeskMessageClientFile(messageDate,
+                            usedeskMessage.file)
+                } else {
+                    UsedeskMessageAgentFile(messageDate,
+                            usedeskMessage.file,
+                            usedeskMessage.name ?: "",
+                            usedeskMessage.usedeskPayload?.avatar ?: "")
+                }
+            }
+        } else {
+            val text: String
+            val html: String
+
+            val divIndex = usedeskMessage.text.indexOf("<div")
+
+            if (divIndex >= 0) {
+                text = usedeskMessage.text.substring(0, divIndex)
+
+                html = usedeskMessage.text.removePrefix(text)
+            } else {
+                text = usedeskMessage.text
+                html = ""
+            }
+
+            val convertedText = text
+                    .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
+                    .replace("</strong>", "</b>")
+                    .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
+                    .replace("</em>", "</i>")
+                    .replace("</p>", "")
+                    .removePrefix("<p>")
+                    .trim()
+
+            if (text.isEmpty() && html.isEmpty()) {
+                null
+            } else if (fromClient) {
+                UsedeskMessageClientText(messageDate,
+                        convertedText,
+                        html)
+            } else {
+                UsedeskMessageAgentText(messageDate,
+                        convertedText,
+                        html,
+                        usedeskMessage.name ?: "",
+                        usedeskMessage.usedeskPayload?.avatar ?: "")
+            }
         }
     }
 
@@ -193,6 +280,7 @@ class ChatInteractor(
                 needSetEmail = true
             }
             actionListener.onMessagesReceived(setup.getMessages())
+            actionListener.onChatItemsReceived(convertAll(setup.getMessages()))
             if (setup.isNoOperators) {
                 actionListener.onOfflineFormExpected(configuration)
             }

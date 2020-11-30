@@ -66,13 +66,11 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         ItemsAdapter(viewModel,
                 binding.rvMessages,
                 agentName,
-                viewLifecycleOwner) { file ->
-            requireActivity().also {
-                if (it is IUsedeskOnFileClickListener) {
-                    it.onFileClick(file)
-                }
-            }
-        }
+                viewLifecycleOwner, { file ->
+            getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
+        }, { html ->
+            getParentListener<IUsedeskOnHtmlClickListener>()?.onHtmlClick(html)
+        })
         viewModel.feedbacksLiveData.observe(viewLifecycleOwner) {
             onFeedbacks(it)
         }
@@ -81,6 +79,20 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         }
         viewModel.chatItemsLiveData.observe(viewLifecycleOwner) {
             showInstead(binding.ltContent, binding.tvLoading, it != null)
+        }
+    }
+
+    private inline fun <reified T> getParentListener(): T? {
+        return when {
+            activity is T -> {
+                activity as T
+            }
+            parentFragment is T -> {
+                parentFragment as T
+            }
+            else -> {
+                null
+            }
         }
     }
 

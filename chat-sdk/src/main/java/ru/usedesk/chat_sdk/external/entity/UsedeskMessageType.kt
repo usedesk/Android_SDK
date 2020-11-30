@@ -2,6 +2,7 @@ package ru.usedesk.chat_sdk.external.entity
 
 import com.google.gson.annotations.SerializedName
 
+@Deprecated("Use new data class UsedeskChatItem")
 enum class UsedeskMessageType {
     @SerializedName("operator_to_client")
     OPERATOR_TO_CLIENT,

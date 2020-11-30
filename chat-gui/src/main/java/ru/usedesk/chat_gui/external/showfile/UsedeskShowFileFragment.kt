@@ -26,7 +26,7 @@ class UsedeskShowFileFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val json = argsGetString(arguments, FILE_URL_KEY)
+        val json = argsGetString(FILE_URL_KEY)
 
         binding = inflateBinding(inflater,
                 container,

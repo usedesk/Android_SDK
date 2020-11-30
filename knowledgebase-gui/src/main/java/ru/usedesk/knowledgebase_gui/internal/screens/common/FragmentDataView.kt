@@ -6,16 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import ru.usedesk.common_gui.internal.UsedeskFragment
 import ru.usedesk.common_gui.internal.inflateBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 
 abstract class FragmentDataView<DATA>(
         private val layoutId: Int,
-        private val defaultStyleId: Int
-) : Fragment() {
+        defaultStyleId: Int
+) : UsedeskFragment(defaultStyleId) {
+
     private lateinit var textViewMessage: TextView
     private lateinit var binding: ViewDataBinding
     private lateinit var container: View

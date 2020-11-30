@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.common_gui.internal.argsGetString
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.FragmentListView
@@ -26,7 +25,7 @@ class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody>(
     }
 
     override fun init() {
-        val searchQuery = argsGetString(arguments, SEARCH_QUERY_KEY)
+        val searchQuery = argsGetString(SEARCH_QUERY_KEY)
         if (searchQuery != null) {
             viewModel.init(searchQuery)
         }

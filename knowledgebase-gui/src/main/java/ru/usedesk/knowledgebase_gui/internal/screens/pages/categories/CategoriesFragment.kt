@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.common_gui.internal.argsGetLong
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.internal.screens.pages.FragmentListView
@@ -26,7 +25,7 @@ class CategoriesFragment : FragmentListView<UsedeskCategory>(
     }
 
     override fun init() {
-        val sectionId = argsGetLong(arguments, SECTION_ID_KEY)
+        val sectionId = argsGetLong(SECTION_ID_KEY)
         if (sectionId != null) {
             viewModel.init(sectionId)
         }

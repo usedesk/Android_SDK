@@ -22,7 +22,7 @@
             android:textColor="#FFFFFF"
             android:textSize="17sp"
             android:textStyle="bold"
-            tools:background="@drawable/background_agent_avatar_black"
+            tools:background="@drawable/background_avatar_dark"
             tools:text="AB" />
 
         <LinearLayout

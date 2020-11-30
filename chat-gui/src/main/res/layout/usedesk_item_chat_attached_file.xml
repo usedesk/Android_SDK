@@ -6,20 +6,26 @@
     <FrameLayout
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_margin="4dp"
-        tools:theme="@style/Usedesk.Theme.Chat">
+        android:layout_marginHorizontal="2dp">
 
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/iv_preview"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
             android:layout_margin="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            app:riv_corner_radius="2dp"
-            tools:src="@android:drawable/sym_def_app_icon" />
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            tools:theme="@style/Usedesk.Theme.Chat">
+
+            <ImageView
+                android:id="@+id/iv_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                tools:src="@android:drawable/sym_def_app_icon" />
+        </androidx.cardview.widget.CardView>
 
         <ImageView
             android:id="@+id/iv_detach"

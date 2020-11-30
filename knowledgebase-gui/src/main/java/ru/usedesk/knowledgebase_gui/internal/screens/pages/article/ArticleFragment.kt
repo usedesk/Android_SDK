@@ -7,7 +7,6 @@ import android.webkit.WebView
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
-import ru.usedesk.common_gui.internal.argsGetLong
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.internal.screens.common.FragmentDataView
 import ru.usedesk.knowledgebase_gui.internal.screens.entity.DataOrMessage
@@ -33,7 +32,7 @@ class ArticleFragment : FragmentDataView<UsedeskArticleBody>(
     }
 
     override fun init() {
-        val articleId = argsGetLong(arguments, ARTICLE_ID_KEY)
+        val articleId = argsGetLong(ARTICLE_ID_KEY)
         if (articleId != null) {
             viewModel.init(articleId)
         }

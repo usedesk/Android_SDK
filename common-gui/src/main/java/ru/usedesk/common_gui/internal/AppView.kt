@@ -1,7 +1,6 @@
 package ru.usedesk.common_gui.internal
 
 import android.content.Context
-import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -48,50 +47,6 @@ fun <T> observe(lifecycleOwner: LifecycleOwner,
     liveData.observe(lifecycleOwner, Observer(lambda))
 }
 
-fun argsGetInt(arguments: Bundle?, key: String, default: Int): Int {
-    return arguments?.getInt(key, default) ?: default
-}
-
-fun argsGetInt(arguments: Bundle?, key: String): Int? {
-    return if (arguments?.containsKey(key) == true) {
-        arguments.getInt(key)
-    } else {
-        null
-    }
-}
-
-fun argsGetLong(arguments: Bundle?, key: String, default: Long): Long {
-    return arguments?.getLong(key, default) ?: default
-}
-
-fun argsGetLong(arguments: Bundle?, key: String): Long? {
-    return if (arguments?.containsKey(key) == true) {
-        arguments.getLong(key)
-    } else {
-        null
-    }
-}
-
-fun argsGetBoolean(arguments: Bundle?, key: String, default: Boolean): Boolean {
-    return arguments?.getBoolean(key, default) ?: default
-}
-
-fun argsGetBoolean(arguments: Bundle?, key: String): Boolean? {
-    return if (arguments?.containsKey(key) == true) {
-        arguments.getBoolean(key)
-    } else {
-        null
-    }
-}
-
-fun argsGetString(arguments: Bundle?, key: String, default: String): String {
-    return arguments?.getString(key) ?: default
-}
-
-fun argsGetString(arguments: Bundle?, key: String): String? {
-    return arguments?.getString(key)
-}
-
 private fun getInputMethodManager(view: View) =
         view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
 
@@ -112,14 +67,6 @@ fun hideKeyboard(view: View) {
     view.run {
         getInputMethodManager(view)?.hideSoftInputFromWindow(view.windowToken, 0)
     }
-}
-
-fun getString(binding: ViewDataBinding, stringId: Int): String {
-    return getString(binding.root, stringId)
-}
-
-fun getString(view: View, stringId: Int): String {
-    return view.resources.getString(stringId)
 }
 
 fun visibleGone(visible: Boolean): Int {

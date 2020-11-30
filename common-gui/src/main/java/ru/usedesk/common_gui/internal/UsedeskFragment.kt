@@ -49,4 +49,52 @@ abstract class UsedeskFragment(
         attrs.recycle()
         return value
     }
+
+
+    fun argsGetInt(key: String, default: Int): Int {
+        return arguments?.getInt(key, default) ?: default
+    }
+
+    fun argsGetInt(key: String): Int? {
+        val args = arguments
+        return if (args?.containsKey(key) == true) {
+            args.getInt(key)
+        } else {
+            null
+        }
+    }
+
+    fun argsGetLong(key: String, default: Long): Long {
+        return arguments?.getLong(key, default) ?: default
+    }
+
+    fun argsGetLong(key: String): Long? {
+        val args = arguments
+        return if (args?.containsKey(key) == true) {
+            args.getLong(key)
+        } else {
+            null
+        }
+    }
+
+    fun argsGetBoolean(key: String, default: Boolean): Boolean {
+        return arguments?.getBoolean(key, default) ?: default
+    }
+
+    fun argsGetBoolean(key: String): Boolean? {
+        val args = arguments
+        return if (args?.containsKey(key) == true) {
+            args.getBoolean(key)
+        } else {
+            null
+        }
+    }
+
+    fun argsGetString(key: String, default: String): String {
+        return arguments?.getString(key) ?: default
+    }
+
+    fun argsGetString(key: String): String? {
+        return arguments?.getString(key)
+    }
 }

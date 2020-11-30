@@ -30,7 +30,7 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         doInit {
-            val agentName: String? = argsGetString(arguments, AGENT_NAME_KEY)
+            val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
             binding = inflateBinding(inflater,
                     container,

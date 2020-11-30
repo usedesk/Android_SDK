@@ -15,7 +15,6 @@ import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageAgent
 import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageFile
 import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageText
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
-import ru.usedesk.common_gui.internal.formatSize
 import ru.usedesk.common_gui.internal.inflateItem
 import ru.usedesk.common_gui.internal.showImage
 import ru.usedesk.common_gui.internal.visibleGone
@@ -124,9 +123,9 @@ internal class ItemsAdapter(
                     .joinToString(separator = "")
             tvAvatar.text = initials//TODO: avatar image
             tvAvatar.setBackgroundResource(if (initials.isEmpty()) {
-                R.drawable.background_agent_avatar_def
+                R.drawable.background_avatar_def
             } else {
-                R.drawable.background_agent_avatar_black
+                R.drawable.background_avatar_dark
             })
         }
     }
@@ -198,8 +197,7 @@ internal class ItemsAdapter(
             } else {
                 ""
             }
-            val size = messageFile.file.size.toLongOrNull() ?: 0L
-            binding.tvFileSize.text = formatSize(recyclerView.context, size)
+            binding.tvFileSize.text = messageFile.file.size
             binding.lRoot.setOnClickListener {
                 onClickFile(messageFile.file)
             }

@@ -17,6 +17,7 @@
             android:id="@+id/pick_photo_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginVertical="24dp"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -25,22 +26,24 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:layout_margin="12dp"
                 android:duplicateParentState="true"
-                app:srcCompat="?attr/usedesk_attachment_panel_gallery_icon" />
+                app:srcCompat="@drawable/ic_gallery" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:duplicateParentState="true"
-                android:text="?attr/usedesk_attachment_panel_gallery_title" />
+                android:text="Image" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/take_photo_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginVertical="24dp"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -49,10 +52,11 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:duplicateParentState="true"
-                app:srcCompat="?attr/usedesk_attachment_panel_camera_icon" />
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:layout_margin="12dp"
+                android:background="@drawable/ic_camera"
+                android:duplicateParentState="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -65,6 +69,7 @@
             android:id="@+id/pick_document_button"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginVertical="24dp"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -73,10 +78,11 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:layout_margin="12dp"
                 android:duplicateParentState="true"
-                app:srcCompat="?attr/usedesk_attachment_panel_storage_icon" />
+                app:srcCompat="@drawable/ic_storage" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -32,17 +32,19 @@
 
                 <TextView
                     android:id="@+id/tv_extension"
-                    android:layout_width="wrap_content"
+                    android:layout_width="24dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="8dp"
+                    android:ellipsize="end"
+                    android:gravity="center"
                     android:includeFontPadding="false"
-                    android:maxLength="4"
+                    android:singleLine="true"
                     android:textColor="#F4F6FA"
                     android:textSize="9sp"
                     android:textStyle="bold"
-                    tools:text="DOCX" />
+                    tools:text="EXTENSION" />
             </FrameLayout>
 
             <LinearLayout

@@ -4,7 +4,10 @@ import ru.usedesk.chat_sdk.external.entity.*
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader
 import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.*
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest
 import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException
@@ -43,7 +46,7 @@ class ApiRepository(
     @Throws(UsedeskException::class)
     override fun send(token: String, text: String) {
         checkConnection()
-        socketApi.sendRequest(SendMessageRequest(token, RequestMessage(text)))
+        socketApi.sendRequest(SendMessageRequest(token, text = text))
     }
 
     @Throws(UsedeskSocketException::class)
@@ -57,7 +60,7 @@ class ApiRepository(
     override fun send(token: String, usedeskFileInfo: UsedeskFileInfo) {
         checkConnection()
         val usedeskFile = fileInfoLoader.getFrom(usedeskFileInfo)
-        socketApi.sendRequest(SendMessageRequest(token, RequestMessage(usedeskFile)))
+        socketApi.sendRequest(SendMessageRequest(token, usedeskFile = usedeskFile))
     }
 
     @Throws(UsedeskException::class)

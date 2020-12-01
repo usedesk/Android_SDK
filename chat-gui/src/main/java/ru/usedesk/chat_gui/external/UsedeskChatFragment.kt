@@ -97,7 +97,7 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
     }
 
     private fun openAttachmentDialog() {
-        val bottomSheetDialog = BottomSheetDialog(requireContext())//TODO: сделать отдельным файлом, + сделать кастомизируемым
+        val bottomSheetDialog = BottomSheetDialog(requireContext())//TODO: сделать отдельным файлом + сделать кастомизируемым
         val bottomSheetBinding = inflateBinding<UsedeskDialogAttachmentBinding>(layoutInflater,
                 binding.lRoot,
                 R.layout.usedesk_dialog_attachment,

@@ -7,16 +7,21 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONException
 import org.json.JSONObject
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.external.entity.chat.*
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.BaseRequest
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.*
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.init.InitChatResponse
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.init.InitedChat
+import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
+import java.util.*
 
 @InjectConstructor
 class SocketApi(
@@ -25,8 +30,16 @@ class SocketApi(
 
     private val emitterListeners: MutableMap<String, Emitter.Listener> = hashMapOf()
     private var socket: Socket? = null
-    private var actionListener: IUsedeskActionListener? = null
-    private var onMessageListener: OnMessageListener? = null
+
+    private lateinit var configuration: UsedeskChatConfiguration
+    private lateinit var token: String
+
+    private lateinit var onDisconnected: () -> Unit
+    private lateinit var onTokenError: () -> Unit
+    private lateinit var onInited: (InitChatResponse) -> Unit
+    private lateinit var onNew: (UsedeskMessage) -> Unit
+    private lateinit var onFeedback: () -> Unit
+    private lateinit var onException: (Exception) -> Unit
 
     private val disconnectEmitterListener = Emitter.Listener {
         onDisconnected()
@@ -37,23 +50,129 @@ class SocketApi(
     }
 
     private val connectEmitterListener = Emitter.Listener {
-        onConnect()
+        onInitChat()
     }
 
     private val baseEventEmitterListener = Emitter.Listener {
         onResponse(it[0].toString())
     }
 
-    private fun onDisconnected() {
-        actionListener?.onDisconnected()
-    }
-
     private fun onConnectError() {
-        actionListener?.onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))
+        onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))
     }
 
-    private fun onConnect() {
-        onMessageListener?.onInitChat()
+    private fun onInitChat() {
+        sendRequest(InitChatRequest(token,
+                configuration.companyId,
+                configuration.url))
+    }
+
+    private fun convert(initChatResponse: InitChatResponse): InitedChat? {
+        return try {
+            InitedChat(
+                    initChatResponse.token!!,
+                    initChatResponse.noOperators!!,
+                    initChatResponse.setup!!.waitingEmail!!,
+                    convert(initChatResponse.setup.messages ?: listOf())
+            )
+        } catch (e: Exception) {
+            onException(e)
+            null
+        }
+    }
+
+    private fun convert(messages: List<InitChatResponse.Setup.Message?>): List<UsedeskChatItem> {
+        return messages.flatMap {
+            try {
+                convert(it?.payload)
+            } catch (e: Exception) {
+                listOf()
+            }
+        }
+    }
+
+    private fun convert(message: InitChatResponse.Setup.Message.Payload?): List<UsedeskChatItem> {
+        val fromClient: Boolean = when (message!!.type) {
+            InitChatResponse.Setup.Message.Payload.Type.CLIENT_TO_OPERATOR,
+            InitChatResponse.Setup.Message.Payload.Type.CLIENT_TO_BOT -> {
+                true
+            }
+            InitChatResponse.Setup.Message.Payload.Type.OPERATOR_TO_CLIENT,
+            InitChatResponse.Setup.Message.Payload.Type.BOT_TO_CLIENT -> {
+                false
+            }
+            else -> {
+                return listOf()
+            }
+        }
+        val messageDate = Calendar.getInstance()
+
+        if (message.file != null) {
+            val file = UsedeskFile(message.file.content!!,
+                    message.file.type!!,
+                    message.file.size!!,
+                    message.file.name!!)
+
+            if (file.isImage()) {
+                if (fromClient) {
+                    UsedeskMessageClientImage(messageDate, file)
+                } else {
+                    UsedeskMessageAgentImage(messageDate,
+                            file,
+                            message.name ?: "",
+                            message.usedeskPayload?.avatar ?: "")
+                }
+            } else {
+                if (fromClient) {
+                    UsedeskMessageClientFile(messageDate,
+                            file)
+                } else {
+                    UsedeskMessageAgentFile(messageDate,
+                            file,
+                            message.name ?: "",
+                            message.usedeskPayload?.avatar ?: "")
+                }
+            }
+        }
+
+        if (message.text?.isNotEmpty() == true) {
+            val text: String
+            val html: String
+
+            val divIndex = message.text.indexOf("<div")
+
+            if (divIndex >= 0) {
+                text = message.text.substring(0, divIndex)
+
+                html = message.text.removePrefix(text)
+            } else {
+                text = message.text
+                html = ""
+            }
+
+            val convertedText = text
+                    .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
+                    .replace("</strong>", "</b>")
+                    .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
+                    .replace("</em>", "</i>")
+                    .replace("</p>", "")
+                    .removePrefix("<p>")
+                    .trim()
+
+            if (text.isEmpty() && html.isEmpty()) {
+                null
+            } else if (fromClient) {
+                UsedeskMessageClientText(messageDate,
+                        convertedText,
+                        html)
+            } else {
+                UsedeskMessageAgentText(messageDate,
+                        convertedText,
+                        html,
+                        message.name ?: "",
+                        message.usedeskPayload?.avatar ?: "")
+            }
+        }
     }
 
     private fun onResponse(rawResponse: String) {
@@ -65,25 +184,25 @@ class SocketApi(
                     val usedeskSocketException: UsedeskSocketException
                     usedeskSocketException = when (errorResponse.code) {
                         HttpURLConnection.HTTP_FORBIDDEN -> {
-                            onMessageListener?.onTokenError()
+                            onTokenError()
                             UsedeskSocketException(UsedeskSocketException.Error.FORBIDDEN_ERROR, errorResponse.message)
                         }
                         HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(UsedeskSocketException.Error.BAD_REQUEST_ERROR, errorResponse.message)
                         HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(UsedeskSocketException.Error.INTERNAL_SERVER_ERROR, errorResponse.message)
                         else -> UsedeskSocketException(UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR, errorResponse.message)
                     }
-                    actionListener?.onException(usedeskSocketException)
+                    onException(usedeskSocketException)
                 }
                 InitChatResponse.TYPE -> {
-                    onMessageListener?.onInit(response as InitChatResponse)
+                    onInited(response as InitChatResponse)
                 }
                 SetEmailResponse.TYPE -> {
                 }
                 NewMessageResponse.TYPE -> {
                     val newMessageResponse = response as NewMessageResponse
-                    onMessageListener?.onNew(newMessageResponse.message)
+                    onNew(newMessageResponse.message)
                 }
-                SendFeedbackResponse.TYPE -> onMessageListener?.onFeedback()
+                SendFeedbackResponse.TYPE -> onFeedback()
             }
         }
     }
@@ -93,8 +212,14 @@ class SocketApi(
     }
 
     @Throws(UsedeskException::class)
-    fun connect(url: String, actionListener: IUsedeskActionListener,
-                onMessageListener: OnMessageListener) {
+    fun connect(url: String,
+                onDisconnected: () -> Unit,
+                onTokenError: () -> Unit,
+                onInit: (InitChatResponse) -> Unit,
+                onNew: (UsedeskMessage) -> Unit,
+                onFeedback: () -> Unit,
+                onException: (Exception) -> Unit
+    ) {
         if (socket != null) {
             return
         }
@@ -103,8 +228,13 @@ class SocketApi(
         } catch (e: URISyntaxException) {
             throw UsedeskSocketException(UsedeskSocketException.Error.IO_ERROR, e.message)
         }
-        this.actionListener = actionListener
-        this.onMessageListener = onMessageListener
+
+        this.onDisconnected = onDisconnected
+        this.onTokenError = onTokenError
+        this.onInited = onInited
+        this.onNew = onNew
+        this.onFeedback = onFeedback
+        this.onException = onException
 
         emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
         emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
@@ -149,7 +279,7 @@ class SocketApi(
                 }
             }
         } catch (e: JsonParseException) {
-            actionListener?.onException(UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message))
+            onException(UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message))
         }
         return null
     }

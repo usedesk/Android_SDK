@@ -8,7 +8,6 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitCha
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException
@@ -20,15 +19,22 @@ import java.net.URL
 class ApiRepository(
         private val socketApi: SocketApi,
         private val httpApiLoader: IHttpApiLoader,
-        private val fileInfoLoader: IFileInfoLoader
+        private val fileInfoLoader: IFileInfoLoader,
+        private val onConnect: () -> Unit
 ) : IApiRepository {
 
     private fun isConnected() = socketApi.isConnected()
 
     @Throws(UsedeskException::class)
-    override fun connect(url: String, actionListener: IUsedeskActionListener,
-                         onMessageListener: OnMessageListener) {
-        socketApi.connect(url, actionListener, onMessageListener)
+    override fun connect(url: String,
+                         actionListener: IUsedeskActionListener,
+                         chatConfiguration: UsedeskChatConfiguration,
+                         token: String) {
+        socketApi.connect(url, {
+            actionListener.onDisconnected()
+        }, {
+            onMessageListener.onInitChat()
+        })
     }
 
     @Throws(UsedeskException::class)

@@ -9,11 +9,9 @@ import io.reactivex.CompletableEmitter
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.entity.*
 import ru.usedesk.chat_sdk.external.entity.chat.*
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.InitChatResponse
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Setup
+import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.init.InitChatResponse
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import toothpick.InjectConstructor
@@ -51,7 +49,7 @@ class ChatInteractor(
         } catch (e: UsedeskDataNotFoundException) {
             e.printStackTrace()
         }
-        apiRepository.connect(configuration.url, actionListener, onMessageListener)
+        apiRepository.connect(configuration.url, actionListener)
     }
 
     override fun disconnect() {
@@ -194,7 +192,7 @@ class ChatInteractor(
         }
     }
 
-    private fun convert(usedeskMessage: UsedeskMessage): UsedeskChatItem? {//TODO: перенести это в interactor
+    private fun convert(usedeskMessage: UsedeskMessage): UsedeskChatItem? {
         val fromClient: Boolean = when (usedeskMessage.type) {
             UsedeskMessageType.CLIENT_TO_OPERATOR,
             UsedeskMessageType.CLIENT_TO_BOT -> {
@@ -316,14 +314,6 @@ class ChatInteractor(
         override fun onInit(initChatResponse: InitChatResponse) {
             if (initChatResponse.token != null && initChatResponse.setup != null) {
                 parseInitResponse(initChatResponse.token, initChatResponse.setup)
-            }
-        }
-
-        override fun onInitChat() {
-            try {
-                apiRepository.init(configuration, token)
-            } catch (e: UsedeskException) {
-                actionListener.onException(e)
             }
         }
 

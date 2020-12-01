@@ -1,13 +1,11 @@
 package ru.usedesk.chat_sdk.internal.data.repository.api
 
 import ru.usedesk.chat_sdk.external.entity.*
-import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
 interface IApiRepository {
     @Throws(UsedeskException::class)
     fun connect(url: String,
-                actionListener: IUsedeskActionListener,
                 onMessageListener: OnMessageListener)
 
     @Throws(UsedeskException::class)

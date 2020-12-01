@@ -24,7 +24,7 @@ open class DataViewModel<T> protected constructor() : ViewModel() {
         disposable = single.subscribe({
             onData(it)
         }) {
-            onThrowable(it)
+            setData(DataOrMessage(DataOrMessage.Message.ERROR))
         }
     }
 
@@ -41,9 +41,5 @@ open class DataViewModel<T> protected constructor() : ViewModel() {
 
     protected open fun onData(data: T) {
         setData(DataOrMessage(data))
-    }
-
-    private fun onThrowable(throwable: Throwable) {
-        setData(DataOrMessage(DataOrMessage.Message.ERROR))
     }
 }

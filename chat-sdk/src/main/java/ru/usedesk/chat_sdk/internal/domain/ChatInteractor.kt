@@ -3,13 +3,17 @@ package ru.usedesk.chat_sdk.internal.domain
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.text.TextUtils
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import ru.usedesk.chat_sdk.external.IUsedeskChat
-import ru.usedesk.chat_sdk.external.entity.*
-import ru.usedesk.chat_sdk.external.entity.chat.*
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.init.InitChatResponse
+import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskMessageButton
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.internal._entity.ChatInited
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskDataNotFoundException
@@ -18,7 +22,7 @@ import toothpick.InjectConstructor
 import java.util.*
 
 @InjectConstructor
-class ChatInteractor(
+internal class ChatInteractor(
         private val context: Context,
         private val configuration: UsedeskChatConfiguration,
         private val actionListener: IUsedeskActionListener,
@@ -49,7 +53,57 @@ class ChatInteractor(
         } catch (e: UsedeskDataNotFoundException) {
             e.printStackTrace()
         }
-        apiRepository.connect(configuration.url, actionListener)
+        val eventListener = object : IApiRepository.EventListener {
+            override fun onConnected() {
+                actionListener.onConnected()
+            }
+
+            override fun onDisconnected() {
+                actionListener.onDisconnected()
+            }
+
+            override fun onTokenError() {
+                userInfoRepository.setToken(null)
+                try {
+                    token?.also {
+                        apiRepository.init(configuration, it)
+                    }
+                } catch (e: UsedeskException) {
+                    actionListener.onException(e)
+                }
+            }
+
+            override fun onFeedback() {
+                actionListener.onFeedbackReceived()
+            }
+
+            override fun onException(exception: Exception) {
+                actionListener.onException(exception)
+            }
+
+            override fun onChatInited(chatInited: ChatInited) {
+                actionListener.onChatItemsReceived(chatInited.messages)
+            }
+
+            override fun onNewChatItems(newChatItems: List<UsedeskChatItem>) {
+                onChatItems(newChatItems)
+            }
+        }
+        apiRepository.connect(
+                configuration.url,
+                token,
+                configuration,
+                eventListener
+        )
+    }
+
+    private fun onChatItems(chatItems: List<UsedeskChatItem>) {
+        chatItems.filter {
+            !messageIds.contains(it.id)
+        }.forEach {
+            messageIds.add(it.id)
+            actionListener.onChatItemReceived(it)
+        }
     }
 
     override fun disconnect() {
@@ -174,117 +228,18 @@ class ChatInteractor(
         }
     }
 
-    private fun parseNewMessageResponse(message: UsedeskMessage) {
-        val hasText = !TextUtils.isEmpty(message.text)
-        val hasFile = message.file != null
-        if ((hasText || hasFile) && !messageIds.contains(message.id) && message.id != null) {
-            messageIds.add(message.id)
-            actionListener.onMessageReceived(message)
-            convertAll(listOf(message)).forEach {
-                actionListener.onChatItemReceived(it)
-            }
-        }
-    }
-
-    private fun convertAll(usedeskMessages: List<UsedeskMessage>): List<UsedeskChatItem> {
-        return usedeskMessages.mapNotNull {
-            convert(it)
-        }
-    }
-
-    private fun convert(usedeskMessage: UsedeskMessage): UsedeskChatItem? {
-        val fromClient: Boolean = when (usedeskMessage.type) {
-            UsedeskMessageType.CLIENT_TO_OPERATOR,
-            UsedeskMessageType.CLIENT_TO_BOT -> {
-                true
-            }
-            UsedeskMessageType.OPERATOR_TO_CLIENT,
-            UsedeskMessageType.BOT_TO_CLIENT -> {
-                false
-            }
-            else -> {
-                return null
-            }
-        }
-        val messageDate = Calendar.getInstance()
-        return if (usedeskMessage.file != null) {
-            if (usedeskMessage.file.isImage()) {
-                if (fromClient) {
-                    UsedeskMessageClientImage(messageDate,
-                            usedeskMessage.file)
-                } else {
-                    UsedeskMessageAgentImage(messageDate,
-                            usedeskMessage.file,
-                            usedeskMessage.name ?: "",
-                            usedeskMessage.usedeskPayload?.avatar ?: "")
-                }
-            } else {
-                if (fromClient) {
-                    UsedeskMessageClientFile(messageDate,
-                            usedeskMessage.file)
-                } else {
-                    UsedeskMessageAgentFile(messageDate,
-                            usedeskMessage.file,
-                            usedeskMessage.name ?: "",
-                            usedeskMessage.usedeskPayload?.avatar ?: "")
-                }
-            }
-        } else {
-            val text: String
-            val html: String
-
-            val divIndex = usedeskMessage.text.indexOf("<div")
-
-            if (divIndex >= 0) {
-                text = usedeskMessage.text.substring(0, divIndex)
-
-                html = usedeskMessage.text.removePrefix(text)
-            } else {
-                text = usedeskMessage.text
-                html = ""
-            }
-
-            val convertedText = text
-                    .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
-                    .replace("</strong>", "</b>")
-                    .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
-                    .replace("</em>", "</i>")
-                    .replace("</p>", "")
-                    .removePrefix("<p>")
-                    .trim()
-
-            if (text.isEmpty() && html.isEmpty()) {
-                null
-            } else if (fromClient) {
-                UsedeskMessageClientText(messageDate,
-                        convertedText,
-                        html)
-            } else {
-                UsedeskMessageAgentText(messageDate,
-                        convertedText,
-                        html,
-                        usedeskMessage.name ?: "",
-                        usedeskMessage.usedeskPayload?.avatar ?: "")
-            }
-        }
-    }
-
-    private fun parseInitResponse(token: String, setup: Setup?) {
-        this.token = token
+    private fun onInitedChat(chatChatInited: ChatInited) {
+        this.token = chatChatInited.token
         userInfoRepository.setToken(token)
         actionListener.onConnected()
-        if (setup != null) {
-            if (setup.waitingEmail) {
-                needSetEmail = true
-            }
-            actionListener.onMessagesReceived(setup.getMessages())
-            actionListener.onChatItemsReceived(convertAll(setup.getMessages()))
-            if (setup.isNoOperators) {
-                actionListener.onOfflineFormExpected(configuration)
-            }
-        } else {
+        if (chatChatInited.waitingEmail) {
             needSetEmail = true
         }
+        actionListener.onChatItemsReceived(chatChatInited.messages)
+        if (chatChatInited.noOperators) {
+            actionListener.onOfflineFormExpected(configuration)
+        }
+
         if (needSetEmail) {
             sendUserEmail()
         }
@@ -293,39 +248,11 @@ class ChatInteractor(
         } catch (ignore: UsedeskException) {
             null
         }
-        try {
+        if (initClientMessage != null) {
             if (!equals(initClientMessage, configuration.initClientMessage)) {
-                send(configuration.initClientMessage!!)
+                send(initClientMessage)
             }
-        } catch (ignore: UsedeskException) {
         }
         userInfoRepository.setConfiguration(configuration)
-    }
-
-    private val onMessageListener = object : OnMessageListener {
-        override fun onNew(message: UsedeskMessage) {
-            parseNewMessageResponse(message)
-        }
-
-        override fun onFeedback() {
-            actionListener.onFeedbackReceived()
-        }
-
-        override fun onInit(initChatResponse: InitChatResponse) {
-            if (initChatResponse.token != null && initChatResponse.setup != null) {
-                parseInitResponse(initChatResponse.token, initChatResponse.setup)
-            }
-        }
-
-        override fun onTokenError() {
-            userInfoRepository.setToken(null)
-            try {
-                token?.also {
-                    apiRepository.init(configuration, it)
-                }
-            } catch (e: UsedeskException) {
-                actionListener.onException(e)
-            }
-        }
     }
 }

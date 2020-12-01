@@ -4,18 +4,17 @@ import androidx.lifecycle.MutableLiveData
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm
-import ru.usedesk.chat_sdk.external.entity.chat.UsedeskChatItem
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.common_gui.internal.UsedeskViewModel
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import java.util.*
 
 class ChatViewModel : UsedeskViewModel() {
 
     val feedbacksLiveData = MutableLiveData<Set<Int>>()
-    val exceptionLiveData = MutableLiveData<UsedeskException>()
+    val exceptionLiveData = MutableLiveData<Exception>()
     val messagePanelStateLiveData = MutableLiveData(MessagePanelState.MESSAGE_PANEL)
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")

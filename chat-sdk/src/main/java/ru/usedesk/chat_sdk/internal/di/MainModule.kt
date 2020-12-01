@@ -17,11 +17,11 @@ import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.FileInfoLoader
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.HttpApiLoader
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader
-import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi
 import ru.usedesk.chat_sdk.internal.data.framework.token.ITokenLoader
 import ru.usedesk.chat_sdk.internal.data.framework.token.TokenLoader
 import ru.usedesk.chat_sdk.internal.data.repository.api.ApiRepository
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.internal.data.repository.api.loader.SocketApi
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.internal.domain.ChatInteractor

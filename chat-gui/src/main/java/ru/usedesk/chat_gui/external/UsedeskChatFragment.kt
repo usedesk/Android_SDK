@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -17,7 +16,6 @@ import ru.usedesk.chat_gui.internal.chat.*
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.common_gui.external.UsedeskToolbar
 import ru.usedesk.common_gui.internal.*
-import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
 class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
@@ -138,14 +136,8 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         }
     }
 
-    private fun onException(exception: UsedeskException?) {
-        if (exception != null) {
-            var message = exception.message
-            if (message == null) {
-                message = exception.toString()
-            }
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
+    private fun onException(exception: Exception) {
+        exception.printStackTrace()
     }
 
     private fun onFeedbacks(feedbacks: Set<Int>?) {

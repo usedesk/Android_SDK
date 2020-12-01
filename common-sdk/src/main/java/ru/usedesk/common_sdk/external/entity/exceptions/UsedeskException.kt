@@ -1,6 +1,6 @@
 package ru.usedesk.common_sdk.external.entity.exceptions
 
-abstract class UsedeskException : Exception {
+abstract class UsedeskException : RuntimeException {
 
     constructor()
 

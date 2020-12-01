@@ -1,10 +1,10 @@
 package ru.usedesk.chat_sdk.external
 
 import io.reactivex.Completable
-import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton
-import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskMessageButton
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 
 interface IUsedeskChat {

@@ -5,7 +5,7 @@ import io.reactivex.Observable
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk.getInstance
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageType
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageAgent
 import toothpick.InjectConstructor
 import java.util.concurrent.TimeUnit
 
@@ -16,8 +16,8 @@ class UsedeskNotificationsPresenter {
 
     val actionListener: IUsedeskActionListener = actionListenerRx
 
-    private val newModelObservable: Observable<UsedeskNotificationsModel> = actionListenerRx.newMessageObservable.filter {
-        it.type == UsedeskMessageType.OPERATOR_TO_CLIENT
+    private val newModelObservable: Observable<UsedeskNotificationsModel> = actionListenerRx.newChatItemObservable.filter {
+        it is UsedeskMessageAgent
     }.map {
         UsedeskNotificationsModel(it)
     }

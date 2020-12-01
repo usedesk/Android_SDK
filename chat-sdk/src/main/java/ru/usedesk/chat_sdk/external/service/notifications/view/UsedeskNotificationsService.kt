@@ -9,6 +9,8 @@ import androidx.core.app.NotificationCompat
 import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageAgent
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageText
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsModel
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter
 import toothpick.ktp.delegate.inject
@@ -18,14 +20,18 @@ abstract class UsedeskNotificationsService : Service() {
 
     lateinit var notificationManager: NotificationManager
         private set
+
     private var messagesDisposable: Disposable? = null
 
     protected open val channelId = "newUsedeskMessages"
     protected open val channelTitle = "Messages from operator"
+    protected open val fileMessage = "Sent the file"
 
     override fun onCreate() {
         super.onCreate()
+
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
         registerNotification()
     }
 
@@ -67,8 +73,10 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     private fun renderModel(model: UsedeskNotificationsModel?) {
-        if (model != null) {
-            showNotification(createNotification(model))
+        model?.also {
+            createNotification(it)?.also { notification ->
+                showNotification(notification)
+            }
         }
     }
 
@@ -76,28 +84,38 @@ abstract class UsedeskNotificationsService : Service() {
     protected open val contentPendingIntent: PendingIntent? = null
     protected open val deletePendingIntent: PendingIntent? = null
 
-    protected open fun createNotification(model: UsedeskNotificationsModel): Notification {
-        var title = model.message.name
-        val text = model.message.text
-        if (model.count > 1) {
-            title += " (" + model.count + ")"
+    protected open fun createNotification(model: UsedeskNotificationsModel): Notification? {
+        return if (model.message is UsedeskMessageAgent) {
+            var title = model.message.name
+            val text = if (model.message is UsedeskMessageText) {
+                model.message.text
+            } else {
+                fileMessage
+            }
+            if (model.count > 1) {
+                title += " (" + model.count + ")"
+            }
+            val notification = NotificationCompat.Builder(this, channelId)
+                    .setSmallIcon(R.drawable.ic_dialog_email)
+                    .setContentTitle(title)
+                    .setContentText(text)
+                    .setContentIntent(contentPendingIntent)
+                    .setDeleteIntent(deletePendingIntent)
+                    .build()
+            notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
+            notification
+        } else {
+            null
         }
-        val notification = NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_dialog_email)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setContentIntent(contentPendingIntent)
-                .setDeleteIntent(deletePendingIntent)
-                .build()
-        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
-        return notification
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (messagesDisposable != null) {
-            messagesDisposable!!.dispose()
+
+        messagesDisposable?.also {
+            it.dispose()
         }
+
         UsedeskChatSdk.release()
     }
 }

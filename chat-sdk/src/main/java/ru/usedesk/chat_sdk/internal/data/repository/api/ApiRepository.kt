@@ -1,13 +1,20 @@
 package ru.usedesk.chat_sdk.internal.data.repository.api
 
-import ru.usedesk.chat_sdk.external.entity.*
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.internal.data.framework.fileinfo.IFileInfoLoader
 import ru.usedesk.chat_sdk.internal.data.framework.httpapi.IHttpApiLoader
-import ru.usedesk.chat_sdk.internal.data.framework.socket.SocketApi
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.InitChatRequest
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendFeedbackRequest
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SendMessageRequest
-import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.request.SetEmailRequest
+import ru.usedesk.chat_sdk.internal.data.repository.api._entity.request.InitChatRequest
+import ru.usedesk.chat_sdk.internal.data.repository.api._entity.request.SendFeedbackRequest
+import ru.usedesk.chat_sdk.internal.data.repository.api._entity.request.SendMessageRequest
+import ru.usedesk.chat_sdk.internal.data.repository.api._entity.request.SetEmailRequest
+import ru.usedesk.chat_sdk.internal.data.repository.api._entity.response.ChatInitedResponse
+import ru.usedesk.chat_sdk.internal.data.repository.api._entity.response.MessageResponse
+import ru.usedesk.chat_sdk.internal.data.repository.api.loader.ChatInitedConverter
+import ru.usedesk.chat_sdk.internal.data.repository.api.loader.ChatItemConverter
+import ru.usedesk.chat_sdk.internal.data.repository.api.loader.SocketApi
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException
@@ -16,25 +23,22 @@ import java.io.IOException
 import java.net.URL
 
 @InjectConstructor
-class ApiRepository(
+internal class ApiRepository(
         private val socketApi: SocketApi,
         private val httpApiLoader: IHttpApiLoader,
         private val fileInfoLoader: IFileInfoLoader,
-        private val onConnect: () -> Unit
+        private val chatInitedConverter: ChatInitedConverter,
+        private val chatItemConverter: ChatItemConverter
 ) : IApiRepository {
 
     private fun isConnected() = socketApi.isConnected()
 
     @Throws(UsedeskException::class)
     override fun connect(url: String,
-                         actionListener: IUsedeskActionListener,
-                         chatConfiguration: UsedeskChatConfiguration,
-                         token: String) {
-        socketApi.connect(url, {
-            actionListener.onDisconnected()
-        }, {
-            onMessageListener.onInitChat()
-        })
+                         token: String?,
+                         configuration: UsedeskChatConfiguration,
+                         eventListener: IApiRepository.EventListener) {
+        socketApi.connect(url, token, configuration.companyId, getEventListener(eventListener))
     }
 
     @Throws(UsedeskException::class)
@@ -53,13 +57,6 @@ class ApiRepository(
     override fun send(token: String, text: String) {
         checkConnection()
         socketApi.sendRequest(SendMessageRequest(token, text = text))
-    }
-
-    @Throws(UsedeskSocketException::class)
-    private fun checkConnection() {
-        if (!isConnected()) {
-            throw UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED)
-        }
     }
 
     @Throws(UsedeskException::class)
@@ -87,6 +84,46 @@ class ApiRepository(
 
     override fun disconnect() {
         socketApi.disconnect()
+    }
+
+    private fun checkConnection() {
+        if (!isConnected()) {
+            throw UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED)
+        }
+    }
+
+    private fun getEventListener(eventListener: IApiRepository.EventListener): SocketApi.EventListener {
+        return object : SocketApi.EventListener {
+            override fun onConnected() {
+                eventListener.onConnected()
+            }
+
+            override fun onDisconnected() {
+                eventListener.onDisconnected()
+            }
+
+            override fun onTokenError() {
+                eventListener.onTokenError()
+            }
+
+            override fun onFeedback() {
+                eventListener.onFeedback()
+            }
+
+            override fun onException(exception: Exception) {
+                eventListener.onException(exception)
+            }
+
+            override fun onInited(chatInitedResponse: ChatInitedResponse) {
+                val chatInited = chatInitedConverter.convert(chatInitedResponse)
+                eventListener.onChatInited(chatInited)
+            }
+
+            override fun onNew(messageResponse: MessageResponse) {
+                val chatItems = chatItemConverter.convert(messageResponse.message)
+                eventListener.onNewChatItems(chatItems)
+            }
+        }
     }
 
     companion object {

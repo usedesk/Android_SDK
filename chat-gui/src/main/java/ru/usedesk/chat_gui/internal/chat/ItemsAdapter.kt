@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.databinding.*
-import ru.usedesk.chat_sdk.external.entity.chat.UsedeskChatItem
-import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageAgent
-import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageFile
-import ru.usedesk.chat_sdk.external.entity.chat.UsedeskMessageText
+import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageAgent
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageFile
+import ru.usedesk.chat_sdk.external.entity.UsedeskMessageText
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.inflateItem
 import ru.usedesk.common_gui.internal.showImage

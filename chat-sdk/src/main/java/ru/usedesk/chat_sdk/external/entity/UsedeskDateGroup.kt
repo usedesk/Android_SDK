@@ -4,6 +4,6 @@ import java.util.*
 
 class UsedeskDateGroup(
         calendar: Calendar
-) : UsedeskChatItem("", calendar) {
+) : UsedeskChatItem(0, calendar) {
     override val type: Type = Type.TYPE_DATE
 }

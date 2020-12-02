@@ -3,17 +3,12 @@ package ru.usedesk.chat_gui.internal.chat
 import androidx.lifecycle.MutableLiveData
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
-import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.*
 import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.common_gui.internal.UsedeskViewModel
-import java.util.*
 
 class ChatViewModel : UsedeskViewModel() {
 
-    val feedbacksLiveData = MutableLiveData<Set<Int>>()
     val exceptionLiveData = MutableLiveData<Exception>()
     val messagePanelStateLiveData = MutableLiveData(MessagePanelState.MESSAGE_PANEL)
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
@@ -46,7 +41,6 @@ class ChatViewModel : UsedeskViewModel() {
                 doIt(usedeskChat.connectRx())
             }
         })
-        feedbacksLiveData.value = HashSet()
     }
 
     fun onMessageChanged(message: String) {
@@ -61,12 +55,8 @@ class ChatViewModel : UsedeskViewModel() {
         fileInfoListLiveData.postValue(usedeskFileInfoList)
     }
 
-    fun sendFeedback(messageIndex: Int, feedback: UsedeskFeedback) {
-        val feedbacks: MutableSet<Int> = HashSet(feedbacksLiveData.value!!.size + 1)
-        feedbacks.addAll(feedbacksLiveData.value!!)
-        feedbacks.add(messageIndex)
-        feedbacksLiveData.postValue(feedbacks)
-        doIt(usedeskChat.sendRx(feedback))
+    fun sendFeedback(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
+        doIt(usedeskChat.sendRx(message, feedback))
     }
 
     override fun onCleared() {

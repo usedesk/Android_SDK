@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.external.entity
 import java.util.*
 
 class UsedeskMessageClientText(
-        id: String,
+        id: Long,
         calendar: Calendar,
         text: String,
         html: String

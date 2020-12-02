@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.external.entity
 import java.util.*
 
 abstract class UsedeskChatItem(
-        val id: String,
+        val id: Long,
         val calendar: Calendar
 ) {
     abstract val type: Type

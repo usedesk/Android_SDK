@@ -19,20 +19,15 @@ internal class Message {
     }
 
     class Payload {
-        var buttons: List<Button?>? = null
-        var isCsi: Boolean? = null
+        var buttons: Array<Button?>? = null
         var userRating: String? = null
         var avatar: String? = null
 
         class Button {
             var type: String? = null
             var title: String? = null
-            var icon: Icon? = null
+            var icon: String? = null
             var data: String? = null
-
-            enum class Icon {
-                LIKE, DISLIKE
-            }
         }
     }
 

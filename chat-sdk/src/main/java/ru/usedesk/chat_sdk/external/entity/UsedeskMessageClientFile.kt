@@ -4,7 +4,7 @@ import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import java.util.*
 
 class UsedeskMessageClientFile(
-        id: String,
+        id: Long,
         calendar: Calendar,
         file: UsedeskFile
 ) : UsedeskMessageFile(id, calendar, file), UsedeskMessageClient {

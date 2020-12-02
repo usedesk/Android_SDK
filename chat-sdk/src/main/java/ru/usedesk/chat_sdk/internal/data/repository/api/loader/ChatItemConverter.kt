@@ -40,7 +40,7 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                 add(Calendar.HOUR, hoursOffset)
             }
 
-            val id = from.id!!
+            val id = from.id!!.toLong()
             val name = from.name ?: ""
             val avatar = from.payload?.avatar ?: ""
 
@@ -74,10 +74,26 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                     val text: String
                     val html: String
 
-                    val buttons = if (!fromClient) {
-                        getButtons(from.text!!)
+                    val buttons: List<UsedeskMessageButton>
+                    val feedbackNeeded: Boolean
+                    val feedback: UsedeskFeedback?
+                    if (!fromClient) {
+                        buttons = getButtons(from.text!!)
+                        feedback = when (from.payload?.userRating) {
+                            "LIKE" -> UsedeskFeedback.LIKE
+                            "DISLIKE" -> UsedeskFeedback.DISLIKE
+                            else -> null
+                        }
+                        feedbackNeeded = feedback == null && from.payload?.buttons?.any {
+                            it?.data == "GOOD_CHAT" ||
+                                    it?.data == "BAD_CHAT" ||
+                                    it?.icon == "like" ||
+                                    it?.icon == "dislike"
+                        } ?: false
                     } else {
-                        listOf()
+                        buttons = listOf()
+                        feedbackNeeded = false
+                        feedback = null
                     }
 
                     val divIndex = from.text!!.indexOf("<div")
@@ -118,9 +134,20 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                     if (convertedText.isEmpty() && html.isEmpty()) {
                         null
                     } else if (fromClient) {
-                        UsedeskMessageClientText(id, messageDate, convertedText, html)
+                        UsedeskMessageClientText(id,
+                                messageDate,
+                                convertedText,
+                                html)
                     } else {
-                        UsedeskMessageAgentText(id, messageDate, convertedText, html, buttons, name, avatar)
+                        UsedeskMessageAgentText(id,
+                                messageDate,
+                                convertedText,
+                                html,
+                                buttons,
+                                feedbackNeeded,
+                                feedback,
+                                name,
+                                avatar)
                     }
                 } else {
                     null

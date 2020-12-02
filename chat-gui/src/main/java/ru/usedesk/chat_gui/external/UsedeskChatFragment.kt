@@ -80,9 +80,6 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
             getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
                     ?: onUrlClick(url)
         })
-        viewModel.feedbacksLiveData.observe(viewLifecycleOwner) {
-            onFeedbacks(it)
-        }
         viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
             onException(it)
         }
@@ -92,7 +89,9 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
     }
 
     private fun onUrlClick(url: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        })
     }
 
     private inline fun <reified T> getParentListener(): T? {
@@ -116,12 +115,6 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
     private fun onException(exception: Exception) {
         exception.printStackTrace()
-    }
-
-    private fun onFeedbacks(feedbacks: Set<Int>?) {
-        /*if (feedbacks != null) {
-            messagesAdapter.updateFeedbacks(feedbacks);
-        }*/
     }
 
     override fun onStart() {

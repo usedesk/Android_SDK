@@ -1,13 +1,9 @@
 package ru.usedesk.chat_sdk.internal.domain
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import ru.usedesk.chat_sdk.external.IUsedeskChat
 import ru.usedesk.chat_sdk.external.entity.*
-import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
 import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.internal._entity.ChatInited
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository
@@ -19,7 +15,6 @@ import java.util.*
 
 @InjectConstructor
 internal class ChatInteractor(
-        private val context: Context,
         private val configuration: UsedeskChatConfiguration,
         private val actionListener: IUsedeskActionListener,
         private val userInfoRepository: IUserInfoRepository,
@@ -28,7 +23,7 @@ internal class ChatInteractor(
 
     private var token: String? = null
     private var needSetEmail = false
-    private val messageIds: MutableSet<String> = HashSet()
+    private val messageIds: MutableSet<Long> = HashSet()
 
     @Throws(UsedeskException::class)
     override fun connect() {
@@ -127,7 +122,7 @@ internal class ChatInteractor(
     }
 
     @Throws(UsedeskException::class)
-    override fun send(feedback: UsedeskFeedback) {
+    override fun send(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
         token?.also {
             apiRepository.send(it, feedback)
         }
@@ -137,17 +132,6 @@ internal class ChatInteractor(
     override fun send(offlineForm: UsedeskOfflineForm) {
         apiRepository.send(configuration, offlineForm.copy(companyId = offlineForm.companyId
                 ?: configuration.companyId))
-    }
-
-    @Throws(UsedeskException::class)
-    override fun send(messageButton: UsedeskMessageButton) {
-        if (messageButton.url.isEmpty()) {
-            send(messageButton.text)
-        } else {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(messageButton.url))
-            browserIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            context.startActivity(browserIntent)
-        }
     }
 
     override fun connectRx(): Completable {
@@ -178,9 +162,9 @@ internal class ChatInteractor(
         }
     }
 
-    override fun sendRx(feedback: UsedeskFeedback): Completable {
+    override fun sendRx(message: UsedeskMessageAgentText, feedback: UsedeskFeedback): Completable {
         return Completable.create { emitter: CompletableEmitter ->
-            send(feedback)
+            send(message, feedback)
             emitter.onComplete()
         }
     }
@@ -188,13 +172,6 @@ internal class ChatInteractor(
     override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             send(offlineForm)
-            emitter.onComplete()
-        }
-    }
-
-    override fun sendRx(messageButton: UsedeskMessageButton): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
-            send(messageButton)
             emitter.onComplete()
         }
     }

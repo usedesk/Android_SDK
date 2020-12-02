@@ -4,7 +4,7 @@ import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import java.util.*
 
 class UsedeskMessageAgentFile(
-        id: String,
+        id: Long,
         calendar: Calendar,
         usedeskFile: UsedeskFile,
         override val name: String,

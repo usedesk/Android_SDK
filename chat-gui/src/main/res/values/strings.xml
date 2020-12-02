@@ -31,4 +31,5 @@
 
     <!--New Styled Values-->
     <string name="usedesk_screen_chat_title">Chat</string>
+    <string name="feedback_thank_you">Thank you for your feedback!</string>
 </resources>

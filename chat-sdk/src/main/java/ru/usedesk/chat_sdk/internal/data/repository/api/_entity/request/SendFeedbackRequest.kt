@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.internal.data.repository.api._entity.request
 
 import com.google.gson.annotations.SerializedName
-import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
 
 class SendFeedbackRequest(
         token: String,

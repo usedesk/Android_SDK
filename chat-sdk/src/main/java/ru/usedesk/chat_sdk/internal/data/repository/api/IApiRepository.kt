@@ -2,8 +2,8 @@ package ru.usedesk.chat_sdk.internal.data.repository.api
 
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
+import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
 import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.internal._entity.ChatInited
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException

@@ -137,7 +137,9 @@ internal class ItemsAdapter(
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
             val anotherChatItem = items.getOrNull(anotherPosition)
-            return anotherChatItem is UsedeskMessageAgent && anotherChatItem.avatar == messageAgent.avatar
+            return anotherChatItem is UsedeskMessageAgent
+                    && anotherChatItem.avatar == messageAgent.avatar
+                    && anotherChatItem.name == messageAgent.name
         }
     }
 
@@ -149,9 +151,12 @@ internal class ItemsAdapter(
         override fun bind(position: Int) {
             super.bind(position)
 
+            binding.lFeedback.visibility = View.GONE
+
             val messageText = items[position] as UsedeskMessageText
 
             binding.tvText.text = Html.fromHtml(messageText.text)
+            binding.tvText.visibility = View.VISIBLE
 
             binding.tvLink.visibility = visibleGone(messageText.html.isNotEmpty())
             binding.tvLink.setOnClickListener {
@@ -282,7 +287,50 @@ internal class ItemsAdapter(
             super.bind(position)
             bindAgent(position, binding.tvName, binding.avatar)
 
-            buttonsAdapter.update((items[position] as UsedeskMessageAgentText).buttons)
+            val messageAgentText = items[position] as UsedeskMessageAgentText
+            buttonsAdapter.update(messageAgentText.buttons)
+
+            if (messageAgentText.feedbackNeeded) {
+                binding.content.lFeedback.visibility = View.VISIBLE
+
+                binding.content.ivLike.apply {
+                    setImageResource(R.drawable.ic_smile_happy)
+                    setOnClickListener {
+                        viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
+                    }
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                }
+
+                binding.content.ivDislike.apply {
+                    setImageResource(R.drawable.ic_smile_sad)
+                    setOnClickListener {
+                        viewModel.sendFeedback(messageAgentText, UsedeskFeedback.DISLIKE)
+                    }
+                    visibility = View.VISIBLE
+                    isEnabled = true
+                }
+            }
+
+            messageAgentText.feedback?.also {
+                binding.content.lFeedback.visibility = View.VISIBLE
+
+                binding.content.ivLike.apply {
+                    setImageResource(R.drawable.ic_smile_happy_colored)
+                    setOnClickListener(null)
+                    visibility = visibleGone(it == UsedeskFeedback.LIKE)
+                    isEnabled = false
+                }
+
+                binding.content.ivDislike.apply {
+                    setImageResource(R.drawable.ic_smile_sad_colored)
+                    setOnClickListener(null)
+                    visibility = visibleGone(it == UsedeskFeedback.DISLIKE)
+                    isEnabled = false
+                }
+
+                binding.content.tvText.setText(R.string.feedback_thank_you)
+            }
         }
     }
 

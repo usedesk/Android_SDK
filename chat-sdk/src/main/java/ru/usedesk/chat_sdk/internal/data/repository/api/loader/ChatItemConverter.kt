@@ -5,6 +5,7 @@ import ru.usedesk.chat_sdk.internal.data.Converter
 import ru.usedesk.chat_sdk.internal.domain.entity.Message
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import toothpick.InjectConstructor
+import java.text.SimpleDateFormat
 import java.util.*
 
 @InjectConstructor
@@ -24,7 +25,20 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                 else -> null
             }!!
 
-            val messageDate = Calendar.getInstance()//TODO: pizdec
+            val createdAt = from.createdAt!!
+
+            val messageDate = Calendar.getInstance().apply {
+                time = try {
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.UK)
+                            .parse(createdAt)!!
+                } catch (e: Exception) {
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.UK)
+                            .parse(createdAt)!!
+                }
+
+                val hoursOffset = TimeZone.getDefault().rawOffset / 3600000
+                add(Calendar.HOUR, hoursOffset)
+            }
 
             val id = from.id!!
             val name = from.name ?: ""

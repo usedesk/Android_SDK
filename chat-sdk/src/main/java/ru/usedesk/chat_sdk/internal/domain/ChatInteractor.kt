@@ -6,12 +6,8 @@ import android.net.Uri
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import ru.usedesk.chat_sdk.external.IUsedeskChat
-import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
-import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.external.entity.*
 import ru.usedesk.chat_sdk.external.entity.old.UsedeskFeedback
-import ru.usedesk.chat_sdk.external.entity.old.UsedeskMessageButton
 import ru.usedesk.chat_sdk.external.entity.old.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.internal._entity.ChatInited
 import ru.usedesk.chat_sdk.internal.data.repository.api.IApiRepository

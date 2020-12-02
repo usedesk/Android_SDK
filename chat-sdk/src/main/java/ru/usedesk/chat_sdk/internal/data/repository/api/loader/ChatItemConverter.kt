@@ -74,6 +74,12 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                     val text: String
                     val html: String
 
+                    val buttons = if (!fromClient) {
+                        getButtons(from.text!!)
+                    } else {
+                        listOf()
+                    }
+
                     val divIndex = from.text!!.indexOf("<div")
 
                     if (divIndex >= 0) {
@@ -85,7 +91,7 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                         html = ""
                     }
 
-                    val convertedText = text
+                    var convertedText = text
                             .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
                             .replace("</strong>", "</b>")
                             .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
@@ -95,12 +101,26 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
                             .trim('\u200B')
                             .trim()
 
+                    buttons.forEach {
+                        val show: String
+                        val replaceBy: String
+                        if (it.isShow) {
+                            show = "show"
+                            replaceBy = it.text
+                        } else {
+                            show = "noshow"
+                            replaceBy = ""
+                        }
+                        val buttonRaw = "{{button:${it.text};${it.url};${it.type};$show}}"
+                        convertedText = convertedText.replaceFirst(buttonRaw, replaceBy)
+                    }
+
                     if (convertedText.isEmpty() && html.isEmpty()) {
                         null
                     } else if (fromClient) {
                         UsedeskMessageClientText(id, messageDate, convertedText, html)
                     } else {
-                        UsedeskMessageAgentText(id, messageDate, convertedText, html, name, avatar)
+                        UsedeskMessageAgentText(id, messageDate, convertedText, html, buttons, name, avatar)
                     }
                 } else {
                     null
@@ -109,5 +129,38 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
 
             listOfNotNull(textMessage, fileMessage)
         } ?: listOf()
+    }
+
+    private fun getButtons(messageText: String): List<UsedeskMessageButton> {
+        val messageButtons = mutableListOf<UsedeskMessageButton>()
+
+        var start = 0
+        while (messageText.indexOf("{{button:", start).apply { start = this } >= 0) {
+            val end = messageText.indexOf("}}", start)
+
+            val buttonText = messageText.substring(start, end + 2)
+            val messageButton = getButton(buttonText)
+            if (messageButton != null) {
+                messageButtons.add(messageButton)
+            }
+            start++
+        }
+
+        return messageButtons
+    }
+
+    private fun getButton(messageText: String): UsedeskMessageButton? {
+        val sections = messageText.replace("{{button:", "")
+                .replace("}}", "")
+                .split(";")
+        return if (sections.size == 4) {
+            val text = sections[0]
+            val url = sections[1]
+            val type = sections[2]
+            val isShow = sections[3] == "show"
+            UsedeskMessageButton(text, url, type, isShow)
+        } else {
+            null
+        }
     }
 }

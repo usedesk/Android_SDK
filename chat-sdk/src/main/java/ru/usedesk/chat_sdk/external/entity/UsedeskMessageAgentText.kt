@@ -7,6 +7,7 @@ class UsedeskMessageAgentText(
         calendar: Calendar,
         text: String,
         html: String,
+        val buttons: List<UsedeskMessageButton>,
         override val name: String,
         override val avatar: String
 ) : UsedeskMessageText(id, calendar, text, html), UsedeskMessageAgent {

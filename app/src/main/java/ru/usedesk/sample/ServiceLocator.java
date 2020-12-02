@@ -16,7 +16,7 @@ public class ServiceLocator {
     private final ConfigurationValidator configurationValidator;
 
     private ServiceLocator(@NonNull Context appContext) {
-        configurationRepository = new ConfigurationRepository(appContext.getSharedPreferences(ConfigurationRepository.class.getName(), Context.MODE_PRIVATE),
+        configurationRepository = new ConfigurationRepository(appContext.getSharedPreferences("SampleConfiguration", Context.MODE_PRIVATE),
                 getWorkScheduler());
         configurationValidator = new ConfigurationValidator(appContext.getResources());
     }

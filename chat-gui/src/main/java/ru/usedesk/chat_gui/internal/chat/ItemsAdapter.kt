@@ -9,10 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.databinding.*
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatItem
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageAgent
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageFile
-import ru.usedesk.chat_sdk.external.entity.UsedeskMessageText
+import ru.usedesk.chat_sdk.external.entity.*
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.inflateItem
 import ru.usedesk.common_gui.internal.setImage
@@ -31,7 +28,6 @@ internal class ItemsAdapter(
         private val onHtmlClick: (String) -> Unit
 ) : RecyclerView.Adapter<ItemsAdapter.ChatItemViewHolder>() {
 
-    private val colorBlack: Int = recyclerView.resources.getColor(R.color.usedesk_black)
     private var items: List<UsedeskChatItem> = listOf()
 
     init {
@@ -80,7 +76,7 @@ internal class ItemsAdapter(
     }
 
     override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
-        holder.bind(items[position], position)
+        holder.bind(position)
     }
 
     override fun getItemCount(): Int = items.size
@@ -91,7 +87,7 @@ internal class ItemsAdapter(
             itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        abstract fun bind(chatItem: UsedeskChatItem, position: Int)
+        abstract fun bind(position: Int)
     }
 
     internal abstract inner class MessageViewHolder(
@@ -99,36 +95,48 @@ internal class ItemsAdapter(
             private val tvTime: TextView
     ) : ChatItemViewHolder(itemView) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            bindTime(chatItem)
+        override fun bind(position: Int) {
+            bindTime(position)
         }
 
-        private fun bindTime(chatItem: UsedeskChatItem) {
+        private fun bindTime(position: Int) {
+            val chatItem = items[position]
             val formatted = getFormattedTime(chatItem.calendar)
             tvTime.text = formatted
         }
 
-        fun bindAgent(bubble: View,
+        fun bindAgent(position: Int,
                       tvName: TextView,
-                      binding: UsedeskItemChatAvatarBinding,
-                      messageAgent: UsedeskMessageAgent) {
-            bubble.setBackgroundResource(R.drawable.bubble_agent)
+                      avatarBinding: UsedeskItemChatAvatarBinding) {
+            val messageAgent = items[position] as UsedeskMessageAgent
 
             tvName.text = customAgentName ?: messageAgent.name
+            tvName.visibility = visibleGone(!isSameAgent(messageAgent, position + 1))
 
             val initials = messageAgent.name.split(' ')
                     .filter { it.isNotEmpty() }
                     .take(2)
                     .map { it[0] }
                     .joinToString(separator = "")
-            binding.tvAvatar.text = initials
-            binding.ivAvatar.setImageResource(if (initials.isEmpty()) {
+            avatarBinding.tvAvatar.text = initials
+            avatarBinding.ivAvatar.setImageResource(if (initials.isEmpty()) {
                 R.drawable.background_avatar_def
             } else {
                 R.drawable.background_avatar_dark
             })
 
-            setImage(binding.ivAvatar, messageAgent.avatar, 0)
+            setImage(avatarBinding.ivAvatar, messageAgent.avatar, 0)
+            avatarBinding.lContainer.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
+        }
+
+        fun bindClient(position: Int,
+                       tvName: TextView) {
+            tvName.visibility = visibleGone(items.getOrNull(position + 1) !is UsedeskMessageClient)
+        }
+
+        private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
+            val anotherChatItem = items.getOrNull(anotherPosition)
+            return anotherChatItem is UsedeskMessageAgent && anotherChatItem.avatar == messageAgent.avatar
         }
     }
 
@@ -137,12 +145,11 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatMessageTextBinding)
         : MessageViewHolder(itemView, binding.tvTime) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            super.bind(chatItem, position)
-            bindText(chatItem as UsedeskMessageText)
-        }
+        override fun bind(position: Int) {
+            super.bind(position)
 
-        private fun bindText(messageText: UsedeskMessageText) {
+            val messageText = items[position] as UsedeskMessageText
+
             binding.tvText.text = Html.fromHtml(messageText.text)
 
             binding.tvLink.visibility = visibleGone(messageText.html.isNotEmpty())
@@ -157,13 +164,11 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatMessageFileBinding
     ) : MessageViewHolder(itemView, binding.tvTime) {
 
-        override fun bind(chatItem: UsedeskChatItem,
-                          position: Int) {
-            super.bind(chatItem, position)
-            bindFile(chatItem as UsedeskMessageFile)
-        }
+        override fun bind(position: Int) {
+            super.bind(position)
 
-        private fun bindFile(messageFile: UsedeskMessageFile) {
+            val messageFile = items[position] as UsedeskMessageFile
+
             val name = messageFile.file.name
             binding.tvFileName.text = name
             val index = name.lastIndexOf('.')
@@ -185,12 +190,14 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatMessageImageBinding
     ) : MessageViewHolder(itemView, binding.tvTime) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            super.bind(chatItem, position)
-            bindImage(chatItem as UsedeskMessageFile)
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindImage(position)
         }
 
-        private fun bindImage(messageFile: UsedeskMessageFile) {
+        private fun bindImage(position: Int) {
+            val messageFile = items[position] as UsedeskMessageFile
+
             binding.ivPreview.setOnClickListener(null)
             binding.ivError.setOnClickListener(null)
             showImage(binding.ivPreview,
@@ -203,7 +210,7 @@ internal class ItemsAdapter(
                 }
             }, {
                 binding.ivError.setOnClickListener {
-                    bindImage(messageFile)
+                    bindImage(position)
                 }
             })
         }
@@ -213,7 +220,8 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatDateBinding
     ) : ChatItemViewHolder(binding.root) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
+        override fun bind(position: Int) {
+            val chatItem = items[position]
             when {
                 isToday(chatItem.calendar) -> {
                     binding.tvDate.setText(R.string.today)
@@ -231,27 +239,39 @@ internal class ItemsAdapter(
     }
 
     internal inner class MessageTextClientViewHolder(
-            binding: UsedeskItemChatMessageTextClientBinding
-    ) : MessageTextViewHolder(binding.root, binding.content)
+            private val binding: UsedeskItemChatMessageTextClientBinding
+    ) : MessageTextViewHolder(binding.root, binding.content) {
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindClient(position, binding.tvName)
+        }
+    }
 
     internal inner class MessageFileClientViewHolder(
-            binding: UsedeskItemChatMessageFileClientBinding
-    ) : MessageFileViewHolder(binding.root, binding.content)
+            private val binding: UsedeskItemChatMessageFileClientBinding
+    ) : MessageFileViewHolder(binding.root, binding.content) {
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindClient(position, binding.tvName)
+        }
+    }
 
     internal inner class MessageImageClientViewHolder(
-            binding: UsedeskItemChatMessageImageClientBinding
-    ) : MessageImageViewHolder(binding.root, binding.content)
+            private val binding: UsedeskItemChatMessageImageClientBinding
+    ) : MessageImageViewHolder(binding.root, binding.content) {
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindClient(position, binding.tvName)
+        }
+    }
 
     internal inner class MessageTextAgentViewHolder(
             private val binding: UsedeskItemChatMessageTextAgentBinding
     ) : MessageTextViewHolder(binding.root, binding.content) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            super.bind(chatItem, position)
-            bindAgent(binding.lAgent,
-                    binding.tvName,
-                    binding.avatar,
-                    chatItem as UsedeskMessageAgent)
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindAgent(position, binding.tvName, binding.avatar)
         }
     }
 
@@ -259,12 +279,9 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatMessageFileAgentBinding
     ) : MessageFileViewHolder(binding.root, binding.content) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            super.bind(chatItem, position)
-            bindAgent(binding.lAgent,
-                    binding.tvName,
-                    binding.avatar,
-                    chatItem as UsedeskMessageAgent)
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindAgent(position, binding.tvName, binding.avatar)
         }
     }
 
@@ -272,12 +289,9 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatMessageImageAgentBinding
     ) : MessageImageViewHolder(binding.root, binding.content) {
 
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            super.bind(chatItem, position)
-            bindAgent(binding.lAgent,
-                    binding.tvName,
-                    binding.avatar,
-                    chatItem as UsedeskMessageAgent)
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindAgent(position, binding.tvName, binding.avatar)
         }
     }
 

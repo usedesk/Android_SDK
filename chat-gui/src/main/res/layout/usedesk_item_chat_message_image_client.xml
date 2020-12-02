@@ -5,12 +5,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="8dp"
         android:gravity="end"
         android:layoutDirection="rtl"
         android:orientation="horizontal"
-        android:paddingVertical="6dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
         android:theme="?attr/usedesk_chat_style_message_client_image"
         tools:theme="@style/UsedeskChatMessage.ClientImage">
 
@@ -25,6 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
+                android:layout_marginTop="12dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:singleLine="true"
@@ -36,8 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:background="@drawable/bubble_your"
-                android:padding="2dp">
+                android:background="@drawable/bubble_your">
 
                 <include
                     android:id="@+id/content"

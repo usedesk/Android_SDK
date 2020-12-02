@@ -29,10 +29,10 @@ internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() 
 
             val messageDate = Calendar.getInstance().apply {
                 time = try {
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.UK)
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
                             .parse(createdAt)!!
                 } catch (e: Exception) {
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.UK)
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
                             .parse(createdAt)!!
                 }
 

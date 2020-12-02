@@ -5,10 +5,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="6dp"
         android:orientation="horizontal"
         android:theme="?attr/usedesk_chat_style_message_agent_image"
         tools:theme="@style/UsedeskChatMessage.AgentImage">
@@ -27,6 +26,7 @@
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:singleLine="true"
@@ -37,16 +37,13 @@
                 android:id="@+id/l_agent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bubble_agent"
-                android:padding="2dp">
+                android:background="@drawable/bubble_agent">
 
                 <include
                     android:id="@+id/content"
                     layout="@layout/usedesk_item_chat_message_image" />
 
             </FrameLayout>
-
         </LinearLayout>
     </LinearLayout>
-
 </layout>

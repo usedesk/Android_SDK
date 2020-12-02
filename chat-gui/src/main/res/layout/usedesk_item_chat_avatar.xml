@@ -6,28 +6,32 @@
     <FrameLayout
         android:id="@+id/l_root"
         android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom">
 
-        <TextView
-            android:id="@+id/tv_avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/background_avatar_dark"
-            android:fontFamily="@font/sf_ui_display_medium"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            tools:text="AB" />
+        <FrameLayout
+            android:id="@+id/l_container"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
 
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/iv_avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:riv_corner_radius="20dp" />
+            <TextView
+                android:id="@+id/tv_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_avatar_dark"
+                android:fontFamily="@font/sf_ui_display_medium"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="#FFFFFF"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                tools:text="AB" />
 
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:riv_corner_radius="20dp" />
+        </FrameLayout>
     </FrameLayout>
-
 </layout>

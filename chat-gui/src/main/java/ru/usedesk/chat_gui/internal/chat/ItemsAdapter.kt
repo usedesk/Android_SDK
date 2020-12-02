@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.internal.chat
 
-import android.graphics.Color
 import android.text.Html
 import android.view.View
 import android.view.ViewGroup
@@ -236,16 +235,8 @@ internal class ItemsAdapter(
     ) : MessageTextViewHolder(binding.root, binding.content)
 
     internal inner class MessageFileClientViewHolder(
-            private val binding: UsedeskItemChatMessageFileClientBinding
-    ) : MessageFileViewHolder(binding.root, binding.content) {
-
-        override fun bind(chatItem: UsedeskChatItem, position: Int) {
-            super.bind(chatItem, position)
-
-            binding.content.ivFileType.setImageResource(R.drawable.ic_file_light)
-            binding.content.tvExtension.setTextColor(Color.parseColor("#242B33"))
-        }
-    }
+            binding: UsedeskItemChatMessageFileClientBinding
+    ) : MessageFileViewHolder(binding.root, binding.content)
 
     internal inner class MessageImageClientViewHolder(
             binding: UsedeskItemChatMessageImageClientBinding
@@ -274,8 +265,6 @@ internal class ItemsAdapter(
                     binding.tvName,
                     binding.avatar,
                     chatItem as UsedeskMessageAgent)
-            binding.content.ivFileType.setImageResource(R.drawable.ic_file_dark)
-            binding.content.tvExtension.setTextColor(Color.parseColor("#F4F6FA"))
         }
     }
 

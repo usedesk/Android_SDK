@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:duplicateParentState="true"
-                android:text="?attr/usedesk_attachment_panel_camera_title" />
+                android:text="Camera" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:duplicateParentState="true"
-                android:text="?attr/usedesk_attachment_panel_storage_title" />
+                android:text="Storage" />
         </LinearLayout>
     </LinearLayout>
 </layout>

@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import org.jetbrains.annotations.NotNull;
 
-import ru.usedesk.chat_gui.external.IUsedeskOnFileClickListener;
+import ru.usedesk.chat_gui.external.showfile.IUsedeskOnFileClickListener;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
 import ru.usedesk.knowledgebase_gui.external.IUsedeskOnBackPressedListener;

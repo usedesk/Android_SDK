@@ -34,10 +34,6 @@ internal class ChatInteractor(
     private var needSetEmail = false
     private val messageIds: MutableSet<String> = HashSet()
 
-    private fun <T> equals(a: T?, b: T?): Boolean {
-        return a == null && b == null || a != null && a == b
-    }
-
     @Throws(UsedeskException::class)
     override fun connect() {
         try {
@@ -45,9 +41,9 @@ internal class ChatInteractor(
             if (this.configuration.email == configuration.email && this.configuration.companyId == configuration.companyId) {
                 token = userInfoRepository.getToken()
             }
-            if (!equals(this.configuration.clientName, configuration.clientName)
-                    || !equals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
-                    || !equals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)) {
+            if (this.configuration.clientName != configuration.clientName
+                    || this.configuration.clientPhoneNumber != configuration.clientPhoneNumber
+                    || this.configuration.clientAdditionalId != configuration.clientAdditionalId) {
                 needSetEmail = true
             }
         } catch (e: UsedeskDataNotFoundException) {
@@ -82,11 +78,11 @@ internal class ChatInteractor(
             }
 
             override fun onChatInited(chatInited: ChatInited) {
-                actionListener.onChatItemsReceived(chatInited.messages)
+                this@ChatInteractor.onChatInited(chatInited)
             }
 
             override fun onNewChatItems(newChatItems: List<UsedeskChatItem>) {
-                onChatItems(newChatItems)
+                this@ChatInteractor.onNewChatItems(newChatItems)
             }
         }
         apiRepository.connect(
@@ -97,7 +93,7 @@ internal class ChatInteractor(
         )
     }
 
-    private fun onChatItems(chatItems: List<UsedeskChatItem>) {
+    private fun onNewChatItems(chatItems: List<UsedeskChatItem>) {
         chatItems.filter {
             !messageIds.contains(it.id)
         }.forEach {
@@ -228,7 +224,7 @@ internal class ChatInteractor(
         }
     }
 
-    private fun onInitedChat(chatChatInited: ChatInited) {
+    private fun onChatInited(chatChatInited: ChatInited) {
         this.token = chatChatInited.token
         userInfoRepository.setToken(token)
         actionListener.onConnected()
@@ -249,7 +245,7 @@ internal class ChatInteractor(
             null
         }
         if (initClientMessage != null) {
-            if (!equals(initClientMessage, configuration.initClientMessage)) {
+            if (initClientMessage != configuration.initClientMessage) {
                 send(initClientMessage)
             }
         }

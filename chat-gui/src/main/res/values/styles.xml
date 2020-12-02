@@ -67,4 +67,8 @@
         <!--new styled values-->
         <item name="usedesk_screen_chat_title">@string/usedesk_screen_chat_title</item>
     </style>
+
+    <style name="UsedeskAttachmentDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+
+    </style>
 </resources>

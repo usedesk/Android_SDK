@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.external
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
-import ru.usedesk.chat_gui.external.attachpanel.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.external.attachpanel.UsedeskDialogAttachmentPanel
-import ru.usedesk.chat_gui.external.showfile.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.external.showhtml.IUsedeskOnHtmlClickListener
 import ru.usedesk.chat_gui.internal.chat.*
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo
@@ -78,6 +76,9 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
             getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
         }, { html ->
             getParentListener<IUsedeskOnHtmlClickListener>()?.onHtmlClick(html)
+        }, { url ->
+            getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
+                    ?: onUrlClick(url)
         })
         viewModel.feedbacksLiveData.observe(viewLifecycleOwner) {
             onFeedbacks(it)
@@ -88,6 +89,10 @@ class UsedeskChatFragment : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         viewModel.chatItemsLiveData.observe(viewLifecycleOwner) {
             showInstead(binding.ltContent, binding.tvLoading, it != null)
         }
+    }
+
+    private fun onUrlClick(url: String) {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
     private inline fun <reified T> getParentListener(): T? {

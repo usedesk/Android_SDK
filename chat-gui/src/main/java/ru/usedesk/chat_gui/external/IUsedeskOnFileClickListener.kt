@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.external.showfile
+package ru.usedesk.chat_gui.external
 
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 

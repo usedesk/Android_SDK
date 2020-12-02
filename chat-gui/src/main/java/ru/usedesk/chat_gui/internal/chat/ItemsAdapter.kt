@@ -25,7 +25,8 @@ internal class ItemsAdapter(
         private val customAgentName: String?,
         owner: LifecycleOwner,
         private val onFileClick: (UsedeskFile) -> Unit,
-        private val onHtmlClick: (String) -> Unit
+        private val onHtmlClick: (String) -> Unit,
+        private val onUrlClick: (String) -> Unit
 ) : RecyclerView.Adapter<ItemsAdapter.ChatItemViewHolder>() {
 
     private var items: List<UsedeskChatItem> = listOf()
@@ -269,9 +270,19 @@ internal class ItemsAdapter(
             private val binding: UsedeskItemChatMessageTextAgentBinding
     ) : MessageTextViewHolder(binding.root, binding.content) {
 
+        private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
+            if (it.url.isNotEmpty()) {
+                onUrlClick(it.url)
+            } else {
+                viewModel.onSend(it.text)
+            }
+        }
+
         override fun bind(position: Int) {
             super.bind(position)
             bindAgent(position, binding.tvName, binding.avatar)
+
+            buttonsAdapter.update((items[position] as UsedeskMessageAgentText).buttons)
         }
     }
 

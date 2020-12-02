@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout
@@ -32,6 +33,14 @@
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:text="?attr/usedesk_open_html_link"
                 android:textColor="@color/usedesk_gray_dark" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="4"
+                tools:listitem="@layout/usedesk_item_chat_button" />
         </LinearLayout>
 
         <TextView

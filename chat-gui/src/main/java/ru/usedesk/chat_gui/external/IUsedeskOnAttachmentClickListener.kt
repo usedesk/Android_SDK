@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.external.attachpanel
+package ru.usedesk.chat_gui.external
 
 interface IUsedeskOnAttachmentClickListener {
     fun onAttachmentClick()

@@ -21,7 +21,7 @@ import java.io.File
 
 class UsedeskDialogAttachmentPanel(
         private val fragment: UsedeskChatFragment
-) : BottomSheetDialog(fragment.requireContext(), UsedeskStyleManager.getStyle(R.style.UsedeskAttachmentDialog)) {
+) : BottomSheetDialog(fragment.requireContext(), UsedeskStyleManager.getStyle(R.style.UsedeskChatAttachmentDialog)) {
 
     init {
         val container = fragment.view as ViewGroup

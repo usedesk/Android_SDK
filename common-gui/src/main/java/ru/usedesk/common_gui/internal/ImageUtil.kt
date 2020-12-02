@@ -12,12 +12,18 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
-fun setImage(imageImageView: ImageView, pictureUrl: String, errorResId: Int) {
+fun setImage(imageImageView: ImageView,
+             pictureUrl: String,
+             errorResId: Int,
+             onError: (() -> Unit)? = null) {
     imageImageView.setImageResource(errorResId)
     if (!TextUtils.isEmpty(pictureUrl)) {
         Glide.with(imageImageView)
                 .load(pictureUrl)
                 .error(errorResId)
+                .listener(AppRequestListener(onError = {
+                    onError?.invoke()
+                }))
                 .into(imageImageView)
     }
 }

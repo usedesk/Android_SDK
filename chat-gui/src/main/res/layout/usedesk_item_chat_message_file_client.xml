@@ -11,7 +11,9 @@
         android:orientation="horizontal"
         android:paddingVertical="6dp"
         android:paddingStart="8dp"
-        android:paddingEnd="32dp">
+        android:paddingEnd="32dp"
+        android:theme="?attr/usedesk_chat_style_message_client_file"
+        tools:theme="@style/UsedeskChatMessage.ClientFile">
 
         <ImageView
             android:id="@+id/iv_avatar"

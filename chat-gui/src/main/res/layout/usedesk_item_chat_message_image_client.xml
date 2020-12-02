@@ -10,7 +10,9 @@
         android:orientation="horizontal"
         android:paddingVertical="6dp"
         android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingEnd="8dp"
+        android:theme="?attr/usedesk_chat_style_message_client_image"
+        tools:theme="@style/UsedeskChatMessage.ClientImage">
 
         <LinearLayout
             android:layout_width="wrap_content"

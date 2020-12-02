@@ -8,20 +8,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/iv_preview"
             android:layout_width="230dp"
             android:layout_height="230dp"
-            android:background="@color/transparent"
-            app:cardCornerRadius="6dp"
-            app:cardElevation="0dp">
-
-            <ImageView
-                android:id="@+id/iv_preview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                tools:src="@drawable/ic_image_loading" />
-        </androidx.cardview.widget.CardView>
+            android:scaleType="centerCrop"
+            app:riv_corner_radius_bottom_left="?attr/usedesk_chat_image_radius_bottom_left"
+            app:riv_corner_radius_bottom_right="?attr/usedesk_chat_image_radius_bottom_right"
+            app:riv_corner_radius_top_left="6dp"
+            app:riv_corner_radius_top_right="6dp"
+            tools:src="@drawable/ic_image_loading" />
 
         <ProgressBar
             android:id="@+id/pb_loading"

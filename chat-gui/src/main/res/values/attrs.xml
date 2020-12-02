@@ -43,4 +43,14 @@
 
     <!--Styled attrs-->
     <attr name="usedesk_screen_chat_title" format="string" />
+
+    <attr name="usedesk_chat_style_message_agent_text" format="reference" />
+    <attr name="usedesk_chat_style_message_agent_file" format="reference" />
+    <attr name="usedesk_chat_style_message_agent_image" format="reference" />
+    <attr name="usedesk_chat_style_message_client_text" format="reference" />
+    <attr name="usedesk_chat_style_message_client_file" format="reference" />
+    <attr name="usedesk_chat_style_message_client_image" format="reference" />
+
+    <attr name="usedesk_chat_image_radius_bottom_left" format="dimension" />
+    <attr name="usedesk_chat_image_radius_bottom_right" format="dimension" />
 </resources>

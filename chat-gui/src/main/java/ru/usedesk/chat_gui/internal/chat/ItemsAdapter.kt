@@ -16,6 +16,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskMessageFile
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageText
 import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile
 import ru.usedesk.common_gui.internal.inflateItem
+import ru.usedesk.common_gui.internal.setImage
 import ru.usedesk.common_gui.internal.showImage
 import ru.usedesk.common_gui.internal.visibleGone
 import java.text.DateFormat
@@ -110,24 +111,25 @@ internal class ItemsAdapter(
 
         fun bindAgent(bubble: View,
                       tvName: TextView,
-                      tvAvatar: TextView,
-                      tvText: TextView?,
+                      binding: UsedeskItemChatAvatarBinding,
                       messageAgent: UsedeskMessageAgent) {
             bubble.setBackgroundResource(R.drawable.bubble_agent)
-            tvText?.setTextColor(colorBlack)
 
             tvName.text = customAgentName ?: messageAgent.name
+
             val initials = messageAgent.name.split(' ')
                     .filter { it.isNotEmpty() }
                     .take(2)
                     .map { it[0] }
                     .joinToString(separator = "")
-            tvAvatar.text = initials//TODO: avatar image
-            tvAvatar.setBackgroundResource(if (initials.isEmpty()) {
+            binding.tvAvatar.text = initials
+            binding.ivAvatar.setImageResource(if (initials.isEmpty()) {
                 R.drawable.background_avatar_def
             } else {
                 R.drawable.background_avatar_dark
             })
+
+            setImage(binding.ivAvatar, messageAgent.avatar, 0)
         }
     }
 
@@ -257,8 +259,7 @@ internal class ItemsAdapter(
             super.bind(chatItem, position)
             bindAgent(binding.lAgent,
                     binding.tvName,
-                    binding.tvAvatar,
-                    binding.content.tvText,
+                    binding.avatar,
                     chatItem as UsedeskMessageAgent)
         }
     }
@@ -271,8 +272,7 @@ internal class ItemsAdapter(
             super.bind(chatItem, position)
             bindAgent(binding.lAgent,
                     binding.tvName,
-                    binding.tvAvatar,
-                    binding.content.tvFileName,
+                    binding.avatar,
                     chatItem as UsedeskMessageAgent)
             binding.content.ivFileType.setImageResource(R.drawable.ic_file_dark)
             binding.content.tvExtension.setTextColor(Color.parseColor("#F4F6FA"))
@@ -287,8 +287,7 @@ internal class ItemsAdapter(
             super.bind(chatItem, position)
             bindAgent(binding.lAgent,
                     binding.tvName,
-                    binding.tvAvatar,
-                    null,
+                    binding.avatar,
                     chatItem as UsedeskMessageAgent)
         }
     }

@@ -1,18 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="usedesk_message_user_background_color">#BAD2F1</color>
-    <color name="usedesk_message_panel_background_color">#D1F8F8F8</color>
-    <color name="usedesk_message_operator_background_color">#70A8F1</color>
-    <color name="usedesk_chat_background_color">#FFFFFF</color>
-    <color name="usedesk_divider_color">#BDBDBD</color>
-    <color name="usedesk_white_color">#FFFFFF</color>
-    <color name="usedesk_gray_dark">#828282</color>
-    <color name="usedesk_black">#000000</color>
-    <color name="white">#FFFFFF</color>
-    <color name="blackLightTransparent">#40000000</color>
-    <color name="blackDarkTransparent">#80000000</color>
-    <color name="transparent">#00FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="grayDark">#828282</color>
-    <color name="textGrayDark">#333333</color>
 </resources>

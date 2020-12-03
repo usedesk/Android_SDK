@@ -1,69 +1,6 @@
 <resources>
 
     <style name="Usedesk.Theme.Chat" parent="">
-        <!--Common-->
-        <item name="usedesk_divider_color">@color/usedesk_divider_color</item>
-        <!--UsedeskOfflineForm-->
-        <item name="usedesk_offline_form_title">@string/usedesk_offline_form_title</item>
-        <item name="usedesk_offline_form_sent_title">@string/usedesk_offline_form_sent_title</item>
-        <item name="usedesk_offline_form_name_hint">@string/usedesk_offline_form_name_hint</item>
-        <item name="usedesk_offline_form_email_hint">@string/usedesk_offline_form_email_hint</item>
-        <item name="usedesk_offline_form_message_hint">@string/usedesk_offline_form_message_hint
-        </item>
-        <item name="usedesk_offline_form_send">@string/usedesk_offline_form_send</item>
-        <!--MessagePanel-->
-        <item name="usedesk_message_panel_background">
-            @color/usedesk_message_panel_background_color
-        </item>
-        <item name="usedesk_message_panel_input_background">
-            @drawable/background_ticket_message_panel
-        </item>
-        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attachment</item>
-        <item name="usedesk_message_panel_send_icon">@drawable/ic_send</item>
-        <item name="usedesk_message_panel_document_icon">@drawable/ic_document_black</item>
-        <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
-        <item name="usedesk_message_panel_detach_icon">@drawable/ic_preview_detach</item>
-        <item name="usedesk_message_panel_input_font_family">@null</item>
-        <item name="usedesk_message_panel_form_send">@string/usedesk_message_panel_hint</item>
-        <item name="usedesk_message_panel_input_hint">@string/usedesk_message_panel_input_hint
-        </item>
-        <!--MessageUser-->
-        <item name="usedesk_message_user_background">@drawable/user_bubble</item>
-        <item name="usedesk_message_user_background_color">
-            @color/usedesk_message_user_background_color
-        </item>
-        <!--MessageOperator-->
-        <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
-        <item name="usedesk_message_operator_background_color">
-            @color/usedesk_message_operator_background_color
-        </item>
-        <item name="usedesk_message_operator_feedback_received">
-            @string/usedesk_message_operator_feedback_received
-        </item>
-        <item name="usedesk_message_operator_like">@drawable/ic_like</item>
-        <item name="usedesk_message_operator_dislike">@drawable/ic_dislike</item>
-        <!--ChatFragment-->
-        <item name="usedesk_chat_fragment_loading_text">@string/usedesk_chat_fragment_loading_text
-        </item>
-        <item name="usedesk_chat_fragment_background">@color/usedesk_chat_background_color</item>
-        <item name="usedesk_open_html_link">Open HTML</item>
-        <!--AttachmentPanel-->
-        <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo_black
-        </item>
-        <item name="usedesk_attachment_panel_camera_icon">@drawable/ic_attachment_take_photo_black
-        </item>
-        <item name="usedesk_attachment_panel_storage_icon">@drawable/ic_attachment_document_black
-        </item>
-        <item name="usedesk_attachment_panel_gallery_title">
-            @string/usedesk_attachment_panel_gallery_title
-        </item>
-        <item name="usedesk_attachment_panel_camera_title">
-            @string/usedesk_attachment_panel_camera_title
-        </item>
-        <item name="usedesk_attachment_panel_storage_title">
-            @string/usedesk_attachment_panel_storage_title
-        </item>
-
         <!--new styled values-->
         <item name="usedesk_screen_chat_title">@string/usedesk_screen_chat_title</item>
 

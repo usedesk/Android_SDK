@@ -28,7 +28,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:singleLine="true"
-                android:textColor="@color/grayDark"
+                android:textColor="#828282"
                 android:textSize="13sp"
                 tools:text="Алена Ошева" />
 

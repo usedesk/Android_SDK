@@ -19,10 +19,6 @@
     <string name="usedesk_message_operator_feedback_received">Thank you for your feedback</string>
     <!--ChatFragment-->
     <string name="usedesk_chat_fragment_loading_text">Loading…</string>
-    <!--AttachmentPanel-->
-    <string name="usedesk_attachment_panel_gallery_title">Photo</string>
-    <string name="usedesk_attachment_panel_camera_title">Camera</string>
-    <string name="usedesk_attachment_panel_storage_title">Document</string>
     <!--Permissions-->
     <string name="settings">Settings</string>
     <string name="need_permissions">Permissions needed</string>

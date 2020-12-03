@@ -70,7 +70,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_regular"
-                        android:textColor="@color/usedesk_gray_dark"
+                        android:textColor="#828282"
                         android:textSize="14sp"
                         tools:text="384 кб" />
                 </LinearLayout>

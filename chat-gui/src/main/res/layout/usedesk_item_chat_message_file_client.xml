@@ -8,12 +8,10 @@
         android:layout_marginVertical="2dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="8dp"
-        android:gravity="start"
-        android:layoutDirection="rtl"
+        android:gravity="end"
         android:orientation="horizontal"
         android:theme="?attr/usedesk_chat_style_message_client_file"
         tools:theme="@style/Usedesk.Chat.Message.Client.File">
-
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -31,6 +29,7 @@
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:singleLine="true"
                 android:textColor="@color/usedesk_gray_dark"
+                android:textSize="13sp"
                 tools:text="Алена Ошева" />
 
             <FrameLayout

@@ -24,7 +24,6 @@
                 android:includeFontPadding="false"
                 android:textColor="#FFFFFF"
                 android:textSize="17sp"
-                android:textStyle="bold"
                 tools:text="AB" />
 
             <com.makeramen.roundedimageview.RoundedImageView

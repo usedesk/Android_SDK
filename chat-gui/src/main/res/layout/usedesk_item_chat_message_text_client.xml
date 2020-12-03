@@ -29,6 +29,7 @@
                 android:fontFamily="@font/sf_ui_display_regular"
                 android:singleLine="true"
                 android:textColor="@color/grayDark"
+                android:textSize="13sp"
                 tools:text="Алена Ошева" />
 
             <FrameLayout

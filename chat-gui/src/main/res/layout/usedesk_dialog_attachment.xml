@@ -36,7 +36,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:duplicateParentState="true"
-                android:text="Image" />
+                android:fontFamily="@font/sf_ui_display_semibold"
+                android:text="@string/usedesk_chat_attachment_image"
+                android:textColor="#000000"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -62,7 +65,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:duplicateParentState="true"
-                android:text="Camera" />
+                android:fontFamily="@font/sf_ui_display_semibold"
+                android:text="@string/usedesk_chat_attachment_camera"
+                android:textColor="#000000"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +94,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:duplicateParentState="true"
-                android:text="Storage" />
+                android:fontFamily="@font/sf_ui_display_semibold"
+                android:text="@string/usedesk_chat_attachment_storage"
+                android:textColor="#000000"
+                android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
 </layout>

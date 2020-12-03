@@ -35,6 +35,6 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            app:srcCompat="?attr/usedesk_message_panel_detach_icon" />
+            app:srcCompat="@drawable/ic_preview_detach" />
     </FrameLayout>
 </layout>

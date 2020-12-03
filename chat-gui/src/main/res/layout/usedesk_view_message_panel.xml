@@ -13,7 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/usedesk_message_panel_background"
+            android:background="#D1F8F8F8"
             android:clipChildren="true"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -33,18 +33,18 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="?attr/usedesk_message_panel_attach_icon"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_attachment" />
 
                 <EditText
                     android:id="@+id/message_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="?attr/usedesk_message_panel_input_background"
-                    android:fontFamily="?attr/usedesk_message_panel_input_font_family"
-                    android:hint="?attr/usedesk_message_panel_input_hint"
+                    android:background="@drawable/background_ticket_message_panel"
+                    android:fontFamily="@font/sf_ui_display_regular"
+                    android:hint="@string/usedesk_message_panel_input_hint"
                     android:includeFontPadding="false"
                     android:inputType="textCapSentences"
                     android:maxLines="5"
@@ -65,10 +65,10 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="?attr/usedesk_message_panel_send_icon"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_send" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

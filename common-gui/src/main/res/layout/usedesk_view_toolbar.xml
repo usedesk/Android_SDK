@@ -51,10 +51,11 @@
                         android:layout_gravity="center_vertical|center_horizontal"
                         android:ellipsize="end"
                         android:gravity="center"
+                        android:fontFamily="@font/sf_ui_display_semibold"
                         android:padding="16dp"
                         android:singleLine="true"
                         android:textColor="#333333"
-                        android:textSize="17sp"
+                        android:textSize="20sp"
                         tools:text="Title" />
 
                     <FrameLayout

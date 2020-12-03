@@ -20,7 +20,7 @@
             android:paddingEnd="12dp"
             android:paddingBottom="4dp"
             android:textColor="#242B33"
-            android:textSize="13sp"
+            android:textSize="15sp"
             tools:text="Вчера" />
     </FrameLayout>
 

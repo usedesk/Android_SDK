@@ -62,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_regular"
                         android:textColor="#000000"
-                        android:textSize="16sp"
+                        android:textSize="18sp"
                         tools:text="Сводная таблица.xls" />
 
                     <TextView
@@ -71,7 +71,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_regular"
                         android:textColor="@color/usedesk_gray_dark"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         tools:text="384 кб" />
                 </LinearLayout>
 
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
                 android:layout_marginEnd="4dp"
-                android:fontFamily="@font/sf_ui_display_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:includeFontPadding="false"
                 android:textColor="#989FB3"
                 android:textSize="13sp"

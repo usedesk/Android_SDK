@@ -28,9 +28,10 @@
                     android:id="@+id/tv_title"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/sf_ui_display_regular"
+                    android:fontFamily="@font/sf_ui_display_semibold"
                     android:gravity="center"
                     android:textColor="#FFFFFF"
+                    android:textSize="17sp"
                     tools:text="Button" />
             </FrameLayout>
         </FrameLayout>

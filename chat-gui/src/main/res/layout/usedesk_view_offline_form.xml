@@ -18,8 +18,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="12dp"
+                android:fontFamily="@font/sf_pro_display_regular"
                 android:text="@string/usedesk_offline_form_title"
-                android:textColor="#202941" />
+                android:textColor="#202941"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tv_sent_text"
@@ -27,21 +29,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="12dp"
+                android:fontFamily="@font/sf_pro_display_regular"
                 android:gravity="center"
                 android:text="@string/usedesk_offline_form_sent_title"
-                android:textColor="#202941" />
+                android:textColor="#202941"
+                android:textSize="18sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="8dp">
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/sf_pro_display_regular">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_regular"
                     android:hint="@string/usedesk_offline_form_name_hint"
                     android:inputType="textPersonName|textCapWords"
                     android:singleLine="true"
@@ -54,12 +60,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="8dp">
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/sf_pro_display_regular">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_regular"
                     android:hint="@string/usedesk_offline_form_email_hint"
                     android:inputType="textEmailAddress"
                     android:singleLine="true"
@@ -72,12 +80,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
-                android:layout_marginVertical="8dp">
+                android:layout_marginVertical="8dp"
+                android:fontFamily="@font/sf_pro_display_regular">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_regular"
                     android:hint="@string/usedesk_offline_form_message_hint"
                     android:inputType="textMultiLine|textCapSentences"
                     android:singleLine="false"
@@ -91,9 +101,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="8dp"
+                android:fontFamily="@font/sf_pro_display_regular"
                 android:gravity="center"
                 android:text="@string/usedesk_offline_form_failed_to_send"
-                android:textColor="#EB5757" />
+                android:textColor="#EB5757"
+                android:textSize="18sp" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -122,10 +134,11 @@
                         android:background="?android:attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:fontFamily="@font/sf_ui_display_regular"
+                        android:fontFamily="@font/sf_ui_display_semibold"
                         android:gravity="center"
                         android:text="@string/usedesk_offline_form_send"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/tv_back"
@@ -134,10 +147,11 @@
                         android:background="?android:attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:fontFamily="@font/sf_ui_display_regular"
+                        android:fontFamily="@font/sf_ui_display_semibold"
                         android:gravity="center"
                         android:text="@string/usedesk_offline_form_back"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp" />
                 </FrameLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

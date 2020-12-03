@@ -12,7 +12,7 @@
         android:layoutDirection="rtl"
         android:orientation="horizontal"
         android:theme="?attr/usedesk_chat_style_message_client_image"
-        tools:theme="@style/UsedeskChatMessage.ClientImage">
+        tools:theme="@style/Usedesk.Chat.Message.Client.Image">
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -3,10 +3,15 @@
     <!--UsedeskOfflineForm-->
     <string name="usedesk_offline_form_title">Unfortunately, all our operators are currently offline, but you can send us a request and we will definitely consider it in the near future.</string>
     <string name="usedesk_offline_form_sent_title">Your request has been sent successfully.</string>
-    <string name="usedesk_offline_form_email_hint">Email</string>
     <string name="usedesk_offline_form_name_hint">Name</string>
+    <string name="usedesk_offline_form_email_hint">Email</string>
     <string name="usedesk_offline_form_message_hint">Message</string>
+    <string name="usedesk_offline_form_name_error">Field required</string>
+    <string name="usedesk_offline_form_email_error">Invalid email</string>
+    <string name="usedesk_offline_form_message_error">Field required</string>
+    <string name="usedesk_offline_form_failed_to_send">Failed to send your request. Please, try again.</string>
     <string name="usedesk_offline_form_send">Send</string>
+    <string name="usedesk_offline_form_back">Back</string>
     <!--MessagePanel-->
     <string name="usedesk_message_panel_hint">Message</string>
     <string name="usedesk_message_panel_input_hint">Write message…</string>

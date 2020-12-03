@@ -10,7 +10,7 @@
         android:layout_marginEnd="32dp"
         android:orientation="horizontal"
         android:theme="?attr/usedesk_chat_style_message_agent_image"
-        tools:theme="@style/UsedeskChatMessage.AgentImage">
+        tools:theme="@style/Usedesk.Chat.Message.Agent.Image">
 
         <include
             android:id="@+id/avatar"

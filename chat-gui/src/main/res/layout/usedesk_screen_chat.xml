@@ -3,86 +3,80 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/l_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:theme="@style/Usedesk.Theme.Chat">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/lt_content"
+        <FrameLayout
+            android:id="@+id/l_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <FrameLayout
-                android:id="@+id/l_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/usedesk_view_toolbar" />
+        </FrameLayout>
 
-                <include
-                    android:id="@+id/toolbar"
-                    layout="@layout/usedesk_view_toolbar" />
-            </FrameLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_messages"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toTopOf="@+id/lt_bottom"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/l_toolbar"
-                tools:listitem="@layout/usedesk_item_chat_message_text_client" />
-
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/lt_bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <include
-                        android:id="@+id/message_panel"
-                        layout="@layout/usedesk_view_message_panel"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <include
-                        layout="@layout/usedesk_view_offline_form"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
-
-                    <include
-                        layout="@layout/usedesk_view_offline_form_sent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
-
-                </androidx.cardview.widget.CardView>
-
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_messages"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/l_toolbar"
+            tools:listitem="@layout/usedesk_item_chat_message_text_client"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_loading"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/usedesk_chat_fragment_loading_text"
+            app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/l_toolbar"
+            tools:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/l_offline_form"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/l_toolbar"
+            tools:visibility="visible">
+
+            <include
+                android:id="@+id/offline_form"
+                layout="@layout/usedesk_view_offline_form" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/l_message_panel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/usedesk_chat_fragment_loading_text" />
-    </FrameLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <include
+                android:id="@+id/message_panel"
+                layout="@layout/usedesk_view_message_panel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -33,7 +33,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/ic_smile_sad" />
+                    app:srcCompat="@drawable/ic_smile_sad" />
 
                 <ImageView
                     android:id="@+id/iv_like"
@@ -43,7 +43,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/ic_smile_happy" />
+                    app:srcCompat="@drawable/ic_smile_happy" />
 
             </LinearLayout>
 

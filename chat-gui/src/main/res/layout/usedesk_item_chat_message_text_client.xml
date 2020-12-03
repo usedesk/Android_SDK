@@ -11,7 +11,7 @@
         android:gravity="end"
         android:orientation="horizontal"
         android:theme="?attr/usedesk_chat_style_message_client_text"
-        tools:theme="@style/UsedeskChatMessage.ClientText">
+        tools:theme="@style/Usedesk.Chat.Message.Client.Text">
 
         <LinearLayout
             android:layout_width="wrap_content"

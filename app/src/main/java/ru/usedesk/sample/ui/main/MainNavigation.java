@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import ru.usedesk.chat_gui.external.UsedeskChatFragment;
-import ru.usedesk.chat_gui.external.showfile.UsedeskShowFileFragment;
-import ru.usedesk.chat_gui.external.showhtml.UsedeskShowHtmlFragment;
-import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
-import ru.usedesk.knowledgebase_gui.external.UsedeskKnowledgeBaseFragment;
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen;
+import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen;
+import ru.usedesk.chat_gui.showhtml.UsedeskShowHtmlScreen;
+import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
+import ru.usedesk.knowledgebase_gui.main.UsedeskKnowledgeBaseFragment;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
 
 public class MainNavigation {
@@ -36,7 +36,7 @@ public class MainNavigation {
     }
 
     void goChat(@Nullable String customAgentName) {
-        switchFragment(UsedeskChatFragment.newInstance(customAgentName));
+        switchFragment(UsedeskChatScreen.newInstance(customAgentName));
     }
 
     void goKnowledgeBase() {
@@ -44,11 +44,11 @@ public class MainNavigation {
     }
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {
-        switchFragment(UsedeskShowFileFragment.newInstance(usedeskFile));
+        switchFragment(UsedeskShowFileScreen.newInstance(usedeskFile));
     }
 
     void goShowHtml(@NonNull String htmlText) {
-        switchFragment(UsedeskShowHtmlFragment.newInstance(htmlText));
+        switchFragment(UsedeskShowHtmlScreen.newInstance(htmlText));
     }
 
     public void onBackPressed() {

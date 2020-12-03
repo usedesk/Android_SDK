@@ -6,8 +6,8 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import ru.usedesk.chat_sdk.external.service.notifications.UsedeskNotificationsServiceFactory;
-import ru.usedesk.chat_sdk.external.service.notifications.view.UsedeskForegroundNotificationsService;
+import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory;
+import ru.usedesk.chat_sdk.service.notifications.view.UsedeskForegroundNotificationsService;
 import ru.usedesk.sample.ui.main.MainActivity;
 
 public class CustomForegroundNotificationsService extends UsedeskForegroundNotificationsService {

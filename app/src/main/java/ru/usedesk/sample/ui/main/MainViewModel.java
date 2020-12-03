@@ -7,11 +7,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import io.reactivex.disposables.CompositeDisposable;
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
-import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
+import ru.usedesk.chat_sdk.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration;
+import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.ServiceLocator;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;

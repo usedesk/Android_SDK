@@ -12,7 +12,7 @@
         android:layoutDirection="rtl"
         android:orientation="horizontal"
         android:theme="?attr/usedesk_chat_style_message_client_file"
-        tools:theme="@style/UsedeskChatMessage.ClientFile">
+        tools:theme="@style/Usedesk.Chat.Message.Client.File">
 
 
         <LinearLayout

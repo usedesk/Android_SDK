@@ -12,11 +12,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import org.jetbrains.annotations.NotNull;
 
-import ru.usedesk.chat_gui.external.IUsedeskOnFileClickListener;
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.internal.domain.entity.UsedeskFile;
-import ru.usedesk.knowledgebase_gui.external.IUsedeskOnBackPressedListener;
-import ru.usedesk.knowledgebase_gui.external.IUsedeskOnSupportClickListener;
+import ru.usedesk.chat_gui.IUsedeskOnFileClickListener;
+import ru.usedesk.chat_sdk.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
+import ru.usedesk.knowledgebase_gui.IUsedeskOnBackPressedListener;
+import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;

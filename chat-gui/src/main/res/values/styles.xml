@@ -67,17 +67,18 @@
         <!--new styled values-->
         <item name="usedesk_screen_chat_title">@string/usedesk_screen_chat_title</item>
 
-        <item name="usedesk_chat_style_message_agent_text">@style/UsedeskChatMessage.AgentText
+        <item name="usedesk_chat_style_message_agent_text">@style/Usedesk.Chat.Message.Agent.Text
         </item>
-        <item name="usedesk_chat_style_message_agent_file">@style/UsedeskChatMessage.AgentFile
+        <item name="usedesk_chat_style_message_agent_file">@style/Usedesk.Chat.Message.Agent.File
         </item>
-        <item name="usedesk_chat_style_message_agent_image">@style/UsedeskChatMessage.AgentImage
+        <item name="usedesk_chat_style_message_agent_image">@style/Usedesk.Chat.Message.Agent.Image
         </item>
-        <item name="usedesk_chat_style_message_client_text">@style/UsedeskChatMessage.ClientText
+        <item name="usedesk_chat_style_message_client_text">@style/Usedesk.Chat.Message.Client.Text
         </item>
-        <item name="usedesk_chat_style_message_client_file">@style/UsedeskChatMessage.ClientFile
+        <item name="usedesk_chat_style_message_client_file">@style/Usedesk.Chat.Message.Client.File
         </item>
-        <item name="usedesk_chat_style_message_client_image">@style/UsedeskChatMessage.ClientImage
+        <item name="usedesk_chat_style_message_client_image">
+            @style/Usedesk.Chat.Message.Client.Image
         </item>
     </style>
 
@@ -85,32 +86,41 @@
 
     </style>
 
-    <style name="UsedeskChatMessage">
+    <style name="Usedesk.Chat.Message" parent="">
         <item name="usedesk_chat_image_radius_bottom_left">6dp</item>
         <item name="usedesk_chat_image_radius_bottom_right">6dp</item>
     </style>
 
-    <style name="UsedeskChatMessage.AgentText">
+    <style name="Usedesk.Chat.Message.Agent.Text" parent="">
         <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
     </style>
 
-    <style name="UsedeskChatMessage.AgentFile">
+    <style name="Usedesk.Chat.Message.Agent.File" parent="">
         <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
     </style>
 
-    <style name="UsedeskChatMessage.AgentImage">
+    <style name="Usedesk.Chat.Message.Agent.Image" parent="">
         <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
     </style>
 
-    <style name="UsedeskChatMessage.ClientText">
+    <style name="Usedesk.Chat.Message.Client.Text" parent="">
         <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
     </style>
 
-    <style name="UsedeskChatMessage.ClientFile">
+    <style name="Usedesk.Chat.Message.Client.File" parent="">
         <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
     </style>
 
-    <style name="UsedeskChatMessage.ClientImage">
+    <style name="Usedesk.Chat.Message.Client.Image" parent="">
         <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
     </style>
+
+    <style name="Usedesk.Chat.Offline.Form" parent="">
+
+    </style>
+
+    <style name="Usedesk.Chat.Offline.Form.ProgressBar" parent="">
+        <item name="colorAccent">#EB5757</item>
+    </style>
+
 </resources>

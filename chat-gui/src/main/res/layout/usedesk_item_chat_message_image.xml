@@ -14,8 +14,6 @@
             android:layout_width="230dp"
             android:layout_height="230dp"
             android:scaleType="centerCrop"
-            app:riv_corner_radius_bottom_left="?attr/usedesk_chat_image_radius_bottom_left"
-            app:riv_corner_radius_bottom_right="?attr/usedesk_chat_image_radius_bottom_right"
             app:riv_corner_radius_top_left="6dp"
             app:riv_corner_radius_top_right="6dp"
             tools:src="@drawable/ic_image_loading" />

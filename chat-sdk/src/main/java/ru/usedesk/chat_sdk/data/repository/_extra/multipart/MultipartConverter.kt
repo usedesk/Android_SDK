@@ -15,11 +15,11 @@ import toothpick.InjectConstructor
 internal class MultipartConverter(
         private val contentResolver: ContentResolver
 ) : IMultipartConverter {
-    override fun makePart(key: String, value: String): MultipartBody.Part {
+    override fun convert(key: String, value: String): MultipartBody.Part {
         return MultipartBody.Part.createFormData(key, value)
     }
 
-    override fun makePart(
+    override fun convert(
             key: String,
             uri: Uri
     ): MultipartBody.Part {

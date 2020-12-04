@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.di
 
+import android.content.ContentResolver
 import android.content.Context
 import com.google.gson.Gson
 import io.reactivex.Scheduler
@@ -37,6 +38,7 @@ internal class MainModule(
 
     init {
         bind(Context::class.java).toInstance(appContext)
+        bind(ContentResolver::class.java).toInstance(appContext.contentResolver)
         bind(UsedeskChatConfiguration::class.java).toInstance(usedeskChatConfiguration)
         bind(IUsedeskActionListener::class.java).toInstance(actionListener)
         bind(Scheduler::class.java).withName("work").toInstance(Schedulers.io())

@@ -4,6 +4,7 @@ import ru.usedesk.chat_sdk.data.repository._extra.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.ChatInitedConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.ChatItemConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.entity.OfflineFormRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
@@ -13,10 +14,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailRequest
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
@@ -36,12 +34,55 @@ internal class ApiRepository(
 
     private fun isConnected() = socketApi.isConnected()
 
+    private lateinit var eventListener: IApiRepository.EventListener
+
+    private val socketEventListener = object : SocketApi.EventListener {
+        override fun onConnected() {
+            eventListener.onConnected()
+        }
+
+        override fun onDisconnected() {
+            eventListener.onDisconnected()
+        }
+
+        override fun onTokenError() {
+            eventListener.onTokenError()
+        }
+
+        override fun onFeedback() {
+            eventListener.onFeedback()
+        }
+
+        override fun onException(exception: Exception) {
+            eventListener.onException(exception)
+        }
+
+        override fun onInited(initChatResponse: InitChatResponse) {
+            val chatInited = chatInitedConverter.convert(initChatResponse)
+            if (chatInited.noOperators) {
+                eventListener.onOfflineForm()
+            } else {
+                eventListener.onChatInited(chatInited)
+            }
+        }
+
+        override fun onNew(messageResponse: MessageResponse) {
+            if (messageResponse.message?.payload?.noOperators == true) {
+                eventListener.onOfflineForm()
+            } else {
+                val chatItems = chatItemConverter.convert(messageResponse.message)
+                eventListener.onNewChatItems(chatItems)
+            }
+        }
+    }
+
     @Throws(UsedeskException::class)
     override fun connect(url: String,
                          token: String?,
                          configuration: UsedeskChatConfiguration,
                          eventListener: IApiRepository.EventListener) {
-        socketApi.connect(url, token, configuration.companyId, getEventListener(eventListener))
+        this.eventListener = eventListener
+        socketApi.connect(url, token, configuration.companyId, socketEventListener)
     }
 
     @Throws(UsedeskException::class)
@@ -67,12 +108,18 @@ internal class ApiRepository(
                       token: String,
                       usedeskFileInfo: UsedeskFileInfo) {
         checkConnection()
-        val url = configuration.url
+        val url = URL(configuration.offlineFormUrl)
+        val postUrl = String.format(HTTP_API_PATH, url.host)
         val parts = listOf(
-                multipartConverter.makePart("chat_token", token),
-                multipartConverter.makePart("file", usedeskFileInfo.uri)
+                multipartConverter.convert("chat_token", token),
+                multipartConverter.convert("file", usedeskFileInfo.uri)
         )
-        fileApi.post(url, parts)
+        val fileResponse = fileApi.post(postUrl, parts)
+        eventListener.onNewChatItems(UsedeskMessageClientFile)
+    }
+
+    private fun convert(fileResponse: FileResponse): UsedeskChatItem {
+        if (fileResponse.)
     }
 
     @Throws(UsedeskException::class)
@@ -103,49 +150,8 @@ internal class ApiRepository(
         }
     }
 
-    private fun getEventListener(eventListener: IApiRepository.EventListener): SocketApi.EventListener {
-        return object : SocketApi.EventListener {
-            override fun onConnected() {
-                eventListener.onConnected()
-            }
-
-            override fun onDisconnected() {
-                eventListener.onDisconnected()
-            }
-
-            override fun onTokenError() {
-                eventListener.onTokenError()
-            }
-
-            override fun onFeedback() {
-                eventListener.onFeedback()
-            }
-
-            override fun onException(exception: Exception) {
-                eventListener.onException(exception)
-            }
-
-            override fun onInited(initChatResponse: InitChatResponse) {
-                val chatInited = chatInitedConverter.convert(initChatResponse)
-                if (chatInited.noOperators) {
-                    eventListener.onOfflineForm()
-                } else {
-                    eventListener.onChatInited(chatInited)
-                }
-            }
-
-            override fun onNew(messageResponse: MessageResponse) {
-                if (messageResponse.message?.payload?.noOperators == true) {
-                    eventListener.onOfflineForm()
-                } else {
-                    val chatItems = chatItemConverter.convert(messageResponse.message)
-                    eventListener.onNewChatItems(chatItems)
-                }
-            }
-        }
-    }
-
     companion object {
         private const val OFFLINE_FORM_PATH = "https://%1s/widget.js/"
+        private const val HTTP_API_PATH = "https://%1s/uapi/v1/"
     }
 }

@@ -108,7 +108,6 @@ internal class ChatInteractor(
         }
         token?.also {
             apiRepository.send(it, textMessage)
-
         }
     }
 
@@ -156,14 +155,16 @@ internal class ChatInteractor(
         return Completable.create { emitter: CompletableEmitter ->
             send(usedeskFileInfo)
             emitter.onComplete()
-        }
+        }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             send(usedeskFileInfoList)
             emitter.onComplete()
-        }
+        }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun sendRx(message: UsedeskMessageAgentText, feedback: UsedeskFeedback): Completable {

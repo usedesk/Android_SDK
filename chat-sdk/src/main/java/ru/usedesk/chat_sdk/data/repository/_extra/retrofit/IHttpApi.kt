@@ -14,6 +14,6 @@ internal interface IHttpApi {
     fun postOfflineForm(@Body request: OfflineFormRequest): Call<Array<Any>>
 
     @Multipart
-    @POST("v1/send_file")
+    @POST("send_file")
     fun postFile(@Part parts: List<MultipartBody.Part>): Call<FileResponse>
 }

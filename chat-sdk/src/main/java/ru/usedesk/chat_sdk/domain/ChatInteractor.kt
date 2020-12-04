@@ -115,7 +115,7 @@ internal class ChatInteractor(
     @Throws(UsedeskException::class)
     override fun send(usedeskFileInfo: UsedeskFileInfo) {
         token?.also {
-            apiRepository.send(it, usedeskFileInfo)
+            apiRepository.send(configuration, it, usedeskFileInfo)
         }
     }
 

@@ -5,21 +5,23 @@ import com.google.gson.Gson
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.usedesk.chat_sdk.data.framework._extra.retrofit.HttpApiFactory
-import ru.usedesk.chat_sdk.data.framework._extra.retrofit.IHttpApiFactory
-import ru.usedesk.chat_sdk.data.framework.configuration.ConfigurationLoader
-import ru.usedesk.chat_sdk.data.framework.configuration.IConfigurationLoader
-import ru.usedesk.chat_sdk.data.framework.fileinfo.FileInfoLoader
-import ru.usedesk.chat_sdk.data.framework.fileinfo.IFileInfoLoader
-import ru.usedesk.chat_sdk.data.framework.httpapi.HttpApiLoader
-import ru.usedesk.chat_sdk.data.framework.httpapi.IHttpApiLoader
-import ru.usedesk.chat_sdk.data.framework.token.ITokenLoader
-import ru.usedesk.chat_sdk.data.framework.token.TokenLoader
+import ru.usedesk.chat_sdk.data.repository._extra.multipart.IMultipartConverter
+import ru.usedesk.chat_sdk.data.repository._extra.multipart.MultipartConverter
+import ru.usedesk.chat_sdk.data.repository._extra.retrofit.HttpApiFactory
+import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApiFactory
 import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
-import ru.usedesk.chat_sdk.data.repository.api.loader.SocketApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.FileApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.OfflineFormApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationLoader
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoader
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.TokenLoader
 import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
@@ -44,8 +46,9 @@ internal class MainModule(
         bind(SocketApi::class.java).to(SocketApi::class.java).singleton()
         bind(IConfigurationLoader::class.java).to(ConfigurationLoader::class.java).singleton()
         bind(ITokenLoader::class.java).to(TokenLoader::class.java).singleton()
-        bind(IFileInfoLoader::class.java).to(FileInfoLoader::class.java).singleton()
-        bind(IHttpApiLoader::class.java).to(HttpApiLoader::class.java).singleton()
+        bind(IMultipartConverter::class.java).to(MultipartConverter::class.java).singleton()
+        bind(IFileApi::class.java).to(FileApi::class.java).singleton()
+        bind(IOfflineFormApi::class.java).to(OfflineFormApi::class.java).singleton()
 
         bind(IUserInfoRepository::class.java).to(UserInfoRepository::class.java).singleton()
         bind(IApiRepository::class.java).to(ApiRepository::class.java).singleton()

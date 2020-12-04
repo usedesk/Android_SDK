@@ -66,7 +66,6 @@ public class ConfigurationScreen extends Fragment {
         viewModel.setTempConfiguration(getConfiguration());
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void onGoToSdkEvent(@NonNull Event<Object> event) {
         event.doEvent(obj -> ((IOnGoToSdkListener) getActivity()).goToSdk());
     }

@@ -1,13 +1,18 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import ru.usedesk.chat_sdk.data.framework.fileinfo.IFileInfoLoader
-import ru.usedesk.chat_sdk.data.framework.httpapi.IHttpApiLoader
-import ru.usedesk.chat_sdk.data.repository.api._entity.request.*
-import ru.usedesk.chat_sdk.data.repository.api._entity.response.ChatInitedResponse
-import ru.usedesk.chat_sdk.data.repository.api._entity.response.MessageResponse
+import ru.usedesk.chat_sdk.data.repository._extra.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.ChatInitedConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.ChatItemConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.SocketApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.entity.OfflineFormRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailRequest
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -22,8 +27,9 @@ import java.net.URL
 @InjectConstructor
 internal class ApiRepository(
         private val socketApi: SocketApi,
-        private val httpApiLoader: IHttpApiLoader,
-        private val fileInfoLoader: IFileInfoLoader,
+        private val offlineFormApi: IOfflineFormApi,
+        private val fileApi: IFileApi,
+        private val multipartConverter: IMultipartConverter,
         private val chatInitedConverter: ChatInitedConverter,
         private val chatItemConverter: ChatItemConverter
 ) : IApiRepository {
@@ -47,20 +53,26 @@ internal class ApiRepository(
     @Throws(UsedeskException::class)
     override fun send(token: String, feedback: UsedeskFeedback) {
         checkConnection()
-        socketApi.sendRequest(SendFeedbackRequest(token, feedback))
+        socketApi.sendRequest(FeedbackRequest(token, feedback))
     }
 
     @Throws(UsedeskException::class)
     override fun send(token: String, text: String) {
         checkConnection()
-        socketApi.sendRequest(SendMessageRequest(token, text = text))
+        socketApi.sendRequest(MessageRequest(token, text))
     }
 
     @Throws(UsedeskException::class)
-    override fun send(token: String, usedeskFileInfo: UsedeskFileInfo) {
+    override fun send(configuration: UsedeskChatConfiguration,
+                      token: String,
+                      usedeskFileInfo: UsedeskFileInfo) {
         checkConnection()
-        val usedeskFile = fileInfoLoader.getFrom(usedeskFileInfo)
-        socketApi.sendRequest(SendMessageRequest(token, usedeskFile = usedeskFile))
+        val url = configuration.url
+        val parts = listOf(
+                multipartConverter.makePart("chat_token", token),
+                multipartConverter.makePart("file", usedeskFileInfo.uri)
+        )
+        fileApi.post(url, parts)
     }
 
     @Throws(UsedeskException::class)
@@ -75,7 +87,7 @@ internal class ApiRepository(
         try {
             val url = URL(configuration.offlineFormUrl)
             val postUrl = String.format(OFFLINE_FORM_PATH, url.host)
-            httpApiLoader.post(postUrl, OfflineFormRequest(companyId, offlineForm))
+            offlineFormApi.post(postUrl, OfflineFormRequest(companyId, offlineForm))
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
@@ -113,8 +125,8 @@ internal class ApiRepository(
                 eventListener.onException(exception)
             }
 
-            override fun onInited(chatInitedResponse: ChatInitedResponse) {
-                val chatInited = chatInitedConverter.convert(chatInitedResponse)
+            override fun onInited(initChatResponse: InitChatResponse) {
+                val chatInited = chatInitedConverter.convert(initChatResponse)
                 if (chatInited.noOperators) {
                     eventListener.onOfflineForm()
                 } else {

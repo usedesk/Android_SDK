@@ -36,11 +36,11 @@ internal interface IApiRepository {
              text: String)
 
     @Throws(UsedeskException::class)
-    fun send(token: String,
+    fun send(configuration: UsedeskChatConfiguration,
+             token: String,
              usedeskFileInfo: UsedeskFileInfo)
 
     fun disconnect()
-
 
     interface EventListener {
         fun onConnected()

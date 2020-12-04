@@ -1,13 +1,13 @@
 package ru.usedesk.chat_sdk.data.repository.configuration
 
-import ru.usedesk.chat_sdk.data.framework.configuration.IConfigurationLoader
-import ru.usedesk.chat_sdk.data.framework.token.ITokenLoader
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import toothpick.InjectConstructor
 
 @InjectConstructor
-class UserInfoRepository(
+internal class UserInfoRepository(
         private val configurationDataLoader: IConfigurationLoader,
         private val tokenDataLoader: ITokenLoader
 ) : IUserInfoRepository {

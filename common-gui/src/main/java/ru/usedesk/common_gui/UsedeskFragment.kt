@@ -1,10 +1,13 @@
 package ru.usedesk.common_gui
 
 import android.content.res.TypedArray
+import android.view.Gravity
+import android.widget.TextView
 import androidx.core.content.res.getColorOrThrow
 import androidx.core.content.res.getIntOrThrow
 import androidx.core.content.res.getStringOrThrow
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 
 abstract class UsedeskFragment(
         protected val defaultStyleId: Int
@@ -20,19 +23,19 @@ abstract class UsedeskFragment(
 
     open fun onBackPressed(): Boolean = false
 
-    fun getStringFromStyle(attrId: Int): String {
+    protected fun getStringFromStyle(attrId: Int): String {
         return getValueFromStyle(attrId) { attrs, index ->
             attrs.getStringOrThrow(index)
         }
     }
 
-    fun getIntFromStyle(attrId: Int): Int {
+    protected fun getIntFromStyle(attrId: Int): Int {
         return getValueFromStyle(attrId) { attrs, index ->
             attrs.getIntOrThrow(index)
         }
     }
 
-    fun getColorFromStyle(attrId: Int): Int {
+    protected fun getColorFromStyle(attrId: Int): Int {
         return getValueFromStyle(attrId) { attrs, index ->
             attrs.getColorOrThrow(index)
         }
@@ -50,11 +53,11 @@ abstract class UsedeskFragment(
     }
 
 
-    fun argsGetInt(key: String, default: Int): Int {
+    protected fun argsGetInt(key: String, default: Int): Int {
         return arguments?.getInt(key, default) ?: default
     }
 
-    fun argsGetInt(key: String): Int? {
+    protected fun argsGetInt(key: String): Int? {
         val args = arguments
         return if (args?.containsKey(key) == true) {
             args.getInt(key)
@@ -63,11 +66,11 @@ abstract class UsedeskFragment(
         }
     }
 
-    fun argsGetLong(key: String, default: Long): Long {
+    protected fun argsGetLong(key: String, default: Long): Long {
         return arguments?.getLong(key, default) ?: default
     }
 
-    fun argsGetLong(key: String): Long? {
+    protected fun argsGetLong(key: String): Long? {
         val args = arguments
         return if (args?.containsKey(key) == true) {
             args.getLong(key)
@@ -76,11 +79,11 @@ abstract class UsedeskFragment(
         }
     }
 
-    fun argsGetBoolean(key: String, default: Boolean): Boolean {
+    protected fun argsGetBoolean(key: String, default: Boolean): Boolean {
         return arguments?.getBoolean(key, default) ?: default
     }
 
-    fun argsGetBoolean(key: String): Boolean? {
+    protected fun argsGetBoolean(key: String): Boolean? {
         val args = arguments
         return if (args?.containsKey(key) == true) {
             args.getBoolean(key)
@@ -89,12 +92,24 @@ abstract class UsedeskFragment(
         }
     }
 
-    fun argsGetString(key: String, default: String): String {
+    protected fun argsGetString(key: String, default: String): String {
         return arguments?.getString(key) ?: default
     }
 
-    fun argsGetString(key: String): String? {
+    protected fun argsGetString(key: String): String? {
         return arguments?.getString(key)
+    }
+
+    protected fun showSnackbarError(stringId: Int) {
+        view?.also {
+            Snackbar.make(it, stringId, Snackbar.LENGTH_LONG).apply {
+                view.setBackgroundColor(resources.getColor(R.color.usedesk_red))
+                view.findViewById<TextView>(R.id.snackbar_text).apply {
+                    gravity = Gravity.CENTER_HORIZONTAL
+                }
+                setTextColor(resources.getColor(R.color.usedesk_white))
+            }.show()
+        }
     }
 
     protected inline fun <reified T> getParentListener(): T? {

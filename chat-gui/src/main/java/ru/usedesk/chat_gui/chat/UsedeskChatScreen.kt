@@ -13,6 +13,7 @@ import ru.usedesk.chat_gui.attachpanel.UsedeskAttachmentDialog
 import ru.usedesk.chat_gui.chat.adapters.ItemsAdapter
 import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.adapters.OfflineFormAdapter
+import ru.usedesk.chat_gui.chat.adapters.UsedeskOfflineFormSuccessDialog
 import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -87,10 +88,17 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
         OfflineFormAdapter(binding.offlineForm,
                 viewModel,
-                viewLifecycleOwner
-        ) {
-            requireActivity().onBackPressed()
-        }
+                viewLifecycleOwner,
+                {
+                    UsedeskOfflineFormSuccessDialog(binding.lRoot).apply {
+                        setOnDismissListener {
+                            requireActivity().onBackPressed()
+                        }
+                    }.show()
+                },
+                {
+                    showSnackbarError(R.string.usedesk_offline_form_failed_to_send)
+                })
 
         viewModel.init()
     }

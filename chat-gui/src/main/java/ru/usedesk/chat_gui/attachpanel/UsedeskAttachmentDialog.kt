@@ -21,7 +21,7 @@ import java.io.File
 
 class UsedeskAttachmentDialog(
         private val screen: UsedeskChatScreen
-) : BottomSheetDialog(screen.requireContext(), UsedeskStyleManager.getStyle(R.style.UsedeskChatAttachmentDialog)) {
+) : BottomSheetDialog(screen.requireContext(), UsedeskStyleManager.getStyle(R.style.Usedesk_Chat_Attachment_Dialog)) {
 
     init {
         val container = screen.view as ViewGroup

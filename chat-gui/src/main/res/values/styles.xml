@@ -19,7 +19,11 @@
         </item>
     </style>
 
-    <style name="UsedeskChatAttachmentDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <style name="Usedesk.Chat.Attachment.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+
+    </style>
+
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
 
     </style>
 

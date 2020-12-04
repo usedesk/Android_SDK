@@ -114,10 +114,10 @@ internal class ApiRepository(
             }
 
             override fun onInited(chatInitedResponse: ChatInitedResponse) {
-                if (chatInitedResponse.setup?.noOperators == true) {
+                val chatInited = chatInitedConverter.convert(chatInitedResponse)
+                if (chatInited.noOperators) {
                     eventListener.onOfflineForm()
                 } else {
-                    val chatInited = chatInitedConverter.convert(chatInitedResponse)
                     eventListener.onChatInited(chatInited)
                 }
             }

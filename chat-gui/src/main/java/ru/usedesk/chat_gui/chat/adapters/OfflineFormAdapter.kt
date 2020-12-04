@@ -12,7 +12,8 @@ internal class OfflineFormAdapter(
         private val binding: UsedeskViewOfflineFormBinding,
         private val viewModel: ChatViewModel,
         lifecycleOwner: LifecycleOwner,
-        private val onBackPressed: () -> Unit
+        private val onSuccessfully: () -> Unit,
+        private val onFailed: () -> Unit
 ) {
 
     init {
@@ -23,10 +24,6 @@ internal class OfflineFormAdapter(
                     binding.etEmail.text.toString(),
                     binding.etMessage.text.toString()
             )
-        }
-
-        binding.tvBack.setOnClickListener {
-            onBackPressed()
         }
 
         binding.etName.setText(viewModel.configuration.clientName)
@@ -94,17 +91,19 @@ internal class OfflineFormAdapter(
                 )
             }
             ChatViewModel.OfflineFormState.FAILED_TO_SEND -> {
+                onFailed()
                 showViews(
                         offlineText = true,
                         fields = true,
-                        error = true,
                         send = true
                 )
             }
             ChatViewModel.OfflineFormState.SENT_SUCCESSFULLY -> {
+                onSuccessfully()
                 showViews(
-                        sentText = true,
-                        back = true
+                        offlineText = true,
+                        fields = true,
+                        send = true
                 )
             }
         }
@@ -112,21 +111,15 @@ internal class OfflineFormAdapter(
 
     private fun showViews(
             offlineText: Boolean = false,
-            sentText: Boolean = false,
             fields: Boolean = false,
-            error: Boolean = false,
             loading: Boolean = false,
-            send: Boolean = false,
-            back: Boolean = false
+            send: Boolean = false
     ) {
         binding.tvOfflineText.visibility = visibleGone(offlineText)
-        binding.tvSentText.visibility = visibleGone(sentText)
         binding.tilName.visibility = visibleGone(fields)
         binding.tilEmail.visibility = visibleGone(fields)
         binding.tilMessage.visibility = visibleGone(fields)
-        binding.tvError.visibility = visibleGone(error)
         binding.pbLoading.visibility = visibleGone(loading)
         binding.tvSend.visibility = visibleGone(send)
-        binding.tvBack.visibility = visibleGone(back)
     }
 }

@@ -2,7 +2,7 @@
 <resources>
     <!--UsedeskOfflineForm-->
     <string name="usedesk_offline_form_title">Unfortunately, all our operators are currently offline, but you can send us a request and we will definitely consider it in the near future.</string>
-    <string name="usedesk_offline_form_sent_title">Your request has been sent successfully.</string>
+    <string name="usedesk_offline_form_sent_title">Your request has been sent successfully.\nWe will reply to you within 1 business day.</string>
     <string name="usedesk_offline_form_name_hint">Name</string>
     <string name="usedesk_offline_form_email_hint">Email</string>
     <string name="usedesk_offline_form_message_hint">Message</string>
@@ -37,4 +37,5 @@
     <string name="usedesk_chat_attachment_camera">Camera</string>
     <string name="usedesk_chat_attachment_storage">Storage</string>
     <string name="usedesk_chat_message_open_html_title">Open HTML</string>
+    <string name="usedesk_chat_offline_form_successfully_close">Close</string>
 </resources>

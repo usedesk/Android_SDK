@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @InjectConstructor
-internal class ChatItemConverter : Converter<Message?, List<UsedeskChatItem>>() {
+internal class ChatItemResponseConverter : Converter<Message?, List<UsedeskChatItem>>() {
 
     override fun convert(from: Message?): List<UsedeskChatItem> {
         return convertOrNull {

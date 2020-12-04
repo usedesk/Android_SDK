@@ -1,12 +1,13 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import ru.usedesk.chat_sdk.data.repository._extra.multipart.IMultipartConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.ChatInitedConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.ChatItemConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.ChatItemResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
-import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.entity.OfflineFormRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
+import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
@@ -14,7 +15,10 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailRequest
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
@@ -28,8 +32,10 @@ internal class ApiRepository(
         private val offlineFormApi: IOfflineFormApi,
         private val fileApi: IFileApi,
         private val multipartConverter: IMultipartConverter,
-        private val chatInitedConverter: ChatInitedConverter,
-        private val chatItemConverter: ChatItemConverter
+        private val initChatResponseConverter: InitChatResponseConverter,
+        private val chatItemResponseConverter: ChatItemResponseConverter,
+        private val fileResponseConverter: FileResponseConverter,
+        private val fileLoader: IFileLoader
 ) : IApiRepository {
 
     private fun isConnected() = socketApi.isConnected()
@@ -58,7 +64,7 @@ internal class ApiRepository(
         }
 
         override fun onInited(initChatResponse: InitChatResponse) {
-            val chatInited = chatInitedConverter.convert(initChatResponse)
+            val chatInited = initChatResponseConverter.convert(initChatResponse)
             if (chatInited.noOperators) {
                 eventListener.onOfflineForm()
             } else {
@@ -70,7 +76,7 @@ internal class ApiRepository(
             if (messageResponse.message?.payload?.noOperators == true) {
                 eventListener.onOfflineForm()
             } else {
-                val chatItems = chatItemConverter.convert(messageResponse.message)
+                val chatItems = chatItemResponseConverter.convert(messageResponse.message)
                 eventListener.onNewChatItems(chatItems)
             }
         }
@@ -110,16 +116,18 @@ internal class ApiRepository(
         checkConnection()
         val url = URL(configuration.offlineFormUrl)
         val postUrl = String.format(HTTP_API_PATH, url.host)
+        val loadedFile = fileLoader.load(usedeskFileInfo.uri)
         val parts = listOf(
                 multipartConverter.convert("chat_token", token),
-                multipartConverter.convert("file", usedeskFileInfo.uri)
+                multipartConverter.convert("file", loadedFile)
         )
-        val fileResponse = fileApi.post(postUrl, parts)
-        eventListener.onNewChatItems(UsedeskMessageClientFile)
-    }
-
-    private fun convert(fileResponse: FileResponse): UsedeskChatItem {
-        if (fileResponse.)
+        val fileResponse = fileApi.post(postUrl, parts).apply {
+            id = "0"
+            type = loadedFile.type
+            name = loadedFile.name
+        }
+        val chatItem = fileResponseConverter.convert(fileResponse)
+        eventListener.onNewChatItems(listOf(chatItem))
     }
 
     @Throws(UsedeskException::class)

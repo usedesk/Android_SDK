@@ -8,8 +8,8 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatItem
 import toothpick.InjectConstructor
 
 @InjectConstructor
-internal class ChatInitedConverter(
-        private val chatItemConverter: ChatItemConverter
+internal class InitChatResponseConverter(
+        private val chatItemResponseConverter: ChatItemResponseConverter
 ) : Converter<InitChatResponse, ChatInited>() {
 
     override fun convert(from: InitChatResponse): ChatInited {
@@ -24,7 +24,7 @@ internal class ChatInitedConverter(
     private fun convert(messages: List<Message?>): List<UsedeskChatItem> {
         return messages.flatMap {
             convertOrNull {
-                chatItemConverter.convert(it!!)
+                chatItemResponseConverter.convert(it!!)
             } ?: listOf()
         }
     }

@@ -2,31 +2,16 @@ package ru.usedesk.chat_sdk.entity
 
 import android.net.Uri
 
-data class UsedeskFileInfo(val uri: Uri, val type: Type) {
+data class UsedeskFileInfo(
+        val uri: Uri,
+        val type: String
+) {
 
-    enum class Type {
-        IMAGE,
-        VIDEO,
-        DOCUMENT,
-        OTHER;
+    fun isImage(): Boolean {
+        return type.startsWith("image/")
+    }
 
-        companion object {
-            fun getByMimeType(mimeType: String?): Type {
-                if (mimeType != null) {
-                    when {
-                        mimeType.startsWith("image/") -> {
-                            return IMAGE
-                        }
-                        mimeType.startsWith("video/") -> {
-                            return VIDEO
-                        }
-                        mimeType.startsWith("doc/") -> {
-                            return DOCUMENT
-                        }
-                    }
-                }
-                return OTHER
-            }
-        }
+    fun isVideo(): Boolean {
+        return type.startsWith("video/")
     }
 }

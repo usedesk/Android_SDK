@@ -1,28 +1,19 @@
-package ru.usedesk.chat_sdk.data.repository._extra.multipart
+package ru.usedesk.chat_sdk.data.repository.api.loader.file
 
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.entity.LoadedFile
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import toothpick.InjectConstructor
 
 @InjectConstructor
-internal class MultipartConverter(
+internal class FileLoader(
         private val contentResolver: ContentResolver
-) : IMultipartConverter {
-    override fun convert(key: String, value: String): MultipartBody.Part {
-        return MultipartBody.Part.createFormData(key, value)
-    }
+) : IFileLoader {
 
-    override fun convert(
-            key: String,
-            uri: Uri
-    ): MultipartBody.Part {
+    override fun load(uri: Uri): LoadedFile {
         contentResolver.openInputStream(uri).use { inputStream ->
             if (inputStream == null) {
                 throw UsedeskDataNotFoundException("Can't open file: $uri")
@@ -31,11 +22,10 @@ internal class MultipartConverter(
             if (size > MAX_FILE_SIZE) {
                 throw UsedeskDataNotFoundException("Max file size = $MAX_FILE_SIZE")
             }
+            val name: String = getFileName(contentResolver, uri)
+            val type = getMimeType(uri)
             val bytes = inputStream.readBytes()
-            val mediaType: MediaType = getMimeType(uri).toMediaType()
-            val requestBody = bytes.toRequestBody(mediaType, 0, size)
-            val fileName: String = getFileName(contentResolver, uri)
-            return MultipartBody.Part.createFormData(key, fileName, requestBody)
+            return LoadedFile(name, size, type, bytes)
         }
     }
 

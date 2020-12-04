@@ -150,8 +150,7 @@ class UsedeskAttachmentDialog(
 
     private fun createUsedeskFileInfo(context: Context, uri: Uri): UsedeskFileInfo {
         val mimeType = getMimeType(context, uri)
-        val type = UsedeskFileInfo.Type.getByMimeType(mimeType)
-        return UsedeskFileInfo(uri, type)
+        return UsedeskFileInfo(uri, mimeType ?: "")
     }
 
     companion object {

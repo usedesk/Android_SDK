@@ -23,7 +23,7 @@ internal class ChatInteractor(
 
     private var token: String? = null
     private var needSetEmail = false
-    private val messageIds: MutableSet<Long> = HashSet()
+    private var lastChatItems = listOf<UsedeskChatItem>()
 
     @Throws(UsedeskException::class)
     override fun connect() {
@@ -89,10 +89,16 @@ internal class ChatInteractor(
     }
 
     private fun onNewChatItems(chatItems: List<UsedeskChatItem>) {
-        chatItems.filter {
-            !messageIds.contains(it.id)
+        chatItems.filter { newChatItem ->
+            !lastChatItems.any { oldChatItem ->
+                if (newChatItem.id != 0L && newChatItem.id == oldChatItem.id) {
+                    false
+                } else !(newChatItem is UsedeskMessageFile &&
+                        oldChatItem is UsedeskMessageFile &&
+                        newChatItem.file.content == oldChatItem.file.content)
+            }
         }.forEach {
-            messageIds.add(it.id)
+            lastChatItems = lastChatItems + it
             actionListener.onChatItemReceived(it)
         }
     }

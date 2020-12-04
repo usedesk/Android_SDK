@@ -6,8 +6,6 @@ import com.google.gson.Gson
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.usedesk.chat_sdk.data.repository._extra.multipart.IMultipartConverter
-import ru.usedesk.chat_sdk.data.repository._extra.multipart.MultipartConverter
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.HttpApiFactory
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApiFactory
 import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
@@ -16,6 +14,10 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.FileApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.OfflineFormApi
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.FileLoader
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
+import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.MultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
@@ -48,6 +50,7 @@ internal class MainModule(
         bind(SocketApi::class.java).to(SocketApi::class.java).singleton()
         bind(IConfigurationLoader::class.java).to(ConfigurationLoader::class.java).singleton()
         bind(ITokenLoader::class.java).to(TokenLoader::class.java).singleton()
+        bind(IFileLoader::class.java).to(FileLoader::class.java).singleton()
         bind(IMultipartConverter::class.java).to(MultipartConverter::class.java).singleton()
         bind(IFileApi::class.java).to(FileApi::class.java).singleton()
         bind(IOfflineFormApi::class.java).to(OfflineFormApi::class.java).singleton()

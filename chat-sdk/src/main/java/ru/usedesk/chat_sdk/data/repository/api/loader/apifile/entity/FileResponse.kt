@@ -8,4 +8,7 @@ internal class FileResponse {
     @SerializedName("file_link")
     var fileLink: String? = null
     var size: String? = null
+    var id: String? = null
+    var type: String? = null
+    var name: String? = null
 }

@@ -6,7 +6,8 @@ import java.util.*
 class UsedeskMessageClientImage(
         id: Long,
         calendar: Calendar,
-        usedeskFile: UsedeskFile
+        usedeskFile: UsedeskFile,
+        override val status: UsedeskMessageClient.Status
 ) : UsedeskMessageImage(id, calendar, usedeskFile), UsedeskMessageClient {
     override val type: Type = Type.TYPE_CLIENT_IMAGE
 }

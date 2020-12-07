@@ -53,13 +53,13 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
 
                     if (file.isImage()) {
                         if (fromClient) {
-                            UsedeskMessageClientImage(id, messageDate, file)
+                            UsedeskMessageClientImage(id, messageDate, file, UsedeskMessageClient.Status.RECEIVED)
                         } else {
                             UsedeskMessageAgentImage(id, messageDate, file, name, avatar)
                         }
                     } else {
                         if (fromClient) {
-                            UsedeskMessageClientFile(id, messageDate, file)
+                            UsedeskMessageClientFile(id, messageDate, file, UsedeskMessageClient.Status.RECEIVED)
                         } else {
                             UsedeskMessageAgentFile(id, messageDate, file, name, avatar)
                         }
@@ -137,7 +137,8 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
                         UsedeskMessageClientText(id,
                                 messageDate,
                                 convertedText,
-                                html)
+                                html,
+                                UsedeskMessageClient.Status.RECEIVED)
                     } else {
                         UsedeskMessageAgentText(id,
                                 messageDate,

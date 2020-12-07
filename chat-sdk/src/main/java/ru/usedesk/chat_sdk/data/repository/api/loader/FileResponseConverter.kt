@@ -4,6 +4,7 @@ import ru.usedesk.chat_sdk.data.Converter
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.entity.FileResponse
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
 import toothpick.InjectConstructor
@@ -21,9 +22,9 @@ internal class FileResponseConverter : Converter<FileResponse, UsedeskMessage>()
         )
         val id = from.id!!.toLong()
         return if (file.isImage()) {
-            UsedeskMessageClientImage(id, Calendar.getInstance(), file)
+            UsedeskMessageClientImage(id, Calendar.getInstance(), file, UsedeskMessageClient.Status.SUCCESSFULLY_SENT)
         } else {
-            UsedeskMessageClientFile(id, Calendar.getInstance(), file)
+            UsedeskMessageClientFile(id, Calendar.getInstance(), file, UsedeskMessageClient.Status.SUCCESSFULLY_SENT)
         }
     }
 }

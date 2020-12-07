@@ -124,9 +124,9 @@ internal class ApiRepository(
                 usedeskFileInfo.name
         )
         val tempMessage = if (usedeskFileInfo.isImage()) {
-            UsedeskMessageClientImage(localId, calendar, file)
+            UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         } else {
-            UsedeskMessageClientFile(localId, calendar, file)
+            UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         }
         eventListener.onMessagesReceived(listOf(tempMessage))
 

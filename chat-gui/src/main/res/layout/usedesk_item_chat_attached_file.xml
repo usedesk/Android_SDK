@@ -6,26 +6,20 @@
     <FrameLayout
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginHorizontal="2dp">
+        android:layout_marginHorizontal="2dp"
+        tools:theme="@style/Usedesk.Theme.Chat">
 
-        <androidx.cardview.widget.CardView
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/iv_preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_margin="4dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="0dp"
-            tools:theme="@style/Usedesk.Theme.Chat">
-
-            <ImageView
-                android:id="@+id/iv_preview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                tools:src="@android:drawable/sym_def_app_icon" />
-        </androidx.cardview.widget.CardView>
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:riv_corner_radius="10dp"
+            tools:src="@drawable/ic_attached_file" />
 
         <ImageView
             android:id="@+id/iv_detach"
@@ -36,5 +30,18 @@
             android:clickable="true"
             android:focusable="true"
             app:srcCompat="@drawable/ic_preview_detach" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/sf_pro_display_semibold"
+            android:singleLine="true"
+            android:textColor="#454D63"
+            android:textSize="12sp"
+            tools:text="file_downloaded.pdf" />
     </FrameLayout>
 </layout>

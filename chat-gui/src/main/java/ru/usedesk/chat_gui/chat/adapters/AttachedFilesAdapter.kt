@@ -40,9 +40,14 @@ internal class AttachedFilesAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(usedeskFileInfo: UsedeskFileInfo) {
-            setImageCenter(binding.ivPreview, usedeskFileInfo.uri, R.drawable.ic_document_black)
+            setImageCenter(binding.ivPreview, usedeskFileInfo.uri, R.drawable.ic_attached_file)
             binding.ivDetach.setOnClickListener {
                 chatViewModel.detachFile(usedeskFileInfo)
+            }
+            binding.tvTitle.text = if (!usedeskFileInfo.isImage()) {
+                usedeskFileInfo.name
+            } else {
+                ""
             }
         }
     }

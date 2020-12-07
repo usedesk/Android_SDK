@@ -4,7 +4,8 @@ import android.net.Uri
 
 data class UsedeskFileInfo(
         val uri: Uri,
-        val type: String
+        val type: String,
+        val name: String
 ) {
 
     fun isImage(): Boolean {

@@ -1,13 +1,11 @@
 package ru.usedesk.chat_gui.attachpanel
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
@@ -17,7 +15,9 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_gui.UsedeskStyleManager
 import ru.usedesk.common_gui.inflateBinding
+import ru.usedesk.common_sdk.FileUtil
 import java.io.File
+
 
 class UsedeskAttachmentDialog(
         private val screen: UsedeskChatScreen
@@ -129,15 +129,6 @@ class UsedeskAttachmentDialog(
         return listOf()
     }
 
-    private fun getMimeType(context: Context, uri: Uri): String? {
-        return if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
-            context.applicationContext.contentResolver.getType(uri)
-        } else {
-            val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString()).toLowerCase()
-            MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-        }
-    }
-
     private fun getUsedeskFileInfoList(context: Context, data: Intent): List<UsedeskFileInfo> {
         return getUriList(data).map {
             createUsedeskFileInfo(context, it)
@@ -149,8 +140,9 @@ class UsedeskAttachmentDialog(
     }
 
     private fun createUsedeskFileInfo(context: Context, uri: Uri): UsedeskFileInfo {
-        val mimeType = getMimeType(context, uri)
-        return UsedeskFileInfo(uri, mimeType ?: "")
+        val mimeType = FileUtil.getMimeType(context, uri)
+        val name = FileUtil.getFileName(context, uri)
+        return UsedeskFileInfo(uri, mimeType ?: "", name)
     }
 
     companion object {

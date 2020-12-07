@@ -92,6 +92,7 @@
                 app:cardElevation="0dp">
 
                 <FrameLayout
+                    android:id="@+id/l_action"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#333333">

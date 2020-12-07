@@ -4,19 +4,8 @@
         <!--new styled values-->
         <item name="usedesk_screen_chat_title">@string/usedesk_screen_chat_title</item>
 
-        <item name="usedesk_chat_style_message_agent_text">@style/Usedesk.Chat.Message.Agent.Text
-        </item>
-        <item name="usedesk_chat_style_message_agent_file">@style/Usedesk.Chat.Message.Agent.File
-        </item>
-        <item name="usedesk_chat_style_message_agent_image">@style/Usedesk.Chat.Message.Agent.Image
-        </item>
-        <item name="usedesk_chat_style_message_client_text">@style/Usedesk.Chat.Message.Client.Text
-        </item>
-        <item name="usedesk_chat_style_message_client_file">@style/Usedesk.Chat.Message.Client.File
-        </item>
-        <item name="usedesk_chat_style_message_client_image">
-            @style/Usedesk.Chat.Message.Client.Image
-        </item>
+        <item name="usedesk_chat_offline_form_action_button_background_enabled">#333333</item>
+        <item name="usedesk_chat_offline_form_action_button_background_disabled">#ADBEC9</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
@@ -59,10 +48,6 @@
     <style name="Usedesk.Chat.Message.Client.File"></style>
 
     <style name="Usedesk.Chat.Message.Client.Image"></style>
-
-    <style name="Usedesk.Chat.Offline.Form" parent="">
-
-    </style>
 
     <style name="Usedesk.Chat.Offline.Form.ProgressBar" parent="">
         <item name="colorAccent">#EB5757</item>

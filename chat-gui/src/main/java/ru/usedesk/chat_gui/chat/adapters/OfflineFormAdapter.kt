@@ -4,6 +4,7 @@ import androidx.lifecycle.LifecycleOwner
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_gui.databinding.UsedeskViewOfflineFormBinding
+import ru.usedesk.common_gui.UsedeskStyleManager
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.showKeyboard
 import ru.usedesk.common_gui.visibleGone
@@ -12,6 +13,7 @@ internal class OfflineFormAdapter(
         private val binding: UsedeskViewOfflineFormBinding,
         private val viewModel: ChatViewModel,
         lifecycleOwner: LifecycleOwner,
+        private val defaultStyleId: Int,
         private val onSuccessfully: () -> Unit,
         private val onFailed: () -> Unit
 ) {
@@ -59,7 +61,9 @@ internal class OfflineFormAdapter(
 
         binding.etMessage.addTextChangedListener(TextChangeListener {
             viewModel.onOfflineFormMessageChanged()
+            updateActionButton(it)
         })
+
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
             binding.tilMessage.error = if (it) {
                 showKeyboard(binding.etMessage)
@@ -68,6 +72,22 @@ internal class OfflineFormAdapter(
                 null
             }
         }
+
+        updateActionButton("")
+    }
+
+    private fun updateActionButton(message: String) {
+        val attr = if (message.isEmpty()) {
+            binding.tvSend.isEnabled = false
+            R.attr.usedesk_chat_offline_form_action_button_background_disabled
+        } else {
+            binding.tvSend.isEnabled = true
+            R.attr.usedesk_chat_offline_form_action_button_background_enabled
+        }
+        val colorId = UsedeskStyleManager.getColor(binding.root.context,
+                defaultStyleId,
+                attr)
+        binding.lAction.setBackgroundColor(colorId)
     }
 
     fun update(message: String) {

@@ -5,7 +5,7 @@ import ru.usedesk.common_sdk.UsedeskValidatorUtil.isValidEmailNecessary
 import ru.usedesk.common_sdk.UsedeskValidatorUtil.isValidPhone
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
-        val companyId: String,//TODO: а почему вдруг String а не Long?
+        val companyId: String,
         val email: String,
         val url: String,
         val offlineFormUrl: String,

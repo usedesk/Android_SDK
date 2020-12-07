@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import ru.usedesk.chat_gui.*
+import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.attachpanel.UsedeskAttachmentDialog
 import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.adapters.MessagesAdapter
@@ -17,10 +18,7 @@ import ru.usedesk.chat_gui.chat.adapters.UsedeskOfflineFormSuccessDialog
 import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.UsedeskToolbar
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.*
 
 class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
 
@@ -40,7 +38,9 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
                     R.layout.usedesk_screen_chat,
                     defaultStyleId)
 
-            val title = getStringFromStyle(R.attr.usedesk_screen_chat_title)
+            val title = UsedeskStyleManager.getString(requireContext(),
+                    defaultStyleId,
+                    R.attr.usedesk_screen_chat_title)
 
             init(agentName)
             UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
@@ -89,6 +89,7 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         OfflineFormAdapter(binding.offlineForm,
                 viewModel,
                 viewLifecycleOwner,
+                defaultStyleId,
                 {
                     UsedeskOfflineFormSuccessDialog(binding.lRoot).apply {
                         setOnDismissListener {
@@ -113,6 +114,7 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
             }
             ChatViewModel.ChatState.OFFLINE_FORM -> {
                 showChatViews(offlineForm = true)
+                showKeyboard(binding.offlineForm.etMessage)
             }
         }
     }

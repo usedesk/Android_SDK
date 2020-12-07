@@ -1,11 +1,7 @@
 package ru.usedesk.common_gui
 
-import android.content.res.TypedArray
 import android.view.Gravity
 import android.widget.TextView
-import androidx.core.content.res.getColorOrThrow
-import androidx.core.content.res.getIntOrThrow
-import androidx.core.content.res.getStringOrThrow
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 
@@ -22,36 +18,6 @@ abstract class UsedeskFragment(
     }
 
     open fun onBackPressed(): Boolean = false
-
-    protected fun getStringFromStyle(attrId: Int): String {
-        return getValueFromStyle(attrId) { attrs, index ->
-            attrs.getStringOrThrow(index)
-        }
-    }
-
-    protected fun getIntFromStyle(attrId: Int): Int {
-        return getValueFromStyle(attrId) { attrs, index ->
-            attrs.getIntOrThrow(index)
-        }
-    }
-
-    protected fun getColorFromStyle(attrId: Int): Int {
-        return getValueFromStyle(attrId) { attrs, index ->
-            attrs.getColorOrThrow(index)
-        }
-    }
-
-    private fun <T> getValueFromStyle(attrId: Int,
-                                      onValue: (TypedArray, Int) -> T): T {
-        val attrs = requireContext().obtainStyledAttributes(
-                UsedeskStyleManager.getStyle(defaultStyleId),
-                intArrayOf(attrId)
-        )
-        val value = onValue(attrs, 0)
-        attrs.recycle()
-        return value
-    }
-
 
     protected fun argsGetInt(key: String, default: Int): Int {
         return arguments?.getInt(key, default) ?: default

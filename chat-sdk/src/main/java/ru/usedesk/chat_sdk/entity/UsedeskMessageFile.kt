@@ -7,4 +7,4 @@ abstract class UsedeskMessageFile(
         id: Long,
         calendar: Calendar,
         val file: UsedeskFile
-) : UsedeskChatItem(id, calendar)
+) : UsedeskMessage(id, calendar)

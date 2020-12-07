@@ -23,7 +23,7 @@ internal class ChatInteractor(
 
     private var token: String? = null
     private var needSetEmail = false
-    private var lastChatItems = listOf<UsedeskChatItem>()
+    private var lastMessages = listOf<UsedeskMessage>()
 
     @Throws(UsedeskException::class)
     override fun connect() {
@@ -72,8 +72,8 @@ internal class ChatInteractor(
                 this@ChatInteractor.onChatInited(chatInited)
             }
 
-            override fun onNewChatItems(newChatItems: List<UsedeskChatItem>) {
-                this@ChatInteractor.onNewChatItems(newChatItems)
+            override fun onNewMessages(newMessages: List<UsedeskMessage>) {
+                this@ChatInteractor.onNewMessages(newMessages)
             }
 
             override fun onOfflineForm() {
@@ -88,18 +88,18 @@ internal class ChatInteractor(
         )
     }
 
-    private fun onNewChatItems(chatItems: List<UsedeskChatItem>) {
-        chatItems.filter { newChatItem ->
-            !lastChatItems.any { oldChatItem ->
-                if (newChatItem.id != 0L && newChatItem.id == oldChatItem.id) {
+    private fun onNewMessages(messages: List<UsedeskMessage>) {
+        messages.filter { newMessage ->
+            !lastMessages.any { oldMessage ->
+                if (newMessage.id != 0L && newMessage.id == oldMessage.id) {
                     false
-                } else !(newChatItem is UsedeskMessageFile &&
-                        oldChatItem is UsedeskMessageFile &&
-                        newChatItem.file.content == oldChatItem.file.content)
+                } else !(newMessage is UsedeskMessageFile &&
+                        oldMessage is UsedeskMessageFile &&
+                        newMessage.file.content == oldMessage.file.content)
             }
         }.forEach {
-            lastChatItems = lastChatItems + it
-            actionListener.onChatItemReceived(it)
+            lastMessages = lastMessages + it
+            actionListener.onMessageReceived(it)
         }
     }
 
@@ -216,7 +216,7 @@ internal class ChatInteractor(
         if (chatChatInited.waitingEmail) {
             needSetEmail = true
         }
-        actionListener.onChatItemsReceived(chatChatInited.messages)
+        actionListener.onMessagesReceived(chatChatInited.messages)
 
         if (needSetEmail) {
             sendUserEmail()

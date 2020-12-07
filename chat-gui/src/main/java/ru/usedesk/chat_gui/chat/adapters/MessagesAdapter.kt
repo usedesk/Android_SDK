@@ -20,7 +20,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-internal class ItemsAdapter(
+internal class MessagesAdapter(
         private val viewModel: ChatViewModel,
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
@@ -28,16 +28,16 @@ internal class ItemsAdapter(
         private val onFileClick: (UsedeskFile) -> Unit,
         private val onHtmlClick: (String) -> Unit,
         private val onUrlClick: (String) -> Unit
-) : RecyclerView.Adapter<ItemsAdapter.ChatItemViewHolder>() {
+) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
-    private var items: List<UsedeskChatItem> = listOf()
+    private var items: List<UsedeskMessage> = listOf()
 
     init {
         recyclerView.layoutManager = LinearLayoutManager(recyclerView.context).apply {
             reverseLayout = true
         }
         recyclerView.adapter = this
-        viewModel.chatItemsLiveData.observe(owner) {
+        viewModel.messagesLiveData.observe(owner) {
             this.items = it ?: listOf()
             notifyDataSetChanged()
         }
@@ -48,27 +48,27 @@ internal class ItemsAdapter(
         return dateFormat.format(calendar.time)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when (viewType) {
-            UsedeskChatItem.Type.TYPE_AGENT_TEXT.value -> {
+            UsedeskMessage.Type.TYPE_AGENT_TEXT.value -> {
                 MessageTextAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_text_agent, parent))
             }
-            UsedeskChatItem.Type.TYPE_AGENT_FILE.value -> {
+            UsedeskMessage.Type.TYPE_AGENT_FILE.value -> {
                 MessageFileAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_file_agent, parent))
             }
-            UsedeskChatItem.Type.TYPE_AGENT_IMAGE.value -> {
+            UsedeskMessage.Type.TYPE_AGENT_IMAGE.value -> {
                 MessageImageAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_image_agent, parent))
             }
-            UsedeskChatItem.Type.TYPE_CLIENT_TEXT.value -> {
+            UsedeskMessage.Type.TYPE_CLIENT_TEXT.value -> {
                 MessageTextClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_text_client, parent))
             }
-            UsedeskChatItem.Type.TYPE_CLIENT_FILE.value -> {
+            UsedeskMessage.Type.TYPE_CLIENT_FILE.value -> {
                 MessageFileClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_file_client, parent))
             }
-            UsedeskChatItem.Type.TYPE_CLIENT_IMAGE.value -> {
+            UsedeskMessage.Type.TYPE_CLIENT_IMAGE.value -> {
                 MessageImageClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_image_client, parent))
             }
-            UsedeskChatItem.Type.TYPE_DATE.value -> {
+            UsedeskMessage.Type.TYPE_DATE.value -> {
                 DateViewHolder(inflateItem(R.layout.usedesk_item_chat_date, parent))
             }
             else -> {
@@ -77,7 +77,7 @@ internal class ItemsAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ChatItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         holder.bind(position)
     }
 
@@ -85,7 +85,7 @@ internal class ItemsAdapter(
 
     override fun getItemViewType(position: Int): Int = items[position].type.value
 
-    internal abstract class ChatItemViewHolder(
+    internal abstract class BaseViewHolder(
             itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
@@ -95,15 +95,15 @@ internal class ItemsAdapter(
     internal abstract inner class MessageViewHolder(
             itemView: View,
             private val tvTime: TextView
-    ) : ChatItemViewHolder(itemView) {
+    ) : BaseViewHolder(itemView) {
 
         override fun bind(position: Int) {
             bindTime(position)
         }
 
         private fun bindTime(position: Int) {
-            val chatItem = items[position]
-            val formatted = getFormattedTime(chatItem.calendar)
+            val message = items[position]
+            val formatted = getFormattedTime(message.calendar)
             tvTime.text = formatted
         }
 
@@ -137,10 +137,10 @@ internal class ItemsAdapter(
         }
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
-            val anotherChatItem = items.getOrNull(anotherPosition)
-            return anotherChatItem is UsedeskMessageAgent
-                    && anotherChatItem.avatar == messageAgent.avatar
-                    && anotherChatItem.name == messageAgent.name
+            val anotherMessage = items.getOrNull(anotherPosition)
+            return anotherMessage is UsedeskMessageAgent
+                    && anotherMessage.avatar == messageAgent.avatar
+                    && anotherMessage.name == messageAgent.name
         }
     }
 
@@ -225,20 +225,20 @@ internal class ItemsAdapter(
 
     internal inner class DateViewHolder(
             private val binding: UsedeskItemChatDateBinding
-    ) : ChatItemViewHolder(binding.root) {
+    ) : BaseViewHolder(binding.root) {
 
         override fun bind(position: Int) {
-            val chatItem = items[position]
+            val message = items[position]
             when {
-                isToday(chatItem.calendar) -> {
+                isToday(message.calendar) -> {
                     binding.tvDate.setText(R.string.today)
                 }
-                isYesterday(chatItem.calendar) -> {
+                isYesterday(message.calendar) -> {
                     binding.tvDate.setText(R.string.yesterday)
                 }
                 else -> {
                     val dateFormat: DateFormat = SimpleDateFormat("dd MMMM", Locale.getDefault())
-                    val formatted = dateFormat.format(chatItem.calendar.time)
+                    val formatted = dateFormat.format(message.calendar.time)
                     binding.tvDate.text = formatted
                 }
             }

@@ -4,12 +4,12 @@ import ru.usedesk.chat_sdk._entity.ChatInited
 import ru.usedesk.chat_sdk.data.Converter
 import ru.usedesk.chat_sdk.data._entity.Message
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.entity.UsedeskChatItem
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import toothpick.InjectConstructor
 
 @InjectConstructor
 internal class InitChatResponseConverter(
-        private val chatItemResponseConverter: ChatItemResponseConverter
+        private val messageResponseConverter: MessageResponseConverter
 ) : Converter<InitChatResponse, ChatInited>() {
 
     override fun convert(from: InitChatResponse): ChatInited {
@@ -21,10 +21,10 @@ internal class InitChatResponseConverter(
         )
     }
 
-    private fun convert(messages: List<Message?>): List<UsedeskChatItem> {
+    private fun convert(messages: List<Message?>): List<UsedeskMessage> {
         return messages.flatMap {
             convertOrNull {
-                chatItemResponseConverter.convert(it!!)
+                messageResponseConverter.convert(it!!)
             } ?: listOf()
         }
     }

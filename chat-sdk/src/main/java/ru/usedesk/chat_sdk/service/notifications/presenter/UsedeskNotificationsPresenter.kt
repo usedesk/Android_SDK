@@ -16,7 +16,7 @@ class UsedeskNotificationsPresenter {
 
     val actionListener: IUsedeskActionListener = actionListenerRx
 
-    private val newModelObservable: Observable<UsedeskNotificationsModel> = actionListenerRx.newChatItemObservable.filter {
+    private val newModelObservable: Observable<UsedeskNotificationsModel> = actionListenerRx.newMessageObservable.filter {
         it is UsedeskMessageAgent
     }.map {
         UsedeskNotificationsModel(it)

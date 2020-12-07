@@ -3,9 +3,9 @@ package ru.usedesk.chat_sdk.entity
 interface IUsedeskActionListener {
     fun onConnected()
 
-    fun onChatItemReceived(chatItem: UsedeskChatItem)
+    fun onMessageReceived(message: UsedeskMessage)
 
-    fun onChatItemsReceived(chatItems: List<UsedeskChatItem>)
+    fun onMessagesReceived(messages: List<UsedeskMessage>)
 
     fun onFeedbackReceived()
 

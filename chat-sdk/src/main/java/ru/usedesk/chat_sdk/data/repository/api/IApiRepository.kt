@@ -49,7 +49,7 @@ internal interface IApiRepository {
         fun onFeedback()
         fun onException(exception: Exception)
         fun onChatInited(chatInited: ChatInited)
-        fun onNewChatItems(newChatItems: List<UsedeskChatItem>)
+        fun onNewMessages(newMessages: List<UsedeskMessage>)
         fun onOfflineForm()
     }
 }

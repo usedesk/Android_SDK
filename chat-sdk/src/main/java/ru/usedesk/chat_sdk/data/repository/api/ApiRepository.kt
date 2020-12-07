@@ -1,8 +1,8 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import ru.usedesk.chat_sdk.data.repository.api.loader.ChatItemResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.entity.OfflineFormRequest
@@ -33,7 +33,7 @@ internal class ApiRepository(
         private val fileApi: IFileApi,
         private val multipartConverter: IMultipartConverter,
         private val initChatResponseConverter: InitChatResponseConverter,
-        private val chatItemResponseConverter: ChatItemResponseConverter,
+        private val messageResponseConverter: MessageResponseConverter,
         private val fileResponseConverter: FileResponseConverter,
         private val fileLoader: IFileLoader
 ) : IApiRepository {
@@ -76,8 +76,8 @@ internal class ApiRepository(
             if (messageResponse.message?.payload?.noOperators == true) {
                 eventListener.onOfflineForm()
             } else {
-                val chatItems = chatItemResponseConverter.convert(messageResponse.message)
-                eventListener.onNewChatItems(chatItems)
+                val messages = messageResponseConverter.convert(messageResponse.message)
+                eventListener.onNewMessages(messages)
             }
         }
     }
@@ -126,8 +126,8 @@ internal class ApiRepository(
             type = loadedFile.type
             name = loadedFile.name
         }
-        val chatItem = fileResponseConverter.convert(fileResponse)
-        eventListener.onNewChatItems(listOf(chatItem))
+        val message = fileResponseConverter.convert(fileResponse)
+        eventListener.onNewMessages(listOf(message))
     }
 
     @Throws(UsedeskException::class)

@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import ru.usedesk.chat_gui.*
 import ru.usedesk.chat_gui.attachpanel.UsedeskAttachmentDialog
-import ru.usedesk.chat_gui.chat.adapters.ItemsAdapter
 import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
+import ru.usedesk.chat_gui.chat.adapters.MessagesAdapter
 import ru.usedesk.chat_gui.chat.adapters.OfflineFormAdapter
 import ru.usedesk.chat_gui.chat.adapters.UsedeskOfflineFormSuccessDialog
 import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
@@ -71,7 +71,7 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
             onChatState(it)
         }
 
-        ItemsAdapter(viewModel,
+        MessagesAdapter(viewModel,
                 binding.rvMessages,
                 agentName,
                 viewLifecycleOwner, { file ->

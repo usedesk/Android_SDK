@@ -7,4 +7,4 @@ abstract class UsedeskMessageText(
         calendar: Calendar,
         val text: String,
         val html: String
-) : UsedeskChatItem(id, calendar)
+) : UsedeskMessage(id, calendar)

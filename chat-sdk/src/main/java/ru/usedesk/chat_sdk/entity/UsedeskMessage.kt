@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.entity
 
 import java.util.*
 
-abstract class UsedeskChatItem(
+abstract class UsedeskMessage(
         val id: Long,
         val calendar: Calendar
 ) {

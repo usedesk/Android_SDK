@@ -9,9 +9,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @InjectConstructor
-internal class ChatItemResponseConverter : Converter<Message?, List<UsedeskChatItem>>() {
+internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessage>>() {
 
-    override fun convert(from: Message?): List<UsedeskChatItem> {
+    override fun convert(from: Message?): List<UsedeskMessage> {
         return convertOrNull {
             val fromClient = when (from!!.type) {
                 Message.TYPE_CLIENT_TO_OPERATOR,

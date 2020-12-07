@@ -8,23 +8,23 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
     private val disconnectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val connectedStateSubject = BehaviorSubject.createDefault(false)
 
-    private val chatItemSubject = BehaviorSubject.create<UsedeskChatItem>()
-    private val newChatItemSubject = BehaviorSubject.create<UsedeskChatItem>()
-    private val chatItemsSubject = BehaviorSubject.create<List<UsedeskChatItem>>()
+    private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
+    private val newMessageSubject = BehaviorSubject.create<UsedeskMessage>()
+    private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
 
     private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<Exception>()
 
-    private var lastChatItems = listOf<UsedeskChatItem>()
+    private var lastMessages = listOf<UsedeskMessage>()
 
-    private fun onNewChatItems(newChatItems: List<UsedeskChatItem>) {
-        postChatItems(lastChatItems + newChatItems)
+    private fun onNewMessages(newMessages: List<UsedeskMessage>) {
+        postMessages(lastMessages + newMessages)
     }
 
-    private fun postChatItems(chatItems: List<UsedeskChatItem>) {
-        lastChatItems = chatItems
-        chatItemsSubject.onNext(chatItems)
+    private fun postMessages(messages: List<UsedeskMessage>) {
+        lastMessages = messages
+        messagesSubject.onNext(messages)
     }
 
     val connectedStateObservable: Observable<Boolean> = connectedStateSubject
@@ -34,17 +34,17 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
     /**
      * Каждое сообщение по отдельности
      */
-    val chatItemObservable: Observable<UsedeskChatItem> = chatItemSubject
+    val messageObservable: Observable<UsedeskMessage> = messageSubject
 
     /**
      * Только новые сообщения, генерируемые после подписки
      */
-    val newChatItemObservable: Observable<UsedeskChatItem> = newChatItemSubject
+    val newMessageObservable: Observable<UsedeskMessage> = newMessageSubject
 
     /**
      * Список всех сообщений (обновляется с каждым новым сообщением)
      */
-    val chatItemsObservable: Observable<List<UsedeskChatItem>> = chatItemsSubject
+    val messagesObservable: Observable<List<UsedeskMessage>> = messagesSubject
 
     val offlineFormExpectedObservable: Observable<UsedeskChatConfiguration> = offlineFormExpectedSubject
 
@@ -59,17 +59,17 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
         connectedStateSubject.onNext(true)
     }
 
-    override fun onChatItemReceived(chatItem: UsedeskChatItem) {
-        chatItemSubject.onNext(chatItem)
-        newChatItemSubject.onNext(chatItem)
-        onNewChatItems(listOf(chatItem))
+    override fun onMessageReceived(message: UsedeskMessage) {
+        messageSubject.onNext(message)
+        newMessageSubject.onNext(message)
+        onNewMessages(listOf(message))
     }
 
-    override fun onChatItemsReceived(chatItems: List<UsedeskChatItem>) {
-        chatItems.forEach {
-            chatItemSubject.onNext(it)
+    override fun onMessagesReceived(messages: List<UsedeskMessage>) {
+        messages.forEach {
+            messageSubject.onNext(it)
         }
-        postChatItems(chatItems)
+        postMessages(messages)
     }
 
     override fun onFeedbackReceived() {

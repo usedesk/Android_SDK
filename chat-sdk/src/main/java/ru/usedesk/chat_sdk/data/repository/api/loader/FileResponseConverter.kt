@@ -3,16 +3,16 @@ package ru.usedesk.chat_sdk.data.repository.api.loader
 import ru.usedesk.chat_sdk.data.Converter
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.entity.FileResponse
-import ru.usedesk.chat_sdk.entity.UsedeskChatItem
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
 import toothpick.InjectConstructor
 import java.util.*
 
 @InjectConstructor
-internal class FileResponseConverter : Converter<FileResponse, UsedeskChatItem>() {
+internal class FileResponseConverter : Converter<FileResponse, UsedeskMessage>() {
 
-    override fun convert(from: FileResponse): UsedeskChatItem {
+    override fun convert(from: FileResponse): UsedeskMessage {
         val file = UsedeskFile(
                 from.fileLink!!,
                 from.type!!,

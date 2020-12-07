@@ -26,7 +26,9 @@ internal class AttachedFilesAdapter(
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-        return ViewHolder(inflateItem(R.layout.usedesk_item_chat_attached_file, viewGroup))
+        return ViewHolder(inflateItem(viewGroup,
+                R.layout.usedesk_item_chat_attached_file,
+                R.style.Usedesk_Chat_Attachment_File))
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {

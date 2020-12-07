@@ -4,14 +4,14 @@ import android.view.ViewGroup
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.UsedeskBottomSheetDialog
 import ru.usedesk.chat_gui.databinding.UsedeskDialogOfflineFormSuccessfullyBinding
-import ru.usedesk.common_gui.inflateBinding
+import ru.usedesk.common_gui.inflateItem
 
 class UsedeskOfflineFormSuccessDialog(
         container: ViewGroup
 ) : UsedeskBottomSheetDialog(container.context, R.style.Usedesk_Chat_Offline_Form_Success_Dialog) {
 
     init {
-        inflateBinding<UsedeskDialogOfflineFormSuccessfullyBinding>(layoutInflater,
+        inflateItem<UsedeskDialogOfflineFormSuccessfullyBinding>(layoutInflater,
                 container,
                 R.layout.usedesk_dialog_offline_form_successfully,
                 defaultStyleId).apply {

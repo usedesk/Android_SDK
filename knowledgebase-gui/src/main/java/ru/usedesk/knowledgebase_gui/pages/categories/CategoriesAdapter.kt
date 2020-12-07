@@ -13,7 +13,9 @@ class CategoriesAdapter internal constructor(
 ) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
-        return SectionViewHolder(inflateItem(R.layout.usedesk_item_category, viewGroup))
+        return SectionViewHolder(inflateItem(viewGroup,
+                R.layout.usedesk_item_category,
+                R.style.Usedesk_Theme_KnowledgeBase))
     }
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {

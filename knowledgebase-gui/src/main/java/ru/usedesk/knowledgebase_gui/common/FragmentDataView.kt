@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LiveData
 import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.inflateBinding
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 
@@ -26,7 +26,7 @@ abstract class FragmentDataView<DATA>(
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateBinding(inflater, container, layoutId, defaultStyleId)
+        binding = inflateItem(inflater, container, layoutId, defaultStyleId)
 
         onView(binding.root)
 

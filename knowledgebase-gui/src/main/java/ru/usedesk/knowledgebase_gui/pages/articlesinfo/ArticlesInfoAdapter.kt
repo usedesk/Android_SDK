@@ -14,7 +14,9 @@ class ArticlesInfoAdapter(
 ) : RecyclerView.Adapter<ArticlesInfoAdapter.ArticleViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
-        return ArticleViewHolder(inflateItem(R.layout.usedesk_item_article_info, viewGroup))
+        return ArticleViewHolder(inflateItem(viewGroup,
+                R.layout.usedesk_item_article_info,
+                R.style.Usedesk_Theme_KnowledgeBase))
     }
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {

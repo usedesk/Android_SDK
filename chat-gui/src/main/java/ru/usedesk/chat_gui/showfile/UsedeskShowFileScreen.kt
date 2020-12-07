@@ -28,7 +28,7 @@ class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
                               savedInstanceState: Bundle?): View {
         val json = argsGetString(FILE_URL_KEY)
 
-        binding = inflateBinding(inflater,
+        binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_screen_show_file,
                 defaultStyleId)

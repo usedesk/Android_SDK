@@ -27,34 +27,38 @@
 
     </style>
 
+    <style name="Usedesk.Chat.Attachment.File" parent=""></style>
+
     <style name="Usedesk.Chat.Message" parent="">
         <item name="usedesk_chat_image_radius_bottom_left">6dp</item>
         <item name="usedesk_chat_image_radius_bottom_right">6dp</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Agent.Text" parent="">
+    <style name="Usedesk.Chat.Message.Date" parent="">
+
+    </style>
+
+    <style name="Usedesk.Chat.Message.Button" parent=""></style>
+
+    <style name="Usedesk.Chat.Message.Agent">
         <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Agent.File" parent="">
-        <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
-    </style>
-
-    <style name="Usedesk.Chat.Message.Agent.Image" parent="">
-        <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
-    </style>
-
-    <style name="Usedesk.Chat.Message.Client.Text" parent="">
+    <style name="Usedesk.Chat.Message.Client">
         <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Client.File" parent="">
-        <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
-    </style>
+    <style name="Usedesk.Chat.Message.Agent.Text"></style>
 
-    <style name="Usedesk.Chat.Message.Client.Image" parent="">
-        <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
-    </style>
+    <style name="Usedesk.Chat.Message.Agent.File"></style>
+
+    <style name="Usedesk.Chat.Message.Agent.Image"></style>
+
+    <style name="Usedesk.Chat.Message.Client.Text"></style>
+
+    <style name="Usedesk.Chat.Message.Client.File"></style>
+
+    <style name="Usedesk.Chat.Message.Client.Image"></style>
 
     <style name="Usedesk.Chat.Offline.Form" parent="">
 

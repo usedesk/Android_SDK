@@ -51,25 +51,39 @@ internal class MessagesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when (viewType) {
             UsedeskMessage.Type.TYPE_AGENT_TEXT.value -> {
-                MessageTextAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_text_agent, parent))
+                MessageTextAgentViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_message_text_agent,
+                        R.style.Usedesk_Chat_Message_Agent_Text))
             }
             UsedeskMessage.Type.TYPE_AGENT_FILE.value -> {
-                MessageFileAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_file_agent, parent))
+                MessageFileAgentViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_message_file_agent,
+                        R.style.Usedesk_Chat_Message_Agent_File))
             }
             UsedeskMessage.Type.TYPE_AGENT_IMAGE.value -> {
-                MessageImageAgentViewHolder(inflateItem(R.layout.usedesk_item_chat_message_image_agent, parent))
+                MessageImageAgentViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_message_image_agent,
+                        R.style.Usedesk_Chat_Message_Agent_Image))
             }
             UsedeskMessage.Type.TYPE_CLIENT_TEXT.value -> {
-                MessageTextClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_text_client, parent))
+                MessageTextClientViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_message_text_client,
+                        R.style.Usedesk_Chat_Message_Client_Text))
             }
             UsedeskMessage.Type.TYPE_CLIENT_FILE.value -> {
-                MessageFileClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_file_client, parent))
+                MessageFileClientViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_message_file_client,
+                        R.style.Usedesk_Chat_Message_Client_File))
             }
             UsedeskMessage.Type.TYPE_CLIENT_IMAGE.value -> {
-                MessageImageClientViewHolder(inflateItem(R.layout.usedesk_item_chat_message_image_client, parent))
+                MessageImageClientViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_message_image_client,
+                        R.style.Usedesk_Chat_Message_Client_Image))
             }
             UsedeskMessage.Type.TYPE_DATE.value -> {
-                DateViewHolder(inflateItem(R.layout.usedesk_item_chat_date, parent))
+                DateViewHolder(inflateItem(parent,
+                        R.layout.usedesk_item_chat_date,
+                        R.style.Usedesk_Chat_Message_Date))
             }
             else -> {
                 throw RuntimeException("Unknown view type:$viewType")
@@ -81,9 +95,9 @@ internal class MessagesAdapter(
         holder.bind(position)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount() = items.size
 
-    override fun getItemViewType(position: Int): Int = items[position].type.value
+    override fun getItemViewType(position: Int) = items[position].type.value
 
     internal abstract class BaseViewHolder(
             itemView: View

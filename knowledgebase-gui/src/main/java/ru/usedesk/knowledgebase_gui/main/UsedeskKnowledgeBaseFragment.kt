@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import ru.usedesk.common_gui.inflateBinding
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.IUsedeskOnBackPressedListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
@@ -39,7 +39,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateBinding(inflater,
+        binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_fragment_knowledge_base,
                 R.style.Usedesk_Theme_KnowledgeBase)

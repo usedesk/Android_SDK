@@ -108,27 +108,23 @@ fun formatSize(context: Context, size: Long?): String {
             context.resources.getStringArray(R.array.size_postfixes)[rank])
 }
 
-fun <T : ViewDataBinding> inflateItem(layoutId: Int,
-                                      parent: ViewGroup): T {
-    return inflateItem(LayoutInflater.from(parent.context),
+fun <T : ViewDataBinding> inflateItem(container: ViewGroup,
+                                      layoutId: Int,
+                                      defaultStyleId: Int): T {
+    return inflateItem(LayoutInflater.from(container.context),
+            container,
             layoutId,
-            parent)
+            defaultStyleId)
 }
 
 fun <T : ViewDataBinding> inflateItem(inflater: LayoutInflater,
+                                      container: ViewGroup?,
                                       layoutId: Int,
-                                      container: ViewGroup?): T {
-    return DataBindingUtil.inflate(inflater,
+                                      defaultStyleId: Int): T {
+    val customStyleId = UsedeskStyleManager.getStyle(defaultStyleId)
+    val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
+    return DataBindingUtil.inflate(localInflater,
             layoutId,
             container,
             false)
-}
-
-fun <T : ViewDataBinding> inflateBinding(inflater: LayoutInflater,
-                                         container: ViewGroup?,
-                                         layoutId: Int,
-                                         defaultStyleId: Int): T {
-    val customStyleId = UsedeskStyleManager.getStyle(defaultStyleId)
-    val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
-    return DataBindingUtil.inflate(localInflater, layoutId, container, false)
 }

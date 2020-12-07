@@ -24,7 +24,9 @@ internal class ButtonsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ButtonViewHolder {
-        return ButtonViewHolder(inflateItem(R.layout.usedesk_item_chat_button, parent))
+        return ButtonViewHolder(inflateItem(parent,
+                R.layout.usedesk_item_chat_button,
+                R.style.Usedesk_Chat_Message_Button))
     }
 
     override fun onBindViewHolder(holder: ButtonViewHolder, position: Int) {

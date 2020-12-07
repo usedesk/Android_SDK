@@ -19,7 +19,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbar
-import ru.usedesk.common_gui.inflateBinding
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.visibleGone
 
 class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
@@ -35,7 +35,7 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
         doInit {
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
-            binding = inflateBinding(inflater,
+            binding = inflateItem(inflater,
                     container,
                     R.layout.usedesk_screen_chat,
                     defaultStyleId)

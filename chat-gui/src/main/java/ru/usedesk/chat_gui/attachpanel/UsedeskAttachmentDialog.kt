@@ -14,7 +14,7 @@ import ru.usedesk.chat_gui.databinding.UsedeskDialogAttachmentBinding
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_gui.UsedeskStyleManager
-import ru.usedesk.common_gui.inflateBinding
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_sdk.FileUtil
 import java.io.File
 
@@ -26,7 +26,7 @@ class UsedeskAttachmentDialog(
     init {
         val container = screen.view as ViewGroup
 
-        inflateBinding<UsedeskDialogAttachmentBinding>(layoutInflater,
+        inflateItem<UsedeskDialogAttachmentBinding>(layoutInflater,
                 container,
                 R.layout.usedesk_dialog_attachment,
                 R.style.Usedesk_Theme_Chat).apply {

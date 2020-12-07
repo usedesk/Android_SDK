@@ -4,8 +4,8 @@ import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.usedesk.chat_sdk._entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
@@ -72,8 +72,12 @@ internal class ChatInteractor(
                 this@ChatInteractor.onChatInited(chatInited)
             }
 
-            override fun onNewMessages(newMessages: List<UsedeskMessage>) {
-                this@ChatInteractor.onNewMessages(newMessages)
+            override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
+                this@ChatInteractor.onMessagesNew(newMessages)
+            }
+
+            override fun onMessageUpdated(message: UsedeskMessage) {
+                this@ChatInteractor.onMessageUpdate(message)
             }
 
             override fun onOfflineForm() {
@@ -88,14 +92,21 @@ internal class ChatInteractor(
         )
     }
 
-    private fun onNewMessages(messages: List<UsedeskMessage>) {
+    private fun onMessageUpdate(message: UsedeskMessage) {
+        lastMessages = lastMessages.map {
+            if (it.id == message.id) {
+                message
+            } else {
+                it
+            }
+        }
+        actionListener.onMessageUpdated(message)
+    }
+
+    private fun onMessagesNew(messages: List<UsedeskMessage>) {
         messages.filter { newMessage ->
             !lastMessages.any { oldMessage ->
-                if (newMessage.id != 0L && newMessage.id == oldMessage.id) {
-                    false
-                } else !(newMessage is UsedeskMessageFile &&
-                        oldMessage is UsedeskMessageFile &&
-                        newMessage.file.content == oldMessage.file.content)
+                newMessage.id != oldMessage.id
             }
         }.forEach {
             lastMessages = lastMessages + it

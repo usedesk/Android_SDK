@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk._entity
+package ru.usedesk.chat_sdk.data.repository.api.entity
 
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 

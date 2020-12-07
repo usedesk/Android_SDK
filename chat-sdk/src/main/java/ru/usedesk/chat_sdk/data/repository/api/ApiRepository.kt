@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
@@ -15,16 +16,14 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailRequest
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.io.IOException
 import java.net.URL
+import java.util.*
 
 @InjectConstructor
 internal class ApiRepository(
@@ -37,6 +36,8 @@ internal class ApiRepository(
         private val fileResponseConverter: FileResponseConverter,
         private val fileLoader: IFileLoader
 ) : IApiRepository {
+
+    private var localId = 0L
 
     private fun isConnected() = socketApi.isConnected()
 
@@ -77,7 +78,7 @@ internal class ApiRepository(
                 eventListener.onOfflineForm()
             } else {
                 val messages = messageResponseConverter.convert(messageResponse.message)
-                eventListener.onNewMessages(messages)
+                eventListener.onMessagesReceived(messages)
             }
         }
     }
@@ -114,6 +115,21 @@ internal class ApiRepository(
                       token: String,
                       usedeskFileInfo: UsedeskFileInfo) {
         checkConnection()
+        localId--
+        val calendar = Calendar.getInstance()
+        val file = UsedeskFile(
+                usedeskFileInfo.uri.toString(),
+                usedeskFileInfo.type,
+                "",
+                usedeskFileInfo.name
+        )
+        val tempMessage = if (usedeskFileInfo.isImage()) {
+            UsedeskMessageClientImage(localId, calendar, file)
+        } else {
+            UsedeskMessageClientFile(localId, calendar, file)
+        }
+        eventListener.onMessagesReceived(listOf(tempMessage))
+
         val url = URL(configuration.offlineFormUrl)
         val postUrl = String.format(HTTP_API_PATH, url.host)
         val loadedFile = fileLoader.load(usedeskFileInfo.uri)
@@ -122,12 +138,12 @@ internal class ApiRepository(
                 multipartConverter.convert("file", loadedFile)
         )
         val fileResponse = fileApi.post(postUrl, parts).apply {
-            id = "0"
+            id = localId.toString()
             type = loadedFile.type
             name = loadedFile.name
         }
         val message = fileResponseConverter.convert(fileResponse)
-        eventListener.onNewMessages(listOf(message))
+        eventListener.onMessageUpdated(message)
     }
 
     @Throws(UsedeskException::class)

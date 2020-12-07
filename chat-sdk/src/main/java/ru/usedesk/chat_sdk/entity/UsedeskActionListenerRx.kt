@@ -4,17 +4,36 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
 class UsedeskActionListenerRx : IUsedeskActionListener {
+
     private val connectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    val connectedObservable: Observable<UsedeskEvent<Any?>> = connectedSubject
+
     private val disconnectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    val disconnectedObservable: Observable<UsedeskEvent<Any?>> = disconnectedSubject
+
     private val connectedStateSubject = BehaviorSubject.createDefault(false)
+    val connectedStateObservable: Observable<Boolean> = connectedStateSubject
 
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
+    val messageObservable: Observable<UsedeskMessage> = messageSubject//Каждое сообщение по отдельности
+
     private val newMessageSubject = BehaviorSubject.create<UsedeskMessage>()
+    val newMessageObservable: Observable<UsedeskMessage> = newMessageSubject//Только новые сообщения, генерируемые после подписки
+
     private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
+    val messagesObservable: Observable<List<UsedeskMessage>> = messagesSubject//Список всех сообщений (обновляется с каждым новым сообщением)
+
+    private val messageUpdateSubject = BehaviorSubject.create<UsedeskMessage>()
+    val messageUpdateObservable: Observable<UsedeskMessage> = messageUpdateSubject//Сообщение, изменившее своё состояние
 
     private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
+    val offlineFormExpectedObservable: Observable<UsedeskChatConfiguration> = offlineFormExpectedSubject
+
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    val feedbackObservable: Observable<UsedeskEvent<Any?>> = feedbackSubject
+
     private val exceptionSubject = BehaviorSubject.create<Exception>()
+    val exceptionObservable: Observable<Exception> = exceptionSubject
 
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -26,33 +45,6 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
         lastMessages = messages
         messagesSubject.onNext(messages)
     }
-
-    val connectedStateObservable: Observable<Boolean> = connectedStateSubject
-
-    val connectedObservable: Observable<UsedeskEvent<Any?>> = connectedSubject
-
-    /**
-     * Каждое сообщение по отдельности
-     */
-    val messageObservable: Observable<UsedeskMessage> = messageSubject
-
-    /**
-     * Только новые сообщения, генерируемые после подписки
-     */
-    val newMessageObservable: Observable<UsedeskMessage> = newMessageSubject
-
-    /**
-     * Список всех сообщений (обновляется с каждым новым сообщением)
-     */
-    val messagesObservable: Observable<List<UsedeskMessage>> = messagesSubject
-
-    val offlineFormExpectedObservable: Observable<UsedeskChatConfiguration> = offlineFormExpectedSubject
-
-    val disconnectedObservable: Observable<UsedeskEvent<Any?>> = disconnectedSubject
-
-    val exceptionObservable: Observable<Exception> = exceptionSubject
-
-    val feedbackObservable: Observable<UsedeskEvent<Any?>> = feedbackSubject
 
     override fun onConnected() {
         connectedSubject.onNext(UsedeskSingleLifeEvent(null))
@@ -70,6 +62,10 @@ class UsedeskActionListenerRx : IUsedeskActionListener {
             messageSubject.onNext(it)
         }
         postMessages(messages)
+    }
+
+    override fun onMessageUpdated(message: UsedeskMessage) {
+        messageUpdateSubject.onNext(message)
     }
 
     override fun onFeedbackReceived() {

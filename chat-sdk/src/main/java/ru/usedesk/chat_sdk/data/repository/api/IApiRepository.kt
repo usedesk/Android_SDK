@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import ru.usedesk.chat_sdk._entity.ChatInited
+import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 
@@ -49,7 +49,8 @@ internal interface IApiRepository {
         fun onFeedback()
         fun onException(exception: Exception)
         fun onChatInited(chatInited: ChatInited)
-        fun onNewMessages(newMessages: List<UsedeskMessage>)
+        fun onMessagesReceived(newMessages: List<UsedeskMessage>)
+        fun onMessageUpdated(message: UsedeskMessage)
         fun onOfflineForm()
     }
 }

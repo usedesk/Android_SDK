@@ -7,6 +7,8 @@ interface IUsedeskActionListener {
 
     fun onMessagesReceived(messages: List<UsedeskMessage>)
 
+    fun onMessageUpdated(message: UsedeskMessage)
+
     fun onFeedbackReceived()
 
     fun onOfflineFormExpected(chatConfiguration: UsedeskChatConfiguration)

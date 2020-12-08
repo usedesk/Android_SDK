@@ -13,7 +13,7 @@ internal class OfflineFormAdapter(
         private val binding: UsedeskViewOfflineFormBinding,
         private val viewModel: ChatViewModel,
         lifecycleOwner: LifecycleOwner,
-        private val defaultStyleId: Int,
+        private val styleValues: UsedeskStyleManager.StyleValues,
         private val onSuccessfully: () -> Unit,
         private val onFailed: () -> Unit
 ) {
@@ -84,9 +84,7 @@ internal class OfflineFormAdapter(
             binding.tvSend.isEnabled = true
             R.attr.usedesk_chat_offline_form_action_button_background_enabled
         }
-        val colorId = UsedeskStyleManager.getColor(binding.root.context,
-                defaultStyleId,
-                attr)
+        val colorId = styleValues.getColor(attr)
         binding.lAction.setBackgroundColor(colorId)
     }
 

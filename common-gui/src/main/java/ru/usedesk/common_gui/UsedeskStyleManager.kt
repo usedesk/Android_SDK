@@ -21,42 +21,42 @@ object UsedeskStyleManager {
     }
 
     @JvmStatic
-    fun getString(context: Context,
-                  defaultStyleId: Int,
-                  attrId: Int): String {
-        return getValue(context, defaultStyleId, attrId) { attrs, index ->
-            attrs.getStringOrThrow(index)
-        }
+    fun getStyleValues(context: Context, defaultStyleId: Int): StyleValues {
+        return StyleValues(context, defaultStyleId)
     }
 
-    @JvmStatic
-    fun getInt(context: Context,
-               defaultStyleId: Int,
-               attrId: Int): Int {
-        return getValue(context, defaultStyleId, attrId) { attrs, index ->
-            attrs.getIntOrThrow(index)
-        }
-    }
+    class StyleValues(
+            private val context: Context,
+            private val defaultStyleId: Int
+    ) {
 
-    @JvmStatic
-    fun getColor(context: Context,
-                 defaultStyleId: Int,
-                 attrId: Int): Int {
-        return getValue(context, defaultStyleId, attrId) { attrs, index ->
-            attrs.getColorOrThrow(index)
+        fun getString(attrId: Int): String {
+            return getValue(attrId) { attrs, index ->
+                attrs.getStringOrThrow(index)
+            }
         }
-    }
 
-    private fun <T> getValue(context: Context,
-                             defaultStyleId: Int,
-                             attrId: Int,
-                             onValue: (TypedArray, Int) -> T): T {
-        val attrs = context.obtainStyledAttributes(
-                getStyle(defaultStyleId),
-                intArrayOf(attrId)
-        )
-        val value = onValue(attrs, 0)
-        attrs.recycle()
-        return value
+        fun getInt(attrId: Int): Int {
+            return getValue(attrId) { attrs, index ->
+                attrs.getIntOrThrow(index)
+            }
+        }
+
+        fun getColor(attrId: Int): Int {
+            return getValue(attrId) { attrs, index ->
+                attrs.getColorOrThrow(index)
+            }
+        }
+
+        private fun <T> getValue(attrId: Int,
+                                 onValue: (TypedArray, Int) -> T): T {
+            val attrs = context.obtainStyledAttributes(
+                    getStyle(defaultStyleId),
+                    intArrayOf(attrId)
+            )
+            val value = onValue(attrs, 0)
+            attrs.recycle()
+            return value
+        }
     }
 }

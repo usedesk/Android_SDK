@@ -38,9 +38,10 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
                     R.layout.usedesk_screen_chat,
                     defaultStyleId)
 
-            val title = UsedeskStyleManager.getString(requireContext(),
+            val title = UsedeskStyleManager.getStyleValues(
+                    requireContext(),
                     defaultStyleId,
-                    R.attr.usedesk_screen_chat_title)
+            ).getString(R.attr.usedesk_screen_chat_title)
 
             init(agentName)
             UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
@@ -86,10 +87,14 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
             onException(it)
         }
 
+        val styleValues = UsedeskStyleManager.getStyleValues(
+                requireContext(),
+                defaultStyleId
+        )
         OfflineFormAdapter(binding.offlineForm,
                 viewModel,
                 viewLifecycleOwner,
-                defaultStyleId,
+                styleValues,
                 {
                     UsedeskOfflineFormSuccessDialog(binding.lRoot).apply {
                         setOnDismissListener {

@@ -14,7 +14,6 @@ abstract class UsedeskMessage(
         TYPE_AGENT_FILE(3),
         TYPE_CLIENT_TEXT(4),
         TYPE_CLIENT_IMAGE(5),
-        TYPE_CLIENT_FILE(6),
-        TYPE_DATE(7)
+        TYPE_CLIENT_FILE(6)
     }
 }

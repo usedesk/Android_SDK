@@ -3,46 +3,57 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
+        android:id="@+id/l_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="32dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         tools:theme="@style/Usedesk.Chat.Message.Agent.File">
 
         <include
-            android:id="@+id/avatar"
-            layout="@layout/usedesk_item_chat_avatar" />
+            android:id="@+id/date"
+            layout="@layout/usedesk_view_chat_date" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginVertical="2dp"
             android:layout_marginStart="8dp"
-            android:orientation="vertical">
+            android:layout_marginEnd="32dp"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_name"
+            <include
+                android:id="@+id/avatar"
+                layout="@layout/usedesk_item_chat_avatar" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/sf_ui_display_regular"
-                android:singleLine="true"
-                android:textColor="#828282"
-                android:textSize="13sp"
-                tools:text="Алена Ошева" />
+                android:layout_marginStart="8dp"
+                android:orientation="vertical">
 
-            <FrameLayout
-                android:id="@+id/l_agent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bubble_agent">
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/sf_ui_display_regular"
+                    android:singleLine="true"
+                    android:textColor="#828282"
+                    android:textSize="13sp"
+                    tools:text="Алена Ошева" />
 
-                <include
-                    android:id="@+id/content"
-                    layout="@layout/usedesk_item_chat_message_file" />
-            </FrameLayout>
+                <FrameLayout
+                    android:id="@+id/l_agent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bubble_agent">
+
+                    <include
+                        android:id="@+id/content"
+                        layout="@layout/usedesk_item_chat_message_file" />
+                </FrameLayout>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </layout>

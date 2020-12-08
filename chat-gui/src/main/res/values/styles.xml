@@ -23,10 +23,6 @@
         <item name="usedesk_chat_image_radius_bottom_right">6dp</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Date" parent="">
-
-    </style>
-
     <style name="Usedesk.Chat.Message.Button" parent=""></style>
 
     <style name="Usedesk.Chat.Message.Agent">

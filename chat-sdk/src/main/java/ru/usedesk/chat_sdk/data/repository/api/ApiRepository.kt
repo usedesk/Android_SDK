@@ -128,7 +128,7 @@ internal class ApiRepository(
         } else {
             UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         }
-        eventListener.onMessagesReceived(listOf(tempMessage))
+        //eventListener.onMessagesReceived(listOf(tempMessage))
 
         val url = URL(configuration.offlineFormUrl)
         val postUrl = String.format(HTTP_API_PATH, url.host)
@@ -143,7 +143,7 @@ internal class ApiRepository(
             name = loadedFile.name
         }
         val message = fileResponseConverter.convert(fileResponse)
-        eventListener.onMessageUpdated(message)
+        //eventListener.onMessageUpdated(message)//TODO: временно, пока сервер не позволит определять какой файл ушёл
     }
 
     @Throws(UsedeskException::class)

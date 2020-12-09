@@ -6,7 +6,8 @@
     <FrameLayout
         android:id="@+id/l_root"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:theme="@style/Usedesk.Chat.Message.Agent.Text">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -17,35 +18,36 @@
             android:layout_marginBottom="6dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/l_feedback"
-                android:layout_width="wrap_content"
+                android:layout_width="136dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginVertical="16dp"
-                android:orientation="horizontal">
+                android:layout_marginVertical="16dp">
 
                 <ImageView
                     android:id="@+id/iv_dislike"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_margin="6dp"
+                    android:layout_width="68dp"
+                    android:layout_height="68dp"
+                    android:layout_gravity="start"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
+                    android:padding="6dp"
                     app:srcCompat="@drawable/ic_smile_sad" />
 
                 <ImageView
                     android:id="@+id/iv_like"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_margin="6dp"
+                    android:layout_width="68dp"
+                    android:layout_height="68dp"
+                    android:layout_gravity="end"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
+                    android:padding="6dp"
                     app:srcCompat="@drawable/ic_smile_happy" />
 
-            </LinearLayout>
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/tv_text"

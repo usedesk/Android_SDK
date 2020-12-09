@@ -1,8 +1,11 @@
 package ru.usedesk.chat_gui.chat.adapters
 
 import android.text.Html
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +22,7 @@ import ru.usedesk.common_gui.visibleGone
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 internal class MessagesAdapter(
         private val viewModel: ChatViewModel,
@@ -303,46 +307,114 @@ internal class MessagesAdapter(
             val messageAgentText = items[position] as UsedeskMessageAgentText
             buttonsAdapter.update(messageAgentText.buttons)
 
-            if (messageAgentText.feedbackNeeded) {
-                binding.content.lFeedback.visibility = View.VISIBLE
+            val ivLike = binding.content.ivLike
+            val ivDislike = binding.content.ivDislike
 
-                binding.content.ivLike.apply {
-                    setImageResource(R.drawable.ic_smile_happy)
-                    setOnClickListener {
-                        viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
-                    }
-                    visibility = View.VISIBLE
-                    isEnabled = true
+            when {
+                messageAgentText.feedback != null -> {
+                    binding.content.lFeedback.visibility = View.VISIBLE
+
+                    aloneSmile(ivLike,
+                            R.drawable.ic_smile_happy_colored,
+                            messageAgentText.feedback == UsedeskFeedback.LIKE
+                    )
+
+                    aloneSmile(ivDislike,
+                            R.drawable.ic_smile_sad_colored,
+                            messageAgentText.feedback == UsedeskFeedback.DISLIKE
+                    )
+
+                    binding.content.tvText.setText(R.string.feedback_thank_you)
                 }
+                messageAgentText.feedbackNeeded -> {
+                    binding.content.lFeedback.visibility = View.VISIBLE
 
-                binding.content.ivDislike.apply {
-                    setImageResource(R.drawable.ic_smile_sad)
-                    setOnClickListener {
+                    val centerX = binding.content.lFeedback.width / 4.0f
+
+                    enableSmile(ivLike,
+                            ivDislike,
+                            initX = centerX * 2.0f,
+                            centerX = centerX,
+                            R.drawable.ic_smile_happy,
+                            R.drawable.ic_smile_happy_colored, {
+                        viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
+                        binding.content.tvText.setText(R.string.feedback_thank_you)
+                    }, {
+                        binding.content.tvText.setText(R.string.feedback_thank_you)
+                    })
+
+                    enableSmile(ivDislike,
+                            ivLike,
+                            initX = 0.0f,
+                            centerX,
+                            R.drawable.ic_smile_sad,
+                            R.drawable.ic_smile_sad_colored, {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.DISLIKE)
-                    }
-                    visibility = View.VISIBLE
-                    isEnabled = true
+                    }, {
+                        binding.content.tvText.setText(R.string.feedback_thank_you)
+                    })
+                }
+                else -> {
+                    binding.content.lFeedback.visibility = View.GONE
                 }
             }
+        }
 
-            messageAgentText.feedback?.also {
-                binding.content.lFeedback.visibility = View.VISIBLE
-
-                binding.content.ivLike.apply {
-                    setImageResource(R.drawable.ic_smile_happy_colored)
-                    setOnClickListener(null)
-                    visibility = visibleGone(it == UsedeskFeedback.LIKE)
-                    isEnabled = false
+        private fun aloneSmile(imageView: ImageView,
+                               imageId: Int,
+                               visible: Boolean) {
+            imageView.apply {
+                setImageResource(imageId)
+                post {
+                    layoutParams = FrameLayout.LayoutParams(
+                            width,
+                            height,
+                            Gravity.CENTER
+                    )
                 }
-
-                binding.content.ivDislike.apply {
-                    setImageResource(R.drawable.ic_smile_sad_colored)
-                    setOnClickListener(null)
-                    visibility = visibleGone(it == UsedeskFeedback.DISLIKE)
-                    isEnabled = false
+                alpha = if (visible) {
+                    1.0f
+                } else {
+                    0.0f
                 }
+                isEnabled = false
+            }
+        }
 
-                binding.content.tvText.setText(R.string.feedback_thank_you)
+        private fun enableSmile(imageViewMain: ImageView,
+                                imageViewSub: ImageView,
+                                initX: Float,
+                                centerX: Float,
+                                initImageId: Int,
+                                activeImageId: Int,
+                                onClick: () -> Unit,
+                                onEnd: () -> Unit) {
+            imageViewMain.apply {
+                x = initX
+                alpha = 1.0f
+                scaleX = 1.0f
+                scaleY = 1.0f
+                isEnabled = true
+                setImageResource(initImageId)
+                setOnClickListener {
+                    isEnabled = false
+
+                    setImageResource(activeImageId)
+
+                    onClick()
+
+                    animate().setDuration(500)
+                            .x(centerX)
+                            .withEndAction {
+                                onEnd()
+                            }
+
+                    imageViewSub.animate()
+                            .setDuration(500)
+                            .alpha(0.0f)
+                            .scaleX(0.5f)
+                            .scaleY(0.5f)
+                }
             }
         }
     }

@@ -72,25 +72,29 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
             onChatState(it)
         }
 
-        MessagesAdapter(viewModel,
-                binding.rvMessages,
-                agentName,
-                viewLifecycleOwner, { file ->
-            getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
-        }, { html ->
-            getParentListener<IUsedeskOnHtmlClickListener>()?.onHtmlClick(html)
-        }, { url ->
-            getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
-                    ?: onUrlClick(url)
-        })
-        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
-            onException(it)
-        }
 
         val styleValues = UsedeskStyleManager.getStyleValues(
                 requireContext(),
                 defaultStyleId
         )
+
+        MessagesAdapter(viewModel,
+                binding.rvMessages,
+                agentName,
+                viewLifecycleOwner,
+                { file ->
+                    getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
+                },
+                { html ->
+                    getParentListener<IUsedeskOnHtmlClickListener>()?.onHtmlClick(html)
+                },
+                { url ->
+                    getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
+                            ?: onUrlClick(url)
+                })
+        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
+            onException(it)
+        }
         OfflineFormAdapter(binding.offlineForm,
                 viewModel,
                 viewLifecycleOwner,

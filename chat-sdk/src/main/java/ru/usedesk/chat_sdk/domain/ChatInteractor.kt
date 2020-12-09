@@ -146,6 +146,18 @@ internal class ChatInteractor(
     override fun send(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
         token?.also {
             apiRepository.send(it, feedback)
+
+            onMessageUpdate(UsedeskMessageAgentText(
+                    message.id,
+                    Calendar.getInstance(),
+                    message.text,
+                    message.html,
+                    message.buttons,
+                    false,
+                    feedback,
+                    message.name,
+                    message.avatar
+            ))
         }
     }
 

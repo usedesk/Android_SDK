@@ -3,6 +3,7 @@ package ru.usedesk.common_gui
 import android.content.Context
 import android.content.res.TypedArray
 import androidx.core.content.res.getColorOrThrow
+import androidx.core.content.res.getDimensionOrThrow
 import androidx.core.content.res.getIntOrThrow
 import androidx.core.content.res.getStringOrThrow
 
@@ -45,6 +46,12 @@ object UsedeskStyleManager {
         fun getColor(attrId: Int): Int {
             return getValue(attrId) { attrs, index ->
                 attrs.getColorOrThrow(index)
+            }
+        }
+
+        fun getPixels(attrId: Int): Float {
+            return getValue(attrId) { attrs, index ->
+                attrs.getDimensionOrThrow(index)
             }
         }
 

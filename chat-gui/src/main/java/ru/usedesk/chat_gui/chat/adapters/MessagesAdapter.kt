@@ -1,10 +1,8 @@
 package ru.usedesk.chat_gui.chat.adapters
 
 import android.text.Html
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
@@ -42,8 +40,24 @@ internal class MessagesAdapter(
         }
         recyclerView.adapter = this
         viewModel.messagesLiveData.observe(owner) {
-            this.items = it ?: listOf()
-            notifyDataSetChanged()
+            it.forEachIndexed { index, message ->
+                if (message != this.items.getOrNull(index)) {
+                    notifyItemChanged(index)
+                }
+            }
+            this.items = it
+        }
+        viewModel.messageUpdateLiveData.observe(owner) { messageUpdate ->
+            items = items.mapIndexed { index, message ->
+                if (messageUpdate.id == message.id) {
+                    if (message is UsedeskMessageClient) {
+                        notifyItemChanged(index)
+                    }
+                    messageUpdate
+                } else {
+                    message
+                }
+            }
         }
     }
 
@@ -315,11 +329,13 @@ internal class MessagesAdapter(
                     binding.content.lFeedback.visibility = View.VISIBLE
 
                     aloneSmile(ivLike,
+                            binding.content.lFeedback,
                             R.drawable.ic_smile_happy_colored,
                             messageAgentText.feedback == UsedeskFeedback.LIKE
                     )
 
                     aloneSmile(ivDislike,
+                            binding.content.lFeedback,
                             R.drawable.ic_smile_sad_colored,
                             messageAgentText.feedback == UsedeskFeedback.DISLIKE
                     )
@@ -329,30 +345,25 @@ internal class MessagesAdapter(
                 messageAgentText.feedbackNeeded -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
 
-                    val centerX = binding.content.lFeedback.width / 4.0f
-
                     enableSmile(ivLike,
                             ivDislike,
-                            initX = centerX * 2.0f,
-                            centerX = centerX,
+                            binding.content.lFeedback,
+                            false,
                             R.drawable.ic_smile_happy,
-                            R.drawable.ic_smile_happy_colored, {
+                            R.drawable.ic_smile_happy_colored) {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
                         binding.content.tvText.setText(R.string.feedback_thank_you)
-                    }, {
-                        binding.content.tvText.setText(R.string.feedback_thank_you)
-                    })
+                    }
 
                     enableSmile(ivDislike,
                             ivLike,
-                            initX = 0.0f,
-                            centerX,
+                            binding.content.lFeedback,
+                            true,
                             R.drawable.ic_smile_sad,
-                            R.drawable.ic_smile_sad_colored, {
+                            R.drawable.ic_smile_sad_colored) {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.DISLIKE)
-                    }, {
                         binding.content.tvText.setText(R.string.feedback_thank_you)
-                    })
+                    }
                 }
                 else -> {
                     binding.content.lFeedback.visibility = View.GONE
@@ -361,16 +372,13 @@ internal class MessagesAdapter(
         }
 
         private fun aloneSmile(imageView: ImageView,
+                               container: ViewGroup,
                                imageId: Int,
                                visible: Boolean) {
             imageView.apply {
                 setImageResource(imageId)
                 post {
-                    layoutParams = FrameLayout.LayoutParams(
-                            width,
-                            height,
-                            Gravity.CENTER
-                    )
+                    x = container.width / 4.0f
                 }
                 alpha = if (visible) {
                     1.0f
@@ -383,14 +391,19 @@ internal class MessagesAdapter(
 
         private fun enableSmile(imageViewMain: ImageView,
                                 imageViewSub: ImageView,
-                                initX: Float,
-                                centerX: Float,
+                                container: ViewGroup,
+                                initStart: Boolean,
                                 initImageId: Int,
                                 activeImageId: Int,
-                                onClick: () -> Unit,
-                                onEnd: () -> Unit) {
+                                onClick: () -> Unit) {
             imageViewMain.apply {
-                x = initX
+                post {
+                    x = if (initStart) {
+                        0.0f
+                    } else {
+                        container.width / 2.0f
+                    }
+                }
                 alpha = 1.0f
                 scaleX = 1.0f
                 scaleY = 1.0f
@@ -404,10 +417,7 @@ internal class MessagesAdapter(
                     onClick()
 
                     animate().setDuration(500)
-                            .x(centerX)
-                            .withEndAction {
-                                onEnd()
-                            }
+                            .x(container.width / 4.0f)
 
                     imageViewSub.animate()
                             .setDuration(500)

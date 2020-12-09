@@ -12,7 +12,8 @@ internal class ChatViewModel : UsedeskViewModel() {
     val exceptionLiveData = MutableLiveData<Exception>()
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")
-    val messagesLiveData = MutableLiveData<List<UsedeskMessage>>()
+    val messagesLiveData = MutableLiveData<List<UsedeskMessage>>(listOf())
+    val messageUpdateLiveData = MutableLiveData<UsedeskMessage>()
     val chatStateLiveData = MutableLiveData(ChatState.LOADING)
 
     val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
@@ -44,6 +45,9 @@ internal class ChatViewModel : UsedeskViewModel() {
             if (!it) {
                 doIt(usedeskChat.connectRx())
             }
+        })
+        addDisposable(actionListenerRx.messageUpdateObservable.subscribe {
+            messageUpdateLiveData.postValue(it)
         })
     }
 

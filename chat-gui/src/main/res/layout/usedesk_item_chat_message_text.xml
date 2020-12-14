@@ -34,7 +34,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="6dp"
-                    app:srcCompat="@drawable/ic_smile_sad" />
+                    tools:src="@drawable/ic_smile_sad" />
 
                 <ImageView
                     android:id="@+id/iv_like"
@@ -45,7 +45,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="6dp"
-                    app:srcCompat="@drawable/ic_smile_happy" />
+                    tools:src="@drawable/ic_smile_happy" />
 
             </FrameLayout>
 

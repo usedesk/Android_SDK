@@ -1,11 +1,14 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
+import okhttp3.OkHttpClient
+import okhttp3.TlsVersion
 import org.json.JSONException
 import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
@@ -20,9 +23,7 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
-import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 
@@ -43,9 +44,9 @@ internal class SocketApi(
     }
 
     private val connectErrorEmitterListener = Emitter.Listener {
-        it.getOrNull(0)?.apply {
-            if (it is Throwable) {
-                it.printStackTrace()
+        it.getOrNull(0)?.also { arg ->
+            if (arg is Throwable) {
+                arg.printStackTrace()
             }
         }
         eventListener.onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))//TODO:https://coderoad.ru/28943660/%D0%9A%D0%B0%D0%BA-%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C-%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D1%83-TLS-1-2-%D0%B2-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B8-Android-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D1%8E%D1%89%D0%B5%D0%BC-%D0%BD%D0%B0-Android-4-1
@@ -104,57 +105,63 @@ internal class SocketApi(
                 companyId: String,
                 eventListener: EventListener
     ) {
-        if (socket != null) {
-            return
+        socket = socket ?: getSocket(url).also { socket ->
+            this.eventListener = eventListener
+            this.initChatRequest = InitChatRequest(token, companyId, url)
+
+            emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
+            emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
+            emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
+            emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
+            emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
+
+            for (event in emitterListeners.keys) {
+                socket.on(event, emitterListeners[event])
+            }
+            socket.connect()
         }
-        socket = try {
-            System.setProperty("https.protocols", "TLSv1.1,TLSv1.2")
+    }
 
-            HttpsURLConnection.setDefaultHostnameVerifier { hostname, session ->
-                true
-            }
-
-            val sslContext = SSLContext.getInstance("TLS").apply {
-                init(null, arrayOf<X509TrustManager>(object : X509TrustManager {
-                    override fun checkClientTrusted(chain: Array<X509Certificate?>?,
-                                                    authType: String?) {
-                    }
-
-                    override fun checkServerTrusted(chain: Array<X509Certificate?>?,
-                                                    authType: String?) {
-                    }
-
+    private fun getSocket(url: String): Socket {
+        return try {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+                val allTrustManager = object : X509TrustManager {
                     override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-                }), SecureRandom())
 
-                HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory)
-                HttpsURLConnection.setDefaultHostnameVerifier { hostname, session ->
-                    true
+                    override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {
+                    }
+
+                    override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+                    }
                 }
-            }
 
-            val options = IO.Options().apply {
-                transports = arrayOf(WebSocket.NAME)
-            }
+                val sslContext = SSLContext.getInstance(TlsVersion.TLS_1_2.javaName()).apply {
+                    init(null, arrayOf(allTrustManager), null)
+                }
 
-            IO.socket(url, options)
+                val sslSocketFactory = TlsSslSocketFactory(sslContext.socketFactory)
+
+                val okHttpClient = OkHttpClient.Builder()
+                        .hostnameVerifier { _, _ ->
+                            true
+                        }
+                        .sslSocketFactory(sslSocketFactory, allTrustManager)
+                        .build()
+
+                IO.setDefaultOkHttpWebSocketFactory(okHttpClient)
+                IO.setDefaultOkHttpCallFactory(okHttpClient)
+
+                val options = IO.Options().apply {
+                    transports = arrayOf(WebSocket.NAME)
+                }
+
+                IO.socket(url, options)
+            } else {
+                IO.socket(url)
+            }
         } catch (e: URISyntaxException) {
             throw UsedeskSocketException(UsedeskSocketException.Error.IO_ERROR, e.message)
         }
-
-        this.eventListener = eventListener
-        this.initChatRequest = InitChatRequest(token, companyId, url)
-
-        emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
-        emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
-        emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
-        emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
-        emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
-
-        for (event in emitterListeners.keys) {
-            socket?.on(event, emitterListeners[event])
-        }
-        socket?.connect()
     }
 
     fun disconnect() {

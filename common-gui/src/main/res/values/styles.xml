@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Usedesk.Common.Toolbar" parent="">
+        <item name="usedesk_common_style_toolbar_toolbar">@style/Usedesk.Common.Toolbar.Toolbar
+        </item>
+    </style>
+
+</resources>

@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        tools:theme="@style/Usedesk.Theme.Chat">
+        tools:theme="@style/Usedesk.Chat.Screen.Chat.Attachment.Dialog">
 
         <LinearLayout
             android:layout_width="match_parent"

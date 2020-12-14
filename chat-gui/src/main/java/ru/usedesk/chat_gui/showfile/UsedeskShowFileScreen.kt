@@ -18,7 +18,7 @@ import ru.usedesk.chat_gui.databinding.UsedeskScreenShowFileBinding
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.common_gui.*
 
-class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
+class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) {
     private val viewModel: ShowFileViewModel by viewModels()
 
     private lateinit var binding: UsedeskScreenShowFileBinding

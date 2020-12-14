@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
 
@@ -72,10 +74,8 @@ public class MainActivity extends AppCompatActivity
     private void initUsedeskStyleManager(@NonNull Configuration configuration) {
         if (configuration.isCustomViews()) {
             //Применение кастомной темы к стандартным фрагментам Чата
-            //UsedeskStyleManager.replaceStyle(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat_Custom);
         } else {
             //Сброс к стандартному gui
-            //UsedeskStyleManager.replaceStyle(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat);
         }
     }
 

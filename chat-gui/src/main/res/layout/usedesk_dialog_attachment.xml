@@ -11,7 +11,7 @@
         android:orientation="horizontal"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        tools:theme="@style/Usedesk.Theme.Chat">
+        tools:theme="@style/Usedesk.Chat.Screen.Chat.Attachment.Dialog">
 
         <LinearLayout
             android:id="@+id/pick_photo_button"
@@ -58,7 +58,7 @@
                 android:layout_width="62dp"
                 android:layout_height="62dp"
                 android:layout_margin="12dp"
-                android:background="@drawable/ic_camera"
+                app:srcCompat="@drawable/ic_camera"
                 android:duplicateParentState="true" />
 
             <TextView

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Styled attrs-->
-    <attr name="usedesk_screen_chat_title" format="string" />
+    <attr name="usedesk_chat_screen_chat_title" format="string" />
 
     <attr name="usedesk_chat_image_radius_bottom_left" format="dimension" />
     <attr name="usedesk_chat_image_radius_bottom_right" format="dimension" />

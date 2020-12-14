@@ -92,7 +92,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 
     UsedeskChatSdk.release();
 
-[**IUsedeskChat**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedeskChat.java) - основной класс для взаимодействия с чатом.
+[**IUsedeskChat**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedesk.Chat.java) - основной класс для взаимодействия с чатом.
 
 | Метод   | Параметры     | Описание события                                         |
 |--------------------------|------------------|------------------|

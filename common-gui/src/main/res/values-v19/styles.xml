@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Usedesk.Common.Toolbar.Toolbar" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">#F7F7F7</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="contentInsetEnd">0dp</item>
+        <item name="contentInsetLeft">0dp</item>
+        <item name="contentInsetRight">0dp</item>
+        <item name="contentInsetStart">0dp</item>
+        <item name="title">""</item>
+    </style>
+
+</resources>

@@ -1,8 +1,8 @@
 package ru.usedesk.sample;
 
-import android.app.Application;
+import androidx.multidex.MultiDexApplication;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     @Override
     public void onCreate() {

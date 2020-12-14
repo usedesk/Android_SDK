@@ -7,7 +7,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginHorizontal="2dp"
-        tools:theme="@style/Usedesk.Theme.Chat">
+        tools:theme="@style/Usedesk.Chat.Screen.Chat.Attachment.Dialog">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/iv_preview"

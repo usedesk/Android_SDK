@@ -21,7 +21,7 @@ import java.io.File
 
 class UsedeskAttachmentDialog(
         private val screen: UsedeskChatScreen
-) : BottomSheetDialog(screen.requireContext(), UsedeskStyleManager.getStyle(R.style.Usedesk_Chat_Attachment_Dialog)) {
+) : BottomSheetDialog(screen.requireContext(), UsedeskStyleManager.getStyle(R.style.Usedesk_Chat_Screen_Chat_Attachment_Dialog)) {
 
     init {
         val container = screen.view as ViewGroup
@@ -29,7 +29,7 @@ class UsedeskAttachmentDialog(
         inflateItem<UsedeskDialogAttachmentBinding>(layoutInflater,
                 container,
                 R.layout.usedesk_dialog_attachment,
-                R.style.Usedesk_Theme_Chat).apply {
+                UsedeskStyleManager.getStyle(R.style.Usedesk_Chat_Screen_Chat_Attachment_Dialog)).apply {
 
             setContentView(root)
 

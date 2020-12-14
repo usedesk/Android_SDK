@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
+import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONException
 import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
@@ -15,11 +16,16 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailResponse
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
+
 
 @InjectConstructor
 internal class SocketApi(
@@ -37,7 +43,12 @@ internal class SocketApi(
     }
 
     private val connectErrorEmitterListener = Emitter.Listener {
-        onConnectError()
+        it.getOrNull(0)?.apply {
+            if (it is Throwable) {
+                it.printStackTrace()
+            }
+        }
+        eventListener.onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))//TODO:https://coderoad.ru/28943660/%D0%9A%D0%B0%D0%BA-%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B8%D1%82%D1%8C-%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D1%83-TLS-1-2-%D0%B2-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B8-Android-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D1%8E%D1%89%D0%B5%D0%BC-%D0%BD%D0%B0-Android-4-1
     }
 
     private val connectEmitterListener = Emitter.Listener {
@@ -47,10 +58,6 @@ internal class SocketApi(
 
     private val baseEventEmitterListener = Emitter.Listener {
         onResponse(it[0].toString())
-    }
-
-    private fun onConnectError() {
-        eventListener.onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))
     }
 
     private fun onResponse(rawResponse: String) {
@@ -92,7 +99,6 @@ internal class SocketApi(
         return socket?.connected() == true
     }
 
-    @Throws(UsedeskException::class)
     fun connect(url: String,
                 token: String?,
                 companyId: String,
@@ -102,7 +108,36 @@ internal class SocketApi(
             return
         }
         socket = try {
-            IO.socket(url)
+            System.setProperty("https.protocols", "TLSv1.1,TLSv1.2")
+
+            HttpsURLConnection.setDefaultHostnameVerifier { hostname, session ->
+                true
+            }
+
+            val sslContext = SSLContext.getInstance("TLS").apply {
+                init(null, arrayOf<X509TrustManager>(object : X509TrustManager {
+                    override fun checkClientTrusted(chain: Array<X509Certificate?>?,
+                                                    authType: String?) {
+                    }
+
+                    override fun checkServerTrusted(chain: Array<X509Certificate?>?,
+                                                    authType: String?) {
+                    }
+
+                    override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                }), SecureRandom())
+
+                HttpsURLConnection.setDefaultSSLSocketFactory(socketFactory)
+                HttpsURLConnection.setDefaultHostnameVerifier { hostname, session ->
+                    true
+                }
+            }
+
+            val options = IO.Options().apply {
+                transports = arrayOf(WebSocket.NAME)
+            }
+
+            IO.socket(url, options)
         } catch (e: URISyntaxException) {
             throw UsedeskSocketException(UsedeskSocketException.Error.IO_ERROR, e.message)
         }

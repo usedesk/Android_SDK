@@ -7,7 +7,7 @@
         android:id="@+id/l_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:theme="@style/Usedesk.Theme.Chat">
+        tools:theme="@style/Usedesk.Chat.Screen.Chat.Attachment.Dialog">
 
         <FrameLayout
             android:id="@+id/l_toolbar"

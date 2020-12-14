@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk
 
 import android.content.Context
+import com.google.android.gms.security.ProviderInstaller
 import ru.usedesk.chat_sdk.di.InstanceBox
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
@@ -14,6 +15,11 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun init(appContext: Context, actionListener: IUsedeskActionListener): IUsedeskChat {
+        try {
+            ProviderInstaller.installIfNeeded(appContext)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         if (instanceBox == null) {
             instanceBox = InstanceBox(appContext, getConfiguration(), actionListener)
         }

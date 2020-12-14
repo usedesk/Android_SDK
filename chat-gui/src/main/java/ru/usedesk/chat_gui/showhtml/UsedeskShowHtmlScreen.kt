@@ -10,7 +10,7 @@ import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 
-class UsedeskShowHtmlScreen : UsedeskFragment(R.style.Usedesk_Theme_Chat) {
+class UsedeskShowHtmlScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Html) {
     private lateinit var rootView: ViewGroup
     private lateinit var wvContent: WebView
     private lateinit var ivClose: ImageView

@@ -1,8 +1,8 @@
 package ru.usedesk.chat_sdk.entity
 
 import android.content.Intent
-import ru.usedesk.common_sdk.UsedeskValidatorUtil.isValidEmailNecessary
-import ru.usedesk.common_sdk.UsedeskValidatorUtil.isValidPhone
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidEmailNecessary
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidPhone
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
         val companyId: String,

@@ -16,7 +16,10 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailRequest
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
@@ -123,12 +126,12 @@ internal class ApiRepository(
                 "",
                 usedeskFileInfo.name
         )
-        val tempMessage = if (usedeskFileInfo.isImage()) {
+        /*val tempMessage = if (usedeskFileInfo.isImage()) {
             UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         } else {
             UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         }
-        //eventListener.onMessagesReceived(listOf(tempMessage))
+        eventListener.onMessagesReceived(listOf(tempMessage))*/
 
         val url = URL(configuration.offlineFormUrl)
         val postUrl = String.format(HTTP_API_PATH, url.host)

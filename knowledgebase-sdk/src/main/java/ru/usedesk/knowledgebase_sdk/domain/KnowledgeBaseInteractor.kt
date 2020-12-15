@@ -10,8 +10,8 @@ import javax.inject.Named
 @InjectConstructor
 internal class KnowledgeBaseInteractor(
         private val knowledgeRepository: IKnowledgeBaseRepository,
-        @Named("work")
-        private val workScheduler: Scheduler,
+        @Named("io")
+        private val ioScheduler: Scheduler,
         @Named("main")
         private val mainThreadScheduler: Scheduler,
         private val configuration: UsedeskKnowledgeBaseConfiguration
@@ -19,7 +19,7 @@ internal class KnowledgeBaseInteractor(
 
     private fun <T> createSingle(emitter: SingleOnSubscribe<T>): Single<T> {
         return Single.create(SafeSingleEmitter(emitter))
-                .subscribeOn(workScheduler)
+                .subscribeOn(ioScheduler)
                 .observeOn(mainThreadScheduler)
     }
 
@@ -63,7 +63,7 @@ internal class KnowledgeBaseInteractor(
         return Completable.create { emitter: CompletableEmitter ->
             addViews(articleId)
             emitter.onComplete()
-        }.subscribeOn(workScheduler)
+        }.subscribeOn(ioScheduler)
                 .observeOn(mainThreadScheduler)
     }
 

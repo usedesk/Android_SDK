@@ -4,7 +4,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
-import ru.usedesk.common_sdk.UsedeskValidatorUtil;
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;

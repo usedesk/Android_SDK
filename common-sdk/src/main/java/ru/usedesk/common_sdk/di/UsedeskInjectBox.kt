@@ -4,7 +4,7 @@ import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.config.Module
 
-abstract class InjectBox {
+abstract class UsedeskInjectBox {
     private var scope: Scope? = null
 
     protected fun init(vararg modules: Module) {

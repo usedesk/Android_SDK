@@ -6,19 +6,20 @@ import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_sdk.di.InjectBox
+import ru.usedesk.common_sdk.di.CommonModule
+import ru.usedesk.common_sdk.di.UsedeskInjectBox
 import toothpick.ktp.delegate.inject
 
-internal class InstanceBox(
+internal class InstanceBoxUsedesk(
         appContext: Context,
         usedeskChatConfiguration: UsedeskChatConfiguration,
         actionListener: IUsedeskActionListener
-) : InjectBox() {
+) : UsedeskInjectBox() {
 
     val usedeskChatSdk: IUsedeskChat by inject()
 
     init {
-        init(MainModule(appContext, usedeskChatConfiguration, actionListener))
+        init(CommonModule(appContext), MainModule(usedeskChatConfiguration, actionListener))
     }
 
     override fun release() {

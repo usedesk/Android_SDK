@@ -15,7 +15,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_gui.UsedeskStyleManager
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_sdk.FileUtil
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import java.io.File
 
 
@@ -140,8 +140,8 @@ class UsedeskAttachmentDialog(
     }
 
     private fun createUsedeskFileInfo(context: Context, uri: Uri): UsedeskFileInfo {
-        val mimeType = FileUtil.getMimeType(context, uri)
-        val name = FileUtil.getFileName(context, uri)
+        val mimeType = UsedeskFileUtil.getMimeType(context, uri)
+        val name = UsedeskFileUtil.getFileName(context, uri)
         return UsedeskFileInfo(uri, mimeType ?: "", name)
     }
 

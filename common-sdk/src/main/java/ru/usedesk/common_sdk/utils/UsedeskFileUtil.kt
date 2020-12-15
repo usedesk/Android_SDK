@@ -1,4 +1,4 @@
-package ru.usedesk.common_sdk
+package ru.usedesk.common_sdk.utils
 
 import android.content.ContentResolver
 import android.content.Context
@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 
-object FileUtil {
+object UsedeskFileUtil {
     fun getFileName(context: Context, uri: Uri): String {
         return getFileName(context.contentResolver, uri)
     }

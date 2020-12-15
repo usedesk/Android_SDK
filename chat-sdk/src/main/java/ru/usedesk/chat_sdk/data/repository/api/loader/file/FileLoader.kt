@@ -3,8 +3,8 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.file
 import android.content.ContentResolver
 import android.net.Uri
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.entity.LoadedFile
-import ru.usedesk.common_sdk.FileUtil
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import toothpick.InjectConstructor
 
 @InjectConstructor
@@ -21,8 +21,8 @@ internal class FileLoader(
             if (size > MAX_FILE_SIZE) {
                 throw UsedeskDataNotFoundException("Max file size = $MAX_FILE_SIZE")
             }
-            val name = FileUtil.getFileName(contentResolver, uri)
-            val type = FileUtil.getMimeType(contentResolver, uri)
+            val name = UsedeskFileUtil.getFileName(contentResolver, uri)
+            val type = UsedeskFileUtil.getMimeType(contentResolver, uri)
             val bytes = inputStream.readBytes()
             return LoadedFile(name, size, type, bytes)
         }

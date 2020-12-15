@@ -1,27 +1,21 @@
 package ru.usedesk.chat_sdk
 
 import android.content.Context
-import com.google.android.gms.security.ProviderInstaller
-import ru.usedesk.chat_sdk.di.InstanceBox
+import ru.usedesk.chat_sdk.di.InstanceBoxUsedesk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 
 object UsedeskChatSdk {
-    private var instanceBox: InstanceBox? = null
+    private var instanceBox: InstanceBoxUsedesk? = null
     private var configuration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
 
     @JvmStatic
     fun init(appContext: Context, actionListener: IUsedeskActionListener): IUsedeskChat {
-        try {
-            ProviderInstaller.installIfNeeded(appContext)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
         if (instanceBox == null) {
-            instanceBox = InstanceBox(appContext, getConfiguration(), actionListener)
+            instanceBox = InstanceBoxUsedesk(appContext, getConfiguration(), actionListener)
         }
         return instanceBox!!.usedeskChatSdk
     }

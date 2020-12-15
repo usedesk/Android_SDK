@@ -1,10 +1,10 @@
-package ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity
+package ru.usedesk.common_sdk.api
 
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
 
-internal class RetrofitEnumConverterFactory : Converter.Factory() {
+internal class EnumConverterFactory : Converter.Factory() {
     override fun stringConverter(type: Type,
                                  annotations: Array<Annotation>,
                                  retrofit: Retrofit): Converter<*, String>? {

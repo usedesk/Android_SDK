@@ -5,7 +5,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.UsedeskValidatorUtil
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 internal class ChatViewModel : UsedeskViewModel() {
 

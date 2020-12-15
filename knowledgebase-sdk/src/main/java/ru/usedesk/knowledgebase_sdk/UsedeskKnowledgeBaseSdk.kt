@@ -1,19 +1,19 @@
 package ru.usedesk.knowledgebase_sdk
 
 import android.content.Context
-import ru.usedesk.knowledgebase_sdk.di.InstanceBox
+import ru.usedesk.knowledgebase_sdk.di.InstanceBoxUsedesk
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 object UsedeskKnowledgeBaseSdk {
-    private var instanceBox: InstanceBox? = null
+    private var instanceBox: InstanceBoxUsedesk? = null
     private var configuration: UsedeskKnowledgeBaseConfiguration? = null
 
     @JvmStatic
     fun init(appContext: Context): IUsedeskKnowledgeBase {
         if (instanceBox == null) {
             checkConfiguration()
-            instanceBox = InstanceBox(appContext, configuration!!)
+            instanceBox = InstanceBoxUsedesk(appContext, configuration!!)
         }
         return instanceBox!!.knowledgeBaseSdk
     }

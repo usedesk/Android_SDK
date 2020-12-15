@@ -3,6 +3,7 @@ package ru.usedesk.knowledgebase_sdk.data.framework.retrofit
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import retrofit2.Call
+import ru.usedesk.common_sdk.api.IUsedeskHttpApiFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity.ApiError
 import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity.ArticlesBodyPage
@@ -16,9 +17,12 @@ import java.util.*
 
 @InjectConstructor
 internal class ApiLoader constructor(
-        private val apiRetrofit: ApiRetrofit,
+        usedeskHttpApiFactory: IUsedeskHttpApiFactory,
         private val gson: Gson
 ) : IApiLoader {
+
+    private val apiRetrofit = usedeskHttpApiFactory.getInstance(SERVER_BASE_URL, ApiRetrofit::class.java)
+
     @Throws(UsedeskHttpException::class)
     override fun getSections(accountId: String, token: String): Array<UsedeskSection> {
         return executeRequest(Array<UsedeskSection>::class.java, apiRetrofit.getSections(accountId, token))
@@ -96,6 +100,8 @@ internal class ApiLoader constructor(
     }
 
     companion object {
+        private const val SERVER_BASE_URL = "https://api.usedesk.ru/support/"
+
         private const val SERVER_ERROR = "111"
         private const val INVALID_TOKEN = "112"
         private const val ACCESS_ERROR = "115"

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,7 +78,9 @@ public abstract class UsedeskNotificationsService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent));
+            UsedeskChatSdk.release();
+            UsedeskChatConfiguration configuration = UsedeskChatConfiguration.deserialize(intent);
+            UsedeskChatSdk.setConfiguration(configuration);
             UsedeskChatSdk.init(this, presenter.getActionListener());
 
             presenter.init();
@@ -136,5 +139,7 @@ public abstract class UsedeskNotificationsService extends Service {
         }
 
         UsedeskChatSdk.release();
+
+        Log.d("TAG", "ServiceOnDestroy");
     }
 }

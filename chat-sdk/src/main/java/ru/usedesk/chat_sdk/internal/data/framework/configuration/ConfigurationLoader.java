@@ -2,6 +2,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.configuration;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +31,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     @Inject
     @Named("configuration")
     ConfigurationLoader(@NonNull Context context) {
-        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_MULTI_PROCESS);
     }
 
     @Nullable
@@ -54,7 +55,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
         final String url = sharedPreferences.getString(KEY_URL, null);
         final String offlineUrl = sharedPreferences.getString(KEY_OFFLINE_URL, null);
         final String email = sharedPreferences.getString(KEY_EMAIL, null);
-        final String initClientMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null);
+        final String initClientMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, "");
 
         if (id == null || url == null || email == null || offlineUrl == null) {
             return null;
@@ -77,9 +78,14 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
             }
         }
 
-        return new UsedeskChatConfiguration(id, email, url, offlineUrl,
+        UsedeskChatConfiguration configuration = new UsedeskChatConfiguration(id, email, url, offlineUrl,
                 name, getLong(phone), getLong(additionalId),
                 initClientMessage);
+
+
+        Log.d("TAG", "ConfigurationLoaded: " + configuration.toString());
+
+        return configuration;
     }
 
     @Override
@@ -94,12 +100,11 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
                 .putString(KEY_CLIENT_INIT_MESSAGE, configuration.getInitClientMessage())
                 .putString(KEY_PHONE, getString(configuration.getClientPhoneNumber()))
                 .apply();
+        Log.d("TAG", "ConfigurationSaved: " + configuration.toString());
     }
 
     @Override
     public void clearData() {
-        super.clearData();
-
         sharedPreferences.edit()
                 .remove(KEY_ID)
                 .remove(KEY_URL)

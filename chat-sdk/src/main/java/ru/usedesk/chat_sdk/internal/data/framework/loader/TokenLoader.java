@@ -22,7 +22,7 @@ public class TokenLoader extends DataLoader<String> {
     @Inject
     @Named("token")
     TokenLoader(@NonNull Context context) {
-        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_MULTI_PROCESS);
     }
 
     @Nullable
@@ -40,8 +40,6 @@ public class TokenLoader extends DataLoader<String> {
 
     @Override
     public void clearData() {
-        super.clearData();
-
         sharedPreferences.edit()
                 .remove(KEY_TOKEN)
                 .apply();

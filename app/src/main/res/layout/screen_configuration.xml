@@ -42,7 +42,7 @@
                     android:textColor="#333333"
                     android:textSize="17sp" />
 
-                <include layout="@layout/usedesk_view_divider_h" />
+                <View style="@style/Usedesk.Divider" />
             </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>

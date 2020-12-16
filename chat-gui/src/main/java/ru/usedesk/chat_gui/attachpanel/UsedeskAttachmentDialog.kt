@@ -5,15 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
-import ru.usedesk.chat_gui.databinding.UsedeskDialogAttachmentBinding
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskPermissionUtil
-import ru.usedesk.common_gui.UsedeskStyleManager
+import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import java.io.File
@@ -21,19 +21,20 @@ import java.io.File
 
 class UsedeskAttachmentDialog(
         private val screen: UsedeskChatScreen
-) : BottomSheetDialog(screen.requireContext(), UsedeskStyleManager.getStyle(R.style.Usedesk_Chat_Screen_Chat_Attachment_Dialog)) {
+) : BottomSheetDialog(screen.requireContext(), UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Screen_Chat_Attachment_Dialog)) {
 
     init {
         val container = screen.view as ViewGroup
 
-        inflateItem<UsedeskDialogAttachmentBinding>(layoutInflater,
+        inflateItem(layoutInflater,
                 container,
-                R.layout.usedesk_dialog_attachment,
-                UsedeskStyleManager.getStyle(R.style.Usedesk_Chat_Screen_Chat_Attachment_Dialog)).apply {
+                R.layout.usedesk_dialog_attachment) {
+            Binding(it)
+        }.apply {
 
-            setContentView(root)
+            setContentView(rootView)
 
-            pickPhotoButton.setOnClickListener {
+            lGallery.setOnClickListener {
                 dismiss()
                 UsedeskPermissionUtil.needReadExternalPermission(container,
                         R.string.need_permission,
@@ -43,7 +44,7 @@ class UsedeskAttachmentDialog(
                 }
             }
 
-            takePhotoButton.setOnClickListener {
+            lCamera.setOnClickListener {
                 dismiss()
                 UsedeskPermissionUtil.needCameraPermission(container,
                         R.string.need_permission,
@@ -53,7 +54,7 @@ class UsedeskAttachmentDialog(
                 }
             }
 
-            pickDocumentButton.setOnClickListener {
+            lStorage.setOnClickListener {
                 dismiss()
                 UsedeskPermissionUtil.needReadExternalPermission(container,
                         R.string.need_permission,
@@ -150,5 +151,13 @@ class UsedeskAttachmentDialog(
         private const val REQUEST_CODE_TAKE_PHOTO = 38142
         private const val MIME_TYPE_ALL_IMAGES = "image/*"
         private const val MIME_TYPE_ALL_DOCS = "*/*"
+    }
+
+    class Binding(
+            val rootView: View
+    ) {
+        val lGallery: View = rootView.findViewById(R.id.l_gallery)
+        val lCamera: View = rootView.findViewById(R.id.l_camera)
+        val lStorage: View = rootView.findViewById(R.id.l_storage)
     }
 }

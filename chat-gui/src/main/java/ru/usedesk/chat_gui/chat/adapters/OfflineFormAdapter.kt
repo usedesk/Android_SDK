@@ -4,7 +4,6 @@ import androidx.lifecycle.LifecycleOwner
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_gui.databinding.UsedeskViewOfflineFormBinding
-import ru.usedesk.common_gui.UsedeskStyleManager
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.showKeyboard
 import ru.usedesk.common_gui.visibleGone

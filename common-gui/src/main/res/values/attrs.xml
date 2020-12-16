@@ -1,5 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="usedesk_common_style_toolbar" format="reference" />
-    <attr name="usedesk_common_style_toolbar_toolbar" format="reference" />
 </resources>

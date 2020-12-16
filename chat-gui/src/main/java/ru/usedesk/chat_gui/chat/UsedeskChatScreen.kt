@@ -15,7 +15,6 @@ import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.adapters.MessagesAdapter
 import ru.usedesk.chat_gui.chat.adapters.OfflineFormAdapter
 import ru.usedesk.chat_gui.chat.adapters.UsedeskOfflineFormSuccessDialog
-import ru.usedesk.chat_gui.databinding.UsedeskScreenChatBinding
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.*
@@ -38,10 +37,7 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
                     R.layout.usedesk_screen_chat,
                     defaultStyleId)
 
-            val title = UsedeskStyleManager.getStyleValues(
-                    requireContext(),
-                    defaultStyleId,
-            ).getString(R.attr.usedesk_chat_screen_chat_title)
+            val title = UsedeskResourceManager.getResourceId(R.attr.usedesk_chat_screen_chat_title)
 
             init(agentName)
             UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
@@ -184,5 +180,11 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
                 }
             }
         }
+    }
+
+    class Binding(
+            val rootView: ViewGroup
+    ) {
+
     }
 }

@@ -2,7 +2,6 @@ package ru.usedesk.chat_gui
 
 import android.content.Context
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import ru.usedesk.common_gui.UsedeskStyleManager
 
 abstract class UsedeskBottomSheetDialog(
         context: Context,

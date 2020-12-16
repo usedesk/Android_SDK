@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -108,23 +106,21 @@ fun formatSize(context: Context, size: Long?): String {
             context.resources.getStringArray(R.array.size_postfixes)[rank])
 }
 
-fun <T : ViewDataBinding> inflateItem(container: ViewGroup,
-                                      layoutId: Int,
-                                      defaultStyleId: Int): T {
+fun <BINDING> inflateItem(container: ViewGroup,
+                          layoutId: Int,
+                          createBinding: (View) -> BINDING): BINDING {
     return inflateItem(LayoutInflater.from(container.context),
             container,
             layoutId,
-            defaultStyleId)
+            createBinding)
 }
 
-fun <T : ViewDataBinding> inflateItem(inflater: LayoutInflater,
-                                      container: ViewGroup?,
-                                      layoutId: Int,
-                                      defaultStyleId: Int): T {
-    val customStyleId = UsedeskStyleManager.getStyle(defaultStyleId)
+fun <BINDING> inflateItem(inflater: LayoutInflater,
+                          container: ViewGroup?,
+                          layoutId: Int,
+                          createBinding: (View) -> BINDING): BINDING {
+    val customStyleId = UsedeskResourceManager.getResourceId(R.style.Usedesk)
     val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
-    return DataBindingUtil.inflate(localInflater,
-            layoutId,
-            container,
-            false)
+    val view = localInflater.inflate(layoutId, container, false)
+    return createBinding(view)
 }

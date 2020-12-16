@@ -8,4 +8,8 @@
 
     <attr name="usedesk_chat_offline_form_action_button_background_enabled" format="color" />
     <attr name="usedesk_chat_offline_form_action_button_background_disabled" format="color" />
+
+    <attr name="usedesk_chat_screen_chat_attachment_dialog_root" format="string" />
+    <attr name="usedesk_chat_screen_chat_attachment_dialog_image" format="string" />
+    <attr name="usedesk_chat_screen_chat_attachment_dialog_image_iv" format="string" />
 </resources>

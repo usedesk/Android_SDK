@@ -11,7 +11,7 @@ buildscript {
 
 allprojects {
     project.group = 'ru.usedesk'
-    project.version = '2.1.4'
+    project.version = '2.1.5'
 
     repositories {
         google()

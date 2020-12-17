@@ -27,10 +27,12 @@ public abstract class DataLoader<T> {
 
     public final void setData(@Nullable T data) {
         this.data = data;
-        saveData(data);
+        if (data == null) {
+            clearData();
+        } else {
+            saveData(data);
+        }
     }
 
-    public void clearData() {
-        data = null;
-    }
+    protected abstract void clearData();
 }

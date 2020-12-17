@@ -32,7 +32,8 @@ public class UsedeskNotificationsPresenter {
     @NonNull
     private Observable<UsedeskNotificationsModel> getNewModelObservable() {
         return actionListenerRx.getNewMessageObservable()
-                .filter(message -> message.getType() == UsedeskMessageType.OPERATOR_TO_CLIENT)
+                .filter(message -> message.getType() == UsedeskMessageType.OPERATOR_TO_CLIENT ||
+                        message.getType() == UsedeskMessageType.BOT_TO_CLIENT)
                 .map(UsedeskNotificationsModel::new);
     }
 
@@ -62,7 +63,8 @@ public class UsedeskNotificationsPresenter {
     }
 
     private void connect() {
-        UsedeskChatSdk.getInstance().connectRx()
+        UsedeskChatSdk.getInstance()
+                .connectRx()
                 .subscribe();
     }
 }

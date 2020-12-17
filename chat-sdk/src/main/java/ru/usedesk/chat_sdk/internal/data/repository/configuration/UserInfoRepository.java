@@ -18,9 +18,8 @@ public class UserInfoRepository implements IUserInfoRepository {
     private final DataLoader<String> tokenDataLoader;
 
     @Inject
-    UserInfoRepository(
-            @Named("configuration") DataLoader<UsedeskChatConfiguration> configurationDataLoader,
-            @Named("token") DataLoader<String> tokenDataLoader) {
+    UserInfoRepository(@Named("configuration") DataLoader<UsedeskChatConfiguration> configurationDataLoader,
+                       @Named("token") DataLoader<String> tokenDataLoader) {
         this.configurationDataLoader = configurationDataLoader;
         this.tokenDataLoader = tokenDataLoader;
     }
@@ -33,11 +32,7 @@ public class UserInfoRepository implements IUserInfoRepository {
 
     @Override
     public void setToken(@Nullable String token) {
-        if (token == null) {
-            tokenDataLoader.clearData();
-        } else {
-            tokenDataLoader.setData(token);
-        }
+        tokenDataLoader.setData(token);
     }
 
     @Override
@@ -48,10 +43,6 @@ public class UserInfoRepository implements IUserInfoRepository {
 
     @Override
     public void setConfiguration(@Nullable UsedeskChatConfiguration configuration) {
-        if (configuration == null) {
-            configurationDataLoader.clearData();
-        } else {
-            configurationDataLoader.setData(configuration);
-        }
+        configurationDataLoader.setData(configuration);
     }
 }

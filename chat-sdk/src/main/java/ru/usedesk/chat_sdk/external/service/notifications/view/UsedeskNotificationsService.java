@@ -77,7 +77,9 @@ public abstract class UsedeskNotificationsService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration.deserialize(intent));
+            UsedeskChatSdk.release();
+            UsedeskChatConfiguration configuration = UsedeskChatConfiguration.deserialize(intent);
+            UsedeskChatSdk.setConfiguration(configuration);
             UsedeskChatSdk.init(this, presenter.getActionListener());
 
             presenter.init();

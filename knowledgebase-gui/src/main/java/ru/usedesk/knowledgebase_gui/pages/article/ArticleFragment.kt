@@ -7,14 +7,14 @@ import android.webkit.WebView
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.common.FragmentDataView
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
 
-class ArticleFragment : FragmentDataView<UsedeskArticleBody>(
-        R.layout.usedesk_fragment_article,
-        R.style.Usedesk_Theme_KnowledgeBase
+internal class ArticleFragment : FragmentDataView<UsedeskArticleBody, ArticleFragment.Binding>(
+        R.layout.usedesk_fragment_article
 ) {
 
     private lateinit var textViewTitle: TextView
@@ -38,6 +38,8 @@ class ArticleFragment : FragmentDataView<UsedeskArticleBody>(
         }
     }
 
+    override fun createBinding(rootView: View) = Binding(rootView)
+
     override fun getLiveData(): LiveData<DataOrMessage<UsedeskArticleBody>> = viewModel.liveData
 
     override fun setDataView(data: UsedeskArticleBody) {
@@ -55,5 +57,9 @@ class ArticleFragment : FragmentDataView<UsedeskArticleBody>(
                 }
             }
         }
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+
     }
 }

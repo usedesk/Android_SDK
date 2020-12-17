@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--Styled attrs-->
-    <attr name="usedesk_chat_screen_chat_title" format="string" />
+    <attr name="usedesk_chat_title" format="reference" />
 
     <attr name="usedesk_chat_image_radius_bottom_left" format="dimension" />
     <attr name="usedesk_chat_image_radius_bottom_right" format="dimension" />
@@ -9,7 +9,21 @@
     <attr name="usedesk_chat_offline_form_action_button_background_enabled" format="color" />
     <attr name="usedesk_chat_offline_form_action_button_background_disabled" format="color" />
 
-    <attr name="usedesk_chat_screen_chat_attachment_dialog_root" format="string" />
-    <attr name="usedesk_chat_screen_chat_attachment_dialog_image" format="string" />
-    <attr name="usedesk_chat_screen_chat_attachment_dialog_image_iv" format="string" />
+    <attr name="usedesk_chat_attachment_dialog_style" format="reference" />
+    <attr name="usedesk_chat_attachment_dialog_gallery_image" format="reference" />
+    <attr name="usedesk_chat_attachment_dialog_gallery_text" format="reference" />
+    <attr name="usedesk_chat_attachment_dialog_camera_image" format="reference" />
+    <attr name="usedesk_chat_attachment_dialog_camera_text" format="reference" />
+    <attr name="usedesk_chat_attachment_dialog_storage_image" format="reference" />
+    <attr name="usedesk_chat_attachment_dialog_storage_text" format="reference" />
+
+    <attr name="usedesk_chat_offline_form_success_dialog_style" format="reference" />
+    <attr name="usedesk_chat_offline_form_success_dialog_ok_image" format="reference" />
+    <attr name="usedesk_chat_offline_form_success_dialog_ok_text" format="reference" />
+    <attr name="usedesk_chat_offline_form_success_dialog_close_text" format="reference" />
+
+    <attr name="usedesk_chat_show_html_close_image" format="reference" />
+    <attr name="usedesk_chat_show_file_file_image" format="reference" />
+    <attr name="usedesk_chat_show_file_share_image" format="reference" />
+    <attr name="usedesk_chat_show_file_download_image" format="reference" />
 </resources>

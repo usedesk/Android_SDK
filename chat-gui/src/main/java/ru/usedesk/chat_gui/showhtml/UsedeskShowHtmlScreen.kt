@@ -7,27 +7,24 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.ImageView
 import ru.usedesk.chat_gui.R
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 
-class UsedeskShowHtmlScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Html) {
-    private lateinit var rootView: ViewGroup
-    private lateinit var wvContent: WebView
-    private lateinit var ivClose: ImageView
+class UsedeskShowHtmlScreen : UsedeskFragment() {
+    private lateinit var binding: Binding
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        rootView = inflateItem(inflater,
+        binding = inflateItem(inflater,
                 container,
-                R.layout.usedesk_screen_show_html,
-                defaultStyleId)
-
-        wvContent = rootView.findViewById(R.id.wv_content)
-        ivClose = rootView.findViewById(R.id.iv_close)
+                R.layout.usedesk_screen_show_html) {
+            Binding(it)
+        }
 
         if (savedInstanceState == null) {
-            wvContent.apply {
+            binding.wvContent.apply {
                 val htmlText = arguments?.getString(HTML_TEXT_KEY, "")
 
                 loadDataWithBaseURL(null,
@@ -45,11 +42,11 @@ class UsedeskShowHtmlScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Html) 
             }
         }
 
-        ivClose.setOnClickListener {
+        binding.ivClose.setOnClickListener {
             onBackPressed()
         }
 
-        return rootView
+        return binding.rootView
     }
 
     companion object {
@@ -63,5 +60,10 @@ class UsedeskShowHtmlScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Html) 
                 }
             }
         }
+    }
+
+    class Binding(rootView: View) : UsedeskBinding(rootView) {
+        val wvContent: WebView = rootView.findViewById(R.id.wv_content)
+        val ivClose: ImageView = rootView.findViewById(R.id.iv_close)
     }
 }

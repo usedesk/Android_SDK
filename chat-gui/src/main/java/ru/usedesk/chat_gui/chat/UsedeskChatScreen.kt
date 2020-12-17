@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.*
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.attachpanel.UsedeskAttachmentDialog
@@ -19,11 +21,11 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.*
 
-class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
+class UsedeskChatScreen : UsedeskFragment() {
 
     private val viewModel: ChatViewModel by viewModels()
 
-    private lateinit var binding: UsedeskScreenChatBinding
+    private lateinit var binding: Binding
     private lateinit var attachment: UsedeskAttachmentDialog
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -34,10 +36,12 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
 
             binding = inflateItem(inflater,
                     container,
-                    R.layout.usedesk_screen_chat,
-                    defaultStyleId)
+                    R.layout.usedesk_screen_chat) {
+                Binding(it)
+            }
 
-            val title = UsedeskResourceManager.getResourceId(R.attr.usedesk_chat_screen_chat_title)
+            val title = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat)
+                    .getString(R.attr.usedesk_chat_title)
 
             init(agentName)
             UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
@@ -48,13 +52,13 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
             }
         }
 
-        return binding.root
+        return binding.rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        attachment = UsedeskAttachmentDialog(this)
+        attachment = UsedeskAttachmentDialog.create(this)
     }
 
     private fun init(agentName: String?) {
@@ -67,12 +71,6 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
         viewModel.chatStateLiveData.observe(viewLifecycleOwner) {
             onChatState(it)
         }
-
-
-        val styleValues = UsedeskStyleManager.getStyleValues(
-                requireContext(),
-                defaultStyleId
-        )
 
         MessagesAdapter(viewModel,
                 binding.rvMessages,
@@ -94,9 +92,8 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
         OfflineFormAdapter(binding.offlineForm,
                 viewModel,
                 viewLifecycleOwner,
-                styleValues,
                 {
-                    UsedeskOfflineFormSuccessDialog(binding.lRoot).apply {
+                    UsedeskOfflineFormSuccessDialog.create(binding.rootView).apply {
                         setOnDismissListener {
                             requireActivity().onBackPressed()
                         }
@@ -129,8 +126,8 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
                               offlineForm: Boolean = false) {
         binding.tvLoading.visibility = visibleGone(loading)
         binding.rvMessages.visibility = visibleGone(messages)
-        binding.lMessagePanel.visibility = visibleGone(messages)
-        binding.lOfflineForm.visibility = visibleGone(offlineForm)
+        binding.messagePanel.rootView.visibility = visibleGone(messages)
+        binding.offlineForm.rootView.visibility = visibleGone(offlineForm)
     }
 
     private fun onUrlClick(url: String) {
@@ -182,9 +179,12 @@ class UsedeskChatScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_Chat) {
         }
     }
 
-    class Binding(
-            val rootView: ViewGroup
-    ) {
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+        val toolbar = UsedeskToolbar.Binding(rootView.findViewById(R.id.toolbar))
+        val offlineForm = OfflineFormAdapter.Binding(rootView.findViewById(R.id.l_offline_form))
+        val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel))
 
+        val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
+        val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
     }
 }

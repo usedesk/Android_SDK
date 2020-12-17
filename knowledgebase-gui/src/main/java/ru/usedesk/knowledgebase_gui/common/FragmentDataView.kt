@@ -5,20 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LiveData
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 
-abstract class FragmentDataView<DATA>(
-        private val layoutId: Int,
-        defaultStyleId: Int
-) : UsedeskFragment(defaultStyleId) {
+abstract class FragmentDataView<DATA, BINDING : UsedeskBinding>(
+        private val layoutId: Int
+) : UsedeskFragment() {
 
     private lateinit var textViewMessage: TextView
-    private lateinit var binding: ViewDataBinding
+    private lateinit var binding: BINDING
     private lateinit var container: View
 
     protected abstract fun setDataView(data: DATA)
@@ -26,9 +25,11 @@ abstract class FragmentDataView<DATA>(
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater, container, layoutId, defaultStyleId)
+        binding = inflateItem(inflater, container, layoutId) {
+            createBinding(it)
+        }
 
-        onView(binding.root)
+        onView(binding.rootView)
 
         init()
 
@@ -36,8 +37,10 @@ abstract class FragmentDataView<DATA>(
             this.onData(it)
         })
 
-        return binding.root
+        return binding.rootView
     }
+
+    abstract fun createBinding(rootView: View): BINDING
 
     open fun init() {}
 

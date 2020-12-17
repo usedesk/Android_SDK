@@ -1,16 +1,17 @@
 package ru.usedesk.knowledgebase_gui.pages.sections
 
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.pages.FragmentListView
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-class SectionsFragment : FragmentListView<UsedeskSection>(
-        R.layout.usedesk_fragment_list,
-        R.style.Usedesk_Theme_KnowledgeBase
+internal class SectionsFragment : FragmentListView<UsedeskSection, SectionsFragment.Binding>(
+        R.layout.usedesk_fragment_list
 ) {
     private val viewModel: SectionsViewModel by viewModels()
 
@@ -24,9 +25,15 @@ class SectionsFragment : FragmentListView<UsedeskSection>(
         return SectionsAdapter(list, (parentFragment as IOnSectionClickListener))
     }
 
+    override fun createBinding(rootView: View) = Binding(rootView)
+
     companion object {
         fun newInstance(): SectionsFragment {
             return SectionsFragment()
         }
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+
     }
 }

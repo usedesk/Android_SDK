@@ -8,20 +8,22 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.databinding.UsedeskScreenShowFileBinding
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.common_gui.*
 
-class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) {
+class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
 
-    private lateinit var binding: UsedeskScreenShowFileBinding
+    private lateinit var binding: Binding
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -30,8 +32,9 @@ class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) 
 
         binding = inflateItem(inflater,
                 container,
-                R.layout.usedesk_screen_show_file,
-                defaultStyleId)
+                R.layout.usedesk_screen_show_file) {
+            Binding(it)
+        }
 
         if (json != null) {
             val fileUrl = UsedeskFile.deserialize(json)
@@ -41,7 +44,7 @@ class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) 
 
         init()
 
-        return binding.root
+        return binding.rootView
     }
 
     private fun init() {
@@ -75,7 +78,7 @@ class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) 
     }
 
     private fun setBlur(blurView: BlurView) {
-        blurView.setupWith(binding.lRoot)
+        blurView.setupWith(binding.rootView as ViewGroup)
                 .setFrameClearDrawable(blurView.background)
                 .setBlurAlgorithm(RenderScriptBlur(context))
                 .setBlurRadius(16f)
@@ -124,7 +127,7 @@ class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) 
 
     private fun onDownloadFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            UsedeskPermissionUtil.needWriteExternalPermission(binding.root,
+            UsedeskPermissionUtil.needWriteExternalPermission(binding.rootView,
                     R.string.need_permission,
                     R.string.settings) {
                 try {
@@ -162,5 +165,21 @@ class UsedeskShowFileScreen : UsedeskFragment(R.style.Usedesk_Chat_Screen_File) 
                 }
             }
         }
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+        val lToolbar: BlurView = rootView.findViewById(R.id.l_toolbar)
+        val lBottom: BlurView = rootView.findViewById(R.id.l_bottom)
+        val lImage: ViewGroup = rootView.findViewById(R.id.l_image)
+        val lFile: ViewGroup = rootView.findViewById(R.id.l_file)
+        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
+        val ivBack: ImageView = rootView.findViewById(R.id.iv_back)
+        val ivShare: ImageView = rootView.findViewById(R.id.iv_share)
+        val ivError: ImageView = rootView.findViewById(R.id.iv_error)
+        val ivImage: ImageView = rootView.findViewById(R.id.iv_image)
+        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val tvFileName: TextView = rootView.findViewById(R.id.tv_file_name)
+        val tvFileSize: TextView = rootView.findViewById(R.id.tv_file_size)
+        val ivDownload: ImageView = rootView.findViewById(R.id.iv_download)
     }
 }

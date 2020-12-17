@@ -1,59 +1,9 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Usedesk.Chat.Screen.Chat" parent="">
-        <item name="usedesk_chat_screen_chat_title">@string/usedesk_screen_chat_title</item>
-
-        <item name="usedesk_chat_offline_form_action_button_background_enabled">#333333</item>
-        <item name="usedesk_chat_offline_form_action_button_background_disabled">#ADBEC9</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.File" parent=""></style>
-
-    <style name="Usedesk.Chat.Screen.Html" parent=""></style>
-
-    <style name="Usedesk.Chat.Attachment.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog" />
-
-    <style name="Usedesk.Chat.Screen.Chat.Attachment.Dialog.Root" parent="">
-        <item name="android:layout_margin">8dp</item>
-        <item name="android:baselineAligned">true</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Chat.Attachment.Dialog.Image" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">24dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:gravity">center</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Chat.Attachment.Dialog.Image.ImageView" parent="">
-        <item name="android:layout_width">62dp</item>
-        <item name="android:layout_height">62dp</item>
-        <item name="android:layout_margin">12dp</item>
-        <item name="android:duplicateParentState">true</item>
-        <item name="srcCompat">@drawable/ic_gallery</item>
-    </style>
-
-    <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-
-    </style>
-
-    <style name="Usedesk.Chat.Attachment.File" parent=""></style>
-
     <style name="Usedesk.Chat.Message" parent="">
         <item name="usedesk_chat_image_radius_bottom_left">6dp</item>
         <item name="usedesk_chat_image_radius_bottom_right">6dp</item>
     </style>
-
-    <style name="Usedesk.Chat.Message.Button" parent=""></style>
 
     <style name="Usedesk.Chat.Message.Agent">
         <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
@@ -63,20 +13,65 @@
         <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Agent.Text"></style>
-
-    <style name="Usedesk.Chat.Message.Agent.File"></style>
-
-    <style name="Usedesk.Chat.Message.Agent.Image"></style>
-
-    <style name="Usedesk.Chat.Message.Client.Text"></style>
-
-    <style name="Usedesk.Chat.Message.Client.File"></style>
-
-    <style name="Usedesk.Chat.Message.Client.Image"></style>
-
     <style name="Usedesk.Chat.Offline.Form.ProgressBar" parent="">
         <item name="colorAccent">#EB5757</item>
+    </style>
+
+    <style name="usedesk.Chat.Time.Style" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">#454D63</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Usedesk.Chat">
+        <item name="usedesk_chat_title">@string/usedesk_screen_chat_title</item>
+
+        <item name="usedesk_chat_offline_form_action_button_background_enabled">#333333</item>
+        <item name="usedesk_chat_offline_form_action_button_background_disabled">#ADBEC9</item>
+
+        <item name="usedesk_chat_attachment_dialog_style">
+            @style/Theme.MaterialComponents.Light.BottomSheetDialog
+        </item>
+        <item name="usedesk_chat_attachment_dialog_gallery_image">@drawable/ic_gallery</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_text">
+            @string/usedesk_chat_attachment_gallery
+        </item>
+        <item name="usedesk_chat_attachment_dialog_camera_image">@drawable/ic_camera</item>
+        <item name="usedesk_chat_attachment_dialog_camera_text">
+            @string/usedesk_chat_attachment_camera
+        </item>
+        <item name="usedesk_chat_attachment_dialog_storage_image">@drawable/ic_storage</item>
+        <item name="usedesk_chat_attachment_dialog_storage_text">
+            @string/usedesk_chat_attachment_storage
+        </item>
+
+        <item name="usedesk_chat_offline_form_success_dialog_style">
+            @style/Theme.MaterialComponents.Light.BottomSheetDialog
+        </item>
+        <item name="usedesk_chat_offline_form_success_dialog_ok_image">@drawable/ic_done_round
+        </item>
+        <item name="usedesk_chat_offline_form_success_dialog_ok_text">
+            @string/usedesk_offline_form_sent_title
+        </item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_text">
+            @string/usedesk_chat_offline_form_successfully_close
+        </item>
+
+        <item name="usedesk_chat_show_html_close_image">@drawable/ic_close</item>
+        <item name="usedesk_chat_show_file_file_image">@drawable/ic_file_gray</item>
+        <item name="usedesk_chat_show_file_share_image">@drawable/ic_share</item>
+        <item name="usedesk_chat_show_file_download_image">@drawable/ic_download</item>
     </style>
 
 </resources>

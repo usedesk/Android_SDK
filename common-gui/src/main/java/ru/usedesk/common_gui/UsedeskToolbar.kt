@@ -20,10 +20,6 @@ class UsedeskToolbar(
         toolbarBinding.tvTitle.text = title
     }
 
-    fun setTitle(titleId: Int) {
-        toolbarBinding.tvTitle.setText(titleId)
-    }
-
     fun setBackButton(onBackPressed: () -> Unit) {
         toolbarBinding.ivBack.apply {
             setOnClickListener {
@@ -43,10 +39,8 @@ class UsedeskToolbar(
         }
     }
 
-    class Binding(
-            val rootView: ViewGroup
-    ) {
-        val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
+    class Binding(rootView: View) : UsedeskBinding(rootView) {
+        val toolbar: Toolbar = rootView as Toolbar
         val ivBack: ImageView = rootView.findViewById(R.id.iv_back)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val lAction: ViewGroup = rootView.findViewById(R.id.l_action)

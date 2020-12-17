@@ -1,17 +1,18 @@
 package ru.usedesk.knowledgebase_gui.pages.articlebody
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.pages.FragmentListView
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
 
-class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody>(
-        R.layout.usedesk_fragment_list,
-        R.style.Usedesk_Theme_KnowledgeBase
+internal class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody, ArticlesBodyFragment.Binding>(
+        R.layout.usedesk_fragment_list
 ) {
 
     private val viewModel: ArticlesBodyViewModel by viewModels()
@@ -31,6 +32,8 @@ class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody>(
         }
     }
 
+    override fun createBinding(rootView: View) = Binding(rootView)
+
     override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskArticleBody>>> = viewModel.liveData
 
     fun onSearchQueryUpdate(searchQuery: String) {
@@ -47,5 +50,9 @@ class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody>(
                 }
             }
         }
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+
     }
 }

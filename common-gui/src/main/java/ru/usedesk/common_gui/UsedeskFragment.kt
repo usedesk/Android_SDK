@@ -5,9 +5,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 
-abstract class UsedeskFragment(
-        protected val defaultStyleId: Int
-) : Fragment() {
+abstract class UsedeskFragment : Fragment() {
     private var inited = false
 
     protected fun doInit(init: () -> Unit) {

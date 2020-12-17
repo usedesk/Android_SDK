@@ -1,23 +1,27 @@
 package ru.usedesk.chat_gui.chat.adapters
 
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
-import ru.usedesk.chat_gui.databinding.UsedeskViewOfflineFormBinding
-import ru.usedesk.common_gui.hideKeyboard
-import ru.usedesk.common_gui.showKeyboard
-import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.*
 
 internal class OfflineFormAdapter(
-        private val binding: UsedeskViewOfflineFormBinding,
+        private val binding: Binding,
         private val viewModel: ChatViewModel,
         lifecycleOwner: LifecycleOwner,
-        private val styleValues: UsedeskStyleManager.StyleValues,
         private val onSuccessfully: () -> Unit,
         private val onFailed: () -> Unit
 ) {
 
     init {
+        val resources = binding.rootView.resources
+
         binding.tvSend.setOnClickListener {
             hideKeyboard(it)
             viewModel.onSend(
@@ -40,7 +44,7 @@ internal class OfflineFormAdapter(
         viewModel.nameErrorLiveData.observe(lifecycleOwner) {
             binding.tilName.error = if (it) {
                 showKeyboard(binding.etName)
-                binding.root.resources.getString(R.string.usedesk_offline_form_name_error)
+                resources.getString(R.string.usedesk_offline_form_name_error)
             } else {
                 null
             }
@@ -52,7 +56,7 @@ internal class OfflineFormAdapter(
         viewModel.emailErrorLiveData.observe(lifecycleOwner) {
             binding.tilEmail.error = if (it) {
                 showKeyboard(binding.etEmail)
-                binding.root.resources.getString(R.string.usedesk_offline_form_email_error)
+                resources.getString(R.string.usedesk_offline_form_email_error)
             } else {
                 null
             }
@@ -66,7 +70,7 @@ internal class OfflineFormAdapter(
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
             binding.tilMessage.error = if (it) {
                 showKeyboard(binding.etMessage)
-                binding.root.resources.getString(R.string.usedesk_offline_form_message_error)
+                resources.getString(R.string.usedesk_offline_form_message_error)
             } else {
                 null
             }
@@ -83,7 +87,11 @@ internal class OfflineFormAdapter(
             binding.tvSend.isEnabled = true
             R.attr.usedesk_chat_offline_form_action_button_background_enabled
         }
-        val colorId = styleValues.getColor(attr)
+
+        val colorId = UsedeskResourceManager.getStyleValues(
+                binding.rootView.context,
+                R.style.Usedesk_Chat
+        ).getColor(attr)
         binding.lAction.setBackgroundColor(colorId)
     }
 
@@ -138,5 +146,18 @@ internal class OfflineFormAdapter(
         binding.tilMessage.visibility = visibleGone(fields)
         binding.pbLoading.visibility = visibleGone(loading)
         binding.tvSend.visibility = visibleGone(send)
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+        val tvOfflineText: TextView = rootView.findViewById(R.id.tv_offline_form_text)
+        val tilEmail: TextInputLayout = rootView.findViewById(R.id.til_offline_form_email)
+        val etEmail: EditText = rootView.findViewById(R.id.et_offline_form_email)
+        val tilName: TextInputLayout = rootView.findViewById(R.id.til_offline_form_name)
+        val etName: EditText = rootView.findViewById(R.id.et_offline_form_name)
+        val tilMessage: TextInputLayout = rootView.findViewById(R.id.til_offline_form_message)
+        val etMessage: EditText = rootView.findViewById(R.id.et_offline_form_message)
+        val tvSend: TextView = rootView.findViewById(R.id.tv_offline_form_send)
+        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_offline_form_loading)
+        val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_action)
     }
 }

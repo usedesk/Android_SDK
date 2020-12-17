@@ -4,14 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.IUsedeskOnBackPressedListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.databinding.UsedeskFragmentKnowledgeBaseBinding
 import ru.usedesk.knowledgebase_gui.helper.FragmentSwitcher
 import ru.usedesk.knowledgebase_gui.pages.article.ArticleFragment
 import ru.usedesk.knowledgebase_gui.pages.articlebody.ArticlesBodyFragment
@@ -24,7 +26,7 @@ import ru.usedesk.knowledgebase_gui.pages.sections.IOnSectionClickListener
 import ru.usedesk.knowledgebase_gui.pages.sections.SectionsFragment
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 
-class UsedeskKnowledgeBaseFragment : Fragment(),
+class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
         IOnSectionClickListener,
         IOnCategoryClickListener,
         IOnArticleInfoClickListener,
@@ -34,15 +36,16 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
-    private lateinit var binding: UsedeskFragmentKnowledgeBaseBinding
+    private lateinit var binding: Binding
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         binding = inflateItem(inflater,
                 container,
-                R.layout.usedesk_fragment_knowledge_base,
-                R.style.Usedesk_Theme_KnowledgeBase)
+                R.layout.usedesk_fragment_knowledge_base) {
+            Binding(it)
+        }
 
         binding.btnSupport.setOnClickListener {
             onSupportClick()
@@ -57,7 +60,7 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         if (savedInstanceState == null) {
             switchFragment(SectionsFragment.newInstance())
         }
-        return binding.root
+        return binding.rootView
     }
 
     private fun showSearchQuery(query: String) {
@@ -111,5 +114,9 @@ class UsedeskKnowledgeBaseFragment : Fragment(),
         fun newInstance(): UsedeskKnowledgeBaseFragment {
             return UsedeskKnowledgeBaseFragment()
         }
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+        val btnSupport: Button = rootView.findViewById(R.id.btn_support)
     }
 }

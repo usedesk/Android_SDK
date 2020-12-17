@@ -1,17 +1,18 @@
 package ru.usedesk.knowledgebase_gui.pages.categories
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.pages.FragmentListView
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
-class CategoriesFragment : FragmentListView<UsedeskCategory>(
-        R.layout.usedesk_fragment_list,
-        R.style.Usedesk_Theme_KnowledgeBase
+internal class CategoriesFragment : FragmentListView<UsedeskCategory, CategoriesFragment.Binding>(
+        R.layout.usedesk_fragment_list
 ) {
 
     private val viewModel: CategoriesViewModel by viewModels()
@@ -31,6 +32,8 @@ class CategoriesFragment : FragmentListView<UsedeskCategory>(
         }
     }
 
+    override fun createBinding(rootView: View) = Binding(rootView)
+
     override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskCategory>>> = viewModel.liveData
 
     companion object {
@@ -43,5 +46,9 @@ class CategoriesFragment : FragmentListView<UsedeskCategory>(
                 }
             }
         }
+    }
+
+    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+
     }
 }

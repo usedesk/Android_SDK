@@ -321,7 +321,7 @@ public void onSupportClick() {
 <a name="custom_view"></a>
 ## Кастомизация готовых пользовательских интерфейсов
 
-Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/values/styles.xml) и [Usedesk.Theme.KnowledgeBase](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/values/styles.xml), после чего указать её для использования:
+Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/values/styles.xml) и [Usedesk.KnowledgeBase](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/values/styles.xml), после чего указать её для использования:
 
   ```
 UsedeskViewCustomizer.getInstance()

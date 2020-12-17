@@ -3,13 +3,13 @@ package ru.usedesk.knowledgebase_gui.pages
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.common.FragmentDataView
 
-abstract class FragmentListView<DATA>(
-        layoutId: Int,
-        defaultThemeId: Int
-) : FragmentDataView<List<DATA>>(layoutId, defaultThemeId) {
+internal abstract class FragmentListView<DATA, BINDING : UsedeskBinding>(
+        layoutId: Int
+) : FragmentDataView<List<DATA>, BINDING>(layoutId) {
     private lateinit var recyclerViewSections: RecyclerView
 
     override fun onView(view: View) {

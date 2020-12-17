@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
@@ -19,9 +20,10 @@ import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import java.io.File
 
 
-class UsedeskAttachmentDialog(
-        private val screen: UsedeskChatScreen
-) : BottomSheetDialog(screen.requireContext(), UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Screen_Chat_Attachment_Dialog)) {
+class UsedeskAttachmentDialog private constructor(
+        private val screen: UsedeskChatScreen,
+        dialogStyle: Int
+) : BottomSheetDialog(screen.requireContext(), dialogStyle) {
 
     init {
         val container = screen.view as ViewGroup
@@ -143,7 +145,7 @@ class UsedeskAttachmentDialog(
     private fun createUsedeskFileInfo(context: Context, uri: Uri): UsedeskFileInfo {
         val mimeType = UsedeskFileUtil.getMimeType(context, uri)
         val name = UsedeskFileUtil.getFileName(context, uri)
-        return UsedeskFileInfo(uri, mimeType ?: "", name)
+        return UsedeskFileInfo(uri, mimeType, name)
     }
 
     companion object {
@@ -151,11 +153,17 @@ class UsedeskAttachmentDialog(
         private const val REQUEST_CODE_TAKE_PHOTO = 38142
         private const val MIME_TYPE_ALL_IMAGES = "image/*"
         private const val MIME_TYPE_ALL_DOCS = "*/*"
+
+        fun create(screen: UsedeskChatScreen): UsedeskAttachmentDialog {
+            val dialogStyle = UsedeskResourceManager.getStyleValues(
+                    screen.requireContext(),
+                    R.style.Usedesk_Chat
+            ).getStyle(R.attr.usedesk_chat_attachment_dialog_style)
+            return UsedeskAttachmentDialog(screen, dialogStyle)
+        }
     }
 
-    class Binding(
-            val rootView: View
-    ) {
+    class Binding(rootView: View) : UsedeskBinding(rootView) {
         val lGallery: View = rootView.findViewById(R.id.l_gallery)
         val lCamera: View = rootView.findViewById(R.id.l_camera)
         val lStorage: View = rootView.findViewById(R.id.l_storage)

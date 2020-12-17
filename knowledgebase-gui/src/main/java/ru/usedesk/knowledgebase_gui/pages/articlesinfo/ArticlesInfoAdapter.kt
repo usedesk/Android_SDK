@@ -1,22 +1,25 @@
 package ru.usedesk.knowledgebase_gui.pages.articlesinfo
 
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.databinding.UsedeskItemArticleInfoBinding
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 import java.util.*
 
-class ArticlesInfoAdapter(
+internal class ArticlesInfoAdapter(
         private val articleInfoList: List<UsedeskArticleInfo>,
         private val onArticleClickListener: IOnArticleInfoClickListener
 ) : RecyclerView.Adapter<ArticlesInfoAdapter.ArticleViewHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
         return ArticleViewHolder(inflateItem(viewGroup,
-                R.layout.usedesk_item_article_info,
-                R.style.Usedesk_Theme_KnowledgeBase))
+                R.layout.usedesk_item_article_info) {
+            ArticleInfoBinding(it)
+        })
     }
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
@@ -26,8 +29,8 @@ class ArticlesInfoAdapter(
     override fun getItemCount() = articleInfoList.size
 
     inner class ArticleViewHolder(
-            private val binding: UsedeskItemArticleInfoBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
+            private val binding: ArticleInfoBinding
+    ) : RecyclerView.ViewHolder(binding.rootView) {
 
         fun bind(articleInfo: UsedeskArticleInfo) {
             binding.tvTitle.text = articleInfo.title
@@ -36,5 +39,10 @@ class ArticlesInfoAdapter(
                 onArticleClickListener.onArticleInfoClick(articleInfo.id)
             }
         }
+    }
+
+    internal class ArticleInfoBinding(rootView: View) : UsedeskBinding(rootView) {
+        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val tvCount: TextView = rootView.findViewById(R.id.tv_count)
     }
 }

@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v2.1.1)
+# Android Usedesk SDK (v2.1.6)
 - [Подключение к проекту](#requires)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [1. Chat SDK](#base_chat_sdk)
@@ -7,6 +7,7 @@
   - [3. Подключение к KnowledgeBase SDK](#base_knowledge_base_sdk)
   - [4. KnowledgeBase GUI](#base_knowledge_base_gui)
 - [Кастомизация готовых пользовательских интерфейсов](#custom_view)
+- [Список изменений](#change_list)
 
 <a name="requires"></a>
 ## Подключение к проекту
@@ -241,7 +242,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 Каждый метод может выбросить [UsedeskException](https://github.com/usedesk/Android_SDK/tree/master/common-sdk/src/main/java/ru/usedesk/common_sdk/external/entity/exceptions/UsedeskException.java).
 
  - [UsedeskSection](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - секция Базы Знаний:
- 
+
 | Переменная | Тип        | Описание                     |
 |------------|------------|------------------------------|
 | id         | long       | Идентификатор секции         |
@@ -250,7 +251,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | categories | UsedeskCategory[] | Категории                    |
 
  - [UsedeskCategory](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskCategory.java) - категория Базы Знаний:
- 
+
 | Переменная | Тип           | Описание                       |
 |------------|---------------|--------------------------------|
 | id         | long          | Идентификатор категории        |
@@ -258,7 +259,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | articles   | UsedeskArticleInfo[] | Список с информацией о статьях |
 
  - [UsedeskArticleInfo](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleInfo.java) - заголовок статьи Базы Знаний:
- 
+
 | Переменная | Тип    | Описание              |
 |------------|--------|-----------------------|
 | id         | long   | Идентификатор статьи  |
@@ -266,7 +267,7 @@ UsedeskSdk.getUsedeskNotificationsServiceFactory()
 | views      | int    | Количество просмотров |
 
  - [ArticleBody](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/entity/UsedeskArticleBody.java) - текст статьи Базы Знаний:
- 
+
 | Переменная | Тип    | Описание                             |
 |------------|--------|--------------------------------------|
 | id         | long   | Идентификатор статьи                 |
@@ -327,7 +328,7 @@ public void onSupportClick() {
 UsedeskViewCustomizer.getInstance()
     .replaceId(ru.usedesk.chat_gui.R.style.Usedesk_Theme_Chat, R.style.Usedesk_Theme_Chat_Custom);
   ```
-  
+
 Так же можно переопределить любой слой из [ресурсов Чата](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/layout/)  и [ресурсов Базы Знаний](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/layout/):
 
   ```
@@ -336,3 +337,9 @@ UsedeskViewCustomizer.getInstance()
   ```
 
 Главным критерием последнего способа является полное соответсвие идентификаторов элементов и их тип стандартному слою.
+
+<a name="change_list"></a>
+## Список изменений
+
+ -  v2.1.6
+  - Исправлена ошибка сбрасывания истории чата

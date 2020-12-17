@@ -2,7 +2,6 @@ package ru.usedesk.chat_sdk.internal.data.framework.configuration;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,14 +77,9 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
             }
         }
 
-        UsedeskChatConfiguration configuration = new UsedeskChatConfiguration(id, email, url, offlineUrl,
+        return new UsedeskChatConfiguration(id, email, url, offlineUrl,
                 name, getLong(phone), getLong(additionalId),
                 initClientMessage);
-
-
-        Log.d("TAG", "ConfigurationLoaded: " + configuration.toString());
-
-        return configuration;
     }
 
     @Override
@@ -100,7 +94,6 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
                 .putString(KEY_CLIENT_INIT_MESSAGE, configuration.getInitClientMessage())
                 .putString(KEY_PHONE, getString(configuration.getClientPhoneNumber()))
                 .apply();
-        Log.d("TAG", "ConfigurationSaved: " + configuration.toString());
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.makeramen.roundedimageview.Corner
+import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile
@@ -67,37 +69,43 @@ internal class MessagesAdapter(
         return when (viewType) {
             UsedeskMessage.Type.TYPE_AGENT_TEXT.value -> {
                 MessageTextAgentViewHolder(inflateItem(parent,
-                        R.layout.usedesk_item_chat_message_text_agent) {
+                        R.layout.usedesk_item_chat_message_text_agent,
+                        R.style.Usedesk_Chat_Message_Text_Agent) {
                     MessageTextAgentBinding(it)
                 })
             }
             UsedeskMessage.Type.TYPE_AGENT_FILE.value -> {
                 MessageFileAgentViewHolder(inflateItem(parent,
-                        R.layout.usedesk_item_chat_message_file_agent) {
+                        R.layout.usedesk_item_chat_message_file_agent,
+                        R.style.Usedesk_Chat_Message_File_Agent) {
                     MessageFileAgentBinding(it)
                 })
             }
             UsedeskMessage.Type.TYPE_AGENT_IMAGE.value -> {
                 MessageImageAgentViewHolder(inflateItem(parent,
-                        R.layout.usedesk_item_chat_message_image_agent) {
+                        R.layout.usedesk_item_chat_message_image_agent,
+                        R.style.Usedesk_Chat_Message_Image_Agent) {
                     MessageImageAgentBinding(it)
                 })
             }
             UsedeskMessage.Type.TYPE_CLIENT_TEXT.value -> {
                 MessageTextClientViewHolder(inflateItem(parent,
-                        R.layout.usedesk_item_chat_message_text_client) {
+                        R.layout.usedesk_item_chat_message_text_client,
+                        R.style.Usedesk_Chat_Message_Text_Client) {
                     MessageTextClientBinding(it)
                 })
             }
             UsedeskMessage.Type.TYPE_CLIENT_FILE.value -> {
                 MessageFileClientViewHolder(inflateItem(parent,
-                        R.layout.usedesk_item_chat_message_file_client) {
+                        R.layout.usedesk_item_chat_message_file_client,
+                        R.style.Usedesk_Chat_Message_File_Client) {
                     MessageFileClientBinding(it)
                 })
             }
             UsedeskMessage.Type.TYPE_CLIENT_IMAGE.value -> {
                 MessageImageClientViewHolder(inflateItem(parent,
-                        R.layout.usedesk_item_chat_message_image_client) {
+                        R.layout.usedesk_item_chat_message_image_client,
+                        R.style.Usedesk_Chat_Message_Image_Client) {
                     MessageImageClientBinding(it)
                 })
             }
@@ -134,10 +142,9 @@ internal class MessagesAdapter(
             tvTime.text = formatted
 
             val previousMessage = items.getOrNull(position + 1)
-            if (isSameDay(previousMessage?.calendar, message.calendar)) {
-                bindingDate.rootView.visibility = View.GONE
+            bindingDate.tvDate.visibility = if (isSameDay(previousMessage?.calendar, message.calendar)) {
+                View.GONE
             } else {
-                bindingDate.rootView.visibility = View.VISIBLE
                 when {
                     isToday(message.calendar) -> {
                         bindingDate.tvDate.setText(R.string.today)
@@ -151,6 +158,7 @@ internal class MessagesAdapter(
                         bindingDate.tvDate.text = formatted
                     }
                 }
+                View.VISIBLE
             }
         }
 
@@ -179,7 +187,7 @@ internal class MessagesAdapter(
             })
 
             setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0)
-            agentBinding.avatar.rootView.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
+            agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position - 1))
         }
 
         fun bindClient(position: Int,
@@ -301,6 +309,8 @@ internal class MessagesAdapter(
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
+
+            binding.content.ivPreview.setCornerRadius(Corner.BOTTOM_RIGHT, 0.0f)
         }
     }
 
@@ -448,6 +458,8 @@ internal class MessagesAdapter(
         override fun bind(position: Int) {
             super.bind(position)
             bindAgent(position, binding.agent)
+
+            binding.content.ivPreview.setCornerRadius(Corner.BOTTOM_LEFT, 0.0f)
         }
     }
 
@@ -518,7 +530,7 @@ internal class MessagesAdapter(
 
     internal class MessageImageBinding(rootView: View) : UsedeskBinding(rootView) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
+        val ivPreview: RoundedImageView = rootView.findViewById(R.id.iv_preview)
         val ivError: ImageView = rootView.findViewById(R.id.iv_error)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
     }

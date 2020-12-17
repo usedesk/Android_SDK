@@ -32,7 +32,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding = inflateItem(inflater,
                 container,
-                R.layout.usedesk_screen_show_file) {
+                R.layout.usedesk_screen_show_file,
+                R.style.Usedesk_Chat_Show_File) {
             Binding(it)
         }
 

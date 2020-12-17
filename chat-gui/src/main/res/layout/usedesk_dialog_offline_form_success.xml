@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:theme="@style/Usedesk.Chat">
+    tools:theme="@style/Usedesk.Chat.Offline.Form.Success.Dialog">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,7 +42,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#19454D63">
+                android:background="?attr/usedesk_chat_offline_form_success_dialog_close_background">
 
                 <TextView
                     android:id="@+id/tv_close"

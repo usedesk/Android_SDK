@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="?attr/usedesk_chat_show_html_root_background"
     android:orientation="vertical"
-    tools:theme="@style/Usedesk.Chat">
+    tools:theme="@style/Usedesk.Chat.Show.Html">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F0F9F9F9">
+        android:background="?attr/usedesk_chat_show_html_toolbar_background">
 
         <ImageView
             android:id="@+id/iv_close"

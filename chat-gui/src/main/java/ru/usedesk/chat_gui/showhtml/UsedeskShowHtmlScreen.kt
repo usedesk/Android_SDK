@@ -19,7 +19,8 @@ class UsedeskShowHtmlScreen : UsedeskFragment() {
                               savedInstanceState: Bundle?): View {
         binding = inflateItem(inflater,
                 container,
-                R.layout.usedesk_screen_show_html) {
+                R.layout.usedesk_screen_show_html,
+                R.style.Usedesk_Chat_Show_Html) {
             Binding(it)
         }
 

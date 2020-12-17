@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.adapters
+package ru.usedesk.chat_gui.chat
 
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +17,8 @@ class UsedeskOfflineFormSuccessDialog private constructor(
     init {
         inflateItem(layoutInflater,
                 container,
-                R.layout.usedesk_dialog_offline_form_successfully) {
+                R.layout.usedesk_dialog_offline_form_success,
+                dialogStyle) {
             Binding(it)
         }.apply {
             setContentView(rootView)
@@ -30,10 +31,9 @@ class UsedeskOfflineFormSuccessDialog private constructor(
 
     companion object {
         fun create(container: View): UsedeskOfflineFormSuccessDialog {
-            val dialogStyle = UsedeskResourceManager.getStyleValues(
-                    container.context,
-                    R.style.Usedesk_Chat
-            ).getStyle(R.attr.usedesk_chat_offline_form_success_dialog_style)
+            val dialogStyle = UsedeskResourceManager.getResourceId(
+                    R.style.Usedesk_Chat_Offline_Form_Success_Dialog
+            )
             return UsedeskOfflineFormSuccessDialog(container as ViewGroup, dialogStyle)
         }
     }

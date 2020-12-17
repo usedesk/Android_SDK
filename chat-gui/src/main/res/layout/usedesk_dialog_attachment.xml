@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
+    android:background="?attr/usedesk_chat_attachment_dialog_background"
     android:baselineAligned="true"
     android:orientation="horizontal"
-    tools:theme="@style/Usedesk.Chat">
+    tools:theme="@style/Usedesk.Chat.Attachment.Dialog">
 
     <LinearLayout
         android:id="@+id/l_gallery"

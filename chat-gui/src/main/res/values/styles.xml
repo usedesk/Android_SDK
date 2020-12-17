@@ -1,23 +1,27 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Usedesk.Chat.Message" parent="">
-        <item name="usedesk_chat_image_radius_bottom_left">6dp</item>
-        <item name="usedesk_chat_image_radius_bottom_right">6dp</item>
+    <style name="Usedesk.Chat.Attachment.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="usedesk_chat_attachment_dialog_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_image">@drawable/ic_gallery</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_text">@string/usedesk_chat_attachment_gallery</item>
+        <item name="usedesk_chat_attachment_dialog_camera_image">@drawable/ic_camera</item>
+        <item name="usedesk_chat_attachment_dialog_camera_text">@string/usedesk_chat_attachment_camera</item>
+        <item name="usedesk_chat_attachment_dialog_storage_image">@drawable/ic_storage</item>
+        <item name="usedesk_chat_attachment_dialog_storage_text">@string/usedesk_chat_attachment_storage</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Agent">
-        <item name="usedesk_chat_image_radius_bottom_left">0dp</item>
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="usedesk_chat_offline_form_success_dialog_ok_image">@drawable/ic_done_round</item>
+        <item name="usedesk_chat_offline_form_success_dialog_ok_text">@string/usedesk_offline_form_sent_title</item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_text">@string/usedesk_chat_offline_form_success_close</item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_background">@color/usedesk_gray_1</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Client">
-        <item name="usedesk_chat_image_radius_bottom_right">0dp</item>
+    <style name="Usedesk.Chat.Attached.File" parent="">
+        <item name="usedesk_chat_attached_file_close_image">@drawable/ic_preview_detach</item>
     </style>
 
-    <style name="Usedesk.Chat.Offline.Form.ProgressBar" parent="">
-        <item name="colorAccent">#EB5757</item>
-    </style>
-
-    <style name="usedesk.Chat.Time.Style" parent="">
+    <style name="Usedesk.Chat.Message.Time" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">20dp</item>
@@ -34,44 +38,80 @@
         <item name="android:textSize">15sp</item>
     </style>
 
-    <style name="Usedesk.Chat">
-        <item name="usedesk_chat_title">@string/usedesk_screen_chat_title</item>
+    <style name="Usedesk.Chat.Message" parent="">
+        <item name="usedesk_chat_message_avatar_background">@drawable/background_avatar_dark</item>
+        <item name="usedesk_chat_message_bubble_agent_background">@drawable/bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_client_background">@drawable/bubble_client</item>
+        <item name="usedesk_chat_message_button_background">@color/usedesk_black_2</item>
+    </style>
 
-        <item name="usedesk_chat_offline_form_action_button_background_enabled">#333333</item>
-        <item name="usedesk_chat_offline_form_action_button_background_disabled">#ADBEC9</item>
+    <style name="Usedesk.Chat.Message.File">
+        <item name="usedesk_chat_message_file_preview_image">@drawable/ic_file_dark</item>
+    </style>
 
-        <item name="usedesk_chat_attachment_dialog_style">
-            @style/Theme.MaterialComponents.Light.BottomSheetDialog
-        </item>
-        <item name="usedesk_chat_attachment_dialog_gallery_image">@drawable/ic_gallery</item>
-        <item name="usedesk_chat_attachment_dialog_gallery_text">
-            @string/usedesk_chat_attachment_gallery
-        </item>
-        <item name="usedesk_chat_attachment_dialog_camera_image">@drawable/ic_camera</item>
-        <item name="usedesk_chat_attachment_dialog_camera_text">
-            @string/usedesk_chat_attachment_camera
-        </item>
-        <item name="usedesk_chat_attachment_dialog_storage_image">@drawable/ic_storage</item>
-        <item name="usedesk_chat_attachment_dialog_storage_text">
-            @string/usedesk_chat_attachment_storage
-        </item>
+    <style name="Usedesk.Chat.Message.File.Agent" />
 
-        <item name="usedesk_chat_offline_form_success_dialog_style">
-            @style/Theme.MaterialComponents.Light.BottomSheetDialog
-        </item>
-        <item name="usedesk_chat_offline_form_success_dialog_ok_image">@drawable/ic_done_round
-        </item>
-        <item name="usedesk_chat_offline_form_success_dialog_ok_text">
-            @string/usedesk_offline_form_sent_title
-        </item>
-        <item name="usedesk_chat_offline_form_success_dialog_close_text">
-            @string/usedesk_chat_offline_form_successfully_close
-        </item>
+    <style name="Usedesk.Chat.Message.File.Client" />
 
+    <style name="Usedesk.Chat.Message.Image">
+        <item name="usedesk_chat_message_image_error_image">@drawable/ic_error</item>
+        <item name="usedesk_chat_message_image_time_background">@drawable/background_time_dark</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Image.Agent" />
+
+    <style name="Usedesk.Chat.Message.Image.Client" />
+
+    <style name="Usedesk.Chat.Message.Text">
+        <item name="usedesk_chat_message_text_open_html_text">@string/usedesk_chat_message_open_html_title</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Agent" />
+
+    <style name="Usedesk.Chat.Message.Text.Client" />
+
+    <style name="Usedesk.Chat.Show.Html" parent="">
         <item name="usedesk_chat_show_html_close_image">@drawable/ic_close</item>
+        <item name="usedesk_chat_show_html_root_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_show_html_toolbar_background">@color/usedesk_white_2</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File" parent="">
+        <item name="usedesk_chat_show_file_root_background">@color/usedesk_white_2</item>
+        <item name="usedesk_chat_show_file_image_background">@color/usedesk_black_1</item>
+        <item name="usedesk_chat_show_file_blur_top_background">@color/usedesk_blur</item>
+        <item name="usedesk_chat_show_file_blur_bottom_background">@color/usedesk_blur</item>
+        <item name="usedesk_chat_show_file_blur_toolbar_background">@color/usedesk_blur_toolbar</item>
         <item name="usedesk_chat_show_file_file_image">@drawable/ic_file_gray</item>
         <item name="usedesk_chat_show_file_share_image">@drawable/ic_share</item>
         <item name="usedesk_chat_show_file_download_image">@drawable/ic_download</item>
+        <item name="usedesk_chat_show_file_error_image">@drawable/ic_error</item>
+        <item name="usedesk_chat_show_file_back_image">@drawable/ic_back_white</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">
+        <item name="colorAccent">#EB5757</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
+        <item name="usedesk_chat_screen_title_text">@string/usedesk_screen_chat_title</item>
+
+        <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
+        <item name="usedesk_chat_screen_offline_form_action_disabled_background">#ADBEC9</item>
+
+        <item name="usedesk_chat_screen_attach_image">@drawable/ic_attachment</item>
+        <item name="usedesk_chat_screen_send_image">@drawable/ic_send</item>
+        <item name="usedesk_chat_screen_loading_text">@string/usedesk_chat_fragment_loading_text</item>
+        <item name="usedesk_chat_screen_message_hint">@string/usedesk_message_panel_input_hint</item>
+        <item name="usedesk_chat_screen_offline_form_description_text">@string/usedesk_offline_form_title</item>
+        <item name="usedesk_chat_screen_offline_form_send_text">@string/usedesk_offline_form_send</item>
+        <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
+        <item name="usedesk_chat_screen_offline_form_name_hint">@string/usedesk_offline_form_name_hint</item>
+        <item name="usedesk_chat_screen_offline_form_email_hint">@string/usedesk_offline_form_email_hint</item>
+        <item name="usedesk_chat_screen_offline_form_message_hint">@string/usedesk_offline_form_message_hint</item>
+
+        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_screen_message_panel_input_background">@drawable/background_ticket_message_panel</item>
     </style>
 
 </resources>

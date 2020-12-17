@@ -17,7 +17,8 @@ internal class ArticlesBodyAdapter(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
         return ArticleViewHolder(inflateItem(viewGroup,
-                R.layout.usedesk_item_article_info) {
+                R.layout.usedesk_item_article_info,
+                R.style.Usedesk_KnowledgeBase) {
             ArticleBodyBinding(it)
         })
     }

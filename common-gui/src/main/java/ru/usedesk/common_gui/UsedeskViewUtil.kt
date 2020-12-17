@@ -107,20 +107,24 @@ fun formatSize(context: Context, size: Long?): String {
 }
 
 fun <BINDING> inflateItem(container: ViewGroup,
-                          layoutId: Int,
+                          defaultLayoutId: Int,
+                          defaultStyleId: Int,
                           createBinding: (View) -> BINDING): BINDING {
     return inflateItem(LayoutInflater.from(container.context),
             container,
-            layoutId,
+            defaultLayoutId,
+            defaultStyleId,
             createBinding)
 }
 
 fun <BINDING> inflateItem(inflater: LayoutInflater,
                           container: ViewGroup?,
-                          layoutId: Int,
+                          defaultLayoutId: Int,
+                          defaultStyleId: Int,
                           createBinding: (View) -> BINDING): BINDING {
-    val customStyleId = UsedeskResourceManager.getResourceId(R.style.Usedesk)
+    val customStyleId = UsedeskResourceManager.getResourceId(defaultStyleId)
     val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
+    val layoutId = UsedeskResourceManager.getResourceId(defaultLayoutId)
     val view = localInflater.inflate(layoutId, container, false)
     return createBinding(view)
 }

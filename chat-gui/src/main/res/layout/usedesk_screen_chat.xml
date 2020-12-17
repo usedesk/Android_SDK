@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:theme="@style/Usedesk.Chat">
-
+    tools:theme="@style/Usedesk.Chat.Screen">
 
     <FrameLayout
         android:id="@+id/l_toolbar"
@@ -40,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
-        android:text="@string/usedesk_chat_fragment_loading_text"
+        android:text="?attr/usedesk_chat_screen_loading_text"
         app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +68,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginVertical="12dp"
                 android:fontFamily="@font/sf_pro_display_regular"
-                android:text="@string/usedesk_offline_form_title"
+                android:text="?attr/usedesk_chat_screen_offline_form_description_text"
                 android:textColor="#202941"
                 android:textSize="18sp" />
 
@@ -86,7 +85,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_regular"
-                    android:hint="@string/usedesk_offline_form_name_hint"
+                    android:hint="?attr/usedesk_chat_screen_offline_form_name_hint"
                     android:inputType="textPersonName|textCapWords"
                     android:singleLine="true"
                     android:textColor="#333333"
@@ -106,7 +105,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_regular"
-                    android:hint="@string/usedesk_offline_form_email_hint"
+                    android:hint="?attr/usedesk_chat_screen_offline_form_email_hint"
                     android:inputType="textEmailAddress"
                     android:singleLine="true"
                     android:textColor="#333333"
@@ -126,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/sf_pro_display_regular"
-                    android:hint="@string/usedesk_offline_form_message_hint"
+                    android:hint="?attr/usedesk_chat_screen_offline_form_message_hint"
                     android:inputType="textMultiLine|textCapSentences"
                     android:singleLine="false"
                     android:textColor="#333333"
@@ -142,17 +141,17 @@
                 app:cardElevation="0dp">
 
                 <FrameLayout
-                    android:id="@+id/l_offline_form_action"
+                    android:id="@+id/l_offline_form_send"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#333333">
+                    android:background="?attr/usedesk_chat_screen_offline_form_send_background">
 
                     <ProgressBar
                         android:id="@+id/pb_offline_form_loading"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:theme="@style/Usedesk.Chat.Offline.Form.ProgressBar" />
+                        android:theme="@style/Usedesk.Chat.Screen.Offline.Form.ProgressBar" />
 
                     <TextView
                         android:id="@+id/tv_offline_form_send"
@@ -163,7 +162,7 @@
                         android:focusable="true"
                         android:fontFamily="@font/sf_ui_display_semibold"
                         android:gravity="center"
-                        android:text="@string/usedesk_offline_form_send"
+                        android:text="?attr/usedesk_chat_screen_offline_form_send_text"
                         android:textColor="#FFFFFF"
                         android:textSize="18sp" />
                 </FrameLayout>
@@ -179,17 +178,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:theme="@style/Usedesk.Chat">
+        tools:theme="@style/Usedesk.Chat.Screen">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
+            android:background="?attr/usedesk_chat_screen_message_panel_background"
             android:clipChildren="true"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <View style="@style/Usedesk.Divider" />
+            <View style="@style/Usedesk.Common.Divider" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -207,15 +206,15 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_attachment" />
+                    app:srcCompat="?attr/usedesk_chat_screen_attach_image" />
 
                 <EditText
                     android:id="@+id/et_message"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/background_ticket_message_panel"
+                    android:background="?attr/usedesk_chat_screen_message_panel_input_background"
                     android:fontFamily="@font/sf_ui_display_regular"
-                    android:hint="@string/usedesk_message_panel_input_hint"
+                    android:hint="?attr/usedesk_chat_screen_message_hint"
                     android:includeFontPadding="false"
                     android:inputType="textCapSentences"
                     android:maxLines="5"
@@ -239,7 +238,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_send" />
+                    app:srcCompat="?attr/usedesk_chat_screen_send_image" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

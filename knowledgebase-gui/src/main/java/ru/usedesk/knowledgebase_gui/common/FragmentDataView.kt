@@ -13,7 +13,8 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 
 abstract class FragmentDataView<DATA, BINDING : UsedeskBinding>(
-        private val layoutId: Int
+        private val layoutId: Int,
+        private val styleId: Int
 ) : UsedeskFragment() {
 
     private lateinit var textViewMessage: TextView
@@ -25,7 +26,7 @@ abstract class FragmentDataView<DATA, BINDING : UsedeskBinding>(
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater, container, layoutId) {
+        binding = inflateItem(inflater, container, layoutId, styleId) {
             createBinding(it)
         }
 

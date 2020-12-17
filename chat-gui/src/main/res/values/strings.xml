@@ -37,5 +37,5 @@
     <string name="usedesk_chat_attachment_camera">Camera</string>
     <string name="usedesk_chat_attachment_storage">Storage</string>
     <string name="usedesk_chat_message_open_html_title">Open HTML</string>
-    <string name="usedesk_chat_offline_form_successfully_close">Close</string>
+    <string name="usedesk_chat_offline_form_success_close">Close</string>
 </resources>

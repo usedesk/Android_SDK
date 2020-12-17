@@ -14,7 +14,8 @@ import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
 
 internal class ArticleFragment : FragmentDataView<UsedeskArticleBody, ArticleFragment.Binding>(
-        R.layout.usedesk_fragment_article
+        R.layout.usedesk_fragment_article,
+        R.style.Usedesk_KnowledgeBase
 ) {
 
     private lateinit var textViewTitle: TextView

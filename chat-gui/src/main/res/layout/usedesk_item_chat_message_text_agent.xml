@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:theme="@style/Usedesk.Chat">
+    tools:theme="@style/Usedesk.Chat.Message.Text.Agent">
 
     <TextView
         android:id="@+id/tv_date"
-        style="@style/usedesk.Chat.Time.Style"
+        style="@style/Usedesk.Chat.Message.Time"
         tools:text="Вчера" />
 
     <LinearLayout
@@ -45,7 +45,7 @@
                 android:id="@+id/l_agent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bubble_agent">
+                android:background="?attr/usedesk_chat_message_bubble_agent_background">
 
                 <include
                     android:id="@+id/content"

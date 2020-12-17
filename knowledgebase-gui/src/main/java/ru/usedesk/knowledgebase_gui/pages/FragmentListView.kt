@@ -8,8 +8,9 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.common.FragmentDataView
 
 internal abstract class FragmentListView<DATA, BINDING : UsedeskBinding>(
-        layoutId: Int
-) : FragmentDataView<List<DATA>, BINDING>(layoutId) {
+        layoutId: Int,
+        styleId: Int
+) : FragmentDataView<List<DATA>, BINDING>(layoutId, styleId) {
     private lateinit var recyclerViewSections: RecyclerView
 
     override fun onView(view: View) {

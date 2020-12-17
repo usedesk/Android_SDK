@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2F2F2"
-    tools:theme="@style/Usedesk.Chat">
+    android:background="?attr/usedesk_chat_show_file_root_background"
+    tools:theme="@style/Usedesk.Chat.Show.File">
 
     <LinearLayout
         android:id="@+id/l_file"
@@ -50,7 +50,7 @@
         android:id="@+id/l_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000000"
+        android:background="?attr/usedesk_chat_show_file_image_background"
         android:visibility="gone">
 
         <com.github.chrisbanes.photoview.PhotoView
@@ -65,7 +65,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_error"
+            app:srcCompat="?attr/usedesk_chat_show_file_error_image"
             tools:visibility="gone" />
 
         <ProgressBar
@@ -80,13 +80,13 @@
         android:id="@+id/l_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#80000000">
+        android:background="?attr/usedesk_chat_show_file_blur_top_background">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
+            android:background="?attr/usedesk_chat_show_file_blur_toolbar_background"
             android:saveEnabled="false"
             app:contentInsetEnd="0dp"
             app:contentInsetLeft="0dp"
@@ -103,7 +103,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="16dp"
-                app:srcCompat="@drawable/ic_back_white" />
+                app:srcCompat="?attr/usedesk_chat_show_file_back_image" />
 
             <TextView
                 android:id="@+id/tv_title"
@@ -125,7 +125,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#80000000">
+        android:background="?attr/usedesk_chat_show_file_blur_bottom_background">
 
         <ImageView
             android:id="@+id/iv_share"

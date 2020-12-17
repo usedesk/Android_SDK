@@ -11,7 +11,8 @@ import ru.usedesk.knowledgebase_gui.pages.FragmentListView
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class SectionsFragment : FragmentListView<UsedeskSection, SectionsFragment.Binding>(
-        R.layout.usedesk_fragment_list
+        R.layout.usedesk_fragment_list,
+        R.style.Usedesk_KnowledgeBase
 ) {
     private val viewModel: SectionsViewModel by viewModels()
 

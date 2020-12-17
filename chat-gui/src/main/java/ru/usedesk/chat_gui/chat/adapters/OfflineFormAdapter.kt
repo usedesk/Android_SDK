@@ -82,15 +82,15 @@ internal class OfflineFormAdapter(
     private fun updateActionButton(message: String) {
         val attr = if (message.isEmpty()) {
             binding.tvSend.isEnabled = false
-            R.attr.usedesk_chat_offline_form_action_button_background_disabled
+            R.attr.usedesk_chat_screen_offline_form_action_disabled_background
         } else {
             binding.tvSend.isEnabled = true
-            R.attr.usedesk_chat_offline_form_action_button_background_enabled
+            R.attr.usedesk_chat_screen_offline_form_action_enabled_background
         }
 
         val colorId = UsedeskResourceManager.getStyleValues(
                 binding.rootView.context,
-                R.style.Usedesk_Chat
+                R.style.Usedesk_Chat_Screen
         ).getColor(attr)
         binding.lAction.setBackgroundColor(colorId)
     }
@@ -158,6 +158,6 @@ internal class OfflineFormAdapter(
         val etMessage: EditText = rootView.findViewById(R.id.et_offline_form_message)
         val tvSend: TextView = rootView.findViewById(R.id.tv_offline_form_send)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_offline_form_loading)
-        val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_action)
+        val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_send)
     }
 }

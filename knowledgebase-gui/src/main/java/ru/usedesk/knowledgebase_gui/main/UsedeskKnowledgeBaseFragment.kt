@@ -43,7 +43,8 @@ class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
                               savedInstanceState: Bundle?): View {
         binding = inflateItem(inflater,
                 container,
-                R.layout.usedesk_fragment_knowledge_base) {
+                R.layout.usedesk_fragment_knowledge_base,
+                R.style.Usedesk_KnowledgeBase) {
             Binding(it)
         }
 

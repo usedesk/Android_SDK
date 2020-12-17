@@ -12,11 +12,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.*
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.attachpanel.UsedeskAttachmentDialog
 import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.adapters.MessagesAdapter
 import ru.usedesk.chat_gui.chat.adapters.OfflineFormAdapter
-import ru.usedesk.chat_gui.chat.adapters.UsedeskOfflineFormSuccessDialog
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.*
@@ -36,12 +34,15 @@ class UsedeskChatScreen : UsedeskFragment() {
 
             binding = inflateItem(inflater,
                     container,
-                    R.layout.usedesk_screen_chat) {
+                    R.layout.usedesk_screen_chat,
+                    R.style.Usedesk_Chat_Screen) {
                 Binding(it)
             }
 
-            val title = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat)
-                    .getString(R.attr.usedesk_chat_title)
+            val title = UsedeskResourceManager.getStyleValues(
+                    requireContext(),
+                    R.style.Usedesk_Chat_Screen
+            ).getString(R.attr.usedesk_chat_screen_title_text)
 
             init(agentName)
             UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {

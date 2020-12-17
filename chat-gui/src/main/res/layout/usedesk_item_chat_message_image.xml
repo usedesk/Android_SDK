@@ -4,17 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp">
+    android:layout_margin="2dp"
+    tools:theme="@style/Usedesk.Chat.Message.Image">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/iv_preview"
         android:layout_width="230dp"
         android:layout_height="230dp"
         android:scaleType="centerCrop"
-        app:riv_corner_radius_bottom_left="?attr/usedesk_chat_image_radius_bottom_left"
-        app:riv_corner_radius_bottom_right="?attr/usedesk_chat_image_radius_bottom_right"
-        app:riv_corner_radius_top_left="6dp"
-        app:riv_corner_radius_top_right="6dp"
+        app:riv_corner_radius="6dp"
         tools:src="@drawable/ic_image_loading" />
 
     <ProgressBar
@@ -31,14 +29,14 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        app:srcCompat="@drawable/ic_error" />
+        app:srcCompat="?attr/usedesk_chat_message_image_error_image" />
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="2dp"
-        android:background="@drawable/background_time_dark"
+        android:background="?attr/usedesk_chat_message_image_time_background"
         android:paddingHorizontal="8dp">
 
         <TextView

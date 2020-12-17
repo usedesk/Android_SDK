@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.attachpanel
+package ru.usedesk.chat_gui.chat
 
 import android.app.Activity
 import android.content.Context
@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskPermissionUtil
@@ -18,7 +17,6 @@ import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import java.io.File
-
 
 class UsedeskAttachmentDialog private constructor(
         private val screen: UsedeskChatScreen,
@@ -30,7 +28,8 @@ class UsedeskAttachmentDialog private constructor(
 
         inflateItem(layoutInflater,
                 container,
-                R.layout.usedesk_dialog_attachment) {
+                R.layout.usedesk_dialog_attachment,
+                dialogStyle) {
             Binding(it)
         }.apply {
 
@@ -155,10 +154,9 @@ class UsedeskAttachmentDialog private constructor(
         private const val MIME_TYPE_ALL_DOCS = "*/*"
 
         fun create(screen: UsedeskChatScreen): UsedeskAttachmentDialog {
-            val dialogStyle = UsedeskResourceManager.getStyleValues(
-                    screen.requireContext(),
-                    R.style.Usedesk_Chat
-            ).getStyle(R.attr.usedesk_chat_attachment_dialog_style)
+            val dialogStyle = UsedeskResourceManager.getResourceId(
+                    R.style.Usedesk_Chat_Attachment_Dialog
+            )
             return UsedeskAttachmentDialog(screen, dialogStyle)
         }
     }

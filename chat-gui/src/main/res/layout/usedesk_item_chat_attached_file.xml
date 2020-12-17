@@ -5,7 +5,7 @@
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:layout_marginHorizontal="2dp"
-    tools:theme="@style/Usedesk.Chat">
+    tools:theme="@style/Usedesk.Chat.Attached.File">
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/iv_preview"
@@ -27,7 +27,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
-        app:srcCompat="@drawable/ic_preview_detach" />
+        app:srcCompat="?attr/usedesk_chat_attached_file_close_image" />
 
     <TextView
         android:id="@+id/tv_title"

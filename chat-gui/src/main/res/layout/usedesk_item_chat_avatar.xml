@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="40dp"
     android:layout_height="40dp"
-    android:layout_gravity="bottom">
+    android:layout_gravity="bottom"
+    tools:theme="@style/Usedesk.Chat.Message">
 
     <TextView
         android:id="@+id/tv_avatar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_avatar_dark"
+        android:background="?attr/usedesk_chat_message_avatar_background"
         android:fontFamily="@font/sf_ui_display_medium"
         android:gravity="center"
         android:includeFontPadding="false"

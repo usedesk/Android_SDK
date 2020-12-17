@@ -1,3 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="usedesk_common_toolbar_back_image" format="reference" />
+    <attr name="usedesk_common_toolbar_background" format="reference" />
 </resources>

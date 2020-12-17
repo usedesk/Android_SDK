@@ -18,7 +18,8 @@ internal class SectionsAdapter(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
         return SectionViewHolder(inflateItem(viewGroup,
-                R.layout.usedesk_item_section) {
+                R.layout.usedesk_item_section,
+                R.style.Usedesk_KnowledgeBase) {
             SectionBinding(it)
         })
     }

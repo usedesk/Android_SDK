@@ -9,10 +9,21 @@ data class UsedeskFileInfo(
 ) {
 
     fun isImage(): Boolean {
-        return type.startsWith("image/")
+        return Companion.isImage(type)
     }
 
     fun isVideo(): Boolean {
         return type.startsWith("video/")
+    }
+
+    companion object {
+        private const val IMAGE_TYPE = "image/"
+        private val IMAGE_EXTENSIONS = listOf("jpg", "jpeg", "bmp", "png")
+
+        fun isImage(type: String): Boolean {
+            return type.startsWith(IMAGE_TYPE) || IMAGE_EXTENSIONS.any {
+                type.endsWith(it)
+            }
+        }
     }
 }

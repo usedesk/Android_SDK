@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -139,7 +138,5 @@ public abstract class UsedeskNotificationsService extends Service {
         }
 
         UsedeskChatSdk.release();
-
-        Log.d("TAG", "ServiceOnDestroy");
     }
 }

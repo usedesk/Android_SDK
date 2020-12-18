@@ -14,9 +14,9 @@ import java.util.*
 internal class FileResponseConverter : Converter<FileResponse, UsedeskMessage>() {
 
     override fun convert(from: FileResponse): UsedeskMessage {
-        val file = UsedeskFile(
+        val file = UsedeskFile.create(
                 from.fileLink!!,
-                from.type!!,
+                from.type,
                 from.size!!,
                 from.name!!
         )

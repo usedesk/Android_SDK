@@ -46,8 +46,8 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
 
             val fileMessage = convertOrNull {
                 if (from.file != null) {
-                    val file = UsedeskFile(from.file!!.content!!,
-                            from.file!!.type!!,
+                    val file = UsedeskFile.create(from.file!!.content!!,
+                            from.file!!.type,
                             from.file!!.size!!,
                             from.file!!.name!!)
 

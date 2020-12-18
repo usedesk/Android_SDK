@@ -11,19 +11,24 @@ data class UsedeskFile(
         val name: String
 ) {
     fun isImage(): Boolean {
-        val type = if (this.type.isNotEmpty()) {
-            this.type
-        } else {
-            val extension = name.substringAfterLast('.')
-            MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-        } ?: ""
-        return UsedeskFileInfo.isImage(type)
+        return type.startsWith(UsedeskFileInfo.IMAGE_TYPE)
     }
 
     fun serialize(): String = Gson().toJson(this)
 
     companion object {
-
         fun deserialize(json: String): UsedeskFile = Gson().fromJson(json, UsedeskFile::class.java)
+
+        fun create(content: String,
+                   type: String?,
+                   size: String,
+                   name: String): UsedeskFile {
+            val mimeType = if (type?.contains('/') == true) {
+                type
+            } else {
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(type ?: "")
+            } ?: ""
+            return UsedeskFile(content, mimeType, size, name)
+        }
     }
 }

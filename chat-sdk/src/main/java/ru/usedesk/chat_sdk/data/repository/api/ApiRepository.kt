@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
@@ -26,7 +25,6 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.io.IOException
 import java.net.URL
-import java.util.*
 
 @InjectConstructor
 internal class ApiRepository(
@@ -119,14 +117,14 @@ internal class ApiRepository(
                       usedeskFileInfo: UsedeskFileInfo) {
         checkConnection()
         localId--
-        val calendar = Calendar.getInstance()
-        val file = UsedeskFile(
+        /*val calendar = Calendar.getInstance()
+        val file = UsedeskFile.create(
                 usedeskFileInfo.uri.toString(),
                 usedeskFileInfo.type,
                 "",
                 usedeskFileInfo.name
         )
-        /*val tempMessage = if (usedeskFileInfo.isImage()) {
+        val tempMessage = if (usedeskFileInfo.isImage()) {
             UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         } else {
             UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)

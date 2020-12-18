@@ -7,8 +7,8 @@
         <item name="usedesk_common_toolbar_divider_background">@color/usedesk_gray_2</item>
         <item name="usedesk_common_toolbar_title_style">@style/Usedesk.Common.Toolbar.Title.Text.Style</item>
 
-        <item name="usedesk_common_permission_needed_message_text">@string/need_permission</item>
-        <item name="usedesk_common_permission_needed_action_text">@string/settings</item>
+        <item name="usedesk_common_permission_needed_message_text">@string/usedesk_need_permission</item>
+        <item name="usedesk_common_permission_needed_action_text">@string/usedesk_settings</item>
         <item name="usedesk_common_permission_needed_background_color">@color/usedesk_black_2</item>
         <item name="usedesk_common_permission_needed_message_color">@color/usedesk_white_2</item>
         <item name="usedesk_common_permission_needed_action_color">@color/usedesk_red</item>
@@ -18,8 +18,8 @@
     </style>
 
     <style name="Usedesk.Common.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-        <item name="usedesk_common_permission_needed_message_text">@string/need_permission</item>
-        <item name="usedesk_common_permission_needed_action_text">@string/settings</item>
+        <item name="usedesk_common_permission_needed_message_text">@string/usedesk_need_permission</item>
+        <item name="usedesk_common_permission_needed_action_text">@string/usedesk_settings</item>
         <item name="usedesk_common_permission_needed_background_color">@color/usedesk_black_2</item>
         <item name="usedesk_common_permission_needed_message_color">@color/usedesk_white_2</item>
         <item name="usedesk_common_permission_needed_action_color">@color/usedesk_red</item>

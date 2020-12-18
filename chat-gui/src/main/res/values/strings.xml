@@ -21,14 +21,14 @@
     <string name="usedesk_chat_fragment_loading_text">Loading…</string>
 
     <!--TEMP-->
-    <string name="today">Today</string>
-    <string name="yesterday">Yesterday</string>
-    <string name="download_started">Download started</string>
-    <string name="download_failed">Download failed</string>
+    <string name="usedesk_today">Today</string>
+    <string name="usedesk_yesterday">Yesterday</string>
+    <string name="usedesk_download_started">Download started</string>
+    <string name="usedesk_download_failed">Download failed</string>
 
     <!--New Styled Values-->
     <string name="usedesk_screen_chat_title">Chat</string>
-    <string name="feedback_thanks">Thank you for your feedback!</string>
+    <string name="usedesk_feedback_thanks">Thank you for your feedback!</string>
     <string name="usedesk_chat_attachment_gallery">Gallery</string>
     <string name="usedesk_chat_attachment_camera">Camera</string>
     <string name="usedesk_chat_attachment_storage">Storage</string>

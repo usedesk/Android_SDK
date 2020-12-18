@@ -29,9 +29,9 @@
         <item name="usedesk_chat_message_avatar_text_style">@style/Usedesk.Chat.Message.Avatar.Text.Style</item>
         <item name="usedesk_chat_message_bubble_agent_background">@drawable/bubble_agent</item>
         <item name="usedesk_chat_message_bubble_client_background">@drawable/bubble_client</item>
-        <item name="usedesk_chat_message_date_today_text">@string/today</item>
-        <item name="usedesk_chat_message_date_yesterday_text">@string/yesterday</item>
-        <item name="usedesk_chat_message_feedback_thanks_text">@string/feedback_thanks</item>
+        <item name="usedesk_chat_message_date_today_text">@string/usedesk_today</item>
+        <item name="usedesk_chat_message_date_yesterday_text">@string/usedesk_yesterday</item>
+        <item name="usedesk_chat_message_feedback_thanks_text">@string/usedesk_feedback_thanks</item>
         <item name="usedesk_chat_message_feedback_good_image">@drawable/ic_smile_happy</item>
         <item name="usedesk_chat_message_feedback_good_colored_image">@drawable/ic_smile_happy_colored</item>
         <item name="usedesk_chat_message_feedback_bad_image">@drawable/ic_smile_sad</item>
@@ -95,8 +95,8 @@
         <item name="usedesk_chat_show_file_toolbar_text_style">@style/Usedesk.Chat.Show.File.Toolbar.Text.Style</item>
         <item name="usedesk_chat_show_file_name_text_style">@style/Usedesk.Chat.Show.File.Name.Text.Style</item>
         <item name="usedesk_chat_show_file_size_text_style">@style/Usedesk.Chat.Show.File.Size.Text.Style</item>
-        <item name="usedesk_chat_show_file_download_started_text">@string/download_started</item>
-        <item name="usedesk_chat_show_file_download_failed_text">@string/download_failed</item>
+        <item name="usedesk_chat_show_file_download_started_text">@string/usedesk_download_started</item>
+        <item name="usedesk_chat_show_file_download_failed_text">@string/usedesk_download_failed</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">

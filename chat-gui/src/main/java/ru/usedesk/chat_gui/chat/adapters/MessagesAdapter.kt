@@ -174,6 +174,7 @@ internal class MessagesAdapter(
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position + 1))
 
+            agentBinding.avatar.tvAvatar.visibility = View.VISIBLE
             val initials = messageAgent.name.split(' ')
                     .filter { it.isNotEmpty() }
                     .take(2)
@@ -187,7 +188,9 @@ internal class MessagesAdapter(
             })
             agentBinding.avatar.ivAvatar.setImageResource(avatarImageId)
 
-            setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0)
+            setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0, onSuccess = {
+                agentBinding.avatar.tvAvatar.visibility = View.INVISIBLE
+            })
             agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position - 1))
         }
 

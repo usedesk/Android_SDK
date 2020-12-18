@@ -15,7 +15,8 @@ import com.bumptech.glide.request.target.Target
 fun setImage(imageImageView: ImageView,
              pictureUrl: String,
              errorResId: Int,
-             onError: (() -> Unit)? = null) {
+             onError: (() -> Unit)? = null,
+             onSuccess: (() -> Unit)? = null) {
     imageImageView.setImageResource(errorResId)
     if (!TextUtils.isEmpty(pictureUrl)) {
         Glide.with(imageImageView)
@@ -23,6 +24,8 @@ fun setImage(imageImageView: ImageView,
                 .error(errorResId)
                 .listener(AppRequestListener(onError = {
                     onError?.invoke()
+                }, onSuccess = {
+                    onSuccess?.invoke()
                 }))
                 .into(imageImageView)
     }

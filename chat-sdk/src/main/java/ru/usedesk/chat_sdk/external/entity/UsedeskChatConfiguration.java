@@ -51,8 +51,10 @@ public class UsedeskChatConfiguration {
     public static UsedeskChatConfiguration deserialize(@NonNull Intent intent) {
         Long additionalId = null;
         Long phone = null;
-        if (intent.getExtras() != null) {
+        if (intent.hasExtra(PHONE_KEY)) {
             phone = intent.getExtras().getLong(PHONE_KEY);
+        }
+        if (intent.hasExtra(ADDITIONAL_ID_KEY)) {
             additionalId = intent.getExtras().getLong(ADDITIONAL_ID_KEY);
         }
         return new UsedeskChatConfiguration(intent.getStringExtra(COMPANY_ID_KEY),

@@ -110,7 +110,7 @@
         <item name="usedesk_chat_screen_title_text">@string/usedesk_screen_chat_title</item>
 
         <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_3</item>
+        <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
 
         <item name="usedesk_chat_screen_attach_image">@drawable/ic_attachment</item>
         <item name="usedesk_chat_screen_send_image">@drawable/ic_send</item>
@@ -128,6 +128,7 @@
         <item name="usedesk_chat_screen_offline_form_failed_to_send_text">@string/usedesk_offline_form_failed_to_send</item>
 
         <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
         <item name="usedesk_chat_screen_message_panel_input_background">@drawable/background_ticket_message_panel</item>
     </style>
 

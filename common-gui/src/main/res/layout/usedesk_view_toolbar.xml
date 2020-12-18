@@ -72,8 +72,9 @@
             </FrameLayout>
 
             <View
-                style="@style/Usedesk.Common.Divider"
-                android:layout_gravity="bottom" />
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="?attr/usedesk_common_toolbar_divider_background" />
         </LinearLayout>
 
     </androidx.appcompat.widget.Toolbar>

@@ -73,5 +73,6 @@
     <attr name="usedesk_chat_screen_send_image" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_send_background" format="reference" />
     <attr name="usedesk_chat_screen_message_panel_background" format="reference" />
+    <attr name="usedesk_chat_screen_message_panel_divider_background" format="reference" />
     <attr name="usedesk_chat_screen_message_panel_input_background" format="reference" />
 </resources>

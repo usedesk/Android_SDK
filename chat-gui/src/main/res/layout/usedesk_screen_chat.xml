@@ -188,7 +188,10 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <View style="@style/Usedesk.Common.Divider" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="?attr/usedesk_chat_screen_message_panel_divider_background" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

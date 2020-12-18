@@ -93,6 +93,7 @@ public class SocketApi {
                     onMessageListener.onInit(initChatResponse.getToken(), initChatResponse.getSetup());
                     break;
                 case SetEmailResponse.TYPE:
+                    onMessageListener.onSetEmailSuccess();
                     break;
                 case NewMessageResponse.TYPE:
                     NewMessageResponse newMessageResponse = (NewMessageResponse) response;

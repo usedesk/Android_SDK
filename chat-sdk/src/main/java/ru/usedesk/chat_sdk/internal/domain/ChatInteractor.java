@@ -41,6 +41,7 @@ public class ChatInteractor implements IUsedeskChat {
     private String token;
     private boolean needSetEmail = false;
     private Set<String> messageIds = new HashSet<>();
+    private String initClientMessage = null;
 
     @Inject
     ChatInteractor(@NonNull Context context,
@@ -262,24 +263,21 @@ public class ChatInteractor implements IUsedeskChat {
             needSetEmail = true;
         }
 
-        if (needSetEmail) {
-            sendUserEmail();
-        }
-
-        String initClientMessage;
         try {
-            initClientMessage = userInfoRepository.getConfiguration().getInitClientMessage();
-        } catch (UsedeskException ignore) {
-            initClientMessage = null;
-        }
-        try {
+            String initClientMessage = userInfoRepository.getConfiguration().getInitClientMessage();
             if (!equals(initClientMessage, configuration.getInitClientMessage())) {
-                send(configuration.getInitClientMessage());
+                this.initClientMessage = configuration.getInitClientMessage();
             }
         } catch (UsedeskException ignore) {
-
+            this.initClientMessage = configuration.getInitClientMessage();
         }
         userInfoRepository.setConfiguration(configuration);
+
+        if (needSetEmail) {
+            sendUserEmail();
+        } else {
+            getOnMessageListener().onSetEmailSuccess();
+        }
     }
 
     private OnMessageListener getOnMessageListener() {
@@ -317,6 +315,18 @@ public class ChatInteractor implements IUsedeskChat {
                     apiRepository.init(configuration, token);
                 } catch (UsedeskException e) {
                     actionListener.onException(e);
+                }
+            }
+
+            @Override
+            public void onSetEmailSuccess() {
+                if (initClientMessage != null && !initClientMessage.isEmpty()) {
+                    try {
+                        send(initClientMessage);
+                        initClientMessage = "";
+                    } catch (Exception e) {
+                        //nothing
+                    }
                 }
             }
         };

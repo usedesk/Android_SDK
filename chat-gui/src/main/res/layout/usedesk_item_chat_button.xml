@@ -12,7 +12,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/usedesk_chat_message_button_background">
+        android:background="?attr/usedesk_chat_message_text_button_background">
 
         <FrameLayout
             android:id="@+id/l_clickable"
@@ -24,12 +24,10 @@
 
             <TextView
                 android:id="@+id/tv_title"
+                style="?attr/usedesk_chat_message_text_button_text_style"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/sf_ui_display_semibold"
                 android:gravity="center"
-                android:textColor="#FFFFFF"
-                android:textSize="17sp"
                 tools:text="Button" />
         </FrameLayout>
     </FrameLayout>

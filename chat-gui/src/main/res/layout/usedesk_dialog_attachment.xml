@@ -34,10 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:duplicateParentState="true"
-            android:fontFamily="@font/sf_ui_display_semibold"
-            android:text="?attr/usedesk_chat_attachment_dialog_gallery_text"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            style="?attr/usedesk_chat_attachment_dialog_gallery_text_style" />
     </LinearLayout>
 
     <LinearLayout
@@ -65,10 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:duplicateParentState="true"
-            android:fontFamily="@font/sf_ui_display_semibold"
-            android:text="?attr/usedesk_chat_attachment_dialog_camera_text"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            style="?attr/usedesk_chat_attachment_dialog_camera_text_style" />
     </LinearLayout>
 
     <LinearLayout
@@ -96,9 +90,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="2dp"
             android:duplicateParentState="true"
-            android:fontFamily="@font/sf_ui_display_semibold"
-            android:text="?attr/usedesk_chat_attachment_dialog_storage_text"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+            style="?attr/usedesk_chat_attachment_dialog_storage_text_style" />
     </LinearLayout>
 </LinearLayout>

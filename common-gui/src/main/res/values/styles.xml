@@ -5,6 +5,7 @@
         <item name="usedesk_common_toolbar_root_background">@color/usedesk_white_2</item>
         <item name="usedesk_common_toolbar_back_image">@drawable/ic_back</item>
         <item name="usedesk_common_toolbar_divider_background">@color/usedesk_gray_2</item>
+        <item name="usedesk_common_toolbar_title_style">@style/Usedesk.Common.Toolbar.Title.Text.Style</item>
 
         <item name="usedesk_common_permission_needed_message_text">@string/need_permission</item>
         <item name="usedesk_common_permission_needed_action_text">@string/settings</item>
@@ -22,5 +23,13 @@
         <item name="usedesk_common_permission_needed_background_color">@color/usedesk_black_2</item>
         <item name="usedesk_common_permission_needed_message_color">@color/usedesk_white_2</item>
         <item name="usedesk_common_permission_needed_action_color">@color/usedesk_red</item>
+    </style>
+
+    <style name="Usedesk.Common.Toolbar.Title.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
     </style>
 </resources>

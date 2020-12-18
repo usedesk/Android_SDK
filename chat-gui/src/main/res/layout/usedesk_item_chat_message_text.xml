@@ -48,22 +48,16 @@
 
         <TextView
             android:id="@+id/tv_text"
+            style="?attr/usedesk_chat_message_text_message_text_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sf_ui_display_regular"
-            android:textColor="#000000"
-            android:textIsSelectable="true"
-            android:textSize="19sp"
             tools:text="ASjdasklj 412897412897 124784128947 192847128947 192847192847 12984710hr38e9gft2 32t893 2593gt 923t4 293g5t42 73t2783 gt273 gf273 gr2r73g 28r73g 23gr7da" />
 
         <TextView
             android:id="@+id/tv_link"
+            style="?attr/usedesk_chat_message_text_link_text_style"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/sf_ui_display_regular"
-            android:text="?attr/usedesk_chat_message_text_open_html_text"
-            android:textColor="#2F80ED"
-            android:textSize="19sp" />
+            android:layout_height="wrap_content" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_buttons"
@@ -76,14 +70,11 @@
 
     <TextView
         android:id="@+id/tv_time"
+        style="?attr/usedesk_chat_message_time_text_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="2dp"
-        android:fontFamily="@font/roboto_regular"
-        android:includeFontPadding="false"
-        android:textColor="#989FB3"
-        android:textSize="13sp"
         tools:text="12:06" />
 </FrameLayout>

@@ -30,18 +30,13 @@
 
             <TextView
                 android:id="@+id/tv_extension"
+                style="?attr/usedesk_chat_message_file_extension_text_style"
                 android:layout_width="24dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="8dp"
-                android:ellipsize="end"
                 android:gravity="center"
-                android:includeFontPadding="false"
-                android:singleLine="true"
-                android:textColor="#F4F6FA"
-                android:textSize="9sp"
-                android:textStyle="bold"
                 tools:text="EXTENSION" />
         </FrameLayout>
 
@@ -52,20 +47,16 @@
 
             <TextView
                 android:id="@+id/tv_file_name"
+                style="?attr/usedesk_chat_message_file_name_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
-                android:textColor="#000000"
-                android:textSize="18sp"
                 tools:text="Сводная таблица.xls" />
 
             <TextView
                 android:id="@+id/tv_file_size"
+                style="?attr/usedesk_chat_message_file_size_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
-                android:textColor="#828282"
-                android:textSize="14sp"
                 tools:text="384 кб" />
         </LinearLayout>
 
@@ -73,13 +64,10 @@
 
     <TextView
         android:id="@+id/tv_time"
+        style="?attr/usedesk_chat_message_time_text_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/roboto_regular"
-        android:includeFontPadding="false"
-        android:textColor="#989FB3"
-        android:textSize="13sp"
         tools:text="12:06" />
 </FrameLayout>

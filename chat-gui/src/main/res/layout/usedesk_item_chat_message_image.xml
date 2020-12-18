@@ -44,10 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:fontFamily="@font/roboto_regular"
-            android:includeFontPadding="false"
-            android:textColor="#CCFFFFFF"
-            android:textSize="13sp"
+            style="?attr/usedesk_chat_message_time_text_style"
             tools:text="12:06" />
     </FrameLayout>
 </FrameLayout>

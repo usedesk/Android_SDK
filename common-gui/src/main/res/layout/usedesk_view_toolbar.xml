@@ -38,16 +38,12 @@
 
                 <TextView
                     android:id="@+id/tv_title"
+                    style="?attr/usedesk_common_toolbar_title_style"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical|center_horizontal"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/sf_ui_display_semibold"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:singleLine="true"
-                    android:textColor="#333333"
-                    android:textSize="20sp"
                     tools:text="Title" />
 
                 <FrameLayout
@@ -65,9 +61,7 @@
                         android:layout_gravity="center"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
-                        android:focusable="true"
-                        android:singleLine="true"
-                        android:textSize="17sp" />
+                        android:focusable="true" />
                 </FrameLayout>
             </FrameLayout>
 

@@ -31,14 +31,10 @@
 
     <TextView
         android:id="@+id/tv_title"
+        style="?attr/usedesk_chat_attached_file_name_text_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="8dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/sf_pro_display_semibold"
-        android:singleLine="true"
-        android:textColor="#454D63"
-        android:textSize="12sp"
         tools:text="file_downloaded.pdf" />
 </FrameLayout>

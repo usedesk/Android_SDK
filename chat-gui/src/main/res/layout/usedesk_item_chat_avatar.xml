@@ -16,12 +16,10 @@
 
     <TextView
         android:id="@+id/tv_avatar"
+        style="?attr/usedesk_chat_message_avatar_text_style"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fontFamily="@font/sf_ui_display_medium"
         android:gravity="center"
-        android:includeFontPadding="false"
-        android:textColor="#FFFFFF"
-        android:textSize="17sp"
+        android:maxLength="2"
         tools:text="AB" />
 </FrameLayout>

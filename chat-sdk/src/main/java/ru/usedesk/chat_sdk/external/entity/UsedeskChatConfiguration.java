@@ -15,6 +15,7 @@ public class UsedeskChatConfiguration {
     private static final String NAME_KEY = "nameKey";
     private static final String PHONE_KEY = "phoneKey";
     private static final String ADDITIONAL_ID_KEY = "additionalIdKey";
+    private static final String INIT_CLIENT_MESSAGE_KEY = "initClientMessageKey";
 
     private final String companyId;
     private final String email;
@@ -29,14 +30,7 @@ public class UsedeskChatConfiguration {
 
     public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
                                     @NonNull String url, @NonNull String offlineFormUrl) {
-        this(companyId, email, url, offlineFormUrl, null, null, null);
-    }
-
-    public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
-                                    @NonNull String url, @NonNull String offlineFormUrl,
-                                    @Nullable String clientName, @Nullable Long clientPhoneNumber,
-                                    @Nullable Long clientAdditionalId) {
-        this(companyId, email, url, offlineFormUrl, clientName, clientPhoneNumber, clientAdditionalId, null);
+        this(companyId, email, url, offlineFormUrl, null, null, null, null);
     }
 
     public UsedeskChatConfiguration(@NonNull String companyId, @NonNull String email,
@@ -67,7 +61,8 @@ public class UsedeskChatConfiguration {
                 intent.getStringExtra(OFFLINE_FORM_URL_KEY),
                 intent.getStringExtra(NAME_KEY),
                 phone,
-                additionalId);
+                additionalId,
+                intent.getStringExtra(INIT_CLIENT_MESSAGE_KEY));
     }
 
     private static boolean equals(@Nullable Object obj1, @Nullable Object obj2) {
@@ -85,6 +80,7 @@ public class UsedeskChatConfiguration {
         intent.putExtra(NAME_KEY, clientName);
         intent.putExtra(PHONE_KEY, clientPhoneNumber);
         intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId);
+        intent.putExtra(INIT_CLIENT_MESSAGE_KEY, initClientMessage);
     }
 
     public boolean isValid() {

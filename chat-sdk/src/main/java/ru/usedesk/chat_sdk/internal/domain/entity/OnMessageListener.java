@@ -14,4 +14,6 @@ public interface OnMessageListener {
     void onFeedback();
 
     void onTokenError();
+
+    void onSetEmailSuccess();
 }

@@ -8,7 +8,7 @@ android {
         applicationId 'ru.usedesk.sample'
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 35
+        versionCode 36
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
     }

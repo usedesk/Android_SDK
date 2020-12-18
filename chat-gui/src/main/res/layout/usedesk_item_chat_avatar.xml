@@ -7,21 +7,21 @@
     android:layout_gravity="bottom"
     tools:theme="@style/Usedesk.Chat.Message">
 
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/iv_avatar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:riv_corner_radius="20dp"
+        tools:src="@drawable/background_avatar_dark" />
+
     <TextView
         android:id="@+id/tv_avatar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/usedesk_chat_message_avatar_background"
         android:fontFamily="@font/sf_ui_display_medium"
         android:gravity="center"
         android:includeFontPadding="false"
         android:textColor="#FFFFFF"
         android:textSize="17sp"
         tools:text="AB" />
-
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/iv_avatar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:riv_corner_radius="20dp" />
 </FrameLayout>

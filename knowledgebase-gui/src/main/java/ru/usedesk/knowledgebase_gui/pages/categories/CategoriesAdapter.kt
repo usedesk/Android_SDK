@@ -17,8 +17,8 @@ internal class CategoriesAdapter internal constructor(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
         return SectionViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_category,
-                R.style.Usedesk_KnowledgeBase) {
-            CategoryBinding(it)
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            CategoryBinding(rootView, defaultStyleId)
         })
     }
 
@@ -41,7 +41,7 @@ internal class CategoriesAdapter internal constructor(
         }
     }
 
-    internal class CategoryBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class CategoryBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
     }
 }

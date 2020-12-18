@@ -39,7 +39,7 @@ class UsedeskToolbar(
         }
     }
 
-    class Binding(rootView: View) : UsedeskBinding(rootView) {
+    class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val toolbar: Toolbar = rootView as Toolbar
         val ivBack: ImageView = rootView.findViewById(R.id.iv_back)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)

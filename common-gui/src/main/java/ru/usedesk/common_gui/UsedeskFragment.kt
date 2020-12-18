@@ -64,16 +64,18 @@ abstract class UsedeskFragment : Fragment() {
         return arguments?.getString(key)
     }
 
-    protected fun showSnackbarError(stringId: Int) {
-        view?.also {
-            Snackbar.make(it, stringId, Snackbar.LENGTH_LONG).apply {
-                view.setBackgroundColor(resources.getColor(R.color.usedesk_red))
-                view.findViewById<TextView>(R.id.snackbar_text).apply {
-                    gravity = Gravity.CENTER_HORIZONTAL
-                }
-                setTextColor(resources.getColor(R.color.usedesk_white))
-            }.show()
-        }
+    protected fun showSnackbarError(binding: UsedeskBinding,
+                                    messageAttrId: Int) {
+        val message = binding.styleValues.getString(messageAttrId)
+        val backgroundColor = binding.styleValues.getColor(R.attr.usedesk_common_error_background_color)
+        val textColor = binding.styleValues.getColor(R.attr.usedesk_common_error_text_color)
+        Snackbar.make(binding.rootView, message, Snackbar.LENGTH_LONG).apply {
+            view.setBackgroundColor(backgroundColor)
+            view.findViewById<TextView>(R.id.snackbar_text).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+            setTextColor(textColor)
+        }.show()
     }
 
     protected inline fun <reified T> getParentListener(): T? {

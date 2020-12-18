@@ -39,7 +39,7 @@ internal class ArticleFragment : FragmentDataView<UsedeskArticleBody, ArticleFra
         }
     }
 
-    override fun createBinding(rootView: View) = Binding(rootView)
+    override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
 
     override fun getLiveData(): LiveData<DataOrMessage<UsedeskArticleBody>> = viewModel.liveData
 
@@ -60,7 +60,7 @@ internal class ArticleFragment : FragmentDataView<UsedeskArticleBody, ArticleFra
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
 
     }
 }

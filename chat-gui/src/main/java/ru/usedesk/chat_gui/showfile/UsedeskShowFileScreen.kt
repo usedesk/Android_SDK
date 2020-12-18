@@ -24,6 +24,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
 
     private lateinit var binding: Binding
+    private lateinit var styleValues: UsedeskResourceManager.StyleValues
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -33,9 +34,11 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_screen_show_file,
-                R.style.Usedesk_Chat_Show_File) {
-            Binding(it)
+                R.style.Usedesk_Chat_Show_File) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
+
+        styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
 
         if (json != null) {
             val fileUrl = UsedeskFile.deserialize(json)
@@ -99,8 +102,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 binding.ivImage.setOnClickListener {
                     viewModel.onImageClick()
                 }
+                val loadingImageId = binding.styleValues.getId(R.attr.usedesk_chat_show_file_loading_image)
                 showImage(binding.ivImage,
-                        R.drawable.ic_image_loading,
+                        loadingImageId,
                         usedeskFile.content,
                         binding.pbLoading,
                         binding.ivError,
@@ -110,7 +114,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 showInstead(binding.lImage, binding.lFile, false)
 
                 binding.tvFileName.text = usedeskFile.name
-                binding.tvFileSize.text = usedeskFile.size//formatSize(binding.root.context, usedeskFile.size)
+                binding.tvFileSize.text = usedeskFile.size
                 viewModel.onLoaded(true)
             }
         }
@@ -128,27 +132,26 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     private fun onDownloadFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            UsedeskPermissionUtil.needWriteExternalPermission(binding.rootView,
-                    R.string.need_permission,
-                    R.string.settings) {
+            UsedeskPermissionUtil.needWriteExternalPermission(binding,
+                    R.attr.usedesk_common_permission_needed_message_text,
+                    R.attr.usedesk_common_permission_needed_action_text) {
                 try {
                     val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
                         setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "")
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        setDescription("description")
+                        setDescription("description")//TODO: это чё такое?
                         setTitle(usedeskFile.name)
                     }
 
-                    val downloadManager = (requireActivity()
-                            .getSystemService(DOWNLOAD_SERVICE) as DownloadManager?)
+                    val downloadManager = (requireActivity().getSystemService(DOWNLOAD_SERVICE) as DownloadManager?)
                     val id = downloadManager?.enqueue(request)
                     if (id != null) {
-                        val description = resources.getString(R.string.download_started)
+                        val description = styleValues.getString(R.attr.usedesk_chat_show_file_download_started_text)
                         Toast.makeText(context, "$description:\n${usedeskFile.name}", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    val description = resources.getString(R.string.download_failed)
+                    val description = styleValues.getString(R.attr.usedesk_chat_show_file_download_failed_text)
                     Toast.makeText(context, "$description:\n${usedeskFile.name}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -168,7 +171,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val lToolbar: BlurView = rootView.findViewById(R.id.l_toolbar)
         val lBottom: BlurView = rootView.findViewById(R.id.l_bottom)
         val lImage: ViewGroup = rootView.findViewById(R.id.l_image)

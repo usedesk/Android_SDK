@@ -35,8 +35,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             binding = inflateItem(inflater,
                     container,
                     R.layout.usedesk_screen_chat,
-                    R.style.Usedesk_Chat_Screen) {
-                Binding(it)
+                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
             }
 
             val title = UsedeskResourceManager.getStyleValues(
@@ -101,7 +101,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                     }.show()
                 },
                 {
-                    showSnackbarError(R.string.usedesk_offline_form_failed_to_send)
+                    showSnackbarError(binding, R.attr.usedesk_chat_screen_offline_form_failed_to_send_text)
                 })
 
         viewModel.init()
@@ -180,10 +180,10 @@ class UsedeskChatScreen : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
-        val toolbar = UsedeskToolbar.Binding(rootView.findViewById(R.id.toolbar))
-        val offlineForm = OfflineFormAdapter.Binding(rootView.findViewById(R.id.l_offline_form))
-        val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel))
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val toolbar = UsedeskToolbar.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+        val offlineForm = OfflineFormAdapter.Binding(rootView.findViewById(R.id.l_offline_form), defaultStyleId)
+        val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
 
         val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)

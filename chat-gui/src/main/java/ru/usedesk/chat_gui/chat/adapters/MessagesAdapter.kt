@@ -70,43 +70,43 @@ internal class MessagesAdapter(
             UsedeskMessage.Type.TYPE_AGENT_TEXT.value -> {
                 MessageTextAgentViewHolder(inflateItem(parent,
                         R.layout.usedesk_item_chat_message_text_agent,
-                        R.style.Usedesk_Chat_Message_Text_Agent) {
-                    MessageTextAgentBinding(it)
+                        R.style.Usedesk_Chat_Message_Text_Agent) { rootView, defaultStyleId ->
+                    MessageTextAgentBinding(rootView, defaultStyleId)
                 })
             }
             UsedeskMessage.Type.TYPE_AGENT_FILE.value -> {
                 MessageFileAgentViewHolder(inflateItem(parent,
                         R.layout.usedesk_item_chat_message_file_agent,
-                        R.style.Usedesk_Chat_Message_File_Agent) {
-                    MessageFileAgentBinding(it)
+                        R.style.Usedesk_Chat_Message_File_Agent) { rootView, defaultStyleId ->
+                    MessageFileAgentBinding(rootView, defaultStyleId)
                 })
             }
             UsedeskMessage.Type.TYPE_AGENT_IMAGE.value -> {
                 MessageImageAgentViewHolder(inflateItem(parent,
                         R.layout.usedesk_item_chat_message_image_agent,
-                        R.style.Usedesk_Chat_Message_Image_Agent) {
-                    MessageImageAgentBinding(it)
+                        R.style.Usedesk_Chat_Message_Image_Agent) { rootView, defaultStyleId ->
+                    MessageImageAgentBinding(rootView, defaultStyleId)
                 })
             }
             UsedeskMessage.Type.TYPE_CLIENT_TEXT.value -> {
                 MessageTextClientViewHolder(inflateItem(parent,
                         R.layout.usedesk_item_chat_message_text_client,
-                        R.style.Usedesk_Chat_Message_Text_Client) {
-                    MessageTextClientBinding(it)
+                        R.style.Usedesk_Chat_Message_Text_Client) { rootView, defaultStyleId ->
+                    MessageTextClientBinding(rootView, defaultStyleId)
                 })
             }
             UsedeskMessage.Type.TYPE_CLIENT_FILE.value -> {
                 MessageFileClientViewHolder(inflateItem(parent,
                         R.layout.usedesk_item_chat_message_file_client,
-                        R.style.Usedesk_Chat_Message_File_Client) {
-                    MessageFileClientBinding(it)
+                        R.style.Usedesk_Chat_Message_File_Client) { rootView, defaultStyleId ->
+                    MessageFileClientBinding(rootView, defaultStyleId)
                 })
             }
             UsedeskMessage.Type.TYPE_CLIENT_IMAGE.value -> {
                 MessageImageClientViewHolder(inflateItem(parent,
                         R.layout.usedesk_item_chat_message_image_client,
-                        R.style.Usedesk_Chat_Message_Image_Client) {
-                    MessageImageClientBinding(it)
+                        R.style.Usedesk_Chat_Message_Image_Client) { rootView, defaultStyleId ->
+                    MessageImageClientBinding(rootView, defaultStyleId)
                 })
             }
             else -> {
@@ -145,17 +145,17 @@ internal class MessagesAdapter(
             bindingDate.tvDate.visibility = if (isSameDay(previousMessage?.calendar, message.calendar)) {
                 View.GONE
             } else {
-                when {
+                bindingDate.tvDate.text = when {
                     isToday(message.calendar) -> {
-                        bindingDate.tvDate.setText(R.string.today)
+                        bindingDate.styleValues.getString(R.attr.usedesk_chat_message_date_today_text)
                     }
                     isYesterday(message.calendar) -> {
-                        bindingDate.tvDate.setText(R.string.yesterday)
+                        bindingDate.styleValues.getString(R.attr.usedesk_chat_message_date_yesterday_text)
                     }
                     else -> {
                         val dateFormat: DateFormat = SimpleDateFormat("dd MMMM", Locale.getDefault())
                         val formatted = dateFormat.format(message.calendar.time)
-                        bindingDate.tvDate.text = formatted
+                        formatted
                     }
                 }
                 View.VISIBLE
@@ -180,11 +180,12 @@ internal class MessagesAdapter(
                     .map { it[0] }
                     .joinToString(separator = "")
             agentBinding.avatar.tvAvatar.text = initials
-            agentBinding.avatar.ivAvatar.setImageResource(if (initials.isEmpty()) {
-                R.drawable.background_avatar_def
+            val avatarImageId = agentBinding.styleValues.getId(if (initials.isEmpty()) {
+                R.attr.usedesk_chat_message_avatar_default_image
             } else {
-                R.drawable.background_avatar_dark
+                R.attr.usedesk_chat_message_avatar_dark_image
             })
+            agentBinding.avatar.ivAvatar.setImageResource(avatarImageId)
 
             setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0)
             agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position - 1))
@@ -269,8 +270,9 @@ internal class MessagesAdapter(
 
             binding.ivPreview.setOnClickListener(null)
             binding.ivError.setOnClickListener(null)
+            val loadingImage = binding.styleValues.getId(R.attr.usedesk_chat_message_image_loading_image)
             showImage(binding.ivPreview,
-                    R.drawable.ic_image_loading,
+                    loadingImage,
                     messageFile.file.content,
                     binding.pbLoading,
                     binding.ivError, {
@@ -336,23 +338,27 @@ internal class MessagesAdapter(
             val ivLike = binding.content.ivLike
             val ivDislike = binding.content.ivDislike
 
+            val goodImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_good_image)
+            val goodColoredImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_good_colored_image)
+            val badImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_bad_image)
+            val badColoredImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_bad_colored_image)
             when {
                 messageAgentText.feedback != null -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
 
                     aloneSmile(ivLike,
                             binding.content.lFeedback,
-                            R.drawable.ic_smile_happy_colored,
+                            goodColoredImage,
                             messageAgentText.feedback == UsedeskFeedback.LIKE
                     )
 
                     aloneSmile(ivDislike,
                             binding.content.lFeedback,
-                            R.drawable.ic_smile_sad_colored,
+                            badColoredImage,
                             messageAgentText.feedback == UsedeskFeedback.DISLIKE
                     )
 
-                    binding.content.tvText.setText(R.string.feedback_thank_you)
+                    binding.content.tvText.text = binding.styleValues.getString(R.attr.usedesk_chat_message_feedback_thanks_text)
                 }
                 messageAgentText.feedbackNeeded -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
@@ -361,20 +367,20 @@ internal class MessagesAdapter(
                             ivDislike,
                             binding.content.lFeedback,
                             false,
-                            R.drawable.ic_smile_happy,
-                            R.drawable.ic_smile_happy_colored) {
+                            goodImage,
+                            goodColoredImage) {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
-                        binding.content.tvText.setText(R.string.feedback_thank_you)
+                        binding.content.tvText.text = binding.styleValues.getString(R.attr.usedesk_chat_message_feedback_thanks_text)
                     }
 
                     enableSmile(ivDislike,
                             ivLike,
                             binding.content.lFeedback,
                             true,
-                            R.drawable.ic_smile_sad,
-                            R.drawable.ic_smile_sad_colored) {
+                            badImage,
+                            badColoredImage) {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.DISLIKE)
-                        binding.content.tvText.setText(R.string.feedback_thank_you)
+                        binding.content.tvText.text = binding.styleValues.getString(R.attr.usedesk_chat_message_feedback_thanks_text)
                     }
                 }
                 else -> {
@@ -478,16 +484,16 @@ internal class MessagesAdapter(
         }
     }
 
-    internal class DateBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class DateBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvDate: TextView = rootView.findViewById(R.id.tv_date)
     }
 
-    internal class AvatarBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class AvatarBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
         val tvAvatar: TextView = rootView.findViewById(R.id.tv_avatar)
     }
 
-    internal class MessageTextBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class MessageTextBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val rvButtons: RecyclerView = rootView.findViewById(R.id.rv_buttons)
         val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
@@ -497,62 +503,63 @@ internal class MessagesAdapter(
         val ivDislike: ImageView = rootView.findViewById(R.id.iv_dislike)
     }
 
-    internal class MessageTextClientBinding(rootView: View) : UsedeskBinding(rootView) {
-        val content = MessageTextBinding(rootView.findViewById(R.id.content))
-        val client = ClientBinding(rootView)
-        val date = DateBinding(rootView)
+    internal class MessageTextClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val client = ClientBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
     }
 
-    internal class MessageTextAgentBinding(rootView: View) : UsedeskBinding(rootView) {
-        val content = MessageTextBinding(rootView.findViewById(R.id.content))
-        val agent = AgentBinding(rootView)
-        val date = DateBinding(rootView)
+    internal class MessageTextAgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val agent = AgentBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
     }
 
-    internal class MessageFileBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class MessageFileBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val tvFileName: TextView = rootView.findViewById(R.id.tv_file_name)
         val tvFileSize: TextView = rootView.findViewById(R.id.tv_file_size)
         val tvExtension: TextView = rootView.findViewById(R.id.tv_extension)
     }
 
-    internal class MessageFileClientBinding(rootView: View) : UsedeskBinding(rootView) {
-        val content = MessageFileBinding(rootView.findViewById(R.id.content))
-        val client = ClientBinding(rootView)
-        val date = DateBinding(rootView)
+    internal class MessageFileClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageFileBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val client = ClientBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
     }
 
-    internal class MessageFileAgentBinding(rootView: View) : UsedeskBinding(rootView) {
-        val content = MessageFileBinding(rootView.findViewById(R.id.content))
-        val agent = AgentBinding(rootView)
-        val date = DateBinding(rootView)
+    internal class MessageFileAgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageFileBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val agent = AgentBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
     }
 
-    internal class MessageImageBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class MessageImageBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val ivPreview: RoundedImageView = rootView.findViewById(R.id.iv_preview)
         val ivError: ImageView = rootView.findViewById(R.id.iv_error)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
     }
 
-    internal class MessageImageClientBinding(rootView: View) : UsedeskBinding(rootView) {
-        val content = MessageImageBinding(rootView.findViewById(R.id.content))
-        val client = ClientBinding(rootView)
-        val date = DateBinding(rootView)
+    internal class MessageImageClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val client = ClientBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
     }
 
-    internal class MessageImageAgentBinding(rootView: View) : UsedeskBinding(rootView) {
-        val content = MessageImageBinding(rootView.findViewById(R.id.content))
-        val agent = AgentBinding(rootView)
-        val date = DateBinding(rootView)
+    internal class MessageImageAgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val agent = AgentBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
     }
 
-    internal class AgentBinding(rootView: View) : UsedeskBinding(rootView) {
-        val avatar = AvatarBinding(rootView.findViewById(R.id.avatar))
+    internal class AgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val avatar = AvatarBinding(rootView.findViewById(R.id.avatar), defaultStyleId)
+
         val tvName: TextView = rootView.findViewById(R.id.tv_name)
     }
 
-    internal class ClientBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class ClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvName: TextView = rootView.findViewById(R.id.tv_name)
     }
 }

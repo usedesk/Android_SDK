@@ -20,8 +20,6 @@ internal class OfflineFormAdapter(
 ) {
 
     init {
-        val resources = binding.rootView.resources
-
         binding.tvSend.setOnClickListener {
             hideKeyboard(it)
             viewModel.onSend(
@@ -44,7 +42,7 @@ internal class OfflineFormAdapter(
         viewModel.nameErrorLiveData.observe(lifecycleOwner) {
             binding.tilName.error = if (it) {
                 showKeyboard(binding.etName)
-                resources.getString(R.string.usedesk_offline_form_name_error)
+                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_name_error_text)
             } else {
                 null
             }
@@ -56,7 +54,7 @@ internal class OfflineFormAdapter(
         viewModel.emailErrorLiveData.observe(lifecycleOwner) {
             binding.tilEmail.error = if (it) {
                 showKeyboard(binding.etEmail)
-                resources.getString(R.string.usedesk_offline_form_email_error)
+                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_email_error_text)
             } else {
                 null
             }
@@ -70,7 +68,7 @@ internal class OfflineFormAdapter(
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
             binding.tilMessage.error = if (it) {
                 showKeyboard(binding.etMessage)
-                resources.getString(R.string.usedesk_offline_form_message_error)
+                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_message_error_text)
             } else {
                 null
             }
@@ -148,7 +146,7 @@ internal class OfflineFormAdapter(
         binding.tvSend.visibility = visibleGone(send)
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvOfflineText: TextView = rootView.findViewById(R.id.tv_offline_form_text)
         val tilEmail: TextInputLayout = rootView.findViewById(R.id.til_offline_form_email)
         val etEmail: EditText = rootView.findViewById(R.id.et_offline_form_email)

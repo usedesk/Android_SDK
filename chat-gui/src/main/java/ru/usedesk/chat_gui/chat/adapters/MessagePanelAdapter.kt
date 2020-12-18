@@ -48,7 +48,7 @@ internal class MessagePanelAdapter(
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivAttachFile: ImageView = rootView.findViewById(R.id.iv_attach_file)
         val ivSend: ImageView = rootView.findViewById(R.id.iv_send)
         val etMessage: EditText = rootView.findViewById(R.id.et_message)

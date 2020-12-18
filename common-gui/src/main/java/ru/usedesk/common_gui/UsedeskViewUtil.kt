@@ -10,7 +10,6 @@ import android.widget.EditText
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import java.util.*
 
 fun <T> initAndObserve(lifecycleOwner: LifecycleOwner,
                        liveData: LiveData<T?>,
@@ -95,21 +94,10 @@ fun showInstead(viewVisible: View,
     }
 }
 
-fun formatSize(context: Context, size: Long?): String {
-    var sz = size ?: 0L
-    var rank = 0
-    while (sz >= 1024 && rank < 3) {
-        sz /= 1024
-        rank++
-    }
-    return String.format(Locale.getDefault(), "%d %s", sz,
-            context.resources.getStringArray(R.array.size_postfixes)[rank])
-}
-
 fun <BINDING> inflateItem(container: ViewGroup,
                           defaultLayoutId: Int,
                           defaultStyleId: Int,
-                          createBinding: (View) -> BINDING): BINDING {
+                          createBinding: (View, Int) -> BINDING): BINDING {
     return inflateItem(LayoutInflater.from(container.context),
             container,
             defaultLayoutId,
@@ -121,10 +109,10 @@ fun <BINDING> inflateItem(inflater: LayoutInflater,
                           container: ViewGroup?,
                           defaultLayoutId: Int,
                           defaultStyleId: Int,
-                          createBinding: (View) -> BINDING): BINDING {
+                          createBinding: (View, Int) -> BINDING): BINDING {
     val customStyleId = UsedeskResourceManager.getResourceId(defaultStyleId)
     val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
     val layoutId = UsedeskResourceManager.getResourceId(defaultLayoutId)
     val view = localInflater.inflate(layoutId, container, false)
-    return createBinding(view)
+    return createBinding(view, defaultStyleId)
 }

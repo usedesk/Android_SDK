@@ -26,7 +26,7 @@ internal class SectionsFragment : FragmentListView<UsedeskSection, SectionsFragm
         return SectionsAdapter(list, (parentFragment as IOnSectionClickListener))
     }
 
-    override fun createBinding(rootView: View) = Binding(rootView)
+    override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
 
     companion object {
         fun newInstance(): SectionsFragment {
@@ -34,7 +34,7 @@ internal class SectionsFragment : FragmentListView<UsedeskSection, SectionsFragm
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
 
     }
 }

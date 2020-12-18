@@ -33,7 +33,7 @@ internal class CategoriesFragment : FragmentListView<UsedeskCategory, Categories
         }
     }
 
-    override fun createBinding(rootView: View) = Binding(rootView)
+    override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
 
     override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskCategory>>> = viewModel.liveData
 
@@ -49,7 +49,7 @@ internal class CategoriesFragment : FragmentListView<UsedeskCategory, Categories
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
 
     }
 }

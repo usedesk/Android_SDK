@@ -19,6 +19,7 @@
 
     <style name="Usedesk.Chat.Attached.File" parent="">
         <item name="usedesk_chat_attached_file_close_image">@drawable/ic_preview_detach</item>
+        <item name="usedesk_chat_attached_file_preview_image">@drawable/ic_attached_file</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Time" parent="">
@@ -39,10 +40,18 @@
     </style>
 
     <style name="Usedesk.Chat.Message" parent="">
-        <item name="usedesk_chat_message_avatar_background">@drawable/background_avatar_dark</item>
+        <item name="usedesk_chat_message_avatar_default_image">@drawable/background_avatar_def</item>
+        <item name="usedesk_chat_message_avatar_dark_image">@drawable/background_avatar_dark</item>
         <item name="usedesk_chat_message_bubble_agent_background">@drawable/bubble_agent</item>
         <item name="usedesk_chat_message_bubble_client_background">@drawable/bubble_client</item>
         <item name="usedesk_chat_message_button_background">@color/usedesk_black_2</item>
+        <item name="usedesk_chat_message_date_today_text">@string/today</item>
+        <item name="usedesk_chat_message_date_yesterday_text">@string/yesterday</item>
+        <item name="usedesk_chat_message_feedback_thanks_text">@string/feedback_thanks</item>
+        <item name="usedesk_chat_message_feedback_good_image">@drawable/ic_smile_happy</item>
+        <item name="usedesk_chat_message_feedback_good_colored_image">@drawable/ic_smile_happy_colored</item>
+        <item name="usedesk_chat_message_feedback_bad_image">@drawable/ic_smile_sad</item>
+        <item name="usedesk_chat_message_feedback_bad_colored_image">@drawable/ic_smile_sad_colored</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File">
@@ -55,6 +64,7 @@
 
     <style name="Usedesk.Chat.Message.Image">
         <item name="usedesk_chat_message_image_error_image">@drawable/ic_error</item>
+        <item name="usedesk_chat_message_image_loading_image">@drawable/ic_image_loading</item>
         <item name="usedesk_chat_message_image_time_background">@drawable/background_time_dark</item>
     </style>
 
@@ -70,13 +80,13 @@
 
     <style name="Usedesk.Chat.Message.Text.Client" />
 
-    <style name="Usedesk.Chat.Show.Html" parent="">
+    <style name="Usedesk.Chat.Show.Html" parent="Usedesk.Common">
         <item name="usedesk_chat_show_html_close_image">@drawable/ic_close</item>
         <item name="usedesk_chat_show_html_root_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_show_html_toolbar_background">@color/usedesk_white_2</item>
     </style>
 
-    <style name="Usedesk.Chat.Show.File" parent="">
+    <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
         <item name="usedesk_chat_show_file_root_background">@color/usedesk_white_2</item>
         <item name="usedesk_chat_show_file_image_background">@color/usedesk_black_1</item>
         <item name="usedesk_chat_show_file_blur_top_background">@color/usedesk_blur</item>
@@ -87,6 +97,9 @@
         <item name="usedesk_chat_show_file_download_image">@drawable/ic_download</item>
         <item name="usedesk_chat_show_file_error_image">@drawable/ic_error</item>
         <item name="usedesk_chat_show_file_back_image">@drawable/ic_back_white</item>
+        <item name="usedesk_chat_show_file_loading_image">@drawable/ic_image_loading</item>
+        <item name="usedesk_chat_show_file_download_started_text">@string/download_started</item>
+        <item name="usedesk_chat_show_file_download_failed_text">@string/download_failed</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">
@@ -97,7 +110,7 @@
         <item name="usedesk_chat_screen_title_text">@string/usedesk_screen_chat_title</item>
 
         <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_screen_offline_form_action_disabled_background">#ADBEC9</item>
+        <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_3</item>
 
         <item name="usedesk_chat_screen_attach_image">@drawable/ic_attachment</item>
         <item name="usedesk_chat_screen_send_image">@drawable/ic_send</item>
@@ -109,6 +122,10 @@
         <item name="usedesk_chat_screen_offline_form_name_hint">@string/usedesk_offline_form_name_hint</item>
         <item name="usedesk_chat_screen_offline_form_email_hint">@string/usedesk_offline_form_email_hint</item>
         <item name="usedesk_chat_screen_offline_form_message_hint">@string/usedesk_offline_form_message_hint</item>
+        <item name="usedesk_chat_screen_offline_form_name_error_text">@string/usedesk_offline_form_name_error</item>
+        <item name="usedesk_chat_screen_offline_form_email_error_text">@string/usedesk_offline_form_email_error</item>
+        <item name="usedesk_chat_screen_offline_form_message_error_text">@string/usedesk_offline_form_message_error</item>
+        <item name="usedesk_chat_screen_offline_form_failed_to_send_text">@string/usedesk_offline_form_failed_to_send</item>
 
         <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_screen_message_panel_input_background">@drawable/background_ticket_message_panel</item>

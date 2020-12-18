@@ -27,17 +27,30 @@
     <attr name="usedesk_chat_show_file_download_image" format="reference" />
     <attr name="usedesk_chat_show_file_error_image" format="reference" />
     <attr name="usedesk_chat_show_file_back_image" format="reference" />
+    <attr name="usedesk_chat_show_file_loading_image" format="reference" />
+    <attr name="usedesk_chat_show_file_download_started_text" format="string" />
+    <attr name="usedesk_chat_show_file_download_failed_text" format="string" />
 
     <attr name="usedesk_chat_attached_file_close_image" format="reference" />
+    <attr name="usedesk_chat_attached_file_preview_image" format="reference" />
 
     <attr name="usedesk_chat_message_button_background" format="reference" />
-    <attr name="usedesk_chat_message_avatar_background" format="reference" />
+    <attr name="usedesk_chat_message_avatar_default_image" format="reference" />
+    <attr name="usedesk_chat_message_avatar_dark_image" format="reference" />
     <attr name="usedesk_chat_message_bubble_agent_background" format="reference" />
     <attr name="usedesk_chat_message_bubble_client_background" format="reference" />
+    <attr name="usedesk_chat_message_date_today_text" format="string" />
+    <attr name="usedesk_chat_message_date_yesterday_text" format="string" />
+    <attr name="usedesk_chat_message_feedback_thanks_text" format="string" />
+    <attr name="usedesk_chat_message_feedback_good_image" format="reference" />
+    <attr name="usedesk_chat_message_feedback_good_colored_image" format="reference" />
+    <attr name="usedesk_chat_message_feedback_bad_image" format="reference" />
+    <attr name="usedesk_chat_message_feedback_bad_colored_image" format="reference" />
 
     <attr name="usedesk_chat_message_file_preview_image" format="reference" />
 
     <attr name="usedesk_chat_message_image_error_image" format="reference" />
+    <attr name="usedesk_chat_message_image_loading_image" format="reference" />
     <attr name="usedesk_chat_message_image_time_background" format="reference" />
 
     <attr name="usedesk_chat_message_text_open_html_text" format="string" />
@@ -50,6 +63,10 @@
     <attr name="usedesk_chat_screen_offline_form_name_hint" format="string" />
     <attr name="usedesk_chat_screen_offline_form_email_hint" format="string" />
     <attr name="usedesk_chat_screen_offline_form_message_hint" format="string" />
+    <attr name="usedesk_chat_screen_offline_form_name_error_text" format="string" />
+    <attr name="usedesk_chat_screen_offline_form_email_error_text" format="string" />
+    <attr name="usedesk_chat_screen_offline_form_message_error_text" format="string" />
+    <attr name="usedesk_chat_screen_offline_form_failed_to_send_text" format="string" />
     <attr name="usedesk_chat_screen_offline_form_action_enabled_background" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_action_disabled_background" format="reference" />
     <attr name="usedesk_chat_screen_attach_image" format="reference" />

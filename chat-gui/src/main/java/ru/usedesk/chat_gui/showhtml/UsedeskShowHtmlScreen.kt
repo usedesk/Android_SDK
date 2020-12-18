@@ -20,8 +20,8 @@ class UsedeskShowHtmlScreen : UsedeskFragment() {
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_screen_show_html,
-                R.style.Usedesk_Chat_Show_Html) {
-            Binding(it)
+                R.style.Usedesk_Chat_Show_Html) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
 
         if (savedInstanceState == null) {
@@ -63,7 +63,7 @@ class UsedeskShowHtmlScreen : UsedeskFragment() {
         }
     }
 
-    class Binding(rootView: View) : UsedeskBinding(rootView) {
+    class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val wvContent: WebView = rootView.findViewById(R.id.wv_content)
         val ivClose: ImageView = rootView.findViewById(R.id.iv_close)
     }

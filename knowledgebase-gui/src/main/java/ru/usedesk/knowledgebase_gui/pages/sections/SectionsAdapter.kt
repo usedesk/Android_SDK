@@ -19,8 +19,8 @@ internal class SectionsAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
         return SectionViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_section,
-                R.style.Usedesk_KnowledgeBase) {
-            SectionBinding(it)
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            SectionBinding(rootView, defaultStyleId)
         })
     }
 
@@ -44,7 +44,7 @@ internal class SectionsAdapter(
         }
     }
 
-    internal class SectionBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class SectionBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivIcon: ImageView = rootView.findViewById(R.id.iv_icon)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
     }

@@ -26,8 +26,8 @@ abstract class FragmentDataView<DATA, BINDING : UsedeskBinding>(
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater, container, layoutId, styleId) {
-            createBinding(it)
+        binding = inflateItem(inflater, container, layoutId, styleId) { rootView, defaultStyleId ->
+            createBinding(rootView, defaultStyleId)
         }
 
         onView(binding.rootView)
@@ -41,7 +41,7 @@ abstract class FragmentDataView<DATA, BINDING : UsedeskBinding>(
         return binding.rootView
     }
 
-    abstract fun createBinding(rootView: View): BINDING
+    abstract fun createBinding(rootView: View, defaultStyleId: Int): BINDING
 
     open fun init() {}
 

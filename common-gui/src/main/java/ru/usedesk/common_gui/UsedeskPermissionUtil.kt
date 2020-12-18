@@ -1,7 +1,6 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
-import android.view.View
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -11,60 +10,62 @@ import com.karumi.dexter.listener.single.PermissionListener
 import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 
 object UsedeskPermissionUtil {
-    fun needWriteExternalPermission(view: View,
-                                    errorTitleId: Int,
-                                    errorButtonId: Int,
+    fun needWriteExternalPermission(binding: UsedeskBinding,
+                                    errorTitleAttrId: Int,
+                                    errorButtonAttrId: Int,
                                     onGranted: () -> Unit) {
-        needPermission(view,
-                errorTitleId,
-                errorButtonId,
+        needPermission(binding,
+                errorTitleAttrId,
+                errorButtonAttrId,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 onGranted)
     }
 
-    fun needReadExternalPermission(view: View,
-                                   errorTitleId: Int,
-                                   errorButtonId: Int,
+    fun needReadExternalPermission(binding: UsedeskBinding,
+                                   errorTitleAttrId: Int,
+                                   errorButtonAttrId: Int,
                                    onGranted: () -> Unit) {
-        needPermission(view,
-                errorTitleId,
-                errorButtonId,
+        needPermission(binding,
+                errorTitleAttrId,
+                errorButtonAttrId,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 onGranted)
     }
 
-    fun needCameraPermission(view: View,
-                             errorTitleId: Int,
-                             errorButtonId: Int,
+    fun needCameraPermission(binding: UsedeskBinding,
+                             errorTitleAttrId: Int,
+                             errorButtonAttrId: Int,
                              onGranted: () -> Unit) {
-        needPermission(view,
-                errorTitleId,
-                errorButtonId,
+        needPermission(binding,
+                errorTitleAttrId,
+                errorButtonAttrId,
                 Manifest.permission.CAMERA, onGranted)
     }
 
-    fun needPermission(view: View,
-                       errorTitleId: Int,
-                       errorButtonId: Int,
+    fun needPermission(binding: UsedeskBinding,
+                       errorTitleAttrId: Int,
+                       errorButtonAttrId: Int,
                        permission: String?,
                        onGranted: () -> Unit) {
-        Dexter.withContext(view.context)
+        Dexter.withContext(binding.rootView.context)
                 .withPermission(permission)
-                .withListener(SnackbarPermissionListener(view, errorTitleId, errorButtonId, onGranted))
+                .withListener(SnackbarPermissionListener(binding, errorTitleAttrId, errorButtonAttrId, onGranted))
                 .check()
     }
 
-    private class SnackbarPermissionListener(view: View,
-                                             errorTitleId: Int,
-                                             errorButtonId: Int,
+    private class SnackbarPermissionListener(binding: UsedeskBinding,
+                                             errorTitleAttrId: Int,
+                                             errorButtonAttrId: Int,
                                              onGranted: () -> Unit) : PermissionListener {
         private val permissionListener: PermissionListener
         private val onGranted: () -> Unit
 
         init {
+            val errorTitle = binding.styleValues.getString(errorTitleAttrId)
+            val errorButton = binding.styleValues.getString(errorButtonAttrId)
             permissionListener = SnackbarOnDeniedPermissionListener.Builder
-                    .with(view, errorTitleId)
-                    .withOpenSettingsButton(errorButtonId).build()
+                    .with(binding.rootView, errorTitle)
+                    .withOpenSettingsButton(errorButton).build()
             this.onGranted = onGranted
         }
 

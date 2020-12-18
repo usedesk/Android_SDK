@@ -32,7 +32,7 @@
 
     <!--New Styled Values-->
     <string name="usedesk_screen_chat_title">Chat</string>
-    <string name="feedback_thank_you">Thank you for your feedback!</string>
+    <string name="feedback_thanks">Thank you for your feedback!</string>
     <string name="usedesk_chat_attachment_gallery">Gallery</string>
     <string name="usedesk_chat_attachment_camera">Camera</string>
     <string name="usedesk_chat_attachment_storage">Storage</string>

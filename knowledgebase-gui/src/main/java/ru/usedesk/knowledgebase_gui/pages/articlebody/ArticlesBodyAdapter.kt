@@ -18,8 +18,8 @@ internal class ArticlesBodyAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
         return ArticleViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_article_info,
-                R.style.Usedesk_KnowledgeBase) {
-            ArticleBodyBinding(it)
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            ArticleBodyBinding(rootView, defaultStyleId)
         })
     }
 
@@ -42,7 +42,7 @@ internal class ArticlesBodyAdapter(
         }
     }
 
-    internal class ArticleBodyBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class ArticleBodyBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val tvCount: TextView = rootView.findViewById(R.id.tv_count)
     }

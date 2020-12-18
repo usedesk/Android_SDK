@@ -40,6 +40,12 @@ object UsedeskResourceManager {
             }
         }
 
+        fun getId(attrId: Int): Int {
+            return getValue(attrId) { attrs, index ->
+                attrs.getResourceIdOrThrow(index)
+            }
+        }
+
         fun getStyle(attrId: Int): Int {
             return getValue(attrId) { attrs, index ->
                 attrs.getResourceIdOrThrow(index)

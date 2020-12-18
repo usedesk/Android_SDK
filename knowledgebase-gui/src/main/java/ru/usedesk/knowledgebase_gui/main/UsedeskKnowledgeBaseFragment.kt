@@ -44,8 +44,8 @@ class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_fragment_knowledge_base,
-                R.style.Usedesk_KnowledgeBase) {
-            Binding(it)
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
 
         binding.btnSupport.setOnClickListener {
@@ -117,7 +117,7 @@ class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
         }
     }
 
-    internal class Binding(rootView: View) : UsedeskBinding(rootView) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val btnSupport: Button = rootView.findViewById(R.id.btn_support)
     }
 }

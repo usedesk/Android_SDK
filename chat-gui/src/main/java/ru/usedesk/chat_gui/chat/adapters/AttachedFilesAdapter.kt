@@ -31,8 +31,8 @@ internal class AttachedFilesAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         return ViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_chat_attached_file,
-                R.style.Usedesk_Chat_Attached_File) {
-            AttachedFileBinding(it)
+                R.style.Usedesk_Chat_Attached_File) { rootView, defaultStyleId ->
+            AttachedFileBinding(rootView, defaultStyleId)
         })
     }
 
@@ -47,7 +47,8 @@ internal class AttachedFilesAdapter(
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         fun bind(usedeskFileInfo: UsedeskFileInfo) {
-            setImageCenter(binding.ivPreview, usedeskFileInfo.uri, R.drawable.ic_attached_file)
+            val previewImageId = binding.styleValues.getId(R.attr.usedesk_chat_attached_file_preview_image)
+            setImageCenter(binding.ivPreview, usedeskFileInfo.uri, previewImageId)
             binding.ivDetach.setOnClickListener {
                 chatViewModel.detachFile(usedeskFileInfo)
             }
@@ -59,7 +60,7 @@ internal class AttachedFilesAdapter(
         }
     }
 
-    internal class AttachedFileBinding(rootView: View) : UsedeskBinding(rootView) {
+    internal class AttachedFileBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
         val ivDetach: ImageView = rootView.findViewById(R.id.iv_detach)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)

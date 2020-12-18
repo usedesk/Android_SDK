@@ -2,8 +2,14 @@
 <resources>
 
     <style name="Usedesk.Common" parent="">
+        <item name="usedesk_common_toolbar_root_background">@color/usedesk_white_2</item>
         <item name="usedesk_common_toolbar_back_image">@drawable/ic_back</item>
-        <item name="usedesk_common_toolbar_background">@color/usedesk_white_2</item>
+
+        <item name="usedesk_common_permission_needed_message_text">@color/usedesk_white_2</item>
+        <item name="usedesk_common_permission_needed_action_text">@color/usedesk_white_2</item>
+
+        <item name="usedesk_common_error_background_color">@color/usedesk_red</item>
+        <item name="usedesk_common_error_text_color">@color/usedesk_white_1</item>
     </style>
 
     <style name="Usedesk.Common.Divider" parent="">

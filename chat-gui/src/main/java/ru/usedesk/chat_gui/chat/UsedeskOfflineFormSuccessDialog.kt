@@ -18,8 +18,8 @@ class UsedeskOfflineFormSuccessDialog private constructor(
         inflateItem(layoutInflater,
                 container,
                 R.layout.usedesk_dialog_offline_form_success,
-                dialogStyle) {
-            Binding(it)
+                dialogStyle) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }.apply {
             setContentView(rootView)
 
@@ -38,7 +38,7 @@ class UsedeskOfflineFormSuccessDialog private constructor(
         }
     }
 
-    class Binding(rootView: View) : UsedeskBinding(rootView) {
+    class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvClose: TextView = rootView.findViewById(R.id.tv_close)
     }
 }

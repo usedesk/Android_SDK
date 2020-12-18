@@ -23,46 +23,47 @@ class UsedeskAttachmentDialog private constructor(
         dialogStyle: Int
 ) : BottomSheetDialog(screen.requireContext(), dialogStyle) {
 
+    private val binding: Binding
+
     init {
         val container = screen.view as ViewGroup
 
-        inflateItem(layoutInflater,
+        binding = inflateItem(layoutInflater,
                 container,
                 R.layout.usedesk_dialog_attachment,
-                dialogStyle) {
-            Binding(it)
-        }.apply {
+                dialogStyle) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
 
-            setContentView(rootView)
+        setContentView(binding.rootView)
 
-            lGallery.setOnClickListener {
-                dismiss()
-                UsedeskPermissionUtil.needReadExternalPermission(container,
-                        R.string.need_permission,
-                        R.string.settings
-                ) {
-                    pickImage(screen)
-                }
+        binding.lGallery.setOnClickListener {
+            dismiss()
+            UsedeskPermissionUtil.needReadExternalPermission(binding,
+                    R.attr.usedesk_common_permission_needed_message_text,
+                    R.attr.usedesk_common_permission_needed_action_text
+            ) {
+                pickImage(screen)
             }
+        }
 
-            lCamera.setOnClickListener {
-                dismiss()
-                UsedeskPermissionUtil.needCameraPermission(container,
-                        R.string.need_permission,
-                        R.string.settings
-                ) {
-                    takePhoto(screen)
-                }
+        binding.lCamera.setOnClickListener {
+            dismiss()
+            UsedeskPermissionUtil.needCameraPermission(binding,
+                    R.attr.usedesk_common_permission_needed_message_text,
+                    R.attr.usedesk_common_permission_needed_action_text
+            ) {
+                takePhoto(screen)
             }
+        }
 
-            lStorage.setOnClickListener {
-                dismiss()
-                UsedeskPermissionUtil.needReadExternalPermission(container,
-                        R.string.need_permission,
-                        R.string.settings
-                ) {
-                    pickDocument(screen)
-                }
+        binding.lStorage.setOnClickListener {
+            dismiss()
+            UsedeskPermissionUtil.needReadExternalPermission(binding,
+                    R.attr.usedesk_common_permission_needed_message_text,
+                    R.attr.usedesk_common_permission_needed_action_text
+            ) {
+                pickDocument(screen)
             }
         }
     }
@@ -161,7 +162,7 @@ class UsedeskAttachmentDialog private constructor(
         }
     }
 
-    class Binding(rootView: View) : UsedeskBinding(rootView) {
+    class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val lGallery: View = rootView.findViewById(R.id.l_gallery)
         val lCamera: View = rootView.findViewById(R.id.l_camera)
         val lStorage: View = rootView.findViewById(R.id.l_storage)

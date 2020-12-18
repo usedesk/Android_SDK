@@ -1,86 +1,78 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
+import androidx.fragment.app.Fragment
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener
 
 object UsedeskPermissionUtil {
     fun needWriteExternalPermission(binding: UsedeskBinding,
-                                    errorTitleAttrId: Int,
-                                    errorButtonAttrId: Int,
+                                    fragment: Fragment,
                                     onGranted: () -> Unit) {
         needPermission(binding,
-                errorTitleAttrId,
-                errorButtonAttrId,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                fragment,
                 onGranted)
     }
 
     fun needReadExternalPermission(binding: UsedeskBinding,
-                                   errorTitleAttrId: Int,
-                                   errorButtonAttrId: Int,
+                                   fragment: Fragment,
                                    onGranted: () -> Unit) {
         needPermission(binding,
-                errorTitleAttrId,
-                errorButtonAttrId,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
+                fragment,
                 onGranted)
     }
 
     fun needCameraPermission(binding: UsedeskBinding,
-                             errorTitleAttrId: Int,
-                             errorButtonAttrId: Int,
+                             fragment: Fragment,
                              onGranted: () -> Unit) {
         needPermission(binding,
-                errorTitleAttrId,
-                errorButtonAttrId,
-                Manifest.permission.CAMERA, onGranted)
+                Manifest.permission.CAMERA,
+                fragment,
+                onGranted)
     }
 
     fun needPermission(binding: UsedeskBinding,
-                       errorTitleAttrId: Int,
-                       errorButtonAttrId: Int,
                        permission: String?,
+                       fragment: Fragment,
                        onGranted: () -> Unit) {
         Dexter.withContext(binding.rootView.context)
                 .withPermission(permission)
-                .withListener(SnackbarPermissionListener(binding, errorTitleAttrId, errorButtonAttrId, onGranted))
+                .withListener(SnackbarPermissionListener(binding, fragment, onGranted))
                 .check()
     }
 
-    private class SnackbarPermissionListener(binding: UsedeskBinding,
-                                             errorTitleAttrId: Int,
-                                             errorButtonAttrId: Int,
-                                             onGranted: () -> Unit) : PermissionListener {
-        private val permissionListener: PermissionListener
-        private val onGranted: () -> Unit
-
-        init {
-            val errorTitle = binding.styleValues.getString(errorTitleAttrId)
-            val errorButton = binding.styleValues.getString(errorButtonAttrId)
-            permissionListener = SnackbarOnDeniedPermissionListener.Builder
-                    .with(binding.rootView, errorTitle)
-                    .withOpenSettingsButton(errorButton).build()
-            this.onGranted = onGranted
-        }
+    private class SnackbarPermissionListener(
+            private val binding: UsedeskBinding,
+            private val fragment: Fragment,
+            private val onGranted: () -> Unit
+    ) : PermissionListener {
 
         override fun onPermissionGranted(permissionGrantedResponse: PermissionGrantedResponse) {
-            permissionListener.onPermissionGranted(permissionGrantedResponse)
             onGranted()
         }
 
         override fun onPermissionDenied(permissionDeniedResponse: PermissionDeniedResponse) {
-            permissionListener.onPermissionDenied(permissionDeniedResponse)
+            binding.styleValues.apply {
+                UsedeskSnackbar.create(
+                        fragment,
+                        getColor(R.attr.usedesk_common_permission_needed_background_color),
+                        getString(R.attr.usedesk_common_permission_needed_message_text),
+                        getColor(R.attr.usedesk_common_permission_needed_message_color),
+                        getString(R.attr.usedesk_common_permission_needed_action_text),
+                        getColor(R.attr.usedesk_common_permission_needed_action_color)
+                ).show()
+            }
         }
 
         override fun onPermissionRationaleShouldBeShown(permissionRequest: PermissionRequest,
                                                         permissionToken: PermissionToken) {
-            permissionListener.onPermissionRationaleShouldBeShown(permissionRequest, permissionToken)
+            //nothing
         }
     }
 }

@@ -1,6 +1,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Usedesk.Chat.Attachment.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <style name="Usedesk.Chat.Attachment.Dialog" parent="Usedesk.Common.Dialog">
         <item name="usedesk_chat_attachment_dialog_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_attachment_dialog_gallery_image">@drawable/ic_gallery</item>
         <item name="usedesk_chat_attachment_dialog_gallery_text">@string/usedesk_chat_attachment_gallery</item>
@@ -10,7 +10,7 @@
         <item name="usedesk_chat_attachment_dialog_storage_text">@string/usedesk_chat_attachment_storage</item>
     </style>
 
-    <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Usedesk.Common.Dialog">
         <item name="usedesk_chat_offline_form_success_dialog_ok_image">@drawable/ic_done_round</item>
         <item name="usedesk_chat_offline_form_success_dialog_ok_text">@string/usedesk_offline_form_sent_title</item>
         <item name="usedesk_chat_offline_form_success_dialog_close_text">@string/usedesk_chat_offline_form_success_close</item>

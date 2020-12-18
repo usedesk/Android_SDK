@@ -39,30 +39,20 @@ class UsedeskAttachmentDialog private constructor(
 
         binding.lGallery.setOnClickListener {
             dismiss()
-            UsedeskPermissionUtil.needReadExternalPermission(binding,
-                    R.attr.usedesk_common_permission_needed_message_text,
-                    R.attr.usedesk_common_permission_needed_action_text
-            ) {
+            UsedeskPermissionUtil.needReadExternalPermission(binding, screen) {
                 pickImage(screen)
             }
         }
 
         binding.lCamera.setOnClickListener {
             dismiss()
-            UsedeskPermissionUtil.needCameraPermission(binding,
-                    R.attr.usedesk_common_permission_needed_message_text,
-                    R.attr.usedesk_common_permission_needed_action_text
-            ) {
+            UsedeskPermissionUtil.needCameraPermission(binding, screen) {
                 takePhoto(screen)
             }
         }
-
         binding.lStorage.setOnClickListener {
             dismiss()
-            UsedeskPermissionUtil.needReadExternalPermission(binding,
-                    R.attr.usedesk_common_permission_needed_message_text,
-                    R.attr.usedesk_common_permission_needed_action_text
-            ) {
+            UsedeskPermissionUtil.needReadExternalPermission(binding, screen) {
                 pickDocument(screen)
             }
         }

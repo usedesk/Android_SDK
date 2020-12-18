@@ -5,6 +5,9 @@
 
     <attr name="usedesk_common_permission_needed_message_text" format="string" />
     <attr name="usedesk_common_permission_needed_action_text" format="string" />
+    <attr name="usedesk_common_permission_needed_background_color" format="color" />
+    <attr name="usedesk_common_permission_needed_message_color" format="color" />
+    <attr name="usedesk_common_permission_needed_action_color" format="color" />
 
     <attr name="usedesk_common_error_background_color" format="color" />
     <attr name="usedesk_common_error_text_color" format="color" />

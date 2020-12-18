@@ -132,9 +132,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     private fun onDownloadFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            UsedeskPermissionUtil.needWriteExternalPermission(binding,
-                    R.attr.usedesk_common_permission_needed_message_text,
-                    R.attr.usedesk_common_permission_needed_action_text) {
+            UsedeskPermissionUtil.needWriteExternalPermission(binding, this) {
                 try {
                     val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
                         setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "")

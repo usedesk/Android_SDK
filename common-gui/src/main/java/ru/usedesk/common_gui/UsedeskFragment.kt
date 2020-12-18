@@ -1,9 +1,6 @@
 package ru.usedesk.common_gui
 
-import android.view.Gravity
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
 
 abstract class UsedeskFragment : Fragment() {
     private var inited = false
@@ -66,16 +63,14 @@ abstract class UsedeskFragment : Fragment() {
 
     protected fun showSnackbarError(binding: UsedeskBinding,
                                     messageAttrId: Int) {
-        val message = binding.styleValues.getString(messageAttrId)
-        val backgroundColor = binding.styleValues.getColor(R.attr.usedesk_common_error_background_color)
-        val textColor = binding.styleValues.getColor(R.attr.usedesk_common_error_text_color)
-        Snackbar.make(binding.rootView, message, Snackbar.LENGTH_LONG).apply {
-            view.setBackgroundColor(backgroundColor)
-            view.findViewById<TextView>(R.id.snackbar_text).apply {
-                gravity = Gravity.CENTER_HORIZONTAL
-            }
-            setTextColor(textColor)
-        }.show()
+        binding.styleValues.apply {
+            UsedeskSnackbar.create(
+                    this@UsedeskFragment,
+                    getColor(R.attr.usedesk_common_error_background_color),
+                    getString(messageAttrId),
+                    getColor(R.attr.usedesk_common_error_text_color)
+            ).show()
+        }
     }
 
     protected inline fun <reified T> getParentListener(): T? {

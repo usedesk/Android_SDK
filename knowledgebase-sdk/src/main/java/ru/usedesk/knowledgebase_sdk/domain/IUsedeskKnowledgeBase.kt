@@ -33,7 +33,7 @@ interface IUsedeskKnowledgeBase {
 
     fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBody>>
 
-    fun getArticlesRx(searchQuery: UsedeskSearchQueryOld): Single<List<UsedeskArticleBody>>
+    fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleBody>>
 
     fun getCategoriesRx(sectionId: Long): Single<List<UsedeskCategory>>
 

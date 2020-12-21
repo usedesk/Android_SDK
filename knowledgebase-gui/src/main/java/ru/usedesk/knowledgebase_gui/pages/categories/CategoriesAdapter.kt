@@ -3,16 +3,30 @@ package ru.usedesk.knowledgebase_gui.pages.categories
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesAdapter internal constructor(
-        private val categoryList: List<UsedeskCategoryOld>,
-        private val onCategoryClickListener: IOnCategoryClickListener
+        recyclerView: RecyclerView,
+        lifecycleOwner: LifecycleOwner,
+        private val viewModel: CategoriesViewModel,
+        private val onCategoryClick: (Long) -> Unit
 ) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
+
+    private var categoryList = listOf<UsedeskCategory>()
+
+    init {
+        recyclerView.adapter = this
+
+        viewModel.categoriesLiveData.observe(lifecycleOwner) {
+            categoryList = it
+            notifyDataSetChanged()
+        }
+    }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
         return SectionViewHolder(inflateItem(viewGroup,
@@ -23,25 +37,27 @@ internal class CategoriesAdapter internal constructor(
     }
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
-        sectionViewHolder.bind(categoryList[i], onCategoryClickListener)
+        sectionViewHolder.bind(categoryList[i])
     }
 
     override fun getItemCount(): Int = categoryList.size
 
-    class SectionViewHolder(
+    inner class SectionViewHolder(
             private val binding: CategoryBinding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
-        fun bind(category: UsedeskCategoryOld,
-                 onCategoryClickListener: IOnCategoryClickListener) {
+        fun bind(category: UsedeskCategory) {
             binding.tvTitle.text = category.title
-            itemView.setOnClickListener {
-                onCategoryClickListener.onCategoryClick(category.id)
+            binding.tvDescription.text = category.title//TODO: тут в сущности, видимо, должно быть поле с описанием
+            binding.rootView.setOnClickListener {
+                onCategoryClick(category.id)
             }
         }
     }
 
     internal class CategoryBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val tvDescription: TextView = rootView.findViewById(R.id.tv_description)
+        val tvCount: TextView = rootView.findViewById(R.id.tv_count)
     }
 }

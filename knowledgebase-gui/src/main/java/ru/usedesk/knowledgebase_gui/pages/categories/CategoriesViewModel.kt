@@ -1,12 +1,18 @@
 package ru.usedesk.knowledgebase_gui.pages.categories
 
-import ru.usedesk.knowledgebase_gui.common.DataViewModel
+import androidx.lifecycle.MutableLiveData
+import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
-internal class CategoriesViewModel : DataViewModel<List<UsedeskCategoryOld>>() {
+internal class CategoriesViewModel : UsedeskViewModel() {
+
+    val categoriesLiveData = MutableLiveData<List<UsedeskCategory>>()
 
     fun init(sectionId: Long) {
-        loadData(UsedeskKnowledgeBaseSdk.getInstance().getCategoriesRx(sectionId))
+        doIt(UsedeskKnowledgeBaseSdk.getInstance()
+                .getCategoriesRx(sectionId), onValue = {
+            categoriesLiveData.postValue(it)
+        })
     }
 }

@@ -1,12 +1,18 @@
 package ru.usedesk.knowledgebase_gui.pages.articlesinfo
 
-import ru.usedesk.knowledgebase_gui.common.DataViewModel
+import androidx.lifecycle.MutableLiveData
+import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleInfoOld
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
-internal class ArticlesInfoViewModel : DataViewModel<List<UsedeskArticleInfoOld>>() {
+internal class ArticlesInfoViewModel : UsedeskViewModel() {
+
+    val articleInfoListLiveData = MutableLiveData<List<UsedeskArticleInfo>>()
 
     fun init(categoryId: Long) {
-        loadData(UsedeskKnowledgeBaseSdk.getInstance().getArticlesRx(categoryId))
+        doIt(UsedeskKnowledgeBaseSdk.getInstance()
+                .getArticlesRx(categoryId), onValue = {
+            articleInfoListLiveData.postValue(it)
+        })
     }
 }

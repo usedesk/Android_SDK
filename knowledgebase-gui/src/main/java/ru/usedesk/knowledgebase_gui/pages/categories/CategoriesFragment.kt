@@ -1,41 +1,50 @@
 package ru.usedesk.knowledgebase_gui.pages.categories
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
-import ru.usedesk.knowledgebase_gui.pages.FragmentListView
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
 
-internal class CategoriesFragment : FragmentListView<UsedeskCategoryOld, CategoriesFragment.Binding>(
-        R.layout.usedesk_fragment_list,
-        R.style.Usedesk_KnowledgeBase
-) {
+internal class CategoriesFragment : UsedeskFragment() {
 
     private val viewModel: CategoriesViewModel by viewModels()
 
-    override fun getAdapter(list: List<UsedeskCategoryOld>): RecyclerView.Adapter<*> {
-        if (parentFragment !is IOnCategoryClickListener) {
-            throw RuntimeException("Parent fragment must implement " +
-                    IOnCategoryClickListener::class.java.simpleName)
-        }
-        return CategoriesAdapter(list, parentFragment as IOnCategoryClickListener)
-    }
+    private lateinit var binding: Binding
 
-    override fun init() {
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_fragment_list,
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
+
         val sectionId = argsGetLong(SECTION_ID_KEY)
         if (sectionId != null) {
-            viewModel.init(sectionId)
+            init(sectionId)
         }
+
+        return binding.rootView
     }
 
-    override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
+    fun init(sectionId: Long) {
+        viewModel.init(sectionId)
 
-    override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskCategoryOld>>> = viewModel.liveData
+        CategoriesAdapter(binding.rvItems,
+                viewLifecycleOwner,
+                viewModel) {
+            getParentListener<IOnCategoryClickListener>()?.onCategoryClick(it)
+        }
+    }
 
     companion object {
         private const val SECTION_ID_KEY = "sectionIdKey"
@@ -50,6 +59,7 @@ internal class CategoriesFragment : FragmentListView<UsedeskCategoryOld, Categor
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-
+        val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
+        val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
     }
 }

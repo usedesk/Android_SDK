@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
@@ -12,8 +13,9 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class SectionsAdapter(
-        private val viewModel: SectionsViewModel,
         recyclerView: RecyclerView,
+        lifecycleOwner: LifecycleOwner,
+        private val viewModel: SectionsViewModel,
         private val onSectionClick: (Long) -> Unit
 ) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>() {
 
@@ -21,6 +23,11 @@ internal class SectionsAdapter(
 
     init {
         recyclerView.adapter = this
+
+        viewModel.sectionsLiveData.observe(lifecycleOwner) {
+            this.sectionList = it
+            notifyDataSetChanged()
+        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
@@ -46,7 +53,7 @@ internal class SectionsAdapter(
             binding.ivIcon.setImageBitmap(null)
             binding.tvTitle.text = section.title
             setImage(binding.ivIcon, section.thumbnail)
-            itemView.setOnClickListener {
+            binding.rootView.setOnClickListener {
                 onSectionClick(section.id)
             }
         }

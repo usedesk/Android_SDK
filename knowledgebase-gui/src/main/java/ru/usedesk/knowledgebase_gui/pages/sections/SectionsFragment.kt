@@ -34,7 +34,9 @@ internal class SectionsFragment : UsedeskFragment() {
     }
 
     private fun init() {
-        SectionsAdapter(viewModel, binding.rvSections) {
+        SectionsAdapter(binding.rvItems,
+                viewLifecycleOwner,
+                viewModel) {
             getParentListener<IOnSectionClickListener>()?.onSectionClick(it)
         }
 
@@ -48,7 +50,7 @@ internal class SectionsFragment : UsedeskFragment() {
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val rvSections: RecyclerView = rootView.findViewById(R.id.rv_items)
+        val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
     }
 }

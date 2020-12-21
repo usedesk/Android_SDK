@@ -27,8 +27,8 @@
         <item name="usedesk_chat_message_avatar_default_image">@drawable/background_avatar_def</item>
         <item name="usedesk_chat_message_avatar_dark_image">@drawable/background_avatar_dark</item>
         <item name="usedesk_chat_message_avatar_text_style">@style/Usedesk.Chat.Message.Avatar.Text.Style</item>
-        <item name="usedesk_chat_message_bubble_agent_background">@drawable/bubble_agent</item>
-        <item name="usedesk_chat_message_bubble_client_background">@drawable/bubble_client</item>
+        <item name="usedesk_chat_message_bubble_agent_background">@drawable/background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_client_background">@drawable/background_bubble_client</item>
         <item name="usedesk_chat_message_date_today_text">@string/usedesk_today</item>
         <item name="usedesk_chat_message_date_yesterday_text">@string/usedesk_yesterday</item>
         <item name="usedesk_chat_message_feedback_thanks_text">@string/usedesk_feedback_thanks</item>
@@ -93,7 +93,7 @@
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">
-        <item name="colorAccent">#EB5757</item>
+        <item name="colorAccent">@color/usedesk_red</item>
     </style>
 
     <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
@@ -119,13 +119,13 @@
 
         <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
-        <item name="usedesk_chat_screen_message_panel_input_background">@drawable/background_ticket_message_panel</item>
+        <item name="usedesk_chat_screen_message_panel_input_background">@drawable/background_input_message</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Date.Text.Style" parent="">
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:textColor">#454D63</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
         <item name="android:textSize">15sp</item>
     </style>
 
@@ -140,7 +140,7 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Time.Dark.Text.Style" parent="">
-        <item name="android:textColor">#989FB3</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
         <item name="android:textSize">13sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
@@ -168,7 +168,7 @@
     </style>
 
     <style name="Usedesk.Chat.Attached.File.Name.Text.Style" parent="">
-        <item name="android:textColor">#454D63</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
         <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
         <item name="android:textSize">12sp</item>
         <item name="android:singleLine">true</item>
@@ -205,17 +205,17 @@
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.Style" parent="">
-        <item name="android:textColor">#454D63</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:textSize">18sp</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:text">@string/usedesk_chat_offline_form_success_close</item>
+        <item name="android:text">@string/usedesk_offline_form_success_close</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.Style" parent="">
-        <item name="android:textColor">#202941</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:text">@string/usedesk_offline_form_sent_title</item>
@@ -225,21 +225,21 @@
         <item name="android:textColor">@color/usedesk_black_1</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
-        <item name="android:text">@string/usedesk_chat_attachment_gallery</item>
+        <item name="android:text">@string/usedesk_attachment_gallery</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Camera.Text.Style" parent="">
         <item name="android:textColor">@color/usedesk_black_1</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
-        <item name="android:text">@string/usedesk_chat_attachment_camera</item>
+        <item name="android:text">@string/usedesk_attachment_camera</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Storage.Text.Style" parent="">
         <item name="android:textColor">@color/usedesk_black_1</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
-        <item name="android:text">@string/usedesk_chat_attachment_storage</item>
+        <item name="android:text">@string/usedesk_attachment_storage</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Toolbar.Text.Style" parent="">
@@ -262,7 +262,7 @@
     </style>
 
     <style name="Usedesk.Chat.Screen.Message.Text.Style" parent="">
-        <item name="android:textColor">#BDBDBD</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">17sp</item>
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:maxLines">5</item>
@@ -275,11 +275,11 @@
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:singleLine">true</item>
-        <item name="android:text">@string/usedesk_chat_fragment_loading_text</item>
+        <item name="android:text">@string/usedesk_loading_text</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Description.Text.Style" parent="">
-        <item name="android:textColor">#202941</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:text">@string/usedesk_offline_form_title</item>

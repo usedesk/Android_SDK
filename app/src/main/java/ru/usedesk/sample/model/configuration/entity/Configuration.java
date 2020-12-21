@@ -16,7 +16,6 @@ public class Configuration {
     private final String initClientMessage;
     private final String customAgentName;
     private final Boolean foregroundService;
-    private final Boolean customViews;
     private final Boolean withKnowledgeBase;
 
     public Configuration(@NonNull String companyId,
@@ -31,7 +30,6 @@ public class Configuration {
                          @NonNull String initClientMessage,
                          @NonNull String customAgentName,
                          @NonNull Boolean foregroundService,
-                         @NonNull Boolean customViews,
                          @NonNull Boolean withKnowledgeBase) {
         this.companyId = companyId;
         this.email = email;
@@ -43,7 +41,6 @@ public class Configuration {
         this.clientPhoneNumber = clientPhoneNumber;
         this.clientAdditionalId = clientAdditionalId;
         this.foregroundService = foregroundService;
-        this.customViews = customViews;
         this.withKnowledgeBase = withKnowledgeBase;
         this.initClientMessage = initClientMessage;
         this.customAgentName = customAgentName;
@@ -107,11 +104,6 @@ public class Configuration {
     @NonNull
     public Boolean isForegroundService() {
         return foregroundService;
-    }
-
-    @NonNull
-    public Boolean isCustomViews() {
-        return customViews;
     }
 
     @NonNull

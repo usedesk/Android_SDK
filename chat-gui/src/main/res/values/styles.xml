@@ -194,7 +194,7 @@
     <style name="Usedesk.Chat.Message.Text.Message.Text.Style" parent="">
         <item name="android:textColor">@color/usedesk_black_1</item>
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textSize">19sp</item>
+        <item name="android:textSize">17sp</item>
         <item name="android:textIsSelectable">true</item>
     </style>
 

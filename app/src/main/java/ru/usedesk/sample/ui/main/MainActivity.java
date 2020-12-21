@@ -68,15 +68,6 @@ public class MainActivity extends AppCompatActivity
                 ? configuration.getCustomAgentName()
                 : null;
         initUsedeskService(configuration);
-        initUsedeskStyleManager(configuration);
-    }
-
-    private void initUsedeskStyleManager(@NonNull Configuration configuration) {
-        if (configuration.isCustomViews()) {
-            //Применение кастомной темы к стандартным фрагментам Чата
-        } else {
-            //Сброс к стандартному gui
-        }
     }
 
     private void initUsedeskService(@NonNull Configuration configuration) {

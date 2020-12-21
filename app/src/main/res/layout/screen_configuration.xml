@@ -223,15 +223,6 @@
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_custom_views"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
-                    android:checked="false"
-                    android:text="@string/custom_views"
-                    android:textSize="18sp" />
-
-                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_knowledge_base"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

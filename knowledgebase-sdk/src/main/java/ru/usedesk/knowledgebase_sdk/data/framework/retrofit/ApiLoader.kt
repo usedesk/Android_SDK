@@ -8,9 +8,8 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity.ApiError
 import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity.ArticlesBodyPage
 import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity.ViewsAdded
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskSearchQuery
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskSectionOld
 import toothpick.InjectConstructor
 import java.io.IOException
 import java.util.*
@@ -24,19 +23,19 @@ internal class ApiLoader constructor(
     private val apiRetrofit = usedeskHttpApiFactory.getInstance(SERVER_BASE_URL, ApiRetrofit::class.java)
 
     @Throws(UsedeskHttpException::class)
-    override fun getSections(accountId: String, token: String): Array<UsedeskSection> {
-        return executeRequest(Array<UsedeskSection>::class.java, apiRetrofit.getSections(accountId, token))
+    override fun getSections(accountId: String, token: String): Array<UsedeskSectionOld> {
+        return executeRequest(Array<UsedeskSectionOld>::class.java, apiRetrofit.getSections(accountId, token))
     }
 
     @Throws(UsedeskHttpException::class)
     override fun getArticle(accountId: String, articleId: String,
-                            token: String): UsedeskArticleBody {
-        return executeRequest(UsedeskArticleBody::class.java, apiRetrofit.getArticleBody(accountId, articleId, token))
+                            token: String): UsedeskArticleBodyOld {
+        return executeRequest(UsedeskArticleBodyOld::class.java, apiRetrofit.getArticleBody(accountId, articleId, token))
     }
 
     @Throws(UsedeskHttpException::class)
     override fun getArticles(accountId: String, token: String,
-                             searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
+                             searchQuery: UsedeskSearchQueryOld): List<UsedeskArticleBodyOld> {
         return executeRequest(ArticlesBodyPage::class.java,
                 apiRetrofit.getArticlesBody(accountId,
                         token,

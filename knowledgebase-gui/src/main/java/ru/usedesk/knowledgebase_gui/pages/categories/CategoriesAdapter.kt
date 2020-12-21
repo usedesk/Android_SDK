@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
 
 internal class CategoriesAdapter internal constructor(
-        private val categoryList: List<UsedeskCategory>,
+        private val categoryList: List<UsedeskCategoryOld>,
         private val onCategoryClickListener: IOnCategoryClickListener
 ) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
 
@@ -32,7 +32,7 @@ internal class CategoriesAdapter internal constructor(
             private val binding: CategoryBinding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
-        fun bind(category: UsedeskCategory,
+        fun bind(category: UsedeskCategoryOld,
                  onCategoryClickListener: IOnCategoryClickListener) {
             binding.tvTitle.text = category.title
             itemView.setOnClickListener {

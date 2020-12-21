@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskArticleInfo {
-    val id: Long = 0
-    val title: String? = null
-    var views = 0
-}
+class UsedeskArticleInfo(
+        val id: Long,
+        val title: String,
+        val viewsCount: Long
+)

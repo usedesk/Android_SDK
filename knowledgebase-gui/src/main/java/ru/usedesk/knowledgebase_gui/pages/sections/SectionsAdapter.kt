@@ -12,16 +12,24 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class SectionsAdapter(
-        private val sectionList: List<UsedeskSection>,
-        private val onSectionClickListener: IOnSectionClickListener
+        private val viewModel: SectionsViewModel,
+        recyclerView: RecyclerView,
+        private val onSectionClick: (Long) -> Unit
 ) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>() {
 
+    private var sectionList = listOf<UsedeskSection>()
+
+    init {
+        recyclerView.adapter = this
+    }
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
-        return SectionViewHolder(inflateItem(viewGroup,
+        val binding = inflateItem(viewGroup,
                 R.layout.usedesk_item_section,
                 R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
-            SectionBinding(rootView, defaultStyleId)
-        })
+            Binding(rootView, defaultStyleId)
+        }
+        return SectionViewHolder(binding)
     }
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
@@ -31,20 +39,20 @@ internal class SectionsAdapter(
     override fun getItemCount(): Int = sectionList.size
 
     inner class SectionViewHolder(
-            private val binding: SectionBinding
+            private val binding: Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         fun bind(section: UsedeskSection) {
             binding.ivIcon.setImageBitmap(null)
             binding.tvTitle.text = section.title
-            setImage(binding.ivIcon, section.image)
+            setImage(binding.ivIcon, section.thumbnail)
             itemView.setOnClickListener {
-                onSectionClickListener.onSectionClick(section.id)
+                onSectionClick(section.id)
             }
         }
     }
 
-    internal class SectionBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivIcon: ImageView = rootView.findViewById(R.id.iv_icon)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
     }

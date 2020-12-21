@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
 import java.util.*
 
 internal class ArticlesBodyAdapter(
-        private val articleInfoList: List<UsedeskArticleBody>,
+        private val articleInfoList: List<UsedeskArticleBodyOld>,
         private val onArticleClickListener: IOnArticleBodyClickListener
 ) : RecyclerView.Adapter<ArticlesBodyAdapter.ArticleViewHolder>() {
 
@@ -33,7 +33,7 @@ internal class ArticlesBodyAdapter(
             private val binding: ArticleBodyBinding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
-        fun bind(articleBody: UsedeskArticleBody) {
+        fun bind(articleBody: UsedeskArticleBodyOld) {
             binding.tvTitle.text = articleBody.title
             binding.tvCount.text = String.format(Locale.getDefault(), "%d", articleBody.views)
             itemView.setOnClickListener {

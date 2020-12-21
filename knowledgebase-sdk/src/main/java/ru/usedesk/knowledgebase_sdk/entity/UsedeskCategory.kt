@@ -1,10 +1,9 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskCategory {
-    val id: Long = 0
-    val title: String? = null
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleInfoOld
 
-    val public = 0
-    val order = 0
-    var articles: Array<UsedeskArticleInfo>? = null
-}
+class UsedeskCategory(
+        val id: Long,
+        val title: String,
+        val articles: List<UsedeskArticleInfoOld>
+)

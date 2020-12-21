@@ -11,9 +11,9 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.common.FragmentDataView
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
 
-internal class ArticleFragment : FragmentDataView<UsedeskArticleBody, ArticleFragment.Binding>(
+internal class ArticleFragment : FragmentDataView<UsedeskArticleBodyOld, ArticleFragment.Binding>(
         R.layout.usedesk_fragment_article,
         R.style.Usedesk_KnowledgeBase
 ) {
@@ -41,9 +41,9 @@ internal class ArticleFragment : FragmentDataView<UsedeskArticleBody, ArticleFra
 
     override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
 
-    override fun getLiveData(): LiveData<DataOrMessage<UsedeskArticleBody>> = viewModel.liveData
+    override fun getLiveData(): LiveData<DataOrMessage<UsedeskArticleBodyOld>> = viewModel.liveData
 
-    override fun setDataView(data: UsedeskArticleBody) {
+    override fun setDataView(data: UsedeskArticleBodyOld) {
         textViewTitle.text = data.title
         contentWebView.loadData(data.text, "text/html", null)
     }

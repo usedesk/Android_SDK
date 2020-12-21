@@ -9,16 +9,16 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.pages.FragmentListView
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
 
-internal class CategoriesFragment : FragmentListView<UsedeskCategory, CategoriesFragment.Binding>(
+internal class CategoriesFragment : FragmentListView<UsedeskCategoryOld, CategoriesFragment.Binding>(
         R.layout.usedesk_fragment_list,
         R.style.Usedesk_KnowledgeBase
 ) {
 
     private val viewModel: CategoriesViewModel by viewModels()
 
-    override fun getAdapter(list: List<UsedeskCategory>): RecyclerView.Adapter<*> {
+    override fun getAdapter(list: List<UsedeskCategoryOld>): RecyclerView.Adapter<*> {
         if (parentFragment !is IOnCategoryClickListener) {
             throw RuntimeException("Parent fragment must implement " +
                     IOnCategoryClickListener::class.java.simpleName)
@@ -35,7 +35,7 @@ internal class CategoriesFragment : FragmentListView<UsedeskCategory, Categories
 
     override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
 
-    override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskCategory>>> = viewModel.liveData
+    override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskCategoryOld>>> = viewModel.liveData
 
     companion object {
         private const val SECTION_ID_KEY = "sectionIdKey"

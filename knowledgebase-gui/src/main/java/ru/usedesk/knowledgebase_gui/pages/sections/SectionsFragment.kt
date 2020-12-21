@@ -1,32 +1,45 @@
 package ru.usedesk.knowledgebase_gui.pages.sections
 
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
-import ru.usedesk.knowledgebase_gui.pages.FragmentListView
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-internal class SectionsFragment : FragmentListView<UsedeskSection, SectionsFragment.Binding>(
-        R.layout.usedesk_fragment_list,
-        R.style.Usedesk_KnowledgeBase
-) {
+internal class SectionsFragment : UsedeskFragment() {
+
     private val viewModel: SectionsViewModel by viewModels()
+    private lateinit var binding: Binding
 
-    override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskSection>>> = viewModel.liveData
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
 
-    override fun getAdapter(list: List<UsedeskSection>): RecyclerView.Adapter<*> {
-        if (parentFragment !is IOnSectionClickListener) {
-            throw RuntimeException("Parent fragment must implement " +
-                    IOnSectionClickListener::class.java.simpleName)
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_fragment_list,
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
-        return SectionsAdapter(list, (parentFragment as IOnSectionClickListener))
+
+        init()
+
+        return binding.rootView
     }
 
-    override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
+    private fun init() {
+        SectionsAdapter(viewModel, binding.rvSections) {
+            getParentListener<IOnSectionClickListener>()?.onSectionClick(it)
+        }
+
+
+    }
 
     companion object {
         fun newInstance(): SectionsFragment {
@@ -35,6 +48,7 @@ internal class SectionsFragment : FragmentListView<UsedeskSection, SectionsFragm
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-
+        val rvSections: RecyclerView = rootView.findViewById(R.id.rv_items)
+        val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
     }
 }

@@ -3,6 +3,10 @@ package ru.usedesk.knowledgebase_sdk.data.repository
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.IApiLoader
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleInfoOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskSectionOld
 import ru.usedesk.knowledgebase_sdk.entity.*
 import toothpick.InjectConstructor
 
@@ -11,10 +15,10 @@ internal class ApiRepository(
         private val apiLoader: IApiLoader
 ) : IKnowledgeBaseRepository {
 
-    private var sectionList: List<UsedeskSection>? = null
+    private var sectionList: List<UsedeskSectionOld>? = null
 
     @Throws(UsedeskHttpException::class)
-    override fun getSections(accountId: String, token: String): List<UsedeskSection> {
+    override fun getSections(accountId: String, token: String): List<UsedeskSectionOld> {
         if (sectionList == null) {
             sectionList = apiLoader.getSections(accountId, token).toList()
         }
@@ -22,19 +26,19 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskHttpException::class)
-    override fun getArticleBody(accountId: String, token: String, articleId: Long): UsedeskArticleBody {
+    override fun getArticleBody(accountId: String, token: String, articleId: Long): UsedeskArticleBodyOld {
         return apiLoader.getArticle(accountId, articleId.toString(), token)
     }
 
     @Throws(UsedeskHttpException::class)
     override fun getArticles(accountId: String,
                              token: String,
-                             searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
+                             searchQuery: UsedeskSearchQueryOld): List<UsedeskArticleBodyOld> {
         return apiLoader.getArticles(accountId, token, searchQuery)
     }
 
     @Throws(UsedeskHttpException::class, UsedeskDataNotFoundException::class)
-    override fun getCategories(accountId: String, token: String, sectionId: Long): List<UsedeskCategory> {
+    override fun getCategories(accountId: String, token: String, sectionId: Long): List<UsedeskCategoryOld> {
         if (sectionList == null) {
             getSections(accountId, token)
         }
@@ -42,7 +46,7 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskHttpException::class, UsedeskDataNotFoundException::class)
-    override fun getArticles(accountId: String, token: String, categoryId: Long): List<UsedeskArticleInfo> {
+    override fun getArticles(accountId: String, token: String, categoryId: Long): List<UsedeskArticleInfoOld> {
         if (sectionList == null) {
             getSections(accountId, token)
         }
@@ -57,7 +61,7 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskDataNotFoundException::class)
-    private fun getArticleInfo(articleId: Long): UsedeskArticleInfo {
+    private fun getArticleInfo(articleId: Long): UsedeskArticleInfoOld {
         return sectionList?.asSequence()?.mapNotNull { section ->
             section.categories
         }?.flatMap { categories ->
@@ -72,7 +76,7 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskDataNotFoundException::class)
-    private fun getArticles(categoryId: Long): Array<UsedeskArticleInfo> {
+    private fun getArticles(categoryId: Long): Array<UsedeskArticleInfoOld> {
         return sectionList?.mapNotNull { section ->
             section.categories
         }?.flatMap { categories ->
@@ -83,7 +87,7 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskDataNotFoundException::class)
-    private fun getCategories(sectionId: Long): Array<UsedeskCategory> {
+    private fun getCategories(sectionId: Long): Array<UsedeskCategoryOld> {
         return sectionList?.first { section ->
             section.id == sectionId
         }?.categories ?: throw UsedeskDataNotFoundException("UsedeskSection with id($sectionId)")

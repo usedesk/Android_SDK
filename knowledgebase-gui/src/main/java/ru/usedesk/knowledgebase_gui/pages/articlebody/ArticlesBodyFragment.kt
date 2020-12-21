@@ -9,16 +9,16 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
 import ru.usedesk.knowledgebase_gui.pages.FragmentListView
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
 
-internal class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody, ArticlesBodyFragment.Binding>(
+internal class ArticlesBodyFragment : FragmentListView<UsedeskArticleBodyOld, ArticlesBodyFragment.Binding>(
         R.layout.usedesk_fragment_list,
         R.style.Usedesk_KnowledgeBase
 ) {
 
     private val viewModel: ArticlesBodyViewModel by viewModels()
 
-    override fun getAdapter(list: List<UsedeskArticleBody>): RecyclerView.Adapter<*> {
+    override fun getAdapter(list: List<UsedeskArticleBodyOld>): RecyclerView.Adapter<*> {
         if (parentFragment !is IOnArticleBodyClickListener) {
             throw RuntimeException("Parent fragment must implement " +
                     IOnArticleBodyClickListener::class.java.simpleName)
@@ -35,7 +35,7 @@ internal class ArticlesBodyFragment : FragmentListView<UsedeskArticleBody, Artic
 
     override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
 
-    override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskArticleBody>>> = viewModel.liveData
+    override fun getLiveData(): LiveData<DataOrMessage<List<UsedeskArticleBodyOld>>> = viewModel.liveData
 
     fun onSearchQueryUpdate(searchQuery: String) {
         viewModel.onSearchQueryUpdate(searchQuery)

@@ -75,11 +75,11 @@ abstract class UsedeskFragment : Fragment() {
 
     protected inline fun <reified T> getParentListener(): T? {
         return when {
-            activity is T -> {
-                activity as T
-            }
             parentFragment is T -> {
                 parentFragment as T
+            }
+            activity is T -> {
+                activity as T
             }
             else -> {
                 null

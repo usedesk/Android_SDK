@@ -3,6 +3,10 @@ package ru.usedesk.knowledgebase_sdk.domain
 import io.reactivex.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.knowledgebase_sdk.data.repository.IKnowledgeBaseRepository
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleInfoOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskCategoryOld
+import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskSectionOld
 import ru.usedesk.knowledgebase_sdk.entity.*
 import toothpick.InjectConstructor
 import javax.inject.Named
@@ -23,37 +27,37 @@ internal class KnowledgeBaseInteractor(
                 .observeOn(mainThreadScheduler)
     }
 
-    override fun getSectionsRx(): Single<List<UsedeskSection>> {
+    override fun getSectionsRx(): Single<List<UsedeskSectionOld>> {
         return createSingle {
             it.onSuccess(getSections())
         }
     }
 
-    override fun getArticleRx(articleId: Long): Single<UsedeskArticleBody> {
+    override fun getArticleRx(articleId: Long): Single<UsedeskArticleBodyOld> {
         return createSingle {
             it.onSuccess(getArticle(articleId))
         }
     }
 
-    override fun getCategoriesRx(sectionId: Long): Single<List<UsedeskCategory>> {
+    override fun getCategoriesRx(sectionId: Long): Single<List<UsedeskCategoryOld>> {
         return createSingle {
             it.onSuccess(getCategories(sectionId))
         }
     }
 
-    override fun getArticlesRx(categoryId: Long): Single<List<UsedeskArticleInfo>> {
+    override fun getArticlesRx(categoryId: Long): Single<List<UsedeskArticleInfoOld>> {
         return createSingle {
             it.onSuccess(getArticles(categoryId))
         }
     }
 
-    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBody>> {
+    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBodyOld>> {
         return createSingle {
             it.onSuccess(getArticles(searchQuery))
         }
     }
 
-    override fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleBody>> {
+    override fun getArticlesRx(searchQuery: UsedeskSearchQueryOld): Single<List<UsedeskArticleBodyOld>> {
         return createSingle {
             it.onSuccess(getArticles(searchQuery))
         }
@@ -73,33 +77,33 @@ internal class KnowledgeBaseInteractor(
     }
 
     @Throws(UsedeskException::class)
-    override fun getCategories(sectionId: Long): List<UsedeskCategory> {
+    override fun getCategories(sectionId: Long): List<UsedeskCategoryOld> {
         return knowledgeRepository.getCategories(configuration.accountId, configuration.token, sectionId)
     }
 
     @Throws(UsedeskException::class)
-    override fun getSections(): List<UsedeskSection> {
+    override fun getSections(): List<UsedeskSectionOld> {
         return knowledgeRepository.getSections(configuration.accountId, configuration.token)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticle(articleId: Long): UsedeskArticleBody {
+    override fun getArticle(articleId: Long): UsedeskArticleBodyOld {
         return knowledgeRepository.getArticleBody(configuration.accountId, configuration.token, articleId)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: String): List<UsedeskArticleBody> {
-        val query = UsedeskSearchQuery.Builder(searchQuery).build()
+    override fun getArticles(searchQuery: String): List<UsedeskArticleBodyOld> {
+        val query = UsedeskSearchQueryOld.Builder(searchQuery).build()
         return knowledgeRepository.getArticles(configuration.accountId, configuration.token, query)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
+    override fun getArticles(searchQuery: UsedeskSearchQueryOld): List<UsedeskArticleBodyOld> {
         return knowledgeRepository.getArticles(configuration.accountId, configuration.token, searchQuery)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(categoryId: Long): List<UsedeskArticleInfo> {
+    override fun getArticles(categoryId: Long): List<UsedeskArticleInfoOld> {
         return knowledgeRepository.getArticles(configuration.accountId, configuration.token, categoryId)
     }
 

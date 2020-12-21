@@ -1,12 +1,18 @@
 package ru.usedesk.knowledgebase_gui.pages.sections
 
-import ru.usedesk.knowledgebase_gui.common.DataViewModel
+import androidx.lifecycle.MutableLiveData
+import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-internal class SectionsViewModel : DataViewModel<List<UsedeskSection>>() {
+internal class SectionsViewModel : UsedeskViewModel() {
+
+    val sectionsLiveData = MutableLiveData<List<UsedeskSection>>()
 
     init {
-        loadData(UsedeskKnowledgeBaseSdk.getInstance().getSectionsRx())
+        doIt(UsedeskKnowledgeBaseSdk.getInstance()
+                .getSectionsRx(), onValue = {
+            sectionsLiveData.postValue(it)
+        })
     }
 }

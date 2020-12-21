@@ -22,7 +22,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     val messageErrorLiveData = MutableLiveData(false)
 
     val actionListenerRx = UsedeskActionListenerRx()
-    val configuration = UsedeskChatSdk.getConfiguration()
+    val configuration = UsedeskChatSdk.requireConfiguration()
 
     private lateinit var usedeskChat: IUsedeskChat
 

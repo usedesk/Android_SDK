@@ -11,19 +11,15 @@ object UsedeskKnowledgeBaseSdk {
 
     @JvmStatic
     fun init(appContext: Context): IUsedeskKnowledgeBase {
-        if (instanceBox == null) {
-            checkConfiguration()
-            instanceBox = InstanceBoxUsedesk(appContext, configuration!!)
-        }
-        return instanceBox!!.knowledgeBaseSdk
+        return (instanceBox ?: InstanceBoxUsedesk(appContext, requireConfiguration()).also {
+            instanceBox = it
+        }).knowledgeBaseSdk
     }
 
     @JvmStatic
     fun getInstance(): IUsedeskKnowledgeBase {
-        if (instanceBox == null) {
-            throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
-        }
-        return instanceBox!!.knowledgeBaseSdk
+        return instanceBox?.knowledgeBaseSdk
+                ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
     }
 
     @JvmStatic
@@ -33,15 +29,14 @@ object UsedeskKnowledgeBaseSdk {
 
     @JvmStatic
     fun release() {
-        if (instanceBox != null) {
-            instanceBox!!.release()
+        instanceBox?.also {
+            it.release()
             instanceBox = null
         }
     }
 
-    private fun checkConfiguration() {
-        if (configuration == null) {
-            throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
-        }
+    private fun requireConfiguration(): UsedeskKnowledgeBaseConfiguration {
+        return configuration
+                ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
     }
 }

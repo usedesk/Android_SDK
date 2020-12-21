@@ -5,6 +5,5 @@ import java.util.*
 abstract class UsedeskMessageText(
         id: Long,
         calendar: Calendar,
-        val text: String,
-        val html: String
+        val text: String
 ) : UsedeskMessage(id, calendar)

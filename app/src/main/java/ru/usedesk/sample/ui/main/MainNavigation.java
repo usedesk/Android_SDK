@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentManager;
 
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen;
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen;
-import ru.usedesk.chat_gui.showhtml.UsedeskShowHtmlScreen;
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
 import ru.usedesk.knowledgebase_gui.main.UsedeskKnowledgeBaseFragment;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
@@ -45,10 +44,6 @@ public class MainNavigation {
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {
         switchFragment(UsedeskShowFileScreen.newInstance(usedeskFile));
-    }
-
-    void goShowHtml(@NonNull String htmlText) {
-        switchFragment(UsedeskShowHtmlScreen.newInstance(htmlText));
     }
 
     public void onBackPressed() {

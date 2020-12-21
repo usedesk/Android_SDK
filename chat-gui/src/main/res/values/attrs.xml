@@ -13,10 +13,6 @@
     <attr name="usedesk_chat_offline_form_success_dialog_close_background" format="reference" />
     <attr name="usedesk_chat_offline_form_success_dialog_close_text_style" format="reference" />
 
-    <attr name="usedesk_chat_show_html_close_image" format="reference" />
-    <attr name="usedesk_chat_show_html_root_background" format="reference" />
-    <attr name="usedesk_chat_show_html_toolbar_background" format="reference" />
-
     <attr name="usedesk_chat_show_file_root_background" format="reference" />
     <attr name="usedesk_chat_show_file_image_background" format="reference" />
     <attr name="usedesk_chat_show_file_blur_top_background" format="reference" />
@@ -64,7 +60,6 @@
     <attr name="usedesk_chat_message_image_time_background" format="reference" />
 
     <attr name="usedesk_chat_message_text_message_text_style" format="reference" />
-    <attr name="usedesk_chat_message_text_link_text_style" format="reference" />
     <attr name="usedesk_chat_message_text_button_background" format="reference" />
     <attr name="usedesk_chat_message_text_button_text_style" format="reference" />
 

@@ -44,10 +44,6 @@ public class MainViewModel extends ViewModel {
         mainNavigation.goShowFile(usedeskFile);
     }
 
-    void goShowHtml(@NonNull String htmlText) {
-        mainNavigation.goShowHtml(htmlText);
-    }
-
     void goSdk(@Nullable String customAgentName) {
         disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
             UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),

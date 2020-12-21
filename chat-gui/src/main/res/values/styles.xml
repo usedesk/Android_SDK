@@ -66,19 +66,12 @@
     <style name="Usedesk.Chat.Message.Text">
         <item name="usedesk_chat_message_text_button_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_message_text_button_text_style">@style/Usedesk.Chat.Message.Text.Button.Text.Style</item>
-        <item name="usedesk_chat_message_text_link_text_style">@style/Usedesk.Chat.Message.Text.Link.Text.Style</item>
         <item name="usedesk_chat_message_text_message_text_style">@style/Usedesk.Chat.Message.Text.Message.Text.Style</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent" />
 
     <style name="Usedesk.Chat.Message.Text.Client" />
-
-    <style name="Usedesk.Chat.Show.Html" parent="Usedesk.Common">
-        <item name="usedesk_chat_show_html_close_image">@drawable/ic_close</item>
-        <item name="usedesk_chat_show_html_root_background">@color/usedesk_white_1</item>
-        <item name="usedesk_chat_show_html_toolbar_background">@color/usedesk_white_2</item>
-    </style>
 
     <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
         <item name="usedesk_chat_show_file_root_background">@color/usedesk_white_2</item>
@@ -203,13 +196,6 @@
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:textSize">19sp</item>
         <item name="android:textIsSelectable">true</item>
-    </style>
-
-    <style name="Usedesk.Chat.Message.Text.Link.Text.Style" parent="">
-        <item name="android:textColor">@color/usedesk_blue</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textSize">19sp</item>
-        <item name="android:text">@string/usedesk_chat_message_open_html_title</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button.Text.Style" parent="">

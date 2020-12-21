@@ -6,12 +6,11 @@ class UsedeskMessageAgentText(
         id: Long,
         calendar: Calendar,
         text: String,
-        html: String,
         val buttons: List<UsedeskMessageButton>,
         val feedbackNeeded: Boolean,
         val feedback: UsedeskFeedback?,
         override val name: String,
         override val avatar: String
-) : UsedeskMessageText(id, calendar, text, html), UsedeskMessageAgent {
+) : UsedeskMessageText(id, calendar, text), UsedeskMessageAgent {
     override val type: Type = Type.TYPE_AGENT_TEXT
 }

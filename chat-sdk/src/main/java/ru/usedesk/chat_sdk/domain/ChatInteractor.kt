@@ -151,7 +151,6 @@ internal class ChatInteractor(
                     message.id,
                     Calendar.getInstance(),
                     message.text,
-                    message.html,
                     message.buttons,
                     false,
                     feedback,

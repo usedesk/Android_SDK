@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--UsedeskOfflineForm-->
     <string name="usedesk_offline_form_title">Unfortunately, all our operators are currently offline, but you can send us a request and we will definitely consider it in the near future.</string>
     <string name="usedesk_offline_form_sent_title">Your request has been sent successfully.\nWe will reply to you within 1 business day.</string>
     <string name="usedesk_offline_form_name_hint">Name</string>
@@ -11,27 +10,16 @@
     <string name="usedesk_offline_form_message_error">Field required</string>
     <string name="usedesk_offline_form_failed_to_send">Failed to send your request. Please, try again.</string>
     <string name="usedesk_offline_form_send">Send</string>
-    <string name="usedesk_offline_form_back">Back</string>
-    <!--MessagePanel-->
-    <string name="usedesk_message_panel_hint">Message</string>
     <string name="usedesk_message_panel_input_hint">Write message…</string>
-    <!--MessageOperator-->
-    <string name="usedesk_message_operator_feedback_received">Thank you for your feedback</string>
-    <!--ChatFragment-->
-    <string name="usedesk_chat_fragment_loading_text">Loading…</string>
-
-    <!--TEMP-->
+    <string name="usedesk_loading_text">Loading…</string>
     <string name="usedesk_today">Today</string>
     <string name="usedesk_yesterday">Yesterday</string>
     <string name="usedesk_download_started">Download started</string>
     <string name="usedesk_download_failed">Download failed</string>
-
-    <!--New Styled Values-->
     <string name="usedesk_screen_chat_title">Chat</string>
     <string name="usedesk_feedback_thanks">Thank you for your feedback!</string>
-    <string name="usedesk_chat_attachment_gallery">Gallery</string>
-    <string name="usedesk_chat_attachment_camera">Camera</string>
-    <string name="usedesk_chat_attachment_storage">Storage</string>
-    <string name="usedesk_chat_message_open_html_title">Open HTML</string>
-    <string name="usedesk_chat_offline_form_success_close">Close</string>
+    <string name="usedesk_attachment_gallery">Gallery</string>
+    <string name="usedesk_attachment_camera">Camera</string>
+    <string name="usedesk_attachment_storage">Storage</string>
+    <string name="usedesk_offline_form_success_close">Close</string>
 </resources>

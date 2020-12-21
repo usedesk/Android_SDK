@@ -27,7 +27,6 @@ internal class MessagesAdapter(
         private val customAgentName: String?,
         owner: LifecycleOwner,
         private val onFileClick: (UsedeskFile) -> Unit,
-        private val onHtmlClick: (String) -> Unit,
         private val onUrlClick: (String) -> Unit
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
@@ -222,11 +221,6 @@ internal class MessagesAdapter(
 
             binding.tvText.text = Html.fromHtml(messageText.text)
             binding.tvText.visibility = View.VISIBLE
-
-            binding.tvLink.visibility = visibleGone(messageText.html.isNotEmpty())
-            binding.tvLink.setOnClickListener {
-                onHtmlClick(messageText.html)
-            }
         }
     }
 
@@ -501,7 +495,6 @@ internal class MessagesAdapter(
         val rvButtons: RecyclerView = rootView.findViewById(R.id.rv_buttons)
         val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
-        val tvLink: TextView = rootView.findViewById(R.id.tv_link)
         val ivLike: ImageView = rootView.findViewById(R.id.iv_like)
         val ivDislike: ImageView = rootView.findViewById(R.id.iv_dislike)
     }

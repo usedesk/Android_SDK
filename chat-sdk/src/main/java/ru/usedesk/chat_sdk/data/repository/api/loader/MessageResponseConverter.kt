@@ -71,9 +71,6 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
 
             val textMessage = convertOrNull {
                 if (from.text?.isNotEmpty() == true) {
-                    val text: String
-                    val html: String
-
                     val buttons: List<UsedeskMessageButton>
                     val feedbackNeeded: Boolean
                     val feedback: UsedeskFeedback?
@@ -96,18 +93,7 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
                         feedback = null
                     }
 
-                    val divIndex = from.text!!.indexOf("<div")
-
-                    if (divIndex >= 0) {
-                        text = from.text!!.substring(0, divIndex)
-
-                        html = from.text!!.removePrefix(text)
-                    } else {
-                        text = from.text!!
-                        html = ""
-                    }
-
-                    var convertedText = text
+                    var convertedText = from.text!!
                             .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
                             .replace("</strong>", "</b>")
                             .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
@@ -131,19 +117,17 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
                         convertedText = convertedText.replaceFirst(buttonRaw, replaceBy)
                     }
 
-                    if (convertedText.isEmpty() && html.isEmpty()) {
+                    if (convertedText.isEmpty()) {
                         null
                     } else if (fromClient) {
                         UsedeskMessageClientText(id,
                                 messageDate,
                                 convertedText,
-                                html,
                                 UsedeskMessageClient.Status.RECEIVED)
                     } else {
                         UsedeskMessageAgentText(id,
                                 messageDate,
                                 convertedText,
-                                html,
                                 buttons,
                                 feedbackNeeded,
                                 feedback,

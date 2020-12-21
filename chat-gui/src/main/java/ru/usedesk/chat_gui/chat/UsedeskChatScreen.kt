@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.chat_gui.*
+import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
+import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
+import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.adapters.MessagesAdapter
@@ -79,9 +81,6 @@ class UsedeskChatScreen : UsedeskFragment() {
                 viewLifecycleOwner,
                 { file ->
                     getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
-                },
-                { html ->
-                    getParentListener<IUsedeskOnHtmlClickListener>()?.onHtmlClick(html)
                 },
                 { url ->
                     getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)

@@ -6,8 +6,7 @@ class UsedeskMessageClientText(
         id: Long,
         calendar: Calendar,
         text: String,
-        html: String,
         override val status: UsedeskMessageClient.Status
-) : UsedeskMessageText(id, calendar, text, html), UsedeskMessageClient {
+) : UsedeskMessageText(id, calendar, text), UsedeskMessageClient {
     override val type: Type = Type.TYPE_CLIENT_TEXT
 }

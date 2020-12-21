@@ -12,7 +12,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F7F7F7"
+            android:background="@color/usedesk_white_2"
             android:saveEnabled="false"
             app:contentInsetEnd="0dp"
             app:contentInsetLeft="0dp"

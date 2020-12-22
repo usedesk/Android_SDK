@@ -6,8 +6,8 @@ import com.google.gson.Gson
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.usedesk.common_sdk.api.HttpApiFactory
-import ru.usedesk.common_sdk.api.IUsedeskHttpApiFactory
+import ru.usedesk.common_sdk.api.ApiFactory
+import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import toothpick.config.Module
 
@@ -22,6 +22,6 @@ class CommonModule(
         bind(Scheduler::class.java).withName("main").toInstance(AndroidSchedulers.mainThread())
         bind(Gson::class.java).toInstance(Gson())
         bind(UsedeskOkHttpClientFactory::class.java).toInstance(UsedeskOkHttpClientFactory(appContext))
-        bind(IUsedeskHttpApiFactory::class.java).to(HttpApiFactory::class.java).singleton()
+        bind(IUsedeskApiFactory::class.java).to(ApiFactory::class.java).singleton()
     }
 }

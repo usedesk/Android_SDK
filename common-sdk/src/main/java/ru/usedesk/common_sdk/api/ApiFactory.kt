@@ -8,10 +8,10 @@ import toothpick.InjectConstructor
 import java.util.*
 
 @InjectConstructor
-internal class HttpApiFactory(
+internal class ApiFactory(
         private val gson: Gson,
         private val okHttpClientFactory: UsedeskOkHttpClientFactory
-) : IUsedeskHttpApiFactory {
+) : IUsedeskApiFactory {
 
     private val instanceMap: MutableMap<String, Any> = HashMap()
 

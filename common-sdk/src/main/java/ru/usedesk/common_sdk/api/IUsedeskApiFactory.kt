@@ -1,5 +1,5 @@
 package ru.usedesk.common_sdk.api
 
-interface IUsedeskHttpApiFactory {
+interface IUsedeskApiFactory {
     fun <API> getInstance(baseUrl: String, apiClass: Class<API>): API
 }

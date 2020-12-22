@@ -1,22 +1,17 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskSearchQuery private constructor(
-        val searchQuery: String
+internal class UsedeskSearchQuery private constructor(
+        builder: Builder
 ) {
-    private var collectionIds: List<String>? = null
-    private var categoryIds: List<String>? = null
-    private var articleIds: List<String>? = null
-
-    var count: String? = null
-        private set
-    var page: String? = null
-        private set
-    var type: Type? = null
-        private set
-    var sort: Sort? = null
-        private set
-    var order: Order? = null
-        private set
+    val searchQuery: String = builder.searchQuery
+    val collectionIds: List<String>? = builder.collectionIds
+    val categoryIds: List<String>? = builder.categoryIds
+    val articleIds: List<String>? = builder.articleIds
+    val count: String? = builder.count
+    val page: String? = builder.page
+    val type: Type? = builder.type
+    val sort: Sort? = builder.sort
+    val order: Order? = builder.order
 
     fun getCollectionIds(): String? {
         return collectionAsString(collectionIds)
@@ -42,53 +37,34 @@ class UsedeskSearchQuery private constructor(
         ASCENDING, DESCENDING
     }
 
-    class Builder(searchQuery: String) {
-        private val searchQuery: UsedeskSearchQuery = UsedeskSearchQuery(searchQuery)
+    class Builder(val searchQuery: String) {
+        var collectionIds: List<String>? = null
+            private set
+        var categoryIds: List<String>? = null
+            private set
+        var articleIds: List<String>? = null
+            private set
+        var count: String? = null
+            private set
+        var page: String? = null
+            private set
+        var type: Type? = null
+            private set
+        var sort: Sort? = null
+            private set
+        var order: Order? = null
+            private set
 
-        fun setCollectionIds(collectionIds: List<String>?): Builder {
-            searchQuery.collectionIds = collectionIds
-            return this
-        }
+        fun collectionIds(collectionIds: List<String>?) = apply { this.collectionIds = collectionIds }
+        fun categoryIds(categoryIds: List<String>?) = apply { this.categoryIds = categoryIds }
+        fun articleIds(articleIds: List<String>?) = apply { this.articleIds = articleIds }
+        fun count(count: String?) = apply { this.count = count }
+        fun page(page: String?) = apply { this.page = page }
+        fun type(type: Type?) = apply { this.type = type }
+        fun sort(sort: Sort?) = apply { this.sort = sort }
+        fun order(order: Order?) = apply { this.order = order }
 
-        fun setCategoryIds(categoryIds: List<String>?): Builder {
-            searchQuery.categoryIds = categoryIds
-            return this
-        }
-
-        fun setArticleIds(articleIds: List<String>?): Builder {
-            searchQuery.articleIds = articleIds
-            return this
-        }
-
-        fun setCount(count: Int): Builder {
-            searchQuery.count = count.toString()
-            return this
-        }
-
-        fun setPage(page: Int): Builder {
-            searchQuery.page = page.toString()
-            return this
-        }
-
-        fun setType(type: Type?): Builder {
-            searchQuery.type = type
-            return this
-        }
-
-        fun setSort(sort: Sort?): Builder {
-            searchQuery.sort = sort
-            return this
-        }
-
-        fun setOrder(order: Order?): Builder {
-            searchQuery.order = order
-            return this
-        }
-
-        fun build(): UsedeskSearchQuery {
-            return searchQuery
-        }
-
+        fun build() = UsedeskSearchQuery(this)
     }
 
     companion object {

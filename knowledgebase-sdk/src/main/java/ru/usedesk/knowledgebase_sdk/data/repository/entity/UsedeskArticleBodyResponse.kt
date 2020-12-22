@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.entity
 
-internal class UsedeskArticleBodyOld {
+internal class UsedeskArticleBodyResponse {
     val id: Long = 0
     val title: String? = null
     val text: String? = null

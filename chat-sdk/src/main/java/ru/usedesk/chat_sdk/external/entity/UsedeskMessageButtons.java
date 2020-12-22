@@ -18,14 +18,16 @@ public class UsedeskMessageButtons {
                 //Выделим секцию кнопки
                 String buttonText = messageText.substring(start, end + 2);
 
-                //Удалим её из исходного сообщения
-                messageText = messageText.replace(buttonText, "");
-
                 UsedeskMessageButton messageButton = new UsedeskMessageButton(buttonText);
 
-                if (!messageButton.isShow()) {
-                    messageText = messageText.replace(messageButton.getText(), "");
+                String replaceBy;
+                if (messageButton.isShow()) {
+                    replaceBy = messageButton.getText();
+                } else {
+                    replaceBy = "";
                 }
+                //Удалим её из исходного сообщения
+                messageText = messageText.replace(buttonText, replaceBy);
 
                 messageButtons.add(messageButton);
             }

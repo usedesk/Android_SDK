@@ -1,11 +1,11 @@
-package ru.usedesk.knowledgebase_gui.pages.articlesinfo
+package ru.usedesk.knowledgebase_gui.pages.articles
 
 import androidx.lifecycle.MutableLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
-internal class ArticlesInfoViewModel : UsedeskViewModel() {
+internal class ArticlesViewModel : UsedeskViewModel() {
 
     val articleInfoListLiveData = MutableLiveData<List<UsedeskArticleInfo>>()
 

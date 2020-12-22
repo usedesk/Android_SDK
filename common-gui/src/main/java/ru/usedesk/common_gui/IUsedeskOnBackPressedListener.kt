@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui
+package ru.usedesk.common_gui
 
 interface IUsedeskOnBackPressedListener {
     fun onBackPressed(): Boolean

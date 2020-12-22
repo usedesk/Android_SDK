@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.showInstead
 import ru.usedesk.knowledgebase_gui.R
 
 internal class SectionsFragment : UsedeskFragment() {
@@ -20,15 +21,16 @@ internal class SectionsFragment : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
+        doInit {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_fragment_list,
+                    R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }
 
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_fragment_list,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
+            init()
         }
-
-        init()
 
         return binding.rootView
     }
@@ -39,8 +41,12 @@ internal class SectionsFragment : UsedeskFragment() {
                 viewModel) {
             getParentListener<IOnSectionClickListener>()?.onSectionClick(it)
         }
-
-
+        showInstead(binding.pbLoading, binding.rvItems)
+        viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
+            if (it != null) {
+                showInstead(binding.rvItems, binding.pbLoading)
+            }
+        }
     }
 
     companion object {
@@ -51,6 +57,6 @@ internal class SectionsFragment : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
+        val pbLoading: TextView = rootView.findViewById(R.id.pb_loading)
     }
 }

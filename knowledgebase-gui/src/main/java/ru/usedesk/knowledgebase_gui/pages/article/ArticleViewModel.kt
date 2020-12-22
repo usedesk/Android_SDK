@@ -1,20 +1,18 @@
 package ru.usedesk.knowledgebase_gui.pages.article
 
-import android.annotation.SuppressLint
-import ru.usedesk.knowledgebase_gui.common.DataViewModel
+import androidx.lifecycle.MutableLiveData
+import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
 
-class ArticleViewModel : DataViewModel<UsedeskArticleBodyOld>() {
+internal class ArticleViewModel : UsedeskViewModel() {
 
-    @SuppressLint("CheckResult")
-    override fun onData(data: UsedeskArticleBodyOld) {
-        super.onData(data)
-        UsedeskKnowledgeBaseSdk.getInstance().addViewsRx(data.id)
-                .subscribe({}) { it.printStackTrace() }
-    }
+    val articleLiveData = MutableLiveData<UsedeskArticleBody>()
 
     fun init(articleId: Long) {
-        loadData(UsedeskKnowledgeBaseSdk.getInstance().getArticleRx(articleId))
+        doIt(UsedeskKnowledgeBaseSdk.getInstance().getArticleRx(articleId), onValue = {
+            articleLiveData.postValue(it)
+            doIt(UsedeskKnowledgeBaseSdk.getInstance().addViewsRx(it.id))
+        })
     }
 }

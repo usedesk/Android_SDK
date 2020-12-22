@@ -7,19 +7,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import ru.usedesk.common_gui.IUsedeskOnBackPressedListener
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.knowledgebase_gui.IUsedeskOnBackPressedListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.helper.FragmentSwitcher
 import ru.usedesk.knowledgebase_gui.pages.article.ArticleFragment
-import ru.usedesk.knowledgebase_gui.pages.articlebody.ArticlesBodyFragment
-import ru.usedesk.knowledgebase_gui.pages.articlebody.IOnArticleBodyClickListener
-import ru.usedesk.knowledgebase_gui.pages.articlesinfo.ArticlesInfoFragment
-import ru.usedesk.knowledgebase_gui.pages.articlesinfo.IOnArticleInfoClickListener
+import ru.usedesk.knowledgebase_gui.pages.articles.ArticlesFragment
+import ru.usedesk.knowledgebase_gui.pages.articles.IOnArticleClickListener
+import ru.usedesk.knowledgebase_gui.pages.articles_search.ArticlesSearchFragment
+import ru.usedesk.knowledgebase_gui.pages.articles_search.IOnArticlesSearchClickListener
 import ru.usedesk.knowledgebase_gui.pages.categories.CategoriesFragment
 import ru.usedesk.knowledgebase_gui.pages.categories.IOnCategoryClickListener
 import ru.usedesk.knowledgebase_gui.pages.sections.IOnSectionClickListener
@@ -29,8 +29,8 @@ import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
         IOnSectionClickListener,
         IOnCategoryClickListener,
-        IOnArticleInfoClickListener,
-        IOnArticleBodyClickListener,
+        IOnArticleClickListener,
+        IOnArticlesSearchClickListener,
         IUsedeskOnBackPressedListener,
         IUsedeskOnSearchQueryListener {
 
@@ -66,10 +66,10 @@ class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
 
     private fun showSearchQuery(query: String) {
         val fragment = FragmentSwitcher.getLastFragment(this)
-        if (fragment is ArticlesBodyFragment) {
+        if (fragment is ArticlesSearchFragment) {
             fragment.onSearchQueryUpdate(query)
         } else {
-            switchFragment(ArticlesBodyFragment.newInstance(query))
+            switchFragment(ArticlesSearchFragment.newInstance(query))
         }
     }
 
@@ -88,12 +88,12 @@ class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
         switchFragment(ArticleFragment.newInstance(articleId))
     }
 
-    override fun onArticleBodyClick(articleId: Long) {
+    override fun onArticleClick(articleId: Long) {
         switchFragment(ArticleFragment.newInstance(articleId))
     }
 
     override fun onCategoryClick(categoryId: Long) {
-        switchFragment(ArticlesInfoFragment.newInstance(categoryId))
+        switchFragment(ArticlesFragment.newInstance(categoryId))
     }
 
     override fun onSectionClick(sectionId: Long) {

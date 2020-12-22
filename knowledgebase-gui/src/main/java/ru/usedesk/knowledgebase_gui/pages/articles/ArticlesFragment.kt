@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.pages.categories
+package ru.usedesk.knowledgebase_gui.pages.articles
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,9 +13,9 @@ import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.knowledgebase_gui.R
 
-internal class CategoriesFragment : UsedeskFragment() {
+internal class ArticlesFragment : UsedeskFragment() {
 
-    private val viewModel: CategoriesViewModel by viewModels()
+    private val viewModel: ArticlesViewModel by viewModels()
 
     private lateinit var binding: Binding
 
@@ -26,30 +26,31 @@ internal class CategoriesFragment : UsedeskFragment() {
             binding = inflateItem(inflater,
                     container,
                     R.layout.usedesk_fragment_list,
-                    R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                    R.style.Usedesk_KnowledgeBase
+            ) { rootView, defaultStyleId ->
                 Binding(rootView, defaultStyleId)
             }
 
-            val sectionId = argsGetLong(SECTION_ID_KEY)
-            if (sectionId != null) {
-                init(sectionId)
+            val categoryId = argsGetLong(CATEGORY_ID_KEY)
+            if (categoryId != null) {
+                init(categoryId)
             }
         }
 
         return binding.rootView
     }
 
-    fun init(sectionId: Long) {
-        viewModel.init(sectionId)
+    fun init(categoryId: Long) {
+        viewModel.init(categoryId)
 
-        CategoriesAdapter(binding.rvItems,
+        ArticlesAdapter(binding.rvItems,
                 viewLifecycleOwner,
                 viewModel) {
-            getParentListener<IOnCategoryClickListener>()?.onCategoryClick(it)
+            getParentListener<IOnArticleClickListener>()?.onArticleInfoClick(it)
         }
 
         showInstead(binding.pbLoading, binding.rvItems)
-        viewModel.categoriesLiveData.observe(viewLifecycleOwner) {
+        viewModel.articleInfoListLiveData.observe(viewLifecycleOwner) {
             if (it != null) {
                 showInstead(binding.rvItems, binding.pbLoading)
             }
@@ -57,12 +58,12 @@ internal class CategoriesFragment : UsedeskFragment() {
     }
 
     companion object {
-        private const val SECTION_ID_KEY = "sectionIdKey"
+        private const val CATEGORY_ID_KEY = "categoryIdKey"
 
-        fun newInstance(sectionId: Long): CategoriesFragment {
-            return CategoriesFragment().apply {
+        fun newInstance(categoryId: Long): ArticlesFragment {
+            return ArticlesFragment().apply {
                 arguments = Bundle().apply {
-                    putLong(SECTION_ID_KEY, sectionId)
+                    putLong(CATEGORY_ID_KEY, categoryId)
                 }
             }
         }

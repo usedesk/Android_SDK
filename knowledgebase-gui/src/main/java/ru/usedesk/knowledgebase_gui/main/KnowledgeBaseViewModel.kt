@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk.release
 
-class KnowledgeBaseViewModel : ViewModel() {
+internal class KnowledgeBaseViewModel : ViewModel() {
 
     val searchQueryLiveData = MutableLiveData<String>()
     private val delayedQuery: DelayedQuery = DelayedQuery(searchQueryLiveData, SEARCH_DELAY)

@@ -2,50 +2,55 @@ package ru.usedesk.knowledgebase_gui.pages.article
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.showInstead
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.common.FragmentDataView
-import ru.usedesk.knowledgebase_gui.entity.DataOrMessage
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyOld
 
-internal class ArticleFragment : FragmentDataView<UsedeskArticleBodyOld, ArticleFragment.Binding>(
-        R.layout.usedesk_fragment_article,
-        R.style.Usedesk_KnowledgeBase
-) {
-
-    private lateinit var textViewTitle: TextView
-    private lateinit var contentWebView: WebView
+internal class ArticleFragment : UsedeskFragment() {
 
     private val viewModel: ArticleViewModel by viewModels()
+    private lateinit var binding: Binding
 
-    override fun onView(view: View) {
-        super.onView(view)
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        doInit {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_fragment_article,
+                    R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }
 
-        textViewTitle = view.findViewById(R.id.tv_title)
-        contentWebView = view.findViewById(R.id.wv_content)
-
-        contentWebView.setBackgroundColor(Color.TRANSPARENT)
-    }
-
-    override fun init() {
-        val articleId = argsGetLong(ARTICLE_ID_KEY)
-        if (articleId != null) {
-            viewModel.init(articleId)
+            val articleId = argsGetLong(ARTICLE_ID_KEY)
+            if (articleId != null) {
+                init(articleId)
+            }
         }
+
+        return binding.rootView
     }
 
-    override fun createBinding(rootView: View, defaultStyleId: Int) = Binding(rootView, defaultStyleId)
+    private fun init(articleId: Long) {
+        viewModel.init(articleId)
 
-    override fun getLiveData(): LiveData<DataOrMessage<UsedeskArticleBodyOld>> = viewModel.liveData
+        showInstead(binding.pbLoading, binding.wvContent)
 
-    override fun setDataView(data: UsedeskArticleBodyOld) {
-        textViewTitle.text = data.title
-        contentWebView.loadData(data.text, "text/html", null)
+        viewModel.articleLiveData.observe(viewLifecycleOwner) {
+            binding.tvTitle.text = it.title
+            binding.wvContent.loadData(it.text, "text/html", null)
+            binding.wvContent.setBackgroundColor(Color.TRANSPARENT)
+            showInstead(binding.wvContent, binding.pbLoading)
+        }
     }
 
     companion object {
@@ -61,6 +66,8 @@ internal class ArticleFragment : FragmentDataView<UsedeskArticleBodyOld, Article
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-
+        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
+        val wvContent: WebView = rootView.findViewById(R.id.wv_content)
     }
 }

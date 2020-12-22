@@ -32,7 +32,7 @@ internal class CategoriesAdapter internal constructor(
         return SectionViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_category,
                 R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
-            CategoryBinding(rootView, defaultStyleId)
+            Binding(rootView, defaultStyleId)
         })
     }
 
@@ -43,19 +43,19 @@ internal class CategoriesAdapter internal constructor(
     override fun getItemCount(): Int = categoryList.size
 
     inner class SectionViewHolder(
-            private val binding: CategoryBinding
+            private val binding: Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         fun bind(category: UsedeskCategory) {
             binding.tvTitle.text = category.title
-            binding.tvDescription.text = category.title//TODO: тут в сущности, видимо, должно быть поле с описанием
+            binding.tvDescription.text = category.description
             binding.rootView.setOnClickListener {
                 onCategoryClick(category.id)
             }
         }
     }
 
-    internal class CategoryBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val tvDescription: TextView = rootView.findViewById(R.id.tv_description)
         val tvCount: TextView = rootView.findViewById(R.id.tv_count)

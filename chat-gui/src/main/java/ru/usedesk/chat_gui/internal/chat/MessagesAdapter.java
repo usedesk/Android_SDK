@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.internal.chat;
 
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -249,11 +250,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void bind(@NonNull UsedeskMessage message, int position) {
             super.bind(message, position);
 
+            String text;
             if (message.getMessageButtons().getMessageText() != null) {
-                tvMessage.setText(message.getMessageButtons().getMessageText());
+                text = message.getMessageButtons().getMessageText();
             } else {
-                tvMessage.setText(message.getText());
+                text = message.getText();
             }
+            tvMessage.setText(Html.fromHtml(text));
             if (tvMessage.getText().length() > 0) {
                 tvMessage.setVisibility(View.VISIBLE);
             } else {

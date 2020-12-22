@@ -24,7 +24,7 @@
             tools:srcCompat="@drawable/ic_operator_black" />
     </androidx.cardview.widget.CardView>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -46,28 +46,23 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="Ivanov Ivan Ivanovich" />
 
         <TextView
             android:id="@+id/tv_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autoLink="all"
             android:includeFontPadding="false"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_name"
-            tools:text="skjghskhd\ntsjkd" />
+            android:textIsSelectable="true"
+            tools:text="skjghskhd\ntsjkdtsjkdtsjkdtsjkdtsjkdtsjkdtsjkdtsjkd" />
 
         <ImageView
             android:id="@+id/iv_preview"
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:layout_marginTop="4dp"
             android:scaleType="centerCrop"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_name"
             tools:srcCompat="@drawable/ic_home_black" />
 
         <TextView
@@ -77,9 +72,7 @@
             android:includeFontPadding="false"
             android:text="?attr/usedesk_message_operator_feedback_received"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_message" />
+            android:textStyle="bold" />
 
         <LinearLayout
             android:id="@+id/lt_buttons"
@@ -87,8 +80,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_message"
             tools:visibility="gone" />
 
         <LinearLayout
@@ -100,9 +91,6 @@
             android:clipChildren="true"
             android:orientation="horizontal"
             android:padding="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_message"
             tools:visibility="visible">
 
             <ImageButton
@@ -126,7 +114,7 @@
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/ic_dislike" />
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_time"

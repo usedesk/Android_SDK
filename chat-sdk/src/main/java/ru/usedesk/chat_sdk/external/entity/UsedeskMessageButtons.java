@@ -5,11 +5,9 @@ import java.util.List;
 
 public class UsedeskMessageButtons {
     private final String messageText;
-    private final List<UsedeskMessageButton> messageButtons;
+    private final List<UsedeskMessageButton> messageButtons = new ArrayList<>();
 
     UsedeskMessageButtons(String messageText) {
-        this.messageButtons = new ArrayList<>();
-
         if (messageText != null) {
             while (messageText.contains("{{button:") && messageText.contains("}}")) {
                 int start = messageText.indexOf("{{button:");

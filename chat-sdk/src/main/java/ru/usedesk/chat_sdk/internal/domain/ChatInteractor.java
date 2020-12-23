@@ -233,7 +233,8 @@ public class ChatInteractor implements IUsedeskChat {
 
     private void parseNewMessageResponse(UsedeskMessage message) {
         if (message != null && message.getChat() != null) {
-            boolean hasText = !TextUtils.isEmpty(message.getText());
+            boolean hasText = !TextUtils.isEmpty(message.getText()) ||
+                    !message.getMessageButtons().getMessageButtons().isEmpty();
             boolean hasFile = message.getFile() != null;
 
             if ((hasText || hasFile) && !messageIds.contains(message.getId())) {

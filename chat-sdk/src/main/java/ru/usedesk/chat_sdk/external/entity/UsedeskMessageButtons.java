@@ -5,11 +5,9 @@ import java.util.List;
 
 public class UsedeskMessageButtons {
     private final String messageText;
-    private final List<UsedeskMessageButton> messageButtons;
+    private final List<UsedeskMessageButton> messageButtons = new ArrayList<>();
 
     UsedeskMessageButtons(String messageText) {
-        this.messageButtons = new ArrayList<>();
-
         if (messageText != null) {
             while (messageText.contains("{{button:") && messageText.contains("}}")) {
                 int start = messageText.indexOf("{{button:");
@@ -18,14 +16,16 @@ public class UsedeskMessageButtons {
                 //Выделим секцию кнопки
                 String buttonText = messageText.substring(start, end + 2);
 
-                //Удалим её из исходного сообщения
-                messageText = messageText.replace(buttonText, "");
-
                 UsedeskMessageButton messageButton = new UsedeskMessageButton(buttonText);
 
-                if (!messageButton.isShow()) {
-                    messageText = messageText.replace(messageButton.getText(), "");
+                String replaceBy;
+                if (messageButton.isShow()) {
+                    replaceBy = messageButton.getText();
+                } else {
+                    replaceBy = "";
                 }
+                //Удалим её из исходного сообщения
+                messageText = messageText.replace(buttonText, replaceBy);
 
                 messageButtons.add(messageButton);
             }

@@ -1,7 +1,5 @@
 package ru.usedesk.chat_sdk.external.entity;
 
-import android.text.Html;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -13,14 +11,18 @@ public class UsedeskMessage extends BaseMessage {
 
     private UsedeskMessageButtons messageButtons;
 
-    public UsedeskMessage(@NonNull BaseMessage baseMessage, @Nullable UsedeskPayload usedeskPayload,
+    public UsedeskMessage(@NonNull BaseMessage baseMessage,
+                          @Nullable UsedeskPayload usedeskPayload,
                           @Nullable String stringPayload) {
         super(baseMessage);
         this.usedeskPayload = usedeskPayload;
         this.stringPayload = stringPayload;
 
         String text = baseMessage.getText() == null ? "" : baseMessage.getText();
-        messageButtons = new UsedeskMessageButtons(Html.fromHtml(Html.fromHtml(text).toString()).toString());
+        text = text.replace("\r\n", "<br />")
+                .replace("\n\n", "<br />")
+                .replace("\n", "<br />");
+        messageButtons = new UsedeskMessageButtons(text);
     }
 
     @NonNull

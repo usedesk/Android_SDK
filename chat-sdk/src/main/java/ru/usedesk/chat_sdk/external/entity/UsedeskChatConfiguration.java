@@ -80,8 +80,12 @@ public class UsedeskChatConfiguration {
         intent.putExtra(URL_KEY, url);
         intent.putExtra(OFFLINE_FORM_URL_KEY, offlineFormUrl);
         intent.putExtra(NAME_KEY, clientName);
-        intent.putExtra(PHONE_KEY, clientPhoneNumber);
-        intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId);
+        if (clientPhoneNumber != null) {
+            intent.putExtra(PHONE_KEY, clientPhoneNumber);
+        }
+        if (clientAdditionalId != null) {
+            intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId);
+        }
         intent.putExtra(INIT_CLIENT_MESSAGE_KEY, initClientMessage);
     }
 

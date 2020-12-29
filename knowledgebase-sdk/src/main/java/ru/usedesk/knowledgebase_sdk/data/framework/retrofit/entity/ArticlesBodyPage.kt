@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_sdk.data.framework.retrofit.entity
 
 import com.google.gson.annotations.SerializedName
-import ru.usedesk.knowledgebase_sdk.data.repository.entity.UsedeskArticleBodyResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.ArticleBodyResponse
 
 internal class ArticlesBodyPage {
     val page = 0
@@ -14,5 +14,5 @@ internal class ArticlesBodyPage {
     @SerializedName("total-count")
     val totalCount = 0
 
-    val articles: Array<UsedeskArticleBodyResponse>? = null
+    val articles: Array<ArticleBodyResponse>? = null
 }

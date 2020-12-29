@@ -2,14 +2,14 @@ package ru.usedesk.knowledgebase_sdk.domain
 
 import io.reactivex.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
-import ru.usedesk.knowledgebase_sdk.data.repository.IKnowledgeBaseRepository
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApiRepository
 import ru.usedesk.knowledgebase_sdk.entity.*
 import toothpick.InjectConstructor
 import javax.inject.Named
 
 @InjectConstructor
 internal class KnowledgeBaseInteractor(
-        private val knowledgeRepository: IKnowledgeBaseRepository,
+        private val knowledgeApiRepository: IKnowledgeBaseApiRepository,
         @Named("io")
         private val ioScheduler: Scheduler,
         @Named("main")
@@ -69,38 +69,38 @@ internal class KnowledgeBaseInteractor(
 
     @Throws(UsedeskException::class)
     override fun addViews(articleId: Long) {
-        knowledgeRepository.addViews(configuration.accountId, configuration.token, articleId)
+        knowledgeApiRepository.addViews(configuration.accountId, configuration.token, articleId)
     }
 
     @Throws(UsedeskException::class)
     override fun getCategories(sectionId: Long): List<UsedeskCategory> {
-        return knowledgeRepository.getCategories(configuration.accountId, configuration.token, sectionId)
+        return knowledgeApiRepository.getCategories(configuration.accountId, configuration.token, sectionId)
     }
 
     @Throws(UsedeskException::class)
     override fun getSections(): List<UsedeskSection> {
-        return knowledgeRepository.getSections(configuration.accountId, configuration.token)
+        return knowledgeApiRepository.getSections(configuration.accountId, configuration.token)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticle(articleId: Long): UsedeskArticleBody {
-        return knowledgeRepository.getArticleBody(configuration.accountId, configuration.token, articleId)
+        return knowledgeApiRepository.getArticle(configuration.accountId, configuration.token, articleId)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(searchQuery: String): List<UsedeskArticleBody> {
         val query = UsedeskSearchQuery.Builder(searchQuery).build()
-        return knowledgeRepository.getArticles(configuration.accountId, configuration.token, query)
+        return knowledgeApiRepository.getArticles(configuration.accountId, configuration.token, query)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
-        return knowledgeRepository.getArticles(configuration.accountId, configuration.token, searchQuery)
+        return knowledgeApiRepository.getArticles(configuration.accountId, configuration.token, searchQuery)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(categoryId: Long): List<UsedeskArticleInfo> {
-        return knowledgeRepository.getArticles(configuration.accountId, configuration.token, categoryId)
+        return knowledgeApiRepository.getArticles(configuration.accountId, configuration.token, categoryId)
     }
 
     internal class SafeSingleEmitter<T>(

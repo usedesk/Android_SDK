@@ -4,9 +4,8 @@ import ru.usedesk.chat_sdk.data.Converter
 import ru.usedesk.chat_sdk.data._entity.Message
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import toothpick.InjectConstructor
-import java.text.SimpleDateFormat
-import java.util.*
 
 @InjectConstructor
 internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessage>>() {
@@ -27,17 +26,10 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
 
             val createdAt = from.createdAt!!
 
-            val messageDate = Calendar.getInstance().apply {
-                time = try {
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-                            .parse(createdAt)!!
-                } catch (e: Exception) {
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-                            .parse(createdAt)!!
-                }
-
-                val hoursOffset = TimeZone.getDefault().rawOffset / 3600000
-                add(Calendar.HOUR, hoursOffset)
+            val messageDate = try {
+                getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss'Z'", createdAt)
+            } catch (e: Exception) {
+                getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
             }
 
             val id = from.id!!.toLong()

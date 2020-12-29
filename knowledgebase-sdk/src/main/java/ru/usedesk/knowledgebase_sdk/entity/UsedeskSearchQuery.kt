@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-internal class UsedeskSearchQuery private constructor(
+class UsedeskSearchQuery private constructor(
         builder: Builder
 ) {
     val searchQuery: String = builder.searchQuery

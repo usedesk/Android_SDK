@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
@@ -71,6 +71,6 @@ internal class ArticlesFragment : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val pbLoading: TextView = rootView.findViewById(R.id.pb_loading)
+        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
     }
 }

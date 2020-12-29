@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--KnowledgeBaseFragment-->
-    <attr name="usedesk_knowledgebase_support_title" format="string" />
     <!--ArticleInfoItem-->
     <attr name="usedesk_article_info_item_shows_text" format="string" />
 

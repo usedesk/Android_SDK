@@ -1,6 +1,4 @@
 <resources>
-    <!--KnowledgeBaseFragment-->
-    <string name="usedesk_knowledgebase_support_title">Chat with support</string>
     <!--ArticleInfoItem-->
     <string name="usedesk_article_info_item_shows_text">views</string>
 

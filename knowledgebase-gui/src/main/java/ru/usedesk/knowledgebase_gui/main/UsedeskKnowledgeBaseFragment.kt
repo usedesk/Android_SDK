@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.IUsedeskOnBackPressedListener
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
@@ -118,6 +118,6 @@ class UsedeskKnowledgeBaseFragment : UsedeskFragment(),
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val btnSupport: Button = rootView.findViewById(R.id.btn_support)
+        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
     }
 }

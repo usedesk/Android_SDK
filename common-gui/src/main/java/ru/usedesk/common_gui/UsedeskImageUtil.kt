@@ -39,22 +39,12 @@ fun setImageCenter(target: ImageView, uri: Uri, errorId: Int) {
             .into(target)
 }
 
-fun setImage(target: ImageView, path: String?) {
-    if (path != null) {
-        Glide.with(target)
-                .load(path)
-                .into(target)
-    } else {
-        target.setImageDrawable(null)
-    }
-}
-
 
 fun showImage(ivTarget: ImageView,
               loadingId: Int,
               url: String,
-              vLoading: View?,
-              vError: View?,
+              vLoading: View? = null,
+              vError: View? = null,
               onSuccess: () -> Unit = {},
               onError: () -> Unit = {}) {
     showImageStatus(vLoading, true, vError, false)

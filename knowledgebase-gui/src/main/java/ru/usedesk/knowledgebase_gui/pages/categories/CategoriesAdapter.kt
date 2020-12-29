@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.pages.categories
 
+import android.text.Html
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -48,7 +49,8 @@ internal class CategoriesAdapter internal constructor(
 
         fun bind(category: UsedeskCategory) {
             binding.tvTitle.text = category.title
-            binding.tvDescription.text = category.description
+            binding.tvDescription.text = Html.fromHtml(category.description).trim()
+            binding.tvCount.text = category.articles.size.toString()
             binding.rootView.setOnClickListener {
                 onCategoryClick(category.id)
             }

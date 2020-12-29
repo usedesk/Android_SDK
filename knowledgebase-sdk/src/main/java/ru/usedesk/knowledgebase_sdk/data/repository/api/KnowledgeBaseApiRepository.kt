@@ -120,7 +120,7 @@ internal class KnowledgeBaseApiRepository(
                 UsedeskSection(
                         sectionResponse.id!!,
                         sectionResponse.title ?: "",
-                        sectionResponse.image,
+                        null,//sectionResponse.image,
                         categories,
                         sectionResponse.order ?: 0
                 )

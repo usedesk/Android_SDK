@@ -8,7 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.setImage
+import ru.usedesk.common_gui.showImage
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
@@ -52,7 +52,17 @@ internal class SectionsAdapter(
         fun bind(section: UsedeskSection) {
             binding.ivIcon.setImageBitmap(null)
             binding.tvTitle.text = section.title
-            setImage(binding.ivIcon, section.thumbnail)
+            binding.ivIcon.setImageResource(R.drawable.background_no_thumbnail)
+            binding.tvInitials.text = section.title
+            section.thumbnail?.also {
+                showImage(binding.ivIcon,
+                        R.drawable.background_no_thumbnail,
+                        it,
+                        onSuccess = {
+                            binding.tvInitials.text = ""
+                        }
+                )
+            }
             binding.rootView.setOnClickListener {
                 onSectionClick(section.id)
             }
@@ -62,5 +72,6 @@ internal class SectionsAdapter(
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivIcon: ImageView = rootView.findViewById(R.id.iv_icon)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val tvInitials: TextView = rootView.findViewById(R.id.tv_initials)
     }
 }

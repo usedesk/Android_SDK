@@ -2,7 +2,7 @@
 <resources>
 
     <style name="BaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="android:statusBarColor">#F7F7F7</item>
+        <item name="android:statusBarColor">@color/usedesk_white_2</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

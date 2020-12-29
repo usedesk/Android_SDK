@@ -1,8 +1,7 @@
 <resources>
-    <!--ArticleInfoItem-->
-    <string name="usedesk_article_info_item_shows_text">views</string>
 
-    <string name="loading_title">Загрузка…</string>
-    <string name="loading_error">Ошибка загрузки</string>
+    <string name="sections_title">KnowledgeBase</string>
+    <string name="cancel">Cancel</string>
+    <string name="articles_not_found">Articles not found</string>>
 
 </resources>

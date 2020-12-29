@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.common_gui.TextChangeListener
 import ru.usedesk.common_gui.UsedeskBinding
 
 internal class MessagePanelAdapter(

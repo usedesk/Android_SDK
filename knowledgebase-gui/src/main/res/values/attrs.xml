@@ -1,27 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--ArticleInfoItem-->
-    <attr name="usedesk_article_info_item_shows_text" format="string" />
-
-    <attr name="usedesk_item_section_icon_width" format="dimension" />
-    <attr name="usedesk_item_section_icon_height" format="dimension" />
-
-    <attr name="usedesk_item_article_info_title_marginTop" format="dimension" />
-    <attr name="usedesk_item_article_info_title_marginStart" format="dimension" />
-
-    <attr name="usedesk_item_article_info_shows_marginTop" format="dimension" />
-    <attr name="usedesk_item_article_info_shows_marginBottom" format="dimension" />
-    <attr name="usedesk_item_article_info_shows_marginEnd" format="dimension" />
-
-    <attr name="usedesk_item_article_info_count_marginEnd" format="dimension" />
-
-    <attr name="usedesk_item_category_title_text_size" format="dimension" />
-    <attr name="usedesk_item_section_title_text_size" format="dimension" />
-
-    <attr name="usedesk_fragment_article" format="reference" />
-    <attr name="usedesk_fragment_knowledge_base" format="reference" />
-    <attr name="usedesk_fragment_list" format="reference" />
-    <attr name="usedesk_item_article_info" format="reference" />
-    <attr name="usedesk_item_category" format="reference" />
-    <attr name="usedesk_item_section" format="reference" />
+    <attr name="usedesk_knowledgebase_sections_toolbar_title_text" format="string" />
 </resources>

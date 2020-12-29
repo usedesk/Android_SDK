@@ -4,8 +4,6 @@ import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
-import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.ApiRetrofit
-import ru.usedesk.knowledgebase_sdk.data.framework.retrofit.UsedeskApiRepository
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
 import ru.usedesk.knowledgebase_sdk.entity.*
 import toothpick.InjectConstructor
@@ -62,7 +60,7 @@ internal class KnowledgeBaseApiRepository(
     override fun getArticles(accountId: String,
                              token: String,
                              searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
-        return doRequest(Array<ArticleBodyResponse>::class.java) {
+        val articlesSearchResponse = doRequest(ArticlesSearchResponse::class.java) {
             it.getArticles(accountId,
                     token,
                     searchQuery.searchQuery,
@@ -74,9 +72,11 @@ internal class KnowledgeBaseApiRepository(
                     searchQuery.type,
                     searchQuery.sort,
                     searchQuery.order)
-        }.mapNotNull {
+        }
+
+        return (articlesSearchResponse.articles ?: arrayOf()).mapNotNull {
             valueOrNull {
-                UsedeskArticleBody(it.id!!,
+                UsedeskArticleBody(it!!.id!!,
                         it.title ?: "",
                         it.text ?: "")
             }
@@ -97,11 +97,10 @@ internal class KnowledgeBaseApiRepository(
             it.getSections(accountId, token)
         }.mapNotNull { sectionResponse ->
             valueOrNull {
-                val categories = (sectionResponse.categories ?: arrayOf<CategoryResponse>())
+                val categories = (sectionResponse.categories ?: arrayOf())
                         .filterNotNull()
                         .map { categoryResponse ->
-                            val articles = (categoryResponse.articles
-                                    ?: arrayOf<ArticleInfoResponse>())
+                            val articles = (categoryResponse.articles ?: arrayOf())
                                     .filterNotNull()
                                     .map { articleResponse ->
                                         UsedeskArticleInfo(

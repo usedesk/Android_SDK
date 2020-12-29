@@ -47,7 +47,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             ).getString(R.attr.usedesk_chat_screen_title_text)
 
             init(agentName)
-            UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
                 setTitle(title)
                 setBackButton {
                     requireActivity().onBackPressed()
@@ -180,7 +180,7 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val toolbar = UsedeskToolbar.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+        val toolbar = UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
         val offlineForm = OfflineFormAdapter.Binding(rootView.findViewById(R.id.l_offline_form), defaultStyleId)
         val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
 

@@ -6,7 +6,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:background="?attr/usedesk_common_toolbar_root_background"
         android:saveEnabled="false"
         app:contentInsetEnd="0dp"
@@ -29,7 +29,7 @@
                     android:id="@+id/iv_back"
                     android:layout_width="56dp"
                     android:layout_height="56dp"
-                    android:layout_gravity="center_vertical|start"
+                    android:layout_gravity="start|center_vertical"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
@@ -46,23 +46,17 @@
                     android:padding="16dp"
                     tools:text="Title" />
 
-                <FrameLayout
-                    android:id="@+id/l_action"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
+                <ImageView
+                    android:id="@+id/iv_action"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:padding="16dp"
-                    android:visibility="invisible">
-
-                    <ImageView
-                        android:id="@+id/iv_action"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true" />
-                </FrameLayout>
+                    android:visibility="gone"
+                    tools:visibility="visible" />
             </FrameLayout>
 
             <View

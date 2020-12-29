@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen;
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen;
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
-import ru.usedesk.knowledgebase_gui.main.UsedeskKnowledgeBaseFragment;
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
 
 public class MainNavigation {
@@ -39,7 +39,7 @@ public class MainNavigation {
     }
 
     void goKnowledgeBase() {
-        switchFragment(UsedeskKnowledgeBaseFragment.newInstance());
+        switchFragment(UsedeskKnowledgeBaseScreen.newInstance());
     }
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {

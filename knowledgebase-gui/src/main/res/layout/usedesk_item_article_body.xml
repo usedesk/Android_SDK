@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:theme="@style/Usedesk.KnowledgeBase">
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
@@ -16,42 +16,41 @@
         android:fontFamily="@font/sf_ui_display_medium"
         android:textColor="@color/usedesk_black_2"
         android:textSize="17sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:text="Подключение почты" />
 
     <TextView
         android:id="@+id/tv_description"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="4dp"
         android:fontFamily="@font/sf_ui_display_regular"
         android:maxLines="2"
         android:textColor="@color/usedesk_black_2"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_path"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title"
         tools:text="Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты " />
 
     <TextView
         android:id="@+id/tv_path"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="12dp"
         android:fontFamily="@font/sf_ui_display_regular"
         android:textColor="@color/usedesk_gray_cold_2"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         tools:text="Подключение почты" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/usedesk_gray_2" />
+
+</LinearLayout>

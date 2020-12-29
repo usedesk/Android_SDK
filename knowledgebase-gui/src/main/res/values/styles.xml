@@ -1,13 +1,16 @@
 <resources>
 
-    <style name="Usedesk.KnowledgeBase" parent="">
-        <!--ArticleInfoItem-->
-        <item name="usedesk_article_info_item_shows_text">@string/usedesk_article_info_item_shows_text</item>
-    </style>
+    <style name="Usedesk.KnowledgeBase" parent=""></style>
 
 
     <style name="Usedesk.KnowledgeBase.Support.Button.Style" parent="">
         <item name="colorAccent">@color/usedesk_black_2</item>
     </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
+        <item name="usedesk_knowledgebase_sections_toolbar_title_text">@string/sections_title</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Sections.Page" parent=""></style>
 
 </resources>

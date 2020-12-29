@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbar_search"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="?attr/usedesk_common_toolbar_root_background"
@@ -69,6 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:fontFamily="@font/roboto_regular"
                 android:text="@string/cancel"
                 android:textColor="@color/usedesk_red"

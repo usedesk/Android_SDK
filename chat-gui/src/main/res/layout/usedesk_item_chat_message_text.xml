@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:theme="@style/Usedesk.Chat.Message.Text">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="6dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/l_feedback"
+            android:layout_width="136dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="16dp">
+
+            <ImageView
+                android:id="@+id/iv_dislike"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="start"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                tools:src="@drawable/ic_smile_sad" />
+
+            <ImageView
+                android:id="@+id/iv_like"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_gravity="end"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                tools:src="@drawable/ic_smile_happy" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_text"
+            style="?attr/usedesk_chat_message_text_message_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="ASjdasklj 412897412897 124784128947 192847128947 192847192847 12984710hr38e9gft2 32t893 2593gt 923t4 293g5t42 73t2783 gt273 gf273 gr2r73g 28r73g 23gr7da" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="4"
+            tools:listitem="@layout/usedesk_item_chat_button" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_time"
+        style="?attr/usedesk_chat_message_time_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="2dp"
+        tools:text="12:06" />
+</FrameLayout>

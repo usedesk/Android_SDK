@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#d75358</color>
-    <color name="colorPrimaryDark">#ac4246</color>
-    <color name="colorAccent">#000</color>
-
-    <color name="message_user_color">#FF6B6B</color>
-    <color name="message_operator_color">#FFC0C0</color>
+    <color name="colorPrimary">#F7F7F7</color>
+    <color name="colorPrimaryDark">#EFEFEF</color>
+    <color name="colorAccent">#333333</color>
 </resources>

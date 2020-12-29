@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="2dp"
+    android:layout_marginStart="6dp"
+    android:orientation="horizontal"
+    tools:theme="@style/Usedesk.Chat.Message.File">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="6dp"
+        android:layout_marginEnd="40dp"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp">
+
+            <ImageView
+                android:id="@+id/iv_file_type"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                app:srcCompat="?attr/usedesk_chat_message_file_preview_image" />
+
+            <TextView
+                android:id="@+id/tv_extension"
+                style="?attr/usedesk_chat_message_file_extension_text_style"
+                android:layout_width="24dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                tools:text="EXTENSION" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_file_name"
+                style="?attr/usedesk_chat_message_file_name_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Сводная таблица.xls" />
+
+            <TextView
+                android:id="@+id/tv_file_size"
+                style="?attr/usedesk_chat_message_file_size_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="384 кб" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_time"
+        style="?attr/usedesk_chat_message_time_text_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="4dp"
+        tools:text="12:06" />
+</FrameLayout>

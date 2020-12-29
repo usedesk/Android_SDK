@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:theme="@style/Usedesk.Chat.Message.Image.Agent">
+
+    <TextView
+        android:id="@+id/tv_date"
+        style="?attr/usedesk_chat_message_date_text_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:paddingStart="12dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="4dp"
+        tools:text="Вчера" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="32dp"
+        android:orientation="horizontal">
+
+        <include
+            android:id="@+id/avatar"
+            layout="@layout/usedesk_item_chat_avatar" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                style="?attr/usedesk_chat_message_name_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Алена Ошева" />
+
+            <FrameLayout
+                android:id="@+id/l_agent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/usedesk_chat_message_bubble_agent_background">
+
+                <include
+                    android:id="@+id/content"
+                    layout="@layout/usedesk_item_chat_message_image" />
+
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

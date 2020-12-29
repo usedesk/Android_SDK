@@ -4,11 +4,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarStyle" />
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:theme="@style/AppTheme">
 
         <FrameLayout
             android:id="@+id/container"

@@ -1,50 +1,10 @@
 <resources>
 
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="@style/BaseTheme">
         <item name="windowActionModeOverlay">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="ToolbarStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:minHeight">?attr/actionBarSize</item>
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-    </style>
-
-    <style name="Usedesk.Theme.Chat.Custom">
-        <!--UsedeskOfflineForm-->
-        <item name="usedesk_offline_form_title">@string/offline_form_title</item>
-        <!--UsedeskMessagePanel-->
-        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attach_file</item>
-        <item name="usedesk_message_panel_send_icon">@drawable/ic_send</item>
-        <item name="usedesk_message_panel_document_icon">@drawable/ic_document</item>
-        <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
-        <!--UsedeskMessageUser-->
-        <item name="usedesk_message_user_background_color">@color/message_user_color</item>
-        <!--UsedeskMessageOperator-->
-        <item name="usedesk_message_operator_background_color">@color/message_operator_color</item>
-        <item name="usedesk_message_operator_like">@drawable/ic_like</item>
-        <item name="usedesk_message_operator_dislike">@drawable/ic_dislike</item>
-        <!--UsedeskAttachmentPanel-->
-        <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo
-        </item>
-        <item name="usedesk_attachment_panel_camera_icon">@drawable/ic_attachment_take_photo
-        </item>
-        <item name="usedesk_attachment_panel_storage_icon">@drawable/ic_attachment_document
-        </item>
-        <item name="usedesk_attachment_panel_gallery_title">
-            @string/attachment_panel_gallery_title
-        </item>
-        <item name="usedesk_attachment_panel_camera_title">
-            @string/attachment_panel_camera_title
-        </item>
-        <item name="usedesk_attachment_panel_storage_title">
-            @string/attachment_panel_storage_title
-        </item>
-    </style>
 </resources>

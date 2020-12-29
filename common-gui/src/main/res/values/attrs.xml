@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="usedesk_common_toolbar_back_image" format="reference" />
+    <attr name="usedesk_common_toolbar_root_background" format="reference" />
+    <attr name="usedesk_common_toolbar_divider_background" format="reference" />
+    <attr name="usedesk_common_toolbar_title_style" format="reference" />
+
+    <attr name="usedesk_common_permission_needed_message_text" format="string" />
+    <attr name="usedesk_common_permission_needed_action_text" format="string" />
+    <attr name="usedesk_common_permission_needed_background_color" format="color" />
+    <attr name="usedesk_common_permission_needed_message_color" format="color" />
+    <attr name="usedesk_common_permission_needed_action_color" format="color" />
+
+    <attr name="usedesk_common_error_background_color" format="color" />
+    <attr name="usedesk_common_error_text_color" format="color" />
+</resources>

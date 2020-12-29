@@ -1,22 +1,26 @@
 buildscript {
+    ext.kotlin_version = '1.4.21'
     repositories {
         google()
 
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath "com.android.tools.build:gradle:4.1.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
     project.group = 'ru.usedesk'
-    project.version = '2.1.2'
+    project.version = '3.0.0-alpha01'
 
     repositories {
         google()
 
         jcenter()
+
+        maven { url "https://jitpack.io" }
 
         maven { url 'https://github.com/Uncreated/UsedeskAndroidSdkDebug/raw/sdk_2/' }
     }

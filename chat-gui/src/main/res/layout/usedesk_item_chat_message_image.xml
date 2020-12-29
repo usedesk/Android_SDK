@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    tools:theme="@style/Usedesk.Chat.Message.Image">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/iv_preview"
+        android:layout_width="230dp"
+        android:layout_height="230dp"
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="6dp"
+        tools:src="@drawable/ic_image_loading" />
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/iv_error"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="?attr/usedesk_chat_message_image_error_image" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="2dp"
+        android:background="?attr/usedesk_chat_message_image_time_background"
+        android:paddingHorizontal="8dp">
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            style="?attr/usedesk_chat_message_time_text_style"
+            tools:text="12:06" />
+    </FrameLayout>
+</FrameLayout>

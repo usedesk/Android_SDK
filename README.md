@@ -92,7 +92,7 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 
     UsedeskChatSdk.release();
 
-[**IUsedeskChat**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedeskChat.java) - основной класс для взаимодействия с чатом.
+[**IUsedeskChat**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/external/IUsedesk.Chat.java) - основной класс для взаимодействия с чатом.
 
 | Метод   | Параметры     | Описание события                                         |
 |--------------------------|------------------|------------------|
@@ -321,7 +321,7 @@ public void onSupportClick() {
 <a name="custom_view"></a>
 ## Кастомизация готовых пользовательских интерфейсов
 
-Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/values/styles.xml) и [Usedesk.Theme.KnowledgeBase](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/values/styles.xml), после чего указать её для использования:
+Для кастомизации интерфейса можно переопределить тему [Usedesk.Theme.Chat](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/res/values/styles.xml) и [Usedesk.KnowledgeBase](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/res/values/styles.xml), после чего указать её для использования:
 
   ```
 UsedeskViewCustomizer.getInstance()

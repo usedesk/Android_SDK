@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
+    tools:theme="@style/Usedesk.KnowledgeBase">
 
     <FrameLayout
         android:id="@+id/container"

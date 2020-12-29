@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="usedesk_white_1">#FFFFFF</color>
+    <color name="usedesk_white_2">#F7F7F7</color>
+    <color name="usedesk_gray_1">#EEEEEE</color>
+    <color name="usedesk_gray_2">#BCBCBC</color>
+    <color name="usedesk_gray_3">#828282</color>
+    <color name="usedesk_black_1">#000000</color>
+    <color name="usedesk_black_2">#333333</color>
+    <color name="usedesk_red">#EB5757</color>
+    <color name="usedesk_blur">#80000000</color>
+    <color name="usedesk_blur_toolbar">#00FFFFFF</color>
+</resources>

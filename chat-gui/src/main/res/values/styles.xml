@@ -1,53 +1,322 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Usedesk.Theme.Chat">
-        <!--UsedeskOfflineForm-->
-        <item name="usedesk_offline_form_title">@string/usedesk_offline_form_title</item>
-        <item name="usedesk_offline_form_sent_title">@string/usedesk_offline_form_sent_title</item>
-        <item name="usedesk_offline_form_name_hint">@string/usedesk_offline_form_name_hint</item>
-        <item name="usedesk_offline_form_email_hint">@string/usedesk_offline_form_email_hint</item>
-        <item name="usedesk_offline_form_message_hint">@string/usedesk_offline_form_message_hint
-        </item>
-        <item name="usedesk_offline_form_send">@string/usedesk_offline_form_send</item>
-        <!--MessagePanel-->
-        <item name="usedesk_message_panel_form_send">@string/usedesk_message_panel_hint</item>
-        <item name="usedesk_message_panel_attach_icon">@drawable/ic_attach_file_black</item>
-        <item name="usedesk_message_panel_send_icon">@drawable/ic_send_black</item>
-        <item name="usedesk_message_panel_document_icon">@drawable/ic_document_black</item>
-        <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
-        <!--MessageUser-->
-        <item name="usedesk_message_user_background">@drawable/user_bubble</item>
-        <item name="usedesk_message_user_background_color">
-            @color/usedesk_message_user_background_color
-        </item>
-        <!--MessageOperator-->
-        <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
-        <item name="usedesk_message_operator_background_color">
-            @color/usedesk_message_operator_background_color
-        </item>
-        <item name="usedesk_message_operator_feedback_received">
-            @string/usedesk_message_operator_feedback_received
-        </item>
-        <item name="usedesk_message_operator_like">@drawable/ic_like</item>
-        <item name="usedesk_message_operator_dislike">@drawable/ic_dislike</item>
-        <!--ChatFragment-->
-        <item name="usedesk_chat_fragment_loading_text">@string/usedesk_chat_fragment_loading_text
-        </item>
-        <!--AttachmentPanel-->
-        <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo_black
-        </item>
-        <item name="usedesk_attachment_panel_camera_icon">@drawable/ic_attachment_take_photo_black
-        </item>
-        <item name="usedesk_attachment_panel_storage_icon">@drawable/ic_attachment_document_black
-        </item>
-        <item name="usedesk_attachment_panel_gallery_title">
-            @string/usedesk_attachment_panel_gallery_title
-        </item>
-        <item name="usedesk_attachment_panel_camera_title">
-            @string/usedesk_attachment_panel_camera_title
-        </item>
-        <item name="usedesk_attachment_panel_storage_title">
-            @string/usedesk_attachment_panel_storage_title
-        </item>
+    <style name="Usedesk.Chat.Attachment.Dialog" parent="Usedesk.Common.Dialog">
+        <item name="usedesk_chat_attachment_dialog_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_image">@drawable/ic_gallery</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_text_style">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text.Style</item>
+        <item name="usedesk_chat_attachment_dialog_camera_image">@drawable/ic_camera</item>
+        <item name="usedesk_chat_attachment_dialog_camera_text_style">@style/Usedesk.Chat.Attachment.Dialog.Camera.Text.Style</item>
+        <item name="usedesk_chat_attachment_dialog_storage_image">@drawable/ic_storage</item>
+        <item name="usedesk_chat_attachment_dialog_storage_text_style">@style/Usedesk.Chat.Attachment.Dialog.Storage.Text.Style</item>
     </style>
+
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Usedesk.Common.Dialog">
+        <item name="usedesk_chat_offline_form_success_dialog_ok_image">@drawable/ic_done_round</item>
+        <item name="usedesk_chat_offline_form_success_dialog_ok_text_style">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.Style</item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_background">@color/usedesk_gray_1</item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_text_style">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.Style</item>
+    </style>
+
+    <style name="Usedesk.Chat.Attached.File" parent="">
+        <item name="usedesk_chat_attached_file_close_image">@drawable/ic_preview_detach</item>
+        <item name="usedesk_chat_attached_file_preview_image">@drawable/ic_attached_file</item>
+        <item name="usedesk_chat_attached_file_name_text_style">@style/Usedesk.Chat.Attached.File.Name.Text.Style</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message" parent="">
+        <item name="usedesk_chat_message_avatar_default_image">@drawable/background_avatar_def</item>
+        <item name="usedesk_chat_message_avatar_dark_image">@drawable/background_avatar_dark</item>
+        <item name="usedesk_chat_message_avatar_text_style">@style/Usedesk.Chat.Message.Avatar.Text.Style</item>
+        <item name="usedesk_chat_message_bubble_agent_background">@drawable/background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_client_background">@drawable/background_bubble_client</item>
+        <item name="usedesk_chat_message_date_today_text">@string/usedesk_today</item>
+        <item name="usedesk_chat_message_date_yesterday_text">@string/usedesk_yesterday</item>
+        <item name="usedesk_chat_message_feedback_thanks_text">@string/usedesk_feedback_thanks</item>
+        <item name="usedesk_chat_message_feedback_good_image">@drawable/ic_smile_happy</item>
+        <item name="usedesk_chat_message_feedback_good_colored_image">@drawable/ic_smile_happy_colored</item>
+        <item name="usedesk_chat_message_feedback_bad_image">@drawable/ic_smile_sad</item>
+        <item name="usedesk_chat_message_feedback_bad_colored_image">@drawable/ic_smile_sad_colored</item>
+        <item name="usedesk_chat_message_time_text_style">@style/Usedesk.Chat.Message.Time.Dark.Text.Style</item>
+        <item name="usedesk_chat_message_name_text_style">@style/Usedesk.Chat.Message.Name.Text.Style</item>
+        <item name="usedesk_chat_message_date_text_style">@style/Usedesk.Chat.Message.Date.Text.Style</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File">
+        <item name="usedesk_chat_message_file_preview_image">@drawable/ic_file_dark</item>
+        <item name="usedesk_chat_message_file_extension_text_style">@style/Usedesk.Chat.Message.File.Extension.Text.Style</item>
+        <item name="usedesk_chat_message_file_name_text_style">@style/Usedesk.Chat.Message.File.Name.Text.Style</item>
+        <item name="usedesk_chat_message_file_size_text_style">@style/Usedesk.Chat.Message.File.Size.Text.Style</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Agent" />
+
+    <style name="Usedesk.Chat.Message.File.Client" />
+
+    <style name="Usedesk.Chat.Message.Image">
+        <item name="usedesk_chat_message_image_error_image">@drawable/ic_error</item>
+        <item name="usedesk_chat_message_image_loading_image">@drawable/ic_image_loading</item>
+        <item name="usedesk_chat_message_image_time_background">@drawable/background_time_dark</item>
+        <item name="usedesk_chat_message_time_text_style">@style/Usedesk.Chat.Message.Time.Light.Text.Style</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Image.Agent" />
+
+    <style name="Usedesk.Chat.Message.Image.Client" />
+
+    <style name="Usedesk.Chat.Message.Text">
+        <item name="usedesk_chat_message_text_button_background">@color/usedesk_black_2</item>
+        <item name="usedesk_chat_message_text_button_text_style">@style/Usedesk.Chat.Message.Text.Button.Text.Style</item>
+        <item name="usedesk_chat_message_text_message_text_style">@style/Usedesk.Chat.Message.Text.Message.Text.Style</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Agent" />
+
+    <style name="Usedesk.Chat.Message.Text.Client" />
+
+    <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
+        <item name="usedesk_chat_show_file_root_background">@color/usedesk_white_2</item>
+        <item name="usedesk_chat_show_file_image_background">@color/usedesk_black_1</item>
+        <item name="usedesk_chat_show_file_blur_top_background">@color/usedesk_blur</item>
+        <item name="usedesk_chat_show_file_blur_bottom_background">@color/usedesk_blur</item>
+        <item name="usedesk_chat_show_file_blur_toolbar_background">@color/usedesk_blur_toolbar</item>
+        <item name="usedesk_chat_show_file_file_image">@drawable/ic_file_gray</item>
+        <item name="usedesk_chat_show_file_share_image">@drawable/ic_share</item>
+        <item name="usedesk_chat_show_file_download_image">@drawable/ic_download</item>
+        <item name="usedesk_chat_show_file_error_image">@drawable/ic_error</item>
+        <item name="usedesk_chat_show_file_back_image">@drawable/ic_back_white</item>
+        <item name="usedesk_chat_show_file_loading_image">@drawable/ic_image_loading</item>
+        <item name="usedesk_chat_show_file_toolbar_text_style">@style/Usedesk.Chat.Show.File.Toolbar.Text.Style</item>
+        <item name="usedesk_chat_show_file_name_text_style">@style/Usedesk.Chat.Show.File.Name.Text.Style</item>
+        <item name="usedesk_chat_show_file_size_text_style">@style/Usedesk.Chat.Show.File.Size.Text.Style</item>
+        <item name="usedesk_chat_show_file_download_started_text">@string/usedesk_download_started</item>
+        <item name="usedesk_chat_show_file_download_failed_text">@string/usedesk_download_failed</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">
+        <item name="colorAccent">@color/usedesk_red</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
+        <item name="usedesk_chat_screen_title_text">@string/usedesk_screen_chat_title</item>
+
+        <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
+        <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
+
+        <item name="usedesk_chat_screen_attach_image">@drawable/ic_attachment</item>
+        <item name="usedesk_chat_screen_send_image">@drawable/ic_send</item>
+        <item name="usedesk_chat_screen_loading_text_style">@style/Usedesk.Chat.Screen.Loading.Text.Style</item>
+        <item name="usedesk_chat_screen_message_text_style">@style/Usedesk.Chat.Screen.Message.Text.Style</item>
+        <item name="usedesk_chat_screen_offline_form_description_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text.Style</item>
+        <item name="usedesk_chat_screen_offline_form_send_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text.Style</item>
+        <item name="usedesk_chat_screen_offline_form_name_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Name.Text.Style</item>
+        <item name="usedesk_chat_screen_offline_form_email_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Email.Text.Style</item>
+        <item name="usedesk_chat_screen_offline_form_message_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Message.Text.Style</item>
+        <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
+        <item name="usedesk_chat_screen_offline_form_name_error_text">@string/usedesk_offline_form_name_error</item>
+        <item name="usedesk_chat_screen_offline_form_email_error_text">@string/usedesk_offline_form_email_error</item>
+        <item name="usedesk_chat_screen_offline_form_message_error_text">@string/usedesk_offline_form_message_error</item>
+        <item name="usedesk_chat_screen_offline_form_failed_to_send_text">@string/usedesk_offline_form_failed_to_send</item>
+
+        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
+        <item name="usedesk_chat_screen_message_panel_input_background">@drawable/background_input_message</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Date.Text.Style" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Extension.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_1</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Time.Dark.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Time.Light.Text.Style" parent="">
+        <item name="android:textColor">#CCFFFFFF</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Name.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Size.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Attached.File.Name.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Name.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Avatar.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_white_1</item>
+        <item name="android:fontFamily">@font/sf_ui_display_medium</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Message.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Button.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_white_1</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:text">@string/usedesk_offline_form_success_close</item>
+    </style>
+
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:text">@string/usedesk_offline_form_sent_title</item>
+    </style>
+
+    <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:text">@string/usedesk_attachment_gallery</item>
+    </style>
+
+    <style name="Usedesk.Chat.Attachment.Dialog.Camera.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:text">@string/usedesk_attachment_camera</item>
+    </style>
+
+    <style name="Usedesk.Chat.Attachment.Dialog.Storage.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:text">@string/usedesk_attachment_storage</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File.Toolbar.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_white_1</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File.Name.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File.Size.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Message.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:hint">@string/usedesk_message_panel_input_hint</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Loading.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:text">@string/usedesk_loading_text</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Description.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:text">@string/usedesk_offline_form_title</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Name.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">@string/usedesk_offline_form_name_hint</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Email.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">@string/usedesk_offline_form_email_hint</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Message.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:hint">@string/usedesk_offline_form_message_hint</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Send.Text.Style" parent="">
+        <item name="android:textColor">@color/usedesk_white_1</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:text">@string/usedesk_offline_form_send</item>
+    </style>
+
 </resources>

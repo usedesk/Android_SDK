@@ -7,10 +7,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import io.reactivex.disposables.CompositeDisposable;
-import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
-import ru.usedesk.knowledgebase_sdk.external.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.external.entity.UsedeskKnowledgeBaseConfiguration;
+import ru.usedesk.chat_sdk.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration;
+import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk;
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.ServiceLocator;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
@@ -22,64 +23,59 @@ public class MainViewModel extends ViewModel {
 
     private final ConfigurationRepository configurationRepository;
 
-    private final MutableLiveData<Event<Navigation>> navigationLiveData = new MutableLiveData<>();
     private final MutableLiveData<Configuration> configurationLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<String>> errorLiveData = new MutableLiveData<>();
 
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private MainNavigation mainNavigation;
 
     private Configuration configuration;
 
     public MainViewModel() {
         configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
-
-        setNavigation(Navigation.CONFIGURATION);
     }
 
-    void goBack() {
-        Navigation currentNavigation = navigationLiveData.getValue().getData();
-        if (currentNavigation == Navigation.CONFIGURATION) {
-            setNavigation(Navigation.EXIT);
-        } else if (currentNavigation == Navigation.SDK_CHAT && configuration.isWithKnowledgeBase()) {
-            setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
-        } else {
-            setNavigation(Navigation.CONFIGURATION);
-        }
+    void init(MainNavigation mainNavigation) {
+        this.mainNavigation = mainNavigation;
+        mainNavigation.goConfiguration();
     }
 
-    private void setNavigation(@NonNull Navigation navigation) {
-        navigationLiveData.postValue(new OneTimeEvent<>(navigation));
+    void goShowFile(@NonNull UsedeskFile usedeskFile) {
+        mainNavigation.goShowFile(usedeskFile);
     }
 
-    void goInfo() {
-        setNavigation(Navigation.INFO);
+    void goSdk(@Nullable String customAgentName) {
+        disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
+            UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),
+                    configuration.getEmail(),
+                    configuration.getUrl(),
+                    configuration.getOfflineFormUrl(),
+                    configuration.getClientName(),
+                    getLong(configuration.getClientPhoneNumber()),
+                    getLong(configuration.getClientAdditionalId()),
+                    configuration.getInitClientMessage());
+            if (usedeskChatConfiguration.isValid()) {
+                this.configuration = configuration;
+                initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
+
+                configurationLiveData.postValue(configuration);
+                if (this.configuration.isWithKnowledgeBase()) {
+                    mainNavigation.goKnowledgeBase();
+                } else {
+                    mainNavigation.goChat(customAgentName);
+                }
+            } else {
+                errorLiveData.postValue(new OneTimeEvent<>("Invalid configuration"));
+            }
+        }));
     }
 
-    void goSdk() {
-        disposables.add(configurationRepository.getConfiguration()
-                .subscribe(configuration -> {
-                    UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),
-                            configuration.getEmail(),
-                            configuration.getUrl(),
-                            configuration.getOfflineFormUrl(),
-                            configuration.getClientName(),
-                            getLong(configuration.getClientPhoneNumber()),
-                            getLong(configuration.getClientAdditionalId()),
-                            configuration.getInitClientMessage());
-                    if (usedeskChatConfiguration.isValid()) {
-                        this.configuration = configuration;
-                        initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
+    public void goChat(@Nullable String customAgentName) {
+        mainNavigation.goChat(customAgentName);
+    }
 
-                        configurationLiveData.postValue(configuration);
-                        if (this.configuration.isWithKnowledgeBase()) {
-                            setNavigation(Navigation.SDK_KNOWLEDGE_BASE);
-                        } else {
-                            setNavigation(Navigation.SDK_CHAT);
-                        }
-                    } else {
-                        errorLiveData.postValue(new OneTimeEvent<>("Invalid configuration"));
-                    }
-                }));
+    void onBackPressed() {
+        mainNavigation.onBackPressed();
     }
 
     private void initUsedeskConfiguration(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
@@ -98,11 +94,6 @@ public class MainViewModel extends ViewModel {
     }
 
     @NonNull
-    LiveData<Event<Navigation>> getNavigationLiveData() {
-        return navigationLiveData;
-    }
-
-    @NonNull
     LiveData<Configuration> getConfigurationLiveData() {
         return configurationLiveData;
     }
@@ -117,13 +108,5 @@ public class MainViewModel extends ViewModel {
         super.onCleared();
 
         disposables.dispose();
-    }
-
-    public enum Navigation {
-        CONFIGURATION,
-        SDK_KNOWLEDGE_BASE,
-        SDK_CHAT,
-        INFO,
-        EXIT
     }
 }

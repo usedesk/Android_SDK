@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usedesk_settings">Settings</string>
+    <string name="usedesk_need_permissions">Permissions needed</string>
+    <string name="usedesk_need_permission">Permission needed</string>
+</resources>

@@ -23,7 +23,7 @@
     <attr name="usedesk_fragment_article" format="reference" />
     <attr name="usedesk_fragment_knowledge_base" format="reference" />
     <attr name="usedesk_fragment_list" format="reference" />
-    <attr name="usedesk_item_articleinfo" format="reference" />
+    <attr name="usedesk_item_article_info" format="reference" />
     <attr name="usedesk_item_category" format="reference" />
     <attr name="usedesk_item_section" format="reference" />
 </resources>

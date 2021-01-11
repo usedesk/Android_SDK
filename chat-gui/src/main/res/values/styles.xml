@@ -25,7 +25,6 @@
 
     <style name="Usedesk.Chat.Message" parent="">
         <item name="usedesk_chat_message_avatar_default_image">@drawable/background_avatar_def</item>
-        <item name="usedesk_chat_message_avatar_dark_image">@drawable/background_avatar_dark</item>
         <item name="usedesk_chat_message_avatar_text_style">@style/Usedesk.Chat.Message.Avatar.Text.Style</item>
         <item name="usedesk_chat_message_bubble_agent_background">@drawable/background_bubble_agent</item>
         <item name="usedesk_chat_message_bubble_client_background">@drawable/background_bubble_client</item>

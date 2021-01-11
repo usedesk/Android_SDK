@@ -13,4 +13,7 @@
 
     <style name="Usedesk.KnowledgeBase.Sections.Page" parent=""></style>
 
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Dialog" parent="Usedesk.Common.Dialog"></style>
+
 </resources>

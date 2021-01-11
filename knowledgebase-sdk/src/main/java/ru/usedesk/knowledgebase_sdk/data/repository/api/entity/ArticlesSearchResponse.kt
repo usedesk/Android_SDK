@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 internal class ArticlesSearchResponse {
     var page: Long? = null
     var count: Long? = null
-    var articles: Array<ArticleBodyResponse?>? = null
+    var articles: Array<ArticleContentResponse?>? = null
 
     @SerializedName("last-page")
     var lastPage: Long? = null

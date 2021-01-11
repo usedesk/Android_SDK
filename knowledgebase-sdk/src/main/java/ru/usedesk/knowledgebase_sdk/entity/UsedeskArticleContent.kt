@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskArticleBody(
+class UsedeskArticleContent(
         val id: Long,
         val title: String,
         val text: String

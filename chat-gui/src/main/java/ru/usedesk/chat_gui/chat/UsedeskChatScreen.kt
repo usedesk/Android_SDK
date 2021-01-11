@@ -93,7 +93,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 viewModel,
                 viewLifecycleOwner,
                 {
-                    UsedeskOfflineFormSuccessDialog.create(binding.rootView).apply {
+                    UsedeskOfflineFormSuccessDialog.newInstance(binding.rootView).apply {
                         setOnDismissListener {
                             requireActivity().onBackPressed()
                         }

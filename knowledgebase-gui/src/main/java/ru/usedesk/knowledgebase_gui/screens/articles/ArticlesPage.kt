@@ -46,7 +46,7 @@ internal class ArticlesPage : UsedeskFragment() {
         ArticlesAdapter(binding.rvItems,
                 viewLifecycleOwner,
                 viewModel) {
-            getParentListener<IOnArticleClickListener>()?.onArticleInfoClick(it)
+            getParentListener<IOnArticleClickListener>()?.onArticleClick(it)
         }
 
         showInstead(binding.pbLoading, binding.rvItems)

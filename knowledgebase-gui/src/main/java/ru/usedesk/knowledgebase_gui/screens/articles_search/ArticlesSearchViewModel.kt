@@ -3,11 +3,11 @@ package ru.usedesk.knowledgebase_gui.screens.articles_search
 import androidx.lifecycle.MutableLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticlesSearchViewModel : UsedeskViewModel() {
 
-    val articlesLiveData = MutableLiveData<List<UsedeskArticleBody>>()
+    val articlesLiveData = MutableLiveData<List<UsedeskArticleContent>>()
 
     fun onSearchQuery(searchQuery: String) {
         doIt(UsedeskKnowledgeBaseSdk.getInstance().getArticlesRx(searchQuery), onValue = {

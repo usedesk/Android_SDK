@@ -10,13 +10,13 @@ interface IUsedeskKnowledgeBase {
     fun getSections(): List<UsedeskSection>
 
     @Throws(UsedeskException::class)
-    fun getArticle(articleId: Long): UsedeskArticleBody
+    fun getArticle(articleId: Long): UsedeskArticleContent
 
     @Throws(UsedeskException::class)
-    fun getArticles(searchQuery: String): List<UsedeskArticleBody>
+    fun getArticles(searchQuery: String): List<UsedeskArticleContent>
 
     @Throws(UsedeskException::class)
-    fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody>
+    fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent>
 
     @Throws(UsedeskException::class)
     fun getCategories(sectionId: Long): List<UsedeskCategory>
@@ -29,11 +29,11 @@ interface IUsedeskKnowledgeBase {
 
     fun getSectionsRx(): Single<List<UsedeskSection>>
 
-    fun getArticleRx(articleId: Long): Single<UsedeskArticleBody>
+    fun getArticleRx(articleId: Long): Single<UsedeskArticleContent>
 
-    fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBody>>
+    fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleContent>>
 
-    fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleBody>>
+    fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleContent>>
 
     fun getCategoriesRx(sectionId: Long): Single<List<UsedeskCategory>>
 

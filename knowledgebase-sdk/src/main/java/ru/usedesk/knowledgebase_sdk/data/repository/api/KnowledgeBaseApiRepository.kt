@@ -45,21 +45,21 @@ internal class KnowledgeBaseApiRepository(
 
     override fun getArticle(accountId: String,
                             token: String,
-                            articleId: Long): UsedeskArticleBody {
-        val articleBodyResponse = doRequest(ArticleBodyResponse::class.java) {
-            it.getArticleBody(accountId, articleId, token)
+                            articleId: Long): UsedeskArticleContent {
+        val articleContentResponse = doRequest(ArticleContentResponse::class.java) {
+            it.getArticleContent(accountId, articleId, token)
         }
         return valueOrNull {
-            UsedeskArticleBody(articleBodyResponse.id!!,
-                    articleBodyResponse.title ?: "",
-                    articleBodyResponse.text ?: ""
+            UsedeskArticleContent(articleContentResponse.id!!,
+                    articleContentResponse.title ?: "",
+                    articleContentResponse.text ?: ""
             )
         } ?: throw UsedeskHttpException("Wrong response")
     }
 
     override fun getArticles(accountId: String,
                              token: String,
-                             searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
+                             searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent> {
         val articlesSearchResponse = doRequest(ArticlesSearchResponse::class.java) {
             it.getArticles(accountId,
                     token,
@@ -76,7 +76,7 @@ internal class KnowledgeBaseApiRepository(
 
         return (articlesSearchResponse.articles ?: arrayOf()).mapNotNull {
             valueOrNull {
-                UsedeskArticleBody(it!!.id!!,
+                UsedeskArticleContent(it!!.id!!,
                         it.title ?: "",
                         it.text ?: "")
             }

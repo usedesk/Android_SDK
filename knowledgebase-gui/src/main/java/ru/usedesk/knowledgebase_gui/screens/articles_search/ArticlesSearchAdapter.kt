@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleBody
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticlesSearchAdapter(
         recyclerView: RecyclerView,
@@ -18,7 +18,7 @@ internal class ArticlesSearchAdapter(
         private val onArticleClick: (Long) -> Unit
 ) : RecyclerView.Adapter<ArticlesSearchAdapter.ArticleViewHolder>() {
 
-    private var items = listOf<UsedeskArticleBody>()
+    private var items = listOf<UsedeskArticleContent>()
 
     init {
         recyclerView.adapter = this
@@ -33,7 +33,7 @@ internal class ArticlesSearchAdapter(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
         return ArticleViewHolder(inflateItem(viewGroup,
-                R.layout.usedesk_item_article_body,
+                R.layout.usedesk_item_article_content,
                 R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         })
@@ -49,11 +49,11 @@ internal class ArticlesSearchAdapter(
             private val binding: Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
-        fun bind(articleBody: UsedeskArticleBody) {
-            binding.tvTitle.text = articleBody.title
-            binding.tvDescription.text = Html.fromHtml(articleBody.text).trim()
+        fun bind(articleContent: UsedeskArticleContent) {
+            binding.tvTitle.text = articleContent.title
+            binding.tvDescription.text = Html.fromHtml(articleContent.text).trim()
             binding.rootView.setOnClickListener {
-                onArticleClick(articleBody.id)
+                onArticleClick(articleContent.id)
             }
         }
     }

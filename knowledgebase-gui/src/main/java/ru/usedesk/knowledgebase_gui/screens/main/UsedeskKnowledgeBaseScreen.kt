@@ -14,7 +14,7 @@ import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
-import ru.usedesk.knowledgebase_gui.screens.article.ArticleFragment
+import ru.usedesk.knowledgebase_gui.screens.article.ArticleBottomSheetFragment
 import ru.usedesk.knowledgebase_gui.screens.articles.ArticlesPage
 import ru.usedesk.knowledgebase_gui.screens.articles.IOnArticleClickListener
 import ru.usedesk.knowledgebase_gui.screens.articles_search.ArticlesSearchPage
@@ -37,6 +37,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
     private lateinit var binding: Binding
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
+    private var articleContentBottomSheet: ArticleBottomSheetFragment? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -79,10 +80,47 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 }
             }
 
+            viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    when (it.state) {
+                        KnowledgeBaseViewModel.ArticleContentState.State.LOADING -> {
+                            needArticleBottomSheet().apply {
+                                onLoading()
+                                show()
+                            }
+                        }
+                        KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
+                            needArticleBottomSheet().apply {
+                                it.articleContent?.also { articleContent ->
+                                    onArticleContent(articleContent)
+                                    show()
+                                }
+                            }
+                        }
+                        else -> {
+                            articleContentBottomSheet?.apply {
+                                hide()
+                                articleContentBottomSheet = null
+                            }
+                        }
+                    }
+                }
+            }
+
             val sectionsTitle = binding.styleValues.getString(R.attr.usedesk_knowledgebase_sections_toolbar_title_text)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
         }
         return binding.rootView
+    }
+
+    private fun needArticleBottomSheet(): ArticleBottomSheetFragment {
+        return articleContentBottomSheet
+                ?: ArticleBottomSheetFragment.newInstance(binding.rootView).apply {
+                    setOnDismissListener {
+                        viewModel.onArticleClosed()
+                    }
+                    articleContentBottomSheet = this
+                }
     }
 
     private fun showSearchQuery(query: String) {
@@ -115,12 +153,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 .commit()
     }
 
-    override fun onArticleInfoClick(articleId: Long) {
-        switchPage(ArticleFragment.newInstance(articleId))
-    }
-
     override fun onArticleClick(articleId: Long) {
-        switchPage(ArticleFragment.newInstance(articleId))
+        viewModel.onArticleClick(articleId)
     }
 
     override fun onCategoryClick(categoryId: Long,

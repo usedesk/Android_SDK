@@ -13,9 +13,9 @@ internal interface ApiRetrofit {
                     @Query("api_token") token: String): Call<ResponseBody>
 
     @GET("{account_id}/articles/{article_id}")
-    fun getArticleBody(@Path(value = "account_id", encoded = true) accountId: String,
-                       @Path(value = "article_id", encoded = true) articleId: Long,
-                       @Query("api_token") token: String): Call<ResponseBody>
+    fun getArticleContent(@Path(value = "account_id", encoded = true) accountId: String,
+                          @Path(value = "article_id", encoded = true) articleId: Long,
+                          @Query("api_token") token: String): Call<ResponseBody>
 
     @GET("{account_id}/articles/list")
     fun getArticles(@Path(value = "account_id", encoded = true) accountId: String,

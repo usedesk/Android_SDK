@@ -29,7 +29,7 @@ internal class KnowledgeBaseInteractor(
         }
     }
 
-    override fun getArticleRx(articleId: Long): Single<UsedeskArticleBody> {
+    override fun getArticleRx(articleId: Long): Single<UsedeskArticleContent> {
         return createSingle {
             it.onSuccess(getArticle(articleId))
         }
@@ -47,13 +47,13 @@ internal class KnowledgeBaseInteractor(
         }
     }
 
-    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBody>> {
+    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleContent>> {
         return createSingle {
             it.onSuccess(getArticles(searchQuery))
         }
     }
 
-    override fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleBody>> {
+    override fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleContent>> {
         return createSingle {
             it.onSuccess(getArticles(searchQuery))
         }
@@ -83,18 +83,18 @@ internal class KnowledgeBaseInteractor(
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticle(articleId: Long): UsedeskArticleBody {
+    override fun getArticle(articleId: Long): UsedeskArticleContent {
         return knowledgeApiRepository.getArticle(configuration.accountId, configuration.token, articleId)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: String): List<UsedeskArticleBody> {
+    override fun getArticles(searchQuery: String): List<UsedeskArticleContent> {
         val query = UsedeskSearchQuery.Builder(searchQuery).build()
         return knowledgeApiRepository.getArticles(configuration.accountId, configuration.token, query)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
+    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent> {
         return knowledgeApiRepository.getArticles(configuration.accountId, configuration.token, searchQuery)
     }
 

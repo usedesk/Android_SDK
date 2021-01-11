@@ -1,5 +1,5 @@
 package ru.usedesk.knowledgebase_gui.screens.articles
 
 internal interface IOnArticleClickListener {
-    fun onArticleInfoClick(articleId: Long)
+    fun onArticleClick(articleId: Long)
 }

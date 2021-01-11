@@ -9,9 +9,9 @@ internal interface IKnowledgeBaseApiRepository {
 
     fun getArticles(accountId: String, token: String, categoryId: Long): List<UsedeskArticleInfo>
 
-    fun getArticle(accountId: String, token: String, articleId: Long): UsedeskArticleBody
+    fun getArticle(accountId: String, token: String, articleId: Long): UsedeskArticleContent
 
-    fun getArticles(accountId: String, token: String, searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody>
+    fun getArticles(accountId: String, token: String, searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent>
 
     fun addViews(accountId: String, token: String, articleId: Long)
 }

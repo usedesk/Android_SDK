@@ -4,8 +4,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.UsedeskBottomSheetDialog
 import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskBottomSheetDialog
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 
@@ -30,7 +30,7 @@ class UsedeskOfflineFormSuccessDialog private constructor(
     }
 
     companion object {
-        fun create(container: View): UsedeskOfflineFormSuccessDialog {
+        fun newInstance(container: View): UsedeskOfflineFormSuccessDialog {
             val dialogStyle = UsedeskResourceManager.getResourceId(
                     R.style.Usedesk_Chat_Offline_Form_Success_Dialog
             )

@@ -143,12 +143,7 @@ internal class MessagesAdapter(
             itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        open fun bind(position: Int) {
-            /*itemView.startAnimation(
-                    AnimationUtils.loadAnimation(itemView.context,
-                            android.R.anim.fade_in)
-            )*/
-        }
+        abstract fun bind(position: Int)
     }
 
     internal abstract inner class MessageViewHolder(
@@ -158,8 +153,6 @@ internal class MessagesAdapter(
     ) : BaseViewHolder(itemView) {
 
         override fun bind(position: Int) {
-            super.bind(position)
-
             val message = items[position]
             val formatted = getFormattedTime(message.calendar)
             tvTime.text = formatted
@@ -197,24 +190,10 @@ internal class MessagesAdapter(
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
-            agentBinding.avatar.tvAvatar.visibility = View.VISIBLE
-            val initials = messageAgent.name.split(' ')
-                    .filter { it.isNotEmpty() }
-                    .take(2)
-                    .map { it[0] }
-                    .joinToString(separator = "")
-            agentBinding.avatar.tvAvatar.text = initials
-            val avatarImageId = agentBinding.styleValues.getId(if (initials.isEmpty()) {
-                R.attr.usedesk_chat_message_avatar_default_image
-            } else {
-                R.attr.usedesk_chat_message_avatar_dark_image
-            })
-            agentBinding.avatar.ivAvatar.setImageResource(avatarImageId)
+            val avatarImageId = agentBinding.styleValues.getId(R.attr.usedesk_chat_message_avatar_default_image)
 
-            setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0, onSuccess = {
-                agentBinding.avatar.tvAvatar.visibility = View.INVISIBLE
-            })
-            agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
+            setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
+            agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
         }
 
         fun bindClient(position: Int,
@@ -509,11 +488,6 @@ internal class MessagesAdapter(
         val tvDate: TextView = rootView.findViewById(R.id.tv_date)
     }
 
-    internal class AvatarBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
-        val tvAvatar: TextView = rootView.findViewById(R.id.tv_avatar)
-    }
-
     internal class MessageTextBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val rvButtons: RecyclerView = rootView.findViewById(R.id.rv_buttons)
@@ -574,8 +548,7 @@ internal class MessagesAdapter(
     }
 
     internal class AgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val avatar = AvatarBinding(rootView.findViewById(R.id.avatar), defaultStyleId)
-
+        val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
         val tvName: TextView = rootView.findViewById(R.id.tv_name)
     }
 

@@ -33,17 +33,34 @@ internal class MessagesAdapter(
     private var items: List<UsedeskMessage> = listOf()
 
     init {
-        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context).apply {
-            reverseLayout = true
-        }
-        recyclerView.adapter = this
-        viewModel.messagesLiveData.observe(owner) {
-            it.forEachIndexed { index, message ->
-                if (message != this.items.getOrNull(index)) {
-                    notifyItemChanged(index)
+        recyclerView.also {
+            it.layoutManager = LinearLayoutManager(recyclerView.context)
+            it.adapter = this
+            it.setHasFixedSize(false)
+            it.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+                val difBottom = oldBottom - bottom
+                if (difBottom > 0) {
+                    it.scrollBy(0, difBottom)
                 }
             }
-            this.items = it
+        }
+        viewModel.messagesLiveData.observe(owner) { messages ->
+            if (items.isEmpty()) {
+                this.items = messages.reversed()
+                notifyDataSetChanged()
+                recyclerView.scrollToPosition(items.size - 1)
+            }
+        }
+        viewModel.newMessageLiveData.observe(owner) { message ->
+            if (message != null) {
+                val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
+                val contentHeight = recyclerView.computeVerticalScrollRange()
+                items = items + message
+                notifyItemInserted(items.size - 1)
+                if (visibleBottom >= contentHeight) {//Если чат был внизу
+                    recyclerView.scrollToPosition(items.size - 1)
+                }
+            }
         }
         viewModel.messageUpdateLiveData.observe(owner) { messageUpdate ->
             items = items.mapIndexed { index, message ->
@@ -126,7 +143,12 @@ internal class MessagesAdapter(
             itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
 
-        abstract fun bind(position: Int)
+        open fun bind(position: Int) {
+            /*itemView.startAnimation(
+                    AnimationUtils.loadAnimation(itemView.context,
+                            android.R.anim.fade_in)
+            )*/
+        }
     }
 
     internal abstract inner class MessageViewHolder(
@@ -136,11 +158,13 @@ internal class MessagesAdapter(
     ) : BaseViewHolder(itemView) {
 
         override fun bind(position: Int) {
+            super.bind(position)
+
             val message = items[position]
             val formatted = getFormattedTime(message.calendar)
             tvTime.text = formatted
 
-            val previousMessage = items.getOrNull(position + 1)
+            val previousMessage = items.getOrNull(position - 1)
             bindingDate.tvDate.visibility = if (isSameDay(previousMessage?.calendar, message.calendar)) {
                 View.GONE
             } else {
@@ -171,7 +195,7 @@ internal class MessagesAdapter(
             val messageAgent = items[position] as UsedeskMessageAgent
 
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
-            agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position + 1))
+            agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
             agentBinding.avatar.tvAvatar.visibility = View.VISIBLE
             val initials = messageAgent.name.split(' ')
@@ -190,12 +214,12 @@ internal class MessagesAdapter(
             setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0, onSuccess = {
                 agentBinding.avatar.tvAvatar.visibility = View.INVISIBLE
             })
-            agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position - 1))
+            agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
         }
 
         fun bindClient(position: Int,
                        clientBinding: ClientBinding) {
-            clientBinding.tvName.visibility = visibleGone(items.getOrNull(position + 1) is UsedeskMessageAgent)
+            clientBinding.tvName.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
         }
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {

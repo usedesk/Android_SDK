@@ -33,17 +33,34 @@ internal class MessagesAdapter(
     private var items: List<UsedeskMessage> = listOf()
 
     init {
-        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context).apply {
-            reverseLayout = true
-        }
-        recyclerView.adapter = this
-        viewModel.messagesLiveData.observe(owner) {
-            it.forEachIndexed { index, message ->
-                if (message != this.items.getOrNull(index)) {
-                    notifyItemChanged(index)
+        recyclerView.also {
+            it.layoutManager = LinearLayoutManager(recyclerView.context)
+            it.adapter = this
+            it.setHasFixedSize(false)
+            it.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+                val difBottom = oldBottom - bottom
+                if (difBottom > 0) {
+                    it.scrollBy(0, difBottom)
                 }
             }
-            this.items = it
+        }
+        viewModel.messagesLiveData.observe(owner) { messages ->
+            if (items.isEmpty()) {
+                this.items = messages.reversed()
+                notifyDataSetChanged()
+                recyclerView.scrollToPosition(items.size - 1)
+            }
+        }
+        viewModel.newMessageLiveData.observe(owner) { message ->
+            if (message != null) {
+                val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
+                val contentHeight = recyclerView.computeVerticalScrollRange()
+                items = items + message
+                notifyItemInserted(items.size - 1)
+                if (visibleBottom >= contentHeight) {//Если чат был внизу
+                    recyclerView.scrollToPosition(items.size - 1)
+                }
+            }
         }
         viewModel.messageUpdateLiveData.observe(owner) { messageUpdate ->
             items = items.mapIndexed { index, message ->
@@ -140,7 +157,7 @@ internal class MessagesAdapter(
             val formatted = getFormattedTime(message.calendar)
             tvTime.text = formatted
 
-            val previousMessage = items.getOrNull(position + 1)
+            val previousMessage = items.getOrNull(position - 1)
             bindingDate.tvDate.visibility = if (isSameDay(previousMessage?.calendar, message.calendar)) {
                 View.GONE
             } else {
@@ -171,31 +188,17 @@ internal class MessagesAdapter(
             val messageAgent = items[position] as UsedeskMessageAgent
 
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
-            agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position + 1))
+            agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
-            agentBinding.avatar.tvAvatar.visibility = View.VISIBLE
-            val initials = messageAgent.name.split(' ')
-                    .filter { it.isNotEmpty() }
-                    .take(2)
-                    .map { it[0] }
-                    .joinToString(separator = "")
-            agentBinding.avatar.tvAvatar.text = initials
-            val avatarImageId = agentBinding.styleValues.getId(if (initials.isEmpty()) {
-                R.attr.usedesk_chat_message_avatar_default_image
-            } else {
-                R.attr.usedesk_chat_message_avatar_dark_image
-            })
-            agentBinding.avatar.ivAvatar.setImageResource(avatarImageId)
+            val avatarImageId = agentBinding.styleValues.getId(R.attr.usedesk_chat_message_avatar_default_image)
 
-            setImage(agentBinding.avatar.ivAvatar, messageAgent.avatar, 0, onSuccess = {
-                agentBinding.avatar.tvAvatar.visibility = View.INVISIBLE
-            })
-            agentBinding.avatar.rootView.visibility = visibleInvisible(!isSameAgent(messageAgent, position - 1))
+            setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
+            agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
         }
 
         fun bindClient(position: Int,
                        clientBinding: ClientBinding) {
-            clientBinding.tvName.visibility = visibleGone(items.getOrNull(position + 1) is UsedeskMessageAgent)
+            clientBinding.tvName.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
         }
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
@@ -485,11 +488,6 @@ internal class MessagesAdapter(
         val tvDate: TextView = rootView.findViewById(R.id.tv_date)
     }
 
-    internal class AvatarBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
-        val tvAvatar: TextView = rootView.findViewById(R.id.tv_avatar)
-    }
-
     internal class MessageTextBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val rvButtons: RecyclerView = rootView.findViewById(R.id.rv_buttons)
@@ -550,8 +548,7 @@ internal class MessagesAdapter(
     }
 
     internal class AgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val avatar = AvatarBinding(rootView.findViewById(R.id.avatar), defaultStyleId)
-
+        val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
         val tvName: TextView = rootView.findViewById(R.id.tv_name)
     }
 

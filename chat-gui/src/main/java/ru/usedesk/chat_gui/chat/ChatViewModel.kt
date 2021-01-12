@@ -13,6 +13,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>>(listOf())
+    val newMessageLiveData = MutableLiveData<UsedeskMessage>()
     val messageUpdateLiveData = MutableLiveData<UsedeskMessage>()
     val chatStateLiveData = MutableLiveData(ChatState.LOADING)
 
@@ -33,6 +34,9 @@ internal class ChatViewModel : UsedeskViewModel() {
         addDisposable(actionListenerRx.messagesObservable.subscribe {
             messagesLiveData.postValue(it.reversed())
             chatStateLiveData.postValue(ChatState.CHAT)
+        })
+        addDisposable(actionListenerRx.newMessageObservable.subscribe {
+            newMessageLiveData.postValue(it)
         })
         addDisposable(actionListenerRx.offlineFormExpectedObservable.subscribe {
             chatStateLiveData.postValue(ChatState.OFFLINE_FORM)

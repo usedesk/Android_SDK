@@ -7,7 +7,24 @@ import androidx.appcompat.widget.Toolbar
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 
-class ToolbarSearchAdapter {
+class ToolbarSearchAdapter(
+        private val binding: Binding,
+        onCancelClick: () -> Unit
+) {
+
+    init {
+        binding.tvCancel.setOnClickListener {
+            onCancelClick()
+        }
+    }
+
+    fun show() {
+        binding.rootView.visibility = View.VISIBLE
+    }
+
+    fun hide() {
+        binding.rootView.visibility = View.GONE
+    }
 
     class Binding(rootView: View,
                   defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

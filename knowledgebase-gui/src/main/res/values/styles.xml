@@ -1,6 +1,8 @@
 <resources>
 
-    <style name="Usedesk.KnowledgeBase" parent=""></style>
+    <style name="Usedesk.KnowledgeBase" parent="">
+        <item name="usedesk_common_toolbar_divider_background">@color/usedesk_gray_2</item>
+    </style>
 
 
     <style name="Usedesk.KnowledgeBase.Support.Button.Style" parent="">

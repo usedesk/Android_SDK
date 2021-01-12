@@ -8,19 +8,19 @@ import androidx.appcompat.widget.Toolbar
 
 class UsedeskToolbarAdapter(
         activity: AppCompatActivity,
-        private val toolbarBinding: Binding
+        private val binding: Binding
 ) {
 
     init {
-        activity.setSupportActionBar(toolbarBinding.toolbar)
+        activity.setSupportActionBar(binding.toolbar)
     }
 
     fun setTitle(title: String) {
-        toolbarBinding.tvTitle.text = title
+        binding.tvTitle.text = title
     }
 
     fun setBackButton(onBackPressed: () -> Unit) {
-        toolbarBinding.ivBack.apply {
+        binding.ivBack.apply {
             setOnClickListener {
                 onBackPressed()
             }
@@ -29,13 +29,21 @@ class UsedeskToolbarAdapter(
     }
 
     fun setActionButton(imageId: Int, onActionClick: () -> Unit) {
-        toolbarBinding.ivAction.apply {
+        binding.ivAction.apply {
             setImageResource(imageId)
             setOnClickListener {
                 onActionClick.invoke()
             }
             visibility = View.VISIBLE
         }
+    }
+
+    fun show() {
+        binding.rootView.visibility = View.VISIBLE
+    }
+
+    fun hide() {
+        binding.rootView.visibility = View.GONE
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

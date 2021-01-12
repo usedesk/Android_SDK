@@ -45,6 +45,16 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel() {
         articleContentLiveData.postValue(ArticleContentState.none())
     }
 
+    fun sendArticleFeedback(articleId: Long, good: Boolean) {
+        justDoIt(UsedeskKnowledgeBaseSdk.getInstance()
+                .sendFeedbackRx(articleId, good))
+    }
+
+    fun sendArticleFeedback(articleId: Long, message: String) {
+        justDoIt(UsedeskKnowledgeBaseSdk.getInstance()
+                .sendFeedbackRx(articleId, message))
+    }
+
     companion object {
         private const val SEARCH_DELAY = 500
     }

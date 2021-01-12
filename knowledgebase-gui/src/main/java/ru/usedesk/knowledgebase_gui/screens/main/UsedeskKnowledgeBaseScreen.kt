@@ -85,10 +85,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                     KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
                         needArticleBottomSheet().apply {
                             it.articleContent?.also { articleContent ->
-                                onArticleContent(articleContent, onFeedback = {
-                                    //TODO: send feedback
-                                }, onFeedbackMessage = {
-                                    //TODO: create ticket
+                                onArticleContent(articleContent, onFeedback = { articletId, good ->
+                                    viewModel.sendArticleFeedback(articletId, good)
+                                }, onFeedbackMessage = { articletId, message ->
+                                    viewModel.sendArticleFeedback(articletId, message)
                                 })
                                 show()
                             }

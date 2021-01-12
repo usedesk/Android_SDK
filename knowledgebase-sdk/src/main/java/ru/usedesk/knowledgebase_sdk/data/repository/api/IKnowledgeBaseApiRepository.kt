@@ -14,4 +14,8 @@ internal interface IKnowledgeBaseApiRepository {
     fun getArticles(accountId: String, token: String, searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent>
 
     fun addViews(accountId: String, token: String, articleId: Long)
+
+    fun sendFeedback(accountId: String, token: String, articleId: Long, good: Boolean)
+
+    fun sendFeedback(accountId: String, token: String, articleId: Long, message: String)
 }

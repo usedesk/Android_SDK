@@ -35,4 +35,16 @@ internal interface ApiRetrofit {
                  @Path(value = "article_id", encoded = true) articleId: Long,
                  @Query("api_token") token: String,
                  @Query("count") count: Int): Call<ResponseBody>
+
+    @GET("{account_id}/articles/{article_id}/change-rating")
+    fun changeRating(@Path(value = "account_id", encoded = true) accountId: String,
+                     @Path(value = "article_id", encoded = true) articleId: Long,
+                     @Query("count_positive") positive: Int,
+                     @Query("count_negative") negative: Int): Call<ResponseBody>
+
+    /*@GET("{account_id}/articles/{id}/change-rating")
+    fun createTicket(@Path(value = "account_id", encoded = true) accountId: String,
+                     @Path(value = "article_id", encoded = true) articleId: Long,
+                     @Query("api_token") token: String,
+                     @Query("count") count: Int): Call<ResponseBody>*/
 }

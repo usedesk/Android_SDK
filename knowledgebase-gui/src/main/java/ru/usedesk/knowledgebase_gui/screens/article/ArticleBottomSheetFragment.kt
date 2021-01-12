@@ -55,15 +55,15 @@ internal class ArticleBottomSheetFragment private constructor(
     }
 
     fun onArticleContent(articleContent: UsedeskArticleContent,
-                         onFeedback: (Boolean) -> Unit,
-                         onFeedbackMessage: (String) -> Unit) {
+                         onFeedback: (Long, Boolean) -> Unit,
+                         onFeedbackMessage: (Long, String) -> Unit) {
         binding.tvTitle.text = articleContent.title
         binding.wvContent.apply {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
 
-                    showQuestion(onFeedback, onFeedbackMessage)
+                    showQuestion(articleContent.id, onFeedback, onFeedbackMessage)
                 }
             }
             loadData(articleContent.text, "text/html", null)
@@ -72,21 +72,22 @@ internal class ArticleBottomSheetFragment private constructor(
         }
     }
 
-    private fun showQuestion(onFeedback: (Boolean) -> Unit,
-                             onFeedbackMessage: (String) -> Unit) {
+    private fun showQuestion(articleId: Long,
+                             onFeedback: (Long, Boolean) -> Unit,
+                             onFeedbackMessage: (Long, String) -> Unit) {
         binding.tvFeedbackTitle.setText(R.string.article_feedback_question)
         binding.tvFeedbackYes.setText(R.string.article_feedback_yes)
         binding.tvFeedbackNo.setText(R.string.article_feedback_no)
 
         binding.tvFeedbackYes.setOnClickListener {
-            onFeedback(true)
+            onFeedback(articleId, true)
 
             showThanks()
         }
         binding.tvFeedbackNo.setOnClickListener {
-            onFeedback(false)
+            onFeedback(articleId, false)
 
-            showWhatsWrong(onFeedbackMessage)
+            showWhatsWrong(articleId, onFeedbackMessage)
         }
 
         binding.tvFeedbackTitle.visibility = View.VISIBLE
@@ -95,12 +96,13 @@ internal class ArticleBottomSheetFragment private constructor(
         binding.etFeedback.visibility = View.GONE
     }
 
-    private fun showWhatsWrong(onFeedbackMessage: (String) -> Unit) {
+    private fun showWhatsWrong(articleId: Long,
+                               onFeedbackMessage: (Long, String) -> Unit) {
         binding.tvFeedbackTitle.setText(R.string.article_feedback_whats_wrong)
         binding.tvFeedbackYes.setText(R.string.article_feedback_send)
 
         binding.tvFeedbackYes.setOnClickListener {
-            onFeedbackMessage(binding.etFeedback.text.toString())
+            onFeedbackMessage(articleId, binding.etFeedback.text.toString())
 
             showThanks()
         }

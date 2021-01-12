@@ -91,6 +91,25 @@ internal class KnowledgeBaseApiRepository(
         }
     }
 
+    override fun sendFeedback(accountId: String,
+                              token: String,
+                              articleId: Long,
+                              good: Boolean) {
+        doRequest(ChangeRatingResponse::class.java) {
+            it.changeRating(accountId,
+                    articleId,
+                    if (good) 1 else 0,
+                    if (good) 0 else 1)
+        }
+    }
+
+    override fun sendFeedback(accountId: String,
+                              token: String,
+                              articleId: Long,
+                              message: String) {
+        TODO("Not yet implemented")
+    }
+
     private fun loadSections(accountId: String,
                              token: String): List<UsedeskSection> {
         return doRequest(Array<SectionResponse>::class.java) {

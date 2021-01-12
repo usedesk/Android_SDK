@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
-class ChangeRatingResponse {
+internal class ChangeRatingResponse {
     var rating: Rating? = null
 
     class Rating {

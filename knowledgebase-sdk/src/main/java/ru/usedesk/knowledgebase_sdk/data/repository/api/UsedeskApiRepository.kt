@@ -58,7 +58,7 @@ abstract class UsedeskApiRepository<API>(
     }
 
     companion object {
-        private const val SERVER_BASE_URL = "https://api.usedesk.ru/support/"
+        private const val SERVER_BASE_URL = "https://api.usedesk.ru/"
         private const val MAX_ATTEMPTS = 3
 
         private const val SERVER_ERROR = "111"

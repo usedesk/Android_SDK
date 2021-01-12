@@ -107,7 +107,13 @@ internal class KnowledgeBaseApiRepository(
                               token: String,
                               articleId: Long,
                               message: String) {
-        TODO("Not yet implemented")
+        doRequest(CreateTicketResponse::class.java) {
+            it.createTicket(CreateTicketRequest(
+                    token,
+                    "subject",
+                    message
+            ))
+        }
     }
 
     private fun loadSections(accountId: String,

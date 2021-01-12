@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
-class AddViewsResponse {
+internal class AddViewsResponse {
     var res: Long? = null
     var views: Long? = null
 }

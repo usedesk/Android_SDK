@@ -56,7 +56,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
                 binding.toolbar).apply {
             setBackButton {
-                onBackPressed()
+                requireActivity().onBackPressed()
             }
             setActionButton(R.drawable.ic_search) {
                 switchPage(ArticlesSearchPage.newInstance())

@@ -2,6 +2,12 @@
 
     <string name="sections_title">KnowledgeBase</string>
     <string name="cancel">Cancel</string>
-    <string name="articles_not_found">Articles not found</string>>
+    <string name="articles_not_found">Articles not found</string>
+    <string name="article_feedback_question">Была ли статья полезна?</string>
+    <string name="article_feedback_whats_wrong">Посоветуйте, как можно улучшить статью?</string>
+    <string name="article_feedback_thanks">Спасибо за отзыв</string>
+    <string name="article_feedback_yes">YES</string>
+    <string name="article_feedback_no">NO</string>
+    <string name="article_feedback_send">SEND</string>
 
 </resources>

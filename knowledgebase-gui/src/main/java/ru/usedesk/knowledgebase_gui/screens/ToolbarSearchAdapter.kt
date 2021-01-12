@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screens
 
+import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -9,12 +10,23 @@ import ru.usedesk.knowledgebase_gui.R
 
 class ToolbarSearchAdapter(
         private val binding: Binding,
+        onSearchClick: (String) -> Unit,
         onCancelClick: () -> Unit
 ) {
 
     init {
         binding.tvCancel.setOnClickListener {
             onCancelClick()
+        }
+        binding.etQuery.apply {
+            setOnKeyListener { _, keyCode, event ->
+                if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    onSearchClick(text.toString())
+                    true
+                } else {
+                    false
+                }
+            }
         }
     }
 

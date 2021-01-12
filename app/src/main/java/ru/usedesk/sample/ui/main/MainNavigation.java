@@ -25,8 +25,7 @@ public class MainNavigation {
     private void switchFragment(@NonNull Fragment fragment) {
         activity.getSupportFragmentManager()
                 .beginTransaction()
-                .addToBackStack(fragment.getClass().getName())
-                .replace(containerId, fragment)
+                .add(containerId, fragment)
                 .commit();
     }
 
@@ -48,8 +47,11 @@ public class MainNavigation {
 
     public void onBackPressed() {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 1) {
-            fragmentManager.popBackStack();
+        int count = fragmentManager.getFragments().size();
+        if (count > 1) {
+            fragmentManager.beginTransaction()
+                    .remove(fragmentManager.getFragments().get(count - 1))
+                    .commit();
         } else {
             activity.finish();
         }

@@ -31,28 +31,29 @@ class UsedeskChatScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        doInit {
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_screen_chat,
+                R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
+
+        val title = UsedeskResourceManager.getStyleValues(
+                requireContext(),
+                R.style.Usedesk_Chat_Screen
+        ).getString(R.attr.usedesk_chat_screen_title_text)
+
+        UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+            setTitle(title)
+            setBackButton {
+                requireActivity().onBackPressed()
+            }
+        }
+
+        if (savedInstanceState == null) {
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_screen_chat,
-                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            val title = UsedeskResourceManager.getStyleValues(
-                    requireContext(),
-                    R.style.Usedesk_Chat_Screen
-            ).getString(R.attr.usedesk_chat_screen_title_text)
-
             init(agentName)
-            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-                setTitle(title)
-                setBackButton {
-                    requireActivity().onBackPressed()
-                }
-            }
         }
 
         return binding.rootView

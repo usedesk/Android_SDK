@@ -21,22 +21,12 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        doInit {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_list,
-                    R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            init()
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_page_list,
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
-
-        return binding.rootView
-    }
-
-    private fun init() {
-        viewModel.onSearchQuery("")
 
         ArticlesSearchAdapter(binding.rvItems,
                 viewLifecycleOwner,
@@ -45,6 +35,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         }
 
         binding.tvMessage.setText(R.string.articles_not_found)
+
         viewModel.articlesLiveData.observe(viewLifecycleOwner) {
             when {
                 it == null -> {
@@ -64,6 +55,12 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                 }
             }
         }
+
+        if (savedInstanceState == null) {
+            viewModel.onSearchQuery("")
+        }
+
+        return binding.rootView
     }
 
     fun onSearchQueryUpdate(searchQuery: String) {

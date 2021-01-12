@@ -22,16 +22,15 @@ internal class CategoriesPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        doInit {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_list,
-                    R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_page_list,
+                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
 
-            val sectionId = argsGetLong(SECTION_ID_KEY)
-            if (sectionId != null) {
+        if (savedInstanceState == null) {
+            argsGetLong(SECTION_ID_KEY)?.also { sectionId ->
                 init(sectionId)
             }
         }

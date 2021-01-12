@@ -21,32 +21,26 @@ internal class SectionsPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        doInit {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_list,
-                    R.style.Usedesk_KnowledgeBase_Sections_Page) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            init()
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_page_list,
+                R.style.Usedesk_KnowledgeBase_Sections_Page) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
 
-        return binding.rootView
-    }
-
-    private fun init() {
         SectionsAdapter(binding.rvItems,
                 viewLifecycleOwner,
                 viewModel) { id, title ->
             getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
         }
-        showInstead(binding.pbLoading, binding.rvItems)
+
         viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
             if (it != null) {
                 showInstead(binding.rvItems, binding.pbLoading)
             }
         }
+
+        return binding.rootView
     }
 
     companion object {

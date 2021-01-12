@@ -1,7 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screens.main
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,75 +42,67 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        doInit {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_screen_knowledge_base,
-                    R.style.Usedesk_KnowledgeBase_Screen) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_screen_knowledge_base,
+                R.style.Usedesk_KnowledgeBase_Screen) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
 
-            binding.btnSupport.setOnClickListener {
-                onSupportClick()
-            }
+        binding.btnSupport.setOnClickListener {
+            onSupportClick()
+        }
 
-            UsedeskKnowledgeBaseSdk.init(requireContext())
-
-            viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-                showSearchQuery(it)
-            })
-
-            binding.toolbar.ivBack.setOnClickListener {
+        toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
+                binding.toolbar).apply {
+            setBackButton {
                 onBackPressed()
             }
-
-            toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar)
-            toolbarDefaultAdapter.setActionButton(R.drawable.ic_search) {
+            setActionButton(R.drawable.ic_search) {
                 switchPage(ArticlesSearchPage.newInstance())
             }
+        }
 
-            toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch) {
-                onBackPressed()
-            }
+        toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, {
+            (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(it)
+        }, {
+            onBackPressed()
+        })
 
-            binding.toolbarSearch.etQuery.apply {
-                setOnKeyListener { _, keyCode, event ->
-                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                        (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(text.toString())
-                        true
-                    } else {
-                        false
+        viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
+            showSearchQuery(it)
+        })
+
+        viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
+            if (it != null) {
+                when (it.state) {
+                    KnowledgeBaseViewModel.ArticleContentState.State.LOADING -> {
+                        needArticleBottomSheet().apply {
+                            onLoading()
+                            show()
+                        }
                     }
-                }
-            }
-
-            viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
-                if (it != null) {
-                    when (it.state) {
-                        KnowledgeBaseViewModel.ArticleContentState.State.LOADING -> {
-                            needArticleBottomSheet().apply {
-                                onLoading()
+                    KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
+                        needArticleBottomSheet().apply {
+                            it.articleContent?.also { articleContent ->
+                                onArticleContent(articleContent)
                                 show()
                             }
                         }
-                        KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
-                            needArticleBottomSheet().apply {
-                                it.articleContent?.also { articleContent ->
-                                    onArticleContent(articleContent)
-                                    show()
-                                }
-                            }
-                        }
-                        else -> {
-                            articleContentBottomSheet?.apply {
-                                hide()
-                                articleContentBottomSheet = null
-                            }
+                    }
+                    else -> {
+                        articleContentBottomSheet?.apply {
+                            hide()
+                            articleContentBottomSheet = null
                         }
                     }
                 }
             }
+        }
 
+        UsedeskKnowledgeBaseSdk.init(requireContext())
+
+        if (savedInstanceState == null) {
             val sectionsTitle = binding.styleValues.getString(R.attr.usedesk_knowledgebase_sections_toolbar_title_text)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
         }
@@ -155,7 +146,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         }
         childFragmentManager.beginTransaction()
                 .addToBackStack(fragment.javaClass.name)
-                .replace(R.id.container, fragment)
+                .add(R.id.container, fragment)
                 .commit()
     }
 
@@ -180,9 +171,13 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     }
 
     override fun onBackPressed(): Boolean {
-        val count = childFragmentManager.backStackEntryCount
+        val count = childFragmentManager.fragments.size
         if (count > 1) {
-            childFragmentManager.popBackStackImmediate()
+            getLastFragment()?.also {
+                childFragmentManager.beginTransaction()
+                        .remove(it)
+                        .commitNow()
+            }
             val lastFragment = getLastFragment()
             val title = if (lastFragment != null) {
                 updateToolbar(lastFragment)

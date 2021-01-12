@@ -29,8 +29,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val json = argsGetString(FILE_URL_KEY)
-
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_screen_show_file,
@@ -38,20 +36,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }
 
-        styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
-
-        if (json != null) {
-            val fileUrl = UsedeskFile.deserialize(json)
-
-            viewModel.init(fileUrl)
-        }
-
-        init()
-
-        return binding.rootView
-    }
-
-    private fun init() {
         binding.ivBack.setOnClickListener {
             onBackPressed()
         }
@@ -67,6 +51,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
 
+        styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
+
         initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
             onFileUrl(it)
         }
@@ -79,6 +65,16 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             binding.lToolbar.visibility = visibleGone(it == true)
             binding.lBottom.visibility = visibleGone(it == true)
         }
+
+        if (savedInstanceState == null) {
+            argsGetString(FILE_URL_KEY)?.also { json ->
+                val fileUrl = UsedeskFile.deserialize(json)
+
+                viewModel.init(fileUrl)
+            }
+        }
+
+        return binding.rootView
     }
 
     private fun setBlur(blurView: BlurView) {

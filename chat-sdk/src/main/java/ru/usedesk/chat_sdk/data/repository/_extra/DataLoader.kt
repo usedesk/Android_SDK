@@ -27,7 +27,5 @@ internal abstract class DataLoader<T> {
         }
     }
 
-    open fun clearData() {
-        data = null
-    }
+    abstract fun clearData()
 }

@@ -54,7 +54,6 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Thread.sleep(5000)
         val usedeskChatConfiguration = UsedeskChatConfiguration.deserialize(intent)
 
         if (usedeskChatConfiguration == null) {

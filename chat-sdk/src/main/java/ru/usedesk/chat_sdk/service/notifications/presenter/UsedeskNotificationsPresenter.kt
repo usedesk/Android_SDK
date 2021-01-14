@@ -21,11 +21,11 @@ class UsedeskNotificationsPresenter {
     }
 
     val modelObservable = newModelObservable.map {
-        val model = this.model
-        this.model = if (model == null) {
+        val curModel = this.model
+        model = if (curModel == null) {
             it
         } else {
-            reduce(model, it)
+            reduce(curModel, it)
         }
         model
     }

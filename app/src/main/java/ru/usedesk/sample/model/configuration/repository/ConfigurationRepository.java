@@ -57,7 +57,7 @@ public class ConfigurationRepository {
         return Single.create((SingleOnSubscribe<Configuration>) emitter -> {
             if (configuration == null) {
                 configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
-                        sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()),
+                        sharedPreferences.getString(EMAIL_KEY, defaultModel.getClientEmail()),
                         sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
                         sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
                         sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()),
@@ -80,7 +80,7 @@ public class ConfigurationRepository {
         return Completable.create(emitter -> {
             sharedPreferences.edit()
                     .putString(COMPANY_ID_KEY, configurationModel.getCompanyId())
-                    .putString(EMAIL_KEY, configurationModel.getEmail())
+                    .putString(EMAIL_KEY, configurationModel.getClientEmail())
                     .putString(URL_KEY, configurationModel.getUrl())
                     .putString(OFFLINE_FORM_URL_KEY, configurationModel.getOfflineFormUrl())
                     .putString(ACCOUNT_ID_KEY, configurationModel.getAccountId())

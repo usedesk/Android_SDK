@@ -47,7 +47,7 @@ public class MainViewModel extends ViewModel {
     void goSdk(@Nullable String customAgentName) {
         disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
             UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),
-                    configuration.getEmail(),
+                    configuration.getClientEmail(),
                     configuration.getUrl(),
                     configuration.getOfflineFormUrl(),
                     configuration.getClientName(),
@@ -83,7 +83,11 @@ public class MainViewModel extends ViewModel {
         UsedeskChatSdk.setConfiguration(usedeskChatConfiguration);
 
         if (withKnowledgeBase) {
-            UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(configuration.getAccountId(), configuration.getToken()));
+            UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(
+                    configuration.getAccountId(),
+                    configuration.getToken(),
+                    configuration.getClientEmail(),
+                    configuration.getClientName()));
         }
     }
 

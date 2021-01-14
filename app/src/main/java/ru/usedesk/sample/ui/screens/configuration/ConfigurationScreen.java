@@ -92,7 +92,7 @@ public class ConfigurationScreen extends Fragment {
 
     private void onNewConfiguration(@NonNull Configuration configuration) {
         binding.etCompanyId.setText(configuration.getCompanyId());
-        binding.etEmail.setText(configuration.getEmail());
+        binding.etEmail.setText(configuration.getClientEmail());
         binding.etUrl.setText(configuration.getUrl());
         binding.etOfflineUrl.setText(configuration.getOfflineFormUrl());
         binding.etAccountId.setText(configuration.getAccountId());

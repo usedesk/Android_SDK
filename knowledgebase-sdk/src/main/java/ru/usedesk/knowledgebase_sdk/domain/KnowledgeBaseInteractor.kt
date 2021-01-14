@@ -133,15 +133,16 @@ internal class KnowledgeBaseInteractor(
     }
 
     override fun sendFeedback(articleId: Long, good: Boolean) {
-        knowledgeApiRepository.sendFeedback(configuration.accountId,
+        knowledgeApiRepository.sendRating(configuration.accountId,
                 configuration.token,
                 articleId,
                 good)
     }
 
     override fun sendFeedback(articleId: Long, message: String) {
-        knowledgeApiRepository.sendFeedback(configuration.accountId,
-                configuration.token,
+        knowledgeApiRepository.sendFeedback(configuration.token,
+                configuration.clientEmail,
+                configuration.clientName,
                 articleId,
                 message)
     }

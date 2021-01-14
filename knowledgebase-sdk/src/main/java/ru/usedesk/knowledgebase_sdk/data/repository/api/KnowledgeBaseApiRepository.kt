@@ -91,10 +91,10 @@ internal class KnowledgeBaseApiRepository(
         }
     }
 
-    override fun sendFeedback(accountId: String,
-                              token: String,
-                              articleId: Long,
-                              good: Boolean) {
+    override fun sendRating(accountId: String,
+                            token: String,
+                            articleId: Long,
+                            good: Boolean) {
         doRequest(ChangeRatingResponse::class.java) {
             it.changeRating(accountId,
                     articleId,
@@ -103,15 +103,18 @@ internal class KnowledgeBaseApiRepository(
         }
     }
 
-    override fun sendFeedback(accountId: String,
-                              token: String,
+    override fun sendFeedback(token: String,
+                              clientEmail: String,
+                              clientName: String?,
                               articleId: Long,
                               message: String) {
         doRequest(CreateTicketResponse::class.java) {
             it.createTicket(CreateTicketRequest(
                     token,
-                    "subject",
-                    message
+                    clientEmail,
+                    clientName,
+                    message,
+                    articleId
             ))
         }
     }

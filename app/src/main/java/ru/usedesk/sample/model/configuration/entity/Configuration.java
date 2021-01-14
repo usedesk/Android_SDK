@@ -52,7 +52,7 @@ public class Configuration {
     }
 
     @NonNull
-    public String getEmail() {
+    public String getClientEmail() {
         return email;
     }
 

@@ -33,6 +33,9 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
             }
 
             val id = from.id!!.toLong()
+            if (id <= 0) {
+                return@convertOrNull null
+            }
             val name = from.name ?: ""
             val avatar = from.payload?.avatar ?: ""
 

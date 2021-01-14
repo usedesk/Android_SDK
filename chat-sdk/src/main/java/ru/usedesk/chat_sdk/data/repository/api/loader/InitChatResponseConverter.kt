@@ -16,7 +16,7 @@ internal class InitChatResponseConverter(
         return ChatInited(
                 from.token!!,
                 from.setup!!.noOperators == true,
-                from.setup!!.waitingEmail!!,
+                true,
                 convert(from.setup?.messages ?: listOf())
         )
     }

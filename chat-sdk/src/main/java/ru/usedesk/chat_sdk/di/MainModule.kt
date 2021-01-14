@@ -21,7 +21,6 @@ import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsPresenter
 import toothpick.config.Module
 
 internal class MainModule(
@@ -45,8 +44,5 @@ internal class MainModule(
         bind(IApiRepository::class.java).to(ApiRepository::class.java).singleton()
 
         bind(IUsedeskChat::class.java).to(ChatInteractor::class.java).singleton()
-
-        //tmp for service
-        bind(UsedeskNotificationsPresenter::class.java).to(UsedeskNotificationsPresenter::class.java).singleton()
     }
 }

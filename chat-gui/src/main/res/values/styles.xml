@@ -195,6 +195,7 @@
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textIsSelectable">true</item>
+        <item name="android:autoLink">all</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button.Text.Style" parent="">

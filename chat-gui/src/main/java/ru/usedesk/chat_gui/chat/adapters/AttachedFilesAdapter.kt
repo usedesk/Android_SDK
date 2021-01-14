@@ -11,10 +11,11 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.setImageCenter
+import ru.usedesk.common_gui.visibleGone
 
 internal class AttachedFilesAdapter(
         private val chatViewModel: ChatViewModel,
-        recyclerView: RecyclerView
+        private val recyclerView: RecyclerView
 ) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>() {
 
     private var files: List<UsedeskFileInfo> = listOf()
@@ -24,6 +25,7 @@ internal class AttachedFilesAdapter(
     }
 
     fun update(attachedFiles: List<UsedeskFileInfo>) {
+        recyclerView.visibility = visibleGone(files.isNotEmpty())
         files = attachedFiles
         notifyDataSetChanged()
     }

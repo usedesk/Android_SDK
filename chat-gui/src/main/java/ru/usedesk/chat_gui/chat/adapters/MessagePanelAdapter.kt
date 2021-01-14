@@ -44,9 +44,7 @@ internal class MessagePanelAdapter(
     }
 
     private fun onFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>?) {
-        if (usedeskFileInfoList != null) {
-            attachedFilesAdapter.update(usedeskFileInfoList)
-        }
+        attachedFilesAdapter.update(usedeskFileInfoList ?: listOf())
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

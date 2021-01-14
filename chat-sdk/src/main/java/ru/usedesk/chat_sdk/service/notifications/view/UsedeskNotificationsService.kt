@@ -13,10 +13,9 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
 import ru.usedesk.chat_sdk.entity.UsedeskMessageText
 import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsModel
 import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsPresenter
-import toothpick.ktp.delegate.inject
 
 abstract class UsedeskNotificationsService : Service() {
-    private val presenter: UsedeskNotificationsPresenter by inject()
+    private lateinit var presenter: UsedeskNotificationsPresenter
 
     lateinit var notificationManager: NotificationManager
         private set
@@ -30,6 +29,7 @@ abstract class UsedeskNotificationsService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        presenter = UsedeskNotificationsPresenter()
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         registerNotification()
@@ -54,6 +54,7 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Thread.sleep(5000)
         val usedeskChatConfiguration = UsedeskChatConfiguration.deserialize(intent)
 
         if (usedeskChatConfiguration == null) {

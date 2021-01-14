@@ -21,8 +21,8 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         intent.putExtra(URL_KEY, url)
         intent.putExtra(OFFLINE_FORM_URL_KEY, offlineFormUrl)
         intent.putExtra(NAME_KEY, clientName)
-        intent.putExtra(PHONE_KEY, clientPhoneNumber)
-        intent.putExtra(ADDITIONAL_ID_KEY, clientAdditionalId)
+        intent.putExtraLongNullable(PHONE_KEY, clientPhoneNumber)
+        intent.putExtraLongNullable(ADDITIONAL_ID_KEY, clientAdditionalId)
     }
 
     fun isValid(): Boolean {
@@ -31,25 +31,23 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     }
 
     companion object {
-        private const val COMPANY_ID_KEY = "companyIdKey"
-        private const val EMAIL_KEY = "emailKey"
-        private const val URL_KEY = "urlKey"
-        private const val OFFLINE_FORM_URL_KEY = "offlineFormUrlKey"
-        private const val NAME_KEY = "nmeKey"
-        private const val PHONE_KEY = "phoneKey"
-        private const val ADDITIONAL_ID_KEY = "additionalIdKey"
+        private const val COMPANY_ID_KEY = "usedeskCompanyIdKey"
+        private const val EMAIL_KEY = "usedeskEmailKey"
+        private const val URL_KEY = "usedeskUrlKey"
+        private const val OFFLINE_FORM_URL_KEY = "usedeskOfflineFormUrlKey"
+        private const val NAME_KEY = "usedeskNameKey"
+        private const val PHONE_KEY = "usedeskPhoneKey"
+        private const val ADDITIONAL_ID_KEY = "usedeskAdditionalIdKey"
 
-        @JvmOverloads
         @JvmStatic
-        fun deserialize(intent: Intent,
-                        keyPrefix: String = "usedesk"): UsedeskChatConfiguration? {
-            val additionalId = intent.getLongExtra(keyPrefix + ADDITIONAL_ID_KEY, 0)
-            val phone = intent.getLongExtra(keyPrefix + PHONE_KEY, 0)
-            val companyId = intent.getStringExtra(keyPrefix + COMPANY_ID_KEY)
-            val email = intent.getStringExtra(keyPrefix + EMAIL_KEY)
-            val url = intent.getStringExtra(keyPrefix + URL_KEY)
-            val offlineFormUrl = intent.getStringExtra(keyPrefix + OFFLINE_FORM_URL_KEY)
-            val name = intent.getStringExtra(keyPrefix + NAME_KEY)
+        fun deserialize(intent: Intent): UsedeskChatConfiguration? {
+            val additionalId = intent.getLongExtraOrNull(ADDITIONAL_ID_KEY)
+            val phone = intent.getLongExtraOrNull(PHONE_KEY)
+            val companyId = intent.getStringExtra(COMPANY_ID_KEY)
+            val email = intent.getStringExtra(EMAIL_KEY)
+            val url = intent.getStringExtra(URL_KEY)
+            val offlineFormUrl = intent.getStringExtra(OFFLINE_FORM_URL_KEY)
+            val name = intent.getStringExtra(NAME_KEY)
 
             return if (companyId != null
                     && email != null
@@ -65,6 +63,21 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
                         additionalId)
             } else {
                 null
+            }
+        }
+
+        private fun Intent.getLongExtraOrNull(key: String): Long? {
+            return if (hasExtra(key)) {
+                return getLongExtra(key, 0)
+            } else {
+                null
+            }
+        }
+
+        private fun Intent.putExtraLongNullable(key: String,
+                                                value: Long?) {
+            value?.also {
+                putExtra(key, it)
             }
         }
     }

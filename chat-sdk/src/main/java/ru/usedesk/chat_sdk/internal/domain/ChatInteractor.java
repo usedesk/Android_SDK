@@ -8,9 +8,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -40,7 +38,6 @@ public class ChatInteractor implements IUsedeskChat {
 
     private String token;
     private boolean needSetEmail = false;
-    private Set<String> messageIds = new HashSet<>();
     private String initClientMessage = null;
 
     @Inject
@@ -237,8 +234,7 @@ public class ChatInteractor implements IUsedeskChat {
                     !message.getMessageButtons().getMessageButtons().isEmpty();
             boolean hasFile = message.getFile() != null;
 
-            if ((hasText || hasFile) && !messageIds.contains(message.getId())) {
-                messageIds.add(message.getId());
+            if (hasText || hasFile) {
                 actionListener.onMessageReceived(message);
             }
         }

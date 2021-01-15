@@ -22,8 +22,66 @@ internal class ChatInteractor(
 ) : IUsedeskChat {
 
     private var token: String? = null
-    private var needSetEmail = false
     private var lastMessages = listOf<UsedeskMessage>()
+    private var initClientMessage: String? = null
+
+    private val eventListener = object : IApiRepository.EventListener {
+        override fun onConnected() {
+            actionListener.onConnected()
+        }
+
+        override fun onDisconnected() {
+            actionListener.onDisconnected()
+        }
+
+        override fun onTokenError() {
+            userInfoRepository.setToken(null)
+            try {
+                token?.also {
+                    apiRepository.init(configuration, it)
+                }
+            } catch (e: UsedeskException) {
+                actionListener.onException(e)
+            }
+        }
+
+        override fun onFeedback() {
+            actionListener.onFeedbackReceived()
+        }
+
+        override fun onException(exception: Exception) {
+            actionListener.onException(exception)
+        }
+
+        override fun onChatInited(chatInited: ChatInited) {
+            this@ChatInteractor.onChatInited(chatInited)
+        }
+
+        override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(newMessages)
+        }
+
+        override fun onMessageUpdated(message: UsedeskMessage) {
+            this@ChatInteractor.onMessageUpdate(message)
+        }
+
+        override fun onOfflineForm() {
+            actionListener.onOfflineFormExpected(configuration)
+        }
+
+        override fun onSetEmailSuccess() {
+            initClientMessage?.also {
+                if (it.isNotEmpty()) {
+                    try {
+                        send(it)
+                        initClientMessage = ""
+                    } catch (e: Exception) {
+                        //nothing
+                    }
+                }
+            }
+        }
+    }
 
     @Throws(UsedeskException::class)
     override fun connect() {
@@ -32,57 +90,8 @@ internal class ChatInteractor(
             if (this.configuration.email == configuration.email && this.configuration.companyId == configuration.companyId) {
                 token = userInfoRepository.getToken()
             }
-            if (this.configuration.clientName != configuration.clientName
-                    || this.configuration.clientPhoneNumber != configuration.clientPhoneNumber
-                    || this.configuration.clientAdditionalId != configuration.clientAdditionalId) {
-                needSetEmail = true
-            }
         } catch (e: UsedeskDataNotFoundException) {
             e.printStackTrace()
-        }
-        val eventListener = object : IApiRepository.EventListener {
-            override fun onConnected() {
-                actionListener.onConnected()
-            }
-
-            override fun onDisconnected() {
-                actionListener.onDisconnected()
-            }
-
-            override fun onTokenError() {
-                userInfoRepository.setToken(null)
-                try {
-                    token?.also {
-                        apiRepository.init(configuration, it)
-                    }
-                } catch (e: UsedeskException) {
-                    actionListener.onException(e)
-                }
-            }
-
-            override fun onFeedback() {
-                actionListener.onFeedbackReceived()
-            }
-
-            override fun onException(exception: Exception) {
-                actionListener.onException(exception)
-            }
-
-            override fun onChatInited(chatInited: ChatInited) {
-                this@ChatInteractor.onChatInited(chatInited)
-            }
-
-            override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
-                this@ChatInteractor.onMessagesNew(newMessages)
-            }
-
-            override fun onMessageUpdated(message: UsedeskMessage) {
-                this@ChatInteractor.onMessageUpdate(message)
-            }
-
-            override fun onOfflineForm() {
-                actionListener.onOfflineFormExpected(configuration)
-            }
         }
         apiRepository.connect(
                 configuration.url,
@@ -104,11 +113,7 @@ internal class ChatInteractor(
     }
 
     private fun onMessagesNew(messages: List<UsedeskMessage>) {
-        messages.filter { newMessage ->
-            newMessage.id !in lastMessages.map {
-                it.id
-            }
-        }.forEach {
+        messages.forEach {
             lastMessages = lastMessages + it
             actionListener.onMessageReceived(it)
         }
@@ -233,16 +238,12 @@ internal class ChatInteractor(
 
     private fun onChatInited(chatChatInited: ChatInited) {
         this.token = chatChatInited.token
+
         userInfoRepository.setToken(token)
         actionListener.onConnected()
-        if (chatChatInited.waitingEmail) {
-            needSetEmail = true
-        }
+
         actionListener.onMessagesReceived(chatChatInited.messages)
 
-        if (needSetEmail) {
-            sendUserEmail()
-        }
         val initClientMessage = try {
             userInfoRepository.getConfiguration().initClientMessage
         } catch (ignore: UsedeskException) {
@@ -254,5 +255,11 @@ internal class ChatInteractor(
             }
         }
         userInfoRepository.setConfiguration(configuration)
+
+        if (chatChatInited.waitingEmail) {
+            sendUserEmail()
+        } else {
+            eventListener.onSetEmailSuccess()
+        }
     }
 }

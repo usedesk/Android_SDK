@@ -12,21 +12,16 @@
         style="?attr/usedesk_chat_message_date_text_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="20dp"
         android:gravity="center"
-        android:paddingStart="12dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="4dp"
         tools:text="Вчера" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="2dp"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="4dp"
         android:orientation="horizontal">
 
         <com.makeramen.roundedimageview.RoundedImageView
@@ -34,13 +29,13 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="bottom"
+            android:layout_marginHorizontal="8dp"
             app:riv_corner_radius="20dp"
             tools:src="@drawable/background_avatar_def" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:orientation="vertical">
 
             <TextView
@@ -48,11 +43,9 @@
                 style="?attr/usedesk_chat_message_name_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 tools:text="Алена Ошева" />
 
             <FrameLayout
-                android:id="@+id/l_agent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/usedesk_chat_message_bubble_agent_background">
@@ -60,7 +53,6 @@
                 <include
                     android:id="@+id/content"
                     layout="@layout/usedesk_item_chat_message_file" />
-
             </FrameLayout>
         </LinearLayout>
     </LinearLayout>

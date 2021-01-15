@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:theme="@style/Usedesk.KnowledgeBase">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/sf_ui_display_medium"
+        android:textColor="@color/usedesk_black_2"
+        android:textSize="17sp"
+        tools:text="Подключение почты" />
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/sf_ui_display_regular"
+        android:maxLines="2"
+        android:textColor="@color/usedesk_black_2"
+        android:textSize="14sp"
+        tools:text="Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты " />
+
+    <TextView
+        android:id="@+id/tv_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/sf_ui_display_regular"
+        android:textColor="@color/usedesk_gray_cold_2"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:text="Подключение почты" />
+
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/usedesk_gray_2" />
+
+</LinearLayout>

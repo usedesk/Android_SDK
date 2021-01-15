@@ -31,28 +31,29 @@ class UsedeskChatScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        doInit {
+        binding = inflateItem(inflater,
+                container,
+                R.layout.usedesk_screen_chat,
+                R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
+
+        val title = UsedeskResourceManager.getStyleValues(
+                requireContext(),
+                R.style.Usedesk_Chat_Screen
+        ).getString(R.attr.usedesk_chat_screen_title_text)
+
+        UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+            setTitle(title)
+            setBackButton {
+                requireActivity().onBackPressed()
+            }
+        }
+
+        if (savedInstanceState == null) {
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_screen_chat,
-                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            val title = UsedeskResourceManager.getStyleValues(
-                    requireContext(),
-                    R.style.Usedesk_Chat_Screen
-            ).getString(R.attr.usedesk_chat_screen_title_text)
-
             init(agentName)
-            UsedeskToolbar(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-                setTitle(title)
-                setBackButton {
-                    requireActivity().onBackPressed()
-                }
-            }
         }
 
         return binding.rootView
@@ -93,7 +94,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 viewModel,
                 viewLifecycleOwner,
                 {
-                    UsedeskOfflineFormSuccessDialog.create(binding.rootView).apply {
+                    UsedeskOfflineFormSuccessDialog.newInstance(binding.rootView).apply {
                         setOnDismissListener {
                             requireActivity().onBackPressed()
                         }
@@ -180,7 +181,7 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val toolbar = UsedeskToolbar.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+        val toolbar = UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
         val offlineForm = OfflineFormAdapter.Binding(rootView.findViewById(R.id.l_offline_form), defaultStyleId)
         val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
 

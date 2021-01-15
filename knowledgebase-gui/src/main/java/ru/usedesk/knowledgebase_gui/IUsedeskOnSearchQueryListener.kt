@@ -1,5 +1,5 @@
 package ru.usedesk.knowledgebase_gui
 
-interface IUsedeskOnSearchQueryListener {
+internal interface IUsedeskOnSearchQueryListener {
     fun onSearchQuery(query: String)
 }

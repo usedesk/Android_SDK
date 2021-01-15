@@ -14,24 +14,22 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun init(appContext: Context, actionListener: IUsedeskActionListener): IUsedeskChat {
-        if (instanceBox == null) {
-            instanceBox = InstanceBoxUsedesk(appContext, getConfiguration(), actionListener)
-        }
-        return instanceBox!!.usedeskChatSdk
+        return (instanceBox
+                ?: InstanceBoxUsedesk(appContext, requireConfiguration(), actionListener).also {
+                    instanceBox = it
+                }).usedeskChatSdk
     }
 
     @JvmStatic
     fun getInstance(): IUsedeskChat {
-        if (instanceBox == null) {
-            throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
-        }
-        return instanceBox!!.usedeskChatSdk
+        return instanceBox?.usedeskChatSdk
+                ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
     }
 
     @JvmStatic
     fun release() {
-        if (instanceBox != null) {
-            instanceBox!!.release()
+        instanceBox?.also {
+            it.release()
             instanceBox = null
         }
     }
@@ -46,7 +44,7 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun startService(context: Context) {
-        notificationsServiceFactory.startService(context, getConfiguration())
+        notificationsServiceFactory.startService(context, requireConfiguration())
     }
 
     @JvmStatic
@@ -60,8 +58,8 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun getConfiguration(): UsedeskChatConfiguration {
+    fun requireConfiguration(): UsedeskChatConfiguration {
         return configuration
-                ?: throw RuntimeException("Call UsedeskChatSdk.setConfiguration(...) before")
+                ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
     }
 }

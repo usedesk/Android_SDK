@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen;
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen;
 import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
-import ru.usedesk.knowledgebase_gui.main.UsedeskKnowledgeBaseFragment;
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
 
 public class MainNavigation {
@@ -25,8 +25,7 @@ public class MainNavigation {
     private void switchFragment(@NonNull Fragment fragment) {
         activity.getSupportFragmentManager()
                 .beginTransaction()
-                .addToBackStack(fragment.getClass().getName())
-                .replace(containerId, fragment)
+                .add(containerId, fragment)
                 .commit();
     }
 
@@ -39,7 +38,7 @@ public class MainNavigation {
     }
 
     void goKnowledgeBase() {
-        switchFragment(UsedeskKnowledgeBaseFragment.newInstance());
+        switchFragment(UsedeskKnowledgeBaseScreen.newInstance());
     }
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {
@@ -48,8 +47,11 @@ public class MainNavigation {
 
     public void onBackPressed() {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 1) {
-            fragmentManager.popBackStack();
+        int count = fragmentManager.getFragments().size();
+        if (count > 1) {
+            fragmentManager.beginTransaction()
+                    .remove(fragmentManager.getFragments().get(count - 1))
+                    .commit();
         } else {
             activity.finish();
         }

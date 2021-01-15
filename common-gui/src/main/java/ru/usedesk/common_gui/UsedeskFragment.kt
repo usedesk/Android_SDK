@@ -3,14 +3,6 @@ package ru.usedesk.common_gui
 import androidx.fragment.app.Fragment
 
 abstract class UsedeskFragment : Fragment() {
-    private var inited = false
-
-    protected fun doInit(init: () -> Unit) {
-        if (!inited) {
-            inited = true
-            init()
-        }
-    }
 
     open fun onBackPressed(): Boolean = false
 
@@ -75,11 +67,11 @@ abstract class UsedeskFragment : Fragment() {
 
     protected inline fun <reified T> getParentListener(): T? {
         return when {
-            activity is T -> {
-                activity as T
-            }
             parentFragment is T -> {
                 parentFragment as T
+            }
+            activity is T -> {
+                activity as T
             }
             else -> {
                 null

@@ -13,7 +13,7 @@
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Usedesk.Common.Dialog">
         <item name="usedesk_chat_offline_form_success_dialog_ok_image">@drawable/ic_done_round</item>
         <item name="usedesk_chat_offline_form_success_dialog_ok_text_style">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.Style</item>
-        <item name="usedesk_chat_offline_form_success_dialog_close_background">@color/usedesk_gray_1</item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_offline_form_success_dialog_close_text_style">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.Style</item>
     </style>
 
@@ -195,6 +195,7 @@
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textIsSelectable">true</item>
+        <item name="android:autoLink">all</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button.Text.Style" parent="">
@@ -204,7 +205,7 @@
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.Style" parent="">
-        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textColor">@color/usedesk_white_1</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:textSize">18sp</item>
         <item name="android:clickable">true</item>

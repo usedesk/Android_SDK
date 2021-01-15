@@ -56,6 +56,7 @@ internal class MessagesAdapter(
                 val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
                 val contentHeight = recyclerView.computeVerticalScrollRange()
                 items = items + message
+                notifyItemChanged(items.size - 2)
                 notifyItemInserted(items.size - 1)
                 if (visibleBottom >= contentHeight) {//Если чат был внизу
                     recyclerView.scrollToPosition(items.size - 1)
@@ -198,7 +199,7 @@ internal class MessagesAdapter(
 
         fun bindClient(position: Int,
                        clientBinding: ClientBinding) {
-            clientBinding.tvName.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
+            clientBinding.vEmpty.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
         }
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
@@ -404,6 +405,8 @@ internal class MessagesAdapter(
                     0.0f
                 }
                 isEnabled = false
+                isClickable = false
+                setOnClickListener(null)
             }
         }
 
@@ -429,6 +432,13 @@ internal class MessagesAdapter(
                 setImageResource(initImageId)
                 setOnClickListener {
                     isEnabled = false
+                    isClickable = false
+                    setOnClickListener(null)
+                    imageViewSub.apply {
+                        isEnabled = false
+                        isClickable = false
+                        setOnClickListener(null)
+                    }
 
                     setImageResource(activeImageId)
 
@@ -553,6 +563,6 @@ internal class MessagesAdapter(
     }
 
     internal class ClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val tvName: TextView = rootView.findViewById(R.id.tv_name)
+        val vEmpty: View = rootView.findViewById(R.id.v_empty)
     }
 }

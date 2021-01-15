@@ -5,6 +5,8 @@
     <color name="usedesk_gray_1">#EEEEEE</color>
     <color name="usedesk_gray_2">#BCBCBC</color>
     <color name="usedesk_gray_3">#828282</color>
+    <color name="usedesk_gray_cold_1">#F2F4FA</color>
+    <color name="usedesk_gray_cold_2">#989FB3</color>
     <color name="usedesk_black_1">#000000</color>
     <color name="usedesk_black_2">#333333</color>
     <color name="usedesk_red">#EB5757</color>

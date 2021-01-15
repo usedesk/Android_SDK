@@ -13,7 +13,7 @@ internal class ConfigurationLoader(
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
             PREF_NAME,
-            Context.MODE_PRIVATE
+            Context.MODE_MULTI_PROCESS
     )
 
     private fun getString(value: Long?): String? {
@@ -68,7 +68,6 @@ internal class ConfigurationLoader(
     }
 
     override fun clearData() {
-        super.clearData()
         sharedPreferences.edit()
                 .remove(KEY_ID)
                 .remove(KEY_URL)

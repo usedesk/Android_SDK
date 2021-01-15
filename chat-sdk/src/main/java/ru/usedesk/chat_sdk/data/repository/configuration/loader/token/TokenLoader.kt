@@ -26,7 +26,6 @@ internal class TokenLoader(
     }
 
     override fun clearData() {
-        super.clearData()
         sharedPreferences.edit()
                 .remove(KEY_TOKEN)
                 .apply()

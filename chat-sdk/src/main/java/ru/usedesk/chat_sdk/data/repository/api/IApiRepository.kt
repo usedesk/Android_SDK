@@ -52,5 +52,6 @@ internal interface IApiRepository {
         fun onMessagesReceived(newMessages: List<UsedeskMessage>)
         fun onMessageUpdated(message: UsedeskMessage)
         fun onOfflineForm()
+        fun onSetEmailSuccess()
     }
 }

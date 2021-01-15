@@ -19,7 +19,7 @@ fun setImage(imageImageView: ImageView,
              onSuccess: (() -> Unit)? = null) {
     imageImageView.setImageResource(errorResId)
     if (!TextUtils.isEmpty(pictureUrl)) {
-        Glide.with(imageImageView)
+        Glide.with(imageImageView.context.applicationContext)
                 .load(pictureUrl)
                 .error(errorResId)
                 .listener(AppRequestListener(onError = {
@@ -32,34 +32,24 @@ fun setImage(imageImageView: ImageView,
 }
 
 fun setImageCenter(target: ImageView, uri: Uri, errorId: Int) {
-    Glide.with(target)
+    Glide.with(target.context.applicationContext)
             .load(uri)
             .centerCrop()
             .error(errorId)
             .into(target)
 }
 
-fun setImage(target: ImageView, path: String?) {
-    if (path != null) {
-        Glide.with(target)
-                .load(path)
-                .into(target)
-    } else {
-        target.setImageDrawable(null)
-    }
-}
-
 
 fun showImage(ivTarget: ImageView,
               loadingId: Int,
               url: String,
-              vLoading: View?,
-              vError: View?,
+              vLoading: View? = null,
+              vError: View? = null,
               onSuccess: () -> Unit = {},
               onError: () -> Unit = {}) {
     showImageStatus(vLoading, true, vError, false)
 
-    var glide = Glide.with(ivTarget)
+    var glide = Glide.with(ivTarget.context.applicationContext)
             .load(url)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
 

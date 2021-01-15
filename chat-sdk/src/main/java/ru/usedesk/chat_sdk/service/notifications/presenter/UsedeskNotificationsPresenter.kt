@@ -6,10 +6,8 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk.getInstance
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskActionListenerRx
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
-import toothpick.InjectConstructor
 import java.util.concurrent.TimeUnit
 
-@InjectConstructor
 class UsedeskNotificationsPresenter {
     private var model: UsedeskNotificationsModel? = null
     private val actionListenerRx = UsedeskActionListenerRx()
@@ -23,11 +21,11 @@ class UsedeskNotificationsPresenter {
     }
 
     val modelObservable = newModelObservable.map {
-        val model = this.model
-        this.model = if (model == null) {
+        val curModel = this.model
+        model = if (curModel == null) {
             it
         } else {
-            reduce(model, it)
+            reduce(curModel, it)
         }
         model
     }

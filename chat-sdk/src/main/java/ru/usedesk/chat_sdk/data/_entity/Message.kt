@@ -35,6 +35,5 @@ internal class Message {
         const val TYPE_CLIENT_TO_OPERATOR = "client_to_operator"
         const val TYPE_CLIENT_TO_BOT = "client_to_bot"
         const val TYPE_BOT_TO_CLIENT = "bot_to_client"
-        const val SERVICE = "service"
     }
 }

@@ -69,7 +69,7 @@ public class ConfigurationValidator {
     @NonNull
     public ConfigurationValidation validate(@NonNull Configuration configuration) {
         return new ConfigurationValidation(validateCompanyId(configuration.getCompanyId()),
-                validateEmail(configuration.getEmail()),
+                validateEmail(configuration.getClientEmail()),
                 validatePhoneNumber(configuration.getClientPhoneNumber()),
                 validateUrl(configuration.getUrl()),
                 validateOfflineFormUrl(configuration.getOfflineFormUrl()),

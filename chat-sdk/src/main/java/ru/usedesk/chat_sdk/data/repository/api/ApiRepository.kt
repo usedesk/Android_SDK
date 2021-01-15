@@ -82,6 +82,10 @@ internal class ApiRepository(
                 eventListener.onMessagesReceived(messages)
             }
         }
+
+        override fun onSetEmailSuccess() {
+            eventListener.onSetEmailSuccess()
+        }
     }
 
     @Throws(UsedeskException::class)

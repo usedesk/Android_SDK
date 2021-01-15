@@ -80,6 +80,7 @@ internal class SocketApi(
                         eventListener.onInited(response as InitChatResponse)
                     }
                     SetEmailResponse.TYPE -> {
+                        eventListener.onSetEmailSuccess()
                     }
                     MessageResponse.TYPE -> {
                         eventListener.onNew(response as MessageResponse)
@@ -190,5 +191,6 @@ internal class SocketApi(
 
         fun onInited(initChatResponse: InitChatResponse)
         fun onNew(messageResponse: MessageResponse)
+        fun onSetEmailSuccess()
     }
 }

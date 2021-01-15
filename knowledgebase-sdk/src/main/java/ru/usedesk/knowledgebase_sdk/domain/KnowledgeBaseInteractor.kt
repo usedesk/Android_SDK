@@ -2,14 +2,14 @@ package ru.usedesk.knowledgebase_sdk.domain
 
 import io.reactivex.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
-import ru.usedesk.knowledgebase_sdk.data.repository.IKnowledgeBaseRepository
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApiRepository
 import ru.usedesk.knowledgebase_sdk.entity.*
 import toothpick.InjectConstructor
 import javax.inject.Named
 
 @InjectConstructor
 internal class KnowledgeBaseInteractor(
-        private val knowledgeRepository: IKnowledgeBaseRepository,
+        private val knowledgeApiRepository: IKnowledgeBaseApiRepository,
         @Named("io")
         private val ioScheduler: Scheduler,
         @Named("main")
@@ -29,7 +29,7 @@ internal class KnowledgeBaseInteractor(
         }
     }
 
-    override fun getArticleRx(articleId: Long): Single<UsedeskArticleBody> {
+    override fun getArticleRx(articleId: Long): Single<UsedeskArticleContent> {
         return createSingle {
             it.onSuccess(getArticle(articleId))
         }
@@ -47,13 +47,13 @@ internal class KnowledgeBaseInteractor(
         }
     }
 
-    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleBody>> {
+    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleContent>> {
         return createSingle {
             it.onSuccess(getArticles(searchQuery))
         }
     }
 
-    override fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleBody>> {
+    override fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleContent>> {
         return createSingle {
             it.onSuccess(getArticles(searchQuery))
         }
@@ -67,40 +67,84 @@ internal class KnowledgeBaseInteractor(
                 .observeOn(mainThreadScheduler)
     }
 
-    @Throws(UsedeskException::class)
-    override fun addViews(articleId: Long) {
-        knowledgeRepository.addViews(configuration.accountId, configuration.token, articleId)
+    override fun sendFeedbackRx(articleId: Long, good: Boolean): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            sendFeedback(articleId, good)
+            emitter.onComplete()
+        }.subscribeOn(ioScheduler)
+                .observeOn(mainThreadScheduler)
+    }
+
+    override fun sendFeedbackRx(articleId: Long, message: String): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            sendFeedback(articleId, message)
+            emitter.onComplete()
+        }.subscribeOn(ioScheduler)
+                .observeOn(mainThreadScheduler)
     }
 
     @Throws(UsedeskException::class)
     override fun getCategories(sectionId: Long): List<UsedeskCategory> {
-        return knowledgeRepository.getCategories(configuration.accountId, configuration.token, sectionId)
+        return knowledgeApiRepository.getCategories(configuration.accountId,
+                configuration.token,
+                sectionId)
     }
 
     @Throws(UsedeskException::class)
     override fun getSections(): List<UsedeskSection> {
-        return knowledgeRepository.getSections(configuration.accountId, configuration.token)
+        return knowledgeApiRepository.getSections(configuration.accountId,
+                configuration.token)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticle(articleId: Long): UsedeskArticleBody {
-        return knowledgeRepository.getArticleBody(configuration.accountId, configuration.token, articleId)
+    override fun getArticle(articleId: Long): UsedeskArticleContent {
+        return knowledgeApiRepository.getArticle(configuration.accountId,
+                configuration.token,
+                articleId)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: String): List<UsedeskArticleBody> {
+    override fun getArticles(searchQuery: String): List<UsedeskArticleContent> {
         val query = UsedeskSearchQuery.Builder(searchQuery).build()
-        return knowledgeRepository.getArticles(configuration.accountId, configuration.token, query)
+        return knowledgeApiRepository.getArticles(configuration.accountId,
+                configuration.token,
+                query)
     }
 
     @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleBody> {
-        return knowledgeRepository.getArticles(configuration.accountId, configuration.token, searchQuery)
+    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent> {
+        return knowledgeApiRepository.getArticles(configuration.accountId,
+                configuration.token,
+                searchQuery)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(categoryId: Long): List<UsedeskArticleInfo> {
-        return knowledgeRepository.getArticles(configuration.accountId, configuration.token, categoryId)
+        return knowledgeApiRepository.getArticles(configuration.accountId,
+                configuration.token,
+                categoryId)
+    }
+
+    @Throws(UsedeskException::class)
+    override fun addViews(articleId: Long) {
+        knowledgeApiRepository.addViews(configuration.accountId,
+                configuration.token,
+                articleId)
+    }
+
+    override fun sendFeedback(articleId: Long, good: Boolean) {
+        knowledgeApiRepository.sendRating(configuration.accountId,
+                configuration.token,
+                articleId,
+                good)
+    }
+
+    override fun sendFeedback(articleId: Long, message: String) {
+        knowledgeApiRepository.sendFeedback(configuration.token,
+                configuration.clientEmail,
+                configuration.clientName,
+                articleId,
+                message)
     }
 
     internal class SafeSingleEmitter<T>(

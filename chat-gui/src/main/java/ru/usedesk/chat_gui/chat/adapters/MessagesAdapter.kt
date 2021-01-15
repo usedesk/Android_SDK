@@ -198,7 +198,7 @@ internal class MessagesAdapter(
 
         fun bindClient(position: Int,
                        clientBinding: ClientBinding) {
-            clientBinding.tvName.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
+            clientBinding.vEmpty.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
         }
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
@@ -553,6 +553,6 @@ internal class MessagesAdapter(
     }
 
     internal class ClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val tvName: TextView = rootView.findViewById(R.id.tv_name)
+        val vEmpty: View = rootView.findViewById(R.id.v_empty)
     }
 }

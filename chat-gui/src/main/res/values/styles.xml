@@ -111,9 +111,9 @@
         <item name="usedesk_chat_screen_offline_form_email_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Email.Text.Style</item>
         <item name="usedesk_chat_screen_offline_form_message_text_style">@style/Usedesk.Chat.Screen.Offline.Form.Message.Text.Style</item>
         <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_screen_offline_form_name_error_text">@string/usedesk_offline_form_name_error</item>
+        <item name="usedesk_chat_screen_offline_form_name_error_text">@string/usedesk_offline_form_required_error</item>
         <item name="usedesk_chat_screen_offline_form_email_error_text">@string/usedesk_offline_form_email_error</item>
-        <item name="usedesk_chat_screen_offline_form_message_error_text">@string/usedesk_offline_form_message_error</item>
+        <item name="usedesk_chat_screen_offline_form_message_error_text">@string/usedesk_offline_form_required_error</item>
         <item name="usedesk_chat_screen_offline_form_failed_to_send_text">@string/usedesk_offline_form_failed_to_send</item>
 
         <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>

@@ -25,9 +25,9 @@ internal class AttachedFilesAdapter(
     }
 
     fun update(attachedFiles: List<UsedeskFileInfo>) {
-        recyclerView.visibility = visibleGone(files.isNotEmpty())
         files = attachedFiles
         notifyDataSetChanged()
+        recyclerView.visibility = visibleGone(files.isNotEmpty())
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {

@@ -113,11 +113,7 @@ internal class ChatInteractor(
     }
 
     private fun onMessagesNew(messages: List<UsedeskMessage>) {
-        messages.filterNot { newMessage ->
-            newMessage.id in lastMessages.map {
-                it.id
-            }
-        }.forEach {
+        messages.forEach {
             lastMessages = lastMessages + it
             actionListener.onMessageReceived(it)
         }

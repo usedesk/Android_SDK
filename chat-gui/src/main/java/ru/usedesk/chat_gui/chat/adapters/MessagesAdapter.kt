@@ -56,6 +56,7 @@ internal class MessagesAdapter(
                 val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
                 val contentHeight = recyclerView.computeVerticalScrollRange()
                 items = items + message
+                notifyItemChanged(items.size - 2)
                 notifyItemInserted(items.size - 1)
                 if (visibleBottom >= contentHeight) {//Если чат был внизу
                     recyclerView.scrollToPosition(items.size - 1)

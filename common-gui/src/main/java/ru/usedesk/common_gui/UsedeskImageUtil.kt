@@ -1,7 +1,6 @@
 package ru.usedesk.common_gui
 
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
@@ -31,14 +30,6 @@ fun setImage(imageImageView: ImageView,
     }
 }
 
-fun setImageCenter(target: ImageView, uri: Uri, errorId: Int) {
-    Glide.with(target.context.applicationContext)
-            .load(uri)
-            .centerCrop()
-            .error(errorId)
-            .into(target)
-}
-
 
 fun showImage(ivTarget: ImageView,
               loadingId: Int,
@@ -46,12 +37,19 @@ fun showImage(ivTarget: ImageView,
               vLoading: View? = null,
               vError: View? = null,
               onSuccess: () -> Unit = {},
-              onError: () -> Unit = {}) {
+              onError: () -> Unit = {},
+              ignoreCache: Boolean = false) {
     showImageStatus(vLoading, true, vError, false)
 
     var glide = Glide.with(ivTarget.context.applicationContext)
             .load(url)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+
+    glide = if (ignoreCache) {
+        glide.skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+    } else {
+        glide.diskCacheStrategy(DiskCacheStrategy.ALL)
+    }
 
     glide = if (ivTarget.scaleType == ImageView.ScaleType.FIT_CENTER) {
         glide.fitCenter()

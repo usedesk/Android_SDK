@@ -16,6 +16,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
+        android:scaleType="centerCrop"
         app:riv_corner_radius="10dp"
         tools:src="@drawable/ic_attached_file" />
 

@@ -405,6 +405,8 @@ internal class MessagesAdapter(
                     0.0f
                 }
                 isEnabled = false
+                isClickable = false
+                setOnClickListener(null)
             }
         }
 
@@ -430,6 +432,13 @@ internal class MessagesAdapter(
                 setImageResource(initImageId)
                 setOnClickListener {
                     isEnabled = false
+                    isClickable = false
+                    setOnClickListener(null)
+                    imageViewSub.apply {
+                        isEnabled = false
+                        isClickable = false
+                        setOnClickListener(null)
+                    }
 
                     setImageResource(activeImageId)
 

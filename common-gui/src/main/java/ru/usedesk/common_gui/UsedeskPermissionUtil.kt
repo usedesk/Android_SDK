@@ -72,7 +72,7 @@ object UsedeskPermissionUtil {
 
         override fun onPermissionRationaleShouldBeShown(permissionRequest: PermissionRequest,
                                                         permissionToken: PermissionToken) {
-            //nothing
+            permissionToken.continuePermissionRequest()
         }
     }
 }

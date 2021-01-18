@@ -10,7 +10,7 @@ import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.setImageCenter
+import ru.usedesk.common_gui.showImage
 import ru.usedesk.common_gui.visibleGone
 
 internal class AttachedFilesAdapter(
@@ -25,9 +25,9 @@ internal class AttachedFilesAdapter(
     }
 
     fun update(attachedFiles: List<UsedeskFileInfo>) {
-        recyclerView.visibility = visibleGone(files.isNotEmpty())
         files = attachedFiles
         notifyDataSetChanged()
+        recyclerView.visibility = visibleGone(files.isNotEmpty())
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
@@ -50,7 +50,12 @@ internal class AttachedFilesAdapter(
 
         fun bind(usedeskFileInfo: UsedeskFileInfo) {
             val previewImageId = binding.styleValues.getId(R.attr.usedesk_chat_attached_file_preview_image)
-            setImageCenter(binding.ivPreview, usedeskFileInfo.uri, previewImageId)
+
+            showImage(binding.ivPreview,
+                    previewImageId,
+                    usedeskFileInfo.uri.toString(),
+                    ignoreCache = true)
+
             binding.ivDetach.setOnClickListener {
                 chatViewModel.detachFile(usedeskFileInfo)
             }

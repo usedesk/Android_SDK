@@ -222,15 +222,12 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_attached_files"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingVertical="4dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:itemCount="4"
+                tools:itemCount="6"
                 tools:listitem="@layout/usedesk_item_chat_attached_file" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

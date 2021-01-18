@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_offline_form_title">Unfortunately, all our operators are currently offline, but you can send us a request and we will definitely consider it in the near future.</string>
-    <string name="usedesk_offline_form_sent_title">Your request has been sent successfully.\nWe will reply to you within 1 business day.</string>
-    <string name="usedesk_offline_form_name_hint">Name</string>
-    <string name="usedesk_offline_form_email_hint">Email</string>
-    <string name="usedesk_offline_form_message_hint">Message</string>
-    <string name="usedesk_offline_form_name_error">Field required</string>
-    <string name="usedesk_offline_form_email_error">Invalid email</string>
-    <string name="usedesk_offline_form_message_error">Field required</string>
-    <string name="usedesk_offline_form_failed_to_send">Failed to send your request. Please, try again.</string>
-    <string name="usedesk_offline_form_send">Send</string>
-    <string name="usedesk_message_panel_input_hint">Write message…</string>
-    <string name="usedesk_loading_text">Loading…</string>
-    <string name="usedesk_today">Today</string>
-    <string name="usedesk_yesterday">Yesterday</string>
-    <string name="usedesk_download_started">Download started</string>
-    <string name="usedesk_download_failed">Download failed</string>
-    <string name="usedesk_screen_chat_title">Chat</string>
-    <string name="usedesk_feedback_thanks">Thank you for your feedback!</string>
-    <string name="usedesk_attachment_gallery">Gallery</string>
-    <string name="usedesk_attachment_camera">Camera</string>
-    <string name="usedesk_attachment_storage">Storage</string>
-    <string name="usedesk_offline_form_success_close">Close</string>
+    <string name="usedesk_offline_form_we_are_offline">Все операторы заняты. Оставьте сообщение, мы ответим вам на почту в течение 1 рабочего дня.</string>
+    <string name="usedesk_offline_form_sent_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
+    <string name="usedesk_offline_form_name_hint">Имя</string>
+    <string name="usedesk_offline_form_email_hint">Почта</string>
+    <string name="usedesk_offline_form_message_hint">Сообщение</string>
+    <string name="usedesk_offline_form_required_error">Поле не может быть пустым</string>
+    <string name="usedesk_offline_form_email_error">Неправильно введена почта </string>
+    <string name="usedesk_offline_form_failed_to_send">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
+    <string name="usedesk_offline_form_send">Отправить</string>
+    <string name="usedesk_offline_form_success_close">Закрыть</string>
+    <string name="usedesk_message_panel_input_hint">Написать…</string>
+    <string name="usedesk_loading_text">Загрузка…</string>
+    <string name="usedesk_today">Сегодня</string>
+    <string name="usedesk_yesterday">Вчера</string>
+    <string name="usedesk_download_started">Загрузка началась</string>
+    <string name="usedesk_download_failed">Ошибка загрузки</string>
+    <string name="usedesk_screen_chat_title">Чат</string>
+    <string name="usedesk_feedback_thanks">Спасибо за ваш отзыв!</string>
+    <string name="usedesk_attachment_gallery">Галерея</string>
+    <string name="usedesk_attachment_camera">Камера</string>
+    <string name="usedesk_attachment_storage">Файлы</string>
 </resources>

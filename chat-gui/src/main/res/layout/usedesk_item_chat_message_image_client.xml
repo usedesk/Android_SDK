@@ -16,11 +16,6 @@
         android:gravity="center"
         tools:text="Вчера" />
 
-    <View
-        android:id="@+id/v_empty"
-        android:layout_width="match_parent"
-        android:layout_height="4dp" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,4 +34,9 @@
                 layout="@layout/usedesk_item_chat_message_image" />
         </FrameLayout>
     </FrameLayout>
+
+    <View
+        android:id="@+id/v_empty"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
 </LinearLayout>

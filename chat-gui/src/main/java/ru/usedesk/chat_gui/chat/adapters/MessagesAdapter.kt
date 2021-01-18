@@ -195,11 +195,29 @@ internal class MessagesAdapter(
 
             setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
             agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
+
+            val lastOfGroup = position == items.size - 1 ||
+                    items.getOrNull(position + 1) is UsedeskMessageClient
+            agentBinding.vEmpty.visibility = visibleGone(lastOfGroup)
         }
 
         fun bindClient(position: Int,
                        clientBinding: ClientBinding) {
-            clientBinding.vEmpty.visibility = visibleGone(items.getOrNull(position - 1) is UsedeskMessageAgent)
+            val lastOfGroup = position == items.size - 1 ||
+                    items.getOrNull(position + 1) is UsedeskMessageAgent
+            clientBinding.vEmpty.visibility = visibleGone(lastOfGroup)
+        }
+
+        private fun <T : Any> bindBottomMargin(
+                vEmpty: View,
+                isClient: Boolean
+        ) {
+            val last = if (isClient) {
+                items.getOrNull(position + 1) is UsedeskMessageAgent
+            } else {
+                items.getOrNull(position + 1) is UsedeskMessageClient
+            }
+            vEmpty.visibility = visibleGone(last)
         }
 
         private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
@@ -560,6 +578,7 @@ internal class MessagesAdapter(
     internal class AgentBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
         val tvName: TextView = rootView.findViewById(R.id.tv_name)
+        val vEmpty: View = rootView.findViewById(R.id.v_empty)
     }
 
     internal class ClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

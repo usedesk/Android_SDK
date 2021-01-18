@@ -218,7 +218,7 @@
         <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:text">@string/usedesk_offline_form_sent_title</item>
+        <item name="android:text">@string/usedesk_offline_form_sent_successed</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Text.Style" parent="">
@@ -282,7 +282,7 @@
         <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:text">@string/usedesk_offline_form_title</item>
+        <item name="android:text">@string/usedesk_offline_form_we_are_offline</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Name.Text.Style" parent="">

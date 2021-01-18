@@ -7,7 +7,7 @@
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    tools:theme="@style/Usedesk.KnowledgeBase">
+    tools:theme="@style/Usedesk.KnowledgeBase.Sections.Page.Section">
 
     <FrameLayout
         android:id="@+id/l_thumbnail"
@@ -23,9 +23,7 @@
 
         <ImageView
             android:id="@+id/iv_icon"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_gravity="center"
+            style="?attr/usedesk_knowledgebase_sections_page_section_thumbnail_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -33,32 +31,13 @@
 
         <TextView
             android:id="@+id/tv_initials"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/sf_pro_display_semibold"
-            android:maxLength="1"
-            android:singleLine="true"
-            android:textAllCaps="true"
-            android:textColor="@color/usedesk_gray_cold_2"
-            android:textSize="22sp"
+            style="?attr/usedesk_knowledgebase_sections_page_section_initials_text"
             tools:text="П" />
     </FrameLayout>
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="14dp"
-        android:layout_marginLeft="14dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="14dp"
-        android:layout_marginRight="14dp"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="@font/sf_pro_display_semibold"
-        android:textColor="@color/usedesk_black_1"
-        android:textSize="17sp"
+        style="?attr/usedesk_knowledgebase_sections_page_section_title_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
         app:layout_constraintStart_toEndOf="@+id/l_thumbnail"
@@ -67,20 +46,13 @@
 
     <ImageView
         android:id="@+id/iv_arrow"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        style="?attr/usedesk_knowledgebase_sections_page_section_forward_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_arrow_forward" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:id="@+id/v_divider"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:background="@color/usedesk_gray_2"
+        style="?attr/usedesk_knowledgebase_sections_page_section_divider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/tv_title" />

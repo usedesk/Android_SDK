@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/usedesk_white_1"
     android:clickable="true"
+    tools:ignore="KeyboardInaccessibleWidget"
     tools:theme="@style/Usedesk.KnowledgeBase.Screen">
 
     <LinearLayout
@@ -33,13 +33,5 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_support"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="20dp"
-        android:theme="@style/Usedesk.KnowledgeBase.Support.Button.Style"
-        app:srcCompat="@drawable/ic_support" />
-
+        style="?attr/usedesk_knowledgebase_screen_support_button" />
 </FrameLayout>

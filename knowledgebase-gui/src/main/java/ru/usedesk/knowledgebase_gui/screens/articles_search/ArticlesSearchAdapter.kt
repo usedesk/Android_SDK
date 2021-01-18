@@ -34,7 +34,7 @@ internal class ArticlesSearchAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
         return ArticleViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_article_content,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                R.style.Usedesk_KnowledgeBase_Articles_Search_Page_Article) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         })
     }

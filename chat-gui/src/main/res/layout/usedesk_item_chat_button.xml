@@ -7,33 +7,24 @@
     android:layout_marginVertical="4dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="0dp"
-    tools:theme="@style/Usedesk.Chat.Message">
+    tools:theme="@style/Usedesk.Chat.Message.Text">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="?attr/usedesk_chat_message_text_button_background">
 
         <FrameLayout
             android:id="@+id/l_clickable"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true">
 
             <TextView
                 android:id="@+id/tv_title"
-                style="?attr/usedesk_chat_message_text_button_text_style"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center"
+                style="?attr/usedesk_chat_message_text_button_text"
                 tools:text="Button" />
         </FrameLayout>
     </FrameLayout>

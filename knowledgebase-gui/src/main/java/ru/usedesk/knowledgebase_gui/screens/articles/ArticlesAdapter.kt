@@ -31,7 +31,7 @@ internal class ArticlesAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
         return ArticleViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_article_info,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                R.style.Usedesk_KnowledgeBase_Articles_Page_Article) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         })
     }

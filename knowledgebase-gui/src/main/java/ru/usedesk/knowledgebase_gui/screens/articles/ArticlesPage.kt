@@ -25,7 +25,7 @@ internal class ArticlesPage : UsedeskFragment() {
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase
+                R.style.Usedesk_KnowledgeBase_Articles_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }

@@ -32,7 +32,7 @@ internal class CategoriesAdapter internal constructor(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
         return SectionViewHolder(inflateItem(viewGroup,
                 R.layout.usedesk_item_category,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                R.style.Usedesk_KnowledgeBase_Categories_Page_Category) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         })
     }

@@ -53,16 +53,13 @@ abstract class UsedeskFragment : Fragment() {
         return arguments?.getString(key)
     }
 
-    protected fun showSnackbarError(binding: UsedeskBinding,
-                                    messageAttrId: Int) {
-        binding.styleValues.apply {
-            UsedeskSnackbar.create(
-                    this@UsedeskFragment,
-                    getColor(R.attr.usedesk_common_error_background_color),
-                    getString(messageAttrId),
-                    getColor(R.attr.usedesk_common_error_text_color)
-            ).show()
-        }
+    protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
+        UsedeskSnackbar.create(
+                this@UsedeskFragment,
+                styleValues.getColor(R.attr.usedesk_background_color_1),
+                styleValues.getString(R.attr.usedesk_text_1),
+                styleValues.getColor(R.attr.usedesk_text_color_1)
+        ).show()
     }
 
     protected inline fun <reified T> getParentListener(): T? {

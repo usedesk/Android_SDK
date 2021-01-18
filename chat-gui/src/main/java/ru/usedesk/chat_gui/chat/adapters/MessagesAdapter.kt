@@ -153,6 +153,9 @@ internal class MessagesAdapter(
             private val tvTime: TextView
     ) : BaseViewHolder(itemView) {
 
+        private val dateStyleValues = bindingDate.styleValues
+                .getStyleValues(R.attr.usedesk_chat_message_date)
+
         override fun bind(position: Int) {
             val message = items[position]
             val formatted = getFormattedTime(message.calendar)
@@ -164,10 +167,10 @@ internal class MessagesAdapter(
             } else {
                 bindingDate.tvDate.text = when {
                     isToday(message.calendar) -> {
-                        bindingDate.styleValues.getString(R.attr.usedesk_chat_message_date_today_text)
+                        dateStyleValues.getString(R.attr.usedesk_text_1)
                     }
                     isYesterday(message.calendar) -> {
-                        bindingDate.styleValues.getString(R.attr.usedesk_chat_message_date_yesterday_text)
+                        dateStyleValues.getString(R.attr.usedesk_text_2)
                     }
                     else -> {
                         val dateFormat: DateFormat = SimpleDateFormat("dd MMMM", Locale.getDefault())
@@ -191,7 +194,7 @@ internal class MessagesAdapter(
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
-            val avatarImageId = agentBinding.styleValues.getId(R.attr.usedesk_chat_message_avatar_default_image)
+            val avatarImageId = agentBinding.styleValues.getId(R.attr.usedesk_chat_message_avatar_image)
 
             setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
             agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
@@ -279,6 +282,10 @@ internal class MessagesAdapter(
             bindingDate: DateBinding
     ) : MessageViewHolder(itemView, bindingDate, binding.tvTime) {
 
+        private val loadingImageId = binding.styleValues
+                .getStyleValues(R.attr.usedesk_chat_message_image_preview_image)
+                .getId(R.attr.usedesk_drawable_1)
+
         override fun bind(position: Int) {
             super.bind(position)
             bindImage(position)
@@ -289,9 +296,9 @@ internal class MessagesAdapter(
 
             binding.ivPreview.setOnClickListener(null)
             binding.ivError.setOnClickListener(null)
-            val loadingImage = binding.styleValues.getId(R.attr.usedesk_chat_message_image_loading_image)
+
             showImage(binding.ivPreview,
-                    loadingImage,
+                    loadingImageId,
                     messageFile.file.content,
                     binding.pbLoading,
                     binding.ivError, {
@@ -339,6 +346,16 @@ internal class MessagesAdapter(
             private val binding: MessageTextAgentBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content, binding.date) {
 
+        private val goodStyleValues = binding.styleValues
+                .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
+
+        private val badStyleValues = binding.styleValues
+                .getStyleValues(R.attr.usedesk_chat_message_feedback_bad_image)
+
+        private val thanksText = binding.styleValues
+                .getStyleValues(R.attr.usedesk_chat_message_feedback_thanks)
+                .getString(R.attr.usedesk_text_1)
+
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
             if (it.url.isNotEmpty()) {
                 onUrlClick(it.url)
@@ -357,10 +374,10 @@ internal class MessagesAdapter(
             val ivLike = binding.content.ivLike
             val ivDislike = binding.content.ivDislike
 
-            val goodImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_good_image)
-            val goodColoredImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_good_colored_image)
-            val badImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_bad_image)
-            val badColoredImage = binding.styleValues.getId(R.attr.usedesk_chat_message_feedback_bad_colored_image)
+            val goodImage = goodStyleValues.getId(R.attr.usedesk_drawable_1)
+            val goodColoredImage = goodStyleValues.getId(R.attr.usedesk_drawable_2)
+            val badImage = badStyleValues.getId(R.attr.usedesk_drawable_1)
+            val badColoredImage = badStyleValues.getId(R.attr.usedesk_drawable_2)
             when {
                 messageAgentText.feedback != null -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
@@ -377,7 +394,7 @@ internal class MessagesAdapter(
                             messageAgentText.feedback == UsedeskFeedback.DISLIKE
                     )
 
-                    binding.content.tvText.text = binding.styleValues.getString(R.attr.usedesk_chat_message_feedback_thanks_text)
+                    binding.content.tvText.text = thanksText
                 }
                 messageAgentText.feedbackNeeded -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
@@ -389,7 +406,7 @@ internal class MessagesAdapter(
                             goodImage,
                             goodColoredImage) {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
-                        binding.content.tvText.text = binding.styleValues.getString(R.attr.usedesk_chat_message_feedback_thanks_text)
+                        binding.content.tvText.text = thanksText
                     }
 
                     enableSmile(ivDislike,
@@ -399,7 +416,7 @@ internal class MessagesAdapter(
                             badImage,
                             badColoredImage) {
                         viewModel.sendFeedback(messageAgentText, UsedeskFeedback.DISLIKE)
-                        binding.content.tvText.text = binding.styleValues.getString(R.attr.usedesk_chat_message_feedback_thanks_text)
+                        binding.content.tvText.text = thanksText
                     }
                 }
                 else -> {

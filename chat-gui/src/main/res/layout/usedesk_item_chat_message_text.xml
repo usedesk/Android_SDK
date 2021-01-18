@@ -24,33 +24,19 @@
 
             <ImageView
                 android:id="@+id/iv_dislike"
-                android:layout_width="68dp"
-                android:layout_height="68dp"
-                android:layout_gravity="start"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="6dp"
+                style="?attr/usedesk_chat_message_feedback_bad_image"
                 tools:src="@drawable/ic_smile_sad" />
 
             <ImageView
                 android:id="@+id/iv_like"
-                android:layout_width="68dp"
-                android:layout_height="68dp"
-                android:layout_gravity="end"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="6dp"
+                style="?attr/usedesk_chat_message_feedback_good_image"
                 tools:src="@drawable/ic_smile_happy" />
 
         </FrameLayout>
 
         <TextView
             android:id="@+id/tv_text"
-            style="?attr/usedesk_chat_message_text_message_text_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="?attr/usedesk_chat_message_text_message_text"
             tools:text="ASjdasklj 412897412897 124784128947 192847128947 192847192847 12984710hr38e9gft2 32t893 2593gt 923t4 293g5t42 73t2783 gt273 gf273 gr2r73g 28r73g 23gr7da" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -64,11 +50,6 @@
 
     <TextView
         android:id="@+id/tv_time"
-        style="?attr/usedesk_chat_message_time_text_style"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="2dp"
+        style="?attr/usedesk_chat_message_time_text"
         tools:text="12:06" />
 </FrameLayout>

@@ -58,7 +58,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             setBackButton {
                 requireActivity().onBackPressed()
             }
-            setActionButton(R.drawable.ic_search) {
+            val icSearch = binding.styleValues
+                    .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_search_image)
+                    .getId(R.attr.usedesk_drawable_1)
+
+            setActionButton(icSearch) {
                 switchPage(ArticlesSearchPage.newInstance())
             }
         }
@@ -85,10 +89,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                     KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
                         needArticleBottomSheet().apply {
                             it.articleContent?.also { articleContent ->
-                                onArticleContent(articleContent, onFeedback = { articletId, good ->
-                                    viewModel.sendArticleFeedback(articletId, good)
-                                }, onFeedbackMessage = { articletId, message ->
-                                    viewModel.sendArticleFeedback(articletId, message)
+                                onArticleContent(articleContent, onFeedback = { articleId, good ->
+                                    viewModel.sendArticleFeedback(articleId, good)
+                                }, onFeedbackMessage = { articleId, message ->
+                                    viewModel.sendArticleFeedback(articleId, message)
                                 })
                                 show()
                             }
@@ -107,7 +111,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         UsedeskKnowledgeBaseSdk.init(requireContext())
 
         if (savedInstanceState == null) {
-            val sectionsTitle = binding.styleValues.getString(R.attr.usedesk_knowledgebase_sections_toolbar_title_text)
+            val sectionsTitle = binding.styleValues
+                    .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_title)
+                    .getString(R.attr.usedesk_text_1)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
         }
         return binding.rootView

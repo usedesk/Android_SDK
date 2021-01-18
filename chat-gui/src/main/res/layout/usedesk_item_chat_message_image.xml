@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -9,10 +8,7 @@
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/iv_preview"
-        android:layout_width="230dp"
-        android:layout_height="230dp"
-        android:scaleType="centerCrop"
-        app:riv_corner_radius="6dp"
+        style="?attr/usedesk_chat_message_image_preview_image"
         tools:src="@drawable/ic_image_loading" />
 
     <ProgressBar
@@ -23,13 +19,7 @@
 
     <ImageView
         android:id="@+id/iv_error"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        app:srcCompat="?attr/usedesk_chat_message_image_error_image" />
+        style="?attr/usedesk_chat_message_image_error_image" />
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -41,10 +31,7 @@
 
         <TextView
             android:id="@+id/tv_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            style="?attr/usedesk_chat_message_time_text_style"
+            style="?attr/usedesk_chat_message_time_text"
             tools:text="12:06" />
     </FrameLayout>
 </FrameLayout>

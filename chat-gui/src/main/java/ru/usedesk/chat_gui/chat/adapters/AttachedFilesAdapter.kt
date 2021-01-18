@@ -49,7 +49,9 @@ internal class AttachedFilesAdapter(
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         fun bind(usedeskFileInfo: UsedeskFileInfo) {
-            val previewImageId = binding.styleValues.getId(R.attr.usedesk_chat_attached_file_preview_image)
+            val previewImageId = binding.styleValues
+                    .getStyleValues(R.attr.usedesk_chat_attached_file_preview_image)
+                    .getId(R.attr.usedesk_drawable_1)
 
             showImage(binding.ivPreview,
                     previewImageId,

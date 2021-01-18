@@ -25,7 +25,7 @@ internal class CategoriesPage : UsedeskFragment() {
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                R.style.Usedesk_KnowledgeBase_Categories_Page) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
 

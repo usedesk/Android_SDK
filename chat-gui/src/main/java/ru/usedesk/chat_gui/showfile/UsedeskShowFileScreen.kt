@@ -131,7 +131,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             UsedeskPermissionUtil.needWriteExternalPermission(binding, this) {
                 try {
                     val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
-                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "")
+                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, usedeskFile.name)
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                         setDescription("description")//TODO: это чё такое?

@@ -41,14 +41,17 @@ object UsedeskPermissionUtil {
                        permission: String?,
                        fragment: Fragment,
                        onGranted: () -> Unit) {
+        val noPermissionStyleValues = binding.styleValues
+                .getStyleValues(R.attr.usedesk_common_no_permission)
+
         Dexter.withContext(binding.rootView.context)
                 .withPermission(permission)
-                .withListener(SnackbarPermissionListener(binding, fragment, onGranted))
+                .withListener(SnackbarPermissionListener(noPermissionStyleValues, fragment, onGranted))
                 .check()
     }
 
     private class SnackbarPermissionListener(
-            private val binding: UsedeskBinding,
+            private val noPermissionStyleValues: UsedeskResourceManager.StyleValues,
             private val fragment: Fragment,
             private val onGranted: () -> Unit
     ) : PermissionListener {
@@ -58,21 +61,21 @@ object UsedeskPermissionUtil {
         }
 
         override fun onPermissionDenied(permissionDeniedResponse: PermissionDeniedResponse) {
-            binding.styleValues.apply {
+            noPermissionStyleValues.apply {
                 UsedeskSnackbar.create(
                         fragment,
-                        getColor(R.attr.usedesk_common_permission_needed_background_color),
-                        getString(R.attr.usedesk_common_permission_needed_message_text),
-                        getColor(R.attr.usedesk_common_permission_needed_message_color),
-                        getString(R.attr.usedesk_common_permission_needed_action_text),
-                        getColor(R.attr.usedesk_common_permission_needed_action_color)
+                        getColor(R.attr.usedesk_background_color_1),
+                        getString(R.attr.usedesk_text_1),
+                        getColor(R.attr.usedesk_text_color_1),
+                        getString(R.attr.usedesk_text_2),
+                        getColor(R.attr.usedesk_text_color_2)
                 ).show()
             }
         }
 
         override fun onPermissionRationaleShouldBeShown(permissionRequest: PermissionRequest,
                                                         permissionToken: PermissionToken) {
-            //nothing
+            permissionToken.continuePermissionRequest()
         }
     }
 }

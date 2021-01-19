@@ -21,6 +21,10 @@ internal class ArticleBottomSheetFragment private constructor(
 
     private val binding: Binding
 
+    private val messageStyleValues: UsedeskResourceManager.StyleValues
+    private val yesStyleValues: UsedeskResourceManager.StyleValues
+    private val noStyleValues: UsedeskResourceManager.StyleValues
+
     init {
         binding = inflateItem(layoutInflater,
                 container,
@@ -29,16 +33,25 @@ internal class ArticleBottomSheetFragment private constructor(
             Binding(rootView, defaultStyleId)
         }.apply {
             setContentView(rootView)
-        }
 
-        binding.ivClose.setOnClickListener {
-            dismiss()
-        }
+            messageStyleValues = styleValues
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_feedback_title_text)
 
-        binding.lFeedbackYes.visibility = View.GONE
-        binding.lFeedbackNo.visibility = View.GONE
-        binding.etFeedback.visibility = View.GONE
-        binding.tvFeedbackTitle.visibility = View.GONE
+            yesStyleValues = styleValues
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_feedback_yes_text)
+
+            noStyleValues = styleValues
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_feedback_no_text)
+
+            ivClose.setOnClickListener {
+                dismiss()
+            }
+
+            lFeedbackYes.visibility = View.GONE
+            lFeedbackNo.visibility = View.GONE
+            etFeedback.visibility = View.GONE
+            tvFeedbackTitle.visibility = View.GONE
+        }
     }
 
     override fun onStart() {
@@ -75,9 +88,9 @@ internal class ArticleBottomSheetFragment private constructor(
     private fun showQuestion(articleId: Long,
                              onFeedback: (Long, Boolean) -> Unit,
                              onFeedbackMessage: (Long, String) -> Unit) {
-        binding.tvFeedbackTitle.setText(R.string.article_feedback_question)
-        binding.tvFeedbackYes.setText(R.string.article_feedback_yes)
-        binding.tvFeedbackNo.setText(R.string.article_feedback_no)
+        binding.tvFeedbackTitle.text = messageStyleValues.getString(R.attr.usedesk_text_1)
+        binding.tvFeedbackYes.text = yesStyleValues.getString(R.attr.usedesk_text_1)
+        binding.tvFeedbackNo.text = noStyleValues.getString(R.attr.usedesk_text_1)
 
         binding.tvFeedbackYes.setOnClickListener {
             onFeedback(articleId, true)
@@ -98,8 +111,8 @@ internal class ArticleBottomSheetFragment private constructor(
 
     private fun showWhatsWrong(articleId: Long,
                                onFeedbackMessage: (Long, String) -> Unit) {
-        binding.tvFeedbackTitle.setText(R.string.article_feedback_whats_wrong)
-        binding.tvFeedbackYes.setText(R.string.article_feedback_send)
+        binding.tvFeedbackTitle.text = messageStyleValues.getString(R.attr.usedesk_text_2)
+        binding.tvFeedbackYes.text = yesStyleValues.getString(R.attr.usedesk_text_2)
 
         binding.tvFeedbackYes.setOnClickListener {
             onFeedbackMessage(articleId, binding.etFeedback.text.toString())
@@ -114,7 +127,7 @@ internal class ArticleBottomSheetFragment private constructor(
     }
 
     private fun showThanks() {
-        binding.tvFeedbackTitle.setText(R.string.article_feedback_thanks)
+        binding.tvFeedbackTitle.text = messageStyleValues.getString(R.attr.usedesk_text_3)
         binding.lFeedbackYes.visibility = View.GONE
         binding.lFeedbackNo.visibility = View.GONE
         binding.etFeedback.visibility = View.GONE
@@ -127,7 +140,7 @@ internal class ArticleBottomSheetFragment private constructor(
 
     companion object {
         fun newInstance(container: View): ArticleBottomSheetFragment {
-            val dialogStyle = UsedeskResourceManager.getResourceId(R.style.Usedesk_KnowledgeBase_Article_Content_Dialog)
+            val dialogStyle = UsedeskResourceManager.getResourceId(R.style.Usedesk_KnowledgeBase_Article_Content_Page)
             return ArticleBottomSheetFragment(container as ViewGroup, dialogStyle)
         }
     }

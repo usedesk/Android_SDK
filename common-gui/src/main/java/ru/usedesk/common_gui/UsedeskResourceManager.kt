@@ -34,6 +34,11 @@ object UsedeskResourceManager {
             }
         }
 
+        fun getStyleValues(attrId: Int): StyleValues {
+            val styleId = getId(attrId)
+            return StyleValues(context, styleId)
+        }
+
         fun getInt(attrId: Int): Int {
             return getValue(attrId) { attrs, index ->
                 attrs.getIntOrThrow(index)

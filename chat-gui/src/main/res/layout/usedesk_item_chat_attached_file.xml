@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="80dp"
     android:layout_height="80dp"
@@ -9,33 +8,15 @@
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/iv_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_margin="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:scaleType="centerCrop"
-        app:riv_corner_radius="10dp"
+        style="?attr/usedesk_chat_attached_file_preview_image"
         tools:src="@drawable/ic_attached_file" />
 
     <ImageView
         android:id="@+id/iv_detach"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="top|end"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        app:srcCompat="?attr/usedesk_chat_attached_file_close_image" />
+        style="?attr/usedesk_chat_attached_file_close_image" />
 
     <TextView
         android:id="@+id/tv_title"
-        style="?attr/usedesk_chat_attached_file_name_text_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="8dp"
+        style="?attr/usedesk_chat_attached_file_name_text"
         tools:text="file_downloaded.pdf" />
 </FrameLayout>

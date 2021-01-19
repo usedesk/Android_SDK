@@ -14,30 +14,19 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="32dp">
+        android:padding="32dp"
+        tools:visibility="gone">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="10dp"
-            app:srcCompat="?attr/usedesk_chat_show_file_file_image" />
+        <androidx.appcompat.widget.AppCompatImageView style="?attr/usedesk_chat_show_file_file_image" />
 
         <TextView
             android:id="@+id/tv_file_name"
-            style="?attr/usedesk_chat_show_file_name_text_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:gravity="center"
+            style="?attr/usedesk_chat_show_file_name_text"
             tools:text="file_name.zip" />
 
         <TextView
             android:id="@+id/tv_file_size"
-            style="?attr/usedesk_chat_show_file_size_text_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            android:gravity="center"
+            style="?attr/usedesk_chat_show_file_size_text"
             tools:text="29КБ" />
 
     </LinearLayout>
@@ -47,7 +36,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?attr/usedesk_chat_show_file_image_background"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/iv_image"
@@ -58,18 +48,13 @@
 
         <ImageView
             android:id="@+id/iv_error"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            app:srcCompat="?attr/usedesk_chat_show_file_error_image"
-            tools:visibility="gone" />
+            style="?attr/usedesk_chat_show_file_error_image" />
 
         <ProgressBar
             android:id="@+id/pb_loading"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_gravity="center" />
-
     </FrameLayout>
 
     <eightbitlab.com.blurview.BlurView
@@ -92,22 +77,11 @@
 
             <ImageView
                 android:id="@+id/iv_back"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_gravity="center_vertical|start"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="16dp"
-                app:srcCompat="?attr/usedesk_chat_show_file_back_image" />
+                style="?attr/usedesk_chat_show_file_back_image" />
 
             <TextView
                 android:id="@+id/tv_title"
-                style="?attr/usedesk_chat_show_file_toolbar_text_style"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:padding="16dp"
+                style="?attr/usedesk_chat_show_file_toolbar_text"
                 tools:text="Фильтр team" />
 
         </androidx.appcompat.widget.Toolbar>
@@ -122,25 +96,11 @@
 
         <ImageView
             android:id="@+id/iv_share"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="start"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="16dp"
-            app:srcCompat="?attr/usedesk_chat_show_file_share_image" />
+            style="?attr/usedesk_chat_show_file_share_image" />
 
         <ImageView
             android:id="@+id/iv_download"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="end"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="16dp"
-            app:srcCompat="?attr/usedesk_chat_show_file_download_image" />
+            style="?attr/usedesk_chat_show_file_download_image" />
 
     </eightbitlab.com.blurview.BlurView>
 </FrameLayout>

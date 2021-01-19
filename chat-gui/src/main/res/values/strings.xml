@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_offline_form_we_are_offline">Все операторы заняты. Оставьте сообщение, мы ответим вам на почту в течение 1 рабочего дня.</string>
-    <string name="usedesk_offline_form_sent_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
-    <string name="usedesk_offline_form_name_hint">Имя</string>
-    <string name="usedesk_offline_form_email_hint">Почта</string>
-    <string name="usedesk_offline_form_message_hint">Сообщение</string>
-    <string name="usedesk_offline_form_required_error">Поле не может быть пустым</string>
-    <string name="usedesk_offline_form_email_error">Неправильно введена почта </string>
-    <string name="usedesk_offline_form_failed_to_send">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
-    <string name="usedesk_offline_form_send">Отправить</string>
-    <string name="usedesk_offline_form_success_close">Закрыть</string>
-    <string name="usedesk_message_panel_input_hint">Написать…</string>
-    <string name="usedesk_loading_text">Загрузка…</string>
+    <string name="usedesk_we_are_offline">Все операторы заняты. Оставьте сообщение, мы ответим вам на почту в течение 1 рабочего дня.</string>
+    <string name="usedesk_offline_form_send_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
+    <string name="usedesk_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
+    <string name="usedesk_name">Имя</string>
+    <string name="usedesk_email">Почта</string>
+    <string name="usedesk_message">Сообщение</string>
+    <string name="usedesk_field_required_error">Поле не может быть пустым</string>
+    <string name="usedesk_offline_form_email_error">Неправильно введена почта</string>
+    <string name="usedesk_close">Закрыть</string>
+    <string name="usedesk_message_input">Написать…</string>
+    <string name="usedesk_loading">Загрузка…</string>
     <string name="usedesk_today">Сегодня</string>
     <string name="usedesk_yesterday">Вчера</string>
     <string name="usedesk_download_started">Загрузка началась</string>
     <string name="usedesk_download_failed">Ошибка загрузки</string>
-    <string name="usedesk_screen_chat_title">Чат</string>
+    <string name="usedesk_chat">Чат</string>
     <string name="usedesk_feedback_thanks">Спасибо за ваш отзыв!</string>
-    <string name="usedesk_attachment_gallery">Галерея</string>
-    <string name="usedesk_attachment_camera">Камера</string>
-    <string name="usedesk_attachment_storage">Файлы</string>
+    <string name="usedesk_gallery">Галерея</string>
+    <string name="usedesk_camera">Камера</string>
+    <string name="usedesk_storage">Файлы</string>
 </resources>

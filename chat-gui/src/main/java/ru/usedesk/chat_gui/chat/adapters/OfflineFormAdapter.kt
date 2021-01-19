@@ -42,7 +42,9 @@ internal class OfflineFormAdapter(
         viewModel.nameErrorLiveData.observe(lifecycleOwner) {
             binding.tilName.error = if (it) {
                 showKeyboard(binding.etName)
-                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_name_error_text)
+                binding.styleValues
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_name_error)
+                        .getString(R.attr.usedesk_text_1)
             } else {
                 null
             }
@@ -54,7 +56,9 @@ internal class OfflineFormAdapter(
         viewModel.emailErrorLiveData.observe(lifecycleOwner) {
             binding.tilEmail.error = if (it) {
                 showKeyboard(binding.etEmail)
-                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_email_error_text)
+                binding.styleValues
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_email_error)
+                        .getString(R.attr.usedesk_text_1)
             } else {
                 null
             }
@@ -68,7 +72,9 @@ internal class OfflineFormAdapter(
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
             binding.tilMessage.error = if (it) {
                 showKeyboard(binding.etMessage)
-                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_message_error_text)
+                binding.styleValues
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_message_error)
+                        .getString(R.attr.usedesk_text_1)
             } else {
                 null
             }

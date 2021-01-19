@@ -8,12 +8,7 @@
 
     <TextView
         android:id="@+id/tv_date"
-        style="?attr/usedesk_chat_message_date_text_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
+        style="?attr/usedesk_chat_message_date_text"
         tools:text="Вчера" />
 
     <FrameLayout

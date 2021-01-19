@@ -33,7 +33,7 @@ internal class SectionsAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
         val binding = inflateItem(viewGroup,
                 R.layout.usedesk_item_section,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                R.style.Usedesk_KnowledgeBase_Sections_Page_Section) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
         return SectionViewHolder(binding)
@@ -49,14 +49,18 @@ internal class SectionsAdapter(
             private val binding: Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
+        private val noThumbnailId = binding.styleValues
+                .getStyleValues(R.attr.usedesk_knowledgebase_sections_page_section_thumbnail_image)
+                .getId(R.attr.usedesk_drawable_1)
+
         fun bind(section: UsedeskSection) {
             binding.ivIcon.setImageBitmap(null)
             binding.tvTitle.text = section.title
-            binding.ivIcon.setImageResource(R.drawable.background_no_thumbnail)
+            binding.ivIcon.setImageResource(noThumbnailId)
             binding.tvInitials.text = section.title
             section.thumbnail?.also {
                 showImage(binding.ivIcon,
-                        R.drawable.background_no_thumbnail,
+                        noThumbnailId,
                         it,
                         onSuccess = {
                             binding.tvInitials.text = ""

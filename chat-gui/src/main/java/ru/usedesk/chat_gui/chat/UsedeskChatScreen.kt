@@ -38,10 +38,9 @@ class UsedeskChatScreen : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }
 
-        val title = UsedeskResourceManager.getStyleValues(
-                requireContext(),
-                R.style.Usedesk_Chat_Screen
-        ).getString(R.attr.usedesk_chat_screen_title_text)
+        val title = binding.styleValues
+                .getStyleValues(R.attr.usedesk_chat_screen_title_text)
+                .getString(R.attr.usedesk_text_1)
 
         UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
             setTitle(title)
@@ -101,7 +100,9 @@ class UsedeskChatScreen : UsedeskFragment() {
                     }.show()
                 },
                 {
-                    showSnackbarError(binding, R.attr.usedesk_chat_screen_offline_form_failed_to_send_text)
+                    val sendFailedStyleValues = binding.styleValues
+                            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed)
+                    showSnackbarError(sendFailedStyleValues)
                 })
 
         viewModel.init()

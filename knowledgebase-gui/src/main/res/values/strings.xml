@@ -1,13 +1,12 @@
 <resources>
 
-    <string name="sections_title">KnowledgeBase</string>
-    <string name="cancel">Cancel</string>
-    <string name="articles_not_found">Articles not found</string>
-    <string name="article_feedback_question">Была ли статья полезна?</string>
-    <string name="article_feedback_whats_wrong">Посоветуйте, как можно улучшить статью?</string>
-    <string name="article_feedback_thanks">Спасибо за отзыв!</string>
-    <string name="article_feedback_yes">YES</string>
-    <string name="article_feedback_no">NO</string>
-    <string name="article_feedback_send">SEND</string>
+    <string name="usedesk_knowledgebase">База Знаний</string>
+    <string name="usedesk_cancel">Отмена</string>
+    <string name="usedesk_articles_not_found">Статьи не найдены</string>
+    <string name="usedesk_feedback_question">Была ли статья полезна?</string>
+    <string name="usedesk_feedback_whats_wrong">Посоветуйте, как можно улучшить статью?</string>
+    <string name="usedesk_feedback_thanks">Спасибо за отзыв!</string>
+    <string name="usedesk_yes">Да</string>
+    <string name="usedesk_no">Нет</string>
 
 </resources>

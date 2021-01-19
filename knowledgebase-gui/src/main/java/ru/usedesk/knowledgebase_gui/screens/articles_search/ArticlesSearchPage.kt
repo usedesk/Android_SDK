@@ -24,7 +24,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase) { rootView, defaultStyleId ->
+                R.style.Usedesk_KnowledgeBase_Articles_Search_Page) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
 
@@ -34,7 +34,11 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             getParentListener<IOnArticlesSearchClickListener>()?.onArticleClick(it)
         }
 
-        binding.tvMessage.setText(R.string.articles_not_found)
+        val message = binding.styleValues
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_search_page_message)
+                .getString(R.attr.usedesk_text_1)
+
+        binding.tvMessage.text = message
 
         viewModel.articlesLiveData.observe(viewLifecycleOwner) {
             when {

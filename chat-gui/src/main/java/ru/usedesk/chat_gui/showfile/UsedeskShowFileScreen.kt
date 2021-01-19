@@ -24,6 +24,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
 
     private lateinit var binding: Binding
+    private lateinit var downloadStatusStyleValues: UsedeskResourceManager.StyleValues
     private lateinit var styleValues: UsedeskResourceManager.StyleValues
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -35,6 +36,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 R.style.Usedesk_Chat_Show_File) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
+
+        downloadStatusStyleValues = binding.styleValues
+                .getStyleValues(R.attr.usedesk_chat_show_file_download_status)
 
         binding.ivBack.setOnClickListener {
             onBackPressed()
@@ -98,9 +102,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 binding.ivImage.setOnClickListener {
                     viewModel.onImageClick()
                 }
-                val loadingImageId = binding.styleValues.getId(R.attr.usedesk_chat_show_file_loading_image)
                 showImage(binding.ivImage,
-                        loadingImageId,
+                        0,
                         usedeskFile.content,
                         binding.pbLoading,
                         binding.ivError,
@@ -131,7 +134,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             UsedeskPermissionUtil.needWriteExternalPermission(binding, this) {
                 try {
                     val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
-                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "")
+                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, usedeskFile.name)
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                         setDescription("description")//TODO: это чё такое?
@@ -141,11 +144,11 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                     val downloadManager = (requireActivity().getSystemService(DOWNLOAD_SERVICE) as DownloadManager?)
                     val id = downloadManager?.enqueue(request)
                     if (id != null) {
-                        val description = styleValues.getString(R.attr.usedesk_chat_show_file_download_started_text)
+                        val description = downloadStatusStyleValues.getString(R.attr.usedesk_text_1)
                         Toast.makeText(context, "$description:\n${usedeskFile.name}", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    val description = styleValues.getString(R.attr.usedesk_chat_show_file_download_failed_text)
+                    val description = downloadStatusStyleValues.getString(R.attr.usedesk_text_2)
                     Toast.makeText(context, "$description:\n${usedeskFile.name}", Toast.LENGTH_SHORT).show()
                 }
             }

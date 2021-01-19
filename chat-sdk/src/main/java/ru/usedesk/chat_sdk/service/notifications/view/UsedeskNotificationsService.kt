@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
@@ -20,11 +19,11 @@ abstract class UsedeskNotificationsService : Service() {
     lateinit var notificationManager: NotificationManager
         private set
 
-    private var messagesDisposable: Disposable? = null
-
     protected open val channelId = "newUsedeskMessages"
     protected open val channelTitle = "Messages from operator"
     protected open val fileMessage = "Sent the file"
+
+    protected open val showCloseButton = false
 
     override fun onCreate() {
         super.onCreate()
@@ -54,19 +53,16 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val usedeskChatConfiguration = UsedeskChatConfiguration.deserialize(intent)
+        val chatConfiguration = UsedeskChatConfiguration.deserialize(intent)
+        if (chatConfiguration != null) {
+            UsedeskChatSdk.setConfiguration(chatConfiguration)
+            UsedeskChatSdk.init(this)
 
-        if (usedeskChatConfiguration == null) {
-            stopSelf(startId)
-        } else {
-            UsedeskChatSdk.setConfiguration(usedeskChatConfiguration)
-            UsedeskChatSdk.init(this, presenter.actionListener)
-
-            presenter.init()
-
-            messagesDisposable = presenter.modelObservable.subscribe {
+            presenter.init {
                 renderModel(it)
             }
+        } else {
+            stopSelf(startId)
         }
 
         return START_STICKY
@@ -81,8 +77,10 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     protected abstract fun showNotification(notification: Notification)
-    protected open val contentPendingIntent: PendingIntent? = null
-    protected open val deletePendingIntent: PendingIntent? = null
+
+    protected open fun getContentPendingIntent(): PendingIntent? = null
+    protected open fun getDeletePendingIntent(): PendingIntent? = null
+    protected open fun getClosePendingIntent(): PendingIntent? = null
 
     protected open fun createNotification(model: UsedeskNotificationsModel): Notification? {
         return if (model.message is UsedeskMessageAgent) {
@@ -95,15 +93,23 @@ abstract class UsedeskNotificationsService : Service() {
             if (model.count > 1) {
                 title += " (" + model.count + ")"
             }
-            val notification = NotificationCompat.Builder(this, channelId)
-                    .setSmallIcon(R.drawable.ic_dialog_email)
-                    .setContentTitle(title)
-                    .setContentText(text)
-                    .setContentIntent(contentPendingIntent)
-                    .setDeleteIntent(deletePendingIntent)
-                    .build()
-            notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
-            notification
+            NotificationCompat.Builder(this, channelId)
+                    .apply {
+                        setSmallIcon(android.R.drawable.ic_dialog_email)
+                        setContentTitle(title)
+                        setContentText(text)
+                        setContentIntent(getContentPendingIntent())
+                        setDeleteIntent(getDeletePendingIntent())
+                        if (showCloseButton) {
+                            addAction(R.drawable.ic_delete,
+                                    "Закрыть",
+                                    getClosePendingIntent()
+                            )
+                        }
+                    }
+                    .build().apply {
+                        flags = flags or Notification.FLAG_AUTO_CANCEL
+                    }
         } else {
             null
         }
@@ -112,10 +118,7 @@ abstract class UsedeskNotificationsService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        messagesDisposable?.also {
-            it.dispose()
-        }
-
-        UsedeskChatSdk.release()
+        presenter.onClear()
+        UsedeskChatSdk.release(false)
     }
 }

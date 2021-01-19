@@ -13,9 +13,11 @@ open class UsedeskNotificationsServiceFactory {
 
     protected open val serviceClass: Class<*> = UsedeskNotificationsService::class.java
 
-    fun startService(context: Context, usedeskChatConfiguration: UsedeskChatConfiguration) {
-        val intent = Intent(context, serviceClass)
-        usedeskChatConfiguration.serialize(intent)
-        context.startService(intent)
+    fun startService(context: Context,
+                     usedeskChatConfiguration: UsedeskChatConfiguration) {
+        Intent(context, serviceClass).also {
+            usedeskChatConfiguration.serialize(it)
+            context.startService(it)
+        }
     }
 }

@@ -1,13 +1,21 @@
 package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
-import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 
 interface IUsedeskChat {
+
+    fun addActionListener(listener: IUsedeskActionListener)
+
+    fun addActionListener(listener: IUsedeskActionListenerRx)
+
+    fun removeActionListener(listener: IUsedeskActionListener)
+
+    fun removeActionListener(listener: IUsedeskActionListenerRx)
+
+    fun isNoSubscribers(): Boolean
+
     @Throws(UsedeskException::class)
     fun connect()
 

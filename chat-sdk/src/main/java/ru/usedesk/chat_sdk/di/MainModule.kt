@@ -19,18 +19,15 @@ import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoad
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.TokenLoader
 import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import toothpick.config.Module
 
 internal class MainModule(
-        usedeskChatConfiguration: UsedeskChatConfiguration,
-        actionListener: IUsedeskActionListener
+        usedeskChatConfiguration: UsedeskChatConfiguration
 ) : Module() {
 
     init {
         bind(UsedeskChatConfiguration::class.java).toInstance(usedeskChatConfiguration)
-        bind(IUsedeskActionListener::class.java).toInstance(actionListener)
 
         bind(SocketApi::class.java).to(SocketApi::class.java).singleton()
         bind(IConfigurationLoader::class.java).to(ConfigurationLoader::class.java).singleton()

@@ -3,6 +3,7 @@ package ru.usedesk.chat_sdk.domain
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
@@ -12,11 +13,11 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import toothpick.InjectConstructor
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @InjectConstructor
 internal class ChatInteractor(
         private val configuration: UsedeskChatConfiguration,
-        private val actionListener: IUsedeskActionListener,
         private val userInfoRepository: IUserInfoRepository,
         private val apiRepository: IApiRepository
 ) : IUsedeskChat {
@@ -24,14 +25,31 @@ internal class ChatInteractor(
     private var token: String? = null
     private var lastMessages = listOf<UsedeskMessage>()
     private var initClientMessage: String? = null
+    private var actionListeners = mutableSetOf<IUsedeskActionListener>()
+    private var reconnectDisposable: Disposable? = null
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
-            actionListener.onConnected()
+            actionListeners.forEach {
+                it.onConnected()
+            }
         }
 
         override fun onDisconnected() {
-            actionListener.onDisconnected()
+            if (reconnectDisposable?.isDisposed != false) {
+                reconnectDisposable = Completable.timer(5, TimeUnit.SECONDS)
+                        .subscribe {
+                            try {
+                                connect()
+                            } catch (e: Exception) {
+                                //nothing
+                            }
+                        }
+            }
+
+            actionListeners.forEach {
+                it.onDisconnected()
+            }
         }
 
         override fun onTokenError() {
@@ -41,16 +59,22 @@ internal class ChatInteractor(
                     apiRepository.init(configuration, it)
                 }
             } catch (e: UsedeskException) {
-                actionListener.onException(e)
+                actionListeners.forEach {
+                    it.onException(e)
+                }
             }
         }
 
         override fun onFeedback() {
-            actionListener.onFeedbackReceived()
+            actionListeners.forEach {
+                it.onFeedbackReceived()
+            }
         }
 
         override fun onException(exception: Exception) {
-            actionListener.onException(exception)
+            actionListeners.forEach {
+                it.onException(exception)
+            }
         }
 
         override fun onChatInited(chatInited: ChatInited) {
@@ -66,7 +90,9 @@ internal class ChatInteractor(
         }
 
         override fun onOfflineForm() {
-            actionListener.onOfflineFormExpected(configuration)
+            actionListeners.forEach {
+                it.onOfflineFormExpected(configuration)
+            }
         }
 
         override fun onSetEmailSuccess() {
@@ -86,6 +112,8 @@ internal class ChatInteractor(
     @Throws(UsedeskException::class)
     override fun connect() {
         try {
+            reconnectDisposable?.dispose()
+            reconnectDisposable = null
             val configuration = userInfoRepository.getConfiguration()
             if (this.configuration.email == configuration.email && this.configuration.companyId == configuration.companyId) {
                 token = userInfoRepository.getToken()
@@ -109,13 +137,17 @@ internal class ChatInteractor(
                 it
             }
         }
-        actionListener.onMessageUpdated(message)
+        actionListeners.forEach {
+            it.onMessageUpdated(message)
+        }
     }
 
     private fun onMessagesNew(messages: List<UsedeskMessage>) {
         messages.forEach {
             lastMessages = lastMessages + it
-            actionListener.onMessageReceived(it)
+            actionListeners.forEach { listener ->
+                listener.onMessageReceived(it)
+            }
         }
     }
 
@@ -123,13 +155,20 @@ internal class ChatInteractor(
         apiRepository.disconnect()
     }
 
+    override fun addActionListener(listener: IUsedeskActionListener) {
+        actionListeners.add(listener)
+    }
+
+    override fun removeActionListener(listener: IUsedeskActionListener) {
+        actionListeners.remove(listener)
+    }
+
     @Throws(UsedeskException::class)
     override fun send(textMessage: String) {
-        if (textMessage.isEmpty()) {
-            return
-        }
-        token?.also {
-            apiRepository.send(it, textMessage)
+        if (textMessage.isNotEmpty()) {
+            token?.also {
+                apiRepository.send(it, textMessage)
+            }
         }
     }
 
@@ -232,7 +271,9 @@ internal class ChatInteractor(
                         configuration.clientAdditionalId)
             }
         } catch (e: UsedeskException) {
-            actionListener.onException(e)
+            actionListeners.forEach {
+                it.onException(e)
+            }
         }
     }
 
@@ -240,9 +281,11 @@ internal class ChatInteractor(
         this.token = chatChatInited.token
 
         userInfoRepository.setToken(token)
-        actionListener.onConnected()
 
-        actionListener.onMessagesReceived(chatChatInited.messages)
+        actionListeners.forEach {
+            it.onConnected()
+            it.onMessagesReceived(chatChatInited.messages)
+        }
 
         val initClientMessage = try {
             userInfoRepository.getConfiguration().initClientMessage

@@ -26,6 +26,8 @@ abstract class UsedeskNotificationsService : Service() {
     protected open val channelTitle = "Messages from operator"
     protected open val fileMessage = "Sent the file"
 
+    private var differentProcess = false
+
     override fun onCreate() {
         super.onCreate()
 
@@ -54,20 +56,25 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val usedeskChatConfiguration = UsedeskChatConfiguration.deserialize(intent)
+        UsedeskNotificationsServiceFactory.deserialize(intent, onData = { chatConfiguration, differentProcess ->
+            this.differentProcess = differentProcess
 
-        if (usedeskChatConfiguration == null) {
-            stopSelf(startId)
-        } else {
-            UsedeskChatSdk.setConfiguration(usedeskChatConfiguration)
-            UsedeskChatSdk.init(this, presenter.actionListener)
+            val chat = if (differentProcess) {
+                UsedeskChatSdk.setConfiguration(chatConfiguration)
+                UsedeskChatSdk.init(this)
+            } else {
+                UsedeskChatSdk.getInstance()
+            }
+            chat.addActionListener(presenter.actionListener)
 
             presenter.init()
 
             messagesDisposable = presenter.modelObservable.subscribe {
                 renderModel(it)
             }
-        }
+        }, onError = {
+            stopSelf(startId)
+        })
 
         return START_STICKY
     }
@@ -116,6 +123,10 @@ abstract class UsedeskNotificationsService : Service() {
             it.dispose()
         }
 
-        UsedeskChatSdk.release()
+        if (differentProcess) {
+            UsedeskChatSdk.getInstance()
+                    .removeActionListener(presenter.actionListener)
+            UsedeskChatSdk.release()
+        }
     }
 }

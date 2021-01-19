@@ -65,7 +65,8 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     private fun init(agentName: String?) {
-        UsedeskChatSdk.init(requireContext(), viewModel.actionListenerRx)
+        UsedeskChatSdk.init(requireContext())
+                .addActionListener(viewModel.actionListenerRx)
 
         MessagePanelAdapter(binding.messagePanel, viewModel, viewLifecycleOwner) {
             openAttachmentDialog()

@@ -194,7 +194,9 @@ internal class MessagesAdapter(
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
-            val avatarImageId = agentBinding.styleValues.getId(R.attr.usedesk_chat_message_avatar_image)
+            val avatarImageId = agentBinding.styleValues
+                    .getStyleValues(R.attr.usedesk_chat_message_avatar_image)
+                    .getId(R.attr.usedesk_drawable_1)
 
             setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
             agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))

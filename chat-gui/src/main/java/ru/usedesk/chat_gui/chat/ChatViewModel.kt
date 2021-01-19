@@ -1,6 +1,8 @@
 package ru.usedesk.chat_gui.chat
 
 import androidx.lifecycle.MutableLiveData
+import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -22,7 +24,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     val emailErrorLiveData = MutableLiveData(false)
     val messageErrorLiveData = MutableLiveData(false)
 
-    val actionListenerRx = UsedeskActionListenerRx()
+    private lateinit var actionListenerRx: IUsedeskActionListenerRx
     val configuration = UsedeskChatSdk.requireConfiguration()
 
     private lateinit var usedeskChat: IUsedeskChat
@@ -31,28 +33,61 @@ internal class ChatViewModel : UsedeskViewModel() {
         usedeskChat = UsedeskChatSdk.getInstance()
 
         clearFileInfoList()
-        addDisposable(actionListenerRx.messagesObservable.subscribe {
-            messagesLiveData.postValue(it.reversed())
-            chatStateLiveData.postValue(ChatState.CHAT)
-        })
-        addDisposable(actionListenerRx.newMessageObservable.subscribe {
-            newMessageLiveData.postValue(it)
-        })
-        addDisposable(actionListenerRx.offlineFormExpectedObservable.subscribe {
-            chatStateLiveData.postValue(ChatState.OFFLINE_FORM)
-        })
-        addDisposable(actionListenerRx.exceptionObservable.subscribe {
-            exceptionLiveData.postValue(it)
-        })
-        addDisposable(actionListenerRx.connectedStateObservable.subscribe {
+        actionListenerRx = object : IUsedeskActionListenerRx() {
 
-            if (!it) {
-                doIt(usedeskChat.connectRx())
+            override fun onConnectedStateObservable(
+                    connectedStateObservable: Observable<Boolean>
+            ): Disposable? {
+                return connectedStateObservable.subscribe {
+                    if (!it) {
+                        doIt(usedeskChat.connectRx())
+                    }
+                }
             }
-        })
-        addDisposable(actionListenerRx.messageUpdateObservable.subscribe {
-            messageUpdateLiveData.postValue(it)
-        })
+
+            override fun onNewMessageObservable(
+                    newMessageObservable: Observable<UsedeskMessage>
+            ): Disposable? {
+                return newMessageObservable.subscribe {
+                    newMessageLiveData.postValue(it)
+                }
+            }
+
+            override fun onMessagesObservable(
+                    messagesObservable: Observable<List<UsedeskMessage>>
+            ): Disposable? {
+                return messagesObservable.subscribe {
+                    messagesLiveData.postValue(it)
+                    chatStateLiveData.postValue(ChatState.CHAT)
+                }
+            }
+
+            override fun onMessageUpdateObservable(
+                    messageUpdateObservable: Observable<UsedeskMessage>
+            ): Disposable? {
+                return messageUpdateObservable.subscribe {
+                    messageUpdateLiveData.postValue(it)
+                }
+            }
+
+            override fun onOfflineFormExpectedObservable(
+                    offlineFormExpectedObservable: Observable<UsedeskChatConfiguration>
+            ): Disposable? {
+                return offlineFormExpectedObservable.subscribe {
+                    chatStateLiveData.postValue(ChatState.OFFLINE_FORM)
+                }
+            }
+
+            override fun onExceptionObservable(
+                    exceptionObservable: Observable<Exception>
+            ): Disposable? {
+                return exceptionObservable.subscribe {
+                    exceptionLiveData.postValue(it)
+                }
+            }
+        }
+        UsedeskChatSdk.getInstance()
+                .addActionListener(actionListenerRx)
     }
 
     fun onMessageChanged(message: String) {
@@ -73,7 +108,9 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        UsedeskChatSdk.release()
+        UsedeskChatSdk.getInstance()
+                .removeActionListener(actionListenerRx)
+        UsedeskChatSdk.release(false)
     }
 
     fun detachFile(usedeskFileInfo: UsedeskFileInfo) {

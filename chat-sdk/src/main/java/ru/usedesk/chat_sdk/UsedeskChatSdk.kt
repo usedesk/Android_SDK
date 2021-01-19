@@ -25,11 +25,18 @@ object UsedeskChatSdk {
                 ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
     }
 
+    /**
+     * Завершает работу IUsedeskChat
+     * При force == false завершит работу только в том случае, если не осталось слушателей
+     */
     @JvmStatic
-    fun release() {
+    @JvmOverloads
+    fun release(force: Boolean = true) {
         instanceBox?.also {
-            it.release()
-            instanceBox = null
+            if (force || it.usedeskChatSdk.isNoSubscribers()) {
+                it.release()
+                instanceBox = null
+            }
         }
     }
 
@@ -43,7 +50,7 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun startService(context: Context) {
-        notificationsServiceFactory.startService(context, requireConfiguration(), false)
+        notificationsServiceFactory.startService(context, requireConfiguration())
     }
 
     @JvmStatic

@@ -1,49 +1,48 @@
 package ru.usedesk.chat_sdk.service.notifications.presenter
 
-import android.annotation.SuppressLint
 import io.reactivex.Observable
-import ru.usedesk.chat_sdk.UsedeskChatSdk.getInstance
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
-import ru.usedesk.chat_sdk.entity.UsedeskActionListenerRx
+import io.reactivex.disposables.Disposable
+import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
-import java.util.concurrent.TimeUnit
 
 class UsedeskNotificationsPresenter {
-    private var model: UsedeskNotificationsModel? = null
-    private val actionListenerRx = UsedeskActionListenerRx()
+    private var lastModel: UsedeskNotificationsModel? = null
 
-    val actionListener: IUsedeskActionListener = actionListenerRx
+    private lateinit var actionListenerRx: IUsedeskActionListenerRx
 
-    private val newModelObservable: Observable<UsedeskNotificationsModel> = actionListenerRx.newMessageObservable.filter {
-        it is UsedeskMessageAgent
-    }.map {
-        UsedeskNotificationsModel(it)
-    }
+    fun init(onModel: (UsedeskNotificationsModel?) -> Unit) {
+        UsedeskChatSdk.getInstance().apply {
+            actionListenerRx = object : IUsedeskActionListenerRx() {
+                override fun onNewMessageObservable(
+                        newMessageObservable: Observable<UsedeskMessage>
+                ): Disposable? {
+                    return newMessageObservable.filter {
+                        it is UsedeskMessageAgent
+                    }.map {
+                        UsedeskNotificationsModel(it)
+                    }.map {
+                        val curModel = lastModel
+                        lastModel = if (curModel == null) {
+                            it
+                        } else {
+                            UsedeskNotificationsModel(curModel.message, curModel.count + 1)
+                        }
+                        lastModel
+                    }.subscribe {
+                        onModel(it)
+                    }
+                }
+            }
 
-    val modelObservable = newModelObservable.map {
-        val curModel = this.model
-        model = if (curModel == null) {
-            it
-        } else {
-            reduce(curModel, it)
+            addActionListener(actionListenerRx)
+            connectRx().subscribe()
         }
-        model
     }
 
-    private fun reduce(previousModel: UsedeskNotificationsModel,
-                       newModel: UsedeskNotificationsModel): UsedeskNotificationsModel {
-        return UsedeskNotificationsModel(previousModel.message, previousModel.count + 1)
-    }
-
-    @SuppressLint("CheckResult")
-    fun init() {
-        actionListenerRx.disconnectedObservable.delay(5, TimeUnit.SECONDS).subscribe {
-            connect()
-        }
-        connect()
-    }
-
-    private fun connect() {
-        getInstance().connectRx().subscribe()
+    fun onClear() {
+        UsedeskChatSdk.getInstance()
+                .removeActionListener(actionListenerRx)
     }
 }

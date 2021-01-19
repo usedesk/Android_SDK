@@ -17,14 +17,12 @@
         android:theme="@style/AppTheme">
         <service
             android:name=".service.CustomSimpleNotificationsService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":newMessagesReceiver" />
+            android:enabled="true" />
+        <!--android:process=":usedeskMessageReceiver" />-->
         <service
             android:name=".service.CustomForegroundNotificationsService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":newMessagesReceiver" />
+            android:enabled="true" />
+        <!--android:process=":usedeskMessageReceiver" />-->
 
         <activity android:name=".ui.main.MainActivity">
             <intent-filter>

@@ -5,12 +5,19 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 
 interface IUsedeskChat {
-    @Throws(UsedeskException::class)
-    fun connect()
 
     fun addActionListener(listener: IUsedeskActionListener)
 
+    fun addActionListener(listener: IUsedeskActionListenerRx)
+
     fun removeActionListener(listener: IUsedeskActionListener)
+
+    fun removeActionListener(listener: IUsedeskActionListenerRx)
+
+    fun isNoSubscribers(): Boolean
+
+    @Throws(UsedeskException::class)
+    fun connect()
 
     @Throws(UsedeskException::class)
     fun disconnect()

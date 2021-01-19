@@ -46,7 +46,7 @@ internal class MessagesAdapter(
         }
         viewModel.messagesLiveData.observe(owner) { messages ->
             if (items.isEmpty()) {
-                this.items = messages.reversed()
+                this.items = messages
                 notifyDataSetChanged()
                 recyclerView.scrollToPosition(items.size - 1)
             }

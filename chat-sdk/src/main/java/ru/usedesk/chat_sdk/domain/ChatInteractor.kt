@@ -5,6 +5,8 @@ import io.reactivex.CompletableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
@@ -23,32 +25,50 @@ internal class ChatInteractor(
 ) : IUsedeskChat {
 
     private var token: String? = null
-    private var lastMessages = listOf<UsedeskMessage>()
     private var initClientMessage: String? = null
+
     private var actionListeners = mutableSetOf<IUsedeskActionListener>()
+    private var actionListenersRx = mutableSetOf<IUsedeskActionListenerRx>()
+
+    private val connectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    private val disconnectedSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    private val connectedStateSubject = BehaviorSubject.createDefault(false)
+    private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
+    private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
+    private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
+    private val messageUpdateSubject = BehaviorSubject.create<UsedeskMessage>()
+    private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
+    private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
+    private val exceptionSubject = BehaviorSubject.create<Exception>()
+
     private var reconnectDisposable: Disposable? = null
+
+    private var lastMessages = listOf<UsedeskMessage>()
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
-            actionListeners.forEach {
-                it.onConnected()
+            connectedSubject.onNext(UsedeskSingleLifeEvent(null))
+            connectedStateSubject.onNext(true)
+            actionListeners.forEach { listener ->
+                listener.onConnected()
             }
         }
 
         override fun onDisconnected() {
             if (reconnectDisposable?.isDisposed != false) {
-                reconnectDisposable = Completable.timer(5, TimeUnit.SECONDS)
-                        .subscribe {
-                            try {
-                                connect()
-                            } catch (e: Exception) {
-                                //nothing
-                            }
-                        }
+                reconnectDisposable = Completable.timer(5, TimeUnit.SECONDS).subscribe {
+                    try {
+                        connect()
+                    } catch (e: Exception) {
+                        //nothing
+                    }
+                }
             }
 
-            actionListeners.forEach {
-                it.onDisconnected()
+            disconnectedSubject.onNext(UsedeskSingleLifeEvent(null))
+            connectedStateSubject.onNext(false)
+            actionListeners.forEach { listener ->
+                listener.onDisconnected()
             }
         }
 
@@ -59,21 +79,21 @@ internal class ChatInteractor(
                     apiRepository.init(configuration, it)
                 }
             } catch (e: UsedeskException) {
-                actionListeners.forEach {
-                    it.onException(e)
-                }
+                onException(e)
             }
         }
 
         override fun onFeedback() {
-            actionListeners.forEach {
-                it.onFeedbackReceived()
+            feedbackSubject.onNext(UsedeskSingleLifeEvent(null))
+            actionListeners.forEach { listener ->
+                listener.onFeedbackReceived()
             }
         }
 
         override fun onException(exception: Exception) {
-            actionListeners.forEach {
-                it.onException(exception)
+            exceptionSubject.onNext(exception)
+            actionListeners.forEach { listener ->
+                listener.onException(exception)
             }
         }
 
@@ -82,7 +102,7 @@ internal class ChatInteractor(
         }
 
         override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(newMessages)
+            this@ChatInteractor.onMessagesNew(newMessages, false)
         }
 
         override fun onMessageUpdated(message: UsedeskMessage) {
@@ -90,8 +110,9 @@ internal class ChatInteractor(
         }
 
         override fun onOfflineForm() {
-            actionListeners.forEach {
-                it.onOfflineFormExpected(configuration)
+            offlineFormExpectedSubject.onNext(configuration)
+            actionListeners.forEach { listener ->
+                listener.onOfflineFormExpected(configuration)
             }
         }
 
@@ -137,17 +158,27 @@ internal class ChatInteractor(
                 it
             }
         }
-        actionListeners.forEach {
-            it.onMessageUpdated(message)
+        messageUpdateSubject.onNext(message)
+        actionListeners.forEach { listener ->
+            listener.onMessageUpdated(message)
         }
     }
 
-    private fun onMessagesNew(messages: List<UsedeskMessage>) {
+    private fun onMessagesNew(messages: List<UsedeskMessage>,
+                              isInited: Boolean) {
+        lastMessages = lastMessages + messages
         messages.forEach {
-            lastMessages = lastMessages + it
+            messageSubject.onNext(it)
+            if (!isInited) {
+                newMessageSubject.onNext(it)
+            }
             actionListeners.forEach { listener ->
                 listener.onMessageReceived(it)
             }
+        }
+        messagesSubject.onNext(lastMessages)
+        actionListeners.forEach { listener ->
+            listener.onMessagesReceived(lastMessages)
         }
     }
 
@@ -161,6 +192,31 @@ internal class ChatInteractor(
 
     override fun removeActionListener(listener: IUsedeskActionListener) {
         actionListeners.remove(listener)
+    }
+
+    override fun addActionListener(listener: IUsedeskActionListenerRx) {
+        actionListenersRx.add(listener)
+        listener.onObservables(
+                connectedSubject,
+                disconnectedSubject,
+                connectedStateSubject,
+                messageSubject,
+                newMessageSubject,
+                messagesSubject,
+                messageUpdateSubject,
+                offlineFormExpectedSubject,
+                feedbackSubject,
+                exceptionSubject
+        )
+    }
+
+    override fun removeActionListener(listener: IUsedeskActionListenerRx) {
+        actionListenersRx.remove(listener)
+        listener.onDispose()
+    }
+
+    override fun isNoSubscribers(): Boolean {
+        return actionListeners.isEmpty() && actionListenersRx.isEmpty()
     }
 
     @Throws(UsedeskException::class)
@@ -282,20 +338,15 @@ internal class ChatInteractor(
 
         userInfoRepository.setToken(token)
 
-        actionListeners.forEach {
-            it.onConnected()
-            it.onMessagesReceived(chatChatInited.messages)
-        }
+        onMessagesNew(chatChatInited.messages, true)
 
         val initClientMessage = try {
             userInfoRepository.getConfiguration().initClientMessage
         } catch (ignore: UsedeskException) {
             null
         }
-        if (initClientMessage != null) {
-            if (initClientMessage != configuration.initClientMessage) {
-                send(initClientMessage)
-            }
+        if (initClientMessage?.equals(configuration.initClientMessage) == false) {
+            send(initClientMessage)
         }
         userInfoRepository.setConfiguration(configuration)
 

@@ -69,8 +69,8 @@ public class ConfigurationFragment extends Fragment {
     private Configuration getConfiguration() {
         return new Configuration(binding.etCompanyId.getText().toString(),
                 binding.etEmail.getText().toString(),
-                binding.etUrl.getText().toString(),
-                binding.etOfflineUrl.getText().toString(),
+                binding.etSocketUrl.getText().toString(),
+                binding.etSecureUrl.getText().toString(),
                 binding.etAccountId.getText().toString(),
                 binding.etToken.getText().toString(),
                 binding.etClientName.getText().toString(),
@@ -86,8 +86,8 @@ public class ConfigurationFragment extends Fragment {
     private void onNewConfiguration(@NonNull Configuration configuration) {
         binding.etCompanyId.setText(configuration.getCompanyId());
         binding.etEmail.setText(configuration.getEmail());
-        binding.etUrl.setText(configuration.getUrl());
-        binding.etOfflineUrl.setText(configuration.getOfflineFormUrl());
+        binding.etSocketUrl.setText(configuration.getSocketUrl());
+        binding.etSecureUrl.setText(configuration.getSecureUrl());
         binding.etAccountId.setText(configuration.getAccountId());
         binding.etToken.setText(configuration.getToken());
         binding.etClientName.setText(configuration.getClientName());
@@ -106,8 +106,8 @@ public class ConfigurationFragment extends Fragment {
         binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
         binding.tilEmail.setError(configurationValidation.getEmailError());
         binding.tilClientPhoneNumber.setError(configurationValidation.getPhoneNumberError());
-        binding.tilUrl.setError(configurationValidation.getUrlError());
-        binding.tilOfflineUrl.setError(configurationValidation.getOfflineFormUrlError());
+        binding.tilSocketUrl.setError(configurationValidation.getSocketUrlError());
+        binding.tilSecureUrl.setError(configurationValidation.getSecureUrlError());
         binding.tilAccountId.setError(configurationValidation.getAccountIdError());
         binding.tilToken.setError(configurationValidation.getTokenError());
     }

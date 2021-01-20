@@ -7,8 +7,8 @@
 
     <string name="configuration_company_id_hint">Enter company ID</string>
     <string name="configuration_email_hint">Enter email</string>
-    <string name="configuration_url_hint">Enter url</string>
-    <string name="configuration_offline_url_hint">Enter offline form url</string>
+    <string name="configuration_socket_url_hint">Enter socket url</string>
+    <string name="configuration_secure_url_hint">Enter API url</string>
     <string name="switch_hint">Foreground service</string>
 
     <string name="enter_token">Enter token</string>

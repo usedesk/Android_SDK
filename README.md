@@ -62,8 +62,8 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 |-----------------------|-----------------------|-----------------------------|
 | companyId  | String  | Идентификатор компании |
 | clientEmail  | String  | Почта клиента |
-| apiUrl  | String  | Адрес API сервера |
-| offlineFormUrl  | String  | Адрес для отправки оффлайн формы |
+| socketUrl  | String  | Адрес socket-сервера |
+| secureUrl  | String  | Адрес secure сервера |
 | clientName  | String  | Имя клиента |
 | clientPhone  | Long  | Телефонный номер клиента |
 | clientAdditionalId  | Long  | Дополнительный идентификатор клиента |

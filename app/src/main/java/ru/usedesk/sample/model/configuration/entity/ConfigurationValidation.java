@@ -6,23 +6,23 @@ public class ConfigurationValidation {
     private final String companyIdError;
     private final String emailError;
     private final String phoneNumberError;
-    private final String urlError;
-    private final String offlineFormUrlError;
+    private final String socketUrlError;
+    private final String secureUrlError;
     private final String accountIdError;
     private final String tokenError;
 
     public ConfigurationValidation(@Nullable String companyIdError,
                                    @Nullable String emailError,
                                    @Nullable String phoneNumberError,
-                                   @Nullable String urlError,
-                                   @Nullable String offlineFormUrlError,
+                                   @Nullable String socketUrlError,
+                                   @Nullable String secureUrlError,
                                    @Nullable String accountIdError,
                                    @Nullable String tokenError) {
         this.companyIdError = companyIdError;
         this.emailError = emailError;
         this.phoneNumberError = phoneNumberError;
-        this.urlError = urlError;
-        this.offlineFormUrlError = offlineFormUrlError;
+        this.socketUrlError = socketUrlError;
+        this.secureUrlError = secureUrlError;
         this.accountIdError = accountIdError;
         this.tokenError = tokenError;
     }
@@ -31,8 +31,8 @@ public class ConfigurationValidation {
         return isEmpty(companyIdError)
                 && isEmpty(emailError)
                 && isEmpty(phoneNumberError)
-                && isEmpty(urlError)
-                && isEmpty(offlineFormUrlError)
+                && isEmpty(socketUrlError)
+                && isEmpty(secureUrlError)
                 && isEmpty(accountIdError)
                 && isEmpty(tokenError);
     }
@@ -53,12 +53,12 @@ public class ConfigurationValidation {
         return phoneNumberError;
     }
 
-    public String getUrlError() {
-        return urlError;
+    public String getSocketUrlError() {
+        return socketUrlError;
     }
 
-    public String getOfflineFormUrlError() {
-        return offlineFormUrlError;
+    public String getSecureUrlError() {
+        return secureUrlError;
     }
 
     public String getAccountIdError() {

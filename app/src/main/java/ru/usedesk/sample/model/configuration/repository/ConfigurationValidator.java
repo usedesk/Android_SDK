@@ -39,15 +39,15 @@ public class ConfigurationValidator {
     }
 
     @NonNull
-    private String validateUrl(@NonNull String url) {
-        return !Validators.isValidUrlNecessary(url)
+    private String validateSocketUrl(@NonNull String socketUrl) {
+        return !Validators.isValidUrlNecessary(socketUrl)
                 ? resources.getString(R.string.validation_url_error)
                 : "";
     }
 
     @NonNull
-    private String validateOfflineFormUrl(@NonNull String offlineFormUrl) {
-        return !Validators.isValidUrl(offlineFormUrl)
+    private String validateSecureUrl(@NonNull String secureUrl) {
+        return !Validators.isValidUrl(secureUrl)
                 ? resources.getString(R.string.validation_url_error)
                 : "";
     }
@@ -71,8 +71,8 @@ public class ConfigurationValidator {
         return new ConfigurationValidation(validateCompanyId(configuration.getCompanyId()),
                 validateEmail(configuration.getEmail()),
                 validatePhoneNumber(configuration.getClientPhoneNumber()),
-                validateUrl(configuration.getUrl()),
-                validateOfflineFormUrl(configuration.getOfflineFormUrl()),
+                validateSocketUrl(configuration.getSocketUrl()),
+                validateSecureUrl(configuration.getSecureUrl()),
                 validateAccountId(configuration.getAccountId(), configuration.isWithKnowledgeBase()),
                 validateToken(configuration.getToken(), configuration.isWithKnowledgeBase()));
     }

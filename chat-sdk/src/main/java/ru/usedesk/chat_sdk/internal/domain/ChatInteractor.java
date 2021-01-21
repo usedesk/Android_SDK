@@ -75,7 +75,7 @@ public class ChatInteractor implements IUsedeskChat {
             e.printStackTrace();
         }
 
-        apiRepository.connect(configuration.getUrl(), actionListener, getOnMessageListener());
+        apiRepository.connect(configuration.getSocketUrl(), actionListener, getOnMessageListener());
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ChatInteractor implements IUsedeskChat {
             return;
         }
 
-        apiRepository.send(token, usedeskFileInfo);
+        apiRepository.send(configuration, token, usedeskFileInfo);
     }
 
     @Override

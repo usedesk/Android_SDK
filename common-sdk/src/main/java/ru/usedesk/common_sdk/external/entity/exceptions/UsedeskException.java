@@ -1,6 +1,6 @@
 package ru.usedesk.common_sdk.external.entity.exceptions;
 
-public abstract class UsedeskException extends Exception {
+public class UsedeskException extends Exception {
     public UsedeskException() {
     }
 

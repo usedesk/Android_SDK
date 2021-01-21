@@ -60,8 +60,8 @@ public class MainViewModel extends ViewModel {
                 .subscribe(configuration -> {
                     UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(configuration.getCompanyId(),
                             configuration.getEmail(),
-                            configuration.getUrl(),
-                            configuration.getOfflineFormUrl(),
+                            configuration.getSocketUrl(),
+                            configuration.getSecureUrl(),
                             configuration.getClientName(),
                             getLong(configuration.getClientPhoneNumber()),
                             getLong(configuration.getClientAdditionalId()),

@@ -32,6 +32,7 @@ import ru.usedesk.chat_gui.internal.chat.OfflineFormSentAdapter;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
+import ru.usedesk.chat_sdk.external.entity.UsedeskSingleLifeEvent;
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.common_gui.internal.PermissionUtil;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
@@ -123,6 +124,17 @@ public class UsedeskChatFragment extends Fragment {
 
         viewModel.getExceptionLiveData()
                 .observe(lifecycleOwner, this::onException);
+
+        viewModel.getLargeFileSizeErrorLiveData()
+                .observe(lifecycleOwner, this::onLargeFileSizeError);
+    }
+
+    private void onLargeFileSizeError(UsedeskSingleLifeEvent<Object> objectUsedeskSingleLifeEvent) {
+        if (!objectUsedeskSingleLifeEvent.isProcessed()) {
+            objectUsedeskSingleLifeEvent.setProcessed();
+
+            Toast.makeText(requireContext(), R.string.large_file_size_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openAttachmentDialog() {

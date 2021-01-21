@@ -15,6 +15,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.chat_sdk.external.IUsedeskChat;
 import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
@@ -23,6 +24,7 @@ import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.external.entity.UsedeskOfflineForm;
+import ru.usedesk.chat_sdk.external.entity.UsedeskSingleLifeEvent;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public class ChatViewModel extends ViewModel {
@@ -39,6 +41,7 @@ public class ChatViewModel extends ViewModel {
     private final MutableLiveData<String> messageLiveData = new MutableLiveData<>("");
     private final MutableLiveData<String> nameLiveData = new MutableLiveData<>("");
     private final MutableLiveData<String> emailLiveData = new MutableLiveData<>("");
+    private final MutableLiveData<UsedeskSingleLifeEvent<Object>> largeFileSizeErrorLiveData = new MutableLiveData<>();
 
     ChatViewModel(@NonNull IUsedeskChat usedeskChat, @NonNull UsedeskActionListenerRx actionListenerRx) {
         this.usedeskChat = usedeskChat;
@@ -73,10 +76,15 @@ public class ChatViewModel extends ViewModel {
     }
 
     private void justComplete(@NonNull Completable completable) {
+        justComplete(completable, Throwable::printStackTrace);
+    }
+
+    private void justComplete(@NonNull Completable completable,
+                              @NonNull Consumer<Throwable> throwableConsumer) {
         addDisposable(completable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                }, Throwable::printStackTrace));
+                }, throwableConsumer));
     }
 
     private <OUT extends IN, IN> void toLiveData(@NonNull Observable<OUT> observable, @NonNull MutableLiveData<IN> liveData) {
@@ -115,6 +123,11 @@ public class ChatViewModel extends ViewModel {
     @NonNull
     LiveData<String> getEmailLiveData() {
         return emailLiveData;
+    }
+
+    @NonNull
+    public LiveData<UsedeskSingleLifeEvent<Object>> getLargeFileSizeErrorLiveData() {
+        return largeFileSizeErrorLiveData;
     }
 
     @NonNull
@@ -161,7 +174,9 @@ public class ChatViewModel extends ViewModel {
 
     void onSend(@NonNull String textMessage) {
         justComplete(usedeskChat.sendRx(textMessage));
-        justComplete(usedeskChat.sendRx(fileInfoListLiveData.getValue()));
+        justComplete(usedeskChat.sendRx(fileInfoListLiveData.getValue()), throwable -> {
+            largeFileSizeErrorLiveData.postValue(new UsedeskSingleLifeEvent<>());
+        });
 
         clearFileInfoList();
     }

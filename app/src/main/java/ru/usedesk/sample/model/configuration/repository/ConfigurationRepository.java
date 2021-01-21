@@ -13,8 +13,8 @@ import ru.usedesk.sample.model.configuration.entity.Configuration;
 public class ConfigurationRepository {
     private static final String COMPANY_ID_KEY = "companyIdKey";
     private static final String EMAIL_KEY = "emailKey";
-    private static final String URL_KEY = "urlKey";
-    private static final String OFFLINE_FORM_URL_KEY = "offlineFormUrlKey";
+    private static final String SOCKET_URL_KEY = "urlKey";
+    private static final String API_KEY = "offlineFormUrlKey";
     private static final String ACCOUNT_ID_KEY = "accountIdKey";
     private static final String TOKEN_KEY = "tokenKey";
     private static final String CLIENT_NAME_KEY = "clientNameKey";
@@ -60,8 +60,8 @@ public class ConfigurationRepository {
             if (configuration == null) {
                 configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
                         sharedPreferences.getString(EMAIL_KEY, defaultModel.getEmail()),
-                        sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
-                        sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
+                        sharedPreferences.getString(SOCKET_URL_KEY, defaultModel.getSocketUrl()),
+                        sharedPreferences.getString(API_KEY, defaultModel.getSecureUrl()),
                         sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()),
                         sharedPreferences.getString(TOKEN_KEY, defaultModel.getToken()),
                         sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()),
@@ -84,8 +84,8 @@ public class ConfigurationRepository {
             sharedPreferences.edit()
                     .putString(COMPANY_ID_KEY, configurationModel.getCompanyId())
                     .putString(EMAIL_KEY, configurationModel.getEmail())
-                    .putString(URL_KEY, configurationModel.getUrl())
-                    .putString(OFFLINE_FORM_URL_KEY, configurationModel.getOfflineFormUrl())
+                    .putString(SOCKET_URL_KEY, configurationModel.getSocketUrl())
+                    .putString(API_KEY, configurationModel.getSecureUrl())
                     .putString(ACCOUNT_ID_KEY, configurationModel.getAccountId())
                     .putString(TOKEN_KEY, configurationModel.getToken())
                     .putString(CLIENT_NAME_KEY, configurationModel.getClientName())

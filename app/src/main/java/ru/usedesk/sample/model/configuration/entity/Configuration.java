@@ -6,8 +6,8 @@ public class Configuration {
 
     private final String companyId;
     private final String email;
-    private final String url;
-    private final String offlineFormUrl;
+    private final String socketUrl;
+    private final String secureUrl;
     private final String accountId;
     private final String token;
     private final String clientName;
@@ -21,8 +21,8 @@ public class Configuration {
 
     public Configuration(@NonNull String companyId,
                          @NonNull String email,
-                         @NonNull String url,
-                         @NonNull String offlineFormUrl,
+                         @NonNull String socketUrl,
+                         @NonNull String secureUrl,
                          @NonNull String accountId,
                          @NonNull String token,
                          @NonNull String clientName,
@@ -35,8 +35,8 @@ public class Configuration {
                          @NonNull Boolean withKnowledgeBase) {
         this.companyId = companyId;
         this.email = email;
-        this.url = url;
-        this.offlineFormUrl = offlineFormUrl;
+        this.socketUrl = socketUrl;
+        this.secureUrl = secureUrl;
         this.accountId = accountId;
         this.token = token;
         this.clientName = clientName;
@@ -60,13 +60,13 @@ public class Configuration {
     }
 
     @NonNull
-    public String getUrl() {
-        return url;
+    public String getSocketUrl() {
+        return socketUrl;
     }
 
     @NonNull
-    public String getOfflineFormUrl() {
-        return offlineFormUrl;
+    public String getSecureUrl() {
+        return secureUrl;
     }
 
     @NonNull

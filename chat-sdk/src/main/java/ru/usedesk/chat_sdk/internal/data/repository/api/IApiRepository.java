@@ -12,19 +12,31 @@ import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 
 public interface IApiRepository {
 
-    void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener, @NonNull OnMessageListener onMessageListener) throws UsedeskException;
+    void connect(@NonNull String url,
+                 @NonNull IUsedeskActionListener actionListener,
+                 @NonNull OnMessageListener onMessageListener) throws UsedeskException;
 
-    void init(@NonNull UsedeskChatConfiguration configuration, String token) throws UsedeskException;
+    void init(@NonNull UsedeskChatConfiguration configuration,
+              String token) throws UsedeskException;
 
-    void send(@NonNull String token, @NonNull String email, String name, Long phone, Long additionalId) throws UsedeskException;
+    void send(@NonNull String token,
+              @NonNull String email,
+              String name,
+              Long phone,
+              Long additionalId) throws UsedeskException;
 
-    void send(@NonNull UsedeskChatConfiguration configuration, @NonNull UsedeskOfflineForm offlineForm) throws UsedeskException;
+    void send(@NonNull UsedeskChatConfiguration configuration,
+              @NonNull UsedeskOfflineForm offlineForm) throws UsedeskException;
 
-    void send(@NonNull String token, @NonNull UsedeskFeedback feedback) throws UsedeskException;
+    void send(@NonNull String token,
+              @NonNull UsedeskFeedback feedback) throws UsedeskException;
 
-    void send(@NonNull String token, @NonNull String text) throws UsedeskException;
+    void send(@NonNull String token,
+              @NonNull String text) throws UsedeskException;
 
-    void send(@NonNull String token, @NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException;
+    void send(@NonNull UsedeskChatConfiguration configuration,
+              @NonNull String token,
+              @NonNull UsedeskFileInfo usedeskFileInfo) throws UsedeskException;
 
     void disconnect();
 }

@@ -42,30 +42,30 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_url"
+                android:id="@+id/til_socket_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_url"
+                    android:id="@+id/et_socket_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/configuration_usedesk_margin"
-                    android:hint="@string/configuration_url_hint"
+                    android:hint="@string/configuration_socket_url_hint"
                     android:inputType="textUri" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_offline_url"
+                android:id="@+id/til_secure_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_offline_url"
+                    android:id="@+id/et_secure_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/configuration_usedesk_margin"
-                    android:hint="@string/configuration_offline_url_hint"
+                    android:hint="@string/configuration_secure_url_hint"
                     android:inputType="textUri" />
             </com.google.android.material.textfield.TextInputLayout>
 

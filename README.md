@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v2.1.12)
+# Android Usedesk SDK (v2.1.13)
 - [Подключение к проекту](#requires)
 - [Основные этапы работы/взаимодействия с библиотекой](#base)
   - [1. Chat SDK](#base_chat_sdk)
@@ -62,8 +62,8 @@ implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
 |-----------------------|-----------------------|-----------------------------|
 | companyId  | String  | Идентификатор компании |
 | clientEmail  | String  | Почта клиента |
-| apiUrl  | String  | Адрес API сервера |
-| offlineFormUrl  | String  | Адрес для отправки оффлайн формы |
+| socketUrl  | String  | Адрес socket-сервера |
+| secureUrl  | String  | Адрес secure сервера |
 | clientName  | String  | Имя клиента |
 | clientPhone  | Long  | Телефонный номер клиента |
 | clientAdditionalId  | Long  | Дополнительный идентификатор клиента |
@@ -356,3 +356,5 @@ UsedeskViewCustomizer.getInstance()
   - Исправлено падение в семпле при переполнении поля Client Addinional ID
 - v2.1.12
   - Исправлена ошибка, при которой не отображался прикреплённый к сообщению файл, отправленный из интерфейса тикета
+- v2.1.13
+  - Метод отправки файлов заменён на новый с ограничением в 150мб.

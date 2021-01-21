@@ -17,8 +17,8 @@ import ru.usedesk.chat_sdk.internal.data.framework.info.DataLoader;
 public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     private static final String PREF_NAME = "usedeskSdkConfiguration";
     private static final String KEY_ID = "id";
-    private static final String KEY_URL = "url";
-    private static final String KEY_OFFLINE_URL = "offlineUrl";
+    private static final String KEY_SOCKET_URL = "url";
+    private static final String KEY_SECURE_URL = "offlineUrl";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_NAME = "name";
     private static final String KEY_PHONE = "phone";
@@ -51,12 +51,12 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     @Nullable
     protected UsedeskChatConfiguration loadData() {
         final String id = sharedPreferences.getString(KEY_ID, null);
-        final String url = sharedPreferences.getString(KEY_URL, null);
-        final String offlineUrl = sharedPreferences.getString(KEY_OFFLINE_URL, null);
+        final String socketUrl = sharedPreferences.getString(KEY_SOCKET_URL, null);
+        final String secureUrl = sharedPreferences.getString(KEY_SECURE_URL, null);
         final String email = sharedPreferences.getString(KEY_EMAIL, null);
         final String initClientMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, "");
 
-        if (id == null || url == null || email == null || offlineUrl == null) {
+        if (id == null || socketUrl == null || email == null || secureUrl == null) {
             return null;
         }
 
@@ -77,7 +77,7 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
             }
         }
 
-        return new UsedeskChatConfiguration(id, email, url, offlineUrl,
+        return new UsedeskChatConfiguration(id, email, socketUrl, secureUrl,
                 name, getLong(phone), getLong(additionalId),
                 initClientMessage);
     }
@@ -86,8 +86,8 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     protected void saveData(@NonNull UsedeskChatConfiguration configuration) {
         sharedPreferences.edit()
                 .putString(KEY_ID, configuration.getCompanyId())
-                .putString(KEY_URL, configuration.getUrl())
-                .putString(KEY_OFFLINE_URL, configuration.getOfflineFormUrl())
+                .putString(KEY_SOCKET_URL, configuration.getSocketUrl())
+                .putString(KEY_SECURE_URL, configuration.getSecureUrl())
                 .putString(KEY_EMAIL, configuration.getEmail())
                 .putString(KEY_NAME, configuration.getClientName())
                 .putString(KEY_ADDITIONAL_ID, getString(configuration.getClientAdditionalId()))
@@ -100,8 +100,8 @@ public class ConfigurationLoader extends DataLoader<UsedeskChatConfiguration> {
     public void clearData() {
         sharedPreferences.edit()
                 .remove(KEY_ID)
-                .remove(KEY_URL)
-                .remove(KEY_OFFLINE_URL)
+                .remove(KEY_SOCKET_URL)
+                .remove(KEY_SECURE_URL)
                 .remove(KEY_EMAIL)
                 .apply();
     }

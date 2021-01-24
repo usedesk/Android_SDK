@@ -21,8 +21,7 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="?attr/usedesk_chat_message_bubble_client_background">
+            android:layout_gravity="end">
 
             <include
                 android:id="@+id/content"

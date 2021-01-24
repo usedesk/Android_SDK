@@ -3,9 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="2dp"
-    android:layout_marginStart="6dp"
+    android:background="?attr/usedesk_chat_message_bubble_background"
     android:orientation="horizontal"
+    android:paddingLeft="6dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    tools:ignore="RtlHardcoded,RtlSymmetry"
     tools:theme="@style/Usedesk.Chat.Message.File">
 
     <LinearLayout

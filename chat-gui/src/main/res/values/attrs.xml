@@ -33,8 +33,7 @@
     <attr name="usedesk_chat_attached_file_name_text" format="reference" />
 
     <attr name="usedesk_chat_message_avatar_image" format="reference" />
-    <attr name="usedesk_chat_message_bubble_agent_background" format="reference" />
-    <attr name="usedesk_chat_message_bubble_client_background" format="reference" />
+    <attr name="usedesk_chat_message_bubble_background" format="reference" />
     <attr name="usedesk_chat_message_date" format="reference" />
     <attr name="usedesk_chat_message_feedback_thanks" format="reference" />
     <attr name="usedesk_chat_message_feedback_good_image" format="reference" />

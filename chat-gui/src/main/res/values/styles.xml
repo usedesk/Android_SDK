@@ -26,8 +26,6 @@
 
     <style name="Usedesk.Chat.Message" parent="">
         <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image</item>
-        <item name="usedesk_chat_message_bubble_agent_background">@drawable/background_bubble_agent</item>
-        <item name="usedesk_chat_message_bubble_client_background">@drawable/background_bubble_client</item>
         <item name="usedesk_chat_message_date">@style/Usedesk.Chat.Message.Date</item>
         <item name="usedesk_chat_message_feedback_thanks">@style/Usedesk.Chat.Message.Feedback.Thanks</item>
         <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
@@ -93,9 +91,13 @@
         <item name="srcCompat">@drawable/ic_file_dark</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.File.Agent" />
+    <style name="Usedesk.Chat.Message.File.Agent">
+        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_agent</item>
+    </style>
 
-    <style name="Usedesk.Chat.Message.File.Client" />
+    <style name="Usedesk.Chat.Message.File.Client">
+        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_client</item>
+    </style>
 
     <style name="Usedesk.Chat.Message.Image">
         <item name="usedesk_chat_message_image_error_image">@style/Usedesk.Chat.Message.Image.Error.Image</item>
@@ -122,9 +124,13 @@
         <item name="android:focusable">true</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Image.Agent" />
+    <style name="Usedesk.Chat.Message.Image.Agent">
+        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_agent</item>
+    </style>
 
-    <style name="Usedesk.Chat.Message.Image.Client" />
+    <style name="Usedesk.Chat.Message.Image.Client">
+        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_client</item>
+    </style>
 
     <style name="Usedesk.Chat.Message.Text">
         <item name="usedesk_chat_message_text_button_background">@color/usedesk_black_2</item>
@@ -132,9 +138,13 @@
         <item name="usedesk_chat_message_text_message_text">@style/Usedesk.Chat.Message.Text.Message.Text</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Text.Agent" />
+    <style name="Usedesk.Chat.Message.Text.Agent">
+        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_agent</item>
+    </style>
 
-    <style name="Usedesk.Chat.Message.Text.Client" />
+    <style name="Usedesk.Chat.Message.Text.Client">
+        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_client</item>
+    </style>
 
     <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
         <item name="usedesk_chat_show_file_root_background">@color/usedesk_white_2</item>

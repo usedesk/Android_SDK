@@ -112,7 +112,7 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
                         convertedText = convertedText.replaceFirst(buttonRaw, replaceBy)
                     }
 
-                    if (convertedText.isEmpty()) {
+                    if (convertedText.isEmpty() && buttons.isEmpty()) {
                         null
                     } else if (fromClient) {
                         UsedeskMessageClientText(id,

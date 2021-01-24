@@ -290,10 +290,10 @@
         <item name="usedesk_knowledgebase_article_content_page_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_close_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Close.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Divider</item>
-        <item name="usedesk_knowledgebase_article_content_page_feedback_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
-        <item name="usedesk_knowledgebase_article_content_page_feedback_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
-        <item name="usedesk_knowledgebase_article_content_page_feedback_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
-        <item name="usedesk_knowledgebase_article_content_page_feedback_no_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_rating_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_rating_no_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Text</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Divider" parent="">
@@ -382,8 +382,8 @@
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">17sp</item>
-        <item name="usedesk_text_1">@string/usedesk_feedback_question</item>
-        <item name="usedesk_text_2">@string/usedesk_feedback_whats_wrong</item>
-        <item name="usedesk_text_3">@string/usedesk_feedback_thanks</item>
+        <item name="usedesk_text_1">@string/usedesk_rating_question</item>
+        <item name="usedesk_text_2">@string/usedesk_rating_whats_wrong</item>
+        <item name="usedesk_text_3">@string/usedesk_rating_thanks</item>
     </style>
 </resources>

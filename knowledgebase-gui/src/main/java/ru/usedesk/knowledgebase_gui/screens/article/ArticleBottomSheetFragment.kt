@@ -35,22 +35,22 @@ internal class ArticleBottomSheetFragment private constructor(
             setContentView(rootView)
 
             messageStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_feedback_title_text)
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
 
             yesStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_feedback_yes_text)
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_yes_text)
 
             noStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_feedback_no_text)
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_no_text)
 
             ivClose.setOnClickListener {
                 dismiss()
             }
 
-            lFeedbackYes.visibility = View.GONE
-            lFeedbackNo.visibility = View.GONE
-            etFeedback.visibility = View.GONE
-            tvFeedbackTitle.visibility = View.GONE
+            lRatingYes.visibility = View.GONE
+            lRatingNo.visibility = View.GONE
+            etRating.visibility = View.GONE
+            tvRatingTitle.visibility = View.GONE
         }
     }
 
@@ -68,15 +68,15 @@ internal class ArticleBottomSheetFragment private constructor(
     }
 
     fun onArticleContent(articleContent: UsedeskArticleContent,
-                         onFeedback: (Long, Boolean) -> Unit,
-                         onFeedbackMessage: (Long, String) -> Unit) {
+                         onRating: (Long, Boolean) -> Unit,
+                         onRatingMessage: (Long, String) -> Unit) {
         binding.tvTitle.text = articleContent.title
         binding.wvContent.apply {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
 
-                    showQuestion(articleContent.id, onFeedback, onFeedbackMessage)
+                    showQuestion(articleContent.id, onRating, onRatingMessage)
                 }
             }
             loadData(articleContent.text, "text/html", null)
@@ -86,52 +86,52 @@ internal class ArticleBottomSheetFragment private constructor(
     }
 
     private fun showQuestion(articleId: Long,
-                             onFeedback: (Long, Boolean) -> Unit,
-                             onFeedbackMessage: (Long, String) -> Unit) {
-        binding.tvFeedbackTitle.text = messageStyleValues.getString(R.attr.usedesk_text_1)
-        binding.tvFeedbackYes.text = yesStyleValues.getString(R.attr.usedesk_text_1)
-        binding.tvFeedbackNo.text = noStyleValues.getString(R.attr.usedesk_text_1)
+                             onRating: (Long, Boolean) -> Unit,
+                             onRatingMessage: (Long, String) -> Unit) {
+        binding.tvRatingTitle.text = messageStyleValues.getString(R.attr.usedesk_text_1)
+        binding.tvRatingYes.text = yesStyleValues.getString(R.attr.usedesk_text_1)
+        binding.tvRatingNo.text = noStyleValues.getString(R.attr.usedesk_text_1)
 
-        binding.tvFeedbackYes.setOnClickListener {
-            onFeedback(articleId, true)
+        binding.tvRatingYes.setOnClickListener {
+            onRating(articleId, true)
 
             showThanks()
         }
-        binding.tvFeedbackNo.setOnClickListener {
-            onFeedback(articleId, false)
+        binding.tvRatingNo.setOnClickListener {
+            onRating(articleId, false)
 
-            showWhatsWrong(articleId, onFeedbackMessage)
+            showWhatsWrong(articleId, onRatingMessage)
         }
 
-        binding.tvFeedbackTitle.visibility = View.VISIBLE
-        binding.lFeedbackYes.visibility = View.VISIBLE
-        binding.lFeedbackNo.visibility = View.VISIBLE
-        binding.etFeedback.visibility = View.GONE
+        binding.tvRatingTitle.visibility = View.VISIBLE
+        binding.lRatingYes.visibility = View.VISIBLE
+        binding.lRatingNo.visibility = View.VISIBLE
+        binding.etRating.visibility = View.GONE
     }
 
     private fun showWhatsWrong(articleId: Long,
-                               onFeedbackMessage: (Long, String) -> Unit) {
-        binding.tvFeedbackTitle.text = messageStyleValues.getString(R.attr.usedesk_text_2)
-        binding.tvFeedbackYes.text = yesStyleValues.getString(R.attr.usedesk_text_2)
+                               onRatingMessage: (Long, String) -> Unit) {
+        binding.tvRatingTitle.text = messageStyleValues.getString(R.attr.usedesk_text_2)
+        binding.tvRatingYes.text = yesStyleValues.getString(R.attr.usedesk_text_2)
 
-        binding.tvFeedbackYes.setOnClickListener {
-            onFeedbackMessage(articleId, binding.etFeedback.text.toString())
+        binding.tvRatingYes.setOnClickListener {
+            onRatingMessage(articleId, binding.etRating.text.toString())
 
             showThanks()
         }
 
-        binding.lFeedbackNo.visibility = View.GONE
-        binding.tvFeedbackTitle.visibility = View.VISIBLE
-        binding.lFeedbackYes.visibility = View.VISIBLE
-        binding.etFeedback.visibility = View.VISIBLE
+        binding.lRatingNo.visibility = View.GONE
+        binding.tvRatingTitle.visibility = View.VISIBLE
+        binding.lRatingYes.visibility = View.VISIBLE
+        binding.etRating.visibility = View.VISIBLE
     }
 
     private fun showThanks() {
-        binding.tvFeedbackTitle.text = messageStyleValues.getString(R.attr.usedesk_text_3)
-        binding.lFeedbackYes.visibility = View.GONE
-        binding.lFeedbackNo.visibility = View.GONE
-        binding.etFeedback.visibility = View.GONE
-        binding.tvFeedbackTitle.visibility = View.VISIBLE
+        binding.tvRatingTitle.text = messageStyleValues.getString(R.attr.usedesk_text_3)
+        binding.lRatingYes.visibility = View.GONE
+        binding.lRatingNo.visibility = View.GONE
+        binding.etRating.visibility = View.GONE
+        binding.tvRatingTitle.visibility = View.VISIBLE
     }
 
     fun onLoading() {
@@ -150,11 +150,11 @@ internal class ArticleBottomSheetFragment private constructor(
         val ivClose: ImageView = rootView.findViewById(R.id.iv_close)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val wvContent: WebView = rootView.findViewById(R.id.wv_content)
-        val tvFeedbackTitle: TextView = rootView.findViewById(R.id.tv_feedback_title)
-        val etFeedback: EditText = rootView.findViewById(R.id.et_feedback_message)
-        val lFeedbackYes: View = rootView.findViewById(R.id.l_feedback_yes)
-        val tvFeedbackYes: TextView = rootView.findViewById(R.id.tv_feedback_yes)
-        val lFeedbackNo: View = rootView.findViewById(R.id.l_feedback_no)
-        val tvFeedbackNo: TextView = rootView.findViewById(R.id.tv_feedback_no)
+        val tvRatingTitle: TextView = rootView.findViewById(R.id.tv_rating_title)
+        val etRating: EditText = rootView.findViewById(R.id.et_rating_message)
+        val lRatingYes: View = rootView.findViewById(R.id.l_rating_yes)
+        val tvRatingYes: TextView = rootView.findViewById(R.id.tv_rating_yes)
+        val lRatingNo: View = rootView.findViewById(R.id.l_rating_no)
+        val tvRatingNo: TextView = rootView.findViewById(R.id.tv_rating_no)
     }
 }

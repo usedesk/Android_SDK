@@ -58,13 +58,13 @@
                 tools:ignore="WebViewLayout" />
 
             <TextView
-                android:id="@+id/tv_feedback_title"
-                style="?attr/usedesk_knowledgebase_article_content_page_feedback_title_text"
-                tools:text="@string/usedesk_feedback_question" />
+                android:id="@+id/tv_rating_title"
+                style="?attr/usedesk_knowledgebase_article_content_page_rating_title_text"
+                tools:text="@string/usedesk_rating_question" />
 
             <EditText
-                android:id="@+id/et_feedback_message"
-                style="?attr/usedesk_knowledgebase_article_content_page_feedback_message_edit_text" />
+                android:id="@+id/et_rating_message"
+                style="?attr/usedesk_knowledgebase_article_content_page_rating_message_edit_text" />
 
             <LinearLayout
                 android:id="@+id/l_buttons"
@@ -78,30 +78,30 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView2">
 
                 <FrameLayout
-                    android:id="@+id/l_feedback_yes"
+                    android:id="@+id/l_rating_yes"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="4dp"
-                    android:background="@drawable/background_feedback_yes">
+                    android:background="@drawable/background_rating_yes">
 
                     <TextView
-                        android:id="@+id/tv_feedback_yes"
-                        style="?attr/usedesk_knowledgebase_article_content_page_feedback_yes_text"
+                        android:id="@+id/tv_rating_yes"
+                        style="?attr/usedesk_knowledgebase_article_content_page_rating_yes_text"
                         tools:text="@string/usedesk_yes" />
                 </FrameLayout>
 
                 <FrameLayout
-                    android:id="@+id/l_feedback_no"
+                    android:id="@+id/l_rating_no"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="4dp"
-                    android:background="@drawable/background_feedback_no">
+                    android:background="@drawable/background_rating_no">
 
                     <TextView
-                        android:id="@+id/tv_feedback_no"
-                        style="?attr/usedesk_knowledgebase_article_content_page_feedback_no_text"
+                        android:id="@+id/tv_rating_no"
+                        style="?attr/usedesk_knowledgebase_article_content_page_rating_no_text"
                         tools:text="@string/usedesk_no" />
                 </FrameLayout>
             </LinearLayout>

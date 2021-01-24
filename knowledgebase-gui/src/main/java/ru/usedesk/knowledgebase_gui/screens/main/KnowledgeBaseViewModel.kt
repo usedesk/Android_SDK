@@ -45,14 +45,14 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel() {
         articleContentLiveData.postValue(ArticleContentState.none())
     }
 
-    fun sendArticleFeedback(articleId: Long, good: Boolean) {
+    fun sendArticleRating(articleId: Long, good: Boolean) {
         justDoIt(UsedeskKnowledgeBaseSdk.getInstance()
-                .sendFeedbackRx(articleId, good))
+                .sendRatingRx(articleId, good))
     }
 
-    fun sendArticleFeedback(articleId: Long, message: String) {
+    fun sendArticleRating(articleId: Long, message: String) {
         justDoIt(UsedeskKnowledgeBaseSdk.getInstance()
-                .sendFeedbackRx(articleId, message))
+                .sendRatingRx(articleId, message))
     }
 
     companion object {

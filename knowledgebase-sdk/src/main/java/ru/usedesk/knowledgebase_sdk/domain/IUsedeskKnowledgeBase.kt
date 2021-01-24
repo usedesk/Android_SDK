@@ -28,10 +28,10 @@ interface IUsedeskKnowledgeBase {
     fun addViews(articleId: Long)
 
     @Throws(UsedeskException::class)
-    fun sendFeedback(articleId: Long, good: Boolean)
+    fun sendRating(articleId: Long, good: Boolean)
 
     @Throws(UsedeskException::class)
-    fun sendFeedback(articleId: Long, message: String)
+    fun sendRating(articleId: Long, message: String)
 
     fun getSectionsRx(): Single<List<UsedeskSection>>
 
@@ -47,7 +47,7 @@ interface IUsedeskKnowledgeBase {
 
     fun addViewsRx(articleId: Long): Completable
 
-    fun sendFeedbackRx(articleId: Long, good: Boolean): Completable
+    fun sendRatingRx(articleId: Long, good: Boolean): Completable
 
-    fun sendFeedbackRx(articleId: Long, message: String): Completable
+    fun sendRatingRx(articleId: Long, message: String): Completable
 }

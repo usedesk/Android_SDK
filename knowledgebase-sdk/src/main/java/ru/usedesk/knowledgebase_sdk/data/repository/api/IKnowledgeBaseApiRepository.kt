@@ -31,9 +31,9 @@ internal interface IKnowledgeBaseApiRepository {
                    articleId: Long,
                    good: Boolean)
 
-    fun sendFeedback(token: String,
-                     clientEmail: String,
-                     clientName: String?,
-                     articleId: Long,
-                     message: String)
+    fun sendRating(token: String,
+                   clientEmail: String,
+                   clientName: String?,
+                   articleId: Long,
+                   message: String)
 }

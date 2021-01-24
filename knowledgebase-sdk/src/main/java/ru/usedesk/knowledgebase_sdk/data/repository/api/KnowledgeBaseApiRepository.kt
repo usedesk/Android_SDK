@@ -103,11 +103,11 @@ internal class KnowledgeBaseApiRepository(
         }
     }
 
-    override fun sendFeedback(token: String,
-                              clientEmail: String,
-                              clientName: String?,
-                              articleId: Long,
-                              message: String) {
+    override fun sendRating(token: String,
+                            clientEmail: String,
+                            clientName: String?,
+                            articleId: Long,
+                            message: String) {
         doRequest(CreateTicketResponse::class.java) {
             it.createTicket(CreateTicketRequest(
                     token,

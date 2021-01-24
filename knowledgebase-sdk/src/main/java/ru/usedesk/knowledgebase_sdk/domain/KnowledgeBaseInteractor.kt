@@ -67,17 +67,17 @@ internal class KnowledgeBaseInteractor(
                 .observeOn(mainThreadScheduler)
     }
 
-    override fun sendFeedbackRx(articleId: Long, good: Boolean): Completable {
+    override fun sendRatingRx(articleId: Long, good: Boolean): Completable {
         return Completable.create { emitter: CompletableEmitter ->
-            sendFeedback(articleId, good)
+            sendRating(articleId, good)
             emitter.onComplete()
         }.subscribeOn(ioScheduler)
                 .observeOn(mainThreadScheduler)
     }
 
-    override fun sendFeedbackRx(articleId: Long, message: String): Completable {
+    override fun sendRatingRx(articleId: Long, message: String): Completable {
         return Completable.create { emitter: CompletableEmitter ->
-            sendFeedback(articleId, message)
+            sendRating(articleId, message)
             emitter.onComplete()
         }.subscribeOn(ioScheduler)
                 .observeOn(mainThreadScheduler)
@@ -132,15 +132,15 @@ internal class KnowledgeBaseInteractor(
                 articleId)
     }
 
-    override fun sendFeedback(articleId: Long, good: Boolean) {
+    override fun sendRating(articleId: Long, good: Boolean) {
         knowledgeApiRepository.sendRating(configuration.accountId,
                 configuration.token,
                 articleId,
                 good)
     }
 
-    override fun sendFeedback(articleId: Long, message: String) {
-        knowledgeApiRepository.sendFeedback(configuration.token,
+    override fun sendRating(articleId: Long, message: String) {
+        knowledgeApiRepository.sendRating(configuration.token,
                 configuration.clientEmail,
                 configuration.clientName,
                 articleId,

@@ -28,9 +28,8 @@ class UsedeskToolbarAdapter(
         }
     }
 
-    fun setActionButton(imageId: Int, onActionClick: () -> Unit) {
+    fun setActionButton(onActionClick: () -> Unit) {
         binding.ivAction.apply {
-            setImageResource(imageId)
             setOnClickListener {
                 onActionClick.invoke()
             }

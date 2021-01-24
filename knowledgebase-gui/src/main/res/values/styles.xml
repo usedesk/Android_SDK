@@ -3,12 +3,13 @@
     <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
         <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
         <item name="usedesk_knowledgebase_screen_toolbar_title">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title</item>
-        <item name="usedesk_knowledgebase_screen_toolbar_background">@drawable/background_search_input</item>
+        <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/background_search_input</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_icon_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Icon.Image</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_divider">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Divider</item>
+        <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page" parent="">
@@ -31,7 +32,7 @@
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="usedesk_drawable_1">@drawable/ic_search</item>
+        <item name="srcCompat">@drawable/ic_search</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Icon.Image" parent="">

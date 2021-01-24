@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="usedesk_knowledgebase_screen_support_button" format="reference" />
-    <attr name="usedesk_knowledgebase_screen_toolbar_background" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_background" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_title" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_image" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_icon_image" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_cancel_text" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_divider" format="reference" />
-    <attr name="usedesk_knowledgebase_screen_toolbar_title" format="reference" />
 
     <attr name="usedesk_knowledgebase_list_page_message_text" format="reference" />
 

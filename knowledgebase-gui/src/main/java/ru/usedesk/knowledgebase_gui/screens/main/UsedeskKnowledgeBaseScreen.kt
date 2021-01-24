@@ -58,11 +58,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             setBackButton {
                 requireActivity().onBackPressed()
             }
-            val icSearch = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_search_image)
-                    .getId(R.attr.usedesk_drawable_1)
 
-            setActionButton(icSearch) {
+            setActionButton {
                 switchPage(ArticlesSearchPage.newInstance())
             }
         }

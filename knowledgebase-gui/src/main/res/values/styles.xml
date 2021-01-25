@@ -286,7 +286,7 @@
         <item name="srcCompat">@drawable/ic_arrow_forward</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common.Dialog">
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
         <item name="usedesk_knowledgebase_article_content_page_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_close_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Close.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Divider</item>
@@ -294,6 +294,48 @@
         <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_no_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_previous_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image</item>
+        <item name="usedesk_knowledgebase_article_content_page_previous_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_next_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Image</item>
+        <item name="usedesk_knowledgebase_article_content_page_next_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common">
+        <item name="usedesk_knowledgebase_article_content_page_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Title.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_close_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Close.Image</item>
+        <item name="usedesk_knowledgebase_article_content_page_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Divider</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image" parent="">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="srcCompat">@drawable/ic_previous</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_blue</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Image" parent="">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="srcCompat">@drawable/ic_next</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Text" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:gravity">end</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_blue</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Divider" parent="">
@@ -304,7 +346,7 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Title.Text" parent="">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginLeft">16dp</item>

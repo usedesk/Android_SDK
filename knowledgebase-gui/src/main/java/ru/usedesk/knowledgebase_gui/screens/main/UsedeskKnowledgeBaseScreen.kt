@@ -13,7 +13,7 @@ import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
-import ru.usedesk.knowledgebase_gui.screens.article.ArticleBottomSheetFragment
+import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
 import ru.usedesk.knowledgebase_gui.screens.articles.ArticlesPage
 import ru.usedesk.knowledgebase_gui.screens.articles.IOnArticleClickListener
 import ru.usedesk.knowledgebase_gui.screens.articles_search.ArticlesSearchPage
@@ -37,7 +37,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     private lateinit var binding: Binding
     private lateinit var toolbarDefaultAdapter: UsedeskToolbarAdapter
     private lateinit var toolbarSearchAdapter: ToolbarSearchAdapter
-    private var articleContentBottomSheet: ArticleBottomSheetFragment? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -74,37 +73,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             showSearchQuery(it)
         })
 
-        viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                when (it.state) {
-                    KnowledgeBaseViewModel.ArticleContentState.State.LOADING -> {
-                        needArticleBottomSheet().apply {
-                            onLoading()
-                            show()
-                        }
-                    }
-                    KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
-                        needArticleBottomSheet().apply {
-                            it.articleContent?.also { articleContent ->
-                                onArticleContent(articleContent, onRating = { articleId, good ->
-                                    viewModel.sendArticleRating(articleId, good)
-                                }, onRatingMessage = { articleId, message ->
-                                    viewModel.sendArticleRating(articleId, message)
-                                })
-                                show()
-                            }
-                        }
-                    }
-                    else -> {
-                        articleContentBottomSheet?.apply {
-                            hide()
-                            articleContentBottomSheet = null
-                        }
-                    }
-                }
-            }
-        }
-
         UsedeskKnowledgeBaseSdk.init(requireContext())
 
         if (savedInstanceState == null) {
@@ -114,16 +82,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             switchPage(SectionsPage.newInstance(), sectionsTitle)
         }
         return binding.rootView
-    }
-
-    private fun needArticleBottomSheet(): ArticleBottomSheetFragment {
-        return articleContentBottomSheet
-                ?: ArticleBottomSheetFragment.newInstance(binding.rootView).apply {
-                    setOnDismissListener {
-                        viewModel.onArticleClosed()
-                    }
-                    articleContentBottomSheet = this
-                }
     }
 
     private fun showSearchQuery(query: String) {
@@ -157,8 +115,12 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 .commit()
     }
 
-    override fun onArticleClick(articleId: Long) {
-        viewModel.onArticleClick(articleId)
+    override fun onArticleClick(categoryId: Long, articleId: Long) {
+        switchPage(ArticlePage.newInstance(categoryId, articleId), "ЧЁ С ЭТИМ ДЕЛАТЬ БЛЯТЬ")
+    }
+
+    override fun onArticleClick(categoryId: Long) {
+        //switchPage(ArticlePage.newInstance(categoryId, articleId), "ЧЁ С ЭТИМ ДЕЛАТЬ БЛЯТЬ")//TODO: от поиска не откроется
     }
 
     override fun onCategoryClick(categoryId: Long,

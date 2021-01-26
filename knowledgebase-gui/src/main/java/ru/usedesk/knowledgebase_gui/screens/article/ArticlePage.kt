@@ -29,6 +29,16 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
                 R.style.Usedesk_KnowledgeBase_Article_Content_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
+        }.apply {
+            /*btnSupport.apply {
+                setOnClickListener {
+                    requireParentFragment().also {
+                        if (it is IUsedeskOnSupportClickListener) {
+                            it.onSupportClick()
+                        }
+                    }
+                }
+            }*/
         }
 
         argsGetLong(CATEGORY_ID_KEY)?.also { categoryId ->
@@ -82,5 +92,6 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val vpPages: ViewPager = rootView.findViewById(R.id.vp_pages)
+        //val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
     }
 }

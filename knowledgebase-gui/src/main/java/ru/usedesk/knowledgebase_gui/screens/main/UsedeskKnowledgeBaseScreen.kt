@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
@@ -28,7 +27,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         IOnArticleClickListener,
         IUsedeskOnBackPressedListener,
         IUsedeskOnSearchQueryListener,
-        IOnTitleChangeListener {
+        IOnTitleChangeListener,
+        IUsedeskOnSupportClickListener {
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
@@ -44,10 +44,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 R.layout.usedesk_screen_knowledge_base,
                 R.style.Usedesk_KnowledgeBase_Screen) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
-        }
-
-        binding.btnSupport.setOnClickListener {
-            onSupportClick()
         }
 
         toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
@@ -91,7 +87,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         }
     }
 
-    private fun onSupportClick() {
+    override fun onSupportClick() {
         getParentListener<IUsedeskOnSupportClickListener>()?.also {
             it.onSupportClick()
         }
@@ -187,7 +183,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
         val toolbar = UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
         val toolbarSearch = ToolbarSearchAdapter.Binding(rootView.findViewById(R.id.toolbar_search), defaultStyleId)
     }

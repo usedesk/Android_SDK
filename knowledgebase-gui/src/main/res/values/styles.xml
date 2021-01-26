@@ -1,7 +1,6 @@
 <resources>
 
     <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
-        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
         <item name="usedesk_knowledgebase_screen_toolbar_title">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/background_search_input</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText</item>
@@ -14,6 +13,7 @@
 
     <style name="Usedesk.KnowledgeBase.List.Page" parent="">
         <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.List.Page.Message.Text</item>
+        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page.Message.Text" parent="">
@@ -295,6 +295,7 @@
         <item name="usedesk_knowledgebase_article_content_page_previous_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_next_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_next_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text</item>
+        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common"></style>

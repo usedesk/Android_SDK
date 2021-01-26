@@ -10,10 +10,15 @@ import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.view.marginBottom
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
+import kotlin.math.max
+import kotlin.math.min
 
 internal class ArticleItem : UsedeskFragment() {
 
@@ -25,6 +30,7 @@ internal class ArticleItem : UsedeskFragment() {
     private lateinit var yesStyleValues: UsedeskResourceManager.StyleValues
     private lateinit var noStyleValues: UsedeskResourceManager.StyleValues
 
+    private var scrollY = 0
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -76,6 +82,16 @@ internal class ArticleItem : UsedeskFragment() {
             } else {
                 lNext.visibility = View.INVISIBLE
             }
+
+            lContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+                this@ArticleItem.scrollY = scrollY
+                updateFab()
+            })
+
+            lContent.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                lContentScrollable.minimumHeight = rootView.height - lBottomNavigation.measuredHeight
+                updateFab()
+            }
         }
 
         argsGetLong(ARTICLE_ID_KEY)?.also { articleId ->
@@ -86,10 +102,10 @@ internal class ArticleItem : UsedeskFragment() {
             if (it != null) {
                 when (it.state) {
                     ArticleItemViewModel.ArticleContentState.State.LOADING -> {
-                        showInstead(binding.pbLoading, binding.lContent)
+                        showInstead(binding.pbLoading, binding.lContent, gone = false)
                     }
                     ArticleItemViewModel.ArticleContentState.State.LOADED -> {
-                        showInstead(binding.lContent, binding.pbLoading)
+                        showInstead(binding.lContent, binding.pbLoading, gone = false)
                         it.articleContent?.apply {
                             onArticleContent(this)
                         }
@@ -104,7 +120,15 @@ internal class ArticleItem : UsedeskFragment() {
         return binding.rootView
     }
 
+    private fun updateFab() {
+        binding.apply {
+            val dif = max(lContentScrollable.height, lContentScrollable.minimumHeight) - (scrollY + lContent.height)
+            btnSupport.y = (rootView.height - btnSupport.height - btnSupport.marginBottom + min(0, dif)).toFloat()
+        }
+    }
+
     private fun onArticleContent(articleContent: UsedeskArticleContent) {
+        updateFab()
         binding.wvContent.apply {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -115,7 +139,7 @@ internal class ArticleItem : UsedeskFragment() {
             }
             loadData(articleContent.text, "text/html", null)
             setBackgroundColor(Color.TRANSPARENT)
-            showInstead(this, binding.pbLoading)
+            showInstead(this, binding.pbLoading, gone = false)
         }
     }
 
@@ -185,7 +209,9 @@ internal class ArticleItem : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
-        val lContent: View = rootView.findViewById(R.id.l_content)
+        val lContent: NestedScrollView = rootView.findViewById(R.id.l_content)
+        val lContentScrollable: View = rootView.findViewById(R.id.l_content_scrollable)
+        val lBottomNavigation: View = rootView.findViewById(R.id.l_bottom_navigation)
         val wvContent: WebView = rootView.findViewById(R.id.wv_content)
         val tvRatingTitle: TextView = rootView.findViewById(R.id.tv_rating_title)
         val etRating: EditText = rootView.findViewById(R.id.et_rating_message)
@@ -197,5 +223,6 @@ internal class ArticleItem : UsedeskFragment() {
         val tvPrevious: TextView = rootView.findViewById(R.id.tv_previous)
         val lNext: View = rootView.findViewById(R.id.l_next)
         val tvNext: TextView = rootView.findViewById(R.id.tv_next)
+        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
     }
 }

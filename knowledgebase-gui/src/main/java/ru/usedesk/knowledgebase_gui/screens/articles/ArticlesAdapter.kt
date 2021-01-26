@@ -14,7 +14,7 @@ internal class ArticlesAdapter(
         recyclerView: RecyclerView,
         lifecycleOwner: LifecycleOwner,
         private val viewModel: ArticlesViewModel,
-        private val onArticleInfoClick: (Long) -> Unit
+        private val onArticleInfoClick: (UsedeskArticleInfo) -> Unit
 ) : RecyclerView.Adapter<ArticlesAdapter.ArticleViewHolder>() {
 
     private var items = listOf<UsedeskArticleInfo>()
@@ -49,7 +49,7 @@ internal class ArticlesAdapter(
         fun bind(articleInfo: UsedeskArticleInfo) {
             binding.tvTitle.text = articleInfo.title
             binding.rootView.setOnClickListener {
-                onArticleInfoClick(articleInfo.id)
+                onArticleInfoClick(articleInfo)
             }
         }
     }

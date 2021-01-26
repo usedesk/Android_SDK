@@ -15,9 +15,7 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
 import ru.usedesk.knowledgebase_gui.screens.articles.ArticlesPage
-import ru.usedesk.knowledgebase_gui.screens.articles.IOnArticleClickListener
 import ru.usedesk.knowledgebase_gui.screens.articles_search.ArticlesSearchPage
-import ru.usedesk.knowledgebase_gui.screens.articles_search.IOnArticlesSearchClickListener
 import ru.usedesk.knowledgebase_gui.screens.categories.CategoriesPage
 import ru.usedesk.knowledgebase_gui.screens.categories.IOnCategoryClickListener
 import ru.usedesk.knowledgebase_gui.screens.sections.IOnSectionClickListener
@@ -28,9 +26,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         IOnSectionClickListener,
         IOnCategoryClickListener,
         IOnArticleClickListener,
-        IOnArticlesSearchClickListener,
         IUsedeskOnBackPressedListener,
-        IUsedeskOnSearchQueryListener {
+        IUsedeskOnSearchQueryListener,
+        IOnTitleChangeListener {
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
@@ -115,12 +113,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 .commit()
     }
 
-    override fun onArticleClick(categoryId: Long, articleId: Long) {
-        switchPage(ArticlePage.newInstance(categoryId, articleId), "ЧЁ С ЭТИМ ДЕЛАТЬ БЛЯТЬ")
-    }
-
-    override fun onArticleClick(categoryId: Long) {
-        //switchPage(ArticlePage.newInstance(categoryId, articleId), "ЧЁ С ЭТИМ ДЕЛАТЬ БЛЯТЬ")//TODO: от поиска не откроется
+    override fun onArticleClick(categoryId: Long,
+                                articleId: Long,
+                                articleTitle: String) {
+        switchPage(ArticlePage.newInstance(categoryId, articleId), articleTitle)
     }
 
     override fun onCategoryClick(categoryId: Long,
@@ -137,6 +133,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         if (query.isNotEmpty()) {
             viewModel.onSearchQuery(query)
         }
+    }
+
+    override fun onTitle(title: String) {
+        binding.toolbar.tvTitle.text = title
     }
 
     override fun onBackPressed(): Boolean {

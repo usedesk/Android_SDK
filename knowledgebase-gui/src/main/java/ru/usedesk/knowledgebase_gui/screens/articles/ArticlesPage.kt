@@ -12,6 +12,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
 
 internal class ArticlesPage : UsedeskFragment() {
 
@@ -44,8 +45,11 @@ internal class ArticlesPage : UsedeskFragment() {
 
         ArticlesAdapter(binding.rvItems,
                 viewLifecycleOwner,
-                viewModel) { articleId ->
-            getParentListener<IOnArticleClickListener>()?.onArticleClick(categoryId, articleId)
+                viewModel) { articleInfo ->
+            getParentListener<IOnArticleClickListener>()?.onArticleClick(
+                    articleInfo.categoryId,
+                    articleInfo.id,
+                    articleInfo.title)
         }
 
         showInstead(binding.pbLoading, binding.rvItems)

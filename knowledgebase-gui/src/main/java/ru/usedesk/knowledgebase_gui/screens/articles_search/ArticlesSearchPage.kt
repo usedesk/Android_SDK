@@ -12,6 +12,7 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
 
 internal class ArticlesSearchPage : UsedeskFragment() {
 
@@ -30,8 +31,11 @@ internal class ArticlesSearchPage : UsedeskFragment() {
 
         ArticlesSearchAdapter(binding.rvItems,
                 viewLifecycleOwner,
-                viewModel) {
-            getParentListener<IOnArticlesSearchClickListener>()?.onArticleClick(it)
+                viewModel) { articleContent ->
+            getParentListener<IOnArticleClickListener>()?.onArticleClick(
+                    articleContent.categoryId,
+                    articleContent.id,
+                    articleContent.title)
         }
 
         val message = binding.styleValues

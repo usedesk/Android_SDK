@@ -287,9 +287,6 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
-        <item name="usedesk_knowledgebase_article_content_page_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Title.Text</item>
-        <item name="usedesk_knowledgebase_article_content_page_close_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Close.Image</item>
-        <item name="usedesk_knowledgebase_article_content_page_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Divider</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
@@ -300,11 +297,7 @@
         <item name="usedesk_knowledgebase_article_content_page_next_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common">
-        <item name="usedesk_knowledgebase_article_content_page_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Title.Text</item>
-        <item name="usedesk_knowledgebase_article_content_page_close_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Close.Image</item>
-        <item name="usedesk_knowledgebase_article_content_page_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Divider</item>
-    </style>
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common"></style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image" parent="">
         <item name="android:layout_width">24dp</item>

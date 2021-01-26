@@ -27,9 +27,6 @@
     <attr name="usedesk_knowledgebase_articles_page_article_title" format="reference" />
     <attr name="usedesk_knowledgebase_articles_page_article_divider" format="reference" />
 
-    <attr name="usedesk_knowledgebase_article_content_page_title_text" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_close_image" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_divider" format="reference" />
     <attr name="usedesk_knowledgebase_article_content_page_rating_title_text" format="reference" />
     <attr name="usedesk_knowledgebase_article_content_page_rating_message_edit_text" format="reference" />
     <attr name="usedesk_knowledgebase_article_content_page_rating_yes_text" format="reference" />

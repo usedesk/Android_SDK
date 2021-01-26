@@ -52,7 +52,8 @@ internal class KnowledgeBaseApiRepository(
         return valueOrNull {
             UsedeskArticleContent(articleContentResponse.id!!,
                     articleContentResponse.title ?: "",
-                    articleContentResponse.text ?: ""
+                    articleContentResponse.text ?: "",
+                    articleContentResponse.categoryId?.toLongOrNull()!!
             )
         } ?: throw UsedeskHttpException("Wrong response")
     }
@@ -78,7 +79,8 @@ internal class KnowledgeBaseApiRepository(
             valueOrNull {
                 UsedeskArticleContent(it!!.id!!,
                         it.title ?: "",
-                        it.text ?: "")
+                        it.text ?: "",
+                        it.categoryId?.toLongOrNull()!!)
             }
         }
     }
@@ -128,17 +130,19 @@ internal class KnowledgeBaseApiRepository(
                 val categories = (sectionResponse.categories ?: arrayOf())
                         .filterNotNull()
                         .map { categoryResponse ->
+                            val categoryId = categoryResponse.id!!
                             val articles = (categoryResponse.articles ?: arrayOf())
                                     .filterNotNull()
                                     .map { articleResponse ->
                                         UsedeskArticleInfo(
                                                 articleResponse.id!!,
                                                 articleResponse.title ?: "",
+                                                categoryId,
                                                 articleResponse.views ?: 0
                                         )
                                     }
                             UsedeskCategory(
-                                    categoryResponse.id!!,
+                                    categoryId,
                                     categoryResponse.title ?: "",
                                     categoryResponse.description ?: "",
                                     articles,

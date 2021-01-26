@@ -15,7 +15,7 @@ internal class ArticlesSearchAdapter(
         recyclerView: RecyclerView,
         lifecycleOwner: LifecycleOwner,
         viewModel: ArticlesSearchViewModel,
-        private val onArticleClick: (Long) -> Unit
+        private val onArticleClick: (UsedeskArticleContent) -> Unit
 ) : RecyclerView.Adapter<ArticlesSearchAdapter.ArticleViewHolder>() {
 
     private var items = listOf<UsedeskArticleContent>()
@@ -53,7 +53,7 @@ internal class ArticlesSearchAdapter(
             binding.tvTitle.text = articleContent.title
             binding.tvDescription.text = Html.fromHtml(articleContent.text).trim()
             binding.rootView.setOnClickListener {
-                onArticleClick(articleContent.id)
+                onArticleClick(articleContent)
             }
         }
     }

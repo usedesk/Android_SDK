@@ -9,7 +9,7 @@
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Common.Toolbar.Title.Text</item>
     </style>
 
-    <style name="Usedesk.Common.Dialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog" />
+    <style name="Usedesk.Common.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog" />
 
     <style name="Usedesk.Common.No.Permission" parent="">
         <item name="usedesk_text_1">@string/usedesk_need_permission</item>
@@ -26,6 +26,7 @@
         <item name="android:padding">8dp</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+        <item name="srcCompat">@drawable/ic_back</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 

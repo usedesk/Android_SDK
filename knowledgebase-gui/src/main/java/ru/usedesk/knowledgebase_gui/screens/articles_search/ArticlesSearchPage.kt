@@ -8,10 +8,13 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
 
 internal class ArticlesSearchPage : UsedeskFragment() {
 
@@ -26,19 +29,24 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                 R.layout.usedesk_page_list,
                 R.style.Usedesk_KnowledgeBase_Articles_Search_Page) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
+        }.apply {
+            tvMessage.text = styleValues
+                    .getStyleValues(R.attr.usedesk_knowledgebase_article_search_page_message)
+                    .getString(R.attr.usedesk_text_1)
+
+            btnSupport.setOnClickListener {
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+            }
         }
 
         ArticlesSearchAdapter(binding.rvItems,
                 viewLifecycleOwner,
-                viewModel) {
-            getParentListener<IOnArticlesSearchClickListener>()?.onArticleClick(it)
+                viewModel) { articleContent ->
+            getParentListener<IOnArticleClickListener>()?.onArticleClick(
+                    articleContent.categoryId,
+                    articleContent.id,
+                    articleContent.title)
         }
-
-        val message = binding.styleValues
-                .getStyleValues(R.attr.usedesk_knowledgebase_article_search_page_message)
-                .getString(R.attr.usedesk_text_1)
-
-        binding.tvMessage.text = message
 
         viewModel.articlesLiveData.observe(viewLifecycleOwner) {
             when {
@@ -81,5 +89,6 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val tvMessage: TextView = rootView.findViewById(R.id.tv_message)
+        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
     }
 }

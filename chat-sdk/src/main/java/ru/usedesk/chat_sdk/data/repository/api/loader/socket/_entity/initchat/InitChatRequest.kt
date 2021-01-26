@@ -14,11 +14,13 @@ internal class InitChatRequest(
 
     class Payload {
         val sdk: String = VALUE_CURRENT_SDK
+        val type: String = VALUE_TYPE_SDK
     }
 
     companion object {
         private const val TYPE = "@@server/chat/INIT"
         private const val KEY_COMPANY_ID = "company_id"
         private const val VALUE_CURRENT_SDK = "android"
+        private const val VALUE_TYPE_SDK = "sdk"
     }
 }

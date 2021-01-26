@@ -30,8 +30,4 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_support"
-        style="?attr/usedesk_knowledgebase_screen_support_button" />
 </FrameLayout>

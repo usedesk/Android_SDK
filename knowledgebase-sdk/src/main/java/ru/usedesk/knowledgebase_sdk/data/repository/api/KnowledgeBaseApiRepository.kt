@@ -52,7 +52,8 @@ internal class KnowledgeBaseApiRepository(
         return valueOrNull {
             UsedeskArticleContent(articleContentResponse.id!!,
                     articleContentResponse.title ?: "",
-                    articleContentResponse.text ?: ""
+                    articleContentResponse.text ?: "",
+                    articleContentResponse.categoryId?.toLongOrNull()!!
             )
         } ?: throw UsedeskHttpException("Wrong response")
     }
@@ -78,7 +79,8 @@ internal class KnowledgeBaseApiRepository(
             valueOrNull {
                 UsedeskArticleContent(it!!.id!!,
                         it.title ?: "",
-                        it.text ?: "")
+                        it.text ?: "",
+                        it.categoryId?.toLongOrNull()!!)
             }
         }
     }
@@ -103,11 +105,11 @@ internal class KnowledgeBaseApiRepository(
         }
     }
 
-    override fun sendFeedback(token: String,
-                              clientEmail: String,
-                              clientName: String?,
-                              articleId: Long,
-                              message: String) {
+    override fun sendRating(token: String,
+                            clientEmail: String,
+                            clientName: String?,
+                            articleId: Long,
+                            message: String) {
         doRequest(CreateTicketResponse::class.java) {
             it.createTicket(CreateTicketRequest(
                     token,
@@ -128,17 +130,19 @@ internal class KnowledgeBaseApiRepository(
                 val categories = (sectionResponse.categories ?: arrayOf())
                         .filterNotNull()
                         .map { categoryResponse ->
+                            val categoryId = categoryResponse.id!!
                             val articles = (categoryResponse.articles ?: arrayOf())
                                     .filterNotNull()
                                     .map { articleResponse ->
                                         UsedeskArticleInfo(
                                                 articleResponse.id!!,
                                                 articleResponse.title ?: "",
+                                                categoryId,
                                                 articleResponse.views ?: 0
                                         )
                                     }
                             UsedeskCategory(
-                                    categoryResponse.id!!,
+                                    categoryId,
                                     categoryResponse.title ?: "",
                                     categoryResponse.description ?: "",
                                     articles,
@@ -147,7 +151,7 @@ internal class KnowledgeBaseApiRepository(
                 UsedeskSection(
                         sectionResponse.id!!,
                         sectionResponse.title ?: "",
-                        null,//sectionResponse.image,
+                        sectionResponse.image,
                         categories,
                         sectionResponse.order ?: 0
                 )

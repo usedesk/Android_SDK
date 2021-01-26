@@ -63,16 +63,24 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     protected inline fun <reified T> getParentListener(): T? {
-        return when {
-            parentFragment is T -> {
-                parentFragment as T
-            }
-            activity is T -> {
-                activity as T
-            }
-            else -> {
-                null
+        var listener: T? = null
+
+        var parent = parentFragment
+        while (parent != null) {
+            if (parent is T) {
+                listener = parent
+                break
+            } else {
+                parent = parent.parentFragment
             }
         }
+
+        if (listener == null) {
+            if (activity is T) {
+                listener = activity as T
+            }
+        }
+
+        return listener
     }
 }

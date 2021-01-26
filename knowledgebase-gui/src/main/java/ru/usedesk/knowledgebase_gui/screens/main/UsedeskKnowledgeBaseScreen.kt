@@ -7,17 +7,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
-import ru.usedesk.knowledgebase_gui.screens.article.ArticleBottomSheetFragment
+import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
 import ru.usedesk.knowledgebase_gui.screens.articles.ArticlesPage
-import ru.usedesk.knowledgebase_gui.screens.articles.IOnArticleClickListener
 import ru.usedesk.knowledgebase_gui.screens.articles_search.ArticlesSearchPage
-import ru.usedesk.knowledgebase_gui.screens.articles_search.IOnArticlesSearchClickListener
 import ru.usedesk.knowledgebase_gui.screens.categories.CategoriesPage
 import ru.usedesk.knowledgebase_gui.screens.categories.IOnCategoryClickListener
 import ru.usedesk.knowledgebase_gui.screens.sections.IOnSectionClickListener
@@ -28,16 +24,15 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         IOnSectionClickListener,
         IOnCategoryClickListener,
         IOnArticleClickListener,
-        IOnArticlesSearchClickListener,
         IUsedeskOnBackPressedListener,
-        IUsedeskOnSearchQueryListener {
+        IUsedeskOnSearchQueryListener,
+        IOnTitleChangeListener {
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
     private lateinit var binding: Binding
     private lateinit var toolbarDefaultAdapter: UsedeskToolbarAdapter
     private lateinit var toolbarSearchAdapter: ToolbarSearchAdapter
-    private var articleContentBottomSheet: ArticleBottomSheetFragment? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -49,20 +44,13 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             Binding(rootView, defaultStyleId)
         }
 
-        binding.btnSupport.setOnClickListener {
-            onSupportClick()
-        }
-
         toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
                 binding.toolbar).apply {
             setBackButton {
                 requireActivity().onBackPressed()
             }
-            val icSearch = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_search_image)
-                    .getId(R.attr.usedesk_drawable_1)
 
-            setActionButton(icSearch) {
+            setActionButton {
                 switchPage(ArticlesSearchPage.newInstance())
             }
         }
@@ -77,37 +65,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             showSearchQuery(it)
         })
 
-        viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                when (it.state) {
-                    KnowledgeBaseViewModel.ArticleContentState.State.LOADING -> {
-                        needArticleBottomSheet().apply {
-                            onLoading()
-                            show()
-                        }
-                    }
-                    KnowledgeBaseViewModel.ArticleContentState.State.SUCCESS -> {
-                        needArticleBottomSheet().apply {
-                            it.articleContent?.also { articleContent ->
-                                onArticleContent(articleContent, onFeedback = { articleId, good ->
-                                    viewModel.sendArticleFeedback(articleId, good)
-                                }, onFeedbackMessage = { articleId, message ->
-                                    viewModel.sendArticleFeedback(articleId, message)
-                                })
-                                show()
-                            }
-                        }
-                    }
-                    else -> {
-                        articleContentBottomSheet?.apply {
-                            hide()
-                            articleContentBottomSheet = null
-                        }
-                    }
-                }
-            }
-        }
-
         UsedeskKnowledgeBaseSdk.init(requireContext())
 
         if (savedInstanceState == null) {
@@ -119,28 +76,12 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         return binding.rootView
     }
 
-    private fun needArticleBottomSheet(): ArticleBottomSheetFragment {
-        return articleContentBottomSheet
-                ?: ArticleBottomSheetFragment.newInstance(binding.rootView).apply {
-                    setOnDismissListener {
-                        viewModel.onArticleClosed()
-                    }
-                    articleContentBottomSheet = this
-                }
-    }
-
     private fun showSearchQuery(query: String) {
         val fragment = getLastFragment()
         if (fragment is ArticlesSearchPage) {
             fragment.onSearchQueryUpdate(query)
         } else {
             switchPage(ArticlesSearchPage.newInstance())
-        }
-    }
-
-    private fun onSupportClick() {
-        getParentListener<IUsedeskOnSupportClickListener>()?.also {
-            it.onSupportClick()
         }
     }
 
@@ -160,8 +101,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 .commit()
     }
 
-    override fun onArticleClick(articleId: Long) {
-        viewModel.onArticleClick(articleId)
+    override fun onArticleClick(categoryId: Long,
+                                articleId: Long,
+                                articleTitle: String) {
+        switchPage(ArticlePage.newInstance(categoryId, articleId), articleTitle)
     }
 
     override fun onCategoryClick(categoryId: Long,
@@ -177,6 +120,13 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     override fun onSearchQuery(query: String) {
         if (query.isNotEmpty()) {
             viewModel.onSearchQuery(query)
+        }
+    }
+
+    override fun onTitle(title: String) {
+        binding.toolbar.tvTitle.text = title
+        getLastFragment()?.apply {
+            (arguments ?: Bundle()).putString(COMMON_TITLE_KEY, title)
         }
     }
 
@@ -228,7 +178,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
         val toolbar = UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
         val toolbarSearch = ToolbarSearchAdapter.Binding(rootView.findViewById(R.id.toolbar_search), defaultStyleId)
     }

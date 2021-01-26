@@ -84,7 +84,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 },
                 { url ->
                     getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
-                            ?: onUrlClick(url)
+                            ?: this.onUrlClick(url)
                 })
         viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
             onException(it)

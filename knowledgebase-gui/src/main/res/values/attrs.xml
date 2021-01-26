@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="usedesk_knowledgebase_screen_support_button" format="reference" />
-    <attr name="usedesk_knowledgebase_screen_toolbar_background" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_background" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_title" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_image" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_icon_image" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_cancel_text" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search_divider" format="reference" />
-    <attr name="usedesk_knowledgebase_screen_toolbar_title" format="reference" />
 
     <attr name="usedesk_knowledgebase_list_page_message_text" format="reference" />
 
@@ -27,13 +27,14 @@
     <attr name="usedesk_knowledgebase_articles_page_article_title" format="reference" />
     <attr name="usedesk_knowledgebase_articles_page_article_divider" format="reference" />
 
-    <attr name="usedesk_knowledgebase_article_content_page_title_text" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_close_image" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_divider" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_feedback_title_text" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_feedback_message_edit_text" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_feedback_yes_text" format="reference" />
-    <attr name="usedesk_knowledgebase_article_content_page_feedback_no_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_title_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_message_edit_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_yes_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_no_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_previous_image" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_previous_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_next_image" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_next_text" format="reference" />
 
     <attr name="usedesk_knowledgebase_categories_category_title_text" format="reference" />
     <attr name="usedesk_knowledgebase_categories_category_description_text" format="reference" />

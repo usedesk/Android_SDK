@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.showInstead
+import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 
 internal class CategoriesPage : UsedeskFragment() {
@@ -27,6 +29,10 @@ internal class CategoriesPage : UsedeskFragment() {
                 R.layout.usedesk_page_list,
                 R.style.Usedesk_KnowledgeBase_Categories_Page) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
+        }.apply {
+            btnSupport.setOnClickListener {
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+            }
         }
 
         if (savedInstanceState == null) {
@@ -70,5 +76,6 @@ internal class CategoriesPage : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
+        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
     }
 }

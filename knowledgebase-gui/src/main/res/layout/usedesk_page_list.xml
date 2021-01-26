@@ -25,4 +25,8 @@
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/usedesk_item_section" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_support"
+        style="?attr/usedesk_knowledgebase_screen_support_button" />
 </FrameLayout>

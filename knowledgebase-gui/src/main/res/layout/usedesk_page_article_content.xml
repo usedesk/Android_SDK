@@ -1,110 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/usedesk_white_1"
     tools:theme="@style/Usedesk.KnowledgeBase.Article.Content.Page">
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="?attr/usedesk_knowledgebase_article_content_page_title_text"
-        app:layout_constraintBottom_toTopOf="@+id/v_divider"
-        app:layout_constraintEnd_toStartOf="@+id/iv_close"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Подключение почты" />
-
-    <ImageView
-        android:id="@+id/iv_close"
-        style="?attr/usedesk_knowledgebase_article_content_page_close_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/v_divider"
-        style="?attr/usedesk_knowledgebase_article_content_page_divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_close" />
-
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/v_divider" />
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp_pages"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/v_divider">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <WebView
-                android:id="@+id/wv_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                tools:ignore="WebViewLayout" />
-
-            <TextView
-                android:id="@+id/tv_feedback_title"
-                style="?attr/usedesk_knowledgebase_article_content_page_feedback_title_text"
-                tools:text="@string/usedesk_feedback_question" />
-
-            <EditText
-                android:id="@+id/et_feedback_message"
-                style="?attr/usedesk_knowledgebase_article_content_page_feedback_message_edit_text" />
-
-            <LinearLayout
-                android:id="@+id/l_buttons"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="24dp"
-                android:orientation="horizontal"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                app:layout_constraintTop_toBottomOf="@+id/textView2">
-
-                <FrameLayout
-                    android:id="@+id/l_feedback_yes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
-                    android:background="@drawable/background_feedback_yes">
-
-                    <TextView
-                        android:id="@+id/tv_feedback_yes"
-                        style="?attr/usedesk_knowledgebase_article_content_page_feedback_yes_text"
-                        tools:text="@string/usedesk_yes" />
-                </FrameLayout>
-
-                <FrameLayout
-                    android:id="@+id/l_feedback_no"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
-                    android:background="@drawable/background_feedback_no">
-
-                    <TextView
-                        android:id="@+id/tv_feedback_no"
-                        style="?attr/usedesk_knowledgebase_article_content_page_feedback_no_text"
-                        tools:text="@string/usedesk_no" />
-                </FrameLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent" />
+</FrameLayout>

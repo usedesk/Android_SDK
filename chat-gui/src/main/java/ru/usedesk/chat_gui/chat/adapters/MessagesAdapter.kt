@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.chat.adapters
 import android.text.Html
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -218,9 +219,9 @@ internal class MessagesAdapter(
                 isClient: Boolean
         ) {
             val last = if (isClient) {
-                items.getOrNull(position + 1) is UsedeskMessageAgent
+                items.getOrNull(adapterPosition + 1) is UsedeskMessageAgent
             } else {
-                items.getOrNull(position + 1) is UsedeskMessageClient
+                items.getOrNull(adapterPosition + 1) is UsedeskMessageClient
             }
             vEmpty.visibility = visibleGone(last)
         }
@@ -372,6 +373,14 @@ internal class MessagesAdapter(
 
             val messageAgentText = items[position] as UsedeskMessageAgentText
             buttonsAdapter.update(messageAgentText.buttons)
+
+            binding.content.rootView.layoutParams.apply {
+                width = if (messageAgentText.buttons.isEmpty()) {
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                } else {
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                }
+            }
 
             val ivLike = binding.content.ivLike
             val ivDislike = binding.content.ivDislike

@@ -3,9 +3,9 @@
     <string name="usedesk_knowledgebase">База Знаний</string>
     <string name="usedesk_cancel">Отмена</string>
     <string name="usedesk_articles_not_found">Статьи не найдены</string>
-    <string name="usedesk_feedback_question">Была ли статья полезна?</string>
-    <string name="usedesk_feedback_whats_wrong">Посоветуйте, как можно улучшить статью?</string>
-    <string name="usedesk_feedback_thanks">Спасибо за отзыв!</string>
+    <string name="usedesk_rating_question">Была ли статья полезна?</string>
+    <string name="usedesk_rating_whats_wrong">Посоветуйте, как нам улучшить статью?</string>
+    <string name="usedesk_rating_thanks">Спасибо за отзыв!</string>
     <string name="usedesk_yes">Да</string>
     <string name="usedesk_no">Нет</string>
 

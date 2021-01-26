@@ -15,6 +15,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
+import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import kotlin.math.max
@@ -59,11 +60,7 @@ internal class ArticleItem : UsedeskFragment() {
             if (previousTitle != null) {
                 tvPrevious.text = previousTitle
                 lPrevious.setOnClickListener {
-                    parentFragment?.also {
-                        if (it is IOnArticlePagesListener) {
-                            it.onPrevious()
-                        }
-                    }
+                    getParentListener<IOnArticlePagesListener>()?.onPrevious()
                 }
             } else {
                 lPrevious.visibility = View.INVISIBLE
@@ -73,11 +70,7 @@ internal class ArticleItem : UsedeskFragment() {
             if (nextTitle != null) {
                 tvNext.text = nextTitle
                 lNext.setOnClickListener {
-                    parentFragment?.also {
-                        if (it is IOnArticlePagesListener) {
-                            it.onNext()
-                        }
-                    }
+                    getParentListener<IOnArticlePagesListener>()?.onNext()
                 }
             } else {
                 lNext.visibility = View.INVISIBLE
@@ -91,6 +84,10 @@ internal class ArticleItem : UsedeskFragment() {
             lContent.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 lContentScrollable.minimumHeight = rootView.height - lBottomNavigation.measuredHeight
                 updateFab()
+            }
+
+            btnSupport.setOnClickListener {
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
         }
 

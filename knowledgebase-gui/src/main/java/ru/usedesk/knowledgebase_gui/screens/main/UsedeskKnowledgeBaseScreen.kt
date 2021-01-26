@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
@@ -27,8 +26,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         IOnArticleClickListener,
         IUsedeskOnBackPressedListener,
         IUsedeskOnSearchQueryListener,
-        IOnTitleChangeListener,
-        IUsedeskOnSupportClickListener {
+        IOnTitleChangeListener {
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
@@ -84,12 +82,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             fragment.onSearchQueryUpdate(query)
         } else {
             switchPage(ArticlesSearchPage.newInstance())
-        }
-    }
-
-    override fun onSupportClick() {
-        getParentListener<IUsedeskOnSupportClickListener>()?.also {
-            it.onSupportClick()
         }
     }
 

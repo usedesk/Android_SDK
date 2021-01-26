@@ -35,11 +35,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                     .getString(R.attr.usedesk_text_1)
 
             btnSupport.setOnClickListener {
-                requireParentFragment().also {
-                    if (it is IUsedeskOnSupportClickListener) {
-                        it.onSupportClick()
-                    }
-                }
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
         }
 

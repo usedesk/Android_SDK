@@ -30,11 +30,7 @@ internal class SectionsPage : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }.apply {
             btnSupport.setOnClickListener {
-                requireParentFragment().also {
-                    if (it is IUsedeskOnSupportClickListener) {
-                        it.onSupportClick()
-                    }
-                }
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
         }
 

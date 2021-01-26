@@ -29,16 +29,6 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
                 R.style.Usedesk_KnowledgeBase_Article_Content_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
-        }.apply {
-            /*btnSupport.apply {
-                setOnClickListener {
-                    requireParentFragment().also {
-                        if (it is IUsedeskOnSupportClickListener) {
-                            it.onSupportClick()
-                        }
-                    }
-                }
-            }*/
         }
 
         argsGetLong(CATEGORY_ID_KEY)?.also { categoryId ->
@@ -54,11 +44,7 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
         viewModel.init(categoryId)
 
         articlePagesAdapter = ArticlePagesAdapter(binding.vpPages, childFragmentManager) { articleInfo ->
-            requireParentFragment().also {
-                if (it is IOnTitleChangeListener) {
-                    it.onTitle(articleInfo.title)
-                }
-            }
+            getParentListener<IOnTitleChangeListener>()?.onTitle(articleInfo.title)
         }
 
         viewModel.articlesLiveData.observe(viewLifecycleOwner) { articles ->

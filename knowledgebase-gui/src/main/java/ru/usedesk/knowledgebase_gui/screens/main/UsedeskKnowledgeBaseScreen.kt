@@ -133,6 +133,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
     override fun onTitle(title: String) {
         binding.toolbar.tvTitle.text = title
+        getLastFragment()?.apply {
+            (arguments ?: Bundle()).putString(COMMON_TITLE_KEY, title)
+        }
     }
 
     override fun onBackPressed(): Boolean {

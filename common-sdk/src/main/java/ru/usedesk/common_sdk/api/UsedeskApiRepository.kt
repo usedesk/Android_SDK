@@ -1,12 +1,11 @@
-package ru.usedesk.knowledgebase_sdk.data.repository.api
+package ru.usedesk.common_sdk.api
 
 import android.util.Log
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.Call
-import ru.usedesk.common_sdk.api.IUsedeskApiFactory
+import ru.usedesk.common_sdk.api.entity.ApiError
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
-import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.ApiError
 
 abstract class UsedeskApiRepository<API>(
         private val apiFactory: IUsedeskApiFactory,
@@ -15,11 +14,12 @@ abstract class UsedeskApiRepository<API>(
 ) {
 
     protected fun <RESPONSE> doRequest(
+            urlApi: String,
             responseClass: Class<RESPONSE>,
             getCall: (API) -> Call<ResponseBody>
     ): RESPONSE {
         return execute(gson, responseClass) {
-            getCall(apiFactory.getInstance(SERVER_BASE_URL, apiClass))
+            getCall(apiFactory.getInstance(urlApi, apiClass))
         }
     }
 
@@ -58,7 +58,7 @@ abstract class UsedeskApiRepository<API>(
     }
 
     companion object {
-        private const val SERVER_BASE_URL = "https://api.usedesk.ru/"
+        //private const val SERVER_BASE_URL = "https://api.usedesk.ru/"
         private const val MAX_ATTEMPTS = 3
 
         private const val SERVER_ERROR = "111"

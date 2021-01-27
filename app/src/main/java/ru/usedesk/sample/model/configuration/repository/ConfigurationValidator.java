@@ -68,12 +68,14 @@ public class ConfigurationValidator {
 
     @NonNull
     public ConfigurationValidation validate(@NonNull Configuration configuration) {
-        return new ConfigurationValidation(validateCompanyId(configuration.getCompanyId()),
-                validateEmail(configuration.getClientEmail()),
-                validatePhoneNumber(configuration.getClientPhoneNumber()),
-                validateUrl(configuration.getUrl()),
-                validateOfflineFormUrl(configuration.getOfflineFormUrl()),
+        return new ConfigurationValidation(validateUrl(configuration.getUrlChat()),
+                validateOfflineFormUrl(configuration.getUrlOfflineForm()),
+                validateOfflineFormUrl(configuration.getUrlToSendFile()),
+                validateOfflineFormUrl(configuration.getUrlApi()),
+                validateCompanyId(configuration.getCompanyId()),
                 validateAccountId(configuration.getAccountId(), configuration.isWithKnowledgeBase()),
-                validateToken(configuration.getToken(), configuration.isWithKnowledgeBase()));
+                validateToken(configuration.getToken(), configuration.isWithKnowledgeBase()),
+                validateEmail(configuration.getClientEmail()),
+                validatePhoneNumber(configuration.getClientPhoneNumber()));
     }
 }

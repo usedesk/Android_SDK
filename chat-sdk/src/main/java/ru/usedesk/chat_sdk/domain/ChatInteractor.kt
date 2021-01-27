@@ -143,7 +143,7 @@ internal class ChatInteractor(
             e.printStackTrace()
         }
         apiRepository.connect(
-                configuration.url,
+                configuration.urlChat,
                 token,
                 configuration,
                 eventListener
@@ -341,11 +341,11 @@ internal class ChatInteractor(
         onMessagesNew(chatChatInited.messages, true)
 
         val initClientMessage = try {
-            userInfoRepository.getConfiguration().initClientMessage
+            userInfoRepository.getConfiguration().clientInitMessage
         } catch (ignore: UsedeskException) {
             null
         }
-        if (initClientMessage?.equals(configuration.initClientMessage) == false) {
+        if (initClientMessage?.equals(configuration.clientInitMessage) == false) {
             send(initClientMessage)
         }
         userInfoRepository.setConfiguration(configuration)

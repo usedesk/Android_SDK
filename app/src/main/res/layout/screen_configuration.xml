@@ -35,7 +35,7 @@
                     android:gravity="center"
                     android:padding="16dp"
                     android:singleLine="true"
-                    android:text="@string/configuration_title"
+                    android:text="@string/title"
                     android:textColor="@color/usedesk_black_2"
                     android:textSize="20sp" />
 
@@ -59,6 +59,62 @@
                 android:paddingBottom="8dp">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_url_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_url_chat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/url_chat_hint"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_url_offline_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_url_offline_form"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/url_offline_form_hint"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_url_to_send_file"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_url_to_send_file"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/url_to_send_file_hint"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_url_api"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_url_api"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/url_api"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_company_id"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -68,50 +124,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/configuration_company_id_hint"
+                        android:hint="@string/company_id_hint"
                         android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/configuration_email_hint"
-                        android:inputType="textEmailAddress" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_url"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_url"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/configuration_url_hint"
-                        android:inputType="textUri" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_offline_url"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_offline_url"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/configuration_offline_url_hint"
-                        android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -124,7 +138,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/account_id"
+                        android:hint="@string/account_id_hint"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,8 +152,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/enter_token"
+                        android:hint="@string/token_hint"
                         android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_client_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_client_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/client_email_hint"
+                        android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -186,16 +214,16 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_init_client_message"
+                    android:id="@+id/til_client_init_message"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_init_client_message"
+                        android:id="@+id/et_client_init_message"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/init_client_message"
+                        android:hint="@string/client_init_message"
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -219,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="14dp"
                     android:checked="true"
-                    android:text="@string/switch_hint"
+                    android:text="@string/foreground_service_hint"
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -228,7 +256,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="14dp"
                     android:checked="true"
-                    android:text="@string/knowledge_base"
+                    android:text="@string/knowledge_base_hint"
                     android:textSize="18sp" />
 
                 <Button

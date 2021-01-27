@@ -1,11 +1,13 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import com.google.gson.Gson
+import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
+import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormRequest
+import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.apifile.IFileApi
-import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.IOfflineFormApi
-import ru.usedesk.chat_sdk.data.repository.api.loader.apiofflineform.entity.OfflineFormRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
@@ -19,24 +21,25 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.common_sdk.api.IUsedeskApiFactory
+import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.io.IOException
-import java.net.URL
 
 @InjectConstructor
 internal class ApiRepository(
         private val socketApi: SocketApi,
-        private val offlineFormApi: IOfflineFormApi,
-        private val fileApi: IFileApi,
         private val multipartConverter: IMultipartConverter,
         private val initChatResponseConverter: InitChatResponseConverter,
         private val messageResponseConverter: MessageResponseConverter,
         private val fileResponseConverter: FileResponseConverter,
-        private val fileLoader: IFileLoader
-) : IApiRepository {
+        private val fileLoader: IFileLoader,
+        apiFactory: IUsedeskApiFactory,
+        gson: Gson
+) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
 
     private var localId = 0L
 
@@ -100,7 +103,7 @@ internal class ApiRepository(
     @Throws(UsedeskException::class)
     override fun init(configuration: UsedeskChatConfiguration, token: String?) {
         socketApi.sendRequest(InitChatRequest(token, configuration.companyId,
-                configuration.url))
+                configuration.urlChat))
     }
 
     @Throws(UsedeskException::class)
@@ -135,14 +138,14 @@ internal class ApiRepository(
         }
         eventListener.onMessagesReceived(listOf(tempMessage))*/
 
-        val url = URL(configuration.offlineFormUrl)
-        val postUrl = String.format(HTTP_API_PATH, url.host)
         val loadedFile = fileLoader.load(usedeskFileInfo.uri)
         val parts = listOf(
                 multipartConverter.convert("chat_token", token),
                 multipartConverter.convert("file", loadedFile)
         )
-        val fileResponse = fileApi.post(postUrl, parts).apply {
+        val fileResponse = doRequest(configuration.urlToSendFile, FileResponse::class.java) {
+            it.postFile(parts)
+        }.apply {
             id = localId.toString()
             type = loadedFile.type
             name = loadedFile.name
@@ -161,9 +164,10 @@ internal class ApiRepository(
                       companyId: String,
                       offlineForm: UsedeskOfflineForm) {
         try {
-            val url = URL(configuration.offlineFormUrl)
-            val postUrl = String.format(OFFLINE_FORM_PATH, url.host)
-            offlineFormApi.post(postUrl, OfflineFormRequest(companyId, offlineForm))
+            doRequest(configuration.urlOfflineForm, OfflineFormResponse::class.java) {
+                val request = OfflineFormRequest(companyId, offlineForm)
+                it.sendOfflineForm(request)
+            }
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
@@ -177,10 +181,5 @@ internal class ApiRepository(
         if (!isConnected()) {
             throw UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED)
         }
-    }
-
-    companion object {
-        private const val OFFLINE_FORM_PATH = "https://%1s/widget.js/"
-        private const val HTTP_API_PATH = "https://%1s/uapi/v1/"
     }
 }

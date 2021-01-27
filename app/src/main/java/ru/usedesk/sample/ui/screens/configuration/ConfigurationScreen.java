@@ -75,32 +75,37 @@ public class ConfigurationScreen extends Fragment {
     }
 
     private Configuration getConfiguration() {
-        return new Configuration(binding.etCompanyId.getText().toString(),
-                binding.etEmail.getText().toString(),
-                binding.etUrl.getText().toString(),
-                binding.etOfflineUrl.getText().toString(),
+        return new Configuration(
+                binding.etUrlChat.getText().toString(),
+                binding.etUrlOfflineForm.getText().toString(),
+                binding.etUrlToSendFile.getText().toString(),
+                binding.etUrlApi.getText().toString(),
+                binding.etCompanyId.getText().toString(),
                 binding.etAccountId.getText().toString(),
                 binding.etToken.getText().toString(),
+                binding.etClientEmail.getText().toString(),
                 binding.etClientName.getText().toString(),
                 binding.etClientPhoneNumber.getText().toString(),
                 binding.etClientAdditionalId.getText().toString(),
-                binding.etInitClientMessage.getText().toString(),
+                binding.etClientInitMessage.getText().toString(),
                 binding.etCustomAgentName.getText().toString(),
                 binding.switchForeground.isChecked(),
                 binding.switchKnowledgeBase.isChecked());
     }
 
     private void onNewConfiguration(@NonNull Configuration configuration) {
+        binding.etUrlChat.setText(configuration.getUrlChat());
+        binding.etUrlOfflineForm.setText(configuration.getUrlOfflineForm());
+        binding.etUrlToSendFile.setText(configuration.getUrlToSendFile());
+        binding.etUrlApi.setText(configuration.getUrlApi());
         binding.etCompanyId.setText(configuration.getCompanyId());
-        binding.etEmail.setText(configuration.getClientEmail());
-        binding.etUrl.setText(configuration.getUrl());
-        binding.etOfflineUrl.setText(configuration.getOfflineFormUrl());
         binding.etAccountId.setText(configuration.getAccountId());
         binding.etToken.setText(configuration.getToken());
+        binding.etClientEmail.setText(configuration.getClientEmail());
         binding.etClientName.setText(configuration.getClientName());
         binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber());
         binding.etClientAdditionalId.setText(configuration.getClientAdditionalId());
-        binding.etInitClientMessage.setText(configuration.getInitClientMessage());
+        binding.etClientInitMessage.setText(configuration.getClientInitMessage());
         binding.etCustomAgentName.setText(configuration.getCustomAgentName());
         binding.switchForeground.setChecked(configuration.isForegroundService());
         binding.switchKnowledgeBase.setChecked(configuration.isWithKnowledgeBase());
@@ -110,10 +115,10 @@ public class ConfigurationScreen extends Fragment {
 
     private void onNewConfigurationValidation(@NonNull ConfigurationValidation configurationValidation) {
         binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
-        binding.tilEmail.setError(configurationValidation.getEmailError());
-        binding.tilClientPhoneNumber.setError(configurationValidation.getPhoneNumberError());
-        binding.tilUrl.setError(configurationValidation.getUrlError());
-        binding.tilOfflineUrl.setError(configurationValidation.getOfflineFormUrlError());
+        binding.tilClientEmail.setError(configurationValidation.getClientEmailError());
+        binding.tilClientPhoneNumber.setError(configurationValidation.getClientPhoneNumberError());
+        binding.tilUrlChat.setError(configurationValidation.getUrlChatError());
+        binding.tilUrlOfflineForm.setError(configurationValidation.getUrlOfflineFormError());
         binding.tilAccountId.setError(configurationValidation.getAccountIdError());
         binding.tilToken.setError(configurationValidation.getTokenError());
     }

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormRequest
-import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
@@ -164,8 +163,11 @@ internal class ApiRepository(
                       companyId: String,
                       offlineForm: UsedeskOfflineForm) {
         try {
-            doRequest(configuration.urlOfflineForm, OfflineFormResponse::class.java) {
-                val request = OfflineFormRequest(companyId, offlineForm)
+            doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
+                val request = OfflineFormRequest(companyId,
+                        offlineForm.name,
+                        offlineForm.email,
+                        offlineForm.message)
                 it.sendOfflineForm(request)
             }
         } catch (e: IOException) {

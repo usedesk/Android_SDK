@@ -11,19 +11,21 @@ import io.reactivex.SingleOnSubscribe;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 
 public class ConfigurationRepository {
-    private static final String COMPANY_ID_KEY = "companyIdKey";
-    private static final String EMAIL_KEY = "emailKey";
-    private static final String URL_KEY = "urlKey";
-    private static final String OFFLINE_FORM_URL_KEY = "offlineFormUrlKey";
-    private static final String ACCOUNT_ID_KEY = "accountIdKey";
-    private static final String TOKEN_KEY = "tokenKey";
-    private static final String CLIENT_NAME_KEY = "clientNameKey";
-    private static final String CLIENT_PHONE_NUMBER_KEY = "clientPhoneNumberKey";
-    private static final String CLIENT_ADDITIONAL_ID_KEY = "clientAdditionalIdKey";
-    private static final String INIT_CLIENT_MESSAGE_KEY = "initClientMessageKey";
-    private static final String CUSTOM_AGENT_NAME_KEY = "customAgentNameKey";
-    private static final String FOREGROUND_SERVICE_KEY = "foregroundServiceKey";
-    private static final String WITH_KNOWLEDGE_BASE_KEY = "withKnowledgeBaseKey";
+    private static final String KEY_URL_CHAT = "urlKey";
+    private static final String KEY_URL_OFFLINE_FORM = "offlineFormUrlKey";
+    private static final String KEY_URL_TO_SEND_FILE = "urlToSendFileKey";
+    private static final String KEY_URL_API = "urlApiKey";
+    private static final String KEY_COMPANY_ID = "companyIdKey";
+    private static final String KEY_ACCOUNT_ID = "accountIdKey";
+    private static final String KEY_TOKEN = "tokenKey";
+    private static final String KEY_CLIENT_EMAIL = "emailKey";
+    private static final String KEY_CLIENT_NAME = "clientNameKey";
+    private static final String KEY_CLIENT_PHONE_NUMBER = "clientPhoneNumberKey";
+    private static final String KEY_CLIENT_ADDITIONAL_ID = "clientAdditionalIdKey";
+    private static final String KEY_CLIENT_INIT_MESSAGE = "initClientMessageKey";
+    private static final String KEY_CUSTOM_AGENT_NAME = "customAgentNameKey";
+    private static final String KEY_FOREGROUND_SERVICE = "foregroundServiceKey";
+    private static final String KEY_WITH_KNOWLEDGE_BASE = "withKnowledgeBaseKey";
 
     private final Configuration defaultModel;
 
@@ -37,12 +39,14 @@ public class ConfigurationRepository {
         this.workScheduler = workScheduler;
 
         //TODO: Установите свои значения по умолчанию
-        defaultModel = new Configuration("153712",
-                "android_sdk@usedesk.ru",
-                "https://pubsub.usedesk.ru:1992",
-                "https://secure.usedesk.ru",
+        defaultModel = new Configuration("https://pubsub.usedesk.ru:1992",
+                "https://secure.usedesk.ru/",
+                "https://secure.usedesk.ru/uapi/v1/",
+                "https://api.usedesk.ru/",
+                "153712",
                 "4",
                 "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75",
+                "android_sdk@usedesk.ru",
                 "Иван Иванов",
                 "88005553535",
                 "777",
@@ -56,19 +60,22 @@ public class ConfigurationRepository {
     public Single<Configuration> getConfiguration() {
         return Single.create((SingleOnSubscribe<Configuration>) emitter -> {
             if (configuration == null) {
-                configuration = new Configuration(sharedPreferences.getString(COMPANY_ID_KEY, defaultModel.getCompanyId()),
-                        sharedPreferences.getString(EMAIL_KEY, defaultModel.getClientEmail()),
-                        sharedPreferences.getString(URL_KEY, defaultModel.getUrl()),
-                        sharedPreferences.getString(OFFLINE_FORM_URL_KEY, defaultModel.getOfflineFormUrl()),
-                        sharedPreferences.getString(ACCOUNT_ID_KEY, defaultModel.getAccountId()),
-                        sharedPreferences.getString(TOKEN_KEY, defaultModel.getToken()),
-                        sharedPreferences.getString(CLIENT_NAME_KEY, defaultModel.getClientName()),
-                        sharedPreferences.getString(CLIENT_PHONE_NUMBER_KEY, defaultModel.getClientPhoneNumber()),
-                        sharedPreferences.getString(CLIENT_ADDITIONAL_ID_KEY, defaultModel.getClientAdditionalId()),
-                        sharedPreferences.getString(INIT_CLIENT_MESSAGE_KEY, defaultModel.getInitClientMessage()),
-                        sharedPreferences.getString(CUSTOM_AGENT_NAME_KEY, defaultModel.getCustomAgentName()),
-                        sharedPreferences.getBoolean(FOREGROUND_SERVICE_KEY, defaultModel.isForegroundService()),
-                        sharedPreferences.getBoolean(WITH_KNOWLEDGE_BASE_KEY, defaultModel.isWithKnowledgeBase()));
+                configuration = new Configuration(
+                        sharedPreferences.getString(KEY_URL_CHAT, defaultModel.getUrlChat()),
+                        sharedPreferences.getString(KEY_URL_OFFLINE_FORM, defaultModel.getUrlOfflineForm()),
+                        sharedPreferences.getString(KEY_URL_TO_SEND_FILE, defaultModel.getUrlToSendFile()),
+                        sharedPreferences.getString(KEY_URL_API, defaultModel.getUrlApi()),
+                        sharedPreferences.getString(KEY_COMPANY_ID, defaultModel.getCompanyId()),
+                        sharedPreferences.getString(KEY_ACCOUNT_ID, defaultModel.getAccountId()),
+                        sharedPreferences.getString(KEY_TOKEN, defaultModel.getToken()),
+                        sharedPreferences.getString(KEY_CLIENT_EMAIL, defaultModel.getClientEmail()),
+                        sharedPreferences.getString(KEY_CLIENT_NAME, defaultModel.getClientName()),
+                        sharedPreferences.getString(KEY_CLIENT_PHONE_NUMBER, defaultModel.getClientPhoneNumber()),
+                        sharedPreferences.getString(KEY_CLIENT_ADDITIONAL_ID, defaultModel.getClientAdditionalId()),
+                        sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, defaultModel.getClientInitMessage()),
+                        sharedPreferences.getString(KEY_CUSTOM_AGENT_NAME, defaultModel.getCustomAgentName()),
+                        sharedPreferences.getBoolean(KEY_FOREGROUND_SERVICE, defaultModel.isForegroundService()),
+                        sharedPreferences.getBoolean(KEY_WITH_KNOWLEDGE_BASE, defaultModel.isWithKnowledgeBase()));
             }
             emitter.onSuccess(configuration);
         }).subscribeOn(workScheduler);
@@ -79,19 +86,21 @@ public class ConfigurationRepository {
         this.configuration = configurationModel;
         return Completable.create(emitter -> {
             sharedPreferences.edit()
-                    .putString(COMPANY_ID_KEY, configurationModel.getCompanyId())
-                    .putString(EMAIL_KEY, configurationModel.getClientEmail())
-                    .putString(URL_KEY, configurationModel.getUrl())
-                    .putString(OFFLINE_FORM_URL_KEY, configurationModel.getOfflineFormUrl())
-                    .putString(ACCOUNT_ID_KEY, configurationModel.getAccountId())
-                    .putString(TOKEN_KEY, configurationModel.getToken())
-                    .putString(CLIENT_NAME_KEY, configurationModel.getClientName())
-                    .putString(CLIENT_PHONE_NUMBER_KEY, configurationModel.getClientPhoneNumber())
-                    .putString(CLIENT_ADDITIONAL_ID_KEY, configurationModel.getClientAdditionalId())
-                    .putString(INIT_CLIENT_MESSAGE_KEY, configurationModel.getInitClientMessage())
-                    .putString(CUSTOM_AGENT_NAME_KEY, configurationModel.getCustomAgentName())
-                    .putBoolean(FOREGROUND_SERVICE_KEY, configurationModel.isForegroundService())
-                    .putBoolean(WITH_KNOWLEDGE_BASE_KEY, configurationModel.isWithKnowledgeBase())
+                    .putString(KEY_URL_CHAT, configurationModel.getUrlChat())
+                    .putString(KEY_URL_OFFLINE_FORM, configurationModel.getUrlOfflineForm())
+                    .putString(KEY_URL_TO_SEND_FILE, configurationModel.getUrlToSendFile())
+                    .putString(KEY_URL_API, configurationModel.getUrlApi())
+                    .putString(KEY_COMPANY_ID, configurationModel.getCompanyId())
+                    .putString(KEY_ACCOUNT_ID, configurationModel.getAccountId())
+                    .putString(KEY_TOKEN, configurationModel.getToken())
+                    .putString(KEY_CLIENT_EMAIL, configurationModel.getClientEmail())
+                    .putString(KEY_CLIENT_NAME, configurationModel.getClientName())
+                    .putString(KEY_CLIENT_PHONE_NUMBER, configurationModel.getClientPhoneNumber())
+                    .putString(KEY_CLIENT_ADDITIONAL_ID, configurationModel.getClientAdditionalId())
+                    .putString(KEY_CLIENT_INIT_MESSAGE, configurationModel.getClientInitMessage())
+                    .putString(KEY_CUSTOM_AGENT_NAME, configurationModel.getCustomAgentName())
+                    .putBoolean(KEY_FOREGROUND_SERVICE, configurationModel.isForegroundService())
+                    .putBoolean(KEY_WITH_KNOWLEDGE_BASE, configurationModel.isWithKnowledgeBase())
                     .apply();
 
             emitter.onComplete();

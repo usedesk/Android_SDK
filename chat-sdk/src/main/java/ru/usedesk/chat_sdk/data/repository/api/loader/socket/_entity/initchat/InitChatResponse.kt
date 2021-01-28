@@ -12,7 +12,6 @@ internal class InitChatResponse : BaseResponse() {
     }
 
     class Setup {
-        var waitingEmail: Boolean? = null
         var noOperators: Boolean? = null
         var messages: List<Message?>? = null
     }

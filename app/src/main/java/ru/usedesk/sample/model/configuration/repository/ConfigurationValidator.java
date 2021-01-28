@@ -39,15 +39,29 @@ public class ConfigurationValidator {
     }
 
     @NonNull
-    private String validateUrl(@NonNull String url) {
-        return !UsedeskValidatorUtil.isValidUrlNecessary(url)
+    private String validateUrlChat(@NonNull String urlChat) {
+        return !UsedeskValidatorUtil.isValidUrlNecessary(urlChat)
                 ? resources.getString(R.string.validation_url_error)
                 : "";
     }
 
     @NonNull
-    private String validateOfflineFormUrl(@NonNull String offlineFormUrl) {
+    private String validateUrlOfflineForm(@NonNull String offlineFormUrl) {
         return !UsedeskValidatorUtil.isValidUrl(offlineFormUrl)
+                ? resources.getString(R.string.validation_url_error)
+                : "";
+    }
+
+    @NonNull
+    private String validateUrlToSendFile(@NonNull String urlToSendFile) {
+        return !UsedeskValidatorUtil.isValidUrl(urlToSendFile)
+                ? resources.getString(R.string.validation_url_error)
+                : "";
+    }
+
+    @NonNull
+    private String validateUrlApi(@NonNull String urlApi) {
+        return !UsedeskValidatorUtil.isValidUrl(urlApi)
                 ? resources.getString(R.string.validation_url_error)
                 : "";
     }
@@ -68,12 +82,14 @@ public class ConfigurationValidator {
 
     @NonNull
     public ConfigurationValidation validate(@NonNull Configuration configuration) {
-        return new ConfigurationValidation(validateCompanyId(configuration.getCompanyId()),
-                validateEmail(configuration.getClientEmail()),
-                validatePhoneNumber(configuration.getClientPhoneNumber()),
-                validateUrl(configuration.getUrl()),
-                validateOfflineFormUrl(configuration.getOfflineFormUrl()),
+        return new ConfigurationValidation(validateUrlChat(configuration.getUrlChat()),
+                validateUrlOfflineForm(configuration.getUrlOfflineForm()),
+                validateUrlToSendFile(configuration.getUrlToSendFile()),
+                validateUrlApi(configuration.getUrlApi()),
+                validateCompanyId(configuration.getCompanyId()),
                 validateAccountId(configuration.getAccountId(), configuration.isWithKnowledgeBase()),
-                validateToken(configuration.getToken(), configuration.isWithKnowledgeBase()));
+                validateToken(configuration.getToken(), configuration.isWithKnowledgeBase()),
+                validateEmail(configuration.getClientEmail()),
+                validatePhoneNumber(configuration.getClientPhoneNumber()));
     }
 }

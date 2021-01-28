@@ -5,12 +5,12 @@ import android.util.Patterns
 object UsedeskValidatorUtil {
     @JvmStatic
     fun isValidUrl(text: String?): Boolean {
-        return text == null || isValidUrlNecessary(text)
+        return text == null || text.isEmpty() || isValidUrlNecessary(text)
     }
 
     @JvmStatic
     fun isValidUrlNecessary(text: String?): Boolean {
-        return text != null && Patterns.WEB_URL.matcher(text).matches()
+        return text != null && text.isNotEmpty() && Patterns.WEB_URL.matcher(text).matches()
     }
 
     @JvmStatic

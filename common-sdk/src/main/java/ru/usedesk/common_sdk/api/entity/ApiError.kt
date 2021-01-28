@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
+package ru.usedesk.common_sdk.api.entity
 
 internal data class ApiError(
         val code: String? = null,

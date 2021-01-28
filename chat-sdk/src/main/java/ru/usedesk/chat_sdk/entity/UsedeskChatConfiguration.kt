@@ -6,14 +6,15 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidEmailNecessary
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidPhone
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
+        val urlChat: String,
+        val urlOfflineForm: String = "https://secure.usedesk.ru/",
+        val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val companyId: String,
         val email: String,
-        val url: String,
-        val offlineFormUrl: String,
         val clientName: String? = null,
         val clientPhoneNumber: Long? = null,
         val clientAdditionalId: Long? = null,
-        val initClientMessage: String? = null
+        val clientInitMessage: String? = null
 ) {
 
     fun serialize(intent: Intent) {

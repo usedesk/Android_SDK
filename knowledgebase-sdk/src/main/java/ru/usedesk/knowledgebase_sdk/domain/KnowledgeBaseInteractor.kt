@@ -13,8 +13,7 @@ internal class KnowledgeBaseInteractor(
         @Named("io")
         private val ioScheduler: Scheduler,
         @Named("main")
-        private val mainThreadScheduler: Scheduler,
-        private val configuration: UsedeskKnowledgeBaseConfiguration
+        private val mainThreadScheduler: Scheduler
 ) : IUsedeskKnowledgeBase {
 
     private fun <T> createSingle(emitter: SingleOnSubscribe<T>): Single<T> {
@@ -85,65 +84,47 @@ internal class KnowledgeBaseInteractor(
 
     @Throws(UsedeskException::class)
     override fun getCategories(sectionId: Long): List<UsedeskCategory> {
-        return knowledgeApiRepository.getCategories(configuration.accountId,
-                configuration.token,
-                sectionId)
+        return knowledgeApiRepository.getCategories(sectionId)
     }
 
     @Throws(UsedeskException::class)
     override fun getSections(): List<UsedeskSection> {
-        return knowledgeApiRepository.getSections(configuration.accountId,
-                configuration.token)
+        return knowledgeApiRepository.getSections()
     }
 
     @Throws(UsedeskException::class)
     override fun getArticle(articleId: Long): UsedeskArticleContent {
-        return knowledgeApiRepository.getArticle(configuration.accountId,
-                configuration.token,
-                articleId)
+        return knowledgeApiRepository.getArticle(articleId)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(searchQuery: String): List<UsedeskArticleContent> {
         val query = UsedeskSearchQuery.Builder(searchQuery).build()
-        return knowledgeApiRepository.getArticles(configuration.accountId,
-                configuration.token,
-                query)
+        return knowledgeApiRepository.getArticles(query)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent> {
-        return knowledgeApiRepository.getArticles(configuration.accountId,
-                configuration.token,
-                searchQuery)
+        return knowledgeApiRepository.getArticles(searchQuery)
     }
 
     @Throws(UsedeskException::class)
     override fun getArticles(categoryId: Long): List<UsedeskArticleInfo> {
-        return knowledgeApiRepository.getArticles(configuration.accountId,
-                configuration.token,
-                categoryId)
+        return knowledgeApiRepository.getArticles(categoryId)
     }
 
     @Throws(UsedeskException::class)
     override fun addViews(articleId: Long) {
-        knowledgeApiRepository.addViews(configuration.accountId,
-                configuration.token,
-                articleId)
+        knowledgeApiRepository.addViews(articleId)
     }
 
     override fun sendRating(articleId: Long, good: Boolean) {
-        knowledgeApiRepository.sendRating(configuration.accountId,
-                configuration.token,
-                articleId,
+        knowledgeApiRepository.sendRating(articleId,
                 good)
     }
 
     override fun sendRating(articleId: Long, message: String) {
-        knowledgeApiRepository.sendRating(configuration.token,
-                configuration.clientEmail,
-                configuration.clientName,
-                articleId,
+        knowledgeApiRepository.sendRating(articleId,
                 message)
     }
 

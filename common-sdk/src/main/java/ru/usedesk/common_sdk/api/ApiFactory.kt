@@ -16,19 +16,25 @@ internal class ApiFactory(
     private val instanceMap: MutableMap<String, Any> = HashMap()
 
     override fun <API> getInstance(baseUrl: String, apiClass: Class<API>): API {
-        val key = "${apiClass.name}:$baseUrl"
-        return (instanceMap[key] ?: createInstance(baseUrl, apiClass).also {
+        val url = getCorrectUrl(baseUrl)
+        val key = "${apiClass.name}:$url"
+        return (instanceMap[key] ?: createInstance(url, apiClass).also {
             instanceMap[key] = it!!
         }) as API
     }
 
     private fun <API> createInstance(baseUrl: String, apiClass: Class<API>): API {
+        val url = getCorrectUrl(baseUrl)
         return Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(url)
                 .client(okHttpClientFactory.createInstance())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
                 .create(apiClass)
+    }
+
+    private fun getCorrectUrl(url: String): String {
+        return url.trimEnd('/') + '/'
     }
 }

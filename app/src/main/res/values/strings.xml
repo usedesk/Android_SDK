@@ -3,8 +3,8 @@
 
     <string name="title">Configuration</string>
     <string name="url_chat_hint">Chat url</string>
-    <string name="url_offline_form_hint">Url offline form</string>
-    <string name="url_to_send_file_hint">Url to send file</string>
+    <string name="url_offline_form_hint">Offline form url</string>
+    <string name="url_to_send_file_hint">Send file url</string>
     <string name="url_api">Api url</string>
     <string name="company_id_hint">Company ID</string>
     <string name="account_id_hint">Knowledge Base ID</string>

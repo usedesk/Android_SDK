@@ -46,16 +46,30 @@ public class MainViewModel extends ViewModel {
 
     void goSdk(@Nullable String customAgentName) {
         disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
-            UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(
+            UsedeskChatConfiguration defaultChatConfiguration = new UsedeskChatConfiguration(
                     configuration.getUrlChat(),
                     configuration.getUrlOfflineForm(),
-                    configuration.getUrlToSendFile(),
+                    configuration.getClientEmail()
+            );
+            String urlToSendFile = configuration.getUrlToSendFile();
+            if (urlToSendFile.isEmpty()) {
+                urlToSendFile = defaultChatConfiguration.getUrlToSendFile();
+            }
+            String urlOfflineForm = configuration.getUrlOfflineForm();
+            if (urlOfflineForm.isEmpty()) {
+                urlOfflineForm = defaultChatConfiguration.getUrlOfflineForm();
+            }
+            UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(
+                    configuration.getUrlChat(),
+                    urlOfflineForm,
+                    urlToSendFile,
                     configuration.getCompanyId(),
                     configuration.getClientEmail(),
                     configuration.getClientName(),
                     getLong(configuration.getClientPhoneNumber()),
                     getLong(configuration.getClientAdditionalId()),
                     configuration.getClientInitMessage());
+
             if (usedeskChatConfiguration.isValid()) {
                 this.configuration = configuration;
                 initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
@@ -85,8 +99,17 @@ public class MainViewModel extends ViewModel {
         UsedeskChatSdk.setConfiguration(usedeskChatConfiguration);
 
         if (withKnowledgeBase) {
+            UsedeskKnowledgeBaseConfiguration defaultConfiguration = new UsedeskKnowledgeBaseConfiguration(
+                    configuration.getAccountId(),
+                    configuration.getToken(),
+                    configuration.getClientEmail()
+            );
+            String urlApi = configuration.getUrlApi();
+            if (urlApi.isEmpty()) {
+                urlApi = defaultConfiguration.getUrlApi();
+            }
             UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(
-                    configuration.getUrlApi(),
+                    urlApi,
                     configuration.getAccountId(),
                     configuration.getToken(),
                     configuration.getClientEmail(),

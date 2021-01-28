@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskKnowledgeBaseConfiguration(
-        val urlApi: String,
+class UsedeskKnowledgeBaseConfiguration @JvmOverloads constructor(
+        val urlApi: String = "https://api.usedesk.ru/",
         val accountId: String,
         val token: String,
         val clientEmail: String,

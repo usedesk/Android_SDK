@@ -114,13 +114,15 @@ public class ConfigurationScreen extends Fragment {
     }
 
     private void onNewConfigurationValidation(@NonNull ConfigurationValidation configurationValidation) {
-        binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
-        binding.tilClientEmail.setError(configurationValidation.getClientEmailError());
-        binding.tilClientPhoneNumber.setError(configurationValidation.getClientPhoneNumberError());
         binding.tilUrlChat.setError(configurationValidation.getUrlChatError());
         binding.tilUrlOfflineForm.setError(configurationValidation.getUrlOfflineFormError());
+        binding.tilUrlToSendFile.setError(configurationValidation.getUrlToSendFileError());
+        binding.tilUrlApi.setError(configurationValidation.getUrlApiError());
+        binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
         binding.tilAccountId.setError(configurationValidation.getAccountIdError());
         binding.tilToken.setError(configurationValidation.getTokenError());
+        binding.tilClientEmail.setError(configurationValidation.getClientEmailError());
+        binding.tilClientPhoneNumber.setError(configurationValidation.getClientPhoneNumberError());
     }
 
     public interface IOnGoToSdkListener {

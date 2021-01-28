@@ -7,8 +7,8 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidPhone
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
         val urlChat: String,
-        val urlOfflineForm: String = "https://secure.usedesk.ru",
-        val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1",
+        val urlOfflineForm: String = "https://secure.usedesk.ru/",
+        val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val companyId: String,
         val email: String,
         val clientName: String? = null,

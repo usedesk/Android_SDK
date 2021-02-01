@@ -3,7 +3,11 @@ package ru.usedesk.knowledgebase_sdk.domain
 import io.reactivex.*
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApiRepository
-import ru.usedesk.knowledgebase_sdk.entity.*
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.SearchQueryRequest
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 import toothpick.InjectConstructor
 import javax.inject.Named
 
@@ -52,12 +56,6 @@ internal class KnowledgeBaseInteractor(
         }
     }
 
-    override fun getArticlesRx(searchQuery: UsedeskSearchQuery): Single<List<UsedeskArticleContent>> {
-        return createSingle {
-            it.onSuccess(getArticles(searchQuery))
-        }
-    }
-
     override fun addViewsRx(articleId: Long): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             addViews(articleId)
@@ -99,13 +97,8 @@ internal class KnowledgeBaseInteractor(
 
     @Throws(UsedeskException::class)
     override fun getArticles(searchQuery: String): List<UsedeskArticleContent> {
-        val query = UsedeskSearchQuery.Builder(searchQuery).build()
+        val query = SearchQueryRequest(searchQuery)
         return knowledgeApiRepository.getArticles(query)
-    }
-
-    @Throws(UsedeskException::class)
-    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent> {
-        return knowledgeApiRepository.getArticles(searchQuery)
     }
 
     @Throws(UsedeskException::class)

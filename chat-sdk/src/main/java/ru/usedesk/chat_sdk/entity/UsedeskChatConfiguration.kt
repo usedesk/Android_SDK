@@ -10,7 +10,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         val urlOfflineForm: String = "https://secure.usedesk.ru/",
         val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val companyId: String,
-        val email: String,
+        val clientEmail: String,
         val clientName: String? = null,
         val clientPhoneNumber: Long? = null,
         val clientAdditionalId: Long? = null,
@@ -23,7 +23,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
 
     fun isValid(): Boolean {
         val phoneNumber = clientPhoneNumber?.toString()
-        return isValidPhone(phoneNumber) && isValidEmailNecessary(email)
+        return isValidPhone(phoneNumber) && isValidEmailNecessary(clientEmail)
     }
 
     companion object {

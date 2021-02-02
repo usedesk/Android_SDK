@@ -1,13 +1,12 @@
 package ru.usedesk.chat_sdk.entity
 
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import java.util.*
 
 class UsedeskMessageClientImage(
         id: Long,
-        calendar: Calendar,
+        createdAt: Calendar,
         usedeskFile: UsedeskFile,
         override val status: UsedeskMessageClient.Status
-) : UsedeskMessageImage(id, calendar, usedeskFile), UsedeskMessageClient {
+) : UsedeskMessageFile(id, createdAt, usedeskFile), UsedeskMessageClient {
     override val type: Type = Type.TYPE_CLIENT_IMAGE
 }

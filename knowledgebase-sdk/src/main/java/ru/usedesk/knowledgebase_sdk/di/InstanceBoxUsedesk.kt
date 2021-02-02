@@ -8,13 +8,14 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import toothpick.ktp.delegate.inject
 
 internal class InstanceBoxUsedesk(
-        appContext: Context, knowledgeBaseConfiguration:
+        context: Context, knowledgeBaseConfiguration:
         UsedeskKnowledgeBaseConfiguration
 ) : UsedeskInjectBox() {
 
     val knowledgeBaseSdk: IUsedeskKnowledgeBase by inject()
 
     init {
+        val appContext = context.applicationContext
         init(CommonModule(appContext), MainModule(knowledgeBaseConfiguration))
     }
 }

@@ -15,7 +15,6 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import java.io.File
 
 class UsedeskAttachmentDialog private constructor(
@@ -124,18 +123,12 @@ class UsedeskAttachmentDialog private constructor(
 
     private fun getUsedeskFileInfoList(context: Context, data: Intent): List<UsedeskFileInfo> {
         return getUriList(data).map {
-            createUsedeskFileInfo(context, it)
+            UsedeskFileInfo.create(context, it)
         }
     }
 
     private fun getUsedeskFileInfo(context: Context, uri: Uri): List<UsedeskFileInfo> {
-        return listOf(createUsedeskFileInfo(context, uri))
-    }
-
-    private fun createUsedeskFileInfo(context: Context, uri: Uri): UsedeskFileInfo {
-        val mimeType = UsedeskFileUtil.getMimeType(context, uri)
-        val name = UsedeskFileUtil.getFileName(context, uri)
-        return UsedeskFileInfo(uri, mimeType, name)
+        return listOf(UsedeskFileInfo.create(context, uri))
     }
 
     companion object {

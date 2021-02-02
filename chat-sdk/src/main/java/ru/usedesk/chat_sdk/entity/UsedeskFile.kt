@@ -1,8 +1,7 @@
-package ru.usedesk.chat_sdk.data._entity
+package ru.usedesk.chat_sdk.entity
 
 import android.webkit.MimeTypeMap
 import com.google.gson.Gson
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 
 data class UsedeskFile(
         val content: String,

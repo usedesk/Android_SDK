@@ -1,9 +1,11 @@
 package ru.usedesk.chat_sdk.entity
 
 interface IUsedeskActionListener {
-    fun onConnected()
+    fun onConnectedState(connected: Boolean)
 
     fun onMessageReceived(message: UsedeskMessage)
+
+    fun onNewMessageReceived(message: UsedeskMessage)
 
     fun onMessagesReceived(messages: List<UsedeskMessage>)
 
@@ -12,8 +14,6 @@ interface IUsedeskActionListener {
     fun onFeedbackReceived()
 
     fun onOfflineFormExpected(chatConfiguration: UsedeskChatConfiguration)
-
-    fun onDisconnected()
 
     fun onException(usedeskException: Exception)
 }

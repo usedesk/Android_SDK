@@ -15,15 +15,15 @@ import org.jetbrains.annotations.NotNull;
 
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener;
 import ru.usedesk.chat_sdk.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
+import ru.usedesk.chat_sdk.entity.UsedeskFile;
 import ru.usedesk.common_gui.IUsedeskOnBackPressedListener;
+import ru.usedesk.common_sdk.entity.UsedeskEvent;
 import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.service.CustomForegroundNotificationsService;
 import ru.usedesk.sample.service.CustomSimpleNotificationsService;
-import ru.usedesk.sample.ui._common.Event;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
 
 public class MainActivity extends AppCompatActivity
@@ -57,9 +57,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void onError(@NonNull Event<String> error) {
-        error.doEvent(data -> {
-            Toast.makeText(this, error.getData(), Toast.LENGTH_LONG).show();
+    private void onError(@NonNull UsedeskEvent<String> error) {
+        error.process(text -> {
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+            return null;
         });
     }
 

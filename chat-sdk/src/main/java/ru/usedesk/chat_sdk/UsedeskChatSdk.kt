@@ -8,13 +8,27 @@ import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFact
 
 object UsedeskChatSdk {
     private var instanceBox: InstanceBoxUsedesk? = null
-    private var configuration: UsedeskChatConfiguration? = null
+    private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
 
     @JvmStatic
-    fun init(appContext: Context): IUsedeskChat {
+    fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
+        if (!chatConfiguration.isValid()) {
+            throw RuntimeException("Invalid configuration")
+        }
+        this.chatConfiguration = chatConfiguration
+    }
+
+    @JvmStatic
+    fun requireConfiguration(): UsedeskChatConfiguration {
+        return chatConfiguration
+                ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
+    }
+
+    @JvmStatic
+    fun init(context: Context): IUsedeskChat {
         return (instanceBox
-                ?: InstanceBoxUsedesk(appContext, requireConfiguration()).also {
+                ?: InstanceBoxUsedesk(context, requireConfiguration()).also {
                     instanceBox = it
                 }).usedeskChatSdk
     }
@@ -33,7 +47,7 @@ object UsedeskChatSdk {
     @JvmOverloads
     fun release(force: Boolean = true) {
         instanceBox?.also {
-            if (force || it.usedeskChatSdk.isNoSubscribers()) {
+            if (force || it.usedeskChatSdk.isNoListeners()) {
                 it.release()
                 instanceBox = null
             }
@@ -41,11 +55,8 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun setConfiguration(usedeskChatConfiguration: UsedeskChatConfiguration) {
-        if (!usedeskChatConfiguration.isValid()) {
-            throw RuntimeException("Invalid configuration")
-        }
-        configuration = usedeskChatConfiguration
+    fun setNotificationsServiceFactory(notificationsServiceFactory: UsedeskNotificationsServiceFactory) {
+        this.notificationsServiceFactory = notificationsServiceFactory
     }
 
     @JvmStatic
@@ -56,16 +67,5 @@ object UsedeskChatSdk {
     @JvmStatic
     fun stopService(context: Context) {
         notificationsServiceFactory.stopService(context)
-    }
-
-    @JvmStatic
-    fun setNotificationsServiceFactory(usedeskNotificationsServiceFactory: UsedeskNotificationsServiceFactory) {
-        notificationsServiceFactory = usedeskNotificationsServiceFactory
-    }
-
-    @JvmStatic
-    fun requireConfiguration(): UsedeskChatConfiguration {
-        return configuration
-                ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
     }
 }

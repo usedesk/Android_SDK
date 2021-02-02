@@ -6,13 +6,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import io.reactivex.disposables.CompositeDisposable;
+import ru.usedesk.common_sdk.entity.UsedeskEvent;
+import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent;
 import ru.usedesk.sample.ServiceLocator;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationValidator;
-import ru.usedesk.sample.ui._common.Event;
-import ru.usedesk.sample.ui._common.OneTimeEvent;
 
 public class ConfigurationViewModel extends ViewModel {
 
@@ -20,7 +20,7 @@ public class ConfigurationViewModel extends ViewModel {
     private final ConfigurationValidator configurationValidator;
 
     private final MutableLiveData<Configuration> configuration = new MutableLiveData<>();
-    private final MutableLiveData<Event<Object>> goToSdkEvent = new MutableLiveData<>();
+    private final MutableLiveData<UsedeskEvent<Object>> goToSdkEvent = new MutableLiveData<>();
     private final MutableLiveData<ConfigurationValidation> configurationValidation = new MutableLiveData<>();
 
     private final CompositeDisposable disposables = new CompositeDisposable();
@@ -36,7 +36,7 @@ public class ConfigurationViewModel extends ViewModel {
             this.configuration.postValue(configuration);
             configurationRepository.setConfiguration(configuration)
                     .subscribe();
-            goToSdkEvent.postValue(new OneTimeEvent<>(null));
+            goToSdkEvent.postValue(new UsedeskSingleLifeEvent<>(null));
         } else {
             this.configurationValidation.postValue(configurationValidation);
         }
@@ -51,7 +51,7 @@ public class ConfigurationViewModel extends ViewModel {
     }
 
     @NonNull
-    LiveData<Event<Object>> getGoToSdkEvent() {
+    LiveData<UsedeskEvent<Object>> getGoToSdkEvent() {
         return goToSdkEvent;
     }
 

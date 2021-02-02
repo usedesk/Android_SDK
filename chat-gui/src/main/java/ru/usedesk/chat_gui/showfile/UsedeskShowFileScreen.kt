@@ -17,7 +17,7 @@ import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile
+import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.*
 
 class UsedeskShowFileScreen : UsedeskFragment() {

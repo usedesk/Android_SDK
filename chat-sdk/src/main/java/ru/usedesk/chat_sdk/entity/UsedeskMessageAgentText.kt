@@ -4,13 +4,13 @@ import java.util.*
 
 class UsedeskMessageAgentText(
         id: Long,
-        calendar: Calendar,
+        createdAt: Calendar,
         text: String,
         val buttons: List<UsedeskMessageButton>,
         val feedbackNeeded: Boolean,
         val feedback: UsedeskFeedback?,
         override val name: String,
         override val avatar: String
-) : UsedeskMessageText(id, calendar, text), UsedeskMessageAgent {
+) : UsedeskMessageText(id, createdAt, text), UsedeskMessageAgent {
     override val type: Type = Type.TYPE_AGENT_TEXT
 }

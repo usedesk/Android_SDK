@@ -165,8 +165,8 @@ internal class ApiRepository(
         try {
             doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
                 val request = OfflineFormRequest(companyId,
-                        offlineForm.name,
-                        offlineForm.email,
+                        offlineForm.clientName,
+                        offlineForm.clientEmail,
                         offlineForm.message)
                 it.sendOfflineForm(request)
             }

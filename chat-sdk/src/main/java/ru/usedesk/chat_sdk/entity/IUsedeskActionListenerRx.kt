@@ -1,15 +1,15 @@
 package ru.usedesk.chat_sdk.entity
 
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 
 abstract class IUsedeskActionListenerRx {
 
-    private lateinit var disposables: List<Disposable?>
+    private val disposables = CompositeDisposable()
 
     fun onObservables(
-            connectedObservable: Observable<UsedeskEvent<Any?>>,
-            disconnectedObservable: Observable<UsedeskEvent<Any?>>,
             connectedStateObservable: Observable<Boolean>,
             messageObservable: Observable<UsedeskMessage>,
             newMessageObservable: Observable<UsedeskMessage>,
@@ -19,10 +19,7 @@ abstract class IUsedeskActionListenerRx {
             feedbackObservable: Observable<UsedeskEvent<Any?>>,
             exceptionObservable: Observable<Exception>
     ) {
-        disposables = listOf(
-                onConnectedObservable(connectedObservable),
-                onDisconnectedObservable(disconnectedObservable),
-                onConnectedStateObservable(connectedStateObservable),
+        listOfNotNull(onConnectedStateObservable(connectedStateObservable),
                 onMessageObservable(messageObservable),
                 onNewMessageObservable(newMessageObservable),
                 onMessagesObservable(messagesObservable),
@@ -30,12 +27,10 @@ abstract class IUsedeskActionListenerRx {
                 onOfflineFormExpectedObservable(offlineFormExpectedObservable),
                 onFeedbackObservable(feedbackObservable),
                 onExceptionObservable(exceptionObservable)
-        )
+        ).forEach {
+            disposables.add(it)
+        }
     }
-
-    open fun onConnectedObservable(connectedObservable: Observable<UsedeskEvent<Any?>>): Disposable? = null
-
-    open fun onDisconnectedObservable(disconnectedObservable: Observable<UsedeskEvent<Any?>>): Disposable? = null
 
     open fun onConnectedStateObservable(connectedStateObservable: Observable<Boolean>): Disposable? = null
 
@@ -54,8 +49,6 @@ abstract class IUsedeskActionListenerRx {
     open fun onExceptionObservable(exceptionObservable: Observable<Exception>): Disposable? = null
 
     open fun onDispose() {
-        disposables.forEach {
-            it?.dispose()
-        }
+        disposables.dispose()
     }
 }

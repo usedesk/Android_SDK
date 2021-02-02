@@ -30,7 +30,7 @@ internal class OfflineFormAdapter(
         }
 
         binding.etName.setText(viewModel.configuration.clientName)
-        binding.etEmail.setText(viewModel.configuration.email)
+        binding.etEmail.setText(viewModel.configuration.clientEmail)
 
         viewModel.offlineFormStateLiveData.observe(lifecycleOwner) {
             onState(it)

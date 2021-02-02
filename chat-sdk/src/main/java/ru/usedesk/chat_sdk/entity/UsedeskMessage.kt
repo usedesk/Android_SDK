@@ -4,7 +4,7 @@ import java.util.*
 
 abstract class UsedeskMessage(
         val id: Long,
-        val calendar: Calendar
+        val createdAt: Calendar
 ) {
     abstract val type: Type
 

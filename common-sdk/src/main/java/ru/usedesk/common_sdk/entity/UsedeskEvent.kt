@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.entity
+package ru.usedesk.common_sdk.entity
 
 open class UsedeskEvent<DATA>(
         open val data: DATA

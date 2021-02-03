@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage

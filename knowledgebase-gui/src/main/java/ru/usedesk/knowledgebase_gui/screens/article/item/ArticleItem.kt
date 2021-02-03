@@ -15,8 +15,8 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import kotlin.math.max
 import kotlin.math.min

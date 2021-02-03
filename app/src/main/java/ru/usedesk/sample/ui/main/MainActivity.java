@@ -18,7 +18,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.entity.UsedeskFile;
 import ru.usedesk.common_gui.IUsedeskOnBackPressedListener;
 import ru.usedesk.common_sdk.entity.UsedeskEvent;
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener;
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ActivityMainBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;

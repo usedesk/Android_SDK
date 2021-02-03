@@ -122,7 +122,7 @@ override fun onBackPressed() {
 }
 ```
 
-- Расширить родителя интерфейсом IUsedeskOnFileClickListener, переопределив метод `onFileClick(usedeskFile: UsedeskFile)`, например:
+- Расширить интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt) родителем, переопределив метод `onFileClick(usedeskFile: UsedeskFile)`, например:
 
 ```
 override fun onFileClick(usedeskFile: UsedeskFile ) {
@@ -216,7 +216,7 @@ UsedeskChatSdk.stopService(context)
 UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 ```
 
-[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/external/UsedeskKnowledgeBaseConfiguration.java) - конфигурация Базы Знаний:
+[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/UsedeskKnowledgeBaseConfiguration.kt) - конфигурация Базы Знаний:
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
@@ -245,7 +245,7 @@ override fun onBackPressed() {
 }
 ```
 
-- Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/external/IUsedeskOnSupportClickListener.java) родителем, переопределив метод `onSupportClick()`, например:
+- Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`, например:
 ```
 override fun onSupportClick() {
     supportFragmentManager().beginTransaction()
@@ -280,3 +280,23 @@ UsedeskKnowledgeBaseSdk.release()
 
 <a name="change_list"></a>
 ### Список изменений
+- v2.1.4
+  - Исправлено прикрепление изображений/файлов
+  - Исправлена ошибка инициализации чата без сообщений
+  - Исправлено отсутствие уведомлений
+  - Добавлена валидация значений конфигурации чата
+- v2.1.6
+  - Исправлена ошибка сбрасывания истории чата
+- v2.1.8
+  - Исправлена ошибка при которой первое сообщение пользователя было неопознанным
+- v2.1.11
+  - Исправлено падение сервиса при отсутствии телефона или доп id клиента в конфигурации
+  - Исправлено отображение текста и изображения в сообщении
+  - Исправлено отображение текста кнопок в сообщении, если они должны отображаться
+  - Исправлено падение в семпле при переполнении поля Client Addinional ID
+- v2.1.12
+  - Исправлена ошибка, при которой не отображался прикреплённый к сообщению файл, отправленный из интерфейса тикета
+- v2.1.13
+  - Метод отправки файлов заменён на новый с ограничением в 150мб.
+- v3.0.0
+  - ???

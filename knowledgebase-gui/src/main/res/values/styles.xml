@@ -87,7 +87,7 @@
         <item name="android:layout_gravity">end|bottom</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginBottom">20dp</item>
-        <item name="colorAccent">@color/usedesk_black_2</item>
+        <item name="backgroundTint">@color/usedesk_black_2</item>
         <item name="srcCompat">@drawable/ic_support</item>
     </style>
 

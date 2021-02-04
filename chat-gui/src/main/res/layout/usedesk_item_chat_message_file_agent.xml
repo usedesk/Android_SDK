@@ -21,7 +21,7 @@
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/iv_avatar"
             style="?attr/usedesk_chat_message_avatar_image"
-            tools:src="@drawable/background_avatar_def" />
+            tools:src="@drawable/usedesk_background_avatar_def" />
 
         <LinearLayout
             android:layout_width="match_parent"

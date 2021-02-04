@@ -59,7 +59,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:background="@drawable/background_rating_yes">
+                        android:background="@drawable/usedesk_background_rating_yes">
 
                         <TextView
                             android:id="@+id/tv_rating_yes"
@@ -73,7 +73,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="4dp"
                         android:layout_marginRight="4dp"
-                        android:background="@drawable/background_rating_no">
+                        android:background="@drawable/usedesk_background_rating_no">
 
                         <TextView
                             android:id="@+id/tv_rating_no"

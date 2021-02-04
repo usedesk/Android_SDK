@@ -26,12 +26,12 @@
             <ImageView
                 android:id="@+id/iv_dislike"
                 style="?attr/usedesk_chat_message_feedback_bad_image"
-                tools:src="@drawable/ic_smile_sad" />
+                tools:src="@drawable/usedesk_ic_smile_sad" />
 
             <ImageView
                 android:id="@+id/iv_like"
                 style="?attr/usedesk_chat_message_feedback_good_image"
-                tools:src="@drawable/ic_smile_happy" />
+                tools:src="@drawable/usedesk_ic_smile_happy" />
 
         </FrameLayout>
 

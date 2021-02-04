@@ -26,7 +26,7 @@
             android:layout_gravity="bottom"
             android:layout_marginHorizontal="8dp"
             app:riv_corner_radius="20dp"
-            tools:src="@drawable/background_avatar_def" />
+            tools:src="@drawable/usedesk_background_avatar_def" />
 
         <LinearLayout
             android:layout_width="match_parent"

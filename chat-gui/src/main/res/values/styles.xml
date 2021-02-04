@@ -2,10 +2,10 @@
 
     <style name="Usedesk.Chat.Attachment.Dialog" parent="Usedesk.Common.BottomSheetDialog">
         <item name="usedesk_chat_attachment_dialog_background">@color/usedesk_white_1</item>
-        <item name="usedesk_chat_attachment_dialog_gallery_image">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Image</item>
-        <item name="usedesk_chat_attachment_dialog_gallery_text">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text</item>
         <item name="usedesk_chat_attachment_dialog_camera_image">@style/Usedesk.Chat.Attachment.Dialog.Camera.Image</item>
         <item name="usedesk_chat_attachment_dialog_camera_text">@style/Usedesk.Chat.Attachment.Dialog.Camera.Text</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_image">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Image</item>
+        <item name="usedesk_chat_attachment_dialog_gallery_text">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text</item>
         <item name="usedesk_chat_attachment_dialog_storage_image">@style/Usedesk.Chat.Attachment.Dialog.Storage.Image</item>
         <item name="usedesk_chat_attachment_dialog_storage_text">@style/Usedesk.Chat.Attachment.Dialog.Storage.Text</item>
         <item name="usedesk_common_no_permission">@style/Usedesk.Common.No.Permission</item>
@@ -43,8 +43,8 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-        <item name="usedesk_drawable_1">@drawable/ic_smile_happy</item>
-        <item name="usedesk_drawable_2">@drawable/ic_smile_happy_colored</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_smile_happy</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_smile_happy_colored</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Feedback.Bad.Image" parent="">
@@ -55,8 +55,8 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-        <item name="usedesk_drawable_1">@drawable/ic_smile_sad</item>
-        <item name="usedesk_drawable_2">@drawable/ic_smile_sad_colored</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_smile_sad</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_smile_sad_colored</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Avatar.Image" parent="">
@@ -66,7 +66,7 @@
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="riv_corner_radius">20dp</item>
-        <item name="usedesk_drawable_1">@drawable/background_avatar_def</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_background_avatar_def</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Feedback.Thanks" parent="">
@@ -88,21 +88,21 @@
     <style name="Usedesk.Chat.Message.File.Preview.Image" parent="">
         <item name="android:layout_width">38dp</item>
         <item name="android:layout_height">38dp</item>
-        <item name="srcCompat">@drawable/ic_file_dark</item>
+        <item name="srcCompat">@drawable/usedesk_ic_file_dark</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Agent">
-        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Client">
-        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_client</item>
+        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image">
         <item name="usedesk_chat_message_image_error_image">@style/Usedesk.Chat.Message.Image.Error.Image</item>
         <item name="usedesk_chat_message_image_preview_image">@style/Usedesk.Chat.Message.Image.Preview.Image</item>
-        <item name="usedesk_chat_message_image_time_background">@drawable/background_time_dark</item>
+        <item name="usedesk_chat_message_image_time_background">@drawable/usedesk_background_time_dark</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text</item>
     </style>
 
@@ -111,25 +111,25 @@
         <item name="android:layout_height">230dp</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="riv_corner_radius">6dp</item>
-        <item name="usedesk_drawable_1">@drawable/ic_image_loading</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_image_loading</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Error.Image" parent="">
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_gravity">center</item>
-        <item name="srcCompat">@drawable/ic_error</item>
+        <item name="srcCompat">@drawable/usedesk_ic_error</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Agent">
-        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client">
-        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_client</item>
+        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text">
@@ -139,11 +139,11 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent">
-        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Client">
-        <item name="usedesk_chat_message_bubble_background">@drawable/background_bubble_client</item>
+        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
@@ -169,7 +169,7 @@
         <item name="android:layout_height">64dp</item>
         <item name="android:layout_gravity">start</item>
         <item name="android:padding">16dp</item>
-        <item name="srcCompat">@drawable/ic_share</item>
+        <item name="srcCompat">@drawable/usedesk_ic_share</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -180,7 +180,7 @@
         <item name="android:layout_height">64dp</item>
         <item name="android:layout_gravity">end</item>
         <item name="android:padding">16dp</item>
-        <item name="srcCompat">@drawable/ic_download</item>
+        <item name="srcCompat">@drawable/usedesk_ic_download</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -191,7 +191,7 @@
         <item name="android:layout_height">56dp</item>
         <item name="android:layout_gravity">center_vertical|start</item>
         <item name="android:padding">16dp</item>
-        <item name="srcCompat">@drawable/ic_back_white</item>
+        <item name="srcCompat">@drawable/usedesk_ic_back_white</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -201,14 +201,14 @@
         <item name="android:layout_width">64dp</item>
         <item name="android:layout_height">64dp</item>
         <item name="android:layout_gravity">center</item>
-        <item name="srcCompat">@drawable/ic_error</item>
+        <item name="srcCompat">@drawable/usedesk_ic_error</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.File.Image" parent="">
         <item name="android:layout_width">80dp</item>
         <item name="android:layout_height">80dp</item>
         <item name="android:layout_margin">10dp</item>
-        <item name="srcCompat">@drawable/ic_file_gray</item>
+        <item name="srcCompat">@drawable/usedesk_ic_file_gray</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Download.Status" parent="">
@@ -251,7 +251,7 @@
     <style name="Usedesk.Chat.Screen.Attach.Image" parent="">
         <item name="android:layout_width">44dp</item>
         <item name="android:layout_height">44dp</item>
-        <item name="srcCompat">@drawable/ic_attachment</item>
+        <item name="srcCompat">@drawable/usedesk_ic_attachment</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -260,7 +260,7 @@
     <style name="Usedesk.Chat.Screen.Send.Image" parent="">
         <item name="android:layout_width">44dp</item>
         <item name="android:layout_height">44dp</item>
-        <item name="srcCompat">@drawable/ic_send</item>
+        <item name="srcCompat">@drawable/usedesk_ic_send</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -359,7 +359,7 @@
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_gravity">top|end</item>
-        <item name="srcCompat">@drawable/ic_preview_detach</item>
+        <item name="srcCompat">@drawable/usedesk_ic_preview_detach</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -368,7 +368,7 @@
     <style name="Usedesk.Chat.Attached.File.Preview.Image" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="usedesk_drawable_1">@drawable/ic_attached_file</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_attached_file</item>
         <item name="riv_corner_radius">10dp</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:layout_margin">4dp</item>
@@ -447,7 +447,7 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
-        <item name="srcCompat">@drawable/ic_done_round</item>
+        <item name="srcCompat">@drawable/usedesk_ic_done_round</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text" parent="">
@@ -467,7 +467,7 @@
         <item name="android:layout_height">62dp</item>
         <item name="android:layout_margin">12dp</item>
         <item name="android:duplicateParentState">true</item>
-        <item name="srcCompat">@drawable/ic_gallery</item>
+        <item name="srcCompat">@drawable/usedesk_ic_gallery</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Text" parent="">
@@ -486,7 +486,7 @@
         <item name="android:layout_height">62dp</item>
         <item name="android:layout_margin">12dp</item>
         <item name="android:duplicateParentState">true</item>
-        <item name="srcCompat">@drawable/ic_camera</item>
+        <item name="srcCompat">@drawable/usedesk_ic_camera</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Camera.Text" parent="">
@@ -505,7 +505,7 @@
         <item name="android:layout_height">62dp</item>
         <item name="android:layout_margin">12dp</item>
         <item name="android:duplicateParentState">true</item>
-        <item name="srcCompat">@drawable/ic_storage</item>
+        <item name="srcCompat">@drawable/usedesk_ic_storage</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Storage.Text" parent="">
@@ -553,7 +553,7 @@
     <style name="Usedesk.Chat.Screen.Message.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/background_input_message</item>
+        <item name="android:background">@drawable/usedesk_background_input_message</item>
         <item name="android:inputType">textCapSentences</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>

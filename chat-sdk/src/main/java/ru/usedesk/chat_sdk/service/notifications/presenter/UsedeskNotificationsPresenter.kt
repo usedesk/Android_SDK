@@ -27,7 +27,7 @@ class UsedeskNotificationsPresenter {
                         lastModel = if (curModel == null) {
                             it
                         } else {
-                            UsedeskNotificationsModel(curModel.message, curModel.count + 1)
+                            UsedeskNotificationsModel(it.message, curModel.count + 1)
                         }
                         lastModel
                     }.subscribe {

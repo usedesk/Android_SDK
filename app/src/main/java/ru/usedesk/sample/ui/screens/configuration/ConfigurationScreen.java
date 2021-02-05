@@ -12,11 +12,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import ru.usedesk.common_sdk.entity.UsedeskEvent;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
-import ru.usedesk.sample.ui._common.Event;
 
 public class ConfigurationScreen extends Fragment {
 
@@ -66,8 +66,11 @@ public class ConfigurationScreen extends Fragment {
         viewModel.setTempConfiguration(getConfiguration());
     }
 
-    private void onGoToSdkEvent(@NonNull Event<Object> event) {
-        event.doEvent(obj -> ((IOnGoToSdkListener) getActivity()).goToSdk());
+    private void onGoToSdkEvent(@NonNull UsedeskEvent<Object> event) {
+        event.process(data -> {
+            ((IOnGoToSdkListener) getActivity()).goToSdk();
+            return null;
+        });
     }
 
     private void onGoToSdk() {

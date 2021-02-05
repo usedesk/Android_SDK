@@ -12,8 +12,8 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.showInstead
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 
 internal class CategoriesPage : UsedeskFragment() {
 
@@ -24,24 +24,29 @@ internal class CategoriesPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase_Categories_Page) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
-            btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-        }
-
         if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_page_list,
+                    R.style.Usedesk_KnowledgeBase_Categories_Page) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }.apply {
+                btnSupport.setOnClickListener {
+                    getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                }
+            }
+
             argsGetLong(SECTION_ID_KEY)?.also { sectionId ->
                 init(sectionId)
             }
         }
 
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     fun init(sectionId: Long) {

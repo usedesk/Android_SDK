@@ -10,13 +10,14 @@ import ru.usedesk.common_sdk.di.UsedeskInjectBox
 import toothpick.ktp.delegate.inject
 
 internal class InstanceBoxUsedesk(
-        appContext: Context,
+        context: Context,
         usedeskChatConfiguration: UsedeskChatConfiguration
 ) : UsedeskInjectBox() {
 
     val usedeskChatSdk: IUsedeskChat by inject()
 
     init {
+        val appContext = context.applicationContext
         init(CommonModule(appContext), MainModule(usedeskChatConfiguration))
     }
 

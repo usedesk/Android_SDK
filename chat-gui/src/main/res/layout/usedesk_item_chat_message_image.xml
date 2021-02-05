@@ -10,7 +10,7 @@
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/iv_preview"
         style="?attr/usedesk_chat_message_image_preview_image"
-        tools:src="@drawable/ic_image_loading" />
+        tools:src="@drawable/usedesk_ic_image_loading" />
 
     <ProgressBar
         android:id="@+id/pb_loading"

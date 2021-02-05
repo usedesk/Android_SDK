@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.entity
+package ru.usedesk.common_sdk.entity
 
 class UsedeskSingleLifeEvent<DATA>(
         data: DATA

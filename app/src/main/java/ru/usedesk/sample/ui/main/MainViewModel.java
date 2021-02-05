@@ -8,15 +8,15 @@ import androidx.lifecycle.ViewModel;
 
 import io.reactivex.disposables.CompositeDisposable;
 import ru.usedesk.chat_sdk.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile;
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration;
+import ru.usedesk.chat_sdk.entity.UsedeskFile;
+import ru.usedesk.common_sdk.entity.UsedeskEvent;
+import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent;
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk;
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.ServiceLocator;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
-import ru.usedesk.sample.ui._common.Event;
-import ru.usedesk.sample.ui._common.OneTimeEvent;
 
 
 public class MainViewModel extends ViewModel {
@@ -24,12 +24,13 @@ public class MainViewModel extends ViewModel {
     private final ConfigurationRepository configurationRepository;
 
     private final MutableLiveData<Configuration> configurationLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Event<String>> errorLiveData = new MutableLiveData<>();
+    private final MutableLiveData<UsedeskEvent<String>> errorLiveData = new MutableLiveData<>();
 
     private final CompositeDisposable disposables = new CompositeDisposable();
     private MainNavigation mainNavigation;
 
     private Configuration configuration;
+    private Boolean inited = false;
 
     public MainViewModel() {
         configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
@@ -37,7 +38,10 @@ public class MainViewModel extends ViewModel {
 
     void init(MainNavigation mainNavigation) {
         this.mainNavigation = mainNavigation;
-        mainNavigation.goConfiguration();
+        if (!inited) {
+            inited = true;
+            mainNavigation.goConfiguration();
+        }
     }
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {
@@ -81,7 +85,7 @@ public class MainViewModel extends ViewModel {
                     mainNavigation.goChat(customAgentName);
                 }
             } else {
-                errorLiveData.postValue(new OneTimeEvent<>("Invalid configuration"));
+                errorLiveData.postValue(new UsedeskSingleLifeEvent<>("Invalid configuration"));
             }
         }));
     }
@@ -129,7 +133,7 @@ public class MainViewModel extends ViewModel {
     }
 
     @NonNull
-    LiveData<Event<String>> getErrorLiveData() {
+    LiveData<UsedeskEvent<String>> getErrorLiveData() {
         return errorLiveData;
     }
 

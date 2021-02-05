@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSearchQueryListener
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
@@ -37,43 +36,50 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_screen_knowledge_base,
-                R.style.Usedesk_KnowledgeBase_Screen) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
-
-        toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
-                binding.toolbar).apply {
-            setBackButton {
-                requireActivity().onBackPressed()
-            }
-
-            setActionButton {
-                switchPage(ArticlesSearchPage.newInstance())
-            }
-        }
-
-        toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, {
-            (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(it)
-        }, {
-            onBackPressed()
-        })
-
-        viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-            showSearchQuery(it)
-        })
-
-        UsedeskKnowledgeBaseSdk.init(requireContext())
-
         if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_screen_knowledge_base,
+                    R.style.Usedesk_KnowledgeBase_Screen) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }
+
+            toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
+                    binding.toolbar).apply {
+                setBackButton {
+                    requireActivity().onBackPressed()
+                }
+
+                setActionButton {
+                    switchPage(ArticlesSearchPage.newInstance())
+                }
+            }
+
+            toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, {
+                (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(it)
+            }, {
+                onBackPressed()
+            })
+
+            viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
+                showSearchQuery(it)
+            })
+
+            UsedeskKnowledgeBaseSdk.init(requireContext())
+
             val sectionsTitle = binding.styleValues
                     .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_title)
                     .getString(R.attr.usedesk_text_1)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
+
+            hideKeyboard(binding.rootView)
         }
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     private fun showSearchQuery(query: String) {
@@ -158,9 +164,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         if (fragment is ArticlesSearchPage) {
             toolbarSearchAdapter.show()
             toolbarDefaultAdapter.hide()
+            showKeyboard(binding.toolbarSearch.etQuery)
         } else {
             toolbarSearchAdapter.hide()
             toolbarDefaultAdapter.show()
+            hideKeyboard(binding.rootView)
         }
     }
 

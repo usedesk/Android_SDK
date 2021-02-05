@@ -17,7 +17,6 @@ object UsedeskResourceManager {
         resourceMap[defaultResourceId] = customResourceId
     }
 
-
     @JvmStatic
     fun getStyleValues(context: Context, defaultStyleId: Int): StyleValues {
         return StyleValues(context, defaultStyleId)

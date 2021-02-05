@@ -12,8 +12,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
 
 internal class ArticlesSearchPage : UsedeskFragment() {
@@ -24,55 +24,60 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase_Articles_Search_Page) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
-            tvMessage.text = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_search_page_message)
-                    .getString(R.attr.usedesk_text_1)
-
-            btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-        }
-
-        ArticlesSearchAdapter(binding.rvItems,
-                viewLifecycleOwner,
-                viewModel) { articleContent ->
-            getParentListener<IOnArticleClickListener>()?.onArticleClick(
-                    articleContent.categoryId,
-                    articleContent.id,
-                    articleContent.title)
-        }
-
-        viewModel.articlesLiveData.observe(viewLifecycleOwner) {
-            when {
-                it == null -> {
-                    binding.pbLoading.visibility = View.VISIBLE
-                    binding.tvMessage.visibility = View.GONE
-                    binding.rvItems.visibility = View.GONE
-                }
-                it.isEmpty() -> {
-                    binding.pbLoading.visibility = View.GONE
-                    binding.tvMessage.visibility = View.VISIBLE
-                    binding.rvItems.visibility = View.GONE
-                }
-                else -> {
-                    binding.pbLoading.visibility = View.GONE
-                    binding.tvMessage.visibility = View.GONE
-                    binding.rvItems.visibility = View.VISIBLE
-                }
-            }
-        }
-
         if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_page_list,
+                    R.style.Usedesk_KnowledgeBase_Articles_Search_Page) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }.apply {
+                tvMessage.text = styleValues
+                        .getStyleValues(R.attr.usedesk_knowledgebase_article_search_page_message)
+                        .getString(R.attr.usedesk_text_1)
+
+                btnSupport.setOnClickListener {
+                    getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                }
+            }
+
+            ArticlesSearchAdapter(binding.rvItems,
+                    viewLifecycleOwner,
+                    viewModel) { articleContent ->
+                getParentListener<IOnArticleClickListener>()?.onArticleClick(
+                        articleContent.categoryId,
+                        articleContent.id,
+                        articleContent.title)
+            }
+
+            viewModel.articlesLiveData.observe(viewLifecycleOwner) {
+                when {
+                    it == null -> {
+                        binding.pbLoading.visibility = View.VISIBLE
+                        binding.tvMessage.visibility = View.GONE
+                        binding.rvItems.visibility = View.GONE
+                    }
+                    it.isEmpty() -> {
+                        binding.pbLoading.visibility = View.GONE
+                        binding.tvMessage.visibility = View.VISIBLE
+                        binding.rvItems.visibility = View.GONE
+                    }
+                    else -> {
+                        binding.pbLoading.visibility = View.GONE
+                        binding.tvMessage.visibility = View.GONE
+                        binding.rvItems.visibility = View.VISIBLE
+                    }
+                }
+            }
+
             viewModel.onSearchQuery("")
         }
 
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     fun onSearchQueryUpdate(searchQuery: String) {

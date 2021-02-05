@@ -2,7 +2,7 @@
 
     <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
         <item name="usedesk_knowledgebase_screen_toolbar_title">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title</item>
-        <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/background_search_input</item>
+        <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/usedesk_background_search_input</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
@@ -32,7 +32,7 @@
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_gravity">center_vertical</item>
-        <item name="srcCompat">@drawable/ic_search</item>
+        <item name="srcCompat">@drawable/usedesk_ic_search</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Icon.Image" parent="">
@@ -40,7 +40,7 @@
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
-        <item name="srcCompat">@drawable/ic_search</item>
+        <item name="srcCompat">@drawable/usedesk_ic_search</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Divider" parent="">
@@ -87,8 +87,8 @@
         <item name="android:layout_gravity">end|bottom</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginBottom">20dp</item>
-        <item name="colorAccent">@color/usedesk_black_2</item>
-        <item name="srcCompat">@drawable/ic_support</item>
+        <item name="backgroundTint">@color/usedesk_black_2</item>
+        <item name="srcCompat">@drawable/usedesk_ic_support</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page" parent="Usedesk.KnowledgeBase.List.Page">
@@ -132,14 +132,14 @@
         <item name="android:layout_width">44dp</item>
         <item name="android:layout_height">44dp</item>
         <item name="android:layout_gravity">center</item>
-        <item name="usedesk_drawable_1">@drawable/background_no_thumbnail</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_background_no_thumbnail</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Forward.Image" parent="">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:layout_marginRight">20dp</item>
-        <item name="srcCompat">@drawable/ic_arrow_forward</item>
+        <item name="srcCompat">@drawable/usedesk_ic_arrow_forward</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Divider" parent="">
@@ -283,7 +283,7 @@
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Forward.Image" parent="">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
-        <item name="srcCompat">@drawable/ic_arrow_forward</item>
+        <item name="srcCompat">@drawable/usedesk_ic_arrow_forward</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
@@ -303,7 +303,7 @@
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image" parent="">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
-        <item name="srcCompat">@drawable/ic_previous</item>
+        <item name="srcCompat">@drawable/usedesk_ic_previous</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text" parent="">
@@ -318,7 +318,7 @@
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Image" parent="">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
-        <item name="srcCompat">@drawable/ic_next</item>
+        <item name="srcCompat">@drawable/usedesk_ic_next</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Text" parent="">
@@ -355,7 +355,7 @@
         <item name="android:layout_width">46dp</item>
         <item name="android:layout_height">46dp</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="srcCompat">@drawable/ic_close</item>
+        <item name="srcCompat">@drawable/usedesk_ic_close</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:padding">8dp</item>

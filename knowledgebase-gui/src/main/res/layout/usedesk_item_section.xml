@@ -27,7 +27,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/background_no_thumbnail" />
+            tools:srcCompat="@drawable/usedesk_background_no_thumbnail" />
 
         <TextView
             android:id="@+id/tv_initials"

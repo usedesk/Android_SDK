@@ -41,15 +41,16 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
     }
 
     fun init(categoryId: Long, articleId: Long) {
-        viewModel.init(categoryId)
+        articlePagesAdapter = ArticlePagesAdapter(binding.vpPages,
+                childFragmentManager,
+                viewModel,
+                viewLifecycleOwner)
 
-        articlePagesAdapter = ArticlePagesAdapter(binding.vpPages, childFragmentManager) { articleInfo ->
-            getParentListener<IOnTitleChangeListener>()?.onTitle(articleInfo.title)
-        }
+        viewModel.init(categoryId, articleId)
 
-        viewModel.articlesLiveData.observe(viewLifecycleOwner) { articles ->
-            if (articles != null) {
-                articlePagesAdapter.update(articles, articleId)
+        viewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { article ->
+            article?.also {
+                getParentListener<IOnTitleChangeListener>()?.onTitle(it.title)
             }
         }
     }
@@ -78,6 +79,5 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val vpPages: ViewPager = rootView.findViewById(R.id.vp_pages)
-        //val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
     }
 }

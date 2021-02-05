@@ -4,6 +4,6 @@ import java.util.*
 
 abstract class UsedeskMessageText(
         id: Long,
-        calendar: Calendar,
+        createdAt: Calendar,
         val text: String
-) : UsedeskMessage(id, calendar)
+) : UsedeskMessage(id, createdAt)

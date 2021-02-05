@@ -57,7 +57,7 @@ fun showKeyboardIfFocused(editText: EditText) {
 }
 
 fun hideKeyboard(view: View) {
-    view.run {
+    view.post {
         getInputMethodManager(view)?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

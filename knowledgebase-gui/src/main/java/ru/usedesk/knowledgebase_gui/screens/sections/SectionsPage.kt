@@ -12,8 +12,8 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.showInstead
-import ru.usedesk.knowledgebase_gui.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 
 internal class SectionsPage : UsedeskFragment() {
 
@@ -23,30 +23,37 @@ internal class SectionsPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase_Sections_Page) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
-            btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+        if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_page_list,
+                    R.style.Usedesk_KnowledgeBase_Sections_Page) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }.apply {
+                btnSupport.setOnClickListener {
+                    getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                }
             }
-        }
 
-        SectionsAdapter(binding.rvItems,
-                viewLifecycleOwner,
-                viewModel) { id, title ->
-            getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
-        }
+            SectionsAdapter(binding.rvItems,
+                    viewLifecycleOwner,
+                    viewModel) { id, title ->
+                getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
+            }
 
-        viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                showInstead(binding.rvItems, binding.pbLoading)
+            viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    showInstead(binding.rvItems, binding.pbLoading)
+                }
             }
         }
 
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     companion object {

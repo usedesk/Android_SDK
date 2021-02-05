@@ -4,6 +4,5 @@ class UsedeskCategory(
         val id: Long,
         val title: String,
         val description: String,
-        val articles: List<UsedeskArticleInfo>,
-        val order: Long
+        val articles: List<UsedeskArticleInfo>
 )

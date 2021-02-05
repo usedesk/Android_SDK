@@ -4,6 +4,5 @@ data class UsedeskSection(
         val id: Long,
         val title: String,
         val thumbnail: String? = null,
-        val categories: List<UsedeskCategory>,
-        val order: Long
+        val categories: List<UsedeskCategory>
 )

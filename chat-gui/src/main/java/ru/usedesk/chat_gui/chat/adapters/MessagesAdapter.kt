@@ -14,7 +14,6 @@ import com.makeramen.roundedimageview.Corner
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
 import java.text.DateFormat
@@ -159,23 +158,23 @@ internal class MessagesAdapter(
 
         override fun bind(position: Int) {
             val message = items[position]
-            val formatted = getFormattedTime(message.calendar)
+            val formatted = getFormattedTime(message.createdAt)
             tvTime.text = formatted
 
             val previousMessage = items.getOrNull(position - 1)
-            bindingDate.tvDate.visibility = if (isSameDay(previousMessage?.calendar, message.calendar)) {
+            bindingDate.tvDate.visibility = if (isSameDay(previousMessage?.createdAt, message.createdAt)) {
                 View.GONE
             } else {
                 bindingDate.tvDate.text = when {
-                    isToday(message.calendar) -> {
+                    isToday(message.createdAt) -> {
                         dateStyleValues.getString(R.attr.usedesk_text_1)
                     }
-                    isYesterday(message.calendar) -> {
+                    isYesterday(message.createdAt) -> {
                         dateStyleValues.getString(R.attr.usedesk_text_2)
                     }
                     else -> {
                         val dateFormat: DateFormat = SimpleDateFormat("dd MMMM", Locale.getDefault())
-                        val formatted = dateFormat.format(message.calendar.time)
+                        val formatted = dateFormat.format(message.createdAt.time)
                         formatted
                     }
                 }

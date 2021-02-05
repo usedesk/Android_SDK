@@ -1,12 +1,8 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import ru.usedesk.chat_sdk.data.Converter
-import ru.usedesk.chat_sdk.data._entity.UsedeskFile
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
-import ru.usedesk.chat_sdk.entity.UsedeskMessage
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.*
 import toothpick.InjectConstructor
 import java.util.*
 

@@ -6,10 +6,11 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 open class UsedeskViewModel : ViewModel() {
-    private val disposables: MutableList<Disposable> = mutableListOf()
+    private val disposables = CompositeDisposable()
     private var inited = false
 
     protected fun doInit(init: () -> Unit) {
@@ -82,8 +83,6 @@ open class UsedeskViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
 
-        disposables.forEach {
-            it.dispose()
-        }
+        disposables.dispose()
     }
 }

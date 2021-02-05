@@ -54,19 +54,19 @@ internal class KnowledgeBaseApiRepository(
         } ?: throw UsedeskHttpException("Wrong response")
     }
 
-    override fun getArticles(searchQuery: UsedeskSearchQuery): List<UsedeskArticleContent> {
+    override fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent> {
         val articlesSearchResponse = doRequest(configuration.urlApi, ArticlesSearchResponse::class.java) {
             it.getArticles(configuration.accountId,
                     configuration.token,
-                    searchQuery.searchQuery,
-                    searchQuery.count,
-                    searchQuery.getCollectionIds(),
-                    searchQuery.getCategoryIds(),
-                    searchQuery.getArticleIds(),
-                    searchQuery.page,
-                    searchQuery.type,
-                    searchQuery.sort,
-                    searchQuery.order)
+                    searchQueryRequest.query,
+                    searchQueryRequest.count,
+                    searchQueryRequest.sectionIds?.joinToString(","),
+                    searchQueryRequest.categoryIds?.joinToString(","),
+                    searchQueryRequest.articleIds?.joinToString(","),
+                    searchQueryRequest.page,
+                    searchQueryRequest.type?.name?.toLowerCase(),
+                    searchQueryRequest.sort?.name?.toLowerCase(),
+                    searchQueryRequest.order?.name?.toLowerCase())
         }
 
         return (articlesSearchResponse.articles ?: arrayOf()).mapNotNull {
@@ -131,15 +131,13 @@ internal class KnowledgeBaseApiRepository(
                                     categoryId,
                                     categoryResponse.title ?: "",
                                     categoryResponse.description ?: "",
-                                    articles,
-                                    categoryResponse.order ?: 0)
+                                    articles)
                         }
                 UsedeskSection(
                         sectionResponse.id!!,
                         sectionResponse.title ?: "",
                         sectionResponse.image,
-                        categories,
-                        sectionResponse.order ?: 0
+                        categories
                 )
             }
         }

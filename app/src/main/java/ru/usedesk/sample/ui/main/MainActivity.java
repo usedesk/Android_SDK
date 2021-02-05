@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initUsedeskService(@NonNull Configuration configuration) {
-        UsedeskChatSdk.stopService(this);
-
         UsedeskChatSdk.setNotificationsServiceFactory(configuration.isForegroundService()
                 ? new CustomForegroundNotificationsService.Factory()
                 : new CustomSimpleNotificationsService.Factory());

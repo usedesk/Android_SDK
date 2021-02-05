@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import ru.usedesk.chat_sdk.UsedeskChatSdk;
 import ru.usedesk.common_sdk.entity.UsedeskEvent;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding;
@@ -47,6 +48,10 @@ public class ConfigurationScreen extends Fragment {
                 .observe(getViewLifecycleOwner(), this::onGoToSdkEvent);
 
         binding.btnGoToSdk.setOnClickListener(v -> onGoToSdk());
+
+        binding.switchForeground.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            UsedeskChatSdk.stopService(requireContext());
+        });
 
         try {
             String version = requireContext().getPackageManager()

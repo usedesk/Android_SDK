@@ -30,47 +30,47 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_screen_show_file,
-                R.style.Usedesk_Chat_Show_File) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
-
-        downloadStatusStyleValues = binding.styleValues
-                .getStyleValues(R.attr.usedesk_chat_show_file_download_status)
-
-        binding.ivBack.setOnClickListener {
-            onBackPressed()
-        }
-
-        binding.ivShare.setOnClickListener {
-            onShareFile(viewModel.fileUrlLiveData.value)
-        }
-
-        binding.ivDownload.setOnClickListener {
-            onDownloadFile(viewModel.fileUrlLiveData.value)
-        }
-
-        setBlur(binding.lToolbar)
-        setBlur(binding.lBottom)
-
-        styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
-
-        initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
-            onFileUrl(it)
-        }
-
-        initAndObserve(viewLifecycleOwner, viewModel.errorLiveData) {
-            onError(it)
-        }
-
-        initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {
-            binding.lToolbar.visibility = visibleGone(it == true)
-            binding.lBottom.visibility = visibleGone(it == true)
-        }
-
         if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_screen_show_file,
+                    R.style.Usedesk_Chat_Show_File) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }
+
+            downloadStatusStyleValues = binding.styleValues
+                    .getStyleValues(R.attr.usedesk_chat_show_file_download_status)
+
+            binding.ivBack.setOnClickListener {
+                onBackPressed()
+            }
+
+            binding.ivShare.setOnClickListener {
+                onShareFile(viewModel.fileUrlLiveData.value)
+            }
+
+            binding.ivDownload.setOnClickListener {
+                onDownloadFile(viewModel.fileUrlLiveData.value)
+            }
+
+            setBlur(binding.lToolbar)
+            setBlur(binding.lBottom)
+
+            styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
+
+            initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
+                onFileUrl(it)
+            }
+
+            initAndObserve(viewLifecycleOwner, viewModel.errorLiveData) {
+                onError(it)
+            }
+
+            initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {
+                binding.lToolbar.visibility = visibleGone(it == true)
+                binding.lBottom.visibility = visibleGone(it == true)
+            }
+
             argsGetString(FILE_URL_KEY)?.also { json ->
                 val fileUrl = UsedeskFile.deserialize(json)
 
@@ -79,6 +79,11 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
 
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     private fun setBlur(blurView: BlurView) {

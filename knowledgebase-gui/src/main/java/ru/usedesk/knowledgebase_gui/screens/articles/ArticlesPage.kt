@@ -25,25 +25,30 @@ internal class ArticlesPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_page_list,
-                R.style.Usedesk_KnowledgeBase_Articles_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
-            btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-        }
-
         if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_page_list,
+                    R.style.Usedesk_KnowledgeBase_Articles_Page
+            ) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }.apply {
+                btnSupport.setOnClickListener {
+                    getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                }
+            }
+
             argsGetLong(CATEGORY_ID_KEY)?.also { categoryId ->
                 init(categoryId)
             }
         }
 
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     fun init(categoryId: Long) {

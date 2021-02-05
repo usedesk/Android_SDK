@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity
 
     private MainViewModel viewModel;
     private String customAgentName = null;
-    private boolean inited = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +49,7 @@ public class MainActivity extends AppCompatActivity
 
         viewModel.getErrorLiveData().observe(this, this::onError);
 
-        if (!inited) {
-            inited = true;
-
-            viewModel.init(new MainNavigation(this, R.id.container));
-        }
+        viewModel.init(new MainNavigation(this, R.id.container));
     }
 
     private void onError(@NonNull UsedeskEvent<String> error) {

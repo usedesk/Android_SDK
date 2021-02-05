@@ -31,31 +31,36 @@ class UsedeskChatScreen : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_screen_chat,
-                R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
-
-        val title = binding.styleValues
-                .getStyleValues(R.attr.usedesk_chat_screen_title_text)
-                .getString(R.attr.usedesk_text_1)
-
-        UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-            setTitle(title)
-            setBackButton {
-                requireActivity().onBackPressed()
-            }
-        }
-
         if (savedInstanceState == null) {
+            binding = inflateItem(inflater,
+                    container,
+                    R.layout.usedesk_screen_chat,
+                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
+                Binding(rootView, defaultStyleId)
+            }
+
+            val title = binding.styleValues
+                    .getStyleValues(R.attr.usedesk_chat_screen_title_text)
+                    .getString(R.attr.usedesk_text_1)
+
+            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+                setTitle(title)
+                setBackButton {
+                    requireActivity().onBackPressed()
+                }
+            }
+
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
             init(agentName)
         }
 
         return binding.rootView
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

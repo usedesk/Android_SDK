@@ -30,6 +30,7 @@ public class MainViewModel extends ViewModel {
     private MainNavigation mainNavigation;
 
     private Configuration configuration;
+    private Boolean inited = false;
 
     public MainViewModel() {
         configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
@@ -37,7 +38,10 @@ public class MainViewModel extends ViewModel {
 
     void init(MainNavigation mainNavigation) {
         this.mainNavigation = mainNavigation;
-        mainNavigation.goConfiguration();
+        if (!inited) {
+            inited = true;
+            mainNavigation.goConfiguration();
+        }
     }
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {

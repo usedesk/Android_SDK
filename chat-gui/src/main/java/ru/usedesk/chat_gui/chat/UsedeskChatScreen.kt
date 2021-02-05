@@ -53,6 +53,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
             init(agentName)
+
+            hideKeyboard(binding.rootView)
         }
 
         return binding.rootView

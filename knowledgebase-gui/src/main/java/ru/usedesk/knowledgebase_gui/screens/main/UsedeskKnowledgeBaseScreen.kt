@@ -71,6 +71,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                     .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_title)
                     .getString(R.attr.usedesk_text_1)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
+
+            hideKeyboard(binding.rootView)
         }
         return binding.rootView
     }
@@ -162,9 +164,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         if (fragment is ArticlesSearchPage) {
             toolbarSearchAdapter.show()
             toolbarDefaultAdapter.hide()
+            showKeyboard(binding.toolbarSearch.etQuery)
         } else {
             toolbarSearchAdapter.hide()
             toolbarDefaultAdapter.show()
+            hideKeyboard(binding.rootView)
         }
     }
 

@@ -76,6 +76,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
                 viewModel.init(fileUrl)
             }
+
+            hideKeyboard(binding.rootView)
         }
 
         return binding.rootView

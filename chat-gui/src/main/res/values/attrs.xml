@@ -55,7 +55,6 @@
     <attr name="usedesk_chat_message_text_button_background" format="reference" />
     <attr name="usedesk_chat_message_text_button_text" format="reference" />
 
-    <attr name="usedesk_chat_screen_title_text" format="reference" />
     <attr name="usedesk_chat_screen_loading_text" format="reference" />
     <attr name="usedesk_chat_screen_message_edit_text" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_description_text" format="reference" />
@@ -66,9 +65,6 @@
     <attr name="usedesk_chat_screen_offline_form_email_edit_text" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_message_input_layout" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_message_edit_text" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_name_error" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_email_error" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_message_error" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_send_failed" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_action_enabled_background" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_action_disabled_background" format="reference" />

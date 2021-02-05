@@ -39,12 +39,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 Binding(rootView, defaultStyleId)
             }
 
-            val title = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_screen_title_text)
-                    .getString(R.attr.usedesk_text_1)
-
             UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-                setTitle(title)
                 setBackButton {
                     requireActivity().onBackPressed()
                 }

@@ -43,7 +43,7 @@ internal class OfflineFormAdapter(
             binding.tilName.error = if (it) {
                 showKeyboard(binding.etName)
                 binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_name_error)
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_name_input_layout)
                         .getString(R.attr.usedesk_text_1)
             } else {
                 null
@@ -57,7 +57,7 @@ internal class OfflineFormAdapter(
             binding.tilEmail.error = if (it) {
                 showKeyboard(binding.etEmail)
                 binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_email_error)
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_email_input_layout)
                         .getString(R.attr.usedesk_text_1)
             } else {
                 null
@@ -73,7 +73,7 @@ internal class OfflineFormAdapter(
             binding.tilMessage.error = if (it) {
                 showKeyboard(binding.etMessage)
                 binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_message_error)
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_message_input_layout)
                         .getString(R.attr.usedesk_text_1)
             } else {
                 null

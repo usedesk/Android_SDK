@@ -28,8 +28,6 @@
         <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image</item>
         <item name="usedesk_chat_message_date">@style/Usedesk.Chat.Message.Date</item>
         <item name="usedesk_chat_message_feedback_thanks">@style/Usedesk.Chat.Message.Feedback.Thanks</item>
-        <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
-        <item name="usedesk_chat_message_feedback_bad_image">@style/Usedesk.Chat.Message.Feedback.Bad.Image</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text</item>
         <item name="usedesk_chat_message_name_text">@style/Usedesk.Chat.Message.Name.Text</item>
         <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
@@ -136,6 +134,8 @@
         <item name="usedesk_chat_message_text_button_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_message_text_button_text">@style/Usedesk.Chat.Message.Text.Button.Text</item>
         <item name="usedesk_chat_message_text_message_text">@style/Usedesk.Chat.Message.Text.Message.Text</item>
+        <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
+        <item name="usedesk_chat_message_feedback_bad_image">@style/Usedesk.Chat.Message.Feedback.Bad.Image</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent">
@@ -221,31 +221,27 @@
     </style>
 
     <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
-        <item name="usedesk_chat_screen_title_text">@style/Usedesk.Chat.Screen.Title</item>
+        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Chat.Screen.Title</item>
+
+        <item name="usedesk_chat_screen_loading_text">@style/Usedesk.Chat.Screen.Loading.Text</item>
+        <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
+        <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
+        <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
+        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
 
         <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
-
-        <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
-        <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
-        <item name="usedesk_chat_screen_loading_text">@style/Usedesk.Chat.Screen.Loading.Text</item>
-        <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
         <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>
         <item name="usedesk_chat_screen_offline_form_send_text">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text</item>
         <item name="usedesk_chat_screen_offline_form_name_input_layout">@style/Usedesk.Chat.Screen.Offline.Form.Name.InputLayout</item>
         <item name="usedesk_chat_screen_offline_form_name_edit_text">@style/Usedesk.Chat.Screen.Offline.Form.Name.EditText</item>
-        <item name="usedesk_chat_screen_offline_form_name_error">@style/Usedesk.Chat.Screen.Offline.Form.Name.Error</item>
         <item name="usedesk_chat_screen_offline_form_email_input_layout">@style/Usedesk.Chat.Screen.Offline.Form.Email.InputLayout</item>
         <item name="usedesk_chat_screen_offline_form_email_edit_text">@style/Usedesk.Chat.Screen.Offline.Form.Email.EditText</item>
-        <item name="usedesk_chat_screen_offline_form_email_error">@style/Usedesk.Chat.Screen.Offline.Form.Email.Error</item>
         <item name="usedesk_chat_screen_offline_form_message_input_layout">@style/Usedesk.Chat.Screen.Offline.Form.Message.InputLayout</item>
         <item name="usedesk_chat_screen_offline_form_message_edit_text">@style/Usedesk.Chat.Screen.Offline.Form.Message.EditText</item>
-        <item name="usedesk_chat_screen_offline_form_message_error">@style/Usedesk.Chat.Screen.Offline.Form.Message.Error</item>
         <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_send_failed">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed</item>
-
-        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
-        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Attach.Image" parent="">
@@ -284,8 +280,8 @@
         <item name="usedesk_background_color_1">@color/usedesk_red</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.Title" parent="">
-        <item name="usedesk_text_1">@string/usedesk_chat</item>
+    <style name="Usedesk.Chat.Screen.Title" parent="Usedesk.Common.Toolbar.Title.Text">
+        <item name="android:text">@string/usedesk_chat</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Date.Text" parent="">
@@ -599,6 +595,7 @@
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="usedesk_text_1">@string/usedesk_field_required_error</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Name.EditText" parent="">
@@ -620,6 +617,7 @@
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="usedesk_text_1">@string/usedesk_offline_form_email_error</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Email.EditText" parent="">
@@ -641,6 +639,7 @@
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="usedesk_text_1">@string/usedesk_field_required_error</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Message.EditText" parent="">

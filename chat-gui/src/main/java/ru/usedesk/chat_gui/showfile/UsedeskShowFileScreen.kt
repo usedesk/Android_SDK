@@ -25,7 +25,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     private lateinit var binding: Binding
     private lateinit var downloadStatusStyleValues: UsedeskResourceManager.StyleValues
-    private lateinit var styleValues: UsedeskResourceManager.StyleValues
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -55,8 +54,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
             setBlur(binding.lToolbar)
             setBlur(binding.lBottom)
-
-            styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
 
             initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
                 onFileUrl(it)

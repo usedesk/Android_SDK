@@ -26,8 +26,6 @@
 
     <style name="Usedesk.Chat.Message" parent="">
         <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image</item>
-        <item name="usedesk_chat_message_date">@style/Usedesk.Chat.Message.Date</item>
-        <item name="usedesk_chat_message_feedback_thanks">@style/Usedesk.Chat.Message.Feedback.Thanks</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text</item>
         <item name="usedesk_chat_message_name_text">@style/Usedesk.Chat.Message.Name.Text</item>
         <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
@@ -69,11 +67,6 @@
 
     <style name="Usedesk.Chat.Message.Feedback.Thanks" parent="">
         <item name="usedesk_text_1">@string/usedesk_feedback_thanks</item>
-    </style>
-
-    <style name="Usedesk.Chat.Message.Date" parent="">
-        <item name="usedesk_text_1">@string/usedesk_today</item>
-        <item name="usedesk_text_2">@string/usedesk_yesterday</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File">
@@ -136,6 +129,7 @@
         <item name="usedesk_chat_message_text_message_text">@style/Usedesk.Chat.Message.Text.Message.Text</item>
         <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
         <item name="usedesk_chat_message_feedback_bad_image">@style/Usedesk.Chat.Message.Feedback.Bad.Image</item>
+        <item name="usedesk_chat_message_feedback_thanks">@style/Usedesk.Chat.Message.Feedback.Thanks</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent">
@@ -293,6 +287,8 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:textColor">@color/usedesk_gray_3</item>
         <item name="android:textSize">15sp</item>
+        <item name="usedesk_text_1">@string/usedesk_today</item>
+        <item name="usedesk_text_2">@string/usedesk_yesterday</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Extension.Text" parent="">

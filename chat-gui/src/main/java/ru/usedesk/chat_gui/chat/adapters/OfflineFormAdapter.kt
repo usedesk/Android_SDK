@@ -13,6 +13,7 @@ import ru.usedesk.common_gui.*
 
 internal class OfflineFormAdapter(
         private val binding: Binding,
+        private val rootStyleValues: UsedeskResourceManager.StyleValues,
         private val viewModel: ChatViewModel,
         lifecycleOwner: LifecycleOwner,
         private val onSuccessfully: () -> Unit,
@@ -92,10 +93,7 @@ internal class OfflineFormAdapter(
             R.attr.usedesk_chat_screen_offline_form_action_enabled_background
         }
 
-        val colorId = UsedeskResourceManager.getStyleValues(
-                binding.rootView.context,
-                R.style.Usedesk_Chat_Screen
-        ).getColor(attr)
+        val colorId = rootStyleValues.getColor(attr)
         binding.lAction.setBackgroundColor(colorId)
     }
 

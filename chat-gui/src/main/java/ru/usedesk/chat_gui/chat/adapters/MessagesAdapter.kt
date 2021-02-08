@@ -154,7 +154,7 @@ internal class MessagesAdapter(
     ) : BaseViewHolder(itemView) {
 
         private val dateStyleValues = bindingDate.styleValues
-                .getStyleValues(R.attr.usedesk_chat_message_date)
+                .getStyleValues(R.attr.usedesk_chat_message_date_text)
 
         override fun bind(position: Int) {
             val message = items[position]

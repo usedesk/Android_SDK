@@ -92,6 +92,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             onException(it)
         }
         OfflineFormAdapter(binding.offlineForm,
+                binding.styleValues,
                 viewModel,
                 viewLifecycleOwner,
                 {

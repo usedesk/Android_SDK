@@ -151,7 +151,6 @@
         <item name="usedesk_chat_show_file_image_background">@color/usedesk_black_1</item>
         <item name="usedesk_chat_show_file_blur_top_background">@color/usedesk_blur</item>
         <item name="usedesk_chat_show_file_blur_bottom_background">@color/usedesk_blur</item>
-        <item name="usedesk_chat_show_file_blur_toolbar_background">@color/usedesk_blur_toolbar</item>
         <item name="usedesk_chat_show_file_file_image">@style/Usedesk.Chat.Show.File.File.Image</item>
         <item name="usedesk_chat_show_file_share_image">@style/Usedesk.Chat.Show.File.Share.Image</item>
         <item name="usedesk_chat_show_file_download_image">@style/Usedesk.Chat.Show.File.Download.Image</item>

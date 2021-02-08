@@ -17,7 +17,6 @@
     <attr name="usedesk_chat_show_file_image_background" format="reference" />
     <attr name="usedesk_chat_show_file_blur_top_background" format="reference" />
     <attr name="usedesk_chat_show_file_blur_bottom_background" format="reference" />
-    <attr name="usedesk_chat_show_file_blur_toolbar_background" format="reference" />
     <attr name="usedesk_chat_show_file_file_image" format="reference" />
     <attr name="usedesk_chat_show_file_share_image" format="reference" />
     <attr name="usedesk_chat_show_file_download_image" format="reference" />

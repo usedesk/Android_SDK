@@ -1,12 +1,11 @@
 <resources>
 
     <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
-        <item name="usedesk_knowledgebase_screen_toolbar_title">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title</item>
+        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/usedesk_background_search_input</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
-        <item name="usedesk_knowledgebase_screen_toolbar_search_icon_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Icon.Image</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_divider">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Divider</item>
         <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
     </style>
@@ -49,7 +48,7 @@
         <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Title" parent="">
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Title" parent="Usedesk.Common.Toolbar.Title.Text">
         <item name="usedesk_text_1">@string/usedesk_knowledgebase</item>
     </style>
 
@@ -91,9 +90,7 @@
         <item name="srcCompat">@drawable/usedesk_ic_support</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Sections.Page" parent="Usedesk.KnowledgeBase.List.Page">
-
-    </style>
+    <style name="Usedesk.KnowledgeBase.Sections.Page" parent="Usedesk.KnowledgeBase.List.Page" />
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section" parent="">
         <item name="usedesk_knowledgebase_sections_page_section_thumbnail_image">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Thumbnail.Image</item>
@@ -148,9 +145,7 @@
         <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Page" parent="Usedesk.KnowledgeBase.List.Page">
-
-    </style>
+    <style name="Usedesk.KnowledgeBase.Articles.Page" parent="Usedesk.KnowledgeBase.List.Page" />
 
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article" parent="">
         <item name="usedesk_knowledgebase_articles_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Title</item>
@@ -177,10 +172,10 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page" parent="Usedesk.KnowledgeBase.List.Page">
-        <item name="usedesk_knowledgebase_article_search_page_message">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Title</item>
+        <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Title</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Title" parent="">
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Title" parent="Usedesk.KnowledgeBase.List.Page.Message.Text">
         <item name="usedesk_text_1">@string/usedesk_articles_not_found</item>
     </style>
 
@@ -234,9 +229,7 @@
         <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Categories.Page" parent="Usedesk.KnowledgeBase.List.Page">
-
-    </style>
+    <style name="Usedesk.KnowledgeBase.Categories.Page" parent="Usedesk.KnowledgeBase.List.Page" />
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category" parent="">
         <item name="usedesk_knowledgebase_categories_category_title_text">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Title.Text</item>
@@ -298,7 +291,7 @@
         <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common"></style>
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common" />
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image" parent="">
         <item name="android:layout_width">24dp</item>

@@ -68,7 +68,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             UsedeskKnowledgeBaseSdk.init(requireContext())
 
             val sectionsTitle = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_title)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                     .getString(R.attr.usedesk_text_1)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
 

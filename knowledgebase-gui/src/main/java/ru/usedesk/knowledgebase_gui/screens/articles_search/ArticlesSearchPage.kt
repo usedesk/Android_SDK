@@ -32,7 +32,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                 Binding(rootView, defaultStyleId)
             }.apply {
                 tvMessage.text = styleValues
-                        .getStyleValues(R.attr.usedesk_knowledgebase_article_search_page_message)
+                        .getStyleValues(R.attr.usedesk_knowledgebase_list_page_message_text)
                         .getString(R.attr.usedesk_text_1)
 
                 btnSupport.setOnClickListener {

@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/usedesk_chat_show_file_root_background"
+    android:clickable="true"
+    tools:ignore="KeyboardInaccessibleWidget"
     tools:theme="@style/Usedesk.Chat.Show.File">
 
     <LinearLayout

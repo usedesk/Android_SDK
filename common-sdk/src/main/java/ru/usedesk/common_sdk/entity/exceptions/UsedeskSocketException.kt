@@ -23,7 +23,6 @@ class UsedeskSocketException : UsedeskException {
         DISCONNECTED,
         IO_ERROR,
         JSON_ERROR,
-        UNKNOWN_FROM_SERVER_ERROR,
         UNKNOWN_ERROR
     }
 }

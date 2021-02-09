@@ -64,15 +64,14 @@ internal class SocketApi(
                 when (response.type) {
                     ErrorResponse.TYPE -> {
                         val errorResponse = response as ErrorResponse
-                        val usedeskSocketException: UsedeskSocketException
-                        usedeskSocketException = when (errorResponse.code) {
+                        val usedeskSocketException: UsedeskSocketException = when (errorResponse.code) {
                             HttpURLConnection.HTTP_FORBIDDEN -> {
                                 eventListener.onTokenError()
                                 UsedeskSocketException(UsedeskSocketException.Error.FORBIDDEN_ERROR, errorResponse.message)
                             }
                             HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(UsedeskSocketException.Error.BAD_REQUEST_ERROR, errorResponse.message)
                             HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(UsedeskSocketException.Error.INTERNAL_SERVER_ERROR, errorResponse.message)
-                            else -> UsedeskSocketException(UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR, errorResponse.message)
+                            else -> UsedeskSocketException(errorResponse.message)
                         }
                         eventListener.onException(usedeskSocketException)
                     }

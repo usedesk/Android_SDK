@@ -28,6 +28,10 @@ class UsedeskChatScreen : UsedeskFragment() {
     private lateinit var binding: Binding
     private lateinit var attachment: UsedeskAttachmentDialog
 
+    private lateinit var messagePanelAdapter: MessagePanelAdapter
+    private lateinit var messagesAdapter: MessagesAdapter
+    private lateinit var offlineFormAdapter: OfflineFormAdapter
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -39,12 +43,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 Binding(rootView, defaultStyleId)
             }
 
-            val title = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_screen_title_text)
-                    .getString(R.attr.usedesk_text_1)
-
             UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-                setTitle(title)
                 setBackButton {
                     requireActivity().onBackPressed()
                 }
@@ -57,7 +56,22 @@ class UsedeskChatScreen : UsedeskFragment() {
             hideKeyboard(binding.rootView)
         }
 
+        onLiveData()
+
         return binding.rootView
+    }
+
+    private fun onLiveData() {
+        messagePanelAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        messagesAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        offlineFormAdapter.onLiveData(viewModel, viewLifecycleOwner)
+
+        viewModel.chatStateLiveData.observe(viewLifecycleOwner) {
+            onChatState(it)
+        }
+        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
+            onException(it)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,18 +88,13 @@ class UsedeskChatScreen : UsedeskFragment() {
     private fun init(agentName: String?) {
         UsedeskChatSdk.init(requireContext())
 
-        MessagePanelAdapter(binding.messagePanel, viewModel, viewLifecycleOwner) {
+        messagePanelAdapter = MessagePanelAdapter(binding.messagePanel, viewModel) {
             openAttachmentDialog()
         }
 
-        viewModel.chatStateLiveData.observe(viewLifecycleOwner) {
-            onChatState(it)
-        }
-
-        MessagesAdapter(viewModel,
+        messagesAdapter = MessagesAdapter(viewModel,
                 binding.rvMessages,
                 agentName,
-                viewLifecycleOwner,
                 { file ->
                     getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
                 },
@@ -93,12 +102,9 @@ class UsedeskChatScreen : UsedeskFragment() {
                     getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
                             ?: this.onUrlClick(url)
                 })
-        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
-            onException(it)
-        }
-        OfflineFormAdapter(binding.offlineForm,
+        offlineFormAdapter = OfflineFormAdapter(binding.offlineForm,
+                binding.styleValues,
                 viewModel,
-                viewLifecycleOwner,
                 {
                     UsedeskOfflineFormSuccessDialog.newInstance(binding.rootView).apply {
                         setOnDismissListener {
@@ -108,7 +114,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 },
                 {
                     val sendFailedStyleValues = binding.styleValues
-                            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed)
+                            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed_snackbar)
                     showSnackbarError(sendFailedStyleValues)
                 })
 

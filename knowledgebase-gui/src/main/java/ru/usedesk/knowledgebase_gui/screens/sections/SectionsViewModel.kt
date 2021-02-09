@@ -10,7 +10,7 @@ internal class SectionsViewModel : UsedeskViewModel() {
     val sectionsLiveData = MutableLiveData<List<UsedeskSection>>()
 
     init {
-        doIt(UsedeskKnowledgeBaseSdk.getInstance()
+        doIt(UsedeskKnowledgeBaseSdk.requireInstance()
                 .getSectionsRx(), onValue = {
             sectionsLiveData.postValue(it)
         })

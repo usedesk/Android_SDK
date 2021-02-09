@@ -25,10 +25,9 @@ internal class MessagesAdapter(
         private val viewModel: ChatViewModel,
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
-        owner: LifecycleOwner,
         private val onFileClick: (UsedeskFile) -> Unit,
         private val onUrlClick: (String) -> Unit
-) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
+) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<ChatViewModel> {
 
     private var items: List<UsedeskMessage> = listOf()
 
@@ -44,35 +43,30 @@ internal class MessagesAdapter(
                 }
             }
         }
-        viewModel.messagesLiveData.observe(owner) { messages ->
-            if (items.isEmpty()) {
-                this.items = messages
-                notifyDataSetChanged()
+    }
+
+    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+        viewModel.messagesLiveData.observe(lifecycleOwner) { messages ->
+            onMessages(messages ?: listOf())
+        }
+    }
+
+    private fun onMessages(messages: List<UsedeskMessage>) {
+        val lastItems = items
+        items = messages
+
+        if (lastItems.isEmpty()) {
+            notifyDataSetChanged()
+            recyclerView.scrollToPosition(items.size - 1)
+        } else {
+            (lastItems.size until items.size).forEach { index ->
+                notifyItemChanged(index - 1)
+                notifyItemInserted(index)
+            }
+            val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
+            val contentHeight = recyclerView.computeVerticalScrollRange()
+            if (visibleBottom >= contentHeight) {//Если чат был внизу
                 recyclerView.scrollToPosition(items.size - 1)
-            }
-        }
-        viewModel.newMessageLiveData.observe(owner) { message ->
-            if (message != null) {
-                val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
-                val contentHeight = recyclerView.computeVerticalScrollRange()
-                items = items + message
-                notifyItemChanged(items.size - 2)
-                notifyItemInserted(items.size - 1)
-                if (visibleBottom >= contentHeight) {//Если чат был внизу
-                    recyclerView.scrollToPosition(items.size - 1)
-                }
-            }
-        }
-        viewModel.messageUpdateLiveData.observe(owner) { messageUpdate ->
-            items = items.mapIndexed { index, message ->
-                if (messageUpdate.id == message.id) {
-                    if (message is UsedeskMessageClient) {
-                        notifyItemChanged(index)
-                    }
-                    messageUpdate
-                } else {
-                    message
-                }
             }
         }
     }
@@ -154,7 +148,7 @@ internal class MessagesAdapter(
     ) : BaseViewHolder(itemView) {
 
         private val dateStyleValues = bindingDate.styleValues
-                .getStyleValues(R.attr.usedesk_chat_message_date)
+                .getStyleValues(R.attr.usedesk_chat_message_date_text)
 
         override fun bind(position: Int) {
             val message = items[position]
@@ -355,7 +349,7 @@ internal class MessagesAdapter(
                 .getStyleValues(R.attr.usedesk_chat_message_feedback_bad_image)
 
         private val thanksText = binding.styleValues
-                .getStyleValues(R.attr.usedesk_chat_message_feedback_thanks)
+                .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
                 .getString(R.attr.usedesk_text_1)
 
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {

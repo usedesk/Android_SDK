@@ -25,7 +25,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     private lateinit var binding: Binding
     private lateinit var downloadStatusStyleValues: UsedeskResourceManager.StyleValues
-    private lateinit var styleValues: UsedeskResourceManager.StyleValues
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -39,10 +38,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             }
 
             downloadStatusStyleValues = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_show_file_download_status)
+                    .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
 
             binding.ivBack.setOnClickListener {
-                onBackPressed()
+                requireActivity().onBackPressed()
             }
 
             binding.ivShare.setOnClickListener {
@@ -55,8 +54,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
             setBlur(binding.lToolbar)
             setBlur(binding.lBottom)
-
-            styleValues = UsedeskResourceManager.getStyleValues(requireContext(), R.style.Usedesk_Chat_Show_File)
 
             initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
                 onFileUrl(it)

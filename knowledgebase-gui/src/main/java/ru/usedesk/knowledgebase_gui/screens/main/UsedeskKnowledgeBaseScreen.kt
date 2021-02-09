@@ -61,19 +61,20 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 onBackPressed()
             })
 
-            viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-                showSearchQuery(it)
-            })
-
             UsedeskKnowledgeBaseSdk.init(requireContext())
 
             val sectionsTitle = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_screen_toolbar_title)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                     .getString(R.attr.usedesk_text_1)
             switchPage(SectionsPage.newInstance(), sectionsTitle)
 
             hideKeyboard(binding.rootView)
         }
+
+        viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
+            showSearchQuery(it)
+        })
+
         return binding.rootView
     }
 
@@ -102,7 +103,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             putString(COMMON_TITLE_KEY, title)
         }
         childFragmentManager.beginTransaction()
-                .addToBackStack(fragment.javaClass.name)
                 .add(R.id.container, fragment)
                 .commit()
     }

@@ -15,8 +15,6 @@ internal class ChatViewModel : UsedeskViewModel() {
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>>(listOf())
-    val newMessageLiveData = MutableLiveData<UsedeskMessage>()
-    val messageUpdateLiveData = MutableLiveData<UsedeskMessage>()
     val chatStateLiveData = MutableLiveData(ChatState.LOADING)
 
     val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
@@ -29,8 +27,10 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     private lateinit var usedeskChat: IUsedeskChat
 
+    private var messages: List<UsedeskMessage> = listOf()
+
     fun init() {
-        usedeskChat = UsedeskChatSdk.getInstance()
+        usedeskChat = UsedeskChatSdk.requireInstance()
 
         clearFileInfoList()
         actionListenerRx = object : IUsedeskActionListenerRx() {
@@ -45,28 +45,13 @@ internal class ChatViewModel : UsedeskViewModel() {
                 }
             }
 
-            override fun onNewMessageObservable(
-                    newMessageObservable: Observable<UsedeskMessage>
-            ): Disposable? {
-                return newMessageObservable.subscribe {
-                    newMessageLiveData.postValue(it)
-                }
-            }
-
             override fun onMessagesObservable(
                     messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
                 return messagesObservable.subscribe {
-                    messagesLiveData.postValue(it)
+                    messages = it
+                    messagesLiveData.postValue(messages)
                     chatStateLiveData.postValue(ChatState.CHAT)
-                }
-            }
-
-            override fun onMessageUpdateObservable(
-                    messageUpdateObservable: Observable<UsedeskMessage>
-            ): Disposable? {
-                return messageUpdateObservable.subscribe {
-                    messageUpdateLiveData.postValue(it)
                 }
             }
 
@@ -86,8 +71,7 @@ internal class ChatViewModel : UsedeskViewModel() {
                 }
             }
         }
-        UsedeskChatSdk.getInstance()
-                .addActionListener(actionListenerRx)
+        usedeskChat.addActionListener(actionListenerRx)
     }
 
     fun onMessageChanged(message: String) {
@@ -109,7 +93,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     override fun onCleared() {
         super.onCleared()
         UsedeskChatSdk.getInstance()
-                .removeActionListener(actionListenerRx)
+                ?.removeActionListener(actionListenerRx)
         UsedeskChatSdk.release(false)
     }
 
@@ -137,7 +121,7 @@ internal class ChatViewModel : UsedeskViewModel() {
 
         if (nameIsValid && emailIsValid && messageIsValid) {
             offlineFormStateLiveData.postValue(OfflineFormState.SENDING)
-            doIt(UsedeskChatSdk.getInstance().sendRx(UsedeskOfflineForm(name, email, message)), {
+            doIt(UsedeskChatSdk.requireInstance().sendRx(UsedeskOfflineForm(name, email, message)), {
                 offlineFormStateLiveData.postValue(OfflineFormState.SENT_SUCCESSFULLY)
             }) {
                 offlineFormStateLiveData.postValue(OfflineFormState.FAILED_TO_SEND)

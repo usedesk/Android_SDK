@@ -22,6 +22,8 @@ internal class ArticlesPage : UsedeskFragment() {
 
     private lateinit var binding: Binding
 
+    private lateinit var articlesAdapter: ArticlesAdapter
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -43,6 +45,11 @@ internal class ArticlesPage : UsedeskFragment() {
             }
         }
 
+        articlesAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        viewModel.articleInfoListLiveData.observe(viewLifecycleOwner) {
+            showInstead(binding.rvItems, binding.pbLoading, it != null)
+        }
+
         return binding.rootView
     }
 
@@ -54,20 +61,11 @@ internal class ArticlesPage : UsedeskFragment() {
     fun init(categoryId: Long) {
         viewModel.init(categoryId)
 
-        ArticlesAdapter(binding.rvItems,
-                viewLifecycleOwner,
-                viewModel) { articleInfo ->
+        articlesAdapter = ArticlesAdapter(binding.rvItems) { articleInfo ->
             getParentListener<IOnArticleClickListener>()?.onArticleClick(
                     articleInfo.categoryId,
                     articleInfo.id,
                     articleInfo.title)
-        }
-
-        showInstead(binding.pbLoading, binding.rvItems)
-        viewModel.articleInfoListLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                showInstead(binding.rvItems, binding.pbLoading)
-            }
         }
     }
 

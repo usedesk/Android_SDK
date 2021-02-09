@@ -28,8 +28,13 @@ object UsedeskKnowledgeBaseSdk {
     }
 
     @JvmStatic
-    fun getInstance(): IUsedeskKnowledgeBase {
+    fun getInstance(): IUsedeskKnowledgeBase? {
         return instanceBox?.knowledgeBaseSdk
+    }
+
+    @JvmStatic
+    fun requireInstance(): IUsedeskKnowledgeBase {
+        return getInstance()
                 ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
     }
 

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
@@ -13,20 +14,22 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticlesSearchAdapter(
         recyclerView: RecyclerView,
-        lifecycleOwner: LifecycleOwner,
-        viewModel: ArticlesSearchViewModel,
         private val onArticleClick: (UsedeskArticleContent) -> Unit
-) : RecyclerView.Adapter<ArticlesSearchAdapter.ArticleViewHolder>() {
+) : RecyclerView.Adapter<ArticlesSearchAdapter.ArticleViewHolder>(), IUsedeskAdapter<ArticlesSearchViewModel> {
 
-    private var items = listOf<UsedeskArticleContent>()
+    private var articles = listOf<UsedeskArticleContent>()
 
     init {
         recyclerView.adapter = this
+    }
 
+    override fun onLiveData(viewModel: ArticlesSearchViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.articlesLiveData.observe(lifecycleOwner) {
-            if (it != null) {
-                this.items = it
-                notifyDataSetChanged()
+            (it ?: listOf()).apply {
+                if (articles != this) {
+                    articles = this
+                    notifyDataSetChanged()
+                }
             }
         }
     }
@@ -40,10 +43,10 @@ internal class ArticlesSearchAdapter(
     }
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
-        articleViewHolder.bind(items[i])
+        articleViewHolder.bind(articles[i])
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = articles.size
 
     inner class ArticleViewHolder(
             private val binding: Binding

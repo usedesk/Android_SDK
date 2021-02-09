@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
@@ -13,19 +14,23 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesAdapter internal constructor(
         recyclerView: RecyclerView,
-        lifecycleOwner: LifecycleOwner,
-        private val viewModel: CategoriesViewModel,
         private val onCategoryClick: (Long, String) -> Unit
-) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
+) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>(), IUsedeskAdapter<CategoriesViewModel> {
 
-    private var categoryList = listOf<UsedeskCategory>()
+    private var categories = listOf<UsedeskCategory>()
 
     init {
         recyclerView.adapter = this
+    }
 
+    override fun onLiveData(viewModel: CategoriesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.categoriesLiveData.observe(lifecycleOwner) {
-            categoryList = it
-            notifyDataSetChanged()
+            (it ?: listOf()).apply {
+                if (categories != this) {
+                    categories = this
+                    notifyDataSetChanged()
+                }
+            }
         }
     }
 
@@ -38,10 +43,10 @@ internal class CategoriesAdapter internal constructor(
     }
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
-        sectionViewHolder.bind(categoryList[i])
+        sectionViewHolder.bind(categories[i])
     }
 
-    override fun getItemCount(): Int = categoryList.size
+    override fun getItemCount(): Int = categories.size
 
     inner class SectionViewHolder(
             private val binding: Binding

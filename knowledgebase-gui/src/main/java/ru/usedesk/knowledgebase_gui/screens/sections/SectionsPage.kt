@@ -20,6 +20,8 @@ internal class SectionsPage : UsedeskFragment() {
     private val viewModel: SectionsViewModel by viewModels()
     private lateinit var binding: Binding
 
+    private lateinit var sectionsAdapter: SectionsAdapter
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -35,17 +37,14 @@ internal class SectionsPage : UsedeskFragment() {
                 }
             }
 
-            SectionsAdapter(binding.rvItems,
-                    viewLifecycleOwner,
-                    viewModel) { id, title ->
+            sectionsAdapter = SectionsAdapter(binding.rvItems) { id, title ->
                 getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
             }
+        }
 
-            viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
-                if (it != null) {
-                    showInstead(binding.rvItems, binding.pbLoading)
-                }
-            }
+        sectionsAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
+            showInstead(binding.rvItems, binding.pbLoading, it != null)
         }
 
         return binding.rootView

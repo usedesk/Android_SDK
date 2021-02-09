@@ -7,16 +7,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.TextChangeListener
 import ru.usedesk.common_gui.UsedeskBinding
 
 internal class MessagePanelAdapter(
         private val binding: Binding,
         private val viewModel: ChatViewModel,
-        lifecycleOwner: LifecycleOwner,
         onClickAttach: View.OnClickListener
-) {
+) : IUsedeskAdapter<ChatViewModel> {
 
     private val attachedFilesAdapter: AttachedFilesAdapter
 
@@ -30,21 +29,15 @@ internal class MessagePanelAdapter(
             viewModel.onMessageChanged(it)
         })
         attachedFilesAdapter = AttachedFilesAdapter(viewModel, binding.rvAttachedFiles)
+    }
 
-        onFileInfoList(viewModel.fileInfoListLiveData.value)
-
-        viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
-            onFileInfoList(it)
-        }
+    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+        attachedFilesAdapter.onLiveData(viewModel, lifecycleOwner)
     }
 
     private fun onSendClick() {
         viewModel.onSend(binding.etMessage.text.toString().trim { it <= ' ' })
         binding.etMessage.setText("")
-    }
-
-    private fun onFileInfoList(usedeskFileInfoList: List<UsedeskFileInfo>?) {
-        attachedFilesAdapter.update(usedeskFileInfoList ?: listOf())
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

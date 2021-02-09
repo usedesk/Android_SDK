@@ -13,11 +13,11 @@ import ru.usedesk.common_gui.*
 
 internal class OfflineFormAdapter(
         private val binding: Binding,
+        private val rootStyleValues: UsedeskResourceManager.StyleValues,
         private val viewModel: ChatViewModel,
-        lifecycleOwner: LifecycleOwner,
         private val onSuccessfully: () -> Unit,
         private val onFailed: () -> Unit
-) {
+) : IUsedeskAdapter<ChatViewModel> {
 
     init {
         binding.tvSend.setOnClickListener {
@@ -32,55 +32,60 @@ internal class OfflineFormAdapter(
         binding.etName.setText(viewModel.configuration.clientName)
         binding.etEmail.setText(viewModel.configuration.clientEmail)
 
-        viewModel.offlineFormStateLiveData.observe(lifecycleOwner) {
-            onState(it)
-        }
 
         binding.etName.addTextChangedListener(TextChangeListener {
             viewModel.onOfflineFormNameChanged()
         })
-        viewModel.nameErrorLiveData.observe(lifecycleOwner) {
-            binding.tilName.error = if (it) {
-                showKeyboard(binding.etName)
-                binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_name_error)
-                        .getString(R.attr.usedesk_text_1)
-            } else {
-                null
-            }
-        }
 
         binding.etEmail.addTextChangedListener(TextChangeListener {
             viewModel.onOfflineFormEmailChanged()
         })
-        viewModel.emailErrorLiveData.observe(lifecycleOwner) {
-            binding.tilEmail.error = if (it) {
-                showKeyboard(binding.etEmail)
-                binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_email_error)
-                        .getString(R.attr.usedesk_text_1)
-            } else {
-                null
-            }
-        }
 
         binding.etMessage.addTextChangedListener(TextChangeListener {
             viewModel.onOfflineFormMessageChanged()
             updateActionButton(it)
         })
 
-        viewModel.messageErrorLiveData.observe(lifecycleOwner) {
-            binding.tilMessage.error = if (it) {
-                showKeyboard(binding.etMessage)
+        updateActionButton("")
+    }
+
+    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+        viewModel.offlineFormStateLiveData.observe(lifecycleOwner) {
+            onState(it)
+        }
+
+        viewModel.nameErrorLiveData.observe(lifecycleOwner) {
+            binding.tilName.error = if (it) {
+                showKeyboard(binding.etName)
                 binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_message_error)
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_name_input_layout)
                         .getString(R.attr.usedesk_text_1)
             } else {
                 null
             }
         }
 
-        updateActionButton("")
+        viewModel.emailErrorLiveData.observe(lifecycleOwner) {
+            binding.tilEmail.error = if (it) {
+                showKeyboard(binding.etEmail)
+                binding.styleValues
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_email_input_layout)
+                        .getString(R.attr.usedesk_text_1)
+            } else {
+                null
+            }
+        }
+
+        viewModel.messageErrorLiveData.observe(lifecycleOwner) {
+            binding.tilMessage.error = if (it) {
+                showKeyboard(binding.etMessage)
+                binding.styleValues
+                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_message_input_layout)
+                        .getString(R.attr.usedesk_text_1)
+            } else {
+                null
+            }
+        }
     }
 
     private fun updateActionButton(message: String) {
@@ -92,10 +97,7 @@ internal class OfflineFormAdapter(
             R.attr.usedesk_chat_screen_offline_form_action_enabled_background
         }
 
-        val colorId = UsedeskResourceManager.getStyleValues(
-                binding.rootView.context,
-                R.style.Usedesk_Chat_Screen
-        ).getColor(attr)
+        val colorId = rootStyleValues.getColor(attr)
         binding.lAction.setBackgroundColor(colorId)
     }
 

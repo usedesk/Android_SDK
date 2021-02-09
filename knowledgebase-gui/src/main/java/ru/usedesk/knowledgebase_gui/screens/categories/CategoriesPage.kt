@@ -21,6 +21,8 @@ internal class CategoriesPage : UsedeskFragment() {
 
     private lateinit var binding: Binding
 
+    private lateinit var categoriesAdapter: CategoriesAdapter
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -41,6 +43,11 @@ internal class CategoriesPage : UsedeskFragment() {
             }
         }
 
+        categoriesAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        viewModel.categoriesLiveData.observe(viewLifecycleOwner) {
+            showInstead(binding.rvItems, binding.pbLoading, it != null)
+        }
+
         return binding.rootView
     }
 
@@ -52,17 +59,8 @@ internal class CategoriesPage : UsedeskFragment() {
     fun init(sectionId: Long) {
         viewModel.init(sectionId)
 
-        CategoriesAdapter(binding.rvItems,
-                viewLifecycleOwner,
-                viewModel) { id, title ->
+        categoriesAdapter = CategoriesAdapter(binding.rvItems) { id, title ->
             getParentListener<IOnCategoryClickListener>()?.onCategoryClick(id, title)
-        }
-
-        showInstead(binding.pbLoading, binding.rvItems)
-        viewModel.categoriesLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                showInstead(binding.rvItems, binding.pbLoading)
-            }
         }
     }
 

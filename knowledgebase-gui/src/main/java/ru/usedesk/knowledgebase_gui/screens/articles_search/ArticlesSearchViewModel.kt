@@ -8,10 +8,14 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 internal class ArticlesSearchViewModel : UsedeskViewModel() {
 
     val articlesLiveData = MutableLiveData<List<UsedeskArticleContent>>()
+    private var lastQuery: String = ""
 
     fun onSearchQuery(searchQuery: String) {
-        doIt(UsedeskKnowledgeBaseSdk.getInstance().getArticlesRx(searchQuery), onValue = {
-            articlesLiveData.postValue(it)
-        })
+        if (articlesLiveData.value == null || lastQuery != searchQuery) {
+            lastQuery = searchQuery
+            doIt(UsedeskKnowledgeBaseSdk.requireInstance().getArticlesRx(searchQuery), onValue = {
+                articlesLiveData.postValue(it)
+            })
+        }
     }
 }

@@ -10,7 +10,7 @@ internal class CategoriesViewModel : UsedeskViewModel() {
     val categoriesLiveData = MutableLiveData<List<UsedeskCategory>>()
 
     fun init(sectionId: Long) {
-        doIt(UsedeskKnowledgeBaseSdk.getInstance()
+        doIt(UsedeskKnowledgeBaseSdk.requireInstance()
                 .getCategoriesRx(sectionId), onValue = {
             categoriesLiveData.postValue(it)
         })

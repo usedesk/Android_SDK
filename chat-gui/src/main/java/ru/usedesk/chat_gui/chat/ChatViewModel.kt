@@ -30,7 +30,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     private lateinit var usedeskChat: IUsedeskChat
 
     fun init() {
-        usedeskChat = UsedeskChatSdk.getInstance()
+        usedeskChat = UsedeskChatSdk.requireInstance()
 
         clearFileInfoList()
         actionListenerRx = object : IUsedeskActionListenerRx() {
@@ -86,8 +86,7 @@ internal class ChatViewModel : UsedeskViewModel() {
                 }
             }
         }
-        UsedeskChatSdk.getInstance()
-                .addActionListener(actionListenerRx)
+        usedeskChat.addActionListener(actionListenerRx)
     }
 
     fun onMessageChanged(message: String) {
@@ -109,7 +108,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     override fun onCleared() {
         super.onCleared()
         UsedeskChatSdk.getInstance()
-                .removeActionListener(actionListenerRx)
+                ?.removeActionListener(actionListenerRx)
         UsedeskChatSdk.release(false)
     }
 
@@ -137,7 +136,7 @@ internal class ChatViewModel : UsedeskViewModel() {
 
         if (nameIsValid && emailIsValid && messageIsValid) {
             offlineFormStateLiveData.postValue(OfflineFormState.SENDING)
-            doIt(UsedeskChatSdk.getInstance().sendRx(UsedeskOfflineForm(name, email, message)), {
+            doIt(UsedeskChatSdk.requireInstance().sendRx(UsedeskOfflineForm(name, email, message)), {
                 offlineFormStateLiveData.postValue(OfflineFormState.SENT_SUCCESSFULLY)
             }) {
                 offlineFormStateLiveData.postValue(OfflineFormState.FAILED_TO_SEND)

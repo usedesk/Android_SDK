@@ -34,9 +34,13 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun getInstance(): IUsedeskChat {
+    fun getInstance(): IUsedeskChat? {
         return instanceBox?.usedeskChatSdk
-                ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
+    }
+
+    @JvmStatic
+    fun requireInstance(): IUsedeskChat {
+        return getInstance() ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
     }
 
     /**

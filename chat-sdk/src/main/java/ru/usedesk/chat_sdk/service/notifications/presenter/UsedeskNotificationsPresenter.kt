@@ -13,7 +13,7 @@ class UsedeskNotificationsPresenter {
     private lateinit var actionListenerRx: IUsedeskActionListenerRx
 
     fun init(onModel: (UsedeskNotificationsModel?) -> Unit) {
-        UsedeskChatSdk.getInstance().apply {
+        UsedeskChatSdk.requireInstance().apply {
             actionListenerRx = object : IUsedeskActionListenerRx() {
                 override fun onNewMessageObservable(
                         newMessageObservable: Observable<UsedeskMessage>
@@ -43,6 +43,6 @@ class UsedeskNotificationsPresenter {
 
     fun onClear() {
         UsedeskChatSdk.getInstance()
-                .removeActionListener(actionListenerRx)
+                ?.removeActionListener(actionListenerRx)
     }
 }

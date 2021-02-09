@@ -21,6 +21,8 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     private val viewModel: ArticlesSearchViewModel by viewModels()
     private lateinit var binding: Binding
 
+    private lateinit var articlesSearchAdapter: ArticlesSearchAdapter
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -40,36 +42,35 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                 }
             }
 
-            ArticlesSearchAdapter(binding.rvItems,
-                    viewLifecycleOwner,
-                    viewModel) { articleContent ->
+            articlesSearchAdapter = ArticlesSearchAdapter(binding.rvItems) { articleContent ->
                 getParentListener<IOnArticleClickListener>()?.onArticleClick(
                         articleContent.categoryId,
                         articleContent.id,
                         articleContent.title)
             }
 
-            viewModel.articlesLiveData.observe(viewLifecycleOwner) {
-                when {
-                    it == null -> {
-                        binding.pbLoading.visibility = View.VISIBLE
-                        binding.tvMessage.visibility = View.GONE
-                        binding.rvItems.visibility = View.GONE
-                    }
-                    it.isEmpty() -> {
-                        binding.pbLoading.visibility = View.GONE
-                        binding.tvMessage.visibility = View.VISIBLE
-                        binding.rvItems.visibility = View.GONE
-                    }
-                    else -> {
-                        binding.pbLoading.visibility = View.GONE
-                        binding.tvMessage.visibility = View.GONE
-                        binding.rvItems.visibility = View.VISIBLE
-                    }
+            viewModel.onSearchQuery("")
+        }
+
+        articlesSearchAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        viewModel.articlesLiveData.observe(viewLifecycleOwner) {
+            when {
+                it == null -> {
+                    binding.pbLoading.visibility = View.VISIBLE
+                    binding.tvMessage.visibility = View.GONE
+                    binding.rvItems.visibility = View.GONE
+                }
+                it.isEmpty() -> {
+                    binding.pbLoading.visibility = View.GONE
+                    binding.tvMessage.visibility = View.VISIBLE
+                    binding.rvItems.visibility = View.GONE
+                }
+                else -> {
+                    binding.pbLoading.visibility = View.GONE
+                    binding.tvMessage.visibility = View.GONE
+                    binding.rvItems.visibility = View.VISIBLE
                 }
             }
-
-            viewModel.onSearchQuery("")
         }
 
         return binding.rootView

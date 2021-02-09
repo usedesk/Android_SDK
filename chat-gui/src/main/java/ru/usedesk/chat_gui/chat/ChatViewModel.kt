@@ -15,8 +15,6 @@ internal class ChatViewModel : UsedeskViewModel() {
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>>(listOf())
-    val newMessageLiveData = MutableLiveData<UsedeskMessage>()
-    val messageUpdateLiveData = MutableLiveData<UsedeskMessage>()
     val chatStateLiveData = MutableLiveData(ChatState.LOADING)
 
     val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
@@ -28,6 +26,8 @@ internal class ChatViewModel : UsedeskViewModel() {
     val configuration = UsedeskChatSdk.requireConfiguration()
 
     private lateinit var usedeskChat: IUsedeskChat
+
+    private var messages: List<UsedeskMessage> = listOf()
 
     fun init() {
         usedeskChat = UsedeskChatSdk.requireInstance()
@@ -45,28 +45,13 @@ internal class ChatViewModel : UsedeskViewModel() {
                 }
             }
 
-            override fun onNewMessageObservable(
-                    newMessageObservable: Observable<UsedeskMessage>
-            ): Disposable? {
-                return newMessageObservable.subscribe {
-                    newMessageLiveData.postValue(it)
-                }
-            }
-
             override fun onMessagesObservable(
                     messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
                 return messagesObservable.subscribe {
-                    messagesLiveData.postValue(it)
+                    messages = it
+                    messagesLiveData.postValue(messages)
                     chatStateLiveData.postValue(ChatState.CHAT)
-                }
-            }
-
-            override fun onMessageUpdateObservable(
-                    messageUpdateObservable: Observable<UsedeskMessage>
-            ): Disposable? {
-                return messageUpdateObservable.subscribe {
-                    messageUpdateLiveData.postValue(it)
                 }
             }
 

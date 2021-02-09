@@ -15,10 +15,9 @@ internal class OfflineFormAdapter(
         private val binding: Binding,
         private val rootStyleValues: UsedeskResourceManager.StyleValues,
         private val viewModel: ChatViewModel,
-        lifecycleOwner: LifecycleOwner,
         private val onSuccessfully: () -> Unit,
         private val onFailed: () -> Unit
-) {
+) : IUsedeskAdapter<ChatViewModel> {
 
     init {
         binding.tvSend.setOnClickListener {
@@ -33,13 +32,28 @@ internal class OfflineFormAdapter(
         binding.etName.setText(viewModel.configuration.clientName)
         binding.etEmail.setText(viewModel.configuration.clientEmail)
 
-        viewModel.offlineFormStateLiveData.observe(lifecycleOwner) {
-            onState(it)
-        }
 
         binding.etName.addTextChangedListener(TextChangeListener {
             viewModel.onOfflineFormNameChanged()
         })
+
+        binding.etEmail.addTextChangedListener(TextChangeListener {
+            viewModel.onOfflineFormEmailChanged()
+        })
+
+        binding.etMessage.addTextChangedListener(TextChangeListener {
+            viewModel.onOfflineFormMessageChanged()
+            updateActionButton(it)
+        })
+
+        updateActionButton("")
+    }
+
+    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+        viewModel.offlineFormStateLiveData.observe(lifecycleOwner) {
+            onState(it)
+        }
+
         viewModel.nameErrorLiveData.observe(lifecycleOwner) {
             binding.tilName.error = if (it) {
                 showKeyboard(binding.etName)
@@ -51,9 +65,6 @@ internal class OfflineFormAdapter(
             }
         }
 
-        binding.etEmail.addTextChangedListener(TextChangeListener {
-            viewModel.onOfflineFormEmailChanged()
-        })
         viewModel.emailErrorLiveData.observe(lifecycleOwner) {
             binding.tilEmail.error = if (it) {
                 showKeyboard(binding.etEmail)
@@ -65,11 +76,6 @@ internal class OfflineFormAdapter(
             }
         }
 
-        binding.etMessage.addTextChangedListener(TextChangeListener {
-            viewModel.onOfflineFormMessageChanged()
-            updateActionButton(it)
-        })
-
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
             binding.tilMessage.error = if (it) {
                 showKeyboard(binding.etMessage)
@@ -80,8 +86,6 @@ internal class OfflineFormAdapter(
                 null
             }
         }
-
-        updateActionButton("")
     }
 
     private fun updateActionButton(message: String) {

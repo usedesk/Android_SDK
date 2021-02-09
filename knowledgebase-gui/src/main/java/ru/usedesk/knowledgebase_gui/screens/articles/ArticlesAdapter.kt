@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
@@ -12,19 +13,23 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 internal class ArticlesAdapter(
         recyclerView: RecyclerView,
-        lifecycleOwner: LifecycleOwner,
-        private val viewModel: ArticlesViewModel,
         private val onArticleInfoClick: (UsedeskArticleInfo) -> Unit
-) : RecyclerView.Adapter<ArticlesAdapter.ArticleViewHolder>() {
+) : RecyclerView.Adapter<ArticlesAdapter.ArticleViewHolder>(), IUsedeskAdapter<ArticlesViewModel> {
 
     private var items = listOf<UsedeskArticleInfo>()
 
     init {
         recyclerView.adapter = this
+    }
 
+    override fun onLiveData(viewModel: ArticlesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.articleInfoListLiveData.observe(lifecycleOwner) {
-            items = it
-            notifyDataSetChanged()
+            (it ?: listOf()).apply {
+                if (items != this) {
+                    items = this
+                    notifyDataSetChanged()
+                }
+            }
         }
     }
 

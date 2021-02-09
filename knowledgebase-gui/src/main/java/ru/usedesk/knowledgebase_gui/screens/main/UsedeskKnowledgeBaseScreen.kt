@@ -61,10 +61,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 onBackPressed()
             })
 
-            viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-                showSearchQuery(it)
-            })
-
             UsedeskKnowledgeBaseSdk.init(requireContext())
 
             val sectionsTitle = binding.styleValues
@@ -74,6 +70,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
             hideKeyboard(binding.rootView)
         }
+
+        viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
+            showSearchQuery(it)
+        })
+
         return binding.rootView
     }
 

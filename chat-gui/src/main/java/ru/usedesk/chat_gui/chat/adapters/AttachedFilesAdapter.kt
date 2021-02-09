@@ -4,19 +4,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.showImage
-import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.*
 
 internal class AttachedFilesAdapter(
         private val chatViewModel: ChatViewModel,
         private val recyclerView: RecyclerView
-) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>(), IUsedeskAdapter<ChatViewModel> {
 
     private var files: List<UsedeskFileInfo> = listOf()
 
@@ -24,10 +22,18 @@ internal class AttachedFilesAdapter(
         recyclerView.adapter = this
     }
 
-    fun update(attachedFiles: List<UsedeskFileInfo>) {
-        files = attachedFiles
-        notifyDataSetChanged()
-        recyclerView.visibility = visibleGone(files.isNotEmpty())
+    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+        viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
+            onItems(it ?: listOf())
+        }
+    }
+
+    private fun onItems(attachedFiles: List<UsedeskFileInfo>) {
+        if (files != attachedFiles) {
+            files = attachedFiles
+            notifyDataSetChanged()
+            recyclerView.visibility = visibleGone(files.isNotEmpty())
+        }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {

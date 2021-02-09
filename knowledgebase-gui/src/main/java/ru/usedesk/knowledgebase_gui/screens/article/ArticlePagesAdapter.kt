@@ -5,15 +5,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
+import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.knowledgebase_gui.screens.article.item.ArticleItem
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 internal class ArticlePagesAdapter(
         private val viewPager: ViewPager,
         fragmentManager: FragmentManager,
-        private val viewModel: ArticlePageViewModel,
-        lifecycleOwner: LifecycleOwner
-) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        private val viewModel: ArticlePageViewModel
+) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT),
+        IUsedeskAdapter<ArticlePageViewModel> {
 
     private var items: List<UsedeskArticleInfo> = listOf()
 
@@ -31,14 +32,20 @@ internal class ArticlePagesAdapter(
             }
         })
         viewPager.adapter = this
+    }
 
-        viewModel.articlesLiveData.observe(lifecycleOwner) { articles ->
-            items = articles ?: listOf()
-            notifyDataSetChanged()
+    override fun onLiveData(viewModel: ArticlePageViewModel, lifecycleOwner: LifecycleOwner) {
+        viewModel.articlesLiveData.observe(lifecycleOwner) {
+            (it ?: listOf()).apply {
+                if (items != this) {
+                    items = this
+                    notifyDataSetChanged()
+                }
+            }
         }
 
         viewModel.selectedPositionLiveData.observe(lifecycleOwner) { position ->
-            if (viewPager.currentItem != position) {
+            if (position != null && viewPager.currentItem != position) {
                 viewPager.setCurrentItem(position, false)
             }
         }

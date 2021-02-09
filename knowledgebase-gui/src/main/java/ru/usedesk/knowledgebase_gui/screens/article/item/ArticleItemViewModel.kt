@@ -11,10 +11,10 @@ internal class ArticleItemViewModel : UsedeskViewModel() {
 
     fun init(articleId: Long) {
         doInit {
-            doIt(UsedeskKnowledgeBaseSdk.getInstance()
+            doIt(UsedeskKnowledgeBaseSdk.requireInstance()
                     .getArticleRx(articleId), onValue = { articleContent ->
                 articleContentLiveData.postValue(ArticleContentState.loaded(articleContent))
-                doIt(UsedeskKnowledgeBaseSdk.getInstance().addViewsRx(articleContent.id))
+                doIt(UsedeskKnowledgeBaseSdk.requireInstance().addViewsRx(articleContent.id))
             }, onThrowable = {
                 articleContentLiveData.postValue(ArticleContentState.failed())
             })
@@ -22,12 +22,12 @@ internal class ArticleItemViewModel : UsedeskViewModel() {
     }
 
     fun sendArticleRating(articleId: Long, good: Boolean) {
-        justDoIt(UsedeskKnowledgeBaseSdk.getInstance()
+        justDoIt(UsedeskKnowledgeBaseSdk.requireInstance()
                 .sendRatingRx(articleId, good))
     }
 
     fun sendArticleRating(articleId: Long, message: String) {
-        justDoIt(UsedeskKnowledgeBaseSdk.getInstance()
+        justDoIt(UsedeskKnowledgeBaseSdk.requireInstance()
                 .sendRatingRx(articleId, message))
     }
 

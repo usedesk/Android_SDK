@@ -102,7 +102,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             putString(COMMON_TITLE_KEY, title)
         }
         childFragmentManager.beginTransaction()
-                .addToBackStack(fragment.javaClass.name)
                 .add(R.id.container, fragment)
                 .commit()
     }

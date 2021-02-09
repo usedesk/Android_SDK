@@ -10,7 +10,7 @@ internal class ArticlesViewModel : UsedeskViewModel() {
     val articleInfoListLiveData = MutableLiveData<List<UsedeskArticleInfo>>()
 
     fun init(categoryId: Long) {
-        doIt(UsedeskKnowledgeBaseSdk.getInstance()
+        doIt(UsedeskKnowledgeBaseSdk.requireInstance()
                 .getArticlesRx(categoryId), onValue = {
             articleInfoListLiveData.postValue(it)
         })

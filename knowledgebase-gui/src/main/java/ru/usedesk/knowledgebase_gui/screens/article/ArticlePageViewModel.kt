@@ -14,7 +14,7 @@ internal class ArticlePageViewModel : UsedeskViewModel() {
     fun init(categoryId: Long,
              articleId: Long) {
         doInit {
-            doIt(UsedeskKnowledgeBaseSdk.getInstance()
+            doIt(UsedeskKnowledgeBaseSdk.requireInstance()
                     .getArticlesRx(categoryId), onValue = { articles ->
                 articlesLiveData.postValue(articles)
 

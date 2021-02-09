@@ -10,7 +10,7 @@ internal class ArticlesSearchViewModel : UsedeskViewModel() {
     val articlesLiveData = MutableLiveData<List<UsedeskArticleContent>>()
 
     fun onSearchQuery(searchQuery: String) {
-        doIt(UsedeskKnowledgeBaseSdk.getInstance().getArticlesRx(searchQuery), onValue = {
+        doIt(UsedeskKnowledgeBaseSdk.requireInstance().getArticlesRx(searchQuery), onValue = {
             articlesLiveData.postValue(it)
         })
     }

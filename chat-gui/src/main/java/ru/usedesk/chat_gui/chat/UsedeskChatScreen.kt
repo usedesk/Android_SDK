@@ -104,7 +104,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 },
                 {
                     val sendFailedStyleValues = binding.styleValues
-                            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed)
+                            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed_snackbar)
                     showSnackbarError(sendFailedStyleValues)
                 })
 

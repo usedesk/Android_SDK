@@ -1,10 +1,10 @@
 <resources>
 
     <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
-        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title</item>
+        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title.Text</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/usedesk_background_search_input</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText</item>
-        <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel</item>
+        <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_divider">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Divider</item>
         <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
@@ -48,7 +48,7 @@
         <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Title" parent="Usedesk.Common.Toolbar.Title.Text">
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Title.Text" parent="Usedesk.Common.Toolbar.Title.Text">
         <item name="usedesk_text_1">@string/usedesk_knowledgebase</item>
     </style>
 
@@ -65,7 +65,7 @@
         <item name="android:fontFamily">@font/roboto_regular</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel" parent="">
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">8dp</item>
@@ -148,11 +148,11 @@
     <style name="Usedesk.KnowledgeBase.Articles.Page" parent="Usedesk.KnowledgeBase.List.Page" />
 
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article" parent="">
-        <item name="usedesk_knowledgebase_articles_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Title</item>
+        <item name="usedesk_knowledgebase_articles_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text</item>
         <item name="usedesk_knowledgebase_articles_page_article_divider">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Divider</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Title" parent="">
+    <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">17sp</item>
@@ -172,21 +172,21 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page" parent="Usedesk.KnowledgeBase.List.Page">
-        <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Title</item>
+        <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Title.Text</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Title" parent="Usedesk.KnowledgeBase.List.Page.Message.Text">
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Title.Text" parent="Usedesk.KnowledgeBase.List.Page.Message.Text">
         <item name="usedesk_text_1">@string/usedesk_articles_not_found</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article" parent="">
-        <item name="usedesk_knowledgebase_article_search_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title</item>
-        <item name="usedesk_knowledgebase_article_search_page_article_description">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description</item>
-        <item name="usedesk_knowledgebase_article_search_page_article_path">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path</item>
+        <item name="usedesk_knowledgebase_article_search_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text</item>
+        <item name="usedesk_knowledgebase_article_search_page_article_description">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text</item>
+        <item name="usedesk_knowledgebase_article_search_page_article_path">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text</item>
         <item name="usedesk_knowledgebase_article_search_page_article_divider">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Divider</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title" parent="">
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">20dp</item>
@@ -197,7 +197,7 @@
         <item name="android:fontFamily">@font/sf_ui_display_medium</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description" parent="">
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">20dp</item>
@@ -209,7 +209,7 @@
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path" parent="">
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">20dp</item>
@@ -366,7 +366,7 @@
         <item name="android:paddingLeft">22dp</item>
         <item name="android:paddingRight">22dp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">#26BC00</item>
+        <item name="android:textColor">@color/usedesk_green</item>
         <item name="android:textSize">12sp</item>
         <item name="usedesk_text_1">@string/usedesk_yes</item>
         <item name="usedesk_text_2">@string/usedesk_send</item>
@@ -399,7 +399,7 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme" parent="">
-        <item name="colorAccent">#26BC00</item>
+        <item name="colorAccent">@color/usedesk_green</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text" parent="">

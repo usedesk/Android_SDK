@@ -38,7 +38,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             }
 
             downloadStatusStyleValues = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_show_file_download_status)
+                    .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
 
             binding.ivBack.setOnClickListener {
                 requireActivity().onBackPressed()

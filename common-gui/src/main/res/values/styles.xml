@@ -11,7 +11,7 @@
 
     <style name="Usedesk.Common.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog" />
 
-    <style name="Usedesk.Common.No.Permission" parent="">
+    <style name="Usedesk.Common.No.Permission.Snackbar" parent="">
         <item name="usedesk_text_1">@string/usedesk_need_permission</item>
         <item name="usedesk_text_2">@string/usedesk_settings</item>
         <item name="usedesk_text_color_1">@color/usedesk_white_2</item>

@@ -144,7 +144,7 @@ val usedeskChat = UsedeskChatSdk.init(requireContext())
 После инициализации можно получить экземпляр `IUsedeskChat` вызвав:
 
 ```
-val usedeskChat = UsedeskChatSdk.getInstance()
+val usedeskChat = UsedeskChatSdk.requireInstance()
 ```
 
 Теперь можно добавлять слушателей событий:
@@ -266,7 +266,7 @@ val usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
 После этого можно получить объект класса в любом месте:
 
 ```
-val usedeskKnowledgeBase = UsedeskKnowledgeBase.getInstance()
+val usedeskKnowledgeBase = UsedeskKnowledgeBase.requireInstance()
 ```
 
 Освободить объект:

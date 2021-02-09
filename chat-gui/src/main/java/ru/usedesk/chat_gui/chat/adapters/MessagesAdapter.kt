@@ -355,7 +355,7 @@ internal class MessagesAdapter(
                 .getStyleValues(R.attr.usedesk_chat_message_feedback_bad_image)
 
         private val thanksText = binding.styleValues
-                .getStyleValues(R.attr.usedesk_chat_message_feedback_thanks)
+                .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
                 .getString(R.attr.usedesk_text_1)
 
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {

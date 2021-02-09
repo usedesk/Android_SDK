@@ -6,7 +6,7 @@
     <attr name="usedesk_common_toolbar_action_image" format="reference" />
     <attr name="usedesk_common_toolbar_title_text" format="reference" />
 
-    <attr name="usedesk_common_no_permission" format="reference" />
+    <attr name="usedesk_common_no_permission_snackbar" format="reference" />
 
     <attr name="usedesk_text_1" format="string" />
     <attr name="usedesk_text_2" format="string" />

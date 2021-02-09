@@ -42,7 +42,7 @@ object UsedeskPermissionUtil {
                        fragment: Fragment,
                        onGranted: () -> Unit) {
         val noPermissionStyleValues = binding.styleValues
-                .getStyleValues(R.attr.usedesk_common_no_permission)
+                .getStyleValues(R.attr.usedesk_common_no_permission_snackbar)
 
         Dexter.withContext(binding.rootView.context)
                 .withPermission(permission)

@@ -39,14 +39,12 @@ public class UsedeskOkHttpClientFactory {
     public OkHttpClient createInstance() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 ProviderInstaller.installIfNeeded(appContext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 applyProtocol(builder, TlsVersion.TLS_1_2.javaName());
             } catch (Exception e) {

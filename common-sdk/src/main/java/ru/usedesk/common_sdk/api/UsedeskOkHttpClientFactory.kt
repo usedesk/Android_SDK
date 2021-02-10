@@ -23,14 +23,12 @@ class UsedeskOkHttpClientFactory(
 ) {
     fun createInstance(): OkHttpClient {
         return OkHttpClient.Builder().apply {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                 try {
                     ProviderInstaller.installIfNeeded(appContext)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-            }
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
                 try {
                     applyProtocol(this, TlsVersion.TLS_1_2.javaName())
                 } catch (e: Exception) {

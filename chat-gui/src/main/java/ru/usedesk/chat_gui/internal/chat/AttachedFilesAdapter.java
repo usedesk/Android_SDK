@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.internal.chat;
 
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,6 +12,7 @@ import java.util.List;
 
 import ru.usedesk.chat_gui.R;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFileInfo;
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.common_gui.internal.ImageUtils;
 
 
@@ -39,8 +39,7 @@ public class AttachedFilesAdapter extends RecyclerView.Adapter<AttachedFilesAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.usedesk_item_chat_attached_file, viewGroup, false));
+        return new ViewHolder(UsedeskViewCustomizer.getInstance().createView(viewGroup, R.layout.usedesk_item_chat_attached_file, R.style.Usedesk_Theme_Chat));
     }
 
     @Override

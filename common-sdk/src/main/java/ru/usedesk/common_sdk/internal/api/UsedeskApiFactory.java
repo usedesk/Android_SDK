@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -18,10 +17,13 @@ public class UsedeskApiFactory implements IUsedeskApiFactory {
 
     private final Gson gson;
     private final Map<String, Object> instanceMap = new HashMap<>();
+    private final UsedeskOkHttpClientFactory okHttpClientFactory;
 
     @Inject
-    public UsedeskApiFactory(@NonNull Gson gson) {
+    public UsedeskApiFactory(@NonNull Gson gson,
+                             @NonNull UsedeskOkHttpClientFactory okHttpClientFactory) {
         this.gson = gson;
+        this.okHttpClientFactory = okHttpClientFactory;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class UsedeskApiFactory implements IUsedeskApiFactory {
     private <API> API createInstance(String baseUrl, Class<API> apiClass) {
         return new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .client(new OkHttpClient.Builder().build())
+                .client(okHttpClientFactory.createInstance())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()

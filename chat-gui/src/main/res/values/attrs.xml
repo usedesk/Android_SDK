@@ -15,10 +15,8 @@
     <attr name="usedesk_message_panel_document_remove_icon" format="reference" />
     <!--MessageUser-->
     <attr name="usedesk_message_user_background" format="reference" />
-    <attr name="usedesk_message_user_background_color" format="reference" />
     <!--MessageOperator-->
     <attr name="usedesk_message_operator_background" format="reference" />
-    <attr name="usedesk_message_operator_background_color" format="reference" />
     <attr name="usedesk_message_operator_feedback_received" format="string" />
     <attr name="usedesk_message_operator_like" format="reference" />
     <attr name="usedesk_message_operator_dislike" format="reference" />

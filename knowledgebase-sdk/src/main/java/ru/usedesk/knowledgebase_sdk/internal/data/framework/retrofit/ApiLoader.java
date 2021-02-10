@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskHttpException;
@@ -30,7 +31,8 @@ public class ApiLoader implements IApiLoader {
     private Gson gson;
 
     @Inject
-    ApiLoader(ApiRetrofit apiRetrofit, Gson gson) {
+    ApiLoader(@NonNull ApiRetrofit apiRetrofit,
+              @NonNull Gson gson) {
         this.apiRetrofit = apiRetrofit;
         this.gson = gson;
     }
@@ -69,16 +71,16 @@ public class ApiLoader implements IApiLoader {
                 .getViews();
     }
 
-    private <T> T executeRequest(@NonNull Class<T> tClass, @NonNull Call<String> call)
+    private <T> T executeRequest(@NonNull Class<T> tClass, @NonNull Call<ResponseBody> call)
             throws UsedeskHttpException {
         try {
-            Response<String> sectionsResponse = call.execute();
+            Response<ResponseBody> sectionsResponse = call.execute();
 
             if (sectionsResponse.isSuccessful() && sectionsResponse.body() != null) {
                 try {
-                    return gson.fromJson(sectionsResponse.body(), tClass);
+                    return gson.fromJson(sectionsResponse.body().string(), tClass);
                 } catch (JsonSyntaxException | IllegalStateException e) {
-                    ApiError apiError = gson.fromJson(sectionsResponse.body(), ApiError.class);
+                    ApiError apiError = gson.fromJson(sectionsResponse.body().string(), ApiError.class);
                     UsedeskHttpException usedeskHttpException;
                     switch (apiError.getCode()) {
                         case SERVER_ERROR:

@@ -42,7 +42,7 @@ public class ViewCustomizer implements IUsedeskViewCustomizer {
     @Override
     public View createView(@NonNull ViewGroup viewGroup, int defaultId, int themeId) {
         return createView(LayoutInflater.from(viewGroup.getContext()),
-                getId(defaultId), viewGroup, false, themeId);
+                getId(defaultId), viewGroup, false, getId(themeId));
     }
 
 

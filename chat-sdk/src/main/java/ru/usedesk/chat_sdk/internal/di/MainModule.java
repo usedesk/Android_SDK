@@ -14,8 +14,6 @@ import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskActionListenerRx;
 import ru.usedesk.chat_sdk.external.entity.UsedeskChatConfiguration;
 import ru.usedesk.chat_sdk.external.service.notifications.presenter.UsedeskNotificationsPresenter;
-import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.HttpApiFactory;
-import ru.usedesk.chat_sdk.internal.data.framework._extra.retrofit.IHttpApiFactory;
 import ru.usedesk.chat_sdk.internal.data.framework.api.apifile.FileApi;
 import ru.usedesk.chat_sdk.internal.data.framework.api.apifile.IFileApi;
 import ru.usedesk.chat_sdk.internal.data.framework.configuration.ConfigurationLoader;
@@ -37,11 +35,13 @@ import ru.usedesk.chat_sdk.internal.data.repository.configuration.UserInfoReposi
 import ru.usedesk.chat_sdk.internal.domain.ChatInteractor;
 import ru.usedesk.common_sdk.internal.api.IUsedeskApiFactory;
 import ru.usedesk.common_sdk.internal.api.UsedeskApiFactory;
+import ru.usedesk.common_sdk.internal.api.UsedeskOkHttpClientFactory;
 import toothpick.config.Module;
 
 class MainModule extends Module {
 
-    MainModule(@NonNull Context appContext, @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
+    MainModule(@NonNull Context appContext,
+               @NonNull UsedeskChatConfiguration usedeskChatConfiguration,
                @NonNull IUsedeskActionListener actionListener) {
         bind(Context.class).toInstance(appContext);
         bind(ContentResolver.class).toInstance(appContext.getContentResolver());
@@ -64,7 +64,7 @@ class MainModule extends Module {
         bind(IFileInfoLoader.class).to(FileInfoLoader.class).singleton();
         bind(IHttpApiLoader.class).to(HttpApiLoader.class).singleton();
 
-        bind(IHttpApiFactory.class).to(HttpApiFactory.class).singleton();
+        bind(UsedeskOkHttpClientFactory.class).to(UsedeskOkHttpClientFactory.class).singleton();
         bind(Gson.class).toInstance(gson());
 
         bind(Scheduler.class).withName("work").toInstance(Schedulers.io());

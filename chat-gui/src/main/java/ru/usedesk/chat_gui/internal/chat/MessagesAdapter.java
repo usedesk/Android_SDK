@@ -2,7 +2,6 @@ package ru.usedesk.chat_gui.internal.chat;
 
 import android.text.Html;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,6 +28,7 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.common_gui.internal.ImageUtils;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -131,7 +131,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         protected final TextView timeTextView;
 
         TimeHolder(@NonNull ViewGroup viewGroup, int id) {
-            super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
+            super(UsedeskViewCustomizer.getInstance().createView(viewGroup, id, R.style.Usedesk_Theme_Chat));
 
             timeTextView = itemView.findViewById(R.id.tv_time);
         }

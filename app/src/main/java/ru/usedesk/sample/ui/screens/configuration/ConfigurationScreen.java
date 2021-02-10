@@ -2,6 +2,8 @@ package ru.usedesk.sample.ui.screens.configuration;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk;
 import ru.usedesk.common_sdk.entity.UsedeskEvent;
@@ -60,6 +64,16 @@ public class ConfigurationScreen extends Fragment {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+        initTil(binding.tilUrlChat);
+        initTil(binding.tilUrlOfflineForm);
+        initTil(binding.tilUrlToSendFile);
+        initTil(binding.tilUrlApi);
+        initTil(binding.tilCompanyId);
+        initTil(binding.tilAccountId);
+        initTil(binding.tilToken);
+        initTil(binding.tilClientEmail);
+        initTil(binding.tilClientPhoneNumber);
 
         return binding.getRoot();
     }
@@ -119,6 +133,30 @@ public class ConfigurationScreen extends Fragment {
         binding.switchKnowledgeBase.setChecked(configuration.isWithKnowledgeBase());
 
         viewModel.getConfiguration().removeObservers(getViewLifecycleOwner());
+    }
+
+    private void initTil(TextInputLayout inputLayout) {
+        inputLayout.getEditText().setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                inputLayout.setError(null);
+            }
+        });
+        inputLayout.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                inputLayout.setError(null);
+            }
+        });
     }
 
     private void onNewConfigurationValidation(@NonNull ConfigurationValidation configurationValidation) {

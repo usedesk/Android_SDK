@@ -7,7 +7,7 @@
         <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_divider">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Divider</item>
-        <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
+        <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Action.Image</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page" parent="">
@@ -23,6 +23,10 @@
         <item name="android:textColor">@color/usedesk_gray_cold_2</item>
         <item name="android:textSize">16sp</item>
         <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Action.Image" parent="Usedesk.Common.Toolbar.Action.Image">
+        <item name="srcCompat">@drawable/usedesk_ic_search</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image" parent="">

@@ -20,30 +20,22 @@
             app:contentInsetStart="0dp"
             app:title="">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="56dp">
 
                 <TextView
                     android:id="@+id/tv_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical|center_horizontal"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/sf_pro_display_semibold"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:singleLine="true"
-                    android:text="@string/title"
-                    android:textColor="@color/usedesk_black_2"
-                    android:textSize="20sp" />
+                    style="@style/Usedesk.Common.Toolbar.Title.Text"
+                    android:layout_width="match_parent"
+                    android:text="@string/title" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:layout_gravity="bottom"
                     android:background="@color/usedesk_gray_2" />
-            </LinearLayout>
+            </FrameLayout>
 
         </androidx.appcompat.widget.Toolbar>
 

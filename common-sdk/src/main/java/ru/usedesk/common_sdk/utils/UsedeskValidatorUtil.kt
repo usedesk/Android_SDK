@@ -34,7 +34,7 @@ object UsedeskValidatorUtil {
                 .replace("-", "")
                 .replace("(", "")
                 .replace(")", "")
-        return phone.length in 7..13 && Patterns.PHONE
+        return phone.length in 10..17 && Patterns.PHONE
                 .matcher(phone)
                 .matches()
     }

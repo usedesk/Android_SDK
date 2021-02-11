@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screens.article.ArticlePageViewModel
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import kotlin.math.max
 import kotlin.math.min
@@ -27,12 +28,17 @@ internal class ArticleItem : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private val viewModel: ArticleItemViewModel by viewModels()
+    private val parentViewModel: ArticlePageViewModel by viewModels(
+            ownerProducer = { requireParentFragment() }
+    )
 
     private lateinit var messageStyleValues: UsedeskResourceManager.StyleValues
     private lateinit var yesStyleValues: UsedeskResourceManager.StyleValues
     private lateinit var noStyleValues: UsedeskResourceManager.StyleValues
 
     private var scrollY = 0
+
+    private var currentArticleId: Long? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -93,6 +99,7 @@ internal class ArticleItem : UsedeskFragment() {
         }
 
         argsGetLong(ARTICLE_ID_KEY)?.also { articleId ->
+            currentArticleId = articleId
             viewModel.init(articleId)
         }
 
@@ -111,6 +118,14 @@ internal class ArticleItem : UsedeskFragment() {
                     else -> {
 
                     }
+                }
+            }
+        }
+
+        parentViewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { articleInfo ->
+            currentArticleId?.also {
+                if (articleInfo?.id != it) {
+                    showQuestion(it)
                 }
             }
         }

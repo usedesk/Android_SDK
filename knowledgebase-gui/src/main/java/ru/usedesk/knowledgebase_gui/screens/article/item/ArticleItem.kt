@@ -1,6 +1,7 @@
 package ru.usedesk.knowledgebase_gui.screens.article.item
 
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -134,7 +135,11 @@ internal class ArticleItem : UsedeskFragment() {
                     showQuestion(articleContent.id)
                 }
             }
-            loadData(articleContent.text, "text/html", null)
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+                loadData(articleContent.text, "text/html; charset=utf-8", "UTF-8")
+            } else {
+                loadData(articleContent.text, "text/html", null)
+            }
             setBackgroundColor(Color.TRANSPARENT)
             showInstead(this, binding.pbLoading, gone = false)
         }

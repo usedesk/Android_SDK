@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--KnowledgeBaseFragment-->
-    <attr name="usedesk_knowledgebase_support_title" format="string" />
-    <!--ArticleInfoItem-->
-    <attr name="usedesk_article_info_item_shows_text" format="string" />
+    <attr name="usedesk_knowledgebase_screen_support_button" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_background" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_image" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_cancel_text" format="reference" />
+    <attr name="usedesk_knowledgebase_screen_toolbar_search_divider" format="reference" />
 
-    <attr name="usedesk_item_section_icon_width" format="dimension" />
-    <attr name="usedesk_item_section_icon_height" format="dimension" />
+    <attr name="usedesk_knowledgebase_list_page_message_text" format="reference" />
 
-    <attr name="usedesk_item_article_info_title_marginTop" format="dimension" />
-    <attr name="usedesk_item_article_info_title_marginStart" format="dimension" />
+    <attr name="usedesk_knowledgebase_sections_page_section_thumbnail_image" format="reference" />
+    <attr name="usedesk_knowledgebase_sections_page_section_initials_text" format="reference" />
+    <attr name="usedesk_knowledgebase_sections_page_section_title_text" format="reference" />
+    <attr name="usedesk_knowledgebase_sections_page_section_forward_image" format="reference" />
+    <attr name="usedesk_knowledgebase_sections_page_section_divider" format="reference" />
 
-    <attr name="usedesk_item_article_info_shows_marginTop" format="dimension" />
-    <attr name="usedesk_item_article_info_shows_marginBottom" format="dimension" />
-    <attr name="usedesk_item_article_info_shows_marginEnd" format="dimension" />
+    <attr name="usedesk_knowledgebase_article_search_page_article_title" format="reference" />
+    <attr name="usedesk_knowledgebase_article_search_page_article_description" format="reference" />
+    <attr name="usedesk_knowledgebase_article_search_page_article_path" format="reference" />
+    <attr name="usedesk_knowledgebase_article_search_page_article_divider" format="reference" />
 
-    <attr name="usedesk_item_article_info_count_marginEnd" format="dimension" />
+    <attr name="usedesk_knowledgebase_articles_page_article_title" format="reference" />
+    <attr name="usedesk_knowledgebase_articles_page_article_divider" format="reference" />
 
-    <attr name="usedesk_item_category_title_text_size" format="dimension" />
-    <attr name="usedesk_item_section_title_text_size" format="dimension" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_title_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_message_edit_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_yes_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_rating_no_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_previous_image" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_previous_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_next_image" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_next_text" format="reference" />
 
-    <attr name="usedesk_fragment_article" format="reference" />
-    <attr name="usedesk_fragment_knowledge_base" format="reference" />
-    <attr name="usedesk_fragment_list" format="reference" />
-    <attr name="usedesk_item_articleinfo" format="reference" />
-    <attr name="usedesk_item_category" format="reference" />
-    <attr name="usedesk_item_section" format="reference" />
+    <attr name="usedesk_knowledgebase_categories_category_title_text" format="reference" />
+    <attr name="usedesk_knowledgebase_categories_category_description_text" format="reference" />
+    <attr name="usedesk_knowledgebase_categories_category_forward_image" format="reference" />
+    <attr name="usedesk_knowledgebase_categories_category_count_text" format="reference" />
+    <attr name="usedesk_knowledgebase_categories_category_divider" format="reference" />
 </resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/usedesk_chat_show_file_root_background"
+    android:clickable="true"
+    tools:ignore="KeyboardInaccessibleWidget"
+    tools:theme="@style/Usedesk.Chat.Show.File">
+
+    <LinearLayout
+        android:id="@+id/l_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        tools:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatImageView style="?attr/usedesk_chat_show_file_file_image" />
+
+        <TextView
+            android:id="@+id/tv_file_name"
+            style="?attr/usedesk_chat_show_file_name_text"
+            tools:text="file_name.zip" />
+
+        <TextView
+            android:id="@+id/tv_file_size"
+            style="?attr/usedesk_chat_show_file_size_text"
+            tools:text="29КБ" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/l_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/usedesk_chat_show_file_image_background"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/iv_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
+
+        <ImageView
+            android:id="@+id/iv_error"
+            style="?attr/usedesk_chat_show_file_error_image" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/l_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/usedesk_chat_show_file_blur_top_background">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:saveEnabled="false"
+            app:contentInsetEnd="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp"
+            app:title="">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                style="?attr/usedesk_chat_show_file_back_image" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="?attr/usedesk_chat_show_file_toolbar_text"
+                tools:text="Фильтр team" />
+
+        </androidx.appcompat.widget.Toolbar>
+    </eightbitlab.com.blurview.BlurView>
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/l_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?attr/usedesk_chat_show_file_blur_bottom_background">
+
+        <ImageView
+            android:id="@+id/iv_share"
+            style="?attr/usedesk_chat_show_file_share_image" />
+
+        <ImageView
+            android:id="@+id/iv_download"
+            style="?attr/usedesk_chat_show_file_download_image" />
+
+    </eightbitlab.com.blurview.BlurView>
+</FrameLayout>

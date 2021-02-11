@@ -4,69 +4,78 @@ import androidx.annotation.NonNull;
 
 public class Configuration {
 
+    private final String urlChat;
+    private final String urlOfflineForm;
+    private final String urlToSendFile;
+    private final String urlApi;
     private final String companyId;
-    private final String email;
-    private final String socketUrl;
-    private final String secureUrl;
     private final String accountId;
     private final String token;
+    private final String clientEmail;
     private final String clientName;
     private final String clientPhoneNumber;
     private final String clientAdditionalId;
-    private final String initClientMessage;
+    private final String clientInitMessage;
     private final String customAgentName;
     private final Boolean foregroundService;
-    private final Boolean customViews;
     private final Boolean withKnowledgeBase;
 
-    public Configuration(@NonNull String companyId,
-                         @NonNull String email,
-                         @NonNull String socketUrl,
-                         @NonNull String secureUrl,
-                         @NonNull String accountId,
-                         @NonNull String token,
-                         @NonNull String clientName,
-                         @NonNull String clientPhoneNumber,
-                         @NonNull String clientAdditionalId,
-                         @NonNull String initClientMessage,
-                         @NonNull String customAgentName,
-                         @NonNull Boolean foregroundService,
-                         @NonNull Boolean customViews,
-                         @NonNull Boolean withKnowledgeBase) {
+    public Configuration(
+            @NonNull String urlChat,
+            @NonNull String urlOfflineForm,
+            @NonNull String urlToSendFile,
+            @NonNull String urlApi,
+            @NonNull String companyId,
+            @NonNull String accountId,
+            @NonNull String token,
+            @NonNull String clientEmail,
+            @NonNull String clientName,
+            @NonNull String clientPhoneNumber,
+            @NonNull String clientAdditionalId,
+            @NonNull String clientInitMessage,
+            @NonNull String customAgentName,
+            @NonNull Boolean foregroundService,
+            @NonNull Boolean withKnowledgeBase) {
+        this.urlChat = urlChat;
+        this.urlOfflineForm = urlOfflineForm;
+        this.urlToSendFile = urlToSendFile;
+        this.urlApi = urlApi;
         this.companyId = companyId;
-        this.email = email;
-        this.socketUrl = socketUrl;
-        this.secureUrl = secureUrl;
         this.accountId = accountId;
         this.token = token;
+        this.clientEmail = clientEmail;
         this.clientName = clientName;
         this.clientPhoneNumber = clientPhoneNumber;
         this.clientAdditionalId = clientAdditionalId;
-        this.foregroundService = foregroundService;
-        this.customViews = customViews;
-        this.withKnowledgeBase = withKnowledgeBase;
-        this.initClientMessage = initClientMessage;
+        this.clientInitMessage = clientInitMessage;
         this.customAgentName = customAgentName;
+        this.foregroundService = foregroundService;
+        this.withKnowledgeBase = withKnowledgeBase;
+    }
+
+    @NonNull
+    public String getUrlChat() {
+        return urlChat;
+    }
+
+    @NonNull
+    public String getUrlOfflineForm() {
+        return urlOfflineForm;
+    }
+
+    @NonNull
+    public String getUrlToSendFile() {
+        return urlToSendFile;
+    }
+
+    @NonNull
+    public String getUrlApi() {
+        return urlApi;
     }
 
     @NonNull
     public String getCompanyId() {
         return companyId;
-    }
-
-    @NonNull
-    public String getEmail() {
-        return email;
-    }
-
-    @NonNull
-    public String getSocketUrl() {
-        return socketUrl;
-    }
-
-    @NonNull
-    public String getSecureUrl() {
-        return secureUrl;
     }
 
     @NonNull
@@ -77,6 +86,11 @@ public class Configuration {
     @NonNull
     public String getToken() {
         return token;
+    }
+
+    @NonNull
+    public String getClientEmail() {
+        return clientEmail;
     }
 
     @NonNull
@@ -95,8 +109,8 @@ public class Configuration {
     }
 
     @NonNull
-    public String getInitClientMessage() {
-        return initClientMessage;
+    public String getClientInitMessage() {
+        return clientInitMessage;
     }
 
     @NonNull
@@ -104,18 +118,11 @@ public class Configuration {
         return customAgentName;
     }
 
-    @NonNull
-    public Boolean isForegroundService() {
+    public boolean isForegroundService() {
         return foregroundService;
     }
 
-    @NonNull
-    public Boolean isCustomViews() {
-        return customViews;
-    }
-
-    @NonNull
-    public Boolean isWithKnowledgeBase() {
+    public boolean isWithKnowledgeBase() {
         return withKnowledgeBase;
     }
 }

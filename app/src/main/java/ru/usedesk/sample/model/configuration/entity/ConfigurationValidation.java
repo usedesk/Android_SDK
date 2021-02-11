@@ -3,62 +3,70 @@ package ru.usedesk.sample.model.configuration.entity;
 import androidx.annotation.Nullable;
 
 public class ConfigurationValidation {
+    private final String urlChatError;
+    private final String urlOfflineFormError;
+    private final String urlToSendFileError;
+    private final String urlApiError;
     private final String companyIdError;
-    private final String emailError;
-    private final String phoneNumberError;
-    private final String socketUrlError;
-    private final String secureUrlError;
     private final String accountIdError;
     private final String tokenError;
+    private final String clientEmailError;
+    private final String clientPhoneNumberError;
 
-    public ConfigurationValidation(@Nullable String companyIdError,
-                                   @Nullable String emailError,
-                                   @Nullable String phoneNumberError,
-                                   @Nullable String socketUrlError,
-                                   @Nullable String secureUrlError,
+    public ConfigurationValidation(@Nullable String urlChatError,
+                                   @Nullable String urlOfflineFormError,
+                                   @Nullable String urlToSendFileError,
+                                   @Nullable String urlApiError,
+                                   @Nullable String companyIdError,
                                    @Nullable String accountIdError,
-                                   @Nullable String tokenError) {
+                                   @Nullable String tokenError,
+                                   @Nullable String clientEmailError,
+                                   @Nullable String phoneNumberError) {
+        this.urlChatError = urlChatError;
+        this.urlOfflineFormError = urlOfflineFormError;
+        this.urlToSendFileError = urlToSendFileError;
+        this.urlApiError = urlApiError;
         this.companyIdError = companyIdError;
-        this.emailError = emailError;
-        this.phoneNumberError = phoneNumberError;
-        this.socketUrlError = socketUrlError;
-        this.secureUrlError = secureUrlError;
         this.accountIdError = accountIdError;
         this.tokenError = tokenError;
+        this.clientEmailError = clientEmailError;
+        this.clientPhoneNumberError = phoneNumberError;
     }
 
     public boolean isSuccessed() {
-        return isEmpty(companyIdError)
-                && isEmpty(emailError)
-                && isEmpty(phoneNumberError)
-                && isEmpty(socketUrlError)
-                && isEmpty(secureUrlError)
+        return isEmpty(urlChatError)
+                && isEmpty(urlOfflineFormError)
+                && isEmpty(urlToSendFileError)
+                && isEmpty(urlApiError)
+                && isEmpty(companyIdError)
                 && isEmpty(accountIdError)
-                && isEmpty(tokenError);
+                && isEmpty(tokenError)
+                && isEmpty(clientEmailError)
+                && isEmpty(clientPhoneNumberError);
     }
 
     private boolean isEmpty(@Nullable String value) {
         return value == null || value.isEmpty();
     }
 
+    public String getUrlChatError() {
+        return urlChatError;
+    }
+
+    public String getUrlOfflineFormError() {
+        return urlOfflineFormError;
+    }
+
+    public String getUrlToSendFileError() {
+        return urlToSendFileError;
+    }
+
+    public String getUrlApiError() {
+        return urlApiError;
+    }
+
     public String getCompanyIdError() {
         return companyIdError;
-    }
-
-    public String getEmailError() {
-        return emailError;
-    }
-
-    public String getPhoneNumberError() {
-        return phoneNumberError;
-    }
-
-    public String getSocketUrlError() {
-        return socketUrlError;
-    }
-
-    public String getSecureUrlError() {
-        return secureUrlError;
     }
 
     public String getAccountIdError() {
@@ -67,5 +75,13 @@ public class ConfigurationValidation {
 
     public String getTokenError() {
         return tokenError;
+    }
+
+    public String getClientEmailError() {
+        return clientEmailError;
+    }
+
+    public String getClientPhoneNumberError() {
+        return clientPhoneNumberError;
     }
 }

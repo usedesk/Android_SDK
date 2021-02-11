@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#d75358</color>
-    <color name="colorPrimaryDark">#ac4246</color>
-    <color name="colorAccent">#000</color>
-
-    <color name="message_user_color">#FF6B6B</color>
-    <color name="message_operator_color">#FFC0C0</color>
+    <color name="colorPrimary">@color/usedesk_white_2</color>
+    <color name="colorPrimaryDark">@color/usedesk_gray_1</color>
+    <color name="colorAccent">@color/usedesk_black_2</color>
 </resources>

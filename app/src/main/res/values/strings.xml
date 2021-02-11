@@ -1,40 +1,25 @@
 <resources>
     <string name="app_name">UseDesk SDK</string>
 
-    <string name="app_info_title">Usedesk — Perfect Tool for Customer Support and Communication.</string>
-    <string name="app_info_content">Usedesk helps your team to effectively answer all of your customers’ requests. All incoming requests are taken into account while your specialized staff can consult each other using the system. Thus customers feel your attention, and appreciate the personal touch.</string>
-    <string name="app_info_contacts">Contacts:\nhttp://usedesk.com/\nsupport@usedesk.com</string>
-
-    <string name="configuration_company_id_hint">Enter company ID</string>
-    <string name="configuration_email_hint">Enter email</string>
-    <string name="configuration_socket_url_hint">Enter socket url</string>
-    <string name="configuration_secure_url_hint">Enter API url</string>
-    <string name="switch_hint">Foreground service</string>
-
-    <string name="enter_token">Enter token</string>
-    <string name="custom_views">Custom views</string>
-    <string name="knowledge_base">With KnowledgeBase</string>
+    <string name="title">Configuration</string>
+    <string name="url_chat_hint">Chat url</string>
+    <string name="url_offline_form_hint">Offline form url</string>
+    <string name="url_to_send_file_hint">Send file url</string>
+    <string name="url_api">Api url</string>
+    <string name="company_id_hint">Company ID</string>
+    <string name="account_id_hint">Knowledge Base ID</string>
+    <string name="token_hint">Token</string>
+    <string name="client_email_hint">Client email</string>
     <string name="client_name">Client Name</string>
     <string name="client_phone">Client Phone Number</string>
     <string name="client_additional_id">Client Additional Id</string>
-    <string name="init_client_message">Init Client Message</string>
+    <string name="client_init_message">Client Init Message</string>
     <string name="custom_agent_name">Custom Agent Name</string>
+    <string name="foreground_service_hint">Foreground service</string>
+    <string name="knowledge_base_hint">With KnowledgeBase</string>
     <string name="button_go_to_sdk">Go to sdk</string>
     <string name="validation_empty_error">Field required</string>
     <string name="validation_email_error">Invalid email</string>
     <string name="validation_url_error">Invalid url</string>
     <string name="validation_phone_error">Invalid phone number</string>
-    <string name="configuration_title">Configuration</string>
-    <string name="info_title">Info</string>
-    <string name="knowledge_base_title">KnowledgeBase</string>
-    <string name="chat_title">Chat</string>
-
-    <!--UsedeskOfflineForm-->
-    <string name="offline_form_title">There is not anyone. Send us a request and we will consider it.</string>
-    <!--AttachmentPanel-->
-    <string name="attachment_panel_gallery_title">Gallery</string>
-    <string name="attachment_panel_camera_title">Camera</string>
-    <string name="attachment_panel_storage_title">Storage</string>
-    <string name="search_title">Search</string>
-    <string name="account_id">Knowledge Base ID</string>
 </resources>

@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:background="?attr/usedesk_chat_attachment_dialog_background"
     android:baselineAligned="true"
     android:orientation="horizontal"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    tools:theme="@style/Usedesk.Theme.Chat">
+    tools:theme="@style/Usedesk.Chat.Attachment.Dialog">
 
     <LinearLayout
-        android:id="@+id/pick_photo_button"
+        android:id="@+id/l_gallery"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -20,23 +17,21 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:duplicateParentState="true"
-            app:srcCompat="?attr/usedesk_attachment_panel_gallery_icon" />
+            style="?attr/usedesk_chat_attachment_dialog_gallery_image"
+            tools:style="@style/Usedesk.Chat.Attachment.Dialog.Gallery.Image" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:text="?attr/usedesk_attachment_panel_gallery_title" />
+            style="?attr/usedesk_chat_attachment_dialog_gallery_text"
+            tools:style="@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/take_photo_button"
+        android:id="@+id/l_camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -44,23 +39,21 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:duplicateParentState="true"
-            app:srcCompat="?attr/usedesk_attachment_panel_camera_icon" />
+            style="?attr/usedesk_chat_attachment_dialog_camera_image"
+            tools:style="@style/Usedesk.Chat.Attachment.Dialog.Camera.Image" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:text="?attr/usedesk_attachment_panel_camera_title" />
+            style="?attr/usedesk_chat_attachment_dialog_camera_text"
+            tools:style="@style/Usedesk.Chat.Attachment.Dialog.Camera.Text" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/pick_document_button"
+        android:id="@+id/l_storage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -68,18 +61,16 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <ImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:duplicateParentState="true"
-            app:srcCompat="?attr/usedesk_attachment_panel_storage_icon" />
+            style="?attr/usedesk_chat_attachment_dialog_storage_image"
+            tools:style="@style/Usedesk.Chat.Attachment.Dialog.Storage.Image" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            android:text="?attr/usedesk_attachment_panel_storage_title" />
+            style="?attr/usedesk_chat_attachment_dialog_storage_text"
+            tools:style="@style/Usedesk.Chat.Attachment.Dialog.Storage.Text" />
     </LinearLayout>
 </LinearLayout>

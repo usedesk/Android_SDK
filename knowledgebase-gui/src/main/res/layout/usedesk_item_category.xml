@@ -1,16 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
-    tools:theme="@style/Usedesk.Theme.KnowledgeBase">
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    tools:theme="@style/Usedesk.KnowledgeBase.Categories.Page.Category">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:textSize="20sp"
-        tools:text="Category Title" />
-</androidx.cardview.widget.CardView>
+        android:paddingStart="20dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="?attr/usedesk_knowledgebase_categories_category_title_text"
+            app:layout_constraintEnd_toStartOf="@+id/tv_count"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Почта" />
+
+        <TextView
+            android:id="@+id/tv_description"
+            style="?attr/usedesk_knowledgebase_categories_category_description_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            tools:text="Создавайте тикеты звонков" />
+
+        <ImageView
+            android:id="@+id/iv_arrow"
+            style="?attr/usedesk_knowledgebase_categories_category_forward_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_count"
+            style="?attr/usedesk_knowledgebase_categories_category_count_text"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_arrow"
+            app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
+            app:layout_constraintTop_toTopOf="@+id/iv_arrow"
+            tools:text="5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/v_divider"
+        style="?attr/usedesk_knowledgebase_categories_category_divider" />
+</LinearLayout>

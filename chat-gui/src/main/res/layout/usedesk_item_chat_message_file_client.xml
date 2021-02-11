@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:theme="@style/Usedesk.Chat.Message.File.Client">
+
+    <TextView
+        android:id="@+id/tv_date"
+        style="?attr/usedesk_chat_message_date_text"
+        tools:text="Вчера" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end">
+
+            <include
+                android:id="@+id/content"
+                layout="@layout/usedesk_item_chat_message_file" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <View
+        android:id="@+id/v_empty"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+</LinearLayout>

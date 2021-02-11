@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usedesk_settings">Настройки</string>
+    <string name="usedesk_need_permissions">Необходимы разрешения</string>
+    <string name="usedesk_need_permission">Необходимо разрешение</string>
+    <string name="usedesk_send">Отправить</string>
+</resources>

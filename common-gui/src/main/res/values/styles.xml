@@ -1,5 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Usedesk.Theme" parent="" />
+    <style name="Usedesk.Common" parent="">
+        <item name="usedesk_common_toolbar_root_background">@color/usedesk_white_2</item>
+        <item name="usedesk_common_toolbar_divider_background">@color/usedesk_gray_2</item>
+        <item name="usedesk_common_toolbar_back_image">@style/Usedesk.Common.Toolbar.Back.Image</item>
+        <item name="usedesk_common_toolbar_action_image">@style/Usedesk.Common.Toolbar.Action.Image</item>
+        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Common.Toolbar.Title.Text</item>
+    </style>
 
+    <style name="Usedesk.Common.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog" />
+
+    <style name="Usedesk.Common.No.Permission.Snackbar" parent="">
+        <item name="usedesk_text_1">@string/usedesk_need_permission</item>
+        <item name="usedesk_text_2">@string/usedesk_settings</item>
+        <item name="usedesk_text_color_1">@color/usedesk_white_2</item>
+        <item name="usedesk_text_color_2">@color/usedesk_red</item>
+        <item name="usedesk_background_color_1">@color/usedesk_black_2</item>
+    </style>
+
+    <style name="Usedesk.Common.Toolbar.Back.Image" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="srcCompat">@drawable/usedesk_ic_back</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Usedesk.Common.Toolbar.Action.Image" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="Usedesk.Common.Toolbar.Title.Text" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+    </style>
 </resources>

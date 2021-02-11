@@ -32,13 +32,12 @@ public class ConfigurationViewModel extends ViewModel {
 
     void onGoSdkClick(@NonNull Configuration configuration) {
         ConfigurationValidation configurationValidation = configurationValidator.validate(configuration);
+        this.configurationValidation.postValue(configurationValidation);
         if (configurationValidation.isSuccessed()) {
             this.configuration.postValue(configuration);
             configurationRepository.setConfiguration(configuration)
                     .subscribe();
             goToSdkEvent.postValue(new UsedeskSingleLifeEvent<>(null));
-        } else {
-            this.configurationValidation.postValue(configurationValidation);
         }
     }
 

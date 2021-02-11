@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
-import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import io.socket.client.IO
@@ -64,15 +63,14 @@ internal class SocketApi(
                 when (response.type) {
                     ErrorResponse.TYPE -> {
                         val errorResponse = response as ErrorResponse
-                        val usedeskSocketException: UsedeskSocketException
-                        usedeskSocketException = when (errorResponse.code) {
+                        val usedeskSocketException: UsedeskSocketException = when (errorResponse.code) {
                             HttpURLConnection.HTTP_FORBIDDEN -> {
                                 eventListener.onTokenError()
                                 UsedeskSocketException(UsedeskSocketException.Error.FORBIDDEN_ERROR, errorResponse.message)
                             }
                             HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(UsedeskSocketException.Error.BAD_REQUEST_ERROR, errorResponse.message)
                             HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(UsedeskSocketException.Error.INTERNAL_SERVER_ERROR, errorResponse.message)
-                            else -> UsedeskSocketException(UsedeskSocketException.Error.UNKNOWN_FROM_SERVER_ERROR, errorResponse.message)
+                            else -> UsedeskSocketException(errorResponse.message)
                         }
                         eventListener.onException(usedeskSocketException)
                     }
@@ -121,23 +119,18 @@ internal class SocketApi(
 
     private fun getSocket(url: String): Socket {
         return try {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-
-                usedeskOkHttpClientFactory.createInstance().also {
-                    IO.setDefaultOkHttpWebSocketFactory(it)
-                    IO.setDefaultOkHttpCallFactory(it)
-                }
-
-                val options = IO.Options().apply {
-                    transports = arrayOf(WebSocket.NAME)
-                }
-
-                IO.socket(url, options)
-            } else {
-                IO.socket(url)
+            usedeskOkHttpClientFactory.createInstance().also {
+                IO.setDefaultOkHttpWebSocketFactory(it)
+                IO.setDefaultOkHttpCallFactory(it)
             }
+
+            val options = IO.Options().apply {
+                transports = arrayOf(WebSocket.NAME)
+            }
+
+            IO.socket(url, options)
         } catch (e: URISyntaxException) {
-            throw UsedeskSocketException(UsedeskSocketException.Error.IO_ERROR, e.message)
+            throw UsedeskSocketException(UsedeskSocketException.Error.SOCKET_INIT_ERROR, e.message)
         }
     }
 

@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -54,6 +55,10 @@ class UsedeskAttachmentDialog private constructor(
             UsedeskPermissionUtil.needReadExternalPermission(binding, screen) {
                 pickDocument(screen)
             }
+        }
+
+        BottomSheetBehavior.from(binding.rootView.parent as View).apply {
+            state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 

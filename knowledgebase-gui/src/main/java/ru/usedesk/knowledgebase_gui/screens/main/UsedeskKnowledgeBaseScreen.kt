@@ -103,7 +103,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             putString(COMMON_TITLE_KEY, title)
         }
         childFragmentManager.beginTransaction()
-                .add(R.id.container, fragment)
+                .addToBackStack(fragment.javaClass.name + ":" + fragment.hashCode())
+                .replace(R.id.container, fragment)
                 .commit()
     }
 
@@ -137,13 +138,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     }
 
     override fun onBackPressed(): Boolean {
-        val count = childFragmentManager.fragments.size
-        if (count > 1) {
-            getLastFragment()?.also {
-                childFragmentManager.beginTransaction()
-                        .remove(it)
-                        .commitNow()
-            }
+        if (childFragmentManager.backStackEntryCount > 1) {
+            childFragmentManager.popBackStackImmediate()
             val lastFragment = getLastFragment()
             val title = if (lastFragment != null) {
                 updateToolbar(lastFragment)

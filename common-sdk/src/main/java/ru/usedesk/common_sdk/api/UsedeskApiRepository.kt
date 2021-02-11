@@ -58,12 +58,7 @@ abstract class UsedeskApiRepository<API>(
     }
 
     companion object {
-        //private const val SERVER_BASE_URL = "https://api.usedesk.ru/"
         private const val MAX_ATTEMPTS = 3
-
-        private const val SERVER_ERROR = "111"
-        private const val INVALID_TOKEN = "112"
-        private const val ACCESS_ERROR = "115"
 
         fun <T> valueOrNull(lambda: () -> T): T? {
             return try {

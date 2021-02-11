@@ -21,9 +21,8 @@ class UsedeskSocketException : UsedeskException {
         BAD_REQUEST_ERROR,
         FORBIDDEN_ERROR,
         DISCONNECTED,
-        IO_ERROR,
+        SOCKET_INIT_ERROR,
         JSON_ERROR,
-        UNKNOWN_FROM_SERVER_ERROR,
         UNKNOWN_ERROR
     }
 }

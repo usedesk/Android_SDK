@@ -2,6 +2,7 @@ package ru.usedesk.knowledgebase_gui.internal.screens.pages.article;
 
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -58,7 +59,11 @@ public class ArticleFragment extends FragmentDataView<UsedeskArticleBody, Articl
     @Override
     protected void setDataView(UsedeskArticleBody data) {
         textViewTitle.setText(data.getTitle());
-        contentWebView.loadData(data.getText(), "text/html", null);
-    }
 
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+            contentWebView.loadData(data.getText(), "text/html; charset=utf-8", "UTF-8");
+        } else {
+            contentWebView.loadData(data.getText(), "text/html", null);
+        }
+    }
 }

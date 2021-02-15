@@ -17,7 +17,9 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.textfield.TextInputLayout;
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk;
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration;
 import ru.usedesk.common_sdk.entity.UsedeskEvent;
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration;
 import ru.usedesk.sample.R;
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding;
 import ru.usedesk.sample.model.configuration.entity.Configuration;
@@ -105,14 +107,25 @@ public class ConfigurationScreen extends Fragment {
                 binding.etCompanyId.getText().toString(),
                 binding.etAccountId.getText().toString(),
                 binding.etToken.getText().toString(),
+                binding.etClientSignature.getText().toString(),
                 binding.etClientEmail.getText().toString(),
                 binding.etClientName.getText().toString(),
-                binding.etClientPhoneNumber.getText().toString(),
-                binding.etClientAdditionalId.getText().toString(),
+                binding.etClientNote.getText().toString(),
+                getLong(binding.etClientPhoneNumber.getText().toString()),
+                getLong(binding.etClientAdditionalId.getText().toString()),
                 binding.etClientInitMessage.getText().toString(),
                 binding.etCustomAgentName.getText().toString(),
                 binding.switchForeground.isChecked(),
                 binding.switchKnowledgeBase.isChecked());
+    }
+
+    @Nullable
+    private Long getLong(@Nullable String value) {
+        try {
+            return Long.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void onNewConfiguration(@NonNull Configuration configuration) {
@@ -123,10 +136,11 @@ public class ConfigurationScreen extends Fragment {
         binding.etCompanyId.setText(configuration.getCompanyId());
         binding.etAccountId.setText(configuration.getAccountId());
         binding.etToken.setText(configuration.getToken());
+        binding.etClientSignature.setText(configuration.getClientSignature());
         binding.etClientEmail.setText(configuration.getClientEmail());
         binding.etClientName.setText(configuration.getClientName());
-        binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber());
-        binding.etClientAdditionalId.setText(configuration.getClientAdditionalId());
+        binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber() + "");
+        binding.etClientAdditionalId.setText(configuration.getClientAdditionalId() + "");
         binding.etClientInitMessage.setText(configuration.getClientInitMessage());
         binding.etCustomAgentName.setText(configuration.getCustomAgentName());
         binding.switchForeground.setChecked(configuration.isForegroundService());
@@ -159,16 +173,60 @@ public class ConfigurationScreen extends Fragment {
         });
     }
 
-    private void onNewConfigurationValidation(@NonNull ConfigurationValidation configurationValidation) {
-        binding.tilUrlChat.setError(configurationValidation.getUrlChatError());
-        binding.tilUrlOfflineForm.setError(configurationValidation.getUrlOfflineFormError());
-        binding.tilUrlToSendFile.setError(configurationValidation.getUrlToSendFileError());
-        binding.tilUrlApi.setError(configurationValidation.getUrlApiError());
-        binding.tilCompanyId.setError(configurationValidation.getCompanyIdError());
-        binding.tilAccountId.setError(configurationValidation.getAccountIdError());
-        binding.tilToken.setError(configurationValidation.getTokenError());
-        binding.tilClientEmail.setError(configurationValidation.getClientEmailError());
-        binding.tilClientPhoneNumber.setError(configurationValidation.getClientPhoneNumberError());
+    private void showError(@NonNull TextInputLayout textInputLayout,
+                           boolean isValid,
+                           int errorStringId) {
+        if (isValid) {
+            textInputLayout.setError(null);
+        } else {
+            textInputLayout.setError(getResources().getString(errorStringId));
+        }
+    }
+
+    private void onNewConfigurationValidation(
+            @NonNull ConfigurationValidation configurationValidation
+    ) {
+        UsedeskChatConfiguration.Validation chatValidation =
+                configurationValidation.getChatConfigurationValidation();
+
+        showError(binding.tilUrlChat,
+                chatValidation.getValidUrlChat(),
+                R.string.validation_url_error);
+
+        showError(binding.tilUrlOfflineForm,
+                chatValidation.getValidUrlOfflineForm(),
+                R.string.validation_url_error);
+
+        showError(binding.tilUrlToSendFile,
+                chatValidation.getValidUrlToSendFile(),
+                R.string.validation_url_error);
+
+        showError(binding.tilCompanyId,
+                chatValidation.getValidCompanyId(),
+                R.string.validation_empty_error);
+
+        showError(binding.tilClientEmail,
+                chatValidation.getValidClientEmail(),
+                R.string.validation_email_error);
+
+        showError(binding.tilClientPhoneNumber,
+                chatValidation.getValidClientPhoneNumber(),
+                R.string.validation_phone_error);
+
+        UsedeskKnowledgeBaseConfiguration.Validation knowledgebaseValidation =
+                configurationValidation.getKnowledgeBaseConfiguration();
+
+        showError(binding.tilUrlApi,
+                knowledgebaseValidation.getValidUrlApi(),
+                R.string.validation_empty_error);
+
+        showError(binding.tilAccountId,
+                knowledgebaseValidation.getValidAccountId(),
+                R.string.validation_empty_error);
+
+        showError(binding.tilToken,
+                knowledgebaseValidation.getValidToken(),
+                R.string.validation_empty_error);
     }
 
     public interface IOnGoToSdkListener {

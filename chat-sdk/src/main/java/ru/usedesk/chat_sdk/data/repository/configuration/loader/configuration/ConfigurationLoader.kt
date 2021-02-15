@@ -62,13 +62,12 @@ internal class ConfigurationLoader(
         if (oldVersion == 1) {
             val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
             val urlOfflineForm = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
-            val clientId = sharedPreferences.getString(KEY_ID, null)
+            val companyId = sharedPreferences.getString(KEY_ID, null)
             val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
             val clientInitMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
             if (urlChat != null
                     && urlOfflineForm != null
-                    && clientId != null
-                    && clientEmail != null) {
+                    && companyId != null) {
                 var clientName: String? = null
                 var clientPhone: String? = null
                 var clientAdditionalId: String? = null
@@ -88,9 +87,11 @@ internal class ConfigurationLoader(
                         urlChat,
                         urlOfflineForm,
                         "https://secure.usedesk.ru/uapi/v1/send_file",
-                        clientId,
+                        companyId,
+                        null,
                         clientEmail,
                         clientName,
+                        null,
                         clientPhone?.toLongOrNull(),
                         clientAdditionalId?.toLongOrNull(),
                         clientInitMessage)

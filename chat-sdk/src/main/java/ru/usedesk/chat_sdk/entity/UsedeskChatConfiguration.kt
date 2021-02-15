@@ -2,16 +2,17 @@ package ru.usedesk.chat_sdk.entity
 
 import android.content.Intent
 import com.google.gson.Gson
-import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidEmailNecessary
-import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil.isValidPhone
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
         val urlChat: String,
         val urlOfflineForm: String = "https://secure.usedesk.ru/",
         val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val companyId: String,
-        val clientEmail: String,
+        val clientSignature: String? = null,
+        val clientEmail: String? = null,
         val clientName: String? = null,
+        val clientNote: String? = null,
         val clientPhoneNumber: Long? = null,
         val clientAdditionalId: Long? = null,
         val clientInitMessage: String? = null
@@ -21,9 +22,15 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         intent.putExtra(CONFIGURATION_KEY, Gson().toJson(this))
     }
 
-    fun isValid(): Boolean {
-        val phoneNumber = clientPhoneNumber?.toString()
-        return isValidPhone(phoneNumber) && isValidEmailNecessary(clientEmail)
+    fun validate(): Validation {
+        return Validation(
+                validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
+                validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
+                validUrlToSendFile = UsedeskValidatorUtil.isValidUrlNecessary(urlToSendFile),
+                validCompanyId = companyId.isNotEmpty(),
+                validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
+                validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
+        )
     }
 
     companion object {
@@ -41,6 +48,24 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
             } else {
                 null
             }
+        }
+    }
+
+    class Validation(
+            val validUrlChat: Boolean = false,
+            val validUrlOfflineForm: Boolean = false,
+            val validUrlToSendFile: Boolean = false,
+            val validCompanyId: Boolean = false,
+            val validClientEmail: Boolean = false,
+            val validClientPhoneNumber: Boolean = false
+    ) {
+        fun isAllValid(): Boolean {
+            return validUrlChat
+                    && validUrlOfflineForm
+                    && validUrlToSendFile
+                    && validCompanyId
+                    && validClientEmail
+                    && validClientPhoneNumber
         }
     }
 }

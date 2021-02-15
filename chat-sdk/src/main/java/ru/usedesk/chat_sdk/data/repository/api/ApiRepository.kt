@@ -100,19 +100,22 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskException::class)
-    override fun init(configuration: UsedeskChatConfiguration, token: String?) {
+    override fun init(configuration: UsedeskChatConfiguration,
+                      token: String?) {
         socketApi.sendRequest(InitChatRequest(token, configuration.companyId,
                 configuration.urlChat))
     }
 
     @Throws(UsedeskException::class)
-    override fun send(token: String, feedback: UsedeskFeedback) {
+    override fun send(token: String,
+                      feedback: UsedeskFeedback) {
         checkConnection()
         socketApi.sendRequest(FeedbackRequest(token, feedback))
     }
 
     @Throws(UsedeskException::class)
-    override fun send(token: String, text: String) {
+    override fun send(token: String,
+                      text: String) {
         checkConnection()
         socketApi.sendRequest(MessageRequest(token, text))
     }
@@ -154,8 +157,13 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskException::class)
-    override fun send(token: String, email: String, name: String?, phone: Long?, additionalId: Long?) {
-        socketApi.sendRequest(SetEmailRequest(token, email, name, phone, additionalId))
+    override fun send(token: String,
+                      email: String?,
+                      name: String?,
+                      note: String?,
+                      phone: Long?,
+                      additionalId: Long?) {
+        socketApi.sendRequest(SetEmailRequest(token, email, name, note, phone, additionalId))
     }
 
     @Throws(UsedeskException::class)

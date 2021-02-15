@@ -7,18 +7,15 @@ import androidx.annotation.NonNull;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
-import ru.usedesk.sample.model.configuration.repository.ConfigurationValidator;
 
 public class ServiceLocator {
     private static ServiceLocator instance = null;
 
     private final ConfigurationRepository configurationRepository;
-    private final ConfigurationValidator configurationValidator;
 
     private ServiceLocator(@NonNull Context appContext) {
         configurationRepository = new ConfigurationRepository(appContext.getSharedPreferences("SampleConfiguration", Context.MODE_PRIVATE),
                 getWorkScheduler());
-        configurationValidator = new ConfigurationValidator(appContext.getResources());
     }
 
     static void init(@NonNull Context appContext) {
@@ -35,11 +32,6 @@ public class ServiceLocator {
     @NonNull
     public ConfigurationRepository getConfigurationRepository() {
         return configurationRepository;
-    }
-
-    @NonNull
-    public ConfigurationValidator getConfigurationValidator() {
-        return configurationValidator;
     }
 
     public Scheduler getWorkScheduler() {

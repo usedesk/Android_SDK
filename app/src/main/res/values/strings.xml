@@ -11,7 +11,9 @@
     <string name="token_hint">Token</string>
     <string name="client_email_hint">Client email</string>
     <string name="client_name">Client Name</string>
+    <string name="client_note">Client Note</string>
     <string name="client_phone">Client Phone Number</string>
+    <string name="client_signature">Client Signature</string>
     <string name="client_additional_id">Client Additional Id</string>
     <string name="client_init_message">Client Init Message</string>
     <string name="custom_agent_name">Custom Agent Name</string>

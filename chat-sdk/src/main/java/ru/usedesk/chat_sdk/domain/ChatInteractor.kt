@@ -172,7 +172,12 @@ internal class ChatInteractor(
             reconnectDisposable?.dispose()
             reconnectDisposable = null
             val configuration = userInfoRepository.getConfiguration()
-            if (this.configuration.clientEmail == configuration.clientEmail && this.configuration.companyId == configuration.companyId) {
+            if (configuration.clientSignature != null) {
+                token = configuration.clientSignature
+            } else if (
+                    this.configuration.companyId == configuration.companyId
+                    && (this.configuration.clientEmail == configuration.clientEmail
+                            || this.configuration.clientPhoneNumber == configuration.clientPhoneNumber)) {
                 token = userInfoRepository.getToken()
             }
         } catch (e: UsedeskDataNotFoundException) {
@@ -331,6 +336,7 @@ internal class ChatInteractor(
                 apiRepository.send(it,
                         configuration.clientEmail,
                         configuration.clientName,
+                        configuration.clientNote,
                         configuration.clientPhoneNumber,
                         configuration.clientAdditionalId)
             }

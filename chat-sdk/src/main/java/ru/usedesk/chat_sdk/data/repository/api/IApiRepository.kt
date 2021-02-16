@@ -16,7 +16,8 @@ internal interface IApiRepository {
              token: String?)
 
     @Throws(UsedeskException::class)
-    fun send(token: String,
+    fun send(token: String?,
+             signature: String?,
              email: String?,
              name: String?,
              note: String?,

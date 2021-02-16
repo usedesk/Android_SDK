@@ -9,8 +9,8 @@ object UsedeskValidatorUtil {
                         pattern: Pattern?,
                         customRule: (String) -> Boolean = { true }): Boolean {
         return text?.isEmpty() != false
-                || pattern?.matcher(text)?.matches() != false
-                && customRule(text)
+                || (pattern?.matcher(text)?.matches() != false
+                && customRule(text))
     }
 
     //Не пустой и валидный
@@ -44,14 +44,14 @@ object UsedeskValidatorUtil {
 
     @JvmStatic
     fun isValidPhone(phone: Long?): Boolean {
-        return isValid(phone.toString(), Patterns.PHONE) {
+        return isValid(phone?.toString(), Patterns.PHONE) {
             it.length in 10..17
         }
     }
 
     @JvmStatic
     fun isValidPhoneNecessary(phone: Long?): Boolean {
-        return isValidNecessary(phone.toString(), Patterns.PHONE) {
+        return isValidNecessary(phone?.toString(), Patterns.PHONE) {
             it.length in 10..17
         }
     }

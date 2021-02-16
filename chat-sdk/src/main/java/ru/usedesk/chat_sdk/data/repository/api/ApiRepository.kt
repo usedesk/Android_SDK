@@ -15,7 +15,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientRequest
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -102,7 +102,8 @@ internal class ApiRepository(
     @Throws(UsedeskException::class)
     override fun init(configuration: UsedeskChatConfiguration,
                       token: String?) {
-        socketApi.sendRequest(InitChatRequest(token, configuration.companyId,
+        socketApi.sendRequest(InitChatRequest(token,
+                configuration.companyId,
                 configuration.urlChat))
     }
 
@@ -157,13 +158,14 @@ internal class ApiRepository(
     }
 
     @Throws(UsedeskException::class)
-    override fun send(token: String,
+    override fun send(token: String?,
+                      signature: String?,
                       email: String?,
                       name: String?,
                       note: String?,
                       phone: Long?,
                       additionalId: Long?) {
-        socketApi.sendRequest(SetEmailRequest(token, email, name, note, phone, additionalId))
+        socketApi.sendRequest(SetClientRequest(token, signature, email, name, note, phone, additionalId))
     }
 
     @Throws(UsedeskException::class)

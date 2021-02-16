@@ -28,6 +28,7 @@ internal class ChatInteractor(
 ) : IUsedeskChat {
 
     private var token: String? = null
+    private var signature: String? = null
     private var initClientMessage: String? = null
 
     private var actionListeners = mutableSetOf<IUsedeskActionListener>()
@@ -119,11 +120,8 @@ internal class ChatInteractor(
         }
 
         override fun onTokenError() {
-            userInfoRepository.setToken(null)
             try {
-                token?.also {
-                    apiRepository.init(configuration, it)
-                }
+                apiRepository.init(configuration, token)
             } catch (e: UsedeskException) {
                 onException(e)
             }
@@ -172,12 +170,21 @@ internal class ChatInteractor(
             reconnectDisposable?.dispose()
             reconnectDisposable = null
             val configuration = userInfoRepository.getConfiguration()
-            if (configuration.clientSignature != null) {
-                token = configuration.clientSignature
+            if (!isStringEmpty(this.configuration.clientSignature)) {
+                if (this.configuration.clientSignature == configuration.clientSignature) {
+                    token = this.configuration.clientSignature
+                } else {
+                    token = this.configuration.clientSignature
+                    signature = this.configuration.clientSignature
+                }
             } else if (
                     this.configuration.companyId == configuration.companyId
-                    && (this.configuration.clientEmail == configuration.clientEmail
-                            || this.configuration.clientPhoneNumber == configuration.clientPhoneNumber)) {
+                    && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
+                            || isFieldEquals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
+                            || isFieldEquals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)
+                            || (this.configuration.clientEmail == configuration.clientEmail
+                            && this.configuration.clientPhoneNumber == configuration.clientPhoneNumber
+                            && this.configuration.clientAdditionalId == configuration.clientAdditionalId))) {
                 token = userInfoRepository.getToken()
             }
         } catch (e: UsedeskDataNotFoundException) {
@@ -189,6 +196,22 @@ internal class ChatInteractor(
                 configuration,
                 eventListener
         )
+    }
+
+    private fun isStringEmpty(text: String?): Boolean {
+        return text?.isEmpty() != false
+    }
+
+    private fun isFieldEquals(field1: String?, field2: String?): Boolean {
+        return if (isStringEmpty(field1)) {
+            isStringEmpty(field2)
+        } else {
+            field1 == field2
+        }
+    }
+
+    private fun isFieldEquals(field1: Long?, field2: Long?): Boolean {
+        return field1 != null && field1 == field2
     }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
@@ -332,14 +355,13 @@ internal class ChatInteractor(
 
     private fun sendUserEmail() {
         try {
-            token?.also {
-                apiRepository.send(it,
-                        configuration.clientEmail,
-                        configuration.clientName,
-                        configuration.clientNote,
-                        configuration.clientPhoneNumber,
-                        configuration.clientAdditionalId)
-            }
+            apiRepository.send(token,
+                    signature,
+                    configuration.clientEmail,
+                    configuration.clientName,
+                    configuration.clientNote,
+                    configuration.clientPhoneNumber,
+                    configuration.clientAdditionalId)
         } catch (e: UsedeskException) {
             exceptionSubject.onNext(e)
         }

@@ -139,8 +139,20 @@ public class ConfigurationScreen extends Fragment {
         binding.etClientSignature.setText(configuration.getClientSignature());
         binding.etClientEmail.setText(configuration.getClientEmail());
         binding.etClientName.setText(configuration.getClientName());
-        binding.etClientPhoneNumber.setText(configuration.getClientPhoneNumber() + "");
-        binding.etClientAdditionalId.setText(configuration.getClientAdditionalId() + "");
+        String clientPhoneNumber;
+        if (configuration.getClientPhoneNumber() == null) {
+            clientPhoneNumber = "";
+        } else {
+            clientPhoneNumber = configuration.getClientPhoneNumber().toString();
+        }
+        binding.etClientPhoneNumber.setText(clientPhoneNumber);
+        String clientAdditionalId;
+        if (configuration.getClientAdditionalId() == null) {
+            clientAdditionalId = "";
+        } else {
+            clientAdditionalId = configuration.getClientAdditionalId().toString();
+        }
+        binding.etClientAdditionalId.setText(clientAdditionalId);
         binding.etClientInitMessage.setText(configuration.getClientInitMessage());
         binding.etCustomAgentName.setText(configuration.getCustomAgentName());
         binding.switchForeground.setChecked(configuration.isForegroundService());

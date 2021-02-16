@@ -8,7 +8,7 @@ internal class InitChatRequest(
         @SerializedName(KEY_COMPANY_ID)
         val companyId: String,
         val url: String
-) : BaseRequest(TYPE, token ?: "") {
+) : BaseRequest(TYPE, token) {
 
     private val payload: Payload = Payload()
 

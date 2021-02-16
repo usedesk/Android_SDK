@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.0.0)
+# Android Usedesk SDK (v3.0.1)
 - [Подключение к проекту](#preparation)
 - [Чат](#chat)
   - [Конфигурация](#chat_configuration)
@@ -67,11 +67,12 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | urlOfflineForm | String | Адрес для отправки формы обратной связи |
 | urlToSendFile | String | Адрес для отправки файлов |
 | companyId | String | Идентификатор компании |
-| clientEmail | String | Почта клиента |
-| clientName | String | Имя клиента |
-| clientPhoneNumber | Long | Телефонный номер клиента |
-| clientAdditionalId | Long | Дополнительный идентификатор клиента |
-| clientInitMessage | String | Сообщение, автоматически отправляемое от клиента при открытии чата |
+| clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе |
+| clientEmail | String? | Почта клиента |
+| clientName | String? | Имя клиента |
+| clientPhoneNumber | Long? | Телефонный номер клиента |
+| clientAdditionalId | Long? | Дополнительный идентификатор клиента |
+| clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |
 
 Для кастомизации локальных уведомлений нужно создать 2 собственных класса:
 - Сервис, унаследованный от [UsedeskSimpleNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskSimpleNotificationsService.kt) (обычный сервис) или [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt) (foreground сервис). Где можно переопределить некоторые методы:
@@ -305,3 +306,5 @@ UsedeskKnowledgeBaseSdk.release()
   - Все внутренние классы быблиотеки скрыты
   - Доработана работа с сервером, устранены возможные ошибки
   - Добавлены параметры адресов в конфигурацию
+- v3.0.1
+  - Изменена конфигурация чата, добавлен параметр clientSignature, остальные параметры клиента стали необязательными

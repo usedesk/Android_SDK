@@ -165,7 +165,12 @@ internal class ApiRepository(
                       note: String?,
                       phone: Long?,
                       additionalId: Long?) {
-        socketApi.sendRequest(SetClientRequest(token, signature, email, name, note, phone, additionalId))
+        socketApi.sendRequest(SetClientRequest(
+                if (signature?.isNotEmpty() == true) {
+                    null
+                } else {
+                    token
+                }, signature, email, name, note, phone, additionalId))
     }
 
     @Throws(UsedeskException::class)

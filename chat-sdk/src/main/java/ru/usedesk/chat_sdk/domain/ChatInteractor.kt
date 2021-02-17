@@ -14,7 +14,6 @@ import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import toothpick.InjectConstructor
 import java.util.*
@@ -166,34 +165,30 @@ internal class ChatInteractor(
     }
 
     override fun connect() {
-        try {
-            reconnectDisposable?.dispose()
-            reconnectDisposable = null
-            val configuration = userInfoRepository.getConfiguration()
-            if (!isStringEmpty(this.configuration.clientSignature)) {
-                if (this.configuration.clientSignature == configuration.clientSignature) {
-                    token = this.configuration.clientSignature
-                } else {
-                    token = this.configuration.clientSignature
-                    signature = this.configuration.clientSignature
-                }
-            } else if (
-                    this.configuration.companyId == configuration.companyId
-                    && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
-                            || isFieldEquals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
-                            || isFieldEquals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)
-                            || (this.configuration.clientEmail == configuration.clientEmail
-                            && this.configuration.clientPhoneNumber == configuration.clientPhoneNumber
-                            && this.configuration.clientAdditionalId == configuration.clientAdditionalId))) {
-                token = userInfoRepository.getToken()
+        reconnectDisposable?.dispose()
+        reconnectDisposable = null
+        val configuration = userInfoRepository.getConfigurationNullable()
+        if (!isStringEmpty(this.configuration.clientSignature)) {
+            if (this.configuration.clientSignature == configuration?.clientSignature) {
+                token = this.configuration.clientSignature
+            } else {
+                token = this.configuration.clientSignature
+                signature = this.configuration.clientSignature
             }
-        } catch (e: UsedeskDataNotFoundException) {
-            e.printStackTrace()
+        } else if (configuration != null
+                && this.configuration.companyId == configuration.companyId
+                && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
+                        || isFieldEquals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
+                        || isFieldEquals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)
+                        || (this.configuration.clientEmail == configuration.clientEmail
+                        && this.configuration.clientPhoneNumber == configuration.clientPhoneNumber
+                        && this.configuration.clientAdditionalId == configuration.clientAdditionalId))) {
+            token = userInfoRepository.getToken()
         }
         apiRepository.connect(
-                configuration.urlChat,
+                this.configuration.urlChat,
                 token,
-                configuration,
+                this.configuration,
                 eventListener
         )
     }

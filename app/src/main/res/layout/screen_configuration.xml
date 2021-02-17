@@ -149,6 +149,20 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_client_signature"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_client_signature"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/client_signature"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_email"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -173,6 +187,20 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_name"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_client_note"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_client_note"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/client_note"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 

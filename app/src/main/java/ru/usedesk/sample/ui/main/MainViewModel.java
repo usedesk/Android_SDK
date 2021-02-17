@@ -68,13 +68,15 @@ public class MainViewModel extends ViewModel {
                     urlOfflineForm,
                     urlToSendFile,
                     configuration.getCompanyId(),
+                    configuration.getClientSignature(),
                     configuration.getClientEmail(),
                     configuration.getClientName(),
-                    getLong(configuration.getClientPhoneNumber()),
-                    getLong(configuration.getClientAdditionalId()),
+                    configuration.getClientNote(),
+                    configuration.getClientPhoneNumber(),
+                    configuration.getClientAdditionalId(),
                     configuration.getClientInitMessage());
 
-            if (usedeskChatConfiguration.isValid()) {
+            if (usedeskChatConfiguration.validate().isAllValid()) {
                 this.configuration = configuration;
                 initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
 

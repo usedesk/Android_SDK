@@ -1,41 +1,58 @@
 package ru.usedesk.common_sdk.utils
 
 import android.util.Patterns
+import java.util.regex.Pattern
 
 object UsedeskValidatorUtil {
-    @JvmStatic
-    fun isValidUrl(text: String?): Boolean {
-        return text == null || text.isEmpty() || isValidUrlNecessary(text)
+    //Либо пустой, либо валидный
+    private fun isValid(text: String?,
+                        pattern: Pattern?,
+                        customRule: (String) -> Boolean = { true }): Boolean {
+        return text?.isEmpty() != false
+                || (pattern?.matcher(text)?.matches() != false
+                && customRule(text))
+    }
+
+    //Не пустой и валидный
+    private fun isValidNecessary(text: String?,
+                                 pattern: Pattern?,
+                                 customRule: (String) -> Boolean = { true }): Boolean {
+        return text?.isNotEmpty() == true
+                && pattern?.matcher(text)?.matches() != false
+                && customRule(text)
     }
 
     @JvmStatic
-    fun isValidUrlNecessary(text: String?): Boolean {
-        return text != null && text.isNotEmpty() && Patterns.WEB_URL.matcher(text).matches()
+    fun isValidUrl(url: String?): Boolean {
+        return isValid(url, Patterns.WEB_URL)
     }
 
     @JvmStatic
-    fun isValidEmailNecessary(text: String?): Boolean {
-        return text != null && Patterns.EMAIL_ADDRESS.matcher(text).matches()
+    fun isValidUrlNecessary(url: String?): Boolean {
+        return isValidNecessary(url, Patterns.WEB_URL)
     }
 
     @JvmStatic
-    fun isValidPhone(text: String?): Boolean {
-        return text == null
-                || text.isEmpty()
-                || text == "+" || isValidPhoneNecessary(text)
+    fun isValidEmail(email: String?): Boolean {
+        return isValid(email, Patterns.EMAIL_ADDRESS)
     }
 
     @JvmStatic
-    fun isValidPhoneNecessary(text: String?): Boolean {
-        if (text == null) {
-            return false
+    fun isValidEmailNecessary(email: String?): Boolean {
+        return isValidNecessary(email, Patterns.EMAIL_ADDRESS)
+    }
+
+    @JvmStatic
+    fun isValidPhone(phone: Long?): Boolean {
+        return isValid(phone?.toString(), Patterns.PHONE) {
+            it.length in 10..17
         }
-        val phone = text.replace(" ", "")
-                .replace("-", "")
-                .replace("(", "")
-                .replace(")", "")
-        return phone.length in 10..17 && Patterns.PHONE
-                .matcher(phone)
-                .matches()
+    }
+
+    @JvmStatic
+    fun isValidPhoneNecessary(phone: Long?): Boolean {
+        return isValidNecessary(phone?.toString(), Patterns.PHONE) {
+            it.length in 10..17
+        }
     }
 }

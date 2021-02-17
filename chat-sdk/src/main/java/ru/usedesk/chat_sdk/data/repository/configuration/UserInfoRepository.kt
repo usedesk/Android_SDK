@@ -30,6 +30,14 @@ internal class UserInfoRepository(
         return configurationDataLoader.getData()
     }
 
+    override fun getConfigurationNullable(): UsedeskChatConfiguration? {
+        return try {
+            getConfiguration()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     override fun setConfiguration(configuration: UsedeskChatConfiguration?) {
         if (configuration == null) {
             configurationDataLoader.clearData()

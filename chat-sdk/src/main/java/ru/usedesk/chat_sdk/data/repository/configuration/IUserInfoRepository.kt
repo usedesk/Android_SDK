@@ -12,5 +12,7 @@ interface IUserInfoRepository {
     @Throws(UsedeskDataNotFoundException::class)
     fun getConfiguration(): UsedeskChatConfiguration
 
+    fun getConfigurationNullable(): UsedeskChatConfiguration?
+
     fun setConfiguration(configuration: UsedeskChatConfiguration?)
 }

@@ -66,6 +66,11 @@ fun showImage(ivTarget: ImageView,
             .into(ivTarget)
 }
 
+fun clearImage(ivTarget: ImageView) {
+    Glide.with(ivTarget.context.applicationContext)
+            .clear(ivTarget)
+}
+
 private fun showImageStatus(vLoading: View?,
                             loadingShow: Boolean,
                             vError: View?,

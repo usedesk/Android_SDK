@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.0.2)
+# Android Usedesk SDK (v3.0.3)
 - [Подключение к проекту](#preparation)
 - [Чат](#chat)
   - [Конфигурация](#chat_configuration)
@@ -130,6 +130,23 @@ override fun onFileClick(usedeskFile: UsedeskFile ) {
     supportFragmentManager.beginTransaction()
         .replace(R.id.container, UsedeskShowFileScreen.newInstance(usedeskFile))
         .commit()
+}
+```
+
+- Вызывать метод `clear()` перед выходом из фрагмента, для освобождения ресурсов изображений и остановки загрузок, например:
+
+```
+fun onBackPressed() {
+    val fragmentManager = activity.getSupportFragmentManager()
+    if (fragmentManager.backStackEntryCount > 1) {
+        val fragment = fragmentManager.fragments[0]
+        if (fragment is UsedeskChatScreen) {
+            fragment.clear()
+        }
+        fragmentManager.popBackStack()
+    } else {
+        activity.finish()
+    }
 }
 ```
 
@@ -308,3 +325,8 @@ UsedeskKnowledgeBaseSdk.release()
   - Добавлены параметры адресов в конфигурацию
 - v3.0.2
   - Изменена конфигурация чата, добавлен параметр clientSignature, остальные параметры клиента стали необязательными
+- v3.0.3
+  - Исправлена работа окна превью файла:
+    - Исправлен сброс ссылки при ошибке загрузки изображения
+    - Исправлена работа интерфейса после переворота устройства
+  - Добавлен метод очистки загрузок изображений чата

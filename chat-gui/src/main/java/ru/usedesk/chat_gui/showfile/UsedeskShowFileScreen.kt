@@ -45,28 +45,19 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             }
 
             binding.ivShare.setOnClickListener {
-                onShareFile(viewModel.fileUrlLiveData.value)
+                onShareFile(viewModel.fileLiveData.value?.data)
             }
 
             binding.ivDownload.setOnClickListener {
-                onDownloadFile(viewModel.fileUrlLiveData.value)
+                onDownloadFile(viewModel.fileLiveData.value?.data)
+            }
+
+            binding.ivError.setOnClickListener {
+                viewModel.onRetryPreview()
             }
 
             setBlur(binding.lToolbar)
             setBlur(binding.lBottom)
-
-            initAndObserve(viewLifecycleOwner, viewModel.fileUrlLiveData) {
-                onFileUrl(it)
-            }
-
-            initAndObserve(viewLifecycleOwner, viewModel.errorLiveData) {
-                onError(it)
-            }
-
-            initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {
-                binding.lToolbar.visibility = visibleGone(it == true)
-                binding.lBottom.visibility = visibleGone(it == true)
-            }
 
             argsGetString(FILE_URL_KEY)?.also { json ->
                 val fileUrl = UsedeskFile.deserialize(json)
@@ -75,6 +66,21 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             }
 
             hideKeyboard(binding.rootView)
+        }
+
+        initAndObserve(viewLifecycleOwner, viewModel.fileLiveData) {
+            it?.process { file ->
+                onFileUrl(file)
+            }
+        }
+
+        initAndObserve(viewLifecycleOwner, viewModel.errorLiveData) {
+            onError(it)
+        }
+
+        initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {
+            binding.lToolbar.visibility = visibleGone(it == true)
+            binding.lBottom.visibility = visibleGone(it == true)
         }
 
         return binding.rootView
@@ -141,7 +147,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                         setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, usedeskFile.name)
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        setDescription("description")//TODO: это чё такое?
                         setTitle(usedeskFile.name)
                     }
 

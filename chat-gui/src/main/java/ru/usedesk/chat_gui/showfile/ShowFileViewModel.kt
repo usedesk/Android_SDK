@@ -3,29 +3,35 @@ package ru.usedesk.chat_gui.showfile
 import androidx.lifecycle.MutableLiveData
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 internal class ShowFileViewModel : UsedeskViewModel() {
 
-    val fileUrlLiveData = MutableLiveData<UsedeskFile>()
+    val fileLiveData = MutableLiveData<UsedeskSingleLifeEvent<UsedeskFile>>()
     val errorLiveData = MutableLiveData(false)
     val panelShowLiveData = MutableLiveData(true)
 
-    fun init(usedeskFile: UsedeskFile?) {
+    fun init(file: UsedeskFile?) {
         doInit {
-            fileUrlLiveData.value = usedeskFile
+            doFileLoading(file)
+        }
+    }
+
+    private fun doFileLoading(file: UsedeskFile?) {
+        if (file != null) {
+            fileLiveData.value = UsedeskSingleLifeEvent(file)
         }
     }
 
     fun onLoaded(success: Boolean) {
-        if (success) {
-            errorLiveData.value = false
-        } else {
-            fileUrlLiveData.value = null
-            errorLiveData.value = true
-        }
+        errorLiveData.value = !success
     }
 
     fun onImageClick() {
         panelShowLiveData.value = panelShowLiveData.value != true
+    }
+
+    fun onRetryPreview() {
+        doFileLoading(fileLiveData.value?.data)
     }
 }

@@ -9,25 +9,30 @@ public class UsedeskMessageButtons {
 
     UsedeskMessageButtons(String messageText) {
         if (messageText != null) {
-            while (messageText.contains("{{button:") && messageText.contains("}}")) {
-                int start = messageText.indexOf("{{button:");
-                int end = messageText.indexOf("}}");
+            String tempText = messageText;
+            while (tempText.contains("{{button:") && tempText.contains("}}")) {
+                int start = tempText.indexOf("{{button:");
+                int end = tempText.indexOf("}}", start);
 
                 //Выделим секцию кнопки
-                String buttonText = messageText.substring(start, end + 2);
+                String buttonText = tempText.substring(start, end + 2);
 
-                UsedeskMessageButton messageButton = new UsedeskMessageButton(buttonText);
+                UsedeskMessageButton messageButton = UsedeskMessageButton.create(buttonText);
 
-                String replaceBy;
-                if (messageButton.isShow()) {
-                    replaceBy = messageButton.getText();
-                } else {
-                    replaceBy = "";
+                if (messageButton != null) {
+                    String replaceBy;
+                    if (messageButton.isShow()) {
+                        replaceBy = messageButton.getText();
+                    } else {
+                        replaceBy = "";
+                    }
+                    //Удалим её из исходного сообщения
+                    messageText = messageText.replace(buttonText, replaceBy);
+
+                    messageButtons.add(messageButton);
                 }
-                //Удалим её из исходного сообщения
-                messageText = messageText.replace(buttonText, replaceBy);
 
-                messageButtons.add(messageButton);
+                tempText = tempText.substring(end);
             }
         }
 

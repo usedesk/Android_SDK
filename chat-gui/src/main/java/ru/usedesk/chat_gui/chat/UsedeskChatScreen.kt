@@ -183,7 +183,9 @@ class UsedeskChatScreen : UsedeskFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        messagesAdapter.clear()
+        if (cleared) {
+            messagesAdapter.clear()
+        }
     }
 
     fun clear() {

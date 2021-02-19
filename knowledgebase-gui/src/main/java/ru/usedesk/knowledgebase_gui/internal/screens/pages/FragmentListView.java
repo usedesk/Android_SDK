@@ -15,7 +15,7 @@ import ru.usedesk.knowledgebase_gui.internal.screens.common.FragmentDataView;
 public abstract class FragmentListView<V, T extends DataViewModel<List<V>>>
         extends FragmentDataView<List<V>, T> {
 
-    private RecyclerView recyclerViewSections;
+    private RecyclerView rvList;
 
     public FragmentListView() {
         super(R.layout.usedesk_fragment_list);
@@ -24,13 +24,13 @@ public abstract class FragmentListView<V, T extends DataViewModel<List<V>>>
     @Override
     protected void onView(@NonNull View view) {
         super.onView(view);
-        recyclerViewSections = view.findViewById(R.id.rv_list);
+        rvList = view.findViewById(R.id.rv_list);
     }
 
     @Override
     protected void setDataView(List<V> data) {
-        recyclerViewSections.setAdapter(getAdapter(data));
-        recyclerViewSections.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvList.setAdapter(getAdapter(data));
+        rvList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     protected abstract RecyclerView.Adapter getAdapter(List<V> list);

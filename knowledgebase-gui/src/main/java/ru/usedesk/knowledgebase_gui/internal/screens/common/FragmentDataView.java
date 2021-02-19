@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.knowledgebase_gui.R;
@@ -19,8 +18,6 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
     private final int layoutId;
 
     private TextView textViewMessage;
-
-    private RecyclerView rvList;
 
     public FragmentDataView(int layoutId) {
         this.layoutId = layoutId;
@@ -50,7 +47,6 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
 
     protected void onView(@NonNull View view) {
         textViewMessage = view.findViewById(R.id.tv_message);
-        rvList = view.findViewById(R.id.rv_list);
     }
 
     protected void onData(DataOrMessage<V> dataOrMessage) {
@@ -71,13 +67,11 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
         setDataView(data);
 
         textViewMessage.setVisibility(View.GONE);
-        rvList.setVisibility(View.VISIBLE);
     }
 
     private void onMessage(int resourceId) {
         textViewMessage.setText(resourceId);
 
         textViewMessage.setVisibility(View.VISIBLE);
-        rvList.setVisibility(View.GONE);
     }
 }

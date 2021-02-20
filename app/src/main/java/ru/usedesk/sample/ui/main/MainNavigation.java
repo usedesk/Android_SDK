@@ -49,6 +49,10 @@ public class MainNavigation {
     public void onBackPressed() {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 1) {
+            Fragment fragment = fragmentManager.getFragments().get(0);
+            if (fragment instanceof UsedeskChatScreen) {
+                ((UsedeskChatScreen) fragment).clear();
+            }
             fragmentManager.popBackStack();
         } else {
             activity.finish();

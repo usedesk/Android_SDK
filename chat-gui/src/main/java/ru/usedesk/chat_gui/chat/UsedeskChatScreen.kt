@@ -32,6 +32,8 @@ class UsedeskChatScreen : UsedeskFragment() {
     private lateinit var messagesAdapter: MessagesAdapter
     private lateinit var offlineFormAdapter: OfflineFormAdapter
 
+    private var cleared = false
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -176,6 +178,18 @@ class UsedeskChatScreen : UsedeskFragment() {
 
     fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
         viewModel.setAttachedFiles(attachedFiles)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        if (cleared) {
+            messagesAdapter.clear()
+        }
+    }
+
+    fun clear() {
+        cleared = true
     }
 
     companion object {

@@ -362,12 +362,18 @@ internal class ChatInteractor(
         }
     }
 
-    private fun onChatInited(chatChatInited: ChatInited) {
-        this.token = chatChatInited.token
+    private fun onChatInited(chatInited: ChatInited) {
+        this.token = chatInited.token
 
         userInfoRepository.setToken(token)
 
-        onMessagesNew(chatChatInited.messages, true)
+        val ids = lastMessages.map {
+            it.id
+        }
+        val filteredMessages = chatInited.messages.filter {
+            it.id !in ids
+        }
+        onMessagesNew(filteredMessages, true)
 
         val initClientMessage = try {
             userInfoRepository.getConfiguration().clientInitMessage
@@ -379,7 +385,7 @@ internal class ChatInteractor(
         }
         userInfoRepository.setConfiguration(configuration)
 
-        if (chatChatInited.waitingEmail) {
+        if (chatInited.waitingEmail) {
             sendUserEmail()
         } else {
             eventListener.onSetEmailSuccess()

@@ -30,6 +30,7 @@ internal class MessagesAdapter(
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<ChatViewModel> {
 
     private var items: List<UsedeskMessage> = listOf()
+    private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
 
     init {
         recyclerView.also {
@@ -74,6 +75,12 @@ internal class MessagesAdapter(
     private fun getFormattedTime(calendar: Calendar): String {
         val dateFormat: DateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         return dateFormat.format(calendar.time)
+    }
+
+    fun clear() {
+        viewHolders.forEach {
+            it.clear()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -123,6 +130,8 @@ internal class MessagesAdapter(
             else -> {
                 throw RuntimeException("Unknown view type:$viewType")
             }
+        }.apply {
+            viewHolders.add(this)
         }
     }
 
@@ -139,6 +148,8 @@ internal class MessagesAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
 
         abstract fun bind(position: Int)
+
+        open fun clear() {}
     }
 
     internal abstract inner class MessageViewHolder(
@@ -306,6 +317,10 @@ internal class MessagesAdapter(
                     bindImage(position)
                 }
             })
+        }
+
+        override fun clear() {
+            clearImage(binding.ivPreview)
         }
     }
 

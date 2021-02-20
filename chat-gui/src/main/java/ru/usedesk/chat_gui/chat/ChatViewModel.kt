@@ -83,7 +83,9 @@ internal class ChatViewModel : UsedeskViewModel() {
     }
 
     fun setAttachedFiles(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        fileInfoListLiveData.postValue(usedeskFileInfoList)
+        val attached = (fileInfoListLiveData.value
+                ?: listOf()) + usedeskFileInfoList
+        fileInfoListLiveData.postValue(attached.distinct())
     }
 
     fun sendFeedback(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
@@ -101,7 +103,7 @@ internal class ChatViewModel : UsedeskViewModel() {
         val attachedFileInfoList: MutableList<UsedeskFileInfo> = fileInfoListLiveData.value?.toMutableList()
                 ?: mutableListOf()
         attachedFileInfoList.remove(usedeskFileInfo)
-        setAttachedFiles(attachedFileInfoList)
+        fileInfoListLiveData.postValue(attachedFileInfoList)
     }
 
     fun onSend(textMessage: String) {

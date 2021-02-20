@@ -19,8 +19,6 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
 
     private TextView textViewMessage;
 
-    private View container;
-
     public FragmentDataView(int layoutId) {
         this.layoutId = layoutId;
     }
@@ -31,7 +29,8 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = UsedeskViewCustomizer.getInstance()
                 .createView(inflater, layoutId, container, false, R.style.Usedesk_Theme_KnowledgeBase);
@@ -48,7 +47,6 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
 
     protected void onView(@NonNull View view) {
         textViewMessage = view.findViewById(R.id.tv_message);
-        container = view.findViewById(R.id.container);
     }
 
     protected void onData(DataOrMessage<V> dataOrMessage) {
@@ -69,13 +67,11 @@ public abstract class FragmentDataView<V, T extends DataViewModel<V>> extends Fr
         setDataView(data);
 
         textViewMessage.setVisibility(View.GONE);
-        container.setVisibility(View.VISIBLE);
     }
 
     private void onMessage(int resourceId) {
         textViewMessage.setText(resourceId);
 
         textViewMessage.setVisibility(View.VISIBLE);
-        container.setVisibility(View.GONE);
     }
 }

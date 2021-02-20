@@ -2,10 +2,8 @@ package ru.usedesk.chat_gui.internal.chat;
 
 import android.text.Html;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,6 +27,7 @@ import ru.usedesk.chat_sdk.external.UsedeskChatSdk;
 import ru.usedesk.chat_sdk.external.entity.UsedeskFeedback;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessageButton;
+import ru.usedesk.common_gui.external.UsedeskViewCustomizer;
 import ru.usedesk.common_gui.internal.ImageUtils;
 
 public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -131,7 +130,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         protected final TextView timeTextView;
 
         TimeHolder(@NonNull ViewGroup viewGroup, int id) {
-            super(LayoutInflater.from(viewGroup.getContext()).inflate(id, viewGroup, false));
+            super(UsedeskViewCustomizer.getInstance().createView(viewGroup, id, R.style.Usedesk_Theme_Chat));
 
             timeTextView = itemView.findViewById(R.id.tv_time);
         }
@@ -215,10 +214,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (message.getMessageButtons().getMessageText() != null && message.getMessageButtons().getMessageButtons().size() > 0) {
                 ltButtons.setVisibility(View.VISIBLE);
                 for (UsedeskMessageButton messageButton : message.getMessageButtons().getMessageButtons()) {
-                    Button button = new Button(ltButtons.getContext());
+                    View buttonView = UsedeskViewCustomizer.getInstance()
+                            .createView(ltButtons, R.layout.usedesk_item_message_button, R.style.Usedesk_Theme_Chat);
 
-                    button.setText(messageButton.getText());
-                    button.setOnClickListener(v ->
+                    TextView tvText = buttonView.findViewById(R.id.tv_text);
+
+                    tvText.setText(messageButton.getText());
+                    tvText.setOnClickListener(v ->
                             UsedeskChatSdk.getInstance().sendRx(messageButton)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
@@ -227,7 +229,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                    ltButtons.addView(button, layoutParams);
+                    ltButtons.addView(buttonView, layoutParams);
                 }
             } else {
                 ltButtons.setVisibility(View.GONE);

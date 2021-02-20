@@ -17,6 +17,8 @@ import javax.inject.Inject;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import io.socket.engineio.client.transports.WebSocket;
+import okhttp3.OkHttpClient;
 import ru.usedesk.chat_sdk.external.entity.IUsedeskActionListener;
 import ru.usedesk.chat_sdk.external.entity.UsedeskMessage;
 import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.PayloadMessage;
@@ -33,6 +35,7 @@ import ru.usedesk.chat_sdk.internal.data.framework.socket.entity.response.Simple
 import ru.usedesk.chat_sdk.internal.domain.entity.OnMessageListener;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskException;
 import ru.usedesk.common_sdk.external.entity.exceptions.UsedeskSocketException;
+import ru.usedesk.common_sdk.internal.api.UsedeskOkHttpClientFactory;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
@@ -51,6 +54,7 @@ public class SocketApi {
     private final Map<String, Emitter.Listener> emitterListeners = new HashMap<>(5);
 
     private final Gson gson;
+    private final UsedeskOkHttpClientFactory usedeskOkHttpClientFactory;
 
     private Socket socket;
 
@@ -107,21 +111,24 @@ public class SocketApi {
     };
 
     @Inject
-    SocketApi(Gson gson) {
+    SocketApi(@NonNull Gson gson,
+              @NonNull UsedeskOkHttpClientFactory usedeskOkHttpClientFactory) {
         this.gson = gson;
+        this.usedeskOkHttpClientFactory = usedeskOkHttpClientFactory;
     }
 
     public boolean isConnected() {
         return socket.connected();
     }
 
-    public void connect(@NonNull String url, @NonNull IUsedeskActionListener actionListener,
+    public void connect(@NonNull String url,
+                        @NonNull IUsedeskActionListener actionListener,
                         @NonNull OnMessageListener onMessageListener) throws UsedeskException {
         if (socket != null) {
             return;
         }
         try {
-            socket = IO.socket(url);
+            socket = getSocket(url);
         } catch (URISyntaxException e) {
             throw new UsedeskSocketException(IO_ERROR, e.getMessage());
         }
@@ -140,6 +147,18 @@ public class SocketApi {
         }
 
         socket.connect();
+    }
+
+    private Socket getSocket(String url) throws URISyntaxException {
+        OkHttpClient okHttpClient = usedeskOkHttpClientFactory.createInstance();
+
+        IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+        IO.setDefaultOkHttpCallFactory(okHttpClient);
+
+        IO.Options options = new IO.Options();
+        options.transports = new String[]{WebSocket.NAME};
+
+        return IO.socket(url, options);
     }
 
     public void disconnect() {

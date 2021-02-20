@@ -3,6 +3,7 @@ package ru.usedesk.chat_sdk.internal.data.framework.httpapi;
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Multipart;
@@ -13,7 +14,7 @@ import ru.usedesk.chat_sdk.internal.data.framework.api.apifile.entity.FileRespon
 
 public interface IHttpApi {
     @POST("post/")
-    Call<Object[]> postOfflineForm(@Body UsedeskOfflineForm offlineForm);
+    Call<ResponseBody> postOfflineForm(@Body UsedeskOfflineForm offlineForm);
 
     @Multipart
     @POST("send_file")

@@ -5,13 +5,13 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
     }
 }
 
 allprojects {
     project.group = 'ru.usedesk'
-    project.version = '2.1.13'
+    project.version = '2.1.17'
 
     repositories {
         google()

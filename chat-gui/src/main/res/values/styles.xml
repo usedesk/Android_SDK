@@ -17,14 +17,8 @@
         <item name="usedesk_message_panel_document_remove_icon">@drawable/ic_cancel</item>
         <!--MessageUser-->
         <item name="usedesk_message_user_background">@drawable/user_bubble</item>
-        <item name="usedesk_message_user_background_color">
-            @color/usedesk_message_user_background_color
-        </item>
         <!--MessageOperator-->
         <item name="usedesk_message_operator_background">@drawable/operator_bubble</item>
-        <item name="usedesk_message_operator_background_color">
-            @color/usedesk_message_operator_background_color
-        </item>
         <item name="usedesk_message_operator_feedback_received">
             @string/usedesk_message_operator_feedback_received
         </item>
@@ -36,7 +30,7 @@
         <!--AttachmentPanel-->
         <item name="usedesk_attachment_panel_gallery_icon">@drawable/ic_attachment_photo_black
         </item>
-        <item name="usedesk_attachment_panel_camera_icon">@drawable/ic_attachment_take_photo_black
+        <item name="usedesk_attachment_panel_camera_icon">@drawable/ic_attachment_photo_black
         </item>
         <item name="usedesk_attachment_panel_storage_icon">@drawable/ic_attachment_document_black
         </item>

@@ -12,15 +12,9 @@
         android:layout_gravity="center"
         android:textSize="20sp" />
 
-    <ScrollView
-        android:id="@+id/container"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/usedesk_item_article_info" />
-    </ScrollView>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/usedesk_item_article_info" />
 </FrameLayout>

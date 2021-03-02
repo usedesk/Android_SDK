@@ -8,10 +8,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.showInstead
+import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
@@ -38,6 +35,9 @@ internal class ArticlesPage : UsedeskFragment() {
                 btnSupport.setOnClickListener {
                     getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
                 }
+
+                val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+                btnSupport.visibility = visibleGone(withSupportButton)
             }
 
             argsGetLong(CATEGORY_ID_KEY)?.also { categoryId ->
@@ -71,11 +71,13 @@ internal class ArticlesPage : UsedeskFragment() {
 
     companion object {
         private const val CATEGORY_ID_KEY = "categoryIdKey"
+        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
 
-        fun newInstance(categoryId: Long): ArticlesPage {
+        fun newInstance(withSupportButton: Boolean, categoryId: Long): ArticlesPage {
             return ArticlesPage().apply {
                 arguments = Bundle().apply {
                     putLong(CATEGORY_ID_KEY, categoryId)
+                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
                 }
             }
         }

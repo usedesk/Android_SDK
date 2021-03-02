@@ -38,8 +38,8 @@ public class MainNavigation {
         switchFragment(UsedeskChatScreen.newInstance(customAgentName));
     }
 
-    void goKnowledgeBase() {
-        switchFragment(UsedeskKnowledgeBaseScreen.newInstance());
+    void goKnowledgeBase(boolean withSupportButton) {
+        switchFragment(UsedeskKnowledgeBaseScreen.newInstance(withSupportButton));
     }
 
     void goShowFile(@NonNull UsedeskFile usedeskFile) {

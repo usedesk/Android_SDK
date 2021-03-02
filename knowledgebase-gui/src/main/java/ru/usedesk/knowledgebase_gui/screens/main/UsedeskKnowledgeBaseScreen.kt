@@ -33,6 +33,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     private lateinit var toolbarDefaultAdapter: UsedeskToolbarAdapter
     private lateinit var toolbarSearchAdapter: ToolbarSearchAdapter
 
+    private var withSupportButton = true
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -44,6 +46,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 Binding(rootView, defaultStyleId)
             }
 
+            withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+
             toolbarDefaultAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity,
                     binding.toolbar).apply {
                 setBackButton {
@@ -51,7 +55,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
                 }
 
                 setActionButton {
-                    switchPage(ArticlesSearchPage.newInstance())
+                    switchPage(ArticlesSearchPage.newInstance(withSupportButton))
                 }
             }
 
@@ -66,7 +70,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             val sectionsTitle = binding.styleValues
                     .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                     .getString(R.attr.usedesk_text_1)
-            switchPage(SectionsPage.newInstance(), sectionsTitle)
+            switchPage(SectionsPage.newInstance(withSupportButton), sectionsTitle)
 
             hideKeyboard(binding.rootView)
         }
@@ -88,7 +92,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         if (fragment is ArticlesSearchPage) {
             fragment.onSearchQueryUpdate(query)
         } else {
-            switchPage(ArticlesSearchPage.newInstance())
+            switchPage(ArticlesSearchPage.newInstance(withSupportButton))
         }
     }
 
@@ -111,17 +115,17 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     override fun onArticleClick(categoryId: Long,
                                 articleId: Long,
                                 articleTitle: String) {
-        switchPage(ArticlePage.newInstance(categoryId, articleId), articleTitle)
+        switchPage(ArticlePage.newInstance(withSupportButton, categoryId, articleId), articleTitle)
     }
 
     override fun onCategoryClick(categoryId: Long,
                                  articleTitle: String) {
-        switchPage(ArticlesPage.newInstance(categoryId), articleTitle)
+        switchPage(ArticlesPage.newInstance(withSupportButton, categoryId), articleTitle)
     }
 
     override fun onSectionClick(sectionId: Long,
                                 sectionTitle: String) {
-        switchPage(CategoriesPage.newInstance(sectionId), sectionTitle)
+        switchPage(CategoriesPage.newInstance(withSupportButton, sectionId), sectionTitle)
     }
 
     override fun onSearchQuery(query: String) {
@@ -174,10 +178,16 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
     companion object {
         private const val COMMON_TITLE_KEY = "commonTitleKey"
+        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
 
         @JvmStatic
-        fun newInstance(): UsedeskKnowledgeBaseScreen {
-            return UsedeskKnowledgeBaseScreen()
+        @JvmOverloads
+        fun newInstance(withSupportButton: Boolean = true): UsedeskKnowledgeBaseScreen {
+            return UsedeskKnowledgeBaseScreen().apply {
+                arguments = Bundle().apply {
+                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+                }
+            }
         }
     }
 

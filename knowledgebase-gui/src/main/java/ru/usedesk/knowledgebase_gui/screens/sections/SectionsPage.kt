@@ -8,10 +8,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.showInstead
+import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 
@@ -35,6 +32,9 @@ internal class SectionsPage : UsedeskFragment() {
                 btnSupport.setOnClickListener {
                     getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
                 }
+
+                val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+                btnSupport.visibility = visibleGone(withSupportButton)
             }
 
             sectionsAdapter = SectionsAdapter(binding.rvItems) { id, title ->
@@ -56,8 +56,14 @@ internal class SectionsPage : UsedeskFragment() {
     }
 
     companion object {
-        fun newInstance(): SectionsPage {
-            return SectionsPage()
+        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
+
+        fun newInstance(withSupportButton: Boolean = true): SectionsPage {
+            return SectionsPage().apply {
+                arguments = Bundle().apply {
+                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+                }
+            }
         }
     }
 

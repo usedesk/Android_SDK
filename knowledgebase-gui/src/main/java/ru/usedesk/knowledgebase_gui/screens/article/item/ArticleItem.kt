@@ -96,6 +96,9 @@ internal class ArticleItem : UsedeskFragment() {
             btnSupport.setOnClickListener {
                 getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
+
+            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
         argsGetLong(ARTICLE_ID_KEY)?.also { articleId ->
@@ -210,8 +213,10 @@ internal class ArticleItem : UsedeskFragment() {
         private const val ARTICLE_ID_KEY = "articleIdKey"
         private const val PREVIOUS_TITLE_KEY = "previousTitleKey"
         private const val NEXT_TITLE_KEY = "nextTitleKey"
+        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
 
-        fun newInstance(articleId: Long,
+        fun newInstance(withSupportButton: Boolean,
+                        articleId: Long,
                         previousTitle: String?,
                         nextTitle: String?): ArticleItem {
             return ArticleItem().apply {
@@ -219,6 +224,7 @@ internal class ArticleItem : UsedeskFragment() {
                     putLong(ARTICLE_ID_KEY, articleId)
                     putString(PREVIOUS_TITLE_KEY, previousTitle)
                     putString(NEXT_TITLE_KEY, nextTitle)
+                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
                 }
             }
         }

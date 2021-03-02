@@ -51,7 +51,8 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
         articlePagesAdapter = ArticlePagesAdapter(binding.vpPages,
                 childFragmentManager,
                 viewModel,
-                argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, false))
+                argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true),
+                argsGetBoolean(WITH_ARTICLE_RATING_KEY, true))
 
         viewModel.init(categoryId, articleId)
     }
@@ -68,13 +69,18 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
         private const val CATEGORY_ID_KEY = "categoryIdKey"
         private const val ARTICLE_ID_KEY = "articleIdKey"
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
+        private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
 
-        fun newInstance(withSupportButton: Boolean, categoryId: Long, articleId: Long): ArticlePage {
+        fun newInstance(withSupportButton: Boolean,
+                        withArticleRating: Boolean,
+                        categoryId: Long,
+                        articleId: Long): ArticlePage {
             return ArticlePage().apply {
                 arguments = Bundle().apply {
                     putLong(CATEGORY_ID_KEY, categoryId)
                     putLong(ARTICLE_ID_KEY, articleId)
                     putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+                    putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
                 }
             }
         }

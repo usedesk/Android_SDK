@@ -58,6 +58,7 @@ internal class ArticleItem : UsedeskFragment() {
             noStyleValues = styleValues
                     .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_no_text)
 
+            lRating.visibility = visibleGone(argsGetBoolean(WITH_ARTICLE_RATING_KEY, true))
             lRatingYes.visibility = View.GONE
             lRatingNo.visibility = View.GONE
             etRating.visibility = View.GONE
@@ -214,8 +215,10 @@ internal class ArticleItem : UsedeskFragment() {
         private const val PREVIOUS_TITLE_KEY = "previousTitleKey"
         private const val NEXT_TITLE_KEY = "nextTitleKey"
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
+        private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
 
         fun newInstance(withSupportButton: Boolean,
+                        withArticleRating: Boolean,
                         articleId: Long,
                         previousTitle: String?,
                         nextTitle: String?): ArticleItem {
@@ -225,6 +228,7 @@ internal class ArticleItem : UsedeskFragment() {
                     putString(PREVIOUS_TITLE_KEY, previousTitle)
                     putString(NEXT_TITLE_KEY, nextTitle)
                     putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+                    putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
                 }
             }
         }
@@ -236,6 +240,7 @@ internal class ArticleItem : UsedeskFragment() {
         val lContentScrollable: View = rootView.findViewById(R.id.l_content_scrollable)
         val lBottomNavigation: View = rootView.findViewById(R.id.l_bottom_navigation)
         val wvContent: WebView = rootView.findViewById(R.id.wv_content)
+        val lRating: ViewGroup = rootView.findViewById(R.id.l_rating)
         val tvRatingTitle: TextView = rootView.findViewById(R.id.tv_rating_title)
         val etRating: EditText = rootView.findViewById(R.id.et_rating_message)
         val lRatingYes: View = rootView.findViewById(R.id.l_rating_yes)

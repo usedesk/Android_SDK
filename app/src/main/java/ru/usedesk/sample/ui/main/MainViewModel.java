@@ -78,11 +78,12 @@ public class MainViewModel extends ViewModel {
 
             if (usedeskChatConfiguration.validate().isAllValid()) {
                 this.configuration = configuration;
-                initUsedeskConfiguration(usedeskChatConfiguration, configuration.getWithKnowledgeBase());
+                initUsedeskConfiguration(usedeskChatConfiguration, configuration.getWithKb());
 
                 configurationLiveData.postValue(configuration);
-                if (this.configuration.getWithKnowledgeBase()) {
-                    mainNavigation.goKnowledgeBase(configuration.getWithSupportButton());
+                if (this.configuration.getWithKb()) {
+                    mainNavigation.goKnowledgeBase(configuration.getWithKbSupportButton(),
+                            configuration.getWithKbArticleRating());
                 } else {
                     mainNavigation.goChat(configuration.getCustomAgentName());
                 }

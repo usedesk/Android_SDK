@@ -34,52 +34,59 @@
                     android:scrollbars="none"
                     tools:ignore="WebViewLayout" />
 
-                <TextView
-                    android:id="@+id/tv_rating_title"
-                    style="?attr/usedesk_knowledgebase_article_content_page_rating_title_text"
-                    tools:text="@string/usedesk_rating_question" />
-
-                <EditText
-                    android:id="@+id/et_rating_message"
-                    style="?attr/usedesk_knowledgebase_article_content_page_rating_message_edit_text" />
-
                 <LinearLayout
-                    android:id="@+id/l_buttons"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="56dp"
-                    android:orientation="horizontal"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp">
+                    android:id="@+id/l_rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                    <FrameLayout
-                        android:id="@+id/l_rating_yes"
+                    <TextView
+                        android:id="@+id/tv_rating_title"
+                        style="?attr/usedesk_knowledgebase_article_content_page_rating_title_text"
+                        tools:text="@string/usedesk_rating_question" />
+
+                    <EditText
+                        android:id="@+id/et_rating_message"
+                        style="?attr/usedesk_knowledgebase_article_content_page_rating_message_edit_text" />
+
+                    <LinearLayout
+                        android:id="@+id/l_buttons"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-                        android:background="@drawable/usedesk_background_rating_yes">
+                        android:layout_height="36dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="56dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp">
 
-                        <TextView
-                            android:id="@+id/tv_rating_yes"
-                            style="?attr/usedesk_knowledgebase_article_content_page_rating_yes_text"
-                            tools:text="@string/usedesk_yes" />
-                    </FrameLayout>
+                        <FrameLayout
+                            android:id="@+id/l_rating_yes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginRight="4dp"
+                            android:background="@drawable/usedesk_background_rating_yes">
 
-                    <FrameLayout
-                        android:id="@+id/l_rating_no"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginRight="4dp"
-                        android:background="@drawable/usedesk_background_rating_no">
+                            <TextView
+                                android:id="@+id/tv_rating_yes"
+                                style="?attr/usedesk_knowledgebase_article_content_page_rating_yes_text"
+                                tools:text="@string/usedesk_yes" />
+                        </FrameLayout>
 
-                        <TextView
-                            android:id="@+id/tv_rating_no"
-                            style="?attr/usedesk_knowledgebase_article_content_page_rating_no_text"
-                            tools:text="@string/usedesk_no" />
-                    </FrameLayout>
+                        <FrameLayout
+                            android:id="@+id/l_rating_no"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginRight="4dp"
+                            android:background="@drawable/usedesk_background_rating_no">
+
+                            <TextView
+                                android:id="@+id/tv_rating_no"
+                                style="?attr/usedesk_knowledgebase_article_content_page_rating_no_text"
+                                tools:text="@string/usedesk_no" />
+                        </FrameLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>

@@ -116,8 +116,9 @@ public class ConfigurationScreen extends Fragment {
                 binding.etClientInitMessage.getText().toString(),
                 binding.etCustomAgentName.getText().toString(),
                 binding.switchForeground.isChecked(),
-                binding.switchKnowledgeBase.isChecked(),
-                binding.switchWithSupportButton.isChecked());
+                binding.switchKb.isChecked(),
+                binding.switchKbWithSupportButton.isChecked(),
+                binding.switchKbWithArticleRating.isChecked());
     }
 
     @Nullable
@@ -157,7 +158,9 @@ public class ConfigurationScreen extends Fragment {
         binding.etClientInitMessage.setText(configuration.getClientInitMessage());
         binding.etCustomAgentName.setText(configuration.getCustomAgentName());
         binding.switchForeground.setChecked(configuration.getForegroundService());
-        binding.switchKnowledgeBase.setChecked(configuration.getWithKnowledgeBase());
+        binding.switchKb.setChecked(configuration.getWithKb());
+        binding.switchKbWithSupportButton.setChecked(configuration.getWithKbSupportButton());
+        binding.switchKbWithArticleRating.setChecked(configuration.getWithKbArticleRating());
 
         viewModel.getConfiguration().removeObservers(getViewLifecycleOwner());
     }

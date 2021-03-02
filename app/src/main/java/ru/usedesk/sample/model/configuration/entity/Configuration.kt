@@ -17,5 +17,6 @@ data class Configuration(
         val clientInitMessage: String = "",
         val customAgentName: String = "",
         val foregroundService: Boolean = false,
-        val withKnowledgeBase: Boolean = true,
-        val withSupportButton: Boolean = true)
+        val withKb: Boolean = true,
+        val withKbSupportButton: Boolean = true,
+        val withKbArticleRating: Boolean = true)

@@ -234,7 +234,7 @@ UsedeskChatSdk.stopService(context)
 UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 ```
 
-[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/UsedeskKnowledgeBaseConfiguration.kt) - конфигурация Базы Знаний:
+[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/entity/UsedeskKnowledgeBaseConfiguration.kt) - конфигурация Базы Знаний:
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|

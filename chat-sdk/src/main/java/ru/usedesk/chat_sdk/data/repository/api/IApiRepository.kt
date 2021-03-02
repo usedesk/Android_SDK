@@ -31,6 +31,7 @@ internal interface IApiRepository {
 
     @Throws(UsedeskException::class)
     fun send(token: String,
+             messageId: Long,
              feedback: UsedeskFeedback)
 
     @Throws(UsedeskException::class)

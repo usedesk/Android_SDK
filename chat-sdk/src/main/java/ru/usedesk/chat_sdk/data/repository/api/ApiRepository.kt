@@ -109,9 +109,10 @@ internal class ApiRepository(
 
     @Throws(UsedeskException::class)
     override fun send(token: String,
+                      messageId: Long,
                       feedback: UsedeskFeedback) {
         checkConnection()
-        socketApi.sendRequest(FeedbackRequest(token, feedback))
+        socketApi.sendRequest(FeedbackRequest(token, messageId, feedback))
     }
 
     @Throws(UsedeskException::class)

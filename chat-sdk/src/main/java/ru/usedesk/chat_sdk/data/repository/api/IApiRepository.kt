@@ -41,7 +41,7 @@ internal interface IApiRepository {
     @Throws(UsedeskException::class)
     fun send(configuration: UsedeskChatConfiguration,
              token: String,
-             usedeskFileInfo: UsedeskFileInfo)
+             fileInfo: UsedeskFileInfo)
 
     fun disconnect()
 

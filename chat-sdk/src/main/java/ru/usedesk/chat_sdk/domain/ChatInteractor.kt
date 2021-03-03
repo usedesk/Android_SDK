@@ -220,16 +220,64 @@ internal class ChatInteractor(
         messageUpdateSubject.onNext(message)
     }
 
+    private val sendingMessagesTimeout = CompositeDisposable()
+
     private fun onMessagesNew(messages: List<UsedeskMessage>,
                               isInited: Boolean) {
         lastMessages = lastMessages + messages
-        messages.forEach {
-            messageSubject.onNext(it)
+        messages.forEach { message ->
+            messageSubject.onNext(message)
             if (!isInited) {
-                newMessageSubject.onNext(it)
+                newMessageSubject.onNext(message)
             }
+
+            if (message.id < 0) {
+                runTimeout(message)
+            }
+            messagesSubject.onNext(lastMessages)
         }
-        messagesSubject.onNext(lastMessages)
+    }
+
+    private fun runTimeout(message: UsedeskMessage) {
+        sendingMessagesTimeout.add(
+                Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
+                    val failedMessage = lastMessages.firstOrNull {
+                        it.id == message.id
+                    }
+                    if (failedMessage is UsedeskMessageClient &&
+                            failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
+                        when (failedMessage) {
+                            is UsedeskMessageClientText -> {
+                                UsedeskMessageClientText(
+                                        failedMessage.id,
+                                        failedMessage.createdAt,
+                                        failedMessage.text,
+                                        UsedeskMessageClient.Status.SEND_FAILED
+                                )
+                            }
+                            is UsedeskMessageClientFile -> {
+                                UsedeskMessageClientFile(
+                                        failedMessage.id,
+                                        failedMessage.createdAt,
+                                        failedMessage.file,
+                                        UsedeskMessageClient.Status.SEND_FAILED
+                                )
+                            }
+                            is UsedeskMessageClientImage -> {
+                                UsedeskMessageClientImage(
+                                        failedMessage.id,
+                                        failedMessage.createdAt,
+                                        failedMessage.file,
+                                        UsedeskMessageClient.Status.SEND_FAILED
+                                )
+                            }
+                            else -> null
+                        }?.run {
+                            messageUpdateSubject.onNext(this)
+                        }
+                    }
+                }
+        )
     }
 
     override fun disconnect() {
@@ -390,5 +438,9 @@ internal class ChatInteractor(
         } else {
             eventListener.onSetEmailSuccess()
         }
+    }
+
+    companion object {
+        private const val SENDING_TIMEOUT_SECONDS = 60L
     }
 }

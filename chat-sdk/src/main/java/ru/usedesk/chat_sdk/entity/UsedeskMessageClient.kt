@@ -7,7 +7,6 @@ interface UsedeskMessageClient {
     enum class Status {
         SENDING,
         SUCCESSFULLY_SENT,
-        SEND_FAILED,
-        RECEIVED
+        SEND_FAILED
     }
 }

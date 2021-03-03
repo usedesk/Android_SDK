@@ -5,12 +5,16 @@ import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 
 internal class FeedbackRequest(
         token: String,
+        messageId: Long,
         feedback: UsedeskFeedback
 ) : BaseRequest(TYPE, token) {
 
-    private val payload = Payload(feedback)
+    private val payload = Payload(feedback, messageId)
 
-    private class Payload(private val data: UsedeskFeedback) {
+    private class Payload(
+            private val data: UsedeskFeedback,
+            private val messageId: Long
+    ) {
         private val type: String = VALUE_FEEDBACK_ACTION
     }
 

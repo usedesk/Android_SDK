@@ -18,7 +18,9 @@
     <string name="client_init_message">Client Init Message</string>
     <string name="custom_agent_name">Custom Agent Name</string>
     <string name="foreground_service_hint">Foreground service</string>
-    <string name="knowledge_base_hint">With KnowledgeBase</string>
+    <string name="kb_base_hint">With KnowledgeBase</string>
+    <string name="kb_support_button">With KnowledgeBase Support Button</string>
+    <string name="kb_article_rating">With KnowledgeBase Article Rating</string>
     <string name="button_go_to_sdk">Go to sdk</string>
     <string name="validation_empty_error">Field required</string>
     <string name="validation_email_error">Invalid email</string>

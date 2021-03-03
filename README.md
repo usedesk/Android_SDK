@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.0.5)
+# Android Usedesk SDK (v3.0.6)
 - [Подключение к проекту](#preparation)
 - [Чат](#chat)
   - [Конфигурация](#chat_configuration)
@@ -64,8 +64,8 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
 | urlChat | String | Адрес сервера Чата |
-| urlOfflineForm | String | Адрес для отправки формы обратной связи |
-| urlToSendFile | String | Адрес для отправки файлов |
+| urlOfflineForm | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
+| urlToSendFile | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
 | companyId | String | Идентификатор компании |
 | clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе |
 | clientEmail | String? | Почта клиента |
@@ -234,12 +234,15 @@ UsedeskChatSdk.stopService(context)
 UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 ```
 
-[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/UsedeskKnowledgeBaseConfiguration.kt) - конфигурация Базы Знаний:
+[UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/entity/UsedeskKnowledgeBaseConfiguration.kt) - конфигурация Базы Знаний:
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
+| urlApi | String | Адрес api сервера. Стандартное значение `https://api.usedesk.ru/` |
 | accountId | String | Идентификатор Базы Знаний в системе |
 | token | String | Токен доступа к API |
+| clientEmail | String? | Email клиента |
+| clientName | String? | Имя клиента |
 
 <a name="knowledge_base_gui"></a>
 ### Использование с GUI
@@ -316,6 +319,14 @@ UsedeskKnowledgeBaseSdk.release()
   - Исправлена ошибка, при которой не отображался прикреплённый к сообщению файл, отправленный из интерфейса тикета
 - v2.1.13
   - Метод отправки файлов заменён на новый с ограничением в 150мб
+- v2.1.17
+  - Исправлена работа OkHttpClient, Glide на версиях API 19-21
+  - Исправлено отображение текста в БЗ на версиях API 19-25
+  - Изменены некоторые иконки чата
+  - Изменена кастомизация фона сообщений
+  - Изменены кнопки в сообщении оператора
+  - Исправлена работа атбирутов кастомизации в теме
+  - Исправлена обработка невалидных кнопок в сообщениях чата
 - v3.0.0
   - Библиотека теперь полностью на Kotlin
   - Полностью переделан дизайн и его кастомизация
@@ -332,3 +343,7 @@ UsedeskKnowledgeBaseSdk.release()
   - Добавлен метод очистки загрузок изображений чата
   - Исправлено задвоение сообщений при разрыве соединения в чате
   - Прикрепление файлов в чате теперь дополняет ранее прикреплённые файлы, с камеры также можно прикрепить более 1го файла
+- v3.0.6
+  - Добавлена возможность отключения кнопки "Чат" в Базе Знаний
+  - Добавлена возможность отключения оценки в статьях Базы знаний
+  - Теперь вместе с оценкой чата отправляется id сообщения, в котором поставилась оценка

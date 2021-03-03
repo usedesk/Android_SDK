@@ -48,7 +48,7 @@ public class MainViewModel extends ViewModel {
         mainNavigation.goShowFile(usedeskFile);
     }
 
-    void goSdk(@Nullable String customAgentName) {
+    void goSdk() {
         disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
             UsedeskChatConfiguration defaultChatConfiguration = new UsedeskChatConfiguration(
                     configuration.getUrlChat(),
@@ -78,13 +78,14 @@ public class MainViewModel extends ViewModel {
 
             if (usedeskChatConfiguration.validate().isAllValid()) {
                 this.configuration = configuration;
-                initUsedeskConfiguration(usedeskChatConfiguration, configuration.isWithKnowledgeBase());
+                initUsedeskConfiguration(usedeskChatConfiguration, configuration.getWithKb());
 
                 configurationLiveData.postValue(configuration);
-                if (this.configuration.isWithKnowledgeBase()) {
-                    mainNavigation.goKnowledgeBase();
+                if (this.configuration.getWithKb()) {
+                    mainNavigation.goKnowledgeBase(configuration.getWithKbSupportButton(),
+                            configuration.getWithKbArticleRating());
                 } else {
-                    mainNavigation.goChat(customAgentName);
+                    mainNavigation.goChat(configuration.getCustomAgentName());
                 }
             } else {
                 errorLiveData.postValue(new UsedeskSingleLifeEvent<>("Invalid configuration"));
@@ -92,8 +93,10 @@ public class MainViewModel extends ViewModel {
         }));
     }
 
-    public void goChat(@Nullable String customAgentName) {
-        mainNavigation.goChat(customAgentName);
+    public void goChat() {
+        disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
+            mainNavigation.goChat(configuration.getCustomAgentName());
+        }));
     }
 
     void onBackPressed() {

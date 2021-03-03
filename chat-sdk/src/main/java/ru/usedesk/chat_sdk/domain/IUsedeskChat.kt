@@ -37,4 +37,8 @@ interface IUsedeskChat {
     fun send(offlineForm: UsedeskOfflineForm)
 
     fun sendRx(offlineForm: UsedeskOfflineForm): Completable
+
+    fun sendAgain(usedeskMessageClient: UsedeskMessageClient)
+
+    fun sendAgainRx(usedeskMessageClient: UsedeskMessageClient): Completable
 }

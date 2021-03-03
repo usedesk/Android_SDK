@@ -2,20 +2,16 @@ package ru.usedesk.chat_sdk.data.repository.api
 
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 
 internal interface IApiRepository {
-    @Throws(UsedeskException::class)
     fun connect(url: String,
                 token: String?,
                 configuration: UsedeskChatConfiguration,
                 eventListener: EventListener)
 
-    @Throws(UsedeskException::class)
     fun init(configuration: UsedeskChatConfiguration,
              token: String?)
 
-    @Throws(UsedeskException::class)
     fun send(token: String?,
              signature: String?,
              email: String?,
@@ -24,26 +20,24 @@ internal interface IApiRepository {
              phone: Long?,
              additionalId: Long?)
 
-    @Throws(UsedeskException::class)
     fun send(configuration: UsedeskChatConfiguration,
              companyId: String,
              offlineForm: UsedeskOfflineForm)
 
-    @Throws(UsedeskException::class)
     fun send(token: String,
              messageId: Long,
              feedback: UsedeskFeedback)
 
-    @Throws(UsedeskException::class)
     fun send(token: String,
              text: String)
 
-    @Throws(UsedeskException::class)
     fun send(configuration: UsedeskChatConfiguration,
              token: String,
              fileInfo: UsedeskFileInfo)
 
     fun disconnect()
+
+    fun sendAgain(messageClient: UsedeskMessageClient)
 
     interface EventListener {
         fun onConnected()

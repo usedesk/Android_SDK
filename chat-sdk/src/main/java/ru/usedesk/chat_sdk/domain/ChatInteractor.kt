@@ -352,6 +352,10 @@ internal class ChatInteractor(
         apiRepository.send(configuration, configuration.companyId, offlineForm)
     }
 
+    override fun sendAgain(usedeskMessageClient: UsedeskMessageClient) {
+        apiRepository.sendAgain(usedeskMessageClient)
+    }
+
     override fun connectRx(): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             connect()
@@ -384,6 +388,14 @@ internal class ChatInteractor(
     override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
         return Completable.create { emitter: CompletableEmitter ->
             send(offlineForm)
+            emitter.onComplete()
+        }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun sendAgainRx(usedeskMessageClient: UsedeskMessageClient): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            sendAgain(usedeskMessageClient)
             emitter.onComplete()
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

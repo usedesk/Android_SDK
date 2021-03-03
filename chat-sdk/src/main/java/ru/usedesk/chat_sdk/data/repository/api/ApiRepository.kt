@@ -19,7 +19,6 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.Se
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
@@ -94,7 +93,6 @@ internal class ApiRepository(
         }
     }
 
-    @Throws(UsedeskException::class)
     override fun connect(url: String,
                          token: String?,
                          configuration: UsedeskChatConfiguration,
@@ -103,7 +101,6 @@ internal class ApiRepository(
         socketApi.connect(url, token, configuration.companyId, socketEventListener)
     }
 
-    @Throws(UsedeskException::class)
     override fun init(configuration: UsedeskChatConfiguration,
                       token: String?) {
         socketApi.sendRequest(InitChatRequest(token,
@@ -111,7 +108,6 @@ internal class ApiRepository(
                 configuration.urlChat))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(token: String,
                       messageId: Long,
                       feedback: UsedeskFeedback) {
@@ -119,7 +115,6 @@ internal class ApiRepository(
         socketApi.sendRequest(FeedbackRequest(token, messageId, feedback))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(token: String,
                       text: String) {
         val sendingMessage = createSendingMessage(text)
@@ -129,7 +124,6 @@ internal class ApiRepository(
         socketApi.sendRequest(MessageRequest(token, text, sendingMessage.id))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(configuration: UsedeskChatConfiguration,
                       token: String,
                       fileInfo: UsedeskFileInfo) {
@@ -147,6 +141,13 @@ internal class ApiRepository(
         doRequest(configuration.urlToSendFile, FileResponse::class.java) {
             it.postFile(parts)
         }
+    }
+
+    override fun sendAgain(token: String,
+                           messageClient: UsedeskMessageClient) {
+        checkConnection()
+
+        socketApi.sendRequest(MessageRequest(token, messageClient, sendingMessage.id))
     }
 
     private fun createSendingMessage(text: String): UsedeskMessage {
@@ -171,7 +172,6 @@ internal class ApiRepository(
         }
     }
 
-    @Throws(UsedeskException::class)
     override fun send(token: String?,
                       signature: String?,
                       email: String?,
@@ -187,7 +187,6 @@ internal class ApiRepository(
                 }, signature, email, name, note, phone, additionalId))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(configuration: UsedeskChatConfiguration,
                       companyId: String,
                       offlineForm: UsedeskOfflineForm) {

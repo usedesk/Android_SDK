@@ -460,54 +460,44 @@ internal class ChatInteractor(
     }
 
     override fun connectRx(): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletable {
             connect()
-            emitter.onComplete()
         }
     }
 
     override fun sendRx(textMessage: String): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletable {
             send(textMessage)
-            emitter.onComplete()
         }
     }
 
     override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletableIo {
             send(usedeskFileInfoList)
-            emitter.onComplete()
-        }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
     override fun sendRx(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletable {
             send(agentMessage, feedback)
-            emitter.onComplete()
         }
     }
 
     override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletableIo {
             send(offlineForm)
-            emitter.onComplete()
-        }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
     override fun sendAgainRx(id: Long): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletableIo {
             sendAgain(id)
-            emitter.onComplete()
-        }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
     override fun disconnectRx(): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
+        return safeCompletable {
             disconnect()
-            emitter.onComplete()
         }
     }
 
@@ -553,6 +543,25 @@ internal class ChatInteractor(
         } else {
             eventListener.onSetEmailSuccess()
         }
+    }
+
+    private fun safeCompletable(run: () -> Unit): Completable {
+        return Completable.create { emitter: CompletableEmitter ->
+            try {
+                run()
+            } catch (e: Exception) {
+                if (!emitter.isDisposed) {
+                    emitter.onError(e)
+                }
+            }
+            emitter.onComplete()
+        }
+    }
+
+    private fun safeCompletableIo(run: () -> Unit): Completable {
+        return safeCompletable(run)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     companion object {

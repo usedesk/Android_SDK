@@ -37,7 +37,7 @@ internal class ChatInteractor(
     private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
-    private val messageUpdateSubject = BehaviorSubject.create<UsedeskMessage>()
+    private val messageUpdateSubject = PublishSubject.create<UsedeskMessage>()
     private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<Exception>()
@@ -209,7 +209,7 @@ internal class ChatInteractor(
         return field1 != null && field1 == field2
     }
 
-    private fun onMessageUpdate(message: UsedeskMessage) {
+    private fun onMessageUpdate(message: UsedeskMessage, instantUpdate: Boolean = true) {
         lastMessages = lastMessages.map {
             if (it.id == message.id) {
                 message
@@ -217,7 +217,10 @@ internal class ChatInteractor(
                 it
             }
         }
-        messageUpdateSubject.onNext(message)
+        messagesSubject.onNext(lastMessages)
+        if (instantUpdate) {
+            messageUpdateSubject.onNext(message)
+        }
     }
 
     private val sendingMessagesTimeout = CompositeDisposable()
@@ -337,14 +340,14 @@ internal class ChatInteractor(
 
             onMessageUpdate(UsedeskMessageAgentText(
                     agentMessage.id,
-                    Calendar.getInstance(),
+                    agentMessage.createdAt,
                     agentMessage.text,
                     agentMessage.buttons,
                     false,
                     feedback,
                     agentMessage.name,
                     agentMessage.avatar
-            ))
+            ), false)
         }
     }
 

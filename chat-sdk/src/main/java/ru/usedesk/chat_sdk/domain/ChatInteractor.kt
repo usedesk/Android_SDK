@@ -213,7 +213,9 @@ internal class ChatInteractor(
 
     private fun onMessageUpdate(message: UsedeskMessage) {
         lastMessages = lastMessages.map {
-            if (it.id == message.id) {
+            if (it is UsedeskMessageClient &&
+                    message is UsedeskMessageClient &&
+                    it.localId == message.localId) {
                 message
             } else {
                 it
@@ -234,9 +236,6 @@ internal class ChatInteractor(
                 newMessageSubject.onNext(message)
             }
 
-            if (message.id < 0) {
-                runTimeout(message)
-            }
             messagesSubject.onNext(lastMessages)
         }
     }
@@ -244,41 +243,7 @@ internal class ChatInteractor(
     private fun runTimeout(message: UsedeskMessage) {
         sendingMessagesTimeout.add(
                 Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
-                    val failedMessage = lastMessages.firstOrNull {
-                        it.id == message.id
-                    }
-                    if (failedMessage is UsedeskMessageClient &&
-                            failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
-                        when (failedMessage) {
-                            is UsedeskMessageClientText -> {
-                                UsedeskMessageClientText(
-                                        failedMessage.id,
-                                        failedMessage.createdAt,
-                                        failedMessage.text,
-                                        UsedeskMessageClient.Status.SEND_FAILED
-                                )
-                            }
-                            is UsedeskMessageClientFile -> {
-                                UsedeskMessageClientFile(
-                                        failedMessage.id,
-                                        failedMessage.createdAt,
-                                        failedMessage.file,
-                                        UsedeskMessageClient.Status.SEND_FAILED
-                                )
-                            }
-                            is UsedeskMessageClientImage -> {
-                                UsedeskMessageClientImage(
-                                        failedMessage.id,
-                                        failedMessage.createdAt,
-                                        failedMessage.file,
-                                        UsedeskMessageClient.Status.SEND_FAILED
-                                )
-                            }
-                            else -> null
-                        }?.run {
-                            messageUpdateSubject.onNext(this)
-                        }
-                    }
+                    onMessageSendingFailed(message)
                 }
         )
     }
@@ -319,23 +284,91 @@ internal class ChatInteractor(
     }
 
     override fun send(textMessage: String) {
-        if (textMessage.isNotEmpty()) {
-            token?.also {
-                val sendingMessage = createSendingMessage(textMessage)
-                eventListener.onMessagesReceived(listOf(sendingMessage))
+        if (textMessage.trim().isNotEmpty()) {
+            val sendingMessage = createSendingMessage(textMessage)
+            eventListener.onMessagesReceived(listOf(sendingMessage))
+            sendText(sendingMessage)
+        }
+    }
 
+    private fun sendText(sendingMessage: UsedeskMessageText) {
+        token?.also {
+            runTimeout(sendingMessage)
+
+            try {
                 apiRepository.send(it, sendingMessage)
+            } catch (e: Exception) {
+                onMessageSendingFailed(sendingMessage)
+                throw e
             }
         }
     }
 
     override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        token?.also { token ->
-            usedeskFileInfoList.forEach { usedeskFileInfo ->
-                val sendingMessage = createSendingMessage(usedeskFileInfo)
-                eventListener.onMessagesReceived(listOf(sendingMessage))
+        var exc: Exception? = null
+        usedeskFileInfoList.forEach { usedeskFileInfo ->
+            val sendingMessage = createSendingMessage(usedeskFileInfo)
+            eventListener.onMessagesReceived(listOf(sendingMessage))
 
+            try {
+                sendFile(sendingMessage)
+            } catch (e: Exception) {
+                exc = e
+            }
+        }
+
+        exc?.let {
+            throw it
+        }
+    }
+
+    private fun sendFile(sendingMessage: UsedeskMessageFile) {
+        token?.also { token ->
+            runTimeout(sendingMessage)
+
+            try {
                 apiRepository.send(configuration, token, sendingMessage)
+            } catch (e: Exception) {
+                onMessageSendingFailed(sendingMessage)
+                throw e
+            }
+        }
+    }
+
+    private fun onMessageSendingFailed(sendingMessage: UsedeskMessage) {
+        val failedMessage = lastMessages.firstOrNull {
+            it.id == sendingMessage.id
+        }
+        if (failedMessage is UsedeskMessageClient &&
+                failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
+            when (failedMessage) {
+                is UsedeskMessageClientText -> {
+                    UsedeskMessageClientText(
+                            failedMessage.id,
+                            failedMessage.createdAt,
+                            failedMessage.text,
+                            UsedeskMessageClient.Status.SEND_FAILED
+                    )
+                }
+                is UsedeskMessageClientFile -> {
+                    UsedeskMessageClientFile(
+                            failedMessage.id,
+                            failedMessage.createdAt,
+                            failedMessage.file,
+                            UsedeskMessageClient.Status.SEND_FAILED
+                    )
+                }
+                is UsedeskMessageClientImage -> {
+                    UsedeskMessageClientImage(
+                            failedMessage.id,
+                            failedMessage.createdAt,
+                            failedMessage.file,
+                            UsedeskMessageClient.Status.SEND_FAILED
+                    )
+                }
+                else -> null
+            }?.let {
+                onMessageUpdate(it)
             }
         }
     }
@@ -377,8 +410,7 @@ internal class ChatInteractor(
                                 UsedeskMessageClient.Status.SENDING
                         )
                         onMessageUpdate(sendingMessage)
-                        runTimeout(sendingMessage)
-                        apiRepository.send(token, sendingMessage)
+                        sendText(sendingMessage)
                     }
                     is UsedeskMessageClientImage -> {
                         val sendingMessage = UsedeskMessageClientImage(
@@ -388,8 +420,7 @@ internal class ChatInteractor(
                                 UsedeskMessageClient.Status.SENDING
                         )
                         onMessageUpdate(sendingMessage)
-                        runTimeout(sendingMessage)
-                        apiRepository.send(configuration, token, sendingMessage)
+                        sendFile(sendingMessage)
                     }
                     is UsedeskMessageClientFile -> {
                         val sendingMessage = UsedeskMessageClientFile(
@@ -399,8 +430,7 @@ internal class ChatInteractor(
                                 UsedeskMessageClient.Status.SENDING
                         )
                         onMessageUpdate(sendingMessage)
-                        runTimeout(sendingMessage)
-                        apiRepository.send(configuration, token, sendingMessage)
+                        sendFile(sendingMessage)
                     }
                 }
             }
@@ -526,6 +556,6 @@ internal class ChatInteractor(
     }
 
     companion object {
-        private const val SENDING_TIMEOUT_SECONDS = 60L
+        private const val SENDING_TIMEOUT_SECONDS = 6L
     }
 }

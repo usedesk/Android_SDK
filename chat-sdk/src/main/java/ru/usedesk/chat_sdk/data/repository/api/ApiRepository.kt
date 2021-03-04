@@ -76,7 +76,7 @@ internal class ApiRepository(
             } else {
                 val messages = messageResponseConverter.convert(messageResponse.message)
                 messages.forEach {
-                    if (it.id < 0) {
+                    if (it is UsedeskMessageClient && it.id != it.localId) {
                         eventListener.onMessageUpdated(it)
                     } else {
                         eventListener.onMessagesReceived(listOf(it))

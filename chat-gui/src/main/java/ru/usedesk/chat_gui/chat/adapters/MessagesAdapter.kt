@@ -60,6 +60,13 @@ internal class MessagesAdapter(
             notifyDataSetChanged()
             recyclerView.scrollToPosition(items.size - 1)
         } else {
+            items.forEachIndexed { index, item ->
+                if (item !in lastItems
+                        && (item !is UsedeskMessageAgentText ||
+                                item.feedback == null)) {
+                    notifyItemChanged(index)
+                }
+            }
             (lastItems.size until items.size).forEach { index ->
                 notifyItemChanged(index - 1)
                 notifyItemInserted(index)
@@ -216,7 +223,6 @@ internal class MessagesAdapter(
                        clientBinding: ClientBinding) {
             val lastOfGroup = position == items.size - 1 ||
                     items.getOrNull(position + 1) is UsedeskMessageAgent
-            clientBinding.vEmpty.visibility = visibleGone(lastOfGroup)
             val clientMessage = items[position] as UsedeskMessageClient
             val timeStyleValues = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
             val statusDrawableId = if (clientMessage.status == UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
@@ -232,7 +238,15 @@ internal class MessagesAdapter(
                     0
             )
 
-            clientBinding.ivSentFailed.visibility = visibleInvisible(clientMessage.status != UsedeskMessageClient.Status.SEND_FAILED)
+            clientBinding.apply {
+                ivSentFailed.apply {
+                    visibility = visibleInvisible(clientMessage.status == UsedeskMessageClient.Status.SEND_FAILED)
+                    setOnClickListener {
+                        viewModel.onSendAgain(clientMessage.localId)
+                    }
+                }
+                vEmpty.visibility = visibleGone(lastOfGroup)
+            }
         }
 
         private fun <T : Any> bindBottomMargin(

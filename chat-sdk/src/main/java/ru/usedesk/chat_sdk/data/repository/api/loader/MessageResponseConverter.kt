@@ -31,7 +31,8 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                 getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
             }
 
-            val id = from.payload?.messageId ?: from.id!!
+            val id = from.id!!
+            val localId = from.payload?.messageId ?: id
             val name = from.name ?: ""
             val avatar = from.payload?.avatar ?: ""
 
@@ -44,15 +45,31 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
 
                     if (file.isImage()) {
                         if (fromClient) {
-                            UsedeskMessageClientImage(id, messageDate, file, UsedeskMessageClient.Status.SUCCESSFULLY_SENT)
+                            UsedeskMessageClientImage(id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId)
                         } else {
-                            UsedeskMessageAgentImage(id, messageDate, file, name, avatar)
+                            UsedeskMessageAgentImage(id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar)
                         }
                     } else {
                         if (fromClient) {
-                            UsedeskMessageClientFile(id, messageDate, file, UsedeskMessageClient.Status.SUCCESSFULLY_SENT)
+                            UsedeskMessageClientFile(id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId)
                         } else {
-                            UsedeskMessageAgentFile(id, messageDate, file, name, avatar)
+                            UsedeskMessageAgentFile(id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar)
                         }
                     }
                 } else {
@@ -114,7 +131,8 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                         UsedeskMessageClientText(id,
                                 messageDate,
                                 convertedText,
-                                UsedeskMessageClient.Status.SUCCESSFULLY_SENT)
+                                UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                localId)
                     } else {
                         UsedeskMessageAgentText(id,
                                 messageDate,

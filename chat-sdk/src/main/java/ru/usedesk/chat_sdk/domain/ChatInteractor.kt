@@ -1,11 +1,8 @@
 package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
-import io.reactivex.CompletableEmitter
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
@@ -15,6 +12,8 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
+import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletable
+import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import toothpick.InjectConstructor
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -545,26 +544,7 @@ internal class ChatInteractor(
         }
     }
 
-    private fun safeCompletable(run: () -> Unit): Completable {
-        return Completable.create { emitter: CompletableEmitter ->
-            try {
-                run()
-            } catch (e: Exception) {
-                if (!emitter.isDisposed) {
-                    emitter.onError(e)
-                }
-            }
-            emitter.onComplete()
-        }
-    }
-
-    private fun safeCompletableIo(run: () -> Unit): Completable {
-        return safeCompletable(run)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-    }
-
     companion object {
-        private const val SENDING_TIMEOUT_SECONDS = 6L
+        private const val SENDING_TIMEOUT_SECONDS = 60L
     }
 }

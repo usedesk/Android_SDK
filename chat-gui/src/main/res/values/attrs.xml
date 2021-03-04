@@ -38,6 +38,7 @@
     <attr name="usedesk_chat_message_time_text" format="reference" />
     <attr name="usedesk_chat_message_date_text" format="reference" />
     <attr name="usedesk_chat_message_name_text" format="reference" />
+    <attr name="usedesk_chat_message_client_sent_failed_image" format="reference" />
 
     <attr name="usedesk_chat_message_file_preview_image" format="reference" />
     <attr name="usedesk_chat_message_file_extension_text" format="reference" />

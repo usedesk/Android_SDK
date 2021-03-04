@@ -1,10 +1,10 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import android.net.Uri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
@@ -16,17 +16,14 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientRequest
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
 import java.io.IOException
+import java.util.*
 
 @InjectConstructor
 internal class ApiRepository(
@@ -34,13 +31,10 @@ internal class ApiRepository(
         private val multipartConverter: IMultipartConverter,
         private val initChatResponseConverter: InitChatResponseConverter,
         private val messageResponseConverter: MessageResponseConverter,
-        private val fileResponseConverter: FileResponseConverter,
         private val fileLoader: IFileLoader,
         apiFactory: IUsedeskApiFactory,
         gson: Gson
 ) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
-
-    private var localId = 0L
 
     private fun isConnected() = socketApi.isConnected()
 
@@ -81,7 +75,13 @@ internal class ApiRepository(
                 eventListener.onOfflineForm()
             } else {
                 val messages = messageResponseConverter.convert(messageResponse.message)
-                eventListener.onMessagesReceived(messages)
+                messages.forEach {
+                    if (it is UsedeskMessageClient && it.id != it.localId) {
+                        eventListener.onMessageUpdated(it)
+                    } else {
+                        eventListener.onMessagesReceived(listOf(it))
+                    }
+                }
             }
         }
 
@@ -90,7 +90,6 @@ internal class ApiRepository(
         }
     }
 
-    @Throws(UsedeskException::class)
     override fun connect(url: String,
                          token: String?,
                          configuration: UsedeskChatConfiguration,
@@ -99,7 +98,6 @@ internal class ApiRepository(
         socketApi.connect(url, token, configuration.companyId, socketEventListener)
     }
 
-    @Throws(UsedeskException::class)
     override fun init(configuration: UsedeskChatConfiguration,
                       token: String?) {
         socketApi.sendRequest(InitChatRequest(token,
@@ -107,7 +105,6 @@ internal class ApiRepository(
                 configuration.urlChat))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(token: String,
                       messageId: Long,
                       feedback: UsedeskFeedback) {
@@ -115,50 +112,29 @@ internal class ApiRepository(
         socketApi.sendRequest(FeedbackRequest(token, messageId, feedback))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(token: String,
-                      text: String) {
+                      messageText: UsedeskMessageText) {
         checkConnection()
-        socketApi.sendRequest(MessageRequest(token, text))
+        val request = MessageRequest(token, messageText.text, messageText.id)
+        socketApi.sendRequest(request)
     }
 
-    @Throws(UsedeskException::class)
     override fun send(configuration: UsedeskChatConfiguration,
                       token: String,
-                      usedeskFileInfo: UsedeskFileInfo) {
+                      messageFile: UsedeskMessageFile) {
         checkConnection()
-        localId--
-        /*val calendar = Calendar.getInstance()
-        val file = UsedeskFile.create(
-                usedeskFileInfo.uri.toString(),
-                usedeskFileInfo.type,
-                "",
-                usedeskFileInfo.name
-        )
-        val tempMessage = if (usedeskFileInfo.isImage()) {
-            UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
-        } else {
-            UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
-        }
-        eventListener.onMessagesReceived(listOf(tempMessage))*/
 
-        val loadedFile = fileLoader.load(usedeskFileInfo.uri)
+        val loadedFile = fileLoader.load(Uri.parse(messageFile.file.content))
         val parts = listOf(
                 multipartConverter.convert("chat_token", token),
-                multipartConverter.convert("file", loadedFile)
+                multipartConverter.convert("file", loadedFile),
+                multipartConverter.convert("message_id", messageFile.id)
         )
-        val fileResponse = doRequest(configuration.urlToSendFile, FileResponse::class.java) {
+        doRequest(configuration.urlToSendFile, FileResponse::class.java) {
             it.postFile(parts)
-        }.apply {
-            id = localId.toString()
-            type = loadedFile.type
-            name = loadedFile.name
         }
-        val message = fileResponseConverter.convert(fileResponse)
-        //eventListener.onMessageUpdated(message)//TODO: временно, пока сервер не позволит определять какой файл ушёл
     }
 
-    @Throws(UsedeskException::class)
     override fun send(token: String?,
                       signature: String?,
                       email: String?,
@@ -174,7 +150,6 @@ internal class ApiRepository(
                 }, signature, email, name, note, phone, additionalId))
     }
 
-    @Throws(UsedeskException::class)
     override fun send(configuration: UsedeskChatConfiguration,
                       companyId: String,
                       offlineForm: UsedeskOfflineForm) {

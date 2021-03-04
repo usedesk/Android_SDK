@@ -12,7 +12,7 @@ internal class InitChatRequest(
 
     private val payload: Payload = Payload()
 
-    class Payload {
+    private class Payload {
         val sdk: String = VALUE_CURRENT_SDK
         val type: String = VALUE_TYPE_SDK
     }

@@ -1,9 +1,9 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import ru.usedesk.chat_sdk.data.Converter
-import ru.usedesk.chat_sdk.data._entity.Message
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import toothpick.InjectConstructor
 
@@ -21,10 +21,10 @@ internal class InitChatResponseConverter(
         )
     }
 
-    private fun convert(messages: List<Message?>): List<UsedeskMessage> {
+    private fun convert(messages: List<MessageResponse.Message?>): List<UsedeskMessage> {
         return messages.flatMap {
             convertOrNull {
-                messageResponseConverter.convert(it!!)
+                messageResponseConverter.convert(it)
             } ?: listOf()
         }
     }

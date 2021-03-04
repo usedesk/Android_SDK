@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat
 
-import ru.usedesk.chat_sdk.data._entity.Message
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 
 internal class InitChatResponse : BaseResponse() {
     var token: String? = null
@@ -13,6 +13,6 @@ internal class InitChatResponse : BaseResponse() {
 
     class Setup {
         var noOperators: Boolean? = null
-        var messages: List<Message?>? = null
+        var messages: List<MessageResponse.Message?>? = null
     }
 }

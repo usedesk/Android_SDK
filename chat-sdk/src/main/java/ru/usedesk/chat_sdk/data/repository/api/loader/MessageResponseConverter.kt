@@ -1,23 +1,23 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import ru.usedesk.chat_sdk.data.Converter
-import ru.usedesk.chat_sdk.data._entity.Message
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import toothpick.InjectConstructor
 
 @InjectConstructor
-internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessage>>() {
+internal class MessageResponseConverter : Converter<MessageResponse.Message?, List<UsedeskMessage>>() {
 
-    override fun convert(from: Message?): List<UsedeskMessage> {
+    override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> {
         return convertOrNull {
             val fromClient = when (from!!.type) {
-                Message.TYPE_CLIENT_TO_OPERATOR,
-                Message.TYPE_CLIENT_TO_BOT -> {
+                MessageResponse.TYPE_CLIENT_TO_OPERATOR,
+                MessageResponse.TYPE_CLIENT_TO_BOT -> {
                     true
                 }
-                Message.TYPE_OPERATOR_TO_CLIENT,
-                Message.TYPE_BOT_TO_CLIENT -> {
+                MessageResponse.TYPE_OPERATOR_TO_CLIENT,
+                MessageResponse.TYPE_BOT_TO_CLIENT -> {
                     false
                 }
                 else -> null
@@ -31,10 +31,8 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
                 getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
             }
 
-            val id = from.id!!.toLong()
-            if (id <= 0) {
-                return@convertOrNull null
-            }
+            val id = from.id!!
+            val localId = from.payload?.messageId ?: id
             val name = from.name ?: ""
             val avatar = from.payload?.avatar ?: ""
 
@@ -47,15 +45,31 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
 
                     if (file.isImage()) {
                         if (fromClient) {
-                            UsedeskMessageClientImage(id, messageDate, file, UsedeskMessageClient.Status.RECEIVED)
+                            UsedeskMessageClientImage(id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId)
                         } else {
-                            UsedeskMessageAgentImage(id, messageDate, file, name, avatar)
+                            UsedeskMessageAgentImage(id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar)
                         }
                     } else {
                         if (fromClient) {
-                            UsedeskMessageClientFile(id, messageDate, file, UsedeskMessageClient.Status.RECEIVED)
+                            UsedeskMessageClientFile(id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId)
                         } else {
-                            UsedeskMessageAgentFile(id, messageDate, file, name, avatar)
+                            UsedeskMessageAgentFile(id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar)
                         }
                     }
                 } else {
@@ -117,7 +131,8 @@ internal class MessageResponseConverter : Converter<Message?, List<UsedeskMessag
                         UsedeskMessageClientText(id,
                                 messageDate,
                                 convertedText,
-                                UsedeskMessageClient.Status.RECEIVED)
+                                UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                localId)
                     } else {
                         UsedeskMessageAgentText(id,
                                 messageDate,

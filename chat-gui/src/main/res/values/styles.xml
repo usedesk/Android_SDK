@@ -84,6 +84,19 @@
 
     <style name="Usedesk.Chat.Message.File.Client">
         <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
+        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Client.Sent.Failed" parent="">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="srcCompat">@drawable/usedesk_ic_sent_failed</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image">
@@ -117,6 +130,7 @@
 
     <style name="Usedesk.Chat.Message.Image.Client">
         <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
+        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text">
@@ -133,6 +147,7 @@
 
     <style name="Usedesk.Chat.Message.Text.Client">
         <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
+        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
@@ -290,21 +305,25 @@
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
         <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:includeFontPadding">false</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Time.Light.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
-        <item name="android:textColor">#CCFFFFFF</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#BBFFFFFF</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:includeFontPadding">false</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending_light</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully_light</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Name.Text" parent="">

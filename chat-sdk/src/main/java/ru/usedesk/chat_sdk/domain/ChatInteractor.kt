@@ -211,7 +211,7 @@ internal class ChatInteractor(
         return field1 != null && field1 == field2
     }
 
-    private fun onMessageUpdate(message: UsedeskMessage, instantUpdate: Boolean = true) {
+    private fun onMessageUpdate(message: UsedeskMessage) {
         lastMessages = lastMessages.map {
             if (it.id == message.id) {
                 message
@@ -220,9 +220,7 @@ internal class ChatInteractor(
             }
         }
         messagesSubject.onNext(lastMessages)
-        if (instantUpdate) {
-            messageUpdateSubject.onNext(message)
-        }
+        messageUpdateSubject.onNext(message)
     }
 
     private val sendingMessagesTimeout = CompositeDisposable()
@@ -323,7 +321,10 @@ internal class ChatInteractor(
     override fun send(textMessage: String) {
         if (textMessage.isNotEmpty()) {
             token?.also {
-                apiRepository.send(it, textMessage)
+                val sendingMessage = createSendingMessage(textMessage)
+                eventListener.onMessagesReceived(listOf(sendingMessage))
+
+                apiRepository.send(it, sendingMessage)
             }
         }
     }
@@ -352,7 +353,7 @@ internal class ChatInteractor(
                     feedback,
                     agentMessage.name,
                     agentMessage.avatar
-            ), false)
+            ))
         }
     }
 
@@ -367,16 +368,46 @@ internal class ChatInteractor(
             }
             if (message is UsedeskMessageClient
                     && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
-                if (message is UsedeskMessageText) {
-                    apiRepository.send(token, message)
-                } else if (message is UsedeskMessageFile) {
-                    apiRepository.send(configuration, token, message)
+                when (message) {
+                    is UsedeskMessageClientText -> {
+                        val sendingMessage = UsedeskMessageClientText(
+                                message.id,
+                                message.createdAt,
+                                message.text,
+                                UsedeskMessageClient.Status.SENDING
+                        )
+                        onMessageUpdate(sendingMessage)
+                        runTimeout(sendingMessage)
+                        apiRepository.send(token, sendingMessage)
+                    }
+                    is UsedeskMessageClientImage -> {
+                        val sendingMessage = UsedeskMessageClientImage(
+                                message.id,
+                                message.createdAt,
+                                message.file,
+                                UsedeskMessageClient.Status.SENDING
+                        )
+                        onMessageUpdate(sendingMessage)
+                        runTimeout(sendingMessage)
+                        apiRepository.send(configuration, token, sendingMessage)
+                    }
+                    is UsedeskMessageClientFile -> {
+                        val sendingMessage = UsedeskMessageClientFile(
+                                message.id,
+                                message.createdAt,
+                                message.file,
+                                UsedeskMessageClient.Status.SENDING
+                        )
+                        onMessageUpdate(sendingMessage)
+                        runTimeout(sendingMessage)
+                        apiRepository.send(configuration, token, sendingMessage)
+                    }
                 }
             }
         }
     }
 
-    private fun createSendingMessage(text: String): UsedeskMessage {
+    private fun createSendingMessage(text: String): UsedeskMessageText {
         localId--
         val calendar = Calendar.getInstance()
         return UsedeskMessageClientText(localId, calendar, text, UsedeskMessageClient.Status.SENDING)
@@ -435,9 +466,9 @@ internal class ChatInteractor(
                 .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun sendAgainRx(usedeskMessageClient: UsedeskMessageClient): Completable {
+    override fun sendAgainRx(id: Long): Completable {
         return Completable.create { emitter: CompletableEmitter ->
-            sendAgain(usedeskMessageClient)
+            sendAgain(id)
             emitter.onComplete()
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

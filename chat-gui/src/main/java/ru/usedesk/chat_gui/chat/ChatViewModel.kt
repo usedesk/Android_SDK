@@ -34,7 +34,6 @@ internal class ChatViewModel : UsedeskViewModel() {
 
         clearFileInfoList()
         actionListenerRx = object : IUsedeskActionListenerRx() {
-
             override fun onConnectedStateObservable(
                     connectedStateObservable: Observable<Boolean>
             ): Disposable? {

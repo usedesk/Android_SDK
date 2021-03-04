@@ -40,5 +40,5 @@ interface IUsedeskChat {
 
     fun sendAgain(id: Long)
 
-    fun sendAgainRx(usedeskMessageClient: UsedeskMessageClient): Completable
+    fun sendAgainRx(id: Long): Completable
 }

@@ -12,7 +12,9 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 internal class ArticlePagesAdapter(
         private val viewPager: ViewPager,
         fragmentManager: FragmentManager,
-        private val viewModel: ArticlePageViewModel
+        private val viewModel: ArticlePageViewModel,
+        private val withSupportButton: Boolean,
+        private val withArticleRating: Boolean
 ) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT),
         IUsedeskAdapter<ArticlePageViewModel> {
 
@@ -57,7 +59,9 @@ internal class ArticlePagesAdapter(
         val previous = items.getOrNull(position - 1)
         val current = items[position]
         val next = items.getOrNull(position + 1)
-        return ArticleItem.newInstance(current.id,
+        return ArticleItem.newInstance(withSupportButton,
+                withArticleRating,
+                current.id,
                 previous?.title,
                 next?.title)
     }

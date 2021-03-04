@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity
         IUsedeskOnFileClickListener {
 
     private MainViewModel viewModel;
-    private String customAgentName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +59,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onConfiguration(@NonNull Configuration configuration) {
-        this.customAgentName = !configuration.getCustomAgentName().isEmpty()
-                ? configuration.getCustomAgentName()
-                : null;
         initUsedeskService(configuration);
     }
 
     private void initUsedeskService(@NonNull Configuration configuration) {
-        UsedeskChatSdk.setNotificationsServiceFactory(configuration.isForegroundService()
+        UsedeskChatSdk.setNotificationsServiceFactory(configuration.getForegroundService()
                 ? new CustomForegroundNotificationsService.Factory()
                 : new CustomSimpleNotificationsService.Factory());
     }
@@ -94,11 +90,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSupportClick() {
-        viewModel.goChat(customAgentName);
+        viewModel.goChat();
     }
 
     @Override
     public void goToSdk() {
-        viewModel.goSdk(customAgentName);
+        viewModel.goSdk();
     }
 }

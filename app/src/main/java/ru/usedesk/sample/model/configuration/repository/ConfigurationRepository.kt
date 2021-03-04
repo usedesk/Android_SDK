@@ -7,25 +7,6 @@ import ru.usedesk.sample.model.configuration.entity.Configuration
 
 class ConfigurationRepository(private val sharedPreferences: SharedPreferences,
                               private val workScheduler: Scheduler) {
-    //TODO: Установите свои значения по умолчанию
-    private val defaultModel = Configuration("https://pubsub.usedesk.ru:1992",
-            "https://secure.usedesk.ru/",
-            "https://secure.usedesk.ru/uapi/v1/",
-            "https://api.usedesk.ru/",
-            "153712",
-            "4",
-            "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75",
-            "",
-            "android_sdk@usedesk.ru",
-            "Иван Иванов",
-            "",
-            88005553535,
-            777,
-            "",
-            "",
-            isForegroundService = false,
-            isWithKnowledgeBase = true)
-
     private var configuration: Configuration? = null
 
     fun getConfiguration(): Single<Configuration?> {
@@ -35,7 +16,7 @@ class ConfigurationRepository(private val sharedPreferences: SharedPreferences,
                 Gson().fromJson(json, Configuration::class.java)
             } catch (e: Exception) {
                 null
-            } ?: defaultModel
+            } ?: Configuration()
 
             this.configuration = configuration
             emitter.onSuccess(configuration)

@@ -271,12 +271,30 @@
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_knowledge_base"
+                    android:id="@+id/switch_kb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="14dp"
                     android:checked="true"
-                    android:text="@string/knowledge_base_hint"
+                    android:text="@string/kb_base_hint"
+                    android:textSize="18sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_kb_with_support_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="14dp"
+                    android:checked="true"
+                    android:text="@string/kb_support_button"
+                    android:textSize="18sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_kb_with_article_rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="14dp"
+                    android:checked="true"
+                    android:text="@string/kb_article_rating"
                     android:textSize="18sp" />
 
                 <Button

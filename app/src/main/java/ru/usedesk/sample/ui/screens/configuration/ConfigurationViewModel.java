@@ -67,7 +67,7 @@ public class ConfigurationViewModel extends ViewModel {
 
         return new ConfigurationValidation(chatValidation,
                 knowledgeBaseValidation,
-                configuration.isWithKnowledgeBase());
+                configuration.getWithKb());
     }
 
     @NonNull

@@ -12,6 +12,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
@@ -40,6 +41,9 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                 btnSupport.setOnClickListener {
                     getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
                 }
+
+                val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+                btnSupport.visibility = visibleGone(withSupportButton)
             }
 
             articlesSearchAdapter = ArticlesSearchAdapter(binding.rvItems) { articleContent ->
@@ -86,8 +90,14 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     }
 
     companion object {
-        fun newInstance(): ArticlesSearchPage {
-            return ArticlesSearchPage()
+        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
+
+        fun newInstance(withSupportButton: Boolean = true): ArticlesSearchPage {
+            return ArticlesSearchPage().apply {
+                arguments = Bundle().apply {
+                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+                }
+            }
         }
     }
 

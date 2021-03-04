@@ -47,6 +47,8 @@ internal class ChatInteractor(
 
     private var lastMessages = listOf<UsedeskMessage>()
 
+    private var localId = -1000L
+
     init {
         listenersDisposables.apply {
             connectedStateSubject.subscribe {
@@ -327,9 +329,12 @@ internal class ChatInteractor(
     }
 
     override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        token?.also {
-            for (usedeskFileInfo in usedeskFileInfoList) {
-                apiRepository.send(configuration, it, usedeskFileInfo)
+        token?.also { token ->
+            usedeskFileInfoList.forEach { usedeskFileInfo ->
+                val sendingMessage = createSendingMessage(usedeskFileInfo)
+                eventListener.onMessagesReceived(listOf(sendingMessage))
+
+                apiRepository.send(configuration, token, sendingMessage)
             }
         }
     }
@@ -355,8 +360,42 @@ internal class ChatInteractor(
         apiRepository.send(configuration, configuration.companyId, offlineForm)
     }
 
-    override fun sendAgain(usedeskMessageClient: UsedeskMessageClient) {
-        apiRepository.sendAgain(usedeskMessageClient)
+    override fun sendAgain(id: Long) {
+        token?.let { token ->
+            val message = lastMessages.firstOrNull {
+                it.id == id
+            }
+            if (message is UsedeskMessageClient
+                    && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
+                if (message is UsedeskMessageText) {
+                    apiRepository.send(token, message)
+                } else if (message is UsedeskMessageFile) {
+                    apiRepository.send(configuration, token, message)
+                }
+            }
+        }
+    }
+
+    private fun createSendingMessage(text: String): UsedeskMessage {
+        localId--
+        val calendar = Calendar.getInstance()
+        return UsedeskMessageClientText(localId, calendar, text, UsedeskMessageClient.Status.SENDING)
+    }
+
+    private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessageFile {
+        localId--
+        val calendar = Calendar.getInstance()
+        val file = UsedeskFile.create(
+                fileInfo.uri.toString(),
+                fileInfo.type,
+                "",
+                fileInfo.name
+        )
+        return if (fileInfo.isImage()) {
+            UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
+        } else {
+            UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
+        }
     }
 
     override fun connectRx(): Completable {

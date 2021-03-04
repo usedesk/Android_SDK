@@ -29,15 +29,13 @@ internal interface IApiRepository {
              feedback: UsedeskFeedback)
 
     fun send(token: String,
-             text: String)
+             messageText: UsedeskMessageText)
 
     fun send(configuration: UsedeskChatConfiguration,
              token: String,
-             fileInfo: UsedeskFileInfo)
+             messageFile: UsedeskMessageFile)
 
     fun disconnect()
-
-    fun sendAgain(messageClient: UsedeskMessageClient)
 
     interface EventListener {
         fun onConnected()

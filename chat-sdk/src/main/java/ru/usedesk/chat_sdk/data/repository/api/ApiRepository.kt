@@ -1,10 +1,10 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import android.net.Uri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.FileResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
@@ -31,13 +31,10 @@ internal class ApiRepository(
         private val multipartConverter: IMultipartConverter,
         private val initChatResponseConverter: InitChatResponseConverter,
         private val messageResponseConverter: MessageResponseConverter,
-        private val fileResponseConverter: FileResponseConverter,
         private val fileLoader: IFileLoader,
         apiFactory: IUsedeskApiFactory,
         gson: Gson
 ) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
-
-    private var localId = -1000L
 
     private fun isConnected() = socketApi.isConnected()
 
@@ -116,59 +113,25 @@ internal class ApiRepository(
     }
 
     override fun send(token: String,
-                      text: String) {
-        val sendingMessage = createSendingMessage(text)
-        eventListener.onMessagesReceived(listOf(sendingMessage))
-
+                      messageText: UsedeskMessageText) {
         checkConnection()
-        socketApi.sendRequest(MessageRequest(token, text, sendingMessage.id))
+        val request = MessageRequest(token, messageText.text, messageText.id)
+        socketApi.sendRequest(request)
     }
 
     override fun send(configuration: UsedeskChatConfiguration,
                       token: String,
-                      fileInfo: UsedeskFileInfo) {
-        val sendingMessage = createSendingMessage(fileInfo)
-        eventListener.onMessagesReceived(listOf(sendingMessage))
-
+                      messageFile: UsedeskMessageFile) {
         checkConnection()
 
-        val loadedFile = fileLoader.load(fileInfo.uri)
+        val loadedFile = fileLoader.load(Uri.parse(messageFile.file.content))
         val parts = listOf(
                 multipartConverter.convert("chat_token", token),
                 multipartConverter.convert("file", loadedFile),
-                multipartConverter.convert("message_id", sendingMessage.id)
+                multipartConverter.convert("message_id", messageFile.id)
         )
         doRequest(configuration.urlToSendFile, FileResponse::class.java) {
             it.postFile(parts)
-        }
-    }
-
-    override fun sendAgain(token: String,
-                           messageClient: UsedeskMessageClient) {
-        checkConnection()
-
-        socketApi.sendRequest(MessageRequest(token, messageClient, sendingMessage.id))
-    }
-
-    private fun createSendingMessage(text: String): UsedeskMessage {
-        localId--
-        val calendar = Calendar.getInstance()
-        return UsedeskMessageClientText(localId, calendar, text, UsedeskMessageClient.Status.SENDING)
-    }
-
-    private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessage {
-        localId--
-        val calendar = Calendar.getInstance()
-        val file = UsedeskFile.create(
-                fileInfo.uri.toString(),
-                fileInfo.type,
-                "",
-                fileInfo.name
-        )
-        return if (fileInfo.isImage()) {
-            UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
-        } else {
-            UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
         }
     }
 

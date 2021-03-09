@@ -15,6 +15,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
     val messageLiveData = MutableLiveData("")
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>>(listOf())
+    val messageUpdate = MutableLiveData<UsedeskMessage>()
     val chatStateLiveData = MutableLiveData(ChatState.LOADING)
 
     val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
@@ -34,7 +35,6 @@ internal class ChatViewModel : UsedeskViewModel() {
 
         clearFileInfoList()
         actionListenerRx = object : IUsedeskActionListenerRx() {
-
             override fun onConnectedStateObservable(
                     connectedStateObservable: Observable<Boolean>
             ): Disposable? {
@@ -68,6 +68,12 @@ internal class ChatViewModel : UsedeskViewModel() {
             ): Disposable? {
                 return exceptionObservable.subscribe {
                     exceptionLiveData.postValue(it)
+                }
+            }
+
+            override fun onMessageUpdateObservable(messageUpdateObservable: Observable<UsedeskMessage>): Disposable? {
+                return messageUpdateObservable.subscribe {
+                    messageUpdate.postValue(it)
                 }
             }
         }
@@ -145,6 +151,10 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     fun onOfflineFormMessageChanged() {
         messageErrorLiveData.value = false
+    }
+
+    fun onSendAgain(id: Long) {
+        doIt(usedeskChat.sendAgainRx(id))
     }
 
     enum class ChatState {

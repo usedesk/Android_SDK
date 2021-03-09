@@ -18,7 +18,7 @@ internal class SetClientRequest(
         private const val TYPE = "@@server/chat/SET_CLIENT"
     }
 
-    class Payload(
+    private class Payload(
             private val signature: String?,
             private val email: String?,
             private val username: String?,

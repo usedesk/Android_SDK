@@ -12,6 +12,10 @@ internal class MultipartConverter : IMultipartConverter {
         return MultipartBody.Part.createFormData(key, value)
     }
 
+    override fun convert(key: String, value: Long): MultipartBody.Part {
+        return MultipartBody.Part.createFormData(key, value.toString())
+    }
+
     override fun convert(
             key: String,
             loadedFile: LoadedFile

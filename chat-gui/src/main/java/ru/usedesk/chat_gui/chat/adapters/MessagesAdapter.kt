@@ -33,14 +33,14 @@ internal class MessagesAdapter(
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
 
     init {
-        recyclerView.also {
-            it.layoutManager = LinearLayoutManager(recyclerView.context)
-            it.adapter = this
-            it.setHasFixedSize(false)
-            it.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(recyclerView.context)
+            adapter = this@MessagesAdapter
+            setHasFixedSize(false)
+            addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
                 val difBottom = oldBottom - bottom
                 if (difBottom > 0) {
-                    it.scrollBy(0, difBottom)
+                    scrollBy(0, difBottom)
                 }
             }
         }
@@ -60,6 +60,13 @@ internal class MessagesAdapter(
             notifyDataSetChanged()
             recyclerView.scrollToPosition(items.size - 1)
         } else {
+            items.forEachIndexed { index, item ->
+                if (item !in lastItems
+                        && (item !is UsedeskMessageAgentText ||
+                                item.feedback == null)) {
+                    notifyItemChanged(index)
+                }
+            }
             (lastItems.size until items.size).forEach { index ->
                 notifyItemChanged(index - 1)
                 notifyItemInserted(index)
@@ -155,7 +162,8 @@ internal class MessagesAdapter(
     internal abstract inner class MessageViewHolder(
             itemView: View,
             private val bindingDate: DateBinding,
-            private val tvTime: TextView
+            private val tvTime: TextView,
+            private val styleValues: UsedeskResourceManager.StyleValues
     ) : BaseViewHolder(itemView) {
 
         private val dateStyleValues = bindingDate.styleValues
@@ -215,7 +223,30 @@ internal class MessagesAdapter(
                        clientBinding: ClientBinding) {
             val lastOfGroup = position == items.size - 1 ||
                     items.getOrNull(position + 1) is UsedeskMessageAgent
-            clientBinding.vEmpty.visibility = visibleGone(lastOfGroup)
+            val clientMessage = items[position] as UsedeskMessageClient
+            val timeStyleValues = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
+            val statusDrawableId = if (clientMessage.status == UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
+                timeStyleValues.getId(R.attr.usedesk_drawable_2)
+            } else {
+                timeStyleValues.getId(R.attr.usedesk_drawable_1)
+            }
+
+            tvTime.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    0,
+                    0,
+                    statusDrawableId,
+                    0
+            )
+
+            clientBinding.apply {
+                ivSentFailed.apply {
+                    visibility = visibleInvisible(clientMessage.status == UsedeskMessageClient.Status.SEND_FAILED)
+                    setOnClickListener {
+                        viewModel.onSendAgain(clientMessage.localId)
+                    }
+                }
+                vEmpty.visibility = visibleGone(lastOfGroup)
+            }
         }
 
         private fun <T : Any> bindBottomMargin(
@@ -242,7 +273,7 @@ internal class MessagesAdapter(
             itemView: View,
             private val binding: MessageTextBinding,
             bindingDate: DateBinding)
-        : MessageViewHolder(itemView, bindingDate, binding.tvTime) {
+        : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -260,7 +291,7 @@ internal class MessagesAdapter(
             itemView: View,
             private val binding: MessageFileBinding,
             bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime) {
+    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -287,7 +318,7 @@ internal class MessagesAdapter(
             itemView: View,
             private val binding: MessageImageBinding,
             bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime) {
+    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
 
         private val loadingImageId = binding.styleValues
                 .getStyleValues(R.attr.usedesk_chat_message_image_preview_image)
@@ -619,5 +650,6 @@ internal class MessagesAdapter(
 
     internal class ClientBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val vEmpty: View = rootView.findViewById(R.id.v_empty)
+        val ivSentFailed: ImageView = rootView.findViewById(R.id.iv_sent_failed)
     }
 }

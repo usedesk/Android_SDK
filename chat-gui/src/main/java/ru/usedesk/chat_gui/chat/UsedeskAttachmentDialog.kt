@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -17,6 +19,7 @@ import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 import java.io.File
+
 
 class UsedeskAttachmentDialog private constructor(
         private val screen: UsedeskChatScreen,
@@ -89,10 +92,24 @@ class UsedeskAttachmentDialog private constructor(
     }
 
     private fun takePhoto(fragment: Fragment) {
+        val applicationContext = fragment.requireContext().applicationContext
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
-            putExtra(MediaStore.EXTRA_OUTPUT, getTakePhotoUri(fragment.requireContext()))
+            val uri = getTakePhotoUri(fragment.requireContext())
+            val photoUri = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                uri
+            } else {
+                FileProvider.getUriForFile(
+                        applicationContext,
+                        "${applicationContext.packageName}.provider",
+                        File(uri.path ?: "")
+                )
+            }
+            putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        fragment.startActivityForResult(cameraIntent, REQUEST_CODE_TAKE_PHOTO)
+        if (cameraIntent.resolveActivity(applicationContext.packageManager) != null) {
+            fragment.startActivityForResult(cameraIntent, REQUEST_CODE_TAKE_PHOTO)
+        }
     }
 
     private fun onResult(context: Context, requestCode: Int, data: Intent?): List<UsedeskFileInfo>? {

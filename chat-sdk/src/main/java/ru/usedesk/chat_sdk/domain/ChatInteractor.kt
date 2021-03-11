@@ -305,10 +305,13 @@ internal class ChatInteractor(
 
     override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
         var exc: Exception? = null
-        usedeskFileInfoList.forEach { usedeskFileInfo ->
-            val sendingMessage = createSendingMessage(usedeskFileInfo)
-            eventListener.onMessagesReceived(listOf(sendingMessage))
+        val sendingFiles = usedeskFileInfoList.map { usedeskFileInfo ->
+            createSendingMessage(usedeskFileInfo).also {
+                eventListener.onMessagesReceived(listOf(it))
+            }
+        }
 
+        sendingFiles.forEach { sendingMessage ->
             try {
                 sendFile(sendingMessage)
             } catch (e: Exception) {

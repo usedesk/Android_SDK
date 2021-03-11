@@ -323,10 +323,9 @@ internal class ChatInteractor(
 
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
         token?.also { token ->
-            runTimeout(sendingMessage)
-
             try {
                 apiRepository.send(configuration, token, sendingMessage)
+                runTimeout(sendingMessage)
             } catch (e: Exception) {
                 onMessageSendingFailed(sendingMessage)
                 throw e

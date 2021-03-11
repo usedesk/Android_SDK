@@ -29,6 +29,6 @@ internal class FileLoader(
     }
 
     companion object {
-        private const val MAX_FILE_SIZE = 10 * 1024 * 1024
+        private const val MAX_FILE_SIZE = 25 * 1024 * 1024
     }
 }

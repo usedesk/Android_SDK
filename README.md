@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.0.9)
+# Android Usedesk SDK (v3.0.10)
 - [Подключение к проекту](#preparation)
 - [Чат](#chat)
   - [Конфигурация](#chat_configuration)
@@ -150,6 +150,20 @@ fun onBackPressed() {
 }
 ```
 
+Для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
+
+```
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="${applicationId}.provider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/usedesk_provider_paths" />
+</provider>
+```
+
 <a name="chat_sdk"></a>
 ### Использование без GUI
 
@@ -275,20 +289,6 @@ override fun onSupportClick() {
 }
 ```
 
-Для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
-
-```
-<provider
-    android:name="androidx.core.content.FileProvider"
-    android:authorities="${applicationId}.provider"
-    android:exported="false"
-    android:grantUriPermissions="true">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/usedesk_provider_paths" />
-</provider>
-```
-
 <a name="knowledge_base_sdk"></a>
 ### Использование без GUI
 
@@ -364,5 +364,9 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.0.8
   - Добавлены статусы отправки сообщений
   - Исправлен краш при прерывании асинхронных операций (например отправка сообщения с изображением)
-- v3.0.9
+- v3.0.10
   - Исправлена ошибка прикрепления фото с камеры на версиях API 24 и выше
+  - Исправлен таймаут отправки файлов
+  - Отправляемые файлы сразу отображаются в чате
+  - Максимальный размер отправляемых файлов ограничен в 100мб
+  - Обновлён README.md

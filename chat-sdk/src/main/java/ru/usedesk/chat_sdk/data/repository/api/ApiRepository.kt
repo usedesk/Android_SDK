@@ -40,6 +40,8 @@ internal class ApiRepository(
 
     private lateinit var eventListener: IApiRepository.EventListener
 
+    private var callbackSettings = UsedeskOfflineFormSettings(false, UsedeskOfflineFormSettings.WorkType.NEVER)
+
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() {
             eventListener.onConnected()
@@ -63,24 +65,28 @@ internal class ApiRepository(
 
         override fun onInited(initChatResponse: InitChatResponse) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
-            if (chatInited.noOperators) {
-                eventListener.onOfflineForm()
-            } else {
-                eventListener.onChatInited(chatInited)
+            chatInited.callbackSettings.run {
+                callbackSettings = this
+                if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES && noOperators)
+                        || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
+                        || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {
+                    if (workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {
+                        eventListener.onChatInited(chatInited)
+                    }
+                    eventListener.onOfflineForm(this)
+                } else {
+                    eventListener.onChatInited(chatInited)
+                }
             }
         }
 
         override fun onNew(messageResponse: MessageResponse) {
-            if (messageResponse.message?.payload?.noOperators == true) {
-                eventListener.onOfflineForm()
-            } else {
-                val messages = messageResponseConverter.convert(messageResponse.message)
-                messages.forEach {
-                    if (it is UsedeskMessageClient && it.id != it.localId) {
-                        eventListener.onMessageUpdated(it)
-                    } else {
-                        eventListener.onMessagesReceived(listOf(it))
-                    }
+            val messages = messageResponseConverter.convert(messageResponse.message)
+            messages.forEach {
+                if (it is UsedeskMessageClient && it.id != it.localId) {
+                    eventListener.onMessageUpdated(it)
+                } else {
+                    eventListener.onMessagesReceived(listOf(it))
                 }
             }
         }

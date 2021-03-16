@@ -56,7 +56,7 @@ internal class ChatViewModel : UsedeskViewModel() {
             }
 
             override fun onOfflineFormExpectedObservable(
-                    offlineFormExpectedObservable: Observable<UsedeskChatConfiguration>
+                    offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
             ): Disposable? {
                 return offlineFormExpectedObservable.subscribe {
                     chatStateLiveData.postValue(ChatState.OFFLINE_FORM)

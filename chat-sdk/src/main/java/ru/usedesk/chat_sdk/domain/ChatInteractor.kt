@@ -37,7 +37,7 @@ internal class ChatInteractor(
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
     private val messageUpdateSubject = PublishSubject.create<UsedeskMessage>()
-    private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
+    private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskOfflineFormSettings>()
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<Exception>()
 
@@ -147,8 +147,8 @@ internal class ChatInteractor(
             this@ChatInteractor.onMessageUpdate(message)
         }
 
-        override fun onOfflineForm() {
-            offlineFormExpectedSubject.onNext(configuration)
+        override fun onOfflineForm(callbackSettings: UsedeskOfflineFormSettings) {
+            offlineFormExpectedSubject.onNext(callbackSettings)
         }
 
         override fun onSetEmailSuccess() {
@@ -396,43 +396,41 @@ internal class ChatInteractor(
     }
 
     override fun sendAgain(id: Long) {
-        token?.let { token ->
-            val message = lastMessages.firstOrNull {
-                it.id == id
-            }
-            if (message is UsedeskMessageClient
-                    && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
-                when (message) {
-                    is UsedeskMessageClientText -> {
-                        val sendingMessage = UsedeskMessageClientText(
-                                message.id,
-                                message.createdAt,
-                                message.text,
-                                UsedeskMessageClient.Status.SENDING
-                        )
-                        onMessageUpdate(sendingMessage)
-                        sendText(sendingMessage)
-                    }
-                    is UsedeskMessageClientImage -> {
-                        val sendingMessage = UsedeskMessageClientImage(
-                                message.id,
-                                message.createdAt,
-                                message.file,
-                                UsedeskMessageClient.Status.SENDING
-                        )
-                        onMessageUpdate(sendingMessage)
-                        sendFile(sendingMessage)
-                    }
-                    is UsedeskMessageClientFile -> {
-                        val sendingMessage = UsedeskMessageClientFile(
-                                message.id,
-                                message.createdAt,
-                                message.file,
-                                UsedeskMessageClient.Status.SENDING
-                        )
-                        onMessageUpdate(sendingMessage)
-                        sendFile(sendingMessage)
-                    }
+        val message = lastMessages.firstOrNull {
+            it.id == id
+        }
+        if (message is UsedeskMessageClient
+                && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
+            when (message) {
+                is UsedeskMessageClientText -> {
+                    val sendingMessage = UsedeskMessageClientText(
+                            message.id,
+                            message.createdAt,
+                            message.text,
+                            UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendText(sendingMessage)
+                }
+                is UsedeskMessageClientImage -> {
+                    val sendingMessage = UsedeskMessageClientImage(
+                            message.id,
+                            message.createdAt,
+                            message.file,
+                            UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
+                }
+                is UsedeskMessageClientFile -> {
+                    val sendingMessage = UsedeskMessageClientFile(
+                            message.id,
+                            message.createdAt,
+                            message.file,
+                            UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
                 }
             }
         }

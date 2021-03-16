@@ -231,12 +231,9 @@
         <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
         <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>
         <item name="usedesk_chat_screen_offline_form_send_text">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text</item>
-        <item name="usedesk_chat_screen_offline_form_name_input_layout">@style/Usedesk.Chat.Screen.Offline.Form.Name.InputLayout</item>
-        <item name="usedesk_chat_screen_offline_form_name_edit_text">@style/Usedesk.Chat.Screen.Offline.Form.Name.EditText</item>
-        <item name="usedesk_chat_screen_offline_form_email_input_layout">@style/Usedesk.Chat.Screen.Offline.Form.Email.InputLayout</item>
-        <item name="usedesk_chat_screen_offline_form_email_edit_text">@style/Usedesk.Chat.Screen.Offline.Form.Email.EditText</item>
-        <item name="usedesk_chat_screen_offline_form_message_input_layout">@style/Usedesk.Chat.Screen.Offline.Form.Message.InputLayout</item>
-        <item name="usedesk_chat_screen_offline_form_message_edit_text">@style/Usedesk.Chat.Screen.Offline.Form.Message.EditText</item>
+        <item name="usedesk_chat_screen_offline_form_name">@style/Usedesk.Chat.Screen.Offline.Form.Name</item>
+        <item name="usedesk_chat_screen_offline_form_email">@style/Usedesk.Chat.Screen.Offline.Form.Email</item>
+        <item name="usedesk_chat_screen_offline_form_message">@style/Usedesk.Chat.Screen.Offline.Form.Message</item>
         <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar</item>
     </style>
@@ -579,72 +576,6 @@
         <item name="android:text">@string/usedesk_we_are_offline</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.Offline.Form.Name.InputLayout" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">12dp</item>
-        <item name="android:layout_marginRight">12dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="usedesk_text_1">@string/usedesk_field_required_error</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Name.EditText" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:inputType">textPersonName|textCapWords</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:hint">@string/usedesk_name</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Email.InputLayout" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">12dp</item>
-        <item name="android:layout_marginRight">12dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="usedesk_text_1">@string/usedesk_offline_form_email_error</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Email.EditText" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:inputType">textEmailAddress</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:hint">@string/usedesk_email</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Message.InputLayout" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">12dp</item>
-        <item name="android:layout_marginRight">12dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="usedesk_text_1">@string/usedesk_field_required_error</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Message.EditText" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:inputType">textMultiLine|textCapSentences</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:singleLine">false</item>
-        <item name="android:hint">@string/usedesk_message</item>
-    </style>
-
     <style name="Usedesk.Chat.Screen.Offline.Form.Send.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -657,6 +588,60 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:text">@string/usedesk_send</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Name" parent="Usedesk.Common.Field.Text">
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText.SingleLine</item>
+        <item name="usedesk_text_1">@string/usedesk_name</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Email" parent="Usedesk.Common.Field.Text">
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText.SingleLine</item>
+        <item name="usedesk_text_1">@string/usedesk_email</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Message" parent="Usedesk.Common.Field.Text">
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
+        <item name="usedesk_text_1">@string/usedesk_message</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Additional" parent="Usedesk.Common.Field.Text">
+        <item name="usedesk_text_1">""</item>
+        <item name="usedesk_text_2">@string/usedesk_field_required_error</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text" parent="">
+        <item name="usedesk_common_field_text_input_layout">@style/Usedesk.Common.Field.Text.InputLayout</item>
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
+        <item name="usedesk_text_1">""</item>
+        <item name="usedesk_text_2">@string/usedesk_field_required_error</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.InputLayout" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_red</item>
+        <item name="android:textSize">50sp</item>
+        <item name="android:text">""</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.EditText" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:singleLine">false</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.EditText.SingleLine">
+        <item name="android:singleLine">true</item>
     </style>
 
 </resources>

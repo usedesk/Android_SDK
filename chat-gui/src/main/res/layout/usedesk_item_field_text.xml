@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/sf_pro_display_regular"
+        android:hint="?attr/usedesk_text_2"
+        android:textColor="@color/usedesk_gray_2">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/sf_pro_display_regular"
+            android:inputType="textMultiLine|textCapSentences"
+            android:text="?attr/usedesk_text_1"
+            android:textColor="@color/usedesk_black_2"
+            android:textSize="18sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+</FrameLayout>

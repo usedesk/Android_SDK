@@ -4,7 +4,13 @@ import android.view.View
 
 open class UsedeskBinding(
         val rootView: View,
-        defaultStyleId: Int
+        val styleValues: UsedeskResourceManager.StyleValues
 ) {
-    val styleValues = UsedeskResourceManager.getStyleValues(rootView.context, defaultStyleId)
+    constructor(
+            rootView: View,
+            defaultStyleId: Int
+    ) : this(
+            rootView,
+            UsedeskResourceManager.getStyleValues(rootView.context, defaultStyleId)
+    )
 }

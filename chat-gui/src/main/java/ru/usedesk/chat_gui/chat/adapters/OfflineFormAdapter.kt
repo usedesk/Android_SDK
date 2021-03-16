@@ -2,11 +2,10 @@ package ru.usedesk.chat_gui.chat.adapters
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
-import com.google.android.material.textfield.TextInputLayout
+import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.common_gui.*
@@ -19,32 +18,37 @@ internal class OfflineFormAdapter(
         private val onFailed: () -> Unit
 ) : IUsedeskAdapter<ChatViewModel> {
 
+    private val nameAdapter = UsedeskCommonFieldTextAdapter(binding.name)
+    private val emailAdapter = UsedeskCommonFieldTextAdapter(binding.email)
+    private val messageAdapter = UsedeskCommonFieldTextAdapter(binding.message)
+    private val fieldsAdapter = AdditionalAdapter(binding.rvAdditional)
+
     init {
         binding.tvSend.setOnClickListener {
             hideKeyboard(it)
             viewModel.onSend(
-                    binding.etName.text.toString(),
-                    binding.etEmail.text.toString(),
-                    binding.etMessage.text.toString()
+                    nameAdapter.getText(),
+                    emailAdapter.getText(),
+                    messageAdapter.getText()
             )
         }
 
-        binding.etName.setText(viewModel.configuration.clientName)
-        binding.etEmail.setText(viewModel.configuration.clientEmail)
+        nameAdapter.setText(viewModel.configuration.clientName)
+        emailAdapter.setText(viewModel.configuration.clientEmail)
 
 
-        binding.etName.addTextChangedListener(TextChangeListener {
+        nameAdapter.setTextChangeListener {
             viewModel.onOfflineFormNameChanged()
-        })
+        }
 
-        binding.etEmail.addTextChangedListener(TextChangeListener {
+        emailAdapter.setTextChangeListener {
             viewModel.onOfflineFormEmailChanged()
-        })
+        }
 
-        binding.etMessage.addTextChangedListener(TextChangeListener {
+        messageAdapter.setTextChangeListener {
             viewModel.onOfflineFormMessageChanged()
             updateActionButton(it)
-        })
+        }
 
         updateActionButton("")
     }
@@ -55,37 +59,18 @@ internal class OfflineFormAdapter(
         }
 
         viewModel.nameErrorLiveData.observe(lifecycleOwner) {
-            binding.tilName.error = if (it) {
-                showKeyboard(binding.etName)
-                binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_name_input_layout)
-                        .getString(R.attr.usedesk_text_1)
-            } else {
-                null
-            }
+            nameAdapter.showError(it)
         }
 
         viewModel.emailErrorLiveData.observe(lifecycleOwner) {
-            binding.tilEmail.error = if (it) {
-                showKeyboard(binding.etEmail)
-                binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_email_input_layout)
-                        .getString(R.attr.usedesk_text_1)
-            } else {
-                null
-            }
+            emailAdapter.showError(it)
         }
 
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
-            binding.tilMessage.error = if (it) {
-                showKeyboard(binding.etMessage)
-                binding.styleValues
-                        .getStyleValues(R.attr.usedesk_chat_screen_offline_form_message_input_layout)
-                        .getString(R.attr.usedesk_text_1)
-            } else {
-                null
-            }
+            messageAdapter.showError(it)
         }
+
+        fieldsAdapter.onLiveData(viewModel, lifecycleOwner)
     }
 
     private fun updateActionButton(message: String) {
@@ -102,7 +87,7 @@ internal class OfflineFormAdapter(
     }
 
     fun update(message: String) {
-        binding.etMessage.setText(message)
+        messageAdapter.setText(message)
     }
 
     private fun onState(it: ChatViewModel.OfflineFormState?) {
@@ -147,21 +132,19 @@ internal class OfflineFormAdapter(
             send: Boolean = false
     ) {
         binding.tvOfflineText.visibility = visibleGone(offlineText)
-        binding.tilName.visibility = visibleGone(fields)
-        binding.tilEmail.visibility = visibleGone(fields)
-        binding.tilMessage.visibility = visibleGone(fields)
+        nameAdapter.show(fields)
+        emailAdapter.show(fields)
+        messageAdapter.show(fields)
         binding.pbLoading.visibility = visibleGone(loading)
         binding.tvSend.visibility = visibleGone(send)
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvOfflineText: TextView = rootView.findViewById(R.id.tv_offline_form_text)
-        val tilEmail: TextInputLayout = rootView.findViewById(R.id.til_offline_form_email)
-        val etEmail: EditText = rootView.findViewById(R.id.et_offline_form_email)
-        val tilName: TextInputLayout = rootView.findViewById(R.id.til_offline_form_name)
-        val etName: EditText = rootView.findViewById(R.id.et_offline_form_name)
-        val tilMessage: TextInputLayout = rootView.findViewById(R.id.til_offline_form_message)
-        val etMessage: EditText = rootView.findViewById(R.id.et_offline_form_message)
+        val email = UsedeskCommonFieldTextAdapter.Binding(rootView.findViewById(R.id.l_offline_form_email), styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_name))
+        val name = UsedeskCommonFieldTextAdapter.Binding(rootView.findViewById(R.id.l_offline_form_name), styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_email))
+        val message = UsedeskCommonFieldTextAdapter.Binding(rootView.findViewById(R.id.l_offline_form_message), styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_message))
+        val rvAdditional: RecyclerView = rootView.findViewById(R.id.rv_offline_form_additional)
         val tvSend: TextView = rootView.findViewById(R.id.tv_offline_form_send)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_offline_form_loading)
         val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_send)

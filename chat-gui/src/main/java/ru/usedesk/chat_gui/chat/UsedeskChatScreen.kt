@@ -133,7 +133,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
             ChatViewModel.ChatState.OFFLINE_FORM -> {
                 showChatViews(offlineForm = true)
-                showKeyboard(binding.offlineForm.etMessage)
+                showKeyboard(binding.offlineForm.message.etText)
             }
         }
     }

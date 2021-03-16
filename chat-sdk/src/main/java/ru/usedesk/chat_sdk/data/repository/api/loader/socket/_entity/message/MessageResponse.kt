@@ -37,7 +37,6 @@ internal class MessageResponse : BaseResponse() {
             var buttons: Array<Button?>? = null
             var userRating: String? = null
             var avatar: String? = null
-            var noOperators: Boolean? = null
 
             @SerializedName("message_id")
             var messageId: Long? = null

@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.adapters
+package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.text.Html
 import android.view.View
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.Corner
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.ChatViewModel
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
 import java.text.DateFormat
@@ -22,12 +22,12 @@ import java.util.*
 
 
 internal class MessagesAdapter(
-        private val viewModel: ChatViewModel,
+        private val viewModel: MessagesViewModel,
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
         private val onFileClick: (UsedeskFile) -> Unit,
         private val onUrlClick: (String) -> Unit
-) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<ChatViewModel> {
+) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<MessagesViewModel> {
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
@@ -46,7 +46,7 @@ internal class MessagesAdapter(
         }
     }
 
-    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+    override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.messagesLiveData.observe(lifecycleOwner) { messages ->
             onMessages(messages ?: listOf())
         }

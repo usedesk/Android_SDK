@@ -40,7 +40,7 @@ internal class InitChatResponseConverter(
                     UsedeskOfflineFormSettings.CustomField(
                             type,
                             required,
-                            customField.placeholder
+                            customField.placeholder ?: ""
                     )
                 }
             } ?: listOf()

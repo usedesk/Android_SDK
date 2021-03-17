@@ -40,8 +40,6 @@ internal class ApiRepository(
 
     private lateinit var eventListener: IApiRepository.EventListener
 
-    private var callbackSettings = UsedeskOfflineFormSettings(false, UsedeskOfflineFormSettings.WorkType.NEVER)
-
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() {
             eventListener.onConnected()
@@ -66,7 +64,6 @@ internal class ApiRepository(
         override fun onInited(initChatResponse: InitChatResponse) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
             chatInited.callbackSettings.run {
-                callbackSettings = this
                 if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES && noOperators)
                         || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
                         || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {

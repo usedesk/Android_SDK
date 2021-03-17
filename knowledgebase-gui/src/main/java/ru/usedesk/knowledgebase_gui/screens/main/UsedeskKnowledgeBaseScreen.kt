@@ -36,6 +36,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     private var withSupportButton = true
     private var withArticleRating = true
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -83,11 +88,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         })
 
         return binding.rootView
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
     }
 
     private fun showSearchQuery(query: String) {

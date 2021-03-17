@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    tools:theme="@style/Usedesk.Common.Field.List">
 
     <TextView
         android:id="@+id/tv_title"
@@ -14,8 +16,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="4dp"
         android:fontFamily="@font/sf_pro_display_regular"
-        android:text="Обязательная тема обращения *"
-        android:textColor="@color/usedesk_gray_2"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_arrow"
         app:layout_constraintEnd_toStartOf="@+id/iv_arrow"

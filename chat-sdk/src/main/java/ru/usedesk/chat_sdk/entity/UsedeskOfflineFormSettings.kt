@@ -13,7 +13,7 @@ class UsedeskOfflineFormSettings(
     class CustomField(
             var type: Type,
             var required: Boolean,
-            var placeholder: String? = null
+            var placeholder: String
     ) {
         enum class Type {
             TEXT

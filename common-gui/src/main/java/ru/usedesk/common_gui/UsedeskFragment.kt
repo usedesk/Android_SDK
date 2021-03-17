@@ -53,6 +53,14 @@ abstract class UsedeskFragment : Fragment() {
         return arguments?.getString(key)
     }
 
+    protected fun argsGetStringArray(key: String): Array<String>? {
+        return arguments?.getStringArray(key)
+    }
+
+    protected fun argsGetStringArray(key: String, default: Array<String>): Array<String> {
+        return arguments?.getStringArray(key) ?: default
+    }
+
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
         UsedeskSnackbar.create(
                 this@UsedeskFragment,

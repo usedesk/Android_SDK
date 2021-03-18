@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:theme="@style/Usedesk.Chat.Screen"
     tools:visibility="visible">
 
     <LinearLayout
@@ -15,11 +16,13 @@
             android:id="@+id/tv_offline_form_text"
             style="?attr/usedesk_chat_screen_offline_form_description_text" />
 
-        <LinearLayout
-            android:id="@+id/l_offline_form_additional"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_fields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -32,8 +35,7 @@
             <FrameLayout
                 android:id="@+id/l_offline_form_send"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/usedesk_chat_screen_offline_form_send_background">
+                android:layout_height="match_parent">
 
                 <ProgressBar
                     android:id="@+id/pb_offline_form_loading"
@@ -48,4 +50,4 @@
             </FrameLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

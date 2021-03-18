@@ -13,7 +13,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.hideKeyboard
 
 internal class ChatNavigation(
-        private val fragmentManager: FragmentManager,
+        var fragmentManager: FragmentManager,
         private val rootView: View,
         private val containerId: Int
 ) {

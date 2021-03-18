@@ -32,9 +32,9 @@ class UsedeskCommonFieldListAdapter(
         binding.tvTitle.text = Html.fromHtml(htmlTitle)
     }
 
-    fun setText(text: String) {
+    fun setText(text: String?) {
         binding.tvValue.text = text
-        binding.tvValue.visibility = visibleGone(text.isNotEmpty())
+        binding.tvValue.visibility = visibleGone(text?.isEmpty() == false)
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

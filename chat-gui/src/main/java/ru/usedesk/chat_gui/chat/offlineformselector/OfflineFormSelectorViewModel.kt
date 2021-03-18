@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.common_gui.UsedeskViewModel
 
-class OfflineFormSelectorViewModel : UsedeskViewModel() {
+internal class OfflineFormSelectorViewModel : UsedeskViewModel() {
 
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 

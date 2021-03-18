@@ -25,6 +25,8 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     private var agentName: String? = null
 
+    private var chatInited = false
+
     fun init(chatNavigation: ChatNavigation, agentName: String?) {
         this.chatNavigation = chatNavigation
         this.agentName = agentName
@@ -50,7 +52,10 @@ internal class ChatViewModel : UsedeskViewModel() {
                     messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
                 return messagesObservable.subscribe {
-                    chatNavigation.goMessages(agentName)
+                    if (!chatInited) {
+                        chatInited = true
+                        chatNavigation.goMessages(agentName)
+                    }
                 }
             }
 
@@ -93,5 +98,9 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     fun setSubjectIndex(index: Int) {
         chatNavigation.setSubjectIndex(index)
+    }
+
+    fun goMessages() {
+        chatNavigation.goMessages(agentName)
     }
 }

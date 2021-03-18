@@ -1,5 +1,5 @@
 package ru.usedesk.chat_gui.chat.offlineformselector
 
-interface IItemSelectChangeListener {
+internal interface IItemSelectChangeListener {
     fun onItemSelectChange(index: Int)
 }

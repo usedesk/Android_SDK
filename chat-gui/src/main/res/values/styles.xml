@@ -228,8 +228,12 @@
         <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
         <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>
         <item name="usedesk_chat_screen_offline_form_send_text">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text</item>
-        <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar</item>
+        <item name="usedesk_chat_screen_offline_form_name">@string/usedesk_name</item>
+        <item name="usedesk_chat_screen_offline_form_email">@string/usedesk_email</item>
+        <item name="usedesk_chat_screen_offline_form_message">@string/usedesk_message</item>
+        <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Chat.Screen.Offline.Form.Text.Field</item>
+        <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Chat.Screen.Offline.Form.List.Field</item>
 
         <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
     </style>
@@ -590,27 +594,8 @@
         <item name="android:text">@string/usedesk_send</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.Offline.Form.Name" parent="Usedesk.Common.Field.Text">
-        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText.SingleLine</item>
-        <item name="usedesk_text_1">@string/usedesk_name</item>
-    </style>
+    <style name="Usedesk.Chat.Screen.Offline.Form.Text.Field" parent="Usedesk.Common.Text.Field" />
 
-    <style name="Usedesk.Chat.Screen.Offline.Form.Email" parent="Usedesk.Common.Field.Text">
-        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText.SingleLine</item>
-        <item name="usedesk_text_1">@string/usedesk_email</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Subject" parent="Usedesk.Common.Field.List">
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Message" parent="Usedesk.Common.Field.Text">
-        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
-        <item name="usedesk_text_1">@string/usedesk_message</item>
-    </style>
-
-    <style name="Usedesk.Chat.Screen.Offline.Form.Additional" parent="Usedesk.Common.Field.Text">
-        <item name="usedesk_text_1">""</item>
-        <item name="usedesk_text_2">@string/usedesk_field_required_error</item>
-    </style>
+    <style name="Usedesk.Chat.Screen.Offline.Form.List.Field" parent="Usedesk.Common.List.Field" />
 
 </resources>

@@ -7,5 +7,5 @@ internal data class ChatInited(
         val token: String,
         val waitingEmail: Boolean,
         val messages: List<UsedeskMessage>,
-        val callbackSettings: UsedeskOfflineFormSettings
+        val offlineFormSettings: UsedeskOfflineFormSettings
 )

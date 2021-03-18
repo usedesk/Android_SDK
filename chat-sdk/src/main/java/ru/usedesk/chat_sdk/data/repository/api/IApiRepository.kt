@@ -46,7 +46,7 @@ internal interface IApiRepository {
         fun onChatInited(chatInited: ChatInited)
         fun onMessagesReceived(newMessages: List<UsedeskMessage>)
         fun onMessageUpdated(message: UsedeskMessage)
-        fun onOfflineForm(callbackSettings: UsedeskOfflineFormSettings)
+        fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings, chatInited: ChatInited)
         fun onSetEmailSuccess()
     }
 }

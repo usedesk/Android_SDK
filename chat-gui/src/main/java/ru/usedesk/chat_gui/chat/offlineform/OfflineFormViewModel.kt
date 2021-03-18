@@ -3,6 +3,9 @@ package ru.usedesk.chat_gui.chat.offlineform
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormItem
+import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
+import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
@@ -11,91 +14,131 @@ import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
-class OfflineFormViewModel : UsedeskViewModel() {
-
-    val nameLiveData = MutableLiveData("")
-    val emailLiveData = MutableLiveData("")
-    val subjectLiveData = MutableLiveData<Int>(-1)
-    val additionalsLiveData = MutableLiveData(mapOf<Int, String>())
-    val messageLiveData = MutableLiveData("")
+internal class OfflineFormViewModel : UsedeskViewModel() {
 
     val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
-    val nameErrorLiveData = MutableLiveData(false)
-    val emailErrorLiveData = MutableLiveData(false)
-    val messageErrorLiveData = MutableLiveData(false)
-    val offlineFormSettingsLiveData = MutableLiveData<UsedeskOfflineFormSettings>()
+    val offlineFormSettings = MutableLiveData<UsedeskOfflineFormSettings>()
+    val fieldsLiveData = MutableLiveData<List<OfflineFormItem>>()
+    val sendEnabledLiveData = MutableLiveData(false)
 
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
-    private val actionListenerRx: IUsedeskActionListenerRx
+    private var actionListenerRx: IUsedeskActionListenerRx? = null
 
     val configuration = UsedeskChatSdk.requireConfiguration()
 
-    init {
-        actionListenerRx = object : IUsedeskActionListenerRx() {
-            override fun onOfflineFormExpectedObservable(
-                    offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
-            ): Disposable? {
-                return offlineFormExpectedObservable.subscribe {
-                    offlineFormSettingsLiveData.postValue(it)
+    fun init(nameTitle: String,
+             emailTitle: String,
+             messageTitle: String
+    ) {
+        doInit {
+            object : IUsedeskActionListenerRx() {
+                override fun onOfflineFormExpectedObservable(
+                        offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
+                ): Disposable? {
+                    return offlineFormExpectedObservable.subscribe {
+                        offlineFormSettings.postValue(it)
+                        val subjectField = OfflineFormList(
+                                it.topicsTitle ?: "",
+                                it.topicsRequired,
+                                it.topics,
+                                -1
+                        )
+                        val additionalFields = it.customFields.map { customField ->
+                            OfflineFormText(customField.placeholder,
+                                    customField.required,
+                                    "")
+                        }
+                        val configuration = UsedeskChatSdk.requireConfiguration()
+                        val nameField = OfflineFormText(nameTitle,
+                                true,
+                                configuration.clientName ?: "")
+                        val emailField = OfflineFormText(emailTitle,
+                                true,
+                                configuration.clientEmail ?: "")
+                        val messageField = OfflineFormText(messageTitle,
+                                true,
+                                "")
+                        val fields = listOf(nameField, emailField, subjectField) +
+                                additionalFields +
+                                messageField
+                        fieldsLiveData.postValue(fields)
+                    }
+                }
+            }.let {
+                actionListenerRx = it
+                usedeskChat.addActionListener(it)
+            }
+        }
+    }
+
+    fun onSendOfflineForm(onSuccess: (Boolean) -> Unit) {
+        fieldsLiveData.value?.let { it ->
+            if (isFieldsValid(it)) {
+                offlineFormStateLiveData.postValue(OfflineFormState.SENDING)
+                val name = (it[0] as OfflineFormText).text
+                val email = (it[1] as OfflineFormText).text
+                val subjectField = it[2] as OfflineFormList
+                val subject = subjectField.items.getOrNull(subjectField.selected) ?: ""
+                val message = (it.last() as OfflineFormText).text
+                val additionalFields = it.drop(3).dropLast(1).map {
+                    (it as OfflineFormText).text
+                }
+                val offlineForm = UsedeskOfflineForm(
+                        name,
+                        email,
+                        subject,
+                        additionalFields,
+                        message
+                )
+                doIt(UsedeskChatSdk.requireInstance().sendRx(offlineForm), {
+                    offlineFormStateLiveData.postValue(OfflineFormState.SENT_SUCCESSFULLY)
+                    onSuccess(offlineFormSettings.value?.workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT)
+                }) {
+                    offlineFormStateLiveData.postValue(OfflineFormState.FAILED_TO_SEND)
                 }
             }
         }
-        usedeskChat.addActionListener(actionListenerRx)
     }
 
-    fun onSendOfflineForm() {
-        val name = nameLiveData.value ?: ""
-        val email = emailLiveData.value ?: ""
-        val message = messageLiveData.value ?: ""
-
-        val nameIsValid = name.isNotEmpty()
-        val emailIsValid = UsedeskValidatorUtil.isValidEmailNecessary(email)
-        val messageIsValid = message.isNotEmpty()
-
-        if (nameIsValid && emailIsValid && messageIsValid) {
-            offlineFormStateLiveData.postValue(OfflineFormState.SENDING)
-            doIt(UsedeskChatSdk.requireInstance().sendRx(UsedeskOfflineForm(name, email, message)), {
-                offlineFormStateLiveData.postValue(OfflineFormState.SENT_SUCCESSFULLY)
-            }) {
-                offlineFormStateLiveData.postValue(OfflineFormState.FAILED_TO_SEND)
+    private fun isFieldsValid(items: List<OfflineFormItem>): Boolean {
+        val email = items[1] as OfflineFormText
+        val emailIsValid = UsedeskValidatorUtil.isValidEmailNecessary(email.text)
+        return emailIsValid && items.all {
+            !it.required || when (it) {
+                is OfflineFormText -> {
+                    it.text.isNotEmpty()
+                }
+                is OfflineFormList -> {
+                    it.selected >= 0
+                }
+                else -> true
             }
-        } else {
-            messageErrorLiveData.value = !messageIsValid
-            emailErrorLiveData.value = !emailIsValid
-            nameErrorLiveData.value = !nameIsValid
         }
-    }
-
-    fun onOfflineFormNameChanged(name: String) {
-        nameLiveData.value = name
-        nameErrorLiveData.value = false
-    }
-
-    fun onOfflineFormEmailChanged(email: String) {
-        emailLiveData.value = email
-        emailErrorLiveData.value = false
-    }
-
-    fun onOfflineFormSubjectChanged(index: Int) {
-        subjectLiveData.value = index
-    }
-
-    fun onOfflineFormAdditionalChanged(index: Int, text: String) {
-        val newMap = additionalsLiveData.value?.toMutableMap() ?: mutableMapOf()
-        newMap[index] = text
-        additionalsLiveData.value = newMap
-    }
-
-    fun onOfflineFormMessageChanged(message: String) {
-        messageLiveData.value = message
-        messageErrorLiveData.value = false
     }
 
     override fun onCleared() {
         super.onCleared()
 
-        UsedeskChatSdk.getInstance()
-                ?.removeActionListener(actionListenerRx)
+        actionListenerRx?.let {
+            UsedeskChatSdk.getInstance()
+                    ?.removeActionListener(it)
+        }
+    }
+
+    fun onTextFieldChanged(index: Int, text: String) {
+        val newFields = fieldsLiveData.value!!.toMutableList()
+        val oldField = newFields[index]
+        newFields[index] = OfflineFormText(oldField.title, oldField.required, text)
+        fieldsLiveData.value = newFields
+        sendEnabledLiveData.value = isFieldsValid(newFields)
+    }
+
+    fun onSubjectIndexChanged(index: Int) {
+        val newFields = fieldsLiveData.value!!.toMutableList()
+        val oldField = newFields[2] as OfflineFormList
+        newFields[2] = OfflineFormList(oldField.title, oldField.required, oldField.items, index)
+        fieldsLiveData.value = newFields
+        sendEnabledLiveData.value = isFieldsValid(newFields)
     }
 
     enum class OfflineFormState {
@@ -104,5 +147,4 @@ class OfflineFormViewModel : UsedeskViewModel() {
         SENT_SUCCESSFULLY,
         FAILED_TO_SEND
     }
-
 }

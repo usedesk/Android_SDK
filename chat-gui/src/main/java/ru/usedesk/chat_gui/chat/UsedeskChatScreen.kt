@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
+import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
 import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
 import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -23,7 +24,8 @@ import ru.usedesk.common_gui.inflateItem
 class UsedeskChatScreen : UsedeskFragment(),
         IUsedeskOnAttachmentClickListener,
         IOnOfflineFormSelectorClick,
-        IItemSelectChangeListener {
+        IItemSelectChangeListener,
+        IOnGoToChatListener {
 
     private val viewModel: ChatViewModel by viewModels()
 
@@ -31,6 +33,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     private lateinit var attachment: UsedeskAttachmentDialog
 
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
+    private var chatNavigation: ChatNavigation? = null
 
     private var cleared = false
 
@@ -60,6 +63,8 @@ class UsedeskChatScreen : UsedeskFragment(),
 
             init(agentName)
         }
+
+        chatNavigation?.fragmentManager = childFragmentManager
 
         onLiveData()
 
@@ -100,7 +105,12 @@ class UsedeskChatScreen : UsedeskFragment(),
     private fun init(agentName: String?) {
         UsedeskChatSdk.init(requireContext())
 
-        viewModel.init(ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container), agentName)
+        if (chatNavigation == null) {
+            ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
+                chatNavigation = it
+                viewModel.init(it, agentName)
+            }
+        }
     }
 
     override fun onAttachmentClick() {
@@ -146,8 +156,12 @@ class UsedeskChatScreen : UsedeskFragment(),
         return childFragmentManager.findFragmentById(R.id.page_container)
     }
 
-    override fun onOfflineFormSelectorClick(items: Array<String>, selectedIndex: Int) {
-        viewModel.goOfflineFormSelector(items, selectedIndex)
+    override fun onOfflineFormSelectorClick(items: List<String>, selectedIndex: Int) {
+        viewModel.goOfflineFormSelector(items.toTypedArray(), selectedIndex)
+    }
+
+    override fun onGoToMessages() {
+        viewModel.goMessages()
     }
 
     override fun onDestroyView() {

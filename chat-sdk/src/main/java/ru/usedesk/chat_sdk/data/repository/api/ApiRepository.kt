@@ -4,7 +4,6 @@ import android.net.Uri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
-import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
@@ -63,14 +62,11 @@ internal class ApiRepository(
 
         override fun onInited(initChatResponse: InitChatResponse) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
-            chatInited.callbackSettings.run {
+            chatInited.offlineFormSettings.run {
                 if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES && noOperators)
                         || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
                         || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {
-                    if (workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {
-                        eventListener.onChatInited(chatInited)
-                    }
-                    eventListener.onOfflineForm(this)
+                    eventListener.onOfflineForm(this, chatInited)
                 } else {
                     eventListener.onChatInited(chatInited)
                 }
@@ -158,16 +154,26 @@ internal class ApiRepository(
                       offlineForm: UsedeskOfflineForm) {
         try {
             doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
-                val request = OfflineFormRequest(companyId,
-                        offlineForm.clientName,
-                        offlineForm.clientEmail,
-                        offlineForm.message)
+                val customFields = offlineForm.additionalFields.mapIndexed { index, text ->
+                    ",\n  \"custom_field_${index + 1}\":\"${getCorrectStringValue(text)}\""
+                }.joinToString(separator = "")
+                val request = "{\n" +
+                        "  \"email\": \"${getCorrectStringValue(offlineForm.clientEmail)}\",\n" +
+                        "  \"name\": \"${getCorrectStringValue(offlineForm.clientName)}\",\n" +
+                        "  \"company_id\": \"${getCorrectStringValue(companyId)}\",\n" +
+                        "  \"message\": \"${getCorrectStringValue(offlineForm.message)}\",\n" +
+                        "  \"additionalParameters\": {\n" +
+                        "    \"subject\": \"${getCorrectStringValue(offlineForm.subject)}\"\n" +
+                        "  }" + customFields +
+                        "\n}"
                 it.sendOfflineForm(request)
             }
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
+
+    private fun getCorrectStringValue(value: String) = value.replace("\"", "\\\"")
 
     override fun disconnect() {
         socketApi.disconnect()

@@ -7,7 +7,7 @@
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    tools:theme="@style/Usedesk.Common.Field.List">
+    tools:theme="@style/Usedesk.Common.List.Field">
 
     <LinearLayout
         android:id="@+id/l_text"

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.*
 
@@ -35,19 +36,28 @@ internal class OfflineFormPage : UsedeskFragment() {
             }
             rootView = binding.rootView
 
-            fieldsAdapter = OfflineFormFieldsAdapter(binding.lAdditional, viewModel) {
-                val items = (viewModel.offlineFormSettingsLiveData.value?.topics?.toTypedArray()
-                        ?: arrayOf())
-                val selectedIndex = viewModel.subjectLiveData.value ?: -1
+            binding.tvSend.setOnClickListener {
+                hideKeyboard(it)
+                viewModel.onSendOfflineForm { goToChat ->
+                    if (goToChat) {
+                        getParentListener<IOnGoToChatListener>()?.onGoToMessages()
+                    } else {
+                        OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
+                            setOnDismissListener {
+                                requireActivity().onBackPressed()
+                            }
+                        }.show()
+                    }
+                }
+            }
+
+            fieldsAdapter = OfflineFormFieldsAdapter(binding.rvFields, viewModel) { items, selectedIndex ->
                 getParentListener<IOnOfflineFormSelectorClick>()?.onOfflineFormSelectorClick(items, selectedIndex)
             }
 
-            binding.tvSend.setOnClickListener {
-                hideKeyboard(it)
-                viewModel.onSendOfflineForm()
-            }
+            updateActionButton(false)
 
-            updateActionButton("")
+            init()
         }
 
         onLiveData()
@@ -56,23 +66,27 @@ internal class OfflineFormPage : UsedeskFragment() {
     }
 
     private fun onLiveData() {
-        viewModel.offlineFormSettingsLiveData.observe(viewLifecycleOwner) {
-            fieldsAdapter.init(it)
-        }
+        fieldsAdapter.onLiveData(viewModel, viewLifecycleOwner)
 
         viewModel.offlineFormStateLiveData.observe(viewLifecycleOwner) {
             onState(it)
         }
 
-        fieldsAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        viewModel.sendEnabledLiveData.observe(viewLifecycleOwner) {
+            updateActionButton(it == true)
+        }
+
+        viewModel.offlineFormSettings.observe(viewLifecycleOwner) {
+            binding.tvOfflineText.text = it.callbackGreeting
+        }
     }
 
-    private fun onSuccessfully() {
-        OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
-            setOnDismissListener {
-                requireActivity().onBackPressed()
-            }
-        }.show()
+    private fun init() {
+        viewModel.init(
+                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_name),
+                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_email),
+                binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_message),
+        )
     }
 
     private fun onFailed() {
@@ -88,7 +102,7 @@ internal class OfflineFormPage : UsedeskFragment() {
             send: Boolean = false
     ) {
         binding.tvOfflineText.visibility = visibleGone(offlineText)
-        fieldsAdapter.show(fields)
+        binding.rvFields.visibility = visibleGone(fields)
         binding.pbLoading.visibility = visibleGone(loading)
         binding.tvSend.visibility = visibleGone(send)
     }
@@ -118,7 +132,6 @@ internal class OfflineFormPage : UsedeskFragment() {
                 )
             }
             OfflineFormViewModel.OfflineFormState.SENT_SUCCESSFULLY -> {
-                onSuccessfully()
                 showViews(
                         offlineText = true,
                         fields = true,
@@ -128,13 +141,13 @@ internal class OfflineFormPage : UsedeskFragment() {
         }
     }
 
-    private fun updateActionButton(message: String) {
-        val attr = if (message.isEmpty()) {
-            binding.tvSend.isEnabled = false
-            R.attr.usedesk_chat_screen_offline_form_action_disabled_background
-        } else {
+    private fun updateActionButton(enabled: Boolean) {
+        val attr = if (enabled) {
             binding.tvSend.isEnabled = true
             R.attr.usedesk_chat_screen_offline_form_action_enabled_background
+        } else {
+            binding.tvSend.isEnabled = false
+            R.attr.usedesk_chat_screen_offline_form_action_disabled_background
         }
 
         val colorId = binding.styleValues.getColor(attr)
@@ -142,7 +155,7 @@ internal class OfflineFormPage : UsedeskFragment() {
     }
 
     fun setSubjectIndex(index: Int) {
-        viewModel.onOfflineFormSubjectChanged(index)
+        viewModel.onSubjectIndexChanged(index)
     }
 
     companion object {
@@ -153,7 +166,7 @@ internal class OfflineFormPage : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvOfflineText: TextView = rootView.findViewById(R.id.tv_offline_form_text)
-        val lAdditional: ViewGroup = rootView.findViewById(R.id.l_offline_form_additional)
+        val rvFields: RecyclerView = rootView.findViewById(R.id.rv_fields)
         val tvSend: TextView = rootView.findViewById(R.id.tv_offline_form_send)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_offline_form_loading)
         val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_send)

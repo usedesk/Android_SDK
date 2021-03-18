@@ -48,6 +48,9 @@ internal class ChatInteractor(
 
     private var localId = -1000L
 
+    private var chatInited: ChatInited? = null
+    private var offlineFormToChat = false
+
     init {
         listenersDisposables.apply {
             connectedStateSubject.subscribe {
@@ -136,6 +139,7 @@ internal class ChatInteractor(
         }
 
         override fun onChatInited(chatInited: ChatInited) {
+            this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.onChatInited(chatInited)
         }
 
@@ -147,8 +151,11 @@ internal class ChatInteractor(
             this@ChatInteractor.onMessageUpdate(message)
         }
 
-        override fun onOfflineForm(callbackSettings: UsedeskOfflineFormSettings) {
-            offlineFormExpectedSubject.onNext(callbackSettings)
+        override fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings,
+                                   chatInited: ChatInited) {
+            this@ChatInteractor.chatInited = chatInited
+            this@ChatInteractor.offlineFormToChat = offlineFormSettings.workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+            offlineFormExpectedSubject.onNext(offlineFormSettings)
         }
 
         override fun onSetEmailSuccess() {
@@ -392,7 +399,17 @@ internal class ChatInteractor(
     }
 
     override fun send(offlineForm: UsedeskOfflineForm) {
-        apiRepository.send(configuration, configuration.companyId, offlineForm)
+        if (offlineFormToChat) {
+            offlineForm.run {
+                initClientMessage = (listOf(clientName, clientEmail, subject)
+                        + offlineForm.additionalFields
+                        + offlineForm.message)
+                        .joinToString(separator = "\n")
+                chatInited?.let { onChatInited(it) }
+            }
+        } else {
+            apiRepository.send(configuration, configuration.companyId, offlineForm)
+        }
     }
 
     override fun sendAgain(id: Long) {
@@ -527,7 +544,7 @@ internal class ChatInteractor(
         }
         onMessagesNew(filteredMessages, true)
 
-        val initClientMessage = try {
+        val initClientMessage = initClientMessage ?: try {
             userInfoRepository.getConfiguration().clientInitMessage
         } catch (ignore: UsedeskException) {
             null

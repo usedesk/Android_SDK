@@ -76,7 +76,7 @@
         <item name="usedesk_drawable_2">@drawable/ic_checked</item>
     </style>
 
-    <style name="Usedesk.Common.Field.List" parent="">
+    <style name="Usedesk.Common.List.Field" parent="">
         <item name="usedesk_common_field_list_title_text">@style/Usedesk.Common.Field.List.Title.Text</item>
         <item name="usedesk_common_field_list_value_text">@style/Usedesk.Common.Field.List.Value.Text</item>
         <item name="usedesk_common_field_list_arrow_image">@style/Usedesk.Common.Field.List.Arrow.Image</item>
@@ -112,7 +112,7 @@
         <item name="srcCompat">@drawable/usedesk_ic_arrow_angular</item>
     </style>
 
-    <style name="Usedesk.Common.Field.Text" parent="">
+    <style name="Usedesk.Common.Text.Field" parent="">
         <item name="usedesk_common_field_text_input_layout">@style/Usedesk.Common.Field.Text.InputLayout</item>
         <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
         <item name="usedesk_text_1">""</item>

@@ -70,6 +70,7 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
+| clientNote | String? | Заметка о клиенте |
 | clientPhoneNumber | Long? | Телефонный номер клиента |
 | clientAdditionalId | Long? | Дополнительный идентификатор клиента |
 | clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |

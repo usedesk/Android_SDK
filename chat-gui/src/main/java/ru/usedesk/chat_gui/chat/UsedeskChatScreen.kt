@@ -12,6 +12,7 @@ import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
+import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
@@ -21,12 +22,15 @@ import ru.usedesk.common_gui.inflateItem
 
 class UsedeskChatScreen : UsedeskFragment(),
         IUsedeskOnAttachmentClickListener,
-        IOnOfflineFormSelectorClick {
+        IOnOfflineFormSelectorClick,
+        IItemSelectChangeListener {
 
     private val viewModel: ChatViewModel by viewModels()
 
     private lateinit var binding: Binding
     private lateinit var attachment: UsedeskAttachmentDialog
+
+    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
 
     private var cleared = false
 
@@ -46,7 +50,7 @@ class UsedeskChatScreen : UsedeskFragment(),
                 Binding(rootView, defaultStyleId)
             }
 
-            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+            toolbarAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
                 setBackButton {
                     requireActivity().onBackPressed()
                 }
@@ -66,6 +70,25 @@ class UsedeskChatScreen : UsedeskFragment(),
         viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
             onException(it)
         }
+
+        viewModel.pageLiveData.observe(viewLifecycleOwner) {
+            it?.let { page ->
+                val title = when (page) {
+                    ChatNavigation.Page.LOADING,
+                    ChatNavigation.Page.MESSAGES -> {
+                        binding.styleValues.getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                                .getString(android.R.attr.text)
+                    }
+                    ChatNavigation.Page.OFFLINE_FORM -> {
+                        viewModel.offlineFormSettingsLiveData.value?.callbackTitle
+                    }
+                    ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
+                        viewModel.offlineFormSettingsLiveData.value?.topicsTitle
+                    }
+                }
+                toolbarAdapter.setTitle(title)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,6 +106,10 @@ class UsedeskChatScreen : UsedeskFragment(),
     override fun onAttachmentClick() {
         getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: attachment.show()
+    }
+
+    override fun onItemSelectChange(index: Int) {
+        viewModel.setSubjectIndex(index)
     }
 
     private fun onException(exception: Exception) {

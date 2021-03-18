@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.chat
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import ru.usedesk.chat_gui.chat.loading.LoadingPage
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
@@ -92,6 +93,16 @@ internal class ChatNavigation(
             else -> return
         }
         pageSubject.onNext(page)
+    }
+
+    fun pageRx(): Observable<Page> = pageSubject
+
+    fun setSubjectIndex(index: Int) {
+        fragmentManager.fragments.forEach {
+            if (it is OfflineFormPage) {
+                it.setSubjectIndex(index)
+            }
+        }
     }
 
     enum class Page {

@@ -15,7 +15,7 @@ class UsedeskToolbarAdapter(
         activity.setSupportActionBar(binding.toolbar)
     }
 
-    fun setTitle(title: String) {
+    fun setTitle(title: String?) {
         binding.tvTitle.text = title
     }
 

@@ -11,6 +11,7 @@ import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormSelectorAdapter(
         recyclerView: RecyclerView,
+        private val viewModel: OfflineFormSelectorViewModel,
         private val items: List<String>,
         var selectedIndex: Int
 ) : RecyclerView.Adapter<OfflineFormSelectorAdapter.ViewHolder>(), IUsedeskAdapter<OfflineFormSelectorViewModel> {
@@ -62,7 +63,7 @@ internal class OfflineFormSelectorAdapter(
             adapter.setTitle(items[index])
             adapter.setChecked(index == selectedIndex)
             adapter.setOnClickListener {
-                onSelected(index)
+                viewModel.onSelected(index)
             }
         }
     }

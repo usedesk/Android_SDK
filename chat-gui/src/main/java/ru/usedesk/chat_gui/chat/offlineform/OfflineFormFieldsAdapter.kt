@@ -106,9 +106,13 @@ internal class OfflineFormFieldsAdapter(
     }
 
     private fun subjectUpdate(offlineFormSettings: UsedeskOfflineFormSettings?, index: Int) {
-        viewModel.offlineFormSettingsLiveData.value?.let {
-            val title = it.topics.getOrNull(index) ?: it.topicsTitle ?: ""
+        offlineFormSettings?.let {
+            val title = it.topicsTitle ?: ""
             subjectAdapter.setTitle(title, it.topicsRequired)
+            if (index >= 0) {
+                val text = it.topics.getOrNull(index) ?: ""
+                subjectAdapter.setText(text)
+            }
         }
     }
 

@@ -14,6 +14,7 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     val exceptionLiveData = MutableLiveData<Exception>()
     val offlineFormSettingsLiveData = MutableLiveData<UsedeskOfflineFormSettings>()
+    val pageLiveData = MutableLiveData<ChatNavigation.Page>()
 
     val configuration = UsedeskChatSdk.requireConfiguration()
 
@@ -27,6 +28,10 @@ internal class ChatViewModel : UsedeskViewModel() {
     fun init(chatNavigation: ChatNavigation, agentName: String?) {
         this.chatNavigation = chatNavigation
         this.agentName = agentName
+
+        addDisposable(chatNavigation.pageRx().subscribe {
+            pageLiveData.value = it
+        })
 
         chatNavigation.goLoading()
 
@@ -84,5 +89,9 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     fun goOfflineFormSelector(items: Array<String>, selectedIndex: Int) {
         chatNavigation.goOfflineFormSelector(items, selectedIndex)
+    }
+
+    fun setSubjectIndex(index: Int) {
+        chatNavigation.setSubjectIndex(index)
     }
 }

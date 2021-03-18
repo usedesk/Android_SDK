@@ -213,10 +213,6 @@
         <item name="usedesk_text_2">@string/usedesk_download_failed</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">
-        <item name="colorAccent">@color/usedesk_red</item>
-    </style>
-
     <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Chat.Screen.Title.Text</item>
 
@@ -236,6 +232,10 @@
         <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar</item>
 
         <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">
+        <item name="colorAccent">@color/usedesk_red</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Attach.Image" parent="">

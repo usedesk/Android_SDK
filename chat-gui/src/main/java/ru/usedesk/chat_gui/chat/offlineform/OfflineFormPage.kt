@@ -139,6 +139,10 @@ internal class OfflineFormPage : UsedeskFragment() {
         binding.lAction.setBackgroundColor(colorId)
     }
 
+    fun setSubjectIndex(index: Int) {
+        viewModel.onOfflineFormSubjectChanged(index)
+    }
+
     companion object {
         fun newInstance(): OfflineFormPage {
             return OfflineFormPage()

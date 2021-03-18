@@ -5,6 +5,7 @@ import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import toothpick.InjectConstructor
 
 @InjectConstructor
@@ -15,9 +16,49 @@ internal class InitChatResponseConverter(
     override fun convert(from: InitChatResponse): ChatInited {
         return ChatInited(
                 from.token!!,
-                from.setup!!.noOperators == true,
                 true,
-                convert(from.setup?.messages ?: listOf())
+                convert(from.setup?.messages ?: listOf()),
+                convert(from.setup?.callbackSettings, from.setup!!.noOperators)
+        )
+    }
+
+    private fun convert(callbackSettings: InitChatResponse.Setup.CallbackSettings?,
+                        noOperators: Boolean?): UsedeskOfflineFormSettings {
+        return convertOrNull {
+            val topics = callbackSettings!!.topics?.filter {
+                it?.checked == true
+            }?.mapNotNull {
+                it?.text
+            } ?: listOf()
+            val workType = UsedeskOfflineFormSettings.WorkType.values().firstOrNull {
+                it.name.equals(callbackSettings.workType ?: "", ignoreCase = true)
+            } ?: UsedeskOfflineFormSettings.WorkType.NEVER
+            val customFields = callbackSettings.customFields?.mapNotNull { customField ->
+                convertOrNull {
+                    val required = customField!!.required == true
+                    UsedeskOfflineFormSettings.CustomField(
+                            required,
+                            customField.checked ?: false,
+                            customField.placeholder ?: ""
+                    )
+                }
+            }?.filter {
+                it.checked
+            } ?: listOf()
+            val required = callbackSettings.topicsRequired == 1
+            UsedeskOfflineFormSettings(
+                    noOperators == true,
+                    workType,
+                    callbackSettings.callbackTitle ?: "",
+                    callbackSettings.callbackGreeting ?: "",
+                    customFields,
+                    topics,
+                    callbackSettings.topicsTitle ?: "",
+                    required
+            )
+        } ?: UsedeskOfflineFormSettings(
+                noOperators == true,
+                UsedeskOfflineFormSettings.WorkType.NEVER
         )
     }
 

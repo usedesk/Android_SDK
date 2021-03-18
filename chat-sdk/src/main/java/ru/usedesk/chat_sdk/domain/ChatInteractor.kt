@@ -37,7 +37,7 @@ internal class ChatInteractor(
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
     private val messageUpdateSubject = PublishSubject.create<UsedeskMessage>()
-    private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskChatConfiguration>()
+    private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskOfflineFormSettings>()
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<Exception>()
 
@@ -47,6 +47,9 @@ internal class ChatInteractor(
     private var lastMessages = listOf<UsedeskMessage>()
 
     private var localId = -1000L
+
+    private var chatInited: ChatInited? = null
+    private var offlineFormToChat = false
 
     init {
         listenersDisposables.apply {
@@ -136,6 +139,7 @@ internal class ChatInteractor(
         }
 
         override fun onChatInited(chatInited: ChatInited) {
+            this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.onChatInited(chatInited)
         }
 
@@ -147,8 +151,11 @@ internal class ChatInteractor(
             this@ChatInteractor.onMessageUpdate(message)
         }
 
-        override fun onOfflineForm() {
-            offlineFormExpectedSubject.onNext(configuration)
+        override fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings,
+                                   chatInited: ChatInited) {
+            this@ChatInteractor.chatInited = chatInited
+            this@ChatInteractor.offlineFormToChat = offlineFormSettings.workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+            offlineFormExpectedSubject.onNext(offlineFormSettings)
         }
 
         override fun onSetEmailSuccess() {
@@ -392,47 +399,55 @@ internal class ChatInteractor(
     }
 
     override fun send(offlineForm: UsedeskOfflineForm) {
-        apiRepository.send(configuration, configuration.companyId, offlineForm)
+        if (offlineFormToChat) {
+            offlineForm.run {
+                initClientMessage = (listOf(clientName, clientEmail, subject)
+                        + offlineForm.additionalFields
+                        + offlineForm.message)
+                        .joinToString(separator = "\n")
+                chatInited?.let { onChatInited(it) }
+            }
+        } else {
+            apiRepository.send(configuration, configuration.companyId, offlineForm)
+        }
     }
 
     override fun sendAgain(id: Long) {
-        token?.let { token ->
-            val message = lastMessages.firstOrNull {
-                it.id == id
-            }
-            if (message is UsedeskMessageClient
-                    && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
-                when (message) {
-                    is UsedeskMessageClientText -> {
-                        val sendingMessage = UsedeskMessageClientText(
-                                message.id,
-                                message.createdAt,
-                                message.text,
-                                UsedeskMessageClient.Status.SENDING
-                        )
-                        onMessageUpdate(sendingMessage)
-                        sendText(sendingMessage)
-                    }
-                    is UsedeskMessageClientImage -> {
-                        val sendingMessage = UsedeskMessageClientImage(
-                                message.id,
-                                message.createdAt,
-                                message.file,
-                                UsedeskMessageClient.Status.SENDING
-                        )
-                        onMessageUpdate(sendingMessage)
-                        sendFile(sendingMessage)
-                    }
-                    is UsedeskMessageClientFile -> {
-                        val sendingMessage = UsedeskMessageClientFile(
-                                message.id,
-                                message.createdAt,
-                                message.file,
-                                UsedeskMessageClient.Status.SENDING
-                        )
-                        onMessageUpdate(sendingMessage)
-                        sendFile(sendingMessage)
-                    }
+        val message = lastMessages.firstOrNull {
+            it.id == id
+        }
+        if (message is UsedeskMessageClient
+                && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
+            when (message) {
+                is UsedeskMessageClientText -> {
+                    val sendingMessage = UsedeskMessageClientText(
+                            message.id,
+                            message.createdAt,
+                            message.text,
+                            UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendText(sendingMessage)
+                }
+                is UsedeskMessageClientImage -> {
+                    val sendingMessage = UsedeskMessageClientImage(
+                            message.id,
+                            message.createdAt,
+                            message.file,
+                            UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
+                }
+                is UsedeskMessageClientFile -> {
+                    val sendingMessage = UsedeskMessageClientFile(
+                            message.id,
+                            message.createdAt,
+                            message.file,
+                            UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
                 }
             }
         }
@@ -529,7 +544,7 @@ internal class ChatInteractor(
         }
         onMessagesNew(filteredMessages, true)
 
-        val initClientMessage = try {
+        val initClientMessage = initClientMessage ?: try {
             userInfoRepository.getConfiguration().clientInitMessage
         } catch (ignore: UsedeskException) {
             null

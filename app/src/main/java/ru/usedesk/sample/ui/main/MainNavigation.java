@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen;
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen;
 import ru.usedesk.chat_sdk.entity.UsedeskFile;
+import ru.usedesk.common_gui.UsedeskFragment;
 import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen;
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
 
@@ -52,6 +53,10 @@ public class MainNavigation {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 1) {
             Fragment fragment = fragmentManager.getFragments().get(0);
+            if (fragment instanceof UsedeskFragment &&
+                    ((UsedeskFragment) fragment).onBackPressed()) {
+                return;
+            }
             if (fragment instanceof UsedeskChatScreen) {
                 ((UsedeskChatScreen) fragment).clear();
             }

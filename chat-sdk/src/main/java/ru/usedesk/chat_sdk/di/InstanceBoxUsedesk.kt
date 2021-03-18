@@ -5,7 +5,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_sdk.di.CommonModule
+import ru.usedesk.common_sdk.di.UsedeskCommonModule
 import ru.usedesk.common_sdk.di.UsedeskInjectBox
 import toothpick.ktp.delegate.inject
 
@@ -18,7 +18,7 @@ internal class InstanceBoxUsedesk(
 
     init {
         val appContext = context.applicationContext
-        init(CommonModule(appContext), MainModule(usedeskChatConfiguration))
+        init(UsedeskCommonModule(appContext), MainModule(usedeskChatConfiguration))
     }
 
     override fun release() {

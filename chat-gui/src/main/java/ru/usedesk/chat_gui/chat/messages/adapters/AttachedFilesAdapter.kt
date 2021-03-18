@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.adapters
+package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.view.View
 import android.view.ViewGroup
@@ -7,14 +7,14 @@ import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.ChatViewModel
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.*
 
 internal class AttachedFilesAdapter(
-        private val chatViewModel: ChatViewModel,
+        private val chatViewModel: MessagesViewModel,
         private val recyclerView: RecyclerView
-) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>(), IUsedeskAdapter<ChatViewModel> {
+) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>(), IUsedeskAdapter<MessagesViewModel> {
 
     private var files: List<UsedeskFileInfo> = listOf()
 
@@ -22,7 +22,7 @@ internal class AttachedFilesAdapter(
         recyclerView.adapter = this
     }
 
-    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+    override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
             onItems(it ?: listOf())
         }

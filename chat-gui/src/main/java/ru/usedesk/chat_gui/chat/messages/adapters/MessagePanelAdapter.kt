@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.adapters
+package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.view.View
 import android.widget.EditText
@@ -6,16 +6,16 @@ import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.ChatViewModel
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.common_gui.IUsedeskAdapter
-import ru.usedesk.common_gui.TextChangeListener
 import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskTextChangeListener
 
 internal class MessagePanelAdapter(
         private val binding: Binding,
-        private val viewModel: ChatViewModel,
+        private val viewModel: MessagesViewModel,
         onClickAttach: View.OnClickListener
-) : IUsedeskAdapter<ChatViewModel> {
+) : IUsedeskAdapter<MessagesViewModel> {
 
     private val attachedFilesAdapter: AttachedFilesAdapter
 
@@ -25,13 +25,13 @@ internal class MessagePanelAdapter(
             onSendClick()
         }
         binding.etMessage.setText(viewModel.messageLiveData.value)
-        binding.etMessage.addTextChangedListener(TextChangeListener {
+        binding.etMessage.addTextChangedListener(UsedeskTextChangeListener {
             viewModel.onMessageChanged(it)
         })
         attachedFilesAdapter = AttachedFilesAdapter(viewModel, binding.rvAttachedFiles)
     }
 
-    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+    override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         attachedFilesAdapter.onLiveData(viewModel, lifecycleOwner)
     }
 

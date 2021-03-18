@@ -4,4 +4,5 @@
     <string name="usedesk_need_permissions">Необходимы разрешения</string>
     <string name="usedesk_need_permission">Необходимо разрешение</string>
     <string name="usedesk_send">Отправить</string>
+    <string name="usedesk_field_required_error">Поле не может быть пустым</string>
 </resources>

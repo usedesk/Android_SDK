@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_sdk.di
 
 import android.content.Context
-import ru.usedesk.common_sdk.di.CommonModule
+import ru.usedesk.common_sdk.di.UsedeskCommonModule
 import ru.usedesk.common_sdk.di.UsedeskInjectBox
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
@@ -16,6 +16,6 @@ internal class InstanceBoxUsedesk(
 
     init {
         val appContext = context.applicationContext
-        init(CommonModule(appContext), MainModule(knowledgeBaseConfiguration))
+        init(UsedeskCommonModule(appContext), MainModule(knowledgeBaseConfiguration))
     }
 }

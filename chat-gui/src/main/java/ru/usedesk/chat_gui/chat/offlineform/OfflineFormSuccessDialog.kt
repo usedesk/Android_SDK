@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat
+package ru.usedesk.chat_gui.chat.offlineform
 
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +9,7 @@ import ru.usedesk.common_gui.UsedeskBottomSheetDialog
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 
-class UsedeskOfflineFormSuccessDialog private constructor(
+internal class OfflineFormSuccessDialog private constructor(
         container: ViewGroup,
         dialogStyle: Int
 ) : UsedeskBottomSheetDialog(container.context, dialogStyle) {
@@ -30,11 +30,11 @@ class UsedeskOfflineFormSuccessDialog private constructor(
     }
 
     companion object {
-        fun newInstance(container: View): UsedeskOfflineFormSuccessDialog {
+        fun newInstance(container: View): OfflineFormSuccessDialog {
             val dialogStyle = UsedeskResourceManager.getResourceId(
                     R.style.Usedesk_Chat_Offline_Form_Success_Dialog
             )
-            return UsedeskOfflineFormSuccessDialog(container as ViewGroup, dialogStyle)
+            return OfflineFormSuccessDialog(container as ViewGroup, dialogStyle)
         }
     }
 

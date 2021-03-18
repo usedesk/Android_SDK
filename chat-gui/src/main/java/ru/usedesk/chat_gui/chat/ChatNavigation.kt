@@ -1,7 +1,9 @@
 package ru.usedesk.chat_gui.chat
 
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import io.reactivex.subjects.BehaviorSubject
 import ru.usedesk.chat_gui.chat.loading.LoadingPage
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormPage
@@ -9,11 +11,13 @@ import ru.usedesk.chat_gui.chat.offlineformselector.OfflineFormSelectorPage
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.hideKeyboard
 
-class ChatNavigation(
+internal class ChatNavigation(
         private val fragmentManager: FragmentManager,
         private val rootView: View,
         private val containerId: Int
 ) {
+    private val pageSubject = BehaviorSubject.create<Page>()
+
     fun goLoading() {
         navigateToRoot(LoadingPage.newInstance())
     }
@@ -30,43 +34,37 @@ class ChatNavigation(
         navigateForwardTo(OfflineFormSelectorPage.newInstance(items, selectedIndex))
     }
 
-    private fun navigateToRoot(vararg fragments: UsedeskFragment) {
+    private fun navigateToRoot(fragment: UsedeskFragment) {
         rootView.post {
             fragmentManager.beginTransaction().also { transaction ->
                 fragmentManager.fragments.reversed()
                         .forEach {
                             transaction.remove(it)
                         }
-                fragments.forEach { fragment ->
-                    transaction.add(containerId, fragment)
+                transaction.add(containerId, fragment)
+                transaction.show(fragment)
+                fragment.view?.run {
+                    hideKeyboard(this)
                 }
-                fragments.lastOrNull()?.let {
-                    transaction.show(it)
-                    it.view?.run {
-                        hideKeyboard(this)
-                    }
-                }
+                onFragmentChanged(fragment)
             }.commit()
         }
     }
 
-    private fun navigateForwardTo(vararg fragments: UsedeskFragment) {
+    private fun navigateForwardTo(fragment: UsedeskFragment) {
         fragmentManager.beginTransaction().also { transaction ->
-            fragments.forEach { fragment ->
-                transaction.add(containerId, fragment)
-            }
             fragmentManager.fragments.lastOrNull()?.let {
                 transaction.hide(it)
                 it.view?.run {
                     hideKeyboard(this)
                 }
             }
-            fragments.lastOrNull()?.let {
-                transaction.show(it)
-                it.view?.run {
-                    hideKeyboard(this)
-                }
+            transaction.add(containerId, fragment)
+            transaction.show(fragment)
+            fragment.view?.run {
+                hideKeyboard(this)
             }
+            onFragmentChanged(fragment)
         }.commit()
     }
 
@@ -79,8 +77,27 @@ class ChatNavigation(
                 transaction.remove(current)
                 val last = fragmentManager.fragments[fragmentManager.fragments.size - 2]
                 transaction.show(last)
+                onFragmentChanged(last)
             }.commit()
             true
         }
+    }
+
+    private fun onFragmentChanged(fragment: Fragment) {
+        val page = when (fragment) {
+            is LoadingPage -> Page.LOADING
+            is MessagesPage -> Page.MESSAGES
+            is OfflineFormPage -> Page.OFFLINE_FORM
+            is OfflineFormSelectorPage -> Page.OFFLINE_FORM_SELECTOR
+            else -> return
+        }
+        pageSubject.onNext(page)
+    }
+
+    enum class Page {
+        LOADING,
+        MESSAGES,
+        OFFLINE_FORM,
+        OFFLINE_FORM_SELECTOR
     }
 }

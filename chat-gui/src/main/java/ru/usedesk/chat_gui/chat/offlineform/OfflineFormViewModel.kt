@@ -15,7 +15,7 @@ class OfflineFormViewModel : UsedeskViewModel() {
 
     val nameLiveData = MutableLiveData("")
     val emailLiveData = MutableLiveData("")
-    val subjectLiveData = MutableLiveData<Int>()
+    val subjectLiveData = MutableLiveData<Int>(-1)
     val additionalsLiveData = MutableLiveData(hashMapOf<Int, String>())
     val messageLiveData = MutableLiveData("")
 

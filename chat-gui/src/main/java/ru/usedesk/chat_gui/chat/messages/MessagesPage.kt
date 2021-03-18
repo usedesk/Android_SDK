@@ -43,7 +43,7 @@ internal class MessagesPage : UsedeskFragment() {
             binding = inflateItem(inflater,
                     container,
                     R.layout.usedesk_page_messages,
-                    R.style.Usedesk_Chat_Page_Messages) { rootView, defaultStyleId ->
+                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
                 Binding(rootView, defaultStyleId)
             }
 

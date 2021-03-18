@@ -15,6 +15,8 @@ class UsedeskCommonFieldListAdapter(
         binding.rootView.setOnClickListener {
             onClickListener()
         }
+        setTitle("")
+        setText("")
     }
 
     fun setTitle(title: String, required: Boolean = false) {
@@ -28,7 +30,13 @@ class UsedeskCommonFieldListAdapter(
         binding.tvTitle.text = Html.fromHtml(htmlTitle)
     }
 
+    fun setText(text: String) {
+        binding.tvValue.text = text
+        binding.tvValue.visibility = visibleGone(text.isNotEmpty())
+    }
+
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val tvValue: TextView = rootView.findViewById(R.id.tv_value)
     }
 }

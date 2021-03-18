@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.chat.offlineform
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_gui.*
 
 internal class OfflineFormFieldsAdapter(
@@ -46,7 +47,7 @@ internal class OfflineFormFieldsAdapter(
 
         val subjectBinding = inflateItem(rootView,
                 R.layout.usedesk_item_field_list,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Additional) { rootView, defaultStyleId ->
+                R.style.Usedesk_Chat_Screen_Offline_Form_Subject) { rootView, defaultStyleId ->
             UsedeskCommonFieldListAdapter.Binding(rootView, defaultStyleId)
         }
         subjectAdapter = UsedeskCommonFieldListAdapter(subjectBinding) {
@@ -73,6 +74,7 @@ internal class OfflineFormFieldsAdapter(
 
     override fun onLiveData(viewModel: OfflineFormViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.offlineFormSettingsLiveData.observe(lifecycleOwner) {
+            subjectUpdate(it, viewModel.subjectLiveData.value ?: -1)
             it.customFields.forEachIndexed { index, customField ->
                 val additionalBinding = inflateItem(rootView,
                         R.layout.usedesk_item_field_text,
@@ -95,13 +97,18 @@ internal class OfflineFormFieldsAdapter(
         }
 
         viewModel.subjectLiveData.observe(lifecycleOwner) { index ->
-            viewModel.offlineFormSettingsLiveData.value?.let {
-                subjectAdapter.setTitle(it.topics[index], it.topicsRequired)
-            }
+            subjectUpdate(viewModel.offlineFormSettingsLiveData.value, index ?: -1)
         }
 
         viewModel.messageErrorLiveData.observe(lifecycleOwner) {
             messageAdapter.showError(it)
+        }
+    }
+
+    private fun subjectUpdate(offlineFormSettings: UsedeskOfflineFormSettings?, index: Int) {
+        viewModel.offlineFormSettingsLiveData.value?.let {
+            val title = it.topics.getOrNull(index) ?: it.topicsTitle ?: ""
+            subjectAdapter.setTitle(title, it.topicsRequired)
         }
     }
 

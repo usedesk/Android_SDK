@@ -15,7 +15,7 @@ internal class LoadingPage : UsedeskFragment() {
         val binding = inflateItem(inflater,
                 container,
                 R.layout.usedesk_page_loading,
-                R.style.Usedesk_Chat_Page_Loading) { rootView, defaultStyleId ->
+                R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
 

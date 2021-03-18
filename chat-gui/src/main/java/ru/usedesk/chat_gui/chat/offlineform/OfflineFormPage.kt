@@ -29,7 +29,7 @@ internal class OfflineFormPage : UsedeskFragment() {
             binding = inflateItem(inflater,
                     container,
                     R.layout.usedesk_page_offline_form,
-                    R.style.Usedesk_Chat_Page_OfflineForm) { rootView, defaultStyleId ->
+                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
                 Binding(rootView, defaultStyleId)
             }
 

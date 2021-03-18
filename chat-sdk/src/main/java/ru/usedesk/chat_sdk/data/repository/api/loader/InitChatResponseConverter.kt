@@ -25,7 +25,9 @@ internal class InitChatResponseConverter(
     private fun convert(callbackSettings: InitChatResponse.Setup.CallbackSettings?,
                         noOperators: Boolean?): UsedeskOfflineFormSettings {
         return convertOrNull {
-            val topics = callbackSettings!!.topics?.mapNotNull {
+            val topics = callbackSettings!!.topics?.filter {
+                it?.checked == true
+            }?.mapNotNull {
                 it?.text
             } ?: listOf()
             val workType = UsedeskOfflineFormSettings.WorkType.values().firstOrNull {

@@ -49,6 +49,7 @@ internal class InitChatResponse : BaseResponse() {
 
             class Topic {
                 var text: String? = null
+                var checked: Boolean? = null
             }
         }
     }

@@ -13,6 +13,7 @@ import ru.usedesk.common_gui.UsedeskViewModel
 internal class ChatViewModel : UsedeskViewModel() {
 
     val exceptionLiveData = MutableLiveData<Exception>()
+    val offlineFormSettingsLiveData = MutableLiveData<UsedeskOfflineFormSettings>()
 
     val configuration = UsedeskChatSdk.requireConfiguration()
 
@@ -52,6 +53,7 @@ internal class ChatViewModel : UsedeskViewModel() {
                     offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
             ): Disposable? {
                 return offlineFormExpectedObservable.subscribe {
+                    offlineFormSettingsLiveData.postValue(it)
                     chatNavigation.goOfflineForm()
                 }
             }

@@ -220,30 +220,21 @@
     <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Chat.Screen.Title.Text</item>
 
-    </style>
-
-    <style name="Usedesk.Chat.Page.Loading" parent="Usedesk.Common">
         <item name="usedesk_chat_screen_loading_text">@style/Usedesk.Chat.Screen.Loading.Text</item>
-    </style>
 
-    <style name="Usedesk.Chat.Page.Messages" parent="Usedesk.Common">
         <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
         <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
         <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
-    </style>
 
-    <style name="Usedesk.Chat.Page.OfflineForm" parent="Usedesk.Common">
         <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
         <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>
         <item name="usedesk_chat_screen_offline_form_send_text">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text</item>
         <item name="usedesk_chat_screen_offline_form_send_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar</item>
-    </style>
 
-    <style name="Usedesk.Chat.Page.OfflineFormSelector" parent="Usedesk.Common">
         <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
     </style>
 
@@ -575,7 +566,7 @@
     <style name="Usedesk.Chat.Screen.Offline.Form.Description.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginBottom">12dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
@@ -610,8 +601,6 @@
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Subject" parent="Usedesk.Common.Field.List">
-        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText.SingleLine</item>
-        <item name="usedesk_text_1">@string/usedesk_email</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Message" parent="Usedesk.Common.Field.Text">

@@ -8,7 +8,7 @@ import androidx.appcompat.widget.Toolbar
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.knowledgebase_gui.R
 
-class ToolbarSearchAdapter(
+internal class ToolbarSearchAdapter(
         private val binding: Binding,
         onSearchClick: (String) -> Unit,
         onCancelClick: () -> Unit

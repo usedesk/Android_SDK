@@ -91,7 +91,7 @@ private fun onAction(action: () -> Unit) {
     }
 }
 
-class AppRequestListener(
+internal class AppRequestListener(
         private val vLoading: View? = null,
         private val vError: View? = null,
         private val onSuccess: () -> Unit = {},

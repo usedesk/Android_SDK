@@ -3,7 +3,7 @@ package ru.usedesk.common_gui
 import android.text.Editable
 import android.text.TextWatcher
 
-class TextChangeListener(
+class UsedeskTextChangeListener(
         private val onTextChanged: (String) -> Unit
 ) : TextWatcher {
 

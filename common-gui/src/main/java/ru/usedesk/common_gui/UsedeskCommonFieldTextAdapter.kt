@@ -36,7 +36,7 @@ class UsedeskCommonFieldTextAdapter(
     fun getText(): String = binding.etText.text?.toString() ?: ""
 
     fun setTextChangeListener(onChanged: (String) -> Unit) {
-        binding.etText.addTextChangedListener(TextChangeListener {
+        binding.etText.addTextChangedListener(UsedeskTextChangeListener {
             onChanged(it)
         })
     }

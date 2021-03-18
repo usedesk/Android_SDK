@@ -16,7 +16,7 @@ class OfflineFormViewModel : UsedeskViewModel() {
     val nameLiveData = MutableLiveData("")
     val emailLiveData = MutableLiveData("")
     val subjectLiveData = MutableLiveData<Int>(-1)
-    val additionalsLiveData = MutableLiveData(hashMapOf<Int, String>())
+    val additionalsLiveData = MutableLiveData(mapOf<Int, String>())
     val messageLiveData = MutableLiveData("")
 
     val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
@@ -81,9 +81,9 @@ class OfflineFormViewModel : UsedeskViewModel() {
     }
 
     fun onOfflineFormAdditionalChanged(index: Int, text: String) {
-        val currentMap = additionalsLiveData.value ?: hashMapOf()
-        currentMap.toMutableMap()[index] = text
-        additionalsLiveData.value = currentMap
+        val newMap = additionalsLiveData.value?.toMutableMap() ?: mutableMapOf()
+        newMap[index] = text
+        additionalsLiveData.value = newMap
     }
 
     fun onOfflineFormMessageChanged(message: String) {

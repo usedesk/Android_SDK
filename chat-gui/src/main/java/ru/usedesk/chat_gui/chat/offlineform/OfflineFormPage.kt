@@ -14,6 +14,7 @@ internal class OfflineFormPage : UsedeskFragment() {
 
     private val viewModel: OfflineFormViewModel by viewModels()
 
+    private var rootView: View? = null
     private lateinit var binding: Binding
     private lateinit var fieldsAdapter: OfflineFormFieldsAdapter
 
@@ -25,13 +26,14 @@ internal class OfflineFormPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
+        if (rootView == null) {
             binding = inflateItem(inflater,
                     container,
                     R.layout.usedesk_page_offline_form,
                     R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
                 Binding(rootView, defaultStyleId)
             }
+            rootView = binding.rootView
 
             fieldsAdapter = OfflineFormFieldsAdapter(binding.lAdditional, viewModel) {
                 val items = (viewModel.offlineFormSettingsLiveData.value?.topics?.toTypedArray()
@@ -54,15 +56,15 @@ internal class OfflineFormPage : UsedeskFragment() {
     }
 
     private fun onLiveData() {
+        viewModel.offlineFormSettingsLiveData.observe(viewLifecycleOwner) {
+            fieldsAdapter.init(it)
+        }
+
         viewModel.offlineFormStateLiveData.observe(viewLifecycleOwner) {
             onState(it)
         }
 
         fieldsAdapter.onLiveData(viewModel, viewLifecycleOwner)
-    }
-
-    fun init() {
-        fieldsAdapter.init()
     }
 
     private fun onSuccessfully() {

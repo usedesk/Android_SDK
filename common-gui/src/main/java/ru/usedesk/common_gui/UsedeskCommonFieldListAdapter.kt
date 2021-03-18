@@ -5,18 +5,20 @@ import android.view.View
 import android.widget.TextView
 
 class UsedeskCommonFieldListAdapter(
-        private val binding: Binding,
-        onClickListener: () -> Unit
+        private val binding: Binding
 ) {
     private val colorTitle = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
     private val colorRequired = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
 
     init {
+        setTitle("")
+        setText("")
+    }
+
+    fun setOnClickListener(onClickListener: () -> Unit) {
         binding.rootView.setOnClickListener {
             onClickListener()
         }
-        setTitle("")
-        setText("")
     }
 
     fun setTitle(title: String, required: Boolean = false) {

@@ -49,7 +49,7 @@ internal class InitChatResponseConverter(
             val required = callbackSettings.topicsRequired == 1
             UsedeskOfflineFormSettings(
                     noOperators == true,
-                    workType,
+                    UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT,//TODO:DEBUG //workType,
                     callbackSettings.callbackTitle,
                     callbackSettings.callbackGreeting,
                     customFields,

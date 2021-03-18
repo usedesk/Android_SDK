@@ -207,12 +207,36 @@ internal class MessagesAdapter(
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
-            val avatarImageId = agentBinding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_message_avatar_image)
-                    .getId(R.attr.usedesk_drawable_1)
+            val avatarImageId: Int
+            val visibleState: Int
+            val invisibleState: Int
 
-            setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
-            agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
+            agentBinding.styleValues.getStyleValues(R.attr.usedesk_chat_message_avatar_image).run {
+                avatarImageId = getId(R.attr.usedesk_drawable_1)
+                val visibility = listOf(View.VISIBLE, View.INVISIBLE, View.GONE)
+                        .getOrNull(getInt(android.R.attr.visibility))
+                when (visibility) {
+                    View.INVISIBLE -> {
+                        visibleState = View.INVISIBLE
+                        invisibleState = View.INVISIBLE
+                    }
+                    View.GONE -> {
+                        visibleState = View.GONE
+                        invisibleState = View.GONE
+                    }
+                    else -> {
+                        visibleState = View.VISIBLE
+                        invisibleState = View.INVISIBLE
+                        setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
+                    }
+                }
+            }
+
+            agentBinding.ivAvatar.visibility = if (!isSameAgent(messageAgent, position + 1)) {
+                visibleState
+            } else {
+                invisibleState
+            }
 
             val lastOfGroup = position == items.size - 1 ||
                     items.getOrNull(position + 1) is UsedeskMessageClient

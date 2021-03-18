@@ -6,17 +6,22 @@
     android:layout_height="match_parent"
     tools:theme="@style/Usedesk.Chat.Screen">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_messages"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_gravity="bottom"
         app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:itemCount="3"
-        tools:listitem="@layout/usedesk_item_chat_message_text_client" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_messages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            tools:itemCount="1"
+            tools:listitem="@layout/usedesk_item_chat_message_text_client" />
+    </FrameLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/l_message_panel"

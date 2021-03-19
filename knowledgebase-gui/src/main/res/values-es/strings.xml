@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usedesk_knowledgebase">Base de conocimientos</string>
+    <string name="usedesk_cancel">Cancelar</string>
+    <string name="usedesk_articles_not_found">No se encontraron artículos</string>
+    <string name="usedesk_rating_question">¿Te resultó útil este artículo</string>
+    <string name="usedesk_rating_whats_wrong">Háganos saber cómo podríamos hacerlo mejor</string>
+    <string name="usedesk_rating_thanks">¡Gracias por revisar!</string>
+    <string name="usedesk_yes">Si</string>
+    <string name="usedesk_no">No</string>
+</resources>

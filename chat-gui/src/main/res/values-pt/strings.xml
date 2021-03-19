@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usedesk_offline_form_send_successed">Sua mensagem foi enviada.\nNós responderemos  dentro de um dia útil.</string>
+    <string name="usedesk_offline_form_send_failed">Falha ao enviar o seu pedido. Por favor, tente novamente.</string>
+    <string name="usedesk_name">Nome</string>
+    <string name="usedesk_email">Enviar</string>
+    <string name="usedesk_message">Mensagem</string>
+    <string name="usedesk_close">Fechar</string>
+    <string name="usedesk_message_input">Escrever…</string>
+    <string name="usedesk_loading">Carregando…</string>
+    <string name="usedesk_today">Hoje</string>
+    <string name="usedesk_yesterday">Ontem</string>
+    <string name="usedesk_download_started">Download inciado</string>
+    <string name="usedesk_download_failed">Falha no Download</string>
+    <string name="usedesk_chat">Chat</string>
+    <string name="usedesk_feedback_thanks">Obrigado pelo seu feedback!</string>
+    <string name="usedesk_gallery">Galeria</string>
+    <string name="usedesk_camera">Сâmera</string>
+    <string name="usedesk_storage">Almacenamiento</string>
+</resources>

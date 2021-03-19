@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_knowledgebase">База Знаний</string>
-    <string name="usedesk_cancel">Отмена</string>
-    <string name="usedesk_articles_not_found">Статьи не найдены</string><!--TODO:not found-->
-    <string name="usedesk_rating_question">Была ли статья полезна?</string>
-    <string name="usedesk_rating_whats_wrong">Посоветуйте, как нам улучшить статью?</string>
-    <string name="usedesk_rating_thanks">Спасибо за отзыв!</string>
-    <string name="usedesk_yes">Да</string>
-    <string name="usedesk_no">Нет</string>
+    <string name="usedesk_knowledgebase">Knowledge Base</string>
+    <string name="usedesk_cancel">Cancel</string>
+    <string name="usedesk_articles_not_found">No articles found</string>
+    <string name="usedesk_rating_question">Was this article helpful?</string>
+    <string name="usedesk_rating_whats_wrong">Let us know how we could do better?</string>
+    <string name="usedesk_rating_thanks">Thanks for review!</string>
+    <string name="usedesk_yes">Yes</string>
+    <string name="usedesk_no">No</string>
 </resources>

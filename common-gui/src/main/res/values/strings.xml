@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_settings">Настройки</string><!--TODO:not found-->
-    <string name="usedesk_need_permissions">Необходимы разрешения</string><!--TODO:not found-->
-    <string name="usedesk_need_permission">Необходимо разрешение</string><!--TODO:not found-->
-    <string name="usedesk_send">Отправить</string>
+    <string name="usedesk_settings">Settings</string>
+    <string name="usedesk_need_permission">Permission required</string>
+    <string name="usedesk_send">Send</string>
 </resources>

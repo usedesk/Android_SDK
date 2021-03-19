@@ -27,7 +27,8 @@ internal class ChatInteractor(
 
     private var token: String? = null
     private var signature: String? = null
-    private var initClientMessage: String? = null
+    private var initClientMessage: String? = configuration.clientInitMessage
+    private var initClientOfflineForm: String? = null
 
     private var actionListeners = mutableSetOf<IUsedeskActionListener>()
     private var actionListenersRx = mutableSetOf<IUsedeskActionListenerRx>()
@@ -159,15 +160,19 @@ internal class ChatInteractor(
         }
 
         override fun onSetEmailSuccess() {
-            initClientMessage?.also {
-                if (it.isNotEmpty()) {
-                    try {
-                        send(it)
-                        initClientMessage = ""
-                    } catch (e: Exception) {
-                        //nothing
-                    }
-                }
+            sendInitMessage()
+        }
+    }
+
+    private fun sendInitMessage() {
+        val initMessage = initClientOfflineForm ?: initClientMessage
+        initMessage?.let {
+            try {
+                send(it)
+                initClientMessage = null
+                initClientOfflineForm = null
+            } catch (e: Exception) {
+                //nothing
             }
         }
     }
@@ -401,7 +406,7 @@ internal class ChatInteractor(
     override fun send(offlineForm: UsedeskOfflineForm) {
         if (offlineFormToChat) {
             offlineForm.run {
-                initClientMessage = (listOf(clientName, clientEmail, subject)
+                initClientOfflineForm = (listOf(clientName, clientEmail, subject)
                         + offlineForm.additionalFields
                         + offlineForm.message)
                         .joinToString(separator = "\n")
@@ -544,13 +549,14 @@ internal class ChatInteractor(
         }
         onMessagesNew(filteredMessages, true)
 
-        val initClientMessage = initClientMessage ?: try {
+        val initClientMessageOld = try {
             userInfoRepository.getConfiguration().clientInitMessage
         } catch (ignore: UsedeskException) {
             null
         }
-        if (initClientMessage?.equals(configuration.clientInitMessage) == false) {
-            send(initClientMessage)
+        if (initClientMessage?.equals(initClientMessageOld) == true ||
+                initClientOfflineForm != null) {
+            initClientMessage = null
         }
         userInfoRepository.setConfiguration(configuration)
 

@@ -63,7 +63,11 @@ internal class OfflineFormSelectorAdapter(
             adapter.setTitle(items[index])
             adapter.setChecked(index == selectedIndex)
             adapter.setOnClickListener {
-                viewModel.onSelected(index)
+                viewModel.onSelected(if (selectedIndex != index) {
+                    index
+                } else {
+                    -1
+                })
             }
         }
     }

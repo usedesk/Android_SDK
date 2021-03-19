@@ -2,7 +2,7 @@
 <resources>
     <string name="usedesk_we_are_offline">Все операторы заняты. Оставьте сообщение, мы ответим вам на почту в течение 1 рабочего дня.</string>
     <string name="usedesk_offline_form_send_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
-    <string name="usedesk_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
+    <string name="usedesk_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string><!--TODO:not found-->
     <string name="usedesk_name">Имя</string>
     <string name="usedesk_email">Почта</string>
     <string name="usedesk_message">Сообщение</string>
@@ -12,11 +12,11 @@
     <string name="usedesk_loading">Загрузка…</string>
     <string name="usedesk_today">Сегодня</string>
     <string name="usedesk_yesterday">Вчера</string>
-    <string name="usedesk_download_started">Загрузка началась</string>
+    <string name="usedesk_download_started">Загрузка началась</string><!--TODO:not found-->
     <string name="usedesk_download_failed">Ошибка загрузки</string>
     <string name="usedesk_chat">Чат</string>
-    <string name="usedesk_feedback_thanks">Спасибо за ваш отзыв!</string>
+    <string name="usedesk_feedback_thanks">Спасибо за ваш отзыв!</string><!--TODO:not found-->
     <string name="usedesk_gallery">Галерея</string>
-    <string name="usedesk_camera">Камера</string>
-    <string name="usedesk_storage">Файлы</string>
+    <string name="usedesk_camera">Камера</string><!--TODO:not found-->
+    <string name="usedesk_storage">Файлы</string><!--TODO:not found-->
 </resources>

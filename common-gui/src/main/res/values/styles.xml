@@ -117,7 +117,7 @@
         <item name="usedesk_common_field_text_input_layout">@style/Usedesk.Common.Field.Text.InputLayout</item>
         <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
         <item name="usedesk_text_1">""</item>
-        <item name="usedesk_text_2">@string/usedesk_field_required_error</item>
+        <item name="usedesk_text_2">""</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
     </style>

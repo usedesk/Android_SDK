@@ -88,6 +88,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">18sp</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
@@ -128,6 +129,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginTop">12dp</item>
         <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:ellipsize">end</item>
         <item name="hintTextAppearance">@style/Usedesk.Common.Field.Text.InputLayout.FontSize</item>
         <item name="boxStrokeColor">@drawable/usedesk_text_input_layout_empty</item>
     </style>

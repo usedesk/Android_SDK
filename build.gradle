@@ -13,7 +13,7 @@ buildscript {
 
 allprojects {
     project.group = 'ru.usedesk'
-    project.version = '3.1.1'
+    project.version = '3.1.2'
 
     repositories {
         google()
@@ -22,7 +22,7 @@ allprojects {
 
         maven { url "https://jitpack.io" }
 
-        maven { url 'https://github.com/Uncreated/UsedeskAndroidSdkDebug/raw/sdk_2/' }
+        maven { url 'https://github.com/usedesk/Android_SDK_Maven/raw/master/' }
     }
 }
 

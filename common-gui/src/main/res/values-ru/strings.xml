@@ -4,7 +4,7 @@
     <string name="usedesk_need_permission">@string/usedesk_string_need_permission</string>
     <string name="usedesk_send">@string/usedesk_string_send</string>
 
-    <string name="usedesk_string_settings">Settings</string>
-    <string name="usedesk_string_need_permission">Permission required</string>
-    <string name="usedesk_string_send">Send</string>
+    <string name="usedesk_string_settings">Настройки</string>
+    <string name="usedesk_string_need_permission">Необходимо разрешение</string>
+    <string name="usedesk_string_send">Отправить</string>
 </resources>

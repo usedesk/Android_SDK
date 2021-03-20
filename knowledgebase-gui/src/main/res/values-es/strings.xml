@@ -9,12 +9,12 @@
     <string name="usedesk_yes">@string/usedesk_string_yes</string>
     <string name="usedesk_no">@string/usedesk_string_no</string>
 
-    <string name="usedesk_string_knowledgebase">Knowledge Base</string>
-    <string name="usedesk_string_cancel">Cancel</string>
-    <string name="usedesk_string_articles_not_found">No articles found</string>
-    <string name="usedesk_string_rating_question">Was this article helpful?</string>
-    <string name="usedesk_string_rating_whats_wrong">Let us know how we could do better?</string>
-    <string name="usedesk_string_rating_thanks">Thanks for review!</string>
-    <string name="usedesk_string_yes">Yes</string>
+    <string name="usedesk_string_knowledgebase">Base de conocimientos</string>
+    <string name="usedesk_string_cancel">Cancelar</string>
+    <string name="usedesk_string_articles_not_found">No se encontraron artículos</string>
+    <string name="usedesk_string_rating_question">¿Te resultó útil este artículo</string>
+    <string name="usedesk_string_rating_whats_wrong">Háganos saber cómo podríamos hacerlo mejor</string>
+    <string name="usedesk_string_rating_thanks">¡Gracias por revisar!</string>
+    <string name="usedesk_string_yes">Si</string>
     <string name="usedesk_string_no">No</string>
 </resources>

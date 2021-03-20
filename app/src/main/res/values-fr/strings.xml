@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">la UseDesk SDK</string>
+
+    <string name="title">la Configuration</string>
+    <string name="url_chat_hint">la Chat url</string>
+    <string name="url_offline_form_hint">la Offline form url</string>
+    <string name="url_to_send_file_hint">la Send file url</string>
+    <string name="url_api">la Api url</string>
+    <string name="company_id_hint">la Company ID</string>
+    <string name="account_id_hint">la Knowledge Base ID</string>
+    <string name="token_hint">la Token</string>
+    <string name="client_email_hint">la Client email</string>
+    <string name="client_name">la Client Name</string>
+    <string name="client_note">la Client Note</string>
+    <string name="client_phone">la Client Phone Number</string>
+    <string name="client_signature">la Client Signature</string>
+    <string name="client_additional_id">la Client Additional Id</string>
+    <string name="client_init_message">la Client Init Message</string>
+    <string name="custom_agent_name">la Custom Agent Name</string>
+    <string name="foreground_service_hint">la Foreground service</string>
+    <string name="kb_base_hint">la With KnowledgeBase</string>
+    <string name="kb_support_button">la With KnowledgeBase Support Button</string>
+    <string name="kb_article_rating">la With KnowledgeBase Article Rating</string>
+    <string name="button_go_to_sdk">la Go to sdk</string>
+    <string name="validation_empty_error">la Field required</string>
+    <string name="validation_email_error">la Invalid email</string>
+    <string name="validation_url_error">la Invalid url</string>
+    <string name="validation_phone_error">la Invalid phone number</string>
+
+    <string name="usedesk_offline_form_send_successed">la Your message has been sent.\nWe will reply to you within one business day.</string>
+    <string name="usedesk_offline_form_send_failed">la Failed to send your request. Please, try again.</string>
+    <string name="usedesk_name">la Name</string>
+    <string name="usedesk_email">la Email</string>
+    <string name="usedesk_message">la Message</string>
+    <string name="usedesk_close">la Close</string>
+    <string name="usedesk_message_input">la Text…</string>
+    <string name="usedesk_loading">la Loading…</string>
+    <string name="usedesk_today">la Today</string>
+    <string name="usedesk_yesterday">la Yesterday</string>
+    <string name="usedesk_download_started">la Download started</string>
+    <string name="usedesk_download_failed">la Download failed</string>
+    <string name="usedesk_chat">la Chat</string>
+    <string name="usedesk_feedback_thanks">la Thank you for your feedback!</string>
+    <string name="usedesk_gallery">la Gallery</string>
+    <string name="usedesk_camera">la Camera</string>
+    <string name="usedesk_storage">la Storage</string>
+    <string name="usedesk_knowledgebase">la Knowledge Base</string>
+    <string name="usedesk_cancel">la Cancel</string>
+    <string name="usedesk_articles_not_found">la No articles found</string>
+    <string name="usedesk_rating_question">la Was this article helpful?</string>
+    <string name="usedesk_rating_whats_wrong">la Let us know how we could do better?</string>
+    <string name="usedesk_rating_thanks">la Thanks for review!</string>
+    <string name="usedesk_yes">la Yes</string>
+    <string name="usedesk_no">la No</string>
+    <string name="usedesk_settings">la Settings</string>
+    <string name="usedesk_need_permission">la Permission required</string>
+    <string name="usedesk_send">la Send</string>
+</resources>

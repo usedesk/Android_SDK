@@ -26,4 +26,33 @@
     <string name="validation_email_error">Invalid email</string>
     <string name="validation_url_error">Invalid url</string>
     <string name="validation_phone_error">Invalid phone number</string>
+
+    <string name="usedesk_offline_form_send_successed">eng  Your message has been sent.\nWe will reply to you within one business day.</string>
+    <string name="usedesk_offline_form_send_failed">eng  Failed to send your request. Please, try again.</string>
+    <string name="usedesk_name">eng  Name</string>
+    <string name="usedesk_email">eng  Email</string>
+    <string name="usedesk_message">eng  Message</string>
+    <string name="usedesk_close">eng  Close</string>
+    <string name="usedesk_message_input">eng  Text…</string>
+    <string name="usedesk_loading">eng  Loading…</string>
+    <string name="usedesk_today">eng  Today</string>
+    <string name="usedesk_yesterday">eng  Yesterday</string>
+    <string name="usedesk_download_started">eng  Download started</string>
+    <string name="usedesk_download_failed">eng  Download failed</string>
+    <string name="usedesk_chat">eng  Chat</string>
+    <string name="usedesk_feedback_thanks">eng  Thank you for your feedback!</string>
+    <string name="usedesk_gallery">eng  Gallery</string>
+    <string name="usedesk_camera">eng  Camera</string>
+    <string name="usedesk_storage">eng  Storage</string>
+    <string name="usedesk_settings">eng  Settings</string>
+    <string name="usedesk_need_permission">eng  Permission required</string>
+    <string name="usedesk_send">eng  Send</string>
+    <string name="usedesk_knowledgebase">eng  Knowledge Base</string>
+    <string name="usedesk_cancel">eng  Cancel</string>
+    <string name="usedesk_articles_not_found">eng  No articles found</string>
+    <string name="usedesk_rating_question">eng  Was this article helpful?</string>
+    <string name="usedesk_rating_whats_wrong">eng  Let us know how we could do better?</string>
+    <string name="usedesk_rating_thanks">eng  Thanks for review!</string>
+    <string name="usedesk_yes">eng  Yes</string>
+    <string name="usedesk_no">eng  No</string>
 </resources>

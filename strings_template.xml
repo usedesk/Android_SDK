@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--Common-->
+    <string name="usedesk_settings">@string/usedesk_string_settings</string>
+    <string name="usedesk_need_permission">@string/usedesk_string_need_permission</string>
+    <string name="usedesk_send">@string/usedesk_string_send</string>
+    <!--Chat-->
     <string name="usedesk_offline_form_send_successed">@string/usedesk_string_offline_form_send_successed</string>
     <string name="usedesk_offline_form_send_failed">@string/usedesk_string_offline_form_send_failed</string>
     <string name="usedesk_name">@string/usedesk_string_name</string>
@@ -17,22 +22,13 @@
     <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
     <string name="usedesk_camera">@string/usedesk_string_camera</string>
     <string name="usedesk_storage">@string/usedesk_string_storage</string>
-
-    <string name="usedesk_string_offline_form_send_successed">Your message has been sent.\nWe will reply to you within one business day.</string>
-    <string name="usedesk_string_offline_form_send_failed">Failed to send your request. Please, try again.</string>
-    <string name="usedesk_string_name">Name</string>
-    <string name="usedesk_string_email">Email</string>
-    <string name="usedesk_string_message">Message</string>
-    <string name="usedesk_string_close">Close</string>
-    <string name="usedesk_string_message_input">Text…</string>
-    <string name="usedesk_string_loading">Loading…</string>
-    <string name="usedesk_string_today">Today</string>
-    <string name="usedesk_string_yesterday">Yesterday</string>
-    <string name="usedesk_string_download_started">Download started</string>
-    <string name="usedesk_string_download_failed">Download failed</string>
-    <string name="usedesk_string_chat">Chat</string>
-    <string name="usedesk_string_feedback_thanks">Thank you for your feedback!</string>
-    <string name="usedesk_string_gallery">Gallery</string>
-    <string name="usedesk_string_camera">Camera</string>
-    <string name="usedesk_string_storage">Storage</string>
+    <!--KnowledgeBase-->
+    <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
+    <string name="usedesk_cancel">@string/usedesk_string_cancel</string>
+    <string name="usedesk_articles_not_found">@string/usedesk_string_articles_not_found</string>
+    <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
+    <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
+    <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
+    <string name="usedesk_yes">@string/usedesk_string_yes</string>
+    <string name="usedesk_no">@string/usedesk_string_no</string>
 </resources>

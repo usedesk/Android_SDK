@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_knowledgebase">Base de conocimientos</string>
-    <string name="usedesk_cancel">Cancelar</string>
-    <string name="usedesk_articles_not_found">No se encontraron artículos</string>
-    <string name="usedesk_rating_question">¿Te resultó útil este artículo</string>
-    <string name="usedesk_rating_whats_wrong">Háganos saber cómo podríamos hacerlo mejor</string>
-    <string name="usedesk_rating_thanks">¡Gracias por revisar!</string>
-    <string name="usedesk_yes">Si</string>
-    <string name="usedesk_no">No</string>
+    <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
+    <string name="usedesk_cancel">@string/usedesk_string_cancel</string>
+    <string name="usedesk_articles_not_found">@string/usedesk_string_articles_not_found</string>
+    <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
+    <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
+    <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
+    <string name="usedesk_yes">@string/usedesk_string_yes</string>
+    <string name="usedesk_no">@string/usedesk_string_no</string>
+
+    <string name="usedesk_string_knowledgebase">Base de conocimientos</string>
+    <string name="usedesk_string_cancel">Cancelar</string>
+    <string name="usedesk_string_articles_not_found">No se encontraron artículos</string>
+    <string name="usedesk_string_rating_question">¿Te resultó útil este artículo</string>
+    <string name="usedesk_string_rating_whats_wrong">Háganos saber cómo podríamos hacerlo mejor</string>
+    <string name="usedesk_string_rating_thanks">¡Gracias por revisar!</string>
+    <string name="usedesk_string_yes">Si</string>
+    <string name="usedesk_string_no">No</string>
 </resources>

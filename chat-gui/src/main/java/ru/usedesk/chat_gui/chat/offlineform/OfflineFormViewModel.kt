@@ -38,7 +38,7 @@ internal class OfflineFormViewModel : UsedeskViewModel() {
                     return offlineFormExpectedObservable.subscribe {
                         offlineFormSettings.postValue(it)
                         val subjectField = OfflineFormList(
-                                it.topicsTitle ?: "",
+                                it.topicsTitle,
                                 it.topicsRequired,
                                 it.topics,
                                 -1

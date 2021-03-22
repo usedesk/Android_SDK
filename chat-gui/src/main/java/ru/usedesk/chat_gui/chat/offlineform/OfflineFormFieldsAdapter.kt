@@ -65,7 +65,7 @@ internal class OfflineFormFieldsAdapter(
             if (it != null) {
                 val oldItems = items
                 items = it
-                if (items.isEmpty()) {
+                if (oldItems.isEmpty()) {
                     notifyDataSetChanged()
                 } else {
                     oldItems.forEachIndexed { index, offlineFormItem ->

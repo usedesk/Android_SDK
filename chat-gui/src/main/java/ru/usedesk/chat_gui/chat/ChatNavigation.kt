@@ -48,7 +48,7 @@ internal class ChatNavigation(
                     hideKeyboard(this)
                 }
                 onFragmentChanged(fragment)
-            }.commit()
+            }.commitNow()
         }
     }
 
@@ -66,7 +66,7 @@ internal class ChatNavigation(
                 hideKeyboard(this)
             }
             onFragmentChanged(fragment)
-        }.commit()
+        }.commitNow()
     }
 
     fun onBackPressed(): Boolean {
@@ -79,7 +79,7 @@ internal class ChatNavigation(
                 val last = fragmentManager.fragments[fragmentManager.fragments.size - 2]
                 transaction.show(last)
                 onFragmentChanged(last)
-            }.commit()
+            }.commitNow()
             true
         }
     }

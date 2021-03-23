@@ -16,9 +16,13 @@ import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormFieldsAdapter(
         recyclerView: RecyclerView,
+        binding: OfflineFormPage.Binding,
         private val viewModel: OfflineFormViewModel,
         private val onSubjectClick: (items: List<String>, selectedIndex: Int) -> Unit
 ) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder>(), IUsedeskAdapter<OfflineFormViewModel> {
+
+    private val textFieldStyle = binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_text_field)
+    private val listFieldStyle = binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_list_field)
 
     private var items: List<OfflineFormItem> = listOf()
 
@@ -34,12 +38,12 @@ internal class OfflineFormFieldsAdapter(
         return when (viewType) {
             TYPE_TEXT -> TextViewHolder(inflateItem(parent,
                     R.layout.usedesk_item_field_text,
-                    R.style.Usedesk_Chat_Screen_Offline_Form_Text_Field) { rootView, defaultStyleId ->
+                    textFieldStyle) { rootView, defaultStyleId ->
                 UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
             })
             TYPE_LIST -> ListViewHolder(inflateItem(parent,
                     R.layout.usedesk_item_field_list,
-                    R.style.Usedesk_Chat_Screen_Offline_Form_List_Field) { rootView, defaultStyleId ->
+                    listFieldStyle) { rootView, defaultStyleId ->
                 UsedeskCommonFieldListAdapter.Binding(rootView, defaultStyleId)
             })
             else -> throw RuntimeException("Unknown list type")

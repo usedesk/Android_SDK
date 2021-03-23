@@ -39,6 +39,7 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
 
             adapter = OfflineFormSelectorAdapter(
                     binding.rvItems,
+                    binding,
                     viewModel,
                     items.asList(),
                     selectedIndex

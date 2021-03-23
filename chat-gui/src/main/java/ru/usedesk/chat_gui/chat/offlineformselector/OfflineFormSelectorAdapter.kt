@@ -11,10 +11,13 @@ import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormSelectorAdapter(
         recyclerView: RecyclerView,
+        binding: OfflineFormSelectorPage.Binding,
         private val viewModel: OfflineFormSelectorViewModel,
         private val items: List<String>,
         var selectedIndex: Int
 ) : RecyclerView.Adapter<OfflineFormSelectorAdapter.ViewHolder>(), IUsedeskAdapter<OfflineFormSelectorViewModel> {
+
+    private val itemStyle = binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_selector_checkbox)
 
     init {
         onSelected(selectedIndex)
@@ -25,8 +28,7 @@ internal class OfflineFormSelectorAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(inflateItem(parent, R.layout.usedesk_item_field_checkbox,
-                R.style.Usedesk_Common_Field_CheckBox) { rootView, defaultStyleId ->
+        return ViewHolder(inflateItem(parent, R.layout.usedesk_item_field_checkbox, itemStyle) { rootView, defaultStyleId ->
             UsedeskCommonFieldCheckBoxAdapter.Binding(rootView, defaultStyleId)
         })
     }

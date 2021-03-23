@@ -51,7 +51,7 @@ internal class OfflineFormPage : UsedeskFragment() {
                 }
             }
 
-            fieldsAdapter = OfflineFormFieldsAdapter(binding.rvFields, viewModel) { items, selectedIndex ->
+            fieldsAdapter = OfflineFormFieldsAdapter(binding.rvFields, binding, viewModel) { items, selectedIndex ->
                 getParentListener<IOnOfflineFormSelectorClick>()?.onOfflineFormSelectorClick(items, selectedIndex)
             }
 

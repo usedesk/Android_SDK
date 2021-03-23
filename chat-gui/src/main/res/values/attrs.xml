@@ -70,6 +70,5 @@
     <attr name="usedesk_chat_screen_offline_form_message" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_text_field" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_list_field" format="reference" />
-
     <attr name="usedesk_chat_screen_offline_form_selector_checkbox" format="reference" />
 </resources>

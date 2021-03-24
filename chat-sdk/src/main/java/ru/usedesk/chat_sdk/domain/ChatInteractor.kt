@@ -246,9 +246,8 @@ internal class ChatInteractor(
             if (!isInited) {
                 newMessageSubject.onNext(message)
             }
-
-            messagesSubject.onNext(lastMessages)
         }
+        messagesSubject.onNext(lastMessages)
     }
 
     private fun runTimeout(message: UsedeskMessage) {

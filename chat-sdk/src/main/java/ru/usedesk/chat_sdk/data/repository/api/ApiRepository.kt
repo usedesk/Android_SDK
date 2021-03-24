@@ -2,6 +2,7 @@ package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
@@ -154,19 +155,21 @@ internal class ApiRepository(
                       offlineForm: UsedeskOfflineForm) {
         try {
             doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
-                val customFields = offlineForm.additionalFields.mapIndexed { index, text ->
-                    ",\n  \"custom_field_${index + 1}\":\"${getCorrectStringValue(text)}\""
-                }.joinToString(separator = "")
-                val request = "{\n" +
-                        "  \"email\": \"${getCorrectStringValue(offlineForm.clientEmail)}\",\n" +
-                        "  \"name\": \"${getCorrectStringValue(offlineForm.clientName)}\",\n" +
-                        "  \"company_id\": \"${getCorrectStringValue(companyId)}\",\n" +
-                        "  \"message\": \"${getCorrectStringValue(offlineForm.message)}\",\n" +
-                        "  \"additionalParameters\": {\n" +
-                        "    \"subject\": \"${getCorrectStringValue(offlineForm.subject)}\"\n" +
-                        "  }" + customFields +
-                        "\n}"
-                it.sendOfflineForm(request)
+                val params = mapOf(
+                        "email" to getCorrectStringValue(offlineForm.clientEmail),
+                        "name" to getCorrectStringValue(offlineForm.clientName),
+                        "company_id" to getCorrectStringValue(companyId),
+                        "message" to getCorrectStringValue(offlineForm.message),
+                        "topic" to getCorrectStringValue(offlineForm.topic)
+                )
+                val customFields = offlineForm.fields.map { field ->
+                    field.key to getCorrectStringValue(field.value)
+                }
+                val json = JsonObject()
+                (params + customFields).forEach { param ->
+                    json.addProperty(param.key, param.value)
+                }
+                it.sendOfflineForm(json)
             }
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)

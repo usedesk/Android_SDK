@@ -2,18 +2,19 @@ package ru.usedesk.chat_sdk.entity
 
 class UsedeskOfflineFormSettings(
         val noOperators: Boolean,
-        var workType: WorkType,
-        var callbackTitle: String = "",
-        var callbackGreeting: String = "",
-        var customFields: List<CustomField> = listOf(),
-        var topics: List<String> = listOf(),
-        var topicsTitle: String = "",
-        var topicsRequired: Boolean = false
+        val workType: WorkType,
+        val callbackTitle: String = "",
+        val callbackGreeting: String = "",
+        val fields: List<CustomField> = listOf(),
+        val topics: List<String> = listOf(),
+        val topicsTitle: String = "",
+        val topicsRequired: Boolean = false
 ) {
     class CustomField(
-            var required: Boolean,
-            var checked: Boolean,
-            var placeholder: String
+            val key: String,
+            val required: Boolean,
+            val checked: Boolean,
+            val placeholder: String
     )
 
     enum class WorkType {

@@ -3,6 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import toothpick.InjectConstructor
@@ -88,6 +89,7 @@ internal class ConfigurationLoader(
                         urlOfflineForm,
                         "https://secure.usedesk.ru/uapi/v1/send_file",
                         companyId,
+                        "",
                         null,
                         clientEmail,
                         clientName,
@@ -96,13 +98,22 @@ internal class ConfigurationLoader(
                         clientAdditionalId?.toLongOrNull(),
                         clientInitMessage)
             }
+        } else if (oldVersion == 2) {
+            return try {
+                val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
+                val json = gson.fromJson(jsonRaw, JsonObject::class.java)
+                json.addProperty("channelId", "")
+                return gson.fromJson(json, UsedeskChatConfiguration::class.java)
+            } catch (e: Exception) {
+                null
+            }
         }
 
         return null
     }
 
     companion object {
-        private const val CURRENT_VERSION = 2
+        private const val CURRENT_VERSION = 3
 
         private const val PREF_NAME = "usedeskSdkConfiguration"
 

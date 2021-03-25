@@ -9,6 +9,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         val urlOfflineForm: String = "https://secure.usedesk.ru/",
         val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val companyId: String,
+        val channelId: String,
         val clientSignature: String? = null,
         val clientEmail: String? = null,
         val clientName: String? = null,
@@ -17,6 +18,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         val clientAdditionalId: Long? = null,
         val clientInitMessage: String? = null
 ) {
+    fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 
     fun serialize(intent: Intent) {
         intent.putExtra(CONFIGURATION_KEY, Gson().toJson(this))
@@ -28,6 +30,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
                 validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
                 validUrlToSendFile = UsedeskValidatorUtil.isValidUrlNecessary(urlToSendFile),
                 validCompanyId = companyId.isNotEmpty(),
+                validChannelId = channelId.isNotEmpty(),
                 validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
                 validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
         )
@@ -56,6 +59,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
             val validUrlOfflineForm: Boolean = false,
             val validUrlToSendFile: Boolean = false,
             val validCompanyId: Boolean = false,
+            val validChannelId: Boolean = false,
             val validClientEmail: Boolean = false,
             val validClientPhoneNumber: Boolean = false
     ) {
@@ -64,6 +68,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
                     && validUrlOfflineForm
                     && validUrlToSendFile
                     && validCompanyId
+                    && validChannelId
                     && validClientEmail
                     && validClientPhoneNumber
         }

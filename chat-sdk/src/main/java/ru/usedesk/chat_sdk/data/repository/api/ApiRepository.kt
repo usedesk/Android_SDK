@@ -95,7 +95,7 @@ internal class ApiRepository(
                          configuration: UsedeskChatConfiguration,
                          eventListener: IApiRepository.EventListener) {
         this.eventListener = eventListener
-        socketApi.connect(url, token, configuration.companyId, socketEventListener)
+        socketApi.connect(url, token, configuration.getCompanyAndChannel(), socketEventListener)
     }
 
     override fun init(configuration: UsedeskChatConfiguration,

@@ -189,7 +189,7 @@ internal class ChatInteractor(
                 signature = this.configuration.clientSignature
             }
         } else if (configuration != null
-                && this.configuration.companyId == configuration.companyId
+                && this.configuration.getCompanyAndChannel() == configuration.getCompanyAndChannel()
                 && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
                         || isFieldEquals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
                         || isFieldEquals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)
@@ -412,7 +412,7 @@ internal class ChatInteractor(
                 chatInited?.let { onChatInited(it) }
             }
         } else {
-            apiRepository.send(configuration, configuration.companyId, offlineForm)
+            apiRepository.send(configuration, configuration.getCompanyAndChannel(), offlineForm)
         }
     }
 

@@ -68,6 +68,7 @@ public class MainViewModel extends ViewModel {
                     urlOfflineForm,
                     urlToSendFile,
                     configuration.getCompanyId(),
+                    configuration.getChannelId(),
                     configuration.getClientSignature(),
                     configuration.getClientEmail(),
                     configuration.getClientName(),

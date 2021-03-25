@@ -6,6 +6,7 @@ data class Configuration(
         val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val urlApi: String = "https://api.usedesk.ru/",
         val companyId: String = "153712",
+        val channelId: String = "6202",
         val accountId: String = "4",
         val token: String = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75",
         val clientSignature: String = "",

@@ -7,6 +7,7 @@
     <string name="url_to_send_file_hint">Send file url</string>
     <string name="url_api">Api url</string>
     <string name="company_id_hint">Company ID</string>
+    <string name="channel_id_hint">Channel ID</string>
     <string name="account_id_hint">Knowledge Base ID</string>
     <string name="token_hint">Token</string>
     <string name="client_email_hint">Client email</string>

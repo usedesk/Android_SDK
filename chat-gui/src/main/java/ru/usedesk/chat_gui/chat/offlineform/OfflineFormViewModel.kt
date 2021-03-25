@@ -37,25 +37,29 @@ internal class OfflineFormViewModel : UsedeskViewModel() {
                 ): Disposable? {
                     return offlineFormExpectedObservable.subscribe {
                         offlineFormSettings.postValue(it)
-                        val subjectField = OfflineFormList(
+                        val subjectField = OfflineFormList("topic",
                                 it.topicsTitle,
                                 it.topicsRequired,
                                 it.topics,
                                 -1
                         )
-                        val additionalFields = it.customFields.map { customField ->
-                            OfflineFormText(customField.placeholder,
+                        val additionalFields = it.fields.map { customField ->
+                            OfflineFormText(customField.key,
+                                    customField.placeholder,
                                     customField.required,
                                     "")
                         }
                         val configuration = UsedeskChatSdk.requireConfiguration()
-                        val nameField = OfflineFormText(nameTitle,
+                        val nameField = OfflineFormText("name",
+                                nameTitle,
                                 true,
                                 configuration.clientName ?: "")
-                        val emailField = OfflineFormText(emailTitle,
+                        val emailField = OfflineFormText("email",
+                                emailTitle,
                                 true,
                                 configuration.clientEmail ?: "")
-                        val messageField = OfflineFormText(messageTitle,
+                        val messageField = OfflineFormText("message",
+                                messageTitle,
                                 true,
                                 "")
                         val fields = listOf(nameField, emailField, subjectField) +
@@ -80,8 +84,8 @@ internal class OfflineFormViewModel : UsedeskViewModel() {
                 val subjectField = it[2] as OfflineFormList
                 val subject = subjectField.items.getOrNull(subjectField.selected) ?: ""
                 val message = (it.last() as OfflineFormText).text
-                val additionalFields = it.drop(3).dropLast(1).map {
-                    (it as OfflineFormText).text
+                val additionalFields = it.drop(3).dropLast(1).map { field ->
+                    UsedeskOfflineForm.Field(field.key, field.title, (field as OfflineFormText).text)
                 }
                 val offlineForm = UsedeskOfflineForm(
                         name,
@@ -128,7 +132,7 @@ internal class OfflineFormViewModel : UsedeskViewModel() {
     fun onTextFieldChanged(index: Int, text: String) {
         val newFields = fieldsLiveData.value!!.toMutableList()
         val oldField = newFields[index]
-        newFields[index] = OfflineFormText(oldField.title, oldField.required, text)
+        newFields[index] = OfflineFormText(oldField.key, oldField.title, oldField.required, text)
         fieldsLiveData.value = newFields
         sendEnabledLiveData.value = isFieldsValid(newFields)
     }
@@ -136,7 +140,7 @@ internal class OfflineFormViewModel : UsedeskViewModel() {
     fun onSubjectIndexChanged(index: Int) {
         val newFields = fieldsLiveData.value!!.toMutableList()
         val oldField = newFields[2] as OfflineFormList
-        newFields[2] = OfflineFormList(oldField.title, oldField.required, oldField.items, index)
+        newFields[2] = OfflineFormList(oldField.key, oldField.title, oldField.required, oldField.items, index)
         fieldsLiveData.value = newFields
         sendEnabledLiveData.value = isFieldsValid(newFields)
     }

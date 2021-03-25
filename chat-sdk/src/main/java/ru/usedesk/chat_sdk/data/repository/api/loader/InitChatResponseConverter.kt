@@ -33,16 +33,18 @@ internal class InitChatResponseConverter(
             val workType = UsedeskOfflineFormSettings.WorkType.values().firstOrNull {
                 it.name.equals(callbackSettings.workType ?: "", ignoreCase = true)
             } ?: UsedeskOfflineFormSettings.WorkType.NEVER
-            val customFields = callbackSettings.customFields?.mapNotNull { customField ->
+            val customFields = callbackSettings.customFields?.mapIndexed { index, customField ->
                 convertOrNull {
                     val required = customField!!.required == true
                     UsedeskOfflineFormSettings.CustomField(
+                            "custom_field_$index",
                             required,
                             customField.checked ?: false,
                             customField.placeholder ?: ""
                     )
                 }
-            }?.filter {
+            }?.filterNotNull(
+            )?.filter {
                 it.checked
             } ?: listOf()
             val required = callbackSettings.topicsRequired == 1

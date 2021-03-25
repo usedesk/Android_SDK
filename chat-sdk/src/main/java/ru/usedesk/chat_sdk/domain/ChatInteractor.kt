@@ -189,7 +189,7 @@ internal class ChatInteractor(
                 signature = this.configuration.clientSignature
             }
         } else if (configuration != null
-                && this.configuration.companyId == configuration.companyId
+                && this.configuration.getCompanyAndChannel() == configuration.getCompanyAndChannel()
                 && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
                         || isFieldEquals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
                         || isFieldEquals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)
@@ -246,9 +246,8 @@ internal class ChatInteractor(
             if (!isInited) {
                 newMessageSubject.onNext(message)
             }
-
-            messagesSubject.onNext(lastMessages)
         }
+        messagesSubject.onNext(lastMessages)
     }
 
     private fun runTimeout(message: UsedeskMessage) {
@@ -406,14 +405,14 @@ internal class ChatInteractor(
     override fun send(offlineForm: UsedeskOfflineForm) {
         if (offlineFormToChat) {
             offlineForm.run {
-                initClientOfflineForm = (listOf(clientName, clientEmail, subject)
-                        + offlineForm.additionalFields
+                initClientOfflineForm = (listOf(clientName, clientEmail, topic)
+                        + offlineForm.fields
                         + offlineForm.message)
                         .joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
         } else {
-            apiRepository.send(configuration, configuration.companyId, offlineForm)
+            apiRepository.send(configuration, configuration.getCompanyAndChannel(), offlineForm)
         }
     }
 

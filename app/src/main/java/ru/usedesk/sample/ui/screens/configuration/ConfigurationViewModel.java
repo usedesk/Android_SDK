@@ -48,6 +48,7 @@ public class ConfigurationViewModel extends ViewModel {
                 configuration.getUrlOfflineForm(),
                 configuration.getUrlToSendFile(),
                 configuration.getCompanyId(),
+                configuration.getChannelId(),
                 configuration.getClientSignature(),
                 configuration.getClientEmail(),
                 configuration.getClientName(),

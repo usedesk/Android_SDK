@@ -1,6 +1,6 @@
-# Android Usedesk SDK (v3.1.4)
+# Android Usedesk SDK (v3.1.5)
 - [Подключение к проекту](#preparation)
-- [Локализация]
+- [Локализация](#gui_localization)
 - [Чат](#chat)
   - [Конфигурация](#chat_configuration)
   - [Использование с GUI](#chat_gui)
@@ -9,7 +9,6 @@
   - [Конфигурация](#knowledge_base_configuration)
   - [Использование с GUI](#knowledge_base_gui)
   - [Использование без GUI](#knowledge_base_sdk)
--
 - [Список изменений](#change_list)
 
 <a name="preparation"></a>
@@ -65,10 +64,11 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
-| urlChat | String | Адрес сервера Чата |
-| urlOfflineForm | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
-| urlToSendFile | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
-| companyId | String | Идентификатор компании |
+| urlChat \* | String | Адрес сервера Чата |
+| urlOfflineForm \* | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
+| urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
+| companyId \* | String | Идентификатор компании |
+| channelId \* | String | Идентификатор канала (добавлен в **v3.1.5**) |
 | clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
@@ -76,6 +76,8 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | clientPhoneNumber | Long? | Телефонный номер клиента |
 | clientAdditionalId | Long? | Дополнительный идентификатор клиента |
 | clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |
+
+\* - обязательный параметр
 
 Для кастомизации локальных уведомлений нужно создать 2 собственных класса:
 - Сервис, унаследованный от [UsedeskSimpleNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskSimpleNotificationsService.kt) (обычный сервис) или [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt) (foreground сервис). Где можно переопределить некоторые методы:
@@ -154,7 +156,7 @@ fun onBackPressed() {
 ```
 
 <a name="chat_gui_files"></a>
-Для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
+Начиная с **v3.0.10** для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
 
 ```
 <provider
@@ -256,11 +258,13 @@ UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
-| urlApi | String | Адрес api сервера. Стандартное значение `https://api.usedesk.ru/` |
-| accountId | String | Идентификатор Базы Знаний в системе |
-| token | String | Токен доступа к API |
+| urlApi \*| String | Адрес api сервера. Стандартное значение `https://api.usedesk.ru/` |
+| accountId \*| String | Идентификатор Базы Знаний в системе |
+| token \*| String | Токен доступа к API |
 | clientEmail | String? | Email клиента |
 | clientName | String? | Имя клиента |
+
+\* - обязательный параметр
 
 <a name="knowledge_base_gui"></a>
 ### Использование с GUI
@@ -319,7 +323,7 @@ UsedeskKnowledgeBaseSdk.release()
 <a name="gui_localization"></a>
 ### Локализация GUI
 
-SDK поддерживает следующие языки:
+Начиная с **v3.1.5** SDK поддерживает следующие языки:
 - английский (по умолчанию),
 - русский,
 - испанский,
@@ -385,10 +389,11 @@ SDK поддерживает следующие языки:
   - Отправляемые файлы сразу отображаются в чате
   - Максимальный размер отправляемых файлов ограничен в 100мб
   - **Внимание!** В README.md [дополнен раздел](#chat_gui_files) "Чат -> Использование с GUI"
-- v3.1.4
+- v3.1.5
   - Переработана вкладка Формы Обратной Связи, добавлены аргументы и стили кастомизации для новых элементов и удалены старые
   - Изменена логика отображения внутренних вкладок в окне Чата без затрагивания кастомизации
   - Исправлена ошибка скрытия аватарки агента, теперь параметр visibility в стиле обрабатывается корректно
   - Добавлены Английский, Испанский и Португальский языки, а также шаблон строковых ресурсов
   - В README.md [добавлен раздел](#gui_localization) "Локализация"
   - Исправлена инициализации чата в случае отсутствия сообщений
+  - **Внимание!** В конфигурацию чата добавлен **обязательный** параметр `channelId`

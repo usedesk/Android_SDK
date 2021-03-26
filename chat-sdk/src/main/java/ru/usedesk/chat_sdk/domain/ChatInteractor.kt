@@ -405,8 +405,13 @@ internal class ChatInteractor(
     override fun send(offlineForm: UsedeskOfflineForm) {
         if (offlineFormToChat) {
             offlineForm.run {
+                val fields = offlineForm.fields.filter { field ->
+                    field.value.isNotEmpty()
+                }.map { field ->
+                    field.value
+                }
                 initClientOfflineForm = (listOf(clientName, clientEmail, topic)
-                        + offlineForm.fields
+                        + fields
                         + offlineForm.message)
                         .joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }

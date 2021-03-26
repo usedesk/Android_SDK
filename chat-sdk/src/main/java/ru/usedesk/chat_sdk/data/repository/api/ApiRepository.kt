@@ -162,7 +162,9 @@ internal class ApiRepository(
                         "message" to getCorrectStringValue(offlineForm.message),
                         "topic" to getCorrectStringValue(offlineForm.topic)
                 )
-                val customFields = offlineForm.fields.map { field ->
+                val customFields = offlineForm.fields.filter { field ->
+                    field.value.isNotEmpty()
+                }.map { field ->
                     field.key to getCorrectStringValue(field.value)
                 }
                 val json = JsonObject()

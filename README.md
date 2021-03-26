@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.1.5)
+# Android Usedesk SDK (v3.1.6)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -14,7 +14,7 @@
 <a name="preparation"></a>
 ## Подключение к проекту
 
-Минимальная версия SDK - **19**
+Минимальная версия **Android 4.4 (API 19)**
 
 **[Chat SDK](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/)** - библиотека для работы с чатом.
 
@@ -68,7 +68,7 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | urlOfflineForm \* | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
 | urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
 | companyId \* | String | Идентификатор компании |
-| channelId \* | String | Идентификатор канала (добавлен в **v3.1.5**) |
+| channelId \* | String | Идентификатор канала (добавлен в **v3.1.6**) |
 | clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
@@ -213,11 +213,12 @@ UsedeskChatSdk.release(false)
 | Метод | Параметры | Описание события |
 |---------|---------------|-----------------------|
 | onConnectedState | Boolean | Состояние подключения к серверу (true - подключено, false - разорвано) |
-| onMessageReceived | UsedeskMessage | Новое сообщение |
-| onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из в чата на момент подключения |
-| onMessageUpdated | UsedeskMessage | Обновление уже полученного сообщения |
+| onMessageReceived | UsedeskMessage | Каждое сообщение |
+| onNewMessageReceived | UsedeskMessage | Каждое новое сообщение |
+| onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из чата при каждом изменении |
+| onMessageUpdated | UsedeskMessage | Обновление полученного ранее сообщения |
 | onFeedbackReceived | - | Отзыв доставлен |
-| onOfflineFormExpected | UsedeskChatConfiguration | Ожидается оффлайн форма |
+| onOfflineFormExpected | UUsedeskOfflineFormSettings| Ожидается Форма Обратной Связи |
 | onException | UsedeskException | Возникшее исключение |
 
 [IUsedeskActionListenerRx](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListenerRx.kt) - класс для прослушивания событий чата:
@@ -225,12 +226,12 @@ UsedeskChatSdk.release(false)
 | Метод | Параметры | Описание события |
 |---------|---------------|-----------------------|
 | onConnectedStateObservable | Observable&lt;Boolean&gt; | Состояние подключения к серверу (true - подключено, false - разорвано) |
-| onMessageObservable | Observable&lt;UsedeskMessage&gt; | Обновлённое состояние уже полученного сообщения |
-| onNewMessageObservable | Observable&lt;UsedeskMessage&gt; | Отзыв доставлен |
-| onMessagesObservable | Observable&lt;List&lt;UsedeskMessage&gt;&gt; | Ожидается оффлайн форма |
-| onMessageUpdateObservable | Observable&lt;UsedeskMessage&gt; | Соединение разорвано |
-| onOfflineFormExpectedObservable | Observable&lt;UsedeskChatConfiguration&gt; | Возникшее исключение |
-| onFeedbackObservable | Observable&lt;UsedeskEvent&lt;Any?&gt;&gt; | Возникшее исключение |
+| onMessageObservable | Observable&lt;UsedeskMessage&gt; | Каждое сообщение |
+| onNewMessageObservable | Observable&lt;UsedeskMessage&gt; | Каждое новое сообщение |
+| onMessagesObservable | Observable&lt;List&lt;UsedeskMessage&gt;&gt; | Список сообщений из чата на момент подключения |
+| onMessageUpdateObservable | Observable&lt;UsedeskMessage&gt; | Обновление полученного ранее сообщения |
+| onFeedbackObservable | Observable&lt;UsedeskEvent&lt;Any?&gt;&gt; | Отзыв доставлен |
+| onOfflineFormExpectedObservable | Observable&lt;UsedeskOfflineFormSettings&gt; | Ожидается Форма Обратной Связи |
 | onExceptionObservable | Observable&lt;Exception&gt; | Возникшее исключение |
 
 Запуск сервиса уведомлений:
@@ -323,7 +324,7 @@ UsedeskKnowledgeBaseSdk.release()
 <a name="gui_localization"></a>
 ### Локализация GUI
 
-Начиная с **v3.1.5** SDK поддерживает следующие языки:
+Начиная с **v3.1.6** SDK поддерживает следующие языки:
 - английский (по умолчанию),
 - русский,
 - испанский,
@@ -389,7 +390,7 @@ UsedeskKnowledgeBaseSdk.release()
   - Отправляемые файлы сразу отображаются в чате
   - Максимальный размер отправляемых файлов ограничен в 100мб
   - **Внимание!** В README.md [дополнен раздел](#chat_gui_files) "Чат -> Использование с GUI"
-- v3.1.5
+- v3.1.6
   - Переработана вкладка Формы Обратной Связи, добавлены аргументы и стили кастомизации для новых элементов и удалены старые
   - Изменена логика отображения внутренних вкладок в окне Чата без затрагивания кастомизации
   - Исправлена ошибка скрытия аватарки агента, теперь параметр visibility в стиле обрабатывается корректно

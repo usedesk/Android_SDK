@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
+    <string name="usedesk_cancel">@string/usedesk_string_cancel</string>
+    <string name="usedesk_articles_not_found">@string/usedesk_string_articles_not_found</string>
+    <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
+    <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
+    <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
+    <string name="usedesk_yes">@string/usedesk_string_yes</string>
+    <string name="usedesk_no">@string/usedesk_string_no</string>
+
+    <string name="usedesk_string_knowledgebase">База Знаний</string>
+    <string name="usedesk_string_cancel">Отмена</string>
+    <string name="usedesk_string_articles_not_found">Статьи не найдены</string>
+    <string name="usedesk_string_rating_question">Была ли статья полезна?</string>
+    <string name="usedesk_string_rating_whats_wrong">Посоветуйте, как нам улучшить статью?</string>
+    <string name="usedesk_string_rating_thanks">Спасибо за отзыв!</string>
+    <string name="usedesk_string_yes">Да</string>
+    <string name="usedesk_string_no">Нет</string>
+</resources>

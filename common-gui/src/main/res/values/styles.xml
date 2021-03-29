@@ -52,4 +52,103 @@
         <item name="android:ellipsize">end</item>
         <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
     </style>
+
+    <style name="Usedesk.Common.Field.CheckBox" parent="">
+        <item name="usedesk_common_field_checkbox_text">@style/Usedesk.Common.Field.CheckBox.Text</item>
+        <item name="usedesk_common_field_checkbox_image">@style/Usedesk.Common.Field.CheckBox.Image</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.CheckBox.Text" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.CheckBox.Image" parent="">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="usedesk_drawable_1">@drawable/ic_unchecked</item>
+        <item name="usedesk_drawable_2">@drawable/ic_checked</item>
+    </style>
+
+    <style name="Usedesk.Common.List.Field" parent="">
+        <item name="usedesk_common_field_list_title_text">@style/Usedesk.Common.Field.List.Title.Text</item>
+        <item name="usedesk_common_field_list_value_text">@style/Usedesk.Common.Field.List.Value.Text</item>
+        <item name="usedesk_common_field_list_arrow_image">@style/Usedesk.Common.Field.List.Arrow.Image</item>
+        <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
+        <item name="usedesk_text_color_2">@color/usedesk_red</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.List.Title.Text" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.List.Value.Text" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.List.Arrow.Image" parent="">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:paddingTop">28dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="srcCompat">@drawable/usedesk_ic_arrow_angular</item>
+    </style>
+
+    <style name="Usedesk.Common.Text.Field" parent="">
+        <item name="usedesk_common_field_text_input_layout">@style/Usedesk.Common.Field.Text.InputLayout</item>
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
+        <item name="usedesk_text_1">""</item>
+        <item name="usedesk_text_2">""</item>
+        <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
+        <item name="usedesk_text_color_2">@color/usedesk_red</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.InputLayout" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="hintTextAppearance">@style/Usedesk.Common.Field.Text.InputLayout.FontSize</item>
+        <item name="boxStrokeColor">@drawable/usedesk_text_input_layout_empty</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.InputLayout.FontSize" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.EditText" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.Text.EditText.SingleLine">
+        <item name="android:singleLine">true</item>
+    </style>
 </resources>

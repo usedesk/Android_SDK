@@ -11,7 +11,7 @@ import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import toothpick.config.Module
 
-class CommonModule(
+class UsedeskCommonModule(
         appContext: Context
 ) : Module() {
 

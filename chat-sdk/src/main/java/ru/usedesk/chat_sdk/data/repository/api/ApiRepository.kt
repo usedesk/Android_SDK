@@ -2,9 +2,9 @@ package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
-import ru.usedesk.chat_sdk.data.repository.api.entity.OfflineFormRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
@@ -63,24 +63,24 @@ internal class ApiRepository(
 
         override fun onInited(initChatResponse: InitChatResponse) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
-            if (chatInited.noOperators) {
-                eventListener.onOfflineForm()
-            } else {
-                eventListener.onChatInited(chatInited)
+            chatInited.offlineFormSettings.run {
+                if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES && noOperators)
+                        || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
+                        || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {
+                    eventListener.onOfflineForm(this, chatInited)
+                } else {
+                    eventListener.onChatInited(chatInited)
+                }
             }
         }
 
         override fun onNew(messageResponse: MessageResponse) {
-            if (messageResponse.message?.payload?.noOperators == true) {
-                eventListener.onOfflineForm()
-            } else {
-                val messages = messageResponseConverter.convert(messageResponse.message)
-                messages.forEach {
-                    if (it is UsedeskMessageClient && it.id != it.localId) {
-                        eventListener.onMessageUpdated(it)
-                    } else {
-                        eventListener.onMessagesReceived(listOf(it))
-                    }
+            val messages = messageResponseConverter.convert(messageResponse.message)
+            messages.forEach {
+                if (it is UsedeskMessageClient && it.id != it.localId) {
+                    eventListener.onMessageUpdated(it)
+                } else {
+                    eventListener.onMessagesReceived(listOf(it))
                 }
             }
         }
@@ -95,7 +95,7 @@ internal class ApiRepository(
                          configuration: UsedeskChatConfiguration,
                          eventListener: IApiRepository.EventListener) {
         this.eventListener = eventListener
-        socketApi.connect(url, token, configuration.companyId, socketEventListener)
+        socketApi.connect(url, token, configuration.getCompanyAndChannel(), socketEventListener)
     }
 
     override fun init(configuration: UsedeskChatConfiguration,
@@ -155,16 +155,30 @@ internal class ApiRepository(
                       offlineForm: UsedeskOfflineForm) {
         try {
             doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
-                val request = OfflineFormRequest(companyId,
-                        offlineForm.clientName,
-                        offlineForm.clientEmail,
-                        offlineForm.message)
-                it.sendOfflineForm(request)
+                val params = mapOf(
+                        "email" to getCorrectStringValue(offlineForm.clientEmail),
+                        "name" to getCorrectStringValue(offlineForm.clientName),
+                        "company_id" to getCorrectStringValue(companyId),
+                        "message" to getCorrectStringValue(offlineForm.message),
+                        "topic" to getCorrectStringValue(offlineForm.topic)
+                )
+                val customFields = offlineForm.fields.filter { field ->
+                    field.value.isNotEmpty()
+                }.map { field ->
+                    field.key to getCorrectStringValue(field.value)
+                }
+                val json = JsonObject()
+                (params + customFields).forEach { param ->
+                    json.addProperty(param.key, param.value)
+                }
+                it.sendOfflineForm(json)
             }
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
+
+    private fun getCorrectStringValue(value: String) = value.replace("\"", "\\\"")
 
     override fun disconnect() {
         socketApi.disconnect()

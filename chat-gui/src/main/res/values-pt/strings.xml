@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usedesk_offline_form_send_successed">@string/usedesk_string_offline_form_send_successed</string>
+    <string name="usedesk_offline_form_send_failed">@string/usedesk_string_offline_form_send_failed</string>
+    <string name="usedesk_name">@string/usedesk_string_name</string>
+    <string name="usedesk_email">@string/usedesk_string_email</string>
+    <string name="usedesk_message">@string/usedesk_string_message</string>
+    <string name="usedesk_close">@string/usedesk_string_close</string>
+    <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
+    <string name="usedesk_loading">@string/usedesk_string_loading</string>
+    <string name="usedesk_today">@string/usedesk_string_today</string>
+    <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
+    <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
+    <string name="usedesk_download_failed">@string/usedesk_string_download_failed</string>
+    <string name="usedesk_chat">@string/usedesk_string_chat</string>
+    <string name="usedesk_feedback_thanks">@string/usedesk_string_feedback_thanks</string>
+    <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
+    <string name="usedesk_camera">@string/usedesk_string_camera</string>
+    <string name="usedesk_storage">@string/usedesk_string_storage</string>
+
+    <string name="usedesk_string_offline_form_send_successed">Sua mensagem foi enviada.\nNós responderemos  dentro de um dia útil.</string>
+    <string name="usedesk_string_offline_form_send_failed">Falha ao enviar o seu pedido. Por favor, tente novamente.</string>
+    <string name="usedesk_string_name">Nome</string>
+    <string name="usedesk_string_email">Enviar</string>
+    <string name="usedesk_string_message">Mensagem</string>
+    <string name="usedesk_string_close">Fechar</string>
+    <string name="usedesk_string_message_input">Escrever…</string>
+    <string name="usedesk_string_loading">Carregando…</string>
+    <string name="usedesk_string_today">Hoje</string>
+    <string name="usedesk_string_yesterday">Ontem</string>
+    <string name="usedesk_string_download_started">Download inciado</string>
+    <string name="usedesk_string_download_failed">Falha no Download</string>
+    <string name="usedesk_string_chat">Chat</string>
+    <string name="usedesk_string_feedback_thanks">Obrigado pelo seu feedback!</string>
+    <string name="usedesk_string_gallery">Galeria</string>
+    <string name="usedesk_string_camera">Сâmera</string>
+    <string name="usedesk_string_storage">Almacenamiento</string>
+</resources>

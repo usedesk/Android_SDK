@@ -72,6 +72,7 @@ public class ConfigurationScreen extends Fragment {
         initTil(binding.tilUrlToSendFile);
         initTil(binding.tilUrlApi);
         initTil(binding.tilCompanyId);
+        initTil(binding.tilChannelId);
         initTil(binding.tilAccountId);
         initTil(binding.tilToken);
         initTil(binding.tilClientEmail);
@@ -105,6 +106,7 @@ public class ConfigurationScreen extends Fragment {
                 binding.etUrlToSendFile.getText().toString(),
                 binding.etUrlApi.getText().toString(),
                 binding.etCompanyId.getText().toString(),
+                binding.etChannelId.getText().toString(),
                 binding.etAccountId.getText().toString(),
                 binding.etToken.getText().toString(),
                 binding.etClientSignature.getText().toString(),
@@ -136,6 +138,7 @@ public class ConfigurationScreen extends Fragment {
         binding.etUrlToSendFile.setText(configuration.getUrlToSendFile());
         binding.etUrlApi.setText(configuration.getUrlApi());
         binding.etCompanyId.setText(configuration.getCompanyId());
+        binding.etChannelId.setText(configuration.getChannelId());
         binding.etAccountId.setText(configuration.getAccountId());
         binding.etToken.setText(configuration.getToken());
         binding.etClientSignature.setText(configuration.getClientSignature());
@@ -219,6 +222,10 @@ public class ConfigurationScreen extends Fragment {
 
         showError(binding.tilCompanyId,
                 chatValidation.getValidCompanyId(),
+                R.string.validation_empty_error);
+
+        showError(binding.tilChannelId,
+                chatValidation.getValidChannelId(),
                 R.string.validation_empty_error);
 
         showError(binding.tilClientEmail,

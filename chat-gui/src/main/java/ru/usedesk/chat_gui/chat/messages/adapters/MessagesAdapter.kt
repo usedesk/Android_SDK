@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.adapters
+package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.text.Html
 import android.view.View
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.Corner
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.ChatViewModel
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
 import java.text.DateFormat
@@ -22,12 +22,12 @@ import java.util.*
 
 
 internal class MessagesAdapter(
-        private val viewModel: ChatViewModel,
+        private val viewModel: MessagesViewModel,
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
         private val onFileClick: (UsedeskFile) -> Unit,
         private val onUrlClick: (String) -> Unit
-) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<ChatViewModel> {
+) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<MessagesViewModel> {
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
@@ -46,7 +46,7 @@ internal class MessagesAdapter(
         }
     }
 
-    override fun onLiveData(viewModel: ChatViewModel, lifecycleOwner: LifecycleOwner) {
+    override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.messagesLiveData.observe(lifecycleOwner) { messages ->
             onMessages(messages ?: listOf())
         }
@@ -207,12 +207,36 @@ internal class MessagesAdapter(
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
 
-            val avatarImageId = agentBinding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_message_avatar_image)
-                    .getId(R.attr.usedesk_drawable_1)
+            val avatarImageId: Int
+            val visibleState: Int
+            val invisibleState: Int
 
-            setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
-            agentBinding.ivAvatar.visibility = visibleInvisible(!isSameAgent(messageAgent, position + 1))
+            agentBinding.styleValues.getStyleValues(R.attr.usedesk_chat_message_avatar_image).run {
+                avatarImageId = getId(R.attr.usedesk_drawable_1)
+                val visibility = listOf(View.VISIBLE, View.INVISIBLE, View.GONE)
+                        .getOrNull(getInt(android.R.attr.visibility))
+                when (visibility) {
+                    View.INVISIBLE -> {
+                        visibleState = View.INVISIBLE
+                        invisibleState = View.INVISIBLE
+                    }
+                    View.GONE -> {
+                        visibleState = View.GONE
+                        invisibleState = View.GONE
+                    }
+                    else -> {
+                        visibleState = View.VISIBLE
+                        invisibleState = View.INVISIBLE
+                        setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
+                    }
+                }
+            }
+
+            agentBinding.ivAvatar.visibility = if (!isSameAgent(messageAgent, position + 1)) {
+                visibleState
+            } else {
+                invisibleState
+            }
 
             val lastOfGroup = position == items.size - 1 ||
                     items.getOrNull(position + 1) is UsedeskMessageClient

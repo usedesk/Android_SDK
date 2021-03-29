@@ -55,20 +55,20 @@
 
     <attr name="usedesk_chat_screen_loading_text" format="reference" />
     <attr name="usedesk_chat_screen_message_edit_text" format="reference" />
+    <attr name="usedesk_chat_screen_attach_image" format="reference" />
+    <attr name="usedesk_chat_screen_send_image" format="reference" />
+    <attr name="usedesk_chat_screen_message_panel_background" format="reference" />
+    <attr name="usedesk_chat_screen_message_panel_divider_background" format="reference" />
+
     <attr name="usedesk_chat_screen_offline_form_description_text" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_send_text" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_name_input_layout" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_name_edit_text" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_email_input_layout" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_email_edit_text" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_message_input_layout" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_message_edit_text" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_send_failed_snackbar" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_action_enabled_background" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_action_disabled_background" format="reference" />
-    <attr name="usedesk_chat_screen_attach_image" format="reference" />
-    <attr name="usedesk_chat_screen_send_image" format="reference" />
-    <attr name="usedesk_chat_screen_offline_form_send_background" format="reference" />
-    <attr name="usedesk_chat_screen_message_panel_background" format="reference" />
-    <attr name="usedesk_chat_screen_message_panel_divider_background" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_name" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_email" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_message" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_text_field" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_list_field" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_selector_checkbox" format="reference" />
 </resources>

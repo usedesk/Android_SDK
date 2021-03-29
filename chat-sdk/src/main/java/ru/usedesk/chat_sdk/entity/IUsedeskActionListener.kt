@@ -13,7 +13,7 @@ interface IUsedeskActionListener {
 
     fun onFeedbackReceived()
 
-    fun onOfflineFormExpected(chatConfiguration: UsedeskChatConfiguration)
+    fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings)
 
     fun onException(usedeskException: Exception)
 }

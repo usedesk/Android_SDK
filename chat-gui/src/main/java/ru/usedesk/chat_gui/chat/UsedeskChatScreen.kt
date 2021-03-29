@@ -1,38 +1,46 @@
 package ru.usedesk.chat_gui.chat
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.adapters.MessagePanelAdapter
-import ru.usedesk.chat_gui.chat.adapters.MessagesAdapter
-import ru.usedesk.chat_gui.chat.adapters.OfflineFormAdapter
+import ru.usedesk.chat_gui.chat.messages.MessagesPage
+import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
+import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
+import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskToolbarAdapter
+import ru.usedesk.common_gui.inflateItem
 
-class UsedeskChatScreen : UsedeskFragment() {
+class UsedeskChatScreen : UsedeskFragment(),
+        IUsedeskOnAttachmentClickListener,
+        IOnOfflineFormSelectorClick,
+        IItemSelectChangeListener,
+        IOnGoToChatListener {
 
     private val viewModel: ChatViewModel by viewModels()
 
     private lateinit var binding: Binding
     private lateinit var attachment: UsedeskAttachmentDialog
 
-    private lateinit var messagePanelAdapter: MessagePanelAdapter
-    private lateinit var messagesAdapter: MessagesAdapter
-    private lateinit var offlineFormAdapter: OfflineFormAdapter
+    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
+    private var chatNavigation: ChatNavigation? = null
 
     private var cleared = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -45,7 +53,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 Binding(rootView, defaultStyleId)
             }
 
-            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+            toolbarAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
                 setBackButton {
                     requireActivity().onBackPressed()
                 }
@@ -54,9 +62,9 @@ class UsedeskChatScreen : UsedeskFragment() {
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
 
             init(agentName)
-
-            hideKeyboard(binding.rootView)
         }
+
+        chatNavigation?.fragmentManager = childFragmentManager
 
         onLiveData()
 
@@ -64,21 +72,28 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     private fun onLiveData() {
-        messagePanelAdapter.onLiveData(viewModel, viewLifecycleOwner)
-        messagesAdapter.onLiveData(viewModel, viewLifecycleOwner)
-        offlineFormAdapter.onLiveData(viewModel, viewLifecycleOwner)
-
-        viewModel.chatStateLiveData.observe(viewLifecycleOwner) {
-            onChatState(it)
-        }
         viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
             onException(it)
         }
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
+        viewModel.pageLiveData.observe(viewLifecycleOwner) {
+            it?.let { page ->
+                val title = when (page) {
+                    ChatNavigation.Page.LOADING,
+                    ChatNavigation.Page.MESSAGES -> {
+                        binding.styleValues.getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                                .getString(android.R.attr.text)
+                    }
+                    ChatNavigation.Page.OFFLINE_FORM -> {
+                        viewModel.offlineFormSettingsLiveData.value?.callbackTitle
+                    }
+                    ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
+                        viewModel.offlineFormSettingsLiveData.value?.topicsTitle
+                    }
+                }
+                toolbarAdapter.setTitle(title)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,72 +105,21 @@ class UsedeskChatScreen : UsedeskFragment() {
     private fun init(agentName: String?) {
         UsedeskChatSdk.init(requireContext())
 
-        messagePanelAdapter = MessagePanelAdapter(binding.messagePanel, viewModel) {
-            openAttachmentDialog()
-        }
-
-        messagesAdapter = MessagesAdapter(viewModel,
-                binding.rvMessages,
-                agentName,
-                { file ->
-                    getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
-                },
-                { url ->
-                    getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
-                            ?: this.onUrlClick(url)
-                })
-        offlineFormAdapter = OfflineFormAdapter(binding.offlineForm,
-                binding.styleValues,
-                viewModel,
-                {
-                    UsedeskOfflineFormSuccessDialog.newInstance(binding.rootView).apply {
-                        setOnDismissListener {
-                            requireActivity().onBackPressed()
-                        }
-                    }.show()
-                },
-                {
-                    val sendFailedStyleValues = binding.styleValues
-                            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed_snackbar)
-                    showSnackbarError(sendFailedStyleValues)
-                })
-
-        viewModel.init()
-    }
-
-    private fun onChatState(chatState: ChatViewModel.ChatState?) {
-        when (chatState) {
-            ChatViewModel.ChatState.LOADING -> {
-                showChatViews(loading = true)
-            }
-            ChatViewModel.ChatState.CHAT -> {
-                showChatViews(messages = true)
-            }
-            ChatViewModel.ChatState.OFFLINE_FORM -> {
-                showChatViews(offlineForm = true)
-                showKeyboard(binding.offlineForm.etMessage)
+        if (chatNavigation == null) {
+            ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
+                chatNavigation = it
+                viewModel.init(it, agentName)
             }
         }
     }
 
-    private fun showChatViews(loading: Boolean = false,
-                              messages: Boolean = false,
-                              offlineForm: Boolean = false) {
-        binding.tvLoading.visibility = visibleGone(loading)
-        binding.rvMessages.visibility = visibleGone(messages)
-        binding.messagePanel.rootView.visibility = visibleGone(messages)
-        binding.offlineForm.rootView.visibility = visibleGone(offlineForm)
-    }
-
-    private fun onUrlClick(url: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        })
-    }
-
-    private fun openAttachmentDialog() {
+    override fun onAttachmentClick() {
         getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: attachment.show()
+    }
+
+    override fun onItemSelectChange(index: Int) {
+        viewModel.setSubjectIndex(index)
     }
 
     private fun onException(exception: Exception) {
@@ -172,19 +136,43 @@ class UsedeskChatScreen : UsedeskFragment() {
         UsedeskChatSdk.startService(requireContext())
     }
 
+    override fun onBackPressed(): Boolean {
+        return viewModel.onBackPressed()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         attachment.onActivityResult(requestCode, resultCode, data)
     }
 
     fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
-        viewModel.setAttachedFiles(attachedFiles)
+        getCurrentFragment()?.let {
+            if (it is MessagesPage) {
+                it.setAttachedFiles(attachedFiles)
+            }
+        }
+    }
+
+    private fun getCurrentFragment(): Fragment? {
+        return childFragmentManager.findFragmentById(R.id.page_container)
+    }
+
+    override fun onOfflineFormSelectorClick(items: List<String>, selectedIndex: Int) {
+        viewModel.goOfflineFormSelector(items.toTypedArray(), selectedIndex)
+    }
+
+    override fun onGoToMessages() {
+        viewModel.goMessages()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
 
         if (cleared) {
-            messagesAdapter.clear()
+            getCurrentFragment()?.let {
+                if (it is MessagesPage) {
+                    it.clear()
+                }
+            }
         }
     }
 
@@ -210,10 +198,5 @@ class UsedeskChatScreen : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val toolbar = UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
-        val offlineForm = OfflineFormAdapter.Binding(rootView.findViewById(R.id.l_offline_form), defaultStyleId)
-        val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
-
-        val tvLoading: TextView = rootView.findViewById(R.id.tv_loading)
-        val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
     }
 }

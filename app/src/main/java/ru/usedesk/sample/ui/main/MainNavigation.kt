@@ -1,68 +1,54 @@
-package ru.usedesk.sample.ui.main;
+package ru.usedesk.sample.ui.main
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen.Companion.newInstance
+import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen.Companion.newInstance
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen.Companion.newInstance
+import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen
 
-import ru.usedesk.chat_gui.chat.UsedeskChatScreen;
-import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen;
-import ru.usedesk.chat_sdk.entity.UsedeskFile;
-import ru.usedesk.common_gui.UsedeskFragment;
-import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen;
-import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
-
-public class MainNavigation {
-
-    private final AppCompatActivity activity;
-    private final int containerId;
-
-    MainNavigation(@NonNull AppCompatActivity activity, int containerId) {
-        this.activity = activity;
-        this.containerId = containerId;
-    }
-
-    private void switchFragment(@NonNull Fragment fragment) {
-        activity.getSupportFragmentManager()
+class MainNavigation internal constructor(private val activity: AppCompatActivity, private val containerId: Int) {
+    private fun switchFragment(fragment: Fragment) {
+        activity.supportFragmentManager
                 .beginTransaction()
-                .addToBackStack(fragment.getClass().getName() + ":" + fragment.hashCode())
+                .addToBackStack(fragment.javaClass.name + ":" + fragment.hashCode())
                 .replace(containerId, fragment)
-                .commit();
+                .commit()
     }
 
-    void goConfiguration() {
-        switchFragment(ConfigurationScreen.newInstance());
+    fun goConfiguration() {
+        switchFragment(ConfigurationScreen.newInstance())
     }
 
-    void goChat(@Nullable String customAgentName) {
-        switchFragment(UsedeskChatScreen.newInstance(customAgentName));
+    fun goChat(customAgentName: String?) {
+        switchFragment(newInstance(customAgentName))
     }
 
-    void goKnowledgeBase(boolean withSupportButton,
-                         boolean withArticleRating) {
-        switchFragment(UsedeskKnowledgeBaseScreen.newInstance(withSupportButton,
-                withArticleRating));
+    fun goKnowledgeBase(withSupportButton: Boolean,
+                        withArticleRating: Boolean) {
+        switchFragment(newInstance(withSupportButton, withArticleRating))
     }
 
-    void goShowFile(@NonNull UsedeskFile usedeskFile) {
-        switchFragment(UsedeskShowFileScreen.newInstance(usedeskFile));
+    fun goShowFile(usedeskFile: UsedeskFile) {
+        switchFragment(newInstance(usedeskFile))
     }
 
-    public void onBackPressed() {
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        if (fragmentManager.getBackStackEntryCount() > 1) {
-            Fragment fragment = fragmentManager.getFragments().get(0);
-            if (fragment instanceof UsedeskFragment &&
-                    ((UsedeskFragment) fragment).onBackPressed()) {
-                return;
+    fun onBackPressed() {
+        val fragmentManager = activity.supportFragmentManager
+        if (fragmentManager.backStackEntryCount > 1) {
+            val fragment = fragmentManager.fragments[0]
+            if (fragment is UsedeskFragment && fragment.onBackPressed()) {
+                return
             }
-            if (fragment instanceof UsedeskChatScreen) {
-                ((UsedeskChatScreen) fragment).clear();
+            if (fragment is UsedeskChatScreen) {
+                fragment.clear()
             }
-            fragmentManager.popBackStack();
+            fragmentManager.popBackStack()
         } else {
-            activity.finish();
+            activity.finish()
         }
     }
 }

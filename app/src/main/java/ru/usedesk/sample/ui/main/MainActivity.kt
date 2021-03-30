@@ -1,100 +1,91 @@
-package ru.usedesk.sample.ui.main;
+package ru.usedesk.sample.ui.main
 
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.widget.Toast;
+import android.os.Bundle
+import android.os.StrictMode
+import android.os.StrictMode.VmPolicy
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
+import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.common_gui.IUsedeskOnBackPressedListener
+import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
+import ru.usedesk.sample.R
+import ru.usedesk.sample.databinding.ActivityMainBinding
+import ru.usedesk.sample.model.configuration.entity.Configuration
+import ru.usedesk.sample.service.CustomForegroundNotificationsService
+import ru.usedesk.sample.service.CustomSimpleNotificationsService
+import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdkListener
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-
-import org.jetbrains.annotations.NotNull;
-
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener;
-import ru.usedesk.chat_sdk.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.entity.UsedeskFile;
-import ru.usedesk.common_gui.IUsedeskOnBackPressedListener;
-import ru.usedesk.common_sdk.entity.UsedeskEvent;
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener;
-import ru.usedesk.sample.R;
-import ru.usedesk.sample.databinding.ActivityMainBinding;
-import ru.usedesk.sample.model.configuration.entity.Configuration;
-import ru.usedesk.sample.service.CustomForegroundNotificationsService;
-import ru.usedesk.sample.service.CustomSimpleNotificationsService;
-import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen;
-
-public class MainActivity extends AppCompatActivity
-        implements ConfigurationScreen.IOnGoToSdkListener,
+class MainActivity : AppCompatActivity(),
+        IOnGoToSdkListener,
         IUsedeskOnSupportClickListener,
         IUsedeskOnFileClickListener {
 
-    private MainViewModel viewModel;
+    private val viewModel: MainViewModel by viewModels()
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+        StrictMode.setVmPolicy(VmPolicy.Builder().build())
 
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-
-        viewModel.getConfigurationLiveData().observe(this, this::onConfiguration);
-
-        viewModel.getErrorLiveData().observe(this, this::onError);
-
-        viewModel.init(new MainNavigation(this, R.id.container));
+        viewModel.getConfigurationLiveData().observe(this, {
+            onConfiguration(it)
+        })
+        viewModel.getErrorLiveData().observe(this, {
+            onError(it)
+        })
+        viewModel.init(MainNavigation(this, R.id.container))
     }
 
-    private void onError(@NonNull UsedeskEvent<String> error) {
-        error.process(text -> {
-            Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-            return null;
-        });
-    }
-
-    private void onConfiguration(@NonNull Configuration configuration) {
-        initUsedeskService(configuration);
-    }
-
-    private void initUsedeskService(@NonNull Configuration configuration) {
-        UsedeskChatSdk.setNotificationsServiceFactory(configuration.getForegroundService()
-                ? new CustomForegroundNotificationsService.Factory()
-                : new CustomSimpleNotificationsService.Factory());
-    }
-
-    private Fragment getCurrentFragment() {
-        return getSupportFragmentManager().findFragmentById(R.id.container);
-    }
-
-    @Override
-    public void onFileClick(@NotNull UsedeskFile usedeskFile) {
-        viewModel.goShowFile(usedeskFile);
-    }
-
-    @Override
-    public void onBackPressed() {
-        Fragment fragment = getCurrentFragment();
-        if (fragment instanceof IUsedeskOnBackPressedListener
-                && ((IUsedeskOnBackPressedListener) fragment).onBackPressed()) {
-            //nothing
-        } else {
-            viewModel.onBackPressed();
+    private fun onError(error: UsedeskEvent<String>) {
+        error.process { text: String? ->
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
         }
     }
 
-    @Override
-    public void onSupportClick() {
-        viewModel.goChat();
+    private fun onConfiguration(configuration: Configuration) {
+        initUsedeskService(configuration)
     }
 
-    @Override
-    public void goToSdk() {
-        viewModel.goSdk();
+    private fun initUsedeskService(configuration: Configuration) {
+        if (configuration.foregroundService) {
+            CustomForegroundNotificationsService.Factory()
+        } else {
+            CustomSimpleNotificationsService.Factory()
+        }.let { factory ->
+            setNotificationsServiceFactory(factory)
+        }
+    }
+
+    private fun getCurrentFragment(): Fragment? = supportFragmentManager.findFragmentById(R.id.container)
+
+    override fun onFileClick(usedeskFile: UsedeskFile) {
+        viewModel.goShowFile(usedeskFile)
+    }
+
+    override fun onBackPressed() {
+        val fragment = getCurrentFragment()
+        if (fragment is IUsedeskOnBackPressedListener
+                && (fragment as IUsedeskOnBackPressedListener).onBackPressed()) {
+            //nothing
+        } else {
+            viewModel.onBackPressed()
+        }
+    }
+
+    override fun onSupportClick() {
+        viewModel.goChat()
+    }
+
+    override fun goToSdk() {
+        viewModel.goSdk()
     }
 }

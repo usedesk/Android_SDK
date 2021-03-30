@@ -1,258 +1,201 @@
-package ru.usedesk.sample.ui.screens.configuration;
+package ru.usedesk.sample.ui.screens.configuration
 
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.OnFocusChangeListener
+import android.view.ViewGroup
+import android.widget.CompoundButton
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.google.android.material.textfield.TextInputLayout
+import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
+import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.sample.R
+import ru.usedesk.sample.databinding.ScreenConfigurationBinding
+import ru.usedesk.sample.model.configuration.entity.Configuration
+import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+class ConfigurationScreen : Fragment() {
 
-import com.google.android.material.textfield.TextInputLayout;
+    private val viewModel: ConfigurationViewModel by viewModels()
+    private lateinit var binding: ScreenConfigurationBinding
 
-import ru.usedesk.chat_sdk.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration;
-import ru.usedesk.common_sdk.entity.UsedeskEvent;
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration;
-import ru.usedesk.sample.R;
-import ru.usedesk.sample.databinding.ScreenConfigurationBinding;
-import ru.usedesk.sample.model.configuration.entity.Configuration;
-import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation;
-
-public class ConfigurationScreen extends Fragment {
-
-    private ScreenConfigurationBinding binding;
-    private ConfigurationViewModel viewModel;
-
-    @NonNull
-    public static ConfigurationScreen newInstance() {
-        return new ConfigurationScreen();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.screen_configuration,
-                container, false);
+                container, false)
 
-        viewModel = ViewModelProviders.of(this).get(ConfigurationViewModel.class);
-
-        viewModel.getConfiguration()
-                .observe(getViewLifecycleOwner(), this::onNewConfiguration);
-
-        viewModel.getConfigurationValidation()
-                .observe(getViewLifecycleOwner(), this::onNewConfigurationValidation);
-
-        viewModel.getGoToSdkEvent()
-                .observe(getViewLifecycleOwner(), this::onGoToSdkEvent);
-
-        binding.btnGoToSdk.setOnClickListener(v -> onGoToSdk());
-
-        binding.switchForeground.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            UsedeskChatSdk.stopService(requireContext());
-        });
-
+        viewModel.getConfiguration().observe(viewLifecycleOwner, {
+            onNewConfiguration(it)
+        })
+        viewModel.getConfigurationValidation().observe(viewLifecycleOwner, {
+            onNewConfigurationValidation(it)
+        })
+        viewModel.getGoToSdkEvent().observe(viewLifecycleOwner, {
+            onGoToSdkEvent(it)
+        })
+        binding.btnGoToSdk.setOnClickListener {
+            onGoToSdk()
+        }
+        binding.switchForeground.setOnCheckedChangeListener { _: CompoundButton?, _: Boolean ->
+            stopService(requireContext())
+        }
         try {
-            String version = requireContext().getPackageManager()
-                    .getPackageInfo(requireContext().getPackageName(), 0).versionName;
-            binding.tvVersion.setText("v" + version);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            val version = requireContext().packageManager
+                    .getPackageInfo(requireContext().packageName, 0).versionName
+            binding.tvVersion.text = "v$version"
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
         }
-
-        initTil(binding.tilUrlChat);
-        initTil(binding.tilUrlOfflineForm);
-        initTil(binding.tilUrlToSendFile);
-        initTil(binding.tilUrlApi);
-        initTil(binding.tilCompanyId);
-        initTil(binding.tilChannelId);
-        initTil(binding.tilAccountId);
-        initTil(binding.tilToken);
-        initTil(binding.tilClientEmail);
-        initTil(binding.tilClientPhoneNumber);
-
-        return binding.getRoot();
+        initTil(binding.tilUrlChat)
+        initTil(binding.tilUrlOfflineForm)
+        initTil(binding.tilUrlToSendFile)
+        initTil(binding.tilUrlApi)
+        initTil(binding.tilCompanyId)
+        initTil(binding.tilChannelId)
+        initTil(binding.tilAccountId)
+        initTil(binding.tilToken)
+        initTil(binding.tilClientEmail)
+        initTil(binding.tilClientPhoneNumber)
+        return binding.root
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        viewModel.setTempConfiguration(getConfiguration());
+    override fun onPause() {
+        super.onPause()
+        viewModel.setTempConfiguration(getConfiguration())
     }
 
-    private void onGoToSdkEvent(@NonNull UsedeskEvent<Object> event) {
-        event.process(data -> {
-            ((IOnGoToSdkListener) getActivity()).goToSdk();
-            return null;
-        });
-    }
-
-    private void onGoToSdk() {
-        viewModel.onGoSdkClick(getConfiguration());
-    }
-
-    private Configuration getConfiguration() {
-        return new Configuration(
-                binding.etUrlChat.getText().toString(),
-                binding.etUrlOfflineForm.getText().toString(),
-                binding.etUrlToSendFile.getText().toString(),
-                binding.etUrlApi.getText().toString(),
-                binding.etCompanyId.getText().toString(),
-                binding.etChannelId.getText().toString(),
-                binding.etAccountId.getText().toString(),
-                binding.etToken.getText().toString(),
-                binding.etClientSignature.getText().toString(),
-                binding.etClientEmail.getText().toString(),
-                binding.etClientName.getText().toString(),
-                binding.etClientNote.getText().toString(),
-                getLong(binding.etClientPhoneNumber.getText().toString()),
-                getLong(binding.etClientAdditionalId.getText().toString()),
-                binding.etClientInitMessage.getText().toString(),
-                binding.etCustomAgentName.getText().toString(),
-                binding.switchForeground.isChecked(),
-                binding.switchKb.isChecked(),
-                binding.switchKbWithSupportButton.isChecked(),
-                binding.switchKbWithArticleRating.isChecked());
-    }
-
-    @Nullable
-    private Long getLong(@Nullable String value) {
-        try {
-            return Long.valueOf(value);
-        } catch (Exception e) {
-            return null;
+    private fun onGoToSdkEvent(event: UsedeskEvent<Any?>) {
+        event.process {
+            (activity as IOnGoToSdkListener?)?.goToSdk()
         }
     }
 
-    private void onNewConfiguration(@NonNull Configuration configuration) {
-        binding.etUrlChat.setText(configuration.getUrlChat());
-        binding.etUrlOfflineForm.setText(configuration.getUrlOfflineForm());
-        binding.etUrlToSendFile.setText(configuration.getUrlToSendFile());
-        binding.etUrlApi.setText(configuration.getUrlApi());
-        binding.etCompanyId.setText(configuration.getCompanyId());
-        binding.etChannelId.setText(configuration.getChannelId());
-        binding.etAccountId.setText(configuration.getAccountId());
-        binding.etToken.setText(configuration.getToken());
-        binding.etClientSignature.setText(configuration.getClientSignature());
-        binding.etClientEmail.setText(configuration.getClientEmail());
-        binding.etClientName.setText(configuration.getClientName());
-        String clientPhoneNumber;
-        if (configuration.getClientPhoneNumber() == null) {
-            clientPhoneNumber = "";
+    private fun onGoToSdk() {
+        viewModel.onGoSdkClick(getConfiguration())
+    }
+
+    private fun getConfiguration(): Configuration = Configuration(
+            binding.etUrlChat.text.toString(),
+            binding.etUrlOfflineForm.text.toString(),
+            binding.etUrlToSendFile.text.toString(),
+            binding.etUrlApi.text.toString(),
+            binding.etCompanyId.text.toString(),
+            binding.etChannelId.text.toString(),
+            binding.etAccountId.text.toString(),
+            binding.etToken.text.toString(),
+            binding.etClientSignature.text.toString(),
+            binding.etClientEmail.text.toString(),
+            binding.etClientName.text.toString(),
+            binding.etClientNote.text.toString(),
+            binding.etClientPhoneNumber.text.toString().toLongOrNull(),
+            binding.etClientAdditionalId.text.toString().toLongOrNull(),
+            binding.etClientInitMessage.text.toString(),
+            binding.etCustomAgentName.text.toString(),
+            binding.switchForeground.isChecked,
+            binding.switchKb.isChecked,
+            binding.switchKbWithSupportButton.isChecked,
+            binding.switchKbWithArticleRating.isChecked)
+
+
+    private fun onNewConfiguration(configuration: Configuration) {
+        binding.etUrlChat.setText(configuration.urlChat)
+        binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
+        binding.etUrlToSendFile.setText(configuration.urlToSendFile)
+        binding.etUrlApi.setText(configuration.urlApi)
+        binding.etCompanyId.setText(configuration.companyId)
+        binding.etChannelId.setText(configuration.channelId)
+        binding.etAccountId.setText(configuration.accountId)
+        binding.etToken.setText(configuration.token)
+        binding.etClientSignature.setText(configuration.clientSignature)
+        binding.etClientEmail.setText(configuration.clientEmail)
+        binding.etClientName.setText(configuration.clientName)
+        binding.etClientPhoneNumber.setText(configuration.clientPhoneNumber?.toString() ?: "")
+        binding.etClientAdditionalId.setText(configuration.clientAdditionalId?.toString() ?: "")
+        binding.etClientInitMessage.setText(configuration.clientInitMessage)
+        binding.etCustomAgentName.setText(configuration.customAgentName)
+        binding.switchForeground.isChecked = configuration.foregroundService
+        binding.switchKb.isChecked = configuration.withKb
+        binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
+        binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
+        viewModel.getConfiguration().removeObservers(viewLifecycleOwner)
+    }
+
+    private fun initTil(inputLayout: TextInputLayout) {
+        inputLayout.editText?.apply {
+            onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
+                if (hasFocus) {
+                    inputLayout.error = null
+                }
+            }
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable) {
+                    inputLayout.error = null
+                }
+            })
+        }
+    }
+
+    private fun showError(textInputLayout: TextInputLayout,
+                          isValid: Boolean,
+                          errorStringId: Int) {
+        textInputLayout.error = if (isValid) {
+            null
         } else {
-            clientPhoneNumber = configuration.getClientPhoneNumber().toString();
-        }
-        binding.etClientPhoneNumber.setText(clientPhoneNumber);
-        String clientAdditionalId;
-        if (configuration.getClientAdditionalId() == null) {
-            clientAdditionalId = "";
-        } else {
-            clientAdditionalId = configuration.getClientAdditionalId().toString();
-        }
-        binding.etClientAdditionalId.setText(clientAdditionalId);
-        binding.etClientInitMessage.setText(configuration.getClientInitMessage());
-        binding.etCustomAgentName.setText(configuration.getCustomAgentName());
-        binding.switchForeground.setChecked(configuration.getForegroundService());
-        binding.switchKb.setChecked(configuration.getWithKb());
-        binding.switchKbWithSupportButton.setChecked(configuration.getWithKbSupportButton());
-        binding.switchKbWithArticleRating.setChecked(configuration.getWithKbArticleRating());
-
-        viewModel.getConfiguration().removeObservers(getViewLifecycleOwner());
-    }
-
-    private void initTil(TextInputLayout inputLayout) {
-        inputLayout.getEditText().setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                inputLayout.setError(null);
-            }
-        });
-        inputLayout.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                inputLayout.setError(null);
-            }
-        });
-    }
-
-    private void showError(@NonNull TextInputLayout textInputLayout,
-                           boolean isValid,
-                           int errorStringId) {
-        if (isValid) {
-            textInputLayout.setError(null);
-        } else {
-            textInputLayout.setError(getResources().getString(errorStringId));
+            resources.getString(errorStringId)
         }
     }
 
-    private void onNewConfigurationValidation(
-            @NonNull ConfigurationValidation configurationValidation
-    ) {
-        UsedeskChatConfiguration.Validation chatValidation =
-                configurationValidation.getChatConfigurationValidation();
-
+    private fun onNewConfigurationValidation(configurationValidation: ConfigurationValidation) {
+        val chatValidation = configurationValidation.chatConfigurationValidation
         showError(binding.tilUrlChat,
-                chatValidation.getValidUrlChat(),
-                R.string.validation_url_error);
-
+                chatValidation.validUrlChat,
+                R.string.validation_url_error)
         showError(binding.tilUrlOfflineForm,
-                chatValidation.getValidUrlOfflineForm(),
-                R.string.validation_url_error);
-
+                chatValidation.validUrlOfflineForm,
+                R.string.validation_url_error)
         showError(binding.tilUrlToSendFile,
-                chatValidation.getValidUrlToSendFile(),
-                R.string.validation_url_error);
-
+                chatValidation.validUrlToSendFile,
+                R.string.validation_url_error)
         showError(binding.tilCompanyId,
-                chatValidation.getValidCompanyId(),
-                R.string.validation_empty_error);
-
+                chatValidation.validCompanyId,
+                R.string.validation_empty_error)
         showError(binding.tilChannelId,
-                chatValidation.getValidChannelId(),
-                R.string.validation_empty_error);
-
+                chatValidation.validChannelId,
+                R.string.validation_empty_error)
         showError(binding.tilClientEmail,
-                chatValidation.getValidClientEmail(),
-                R.string.validation_email_error);
-
+                chatValidation.validClientEmail,
+                R.string.validation_email_error)
         showError(binding.tilClientPhoneNumber,
-                chatValidation.getValidClientPhoneNumber(),
-                R.string.validation_phone_error);
+                chatValidation.validClientPhoneNumber,
+                R.string.validation_phone_error)
 
-        UsedeskKnowledgeBaseConfiguration.Validation knowledgebaseValidation =
-                configurationValidation.getKnowledgeBaseConfiguration();
-
+        val knowledgebaseValidation = configurationValidation.knowledgeBaseConfiguration
         showError(binding.tilUrlApi,
-                knowledgebaseValidation.getValidUrlApi(),
-                R.string.validation_empty_error);
-
+                knowledgebaseValidation.validUrlApi,
+                R.string.validation_empty_error)
         showError(binding.tilAccountId,
-                knowledgebaseValidation.getValidAccountId(),
-                R.string.validation_empty_error);
-
+                knowledgebaseValidation.validAccountId,
+                R.string.validation_empty_error)
         showError(binding.tilToken,
-                knowledgebaseValidation.getValidToken(),
-                R.string.validation_empty_error);
+                knowledgebaseValidation.validToken,
+                R.string.validation_empty_error)
     }
 
-    public interface IOnGoToSdkListener {
-        void goToSdk();
+    interface IOnGoToSdkListener {
+        fun goToSdk()
+    }
+
+    companion object {
+        fun newInstance(): ConfigurationScreen {
+            return ConfigurationScreen()
+        }
     }
 }

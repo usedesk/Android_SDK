@@ -1,152 +1,128 @@
-package ru.usedesk.sample.ui.main;
+package ru.usedesk.sample.ui.main
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import io.reactivex.disposables.CompositeDisposable
+import ru.usedesk.chat_sdk.UsedeskChatSdk.setConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk.setConfiguration
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
+import ru.usedesk.sample.ServiceLocator
+import ru.usedesk.sample.model.configuration.entity.Configuration
+import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository
 
-import io.reactivex.disposables.CompositeDisposable;
-import ru.usedesk.chat_sdk.UsedeskChatSdk;
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration;
-import ru.usedesk.chat_sdk.entity.UsedeskFile;
-import ru.usedesk.common_sdk.entity.UsedeskEvent;
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent;
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk;
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration;
-import ru.usedesk.sample.ServiceLocator;
-import ru.usedesk.sample.model.configuration.entity.Configuration;
-import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository;
+class MainViewModel : ViewModel() {
+    private val configurationRepository: ConfigurationRepository = ServiceLocator.configurationRepository
+    private val configurationLiveData = MutableLiveData<Configuration>()
+    private val errorLiveData = MutableLiveData<UsedeskEvent<String>>()
+    private val disposables = CompositeDisposable()
+    private var inited = false
 
+    private lateinit var mainNavigation: MainNavigation
+    private lateinit var configuration: Configuration
 
-public class MainViewModel extends ViewModel {
-
-    private final ConfigurationRepository configurationRepository;
-
-    private final MutableLiveData<Configuration> configurationLiveData = new MutableLiveData<>();
-    private final MutableLiveData<UsedeskEvent<String>> errorLiveData = new MutableLiveData<>();
-
-    private final CompositeDisposable disposables = new CompositeDisposable();
-    private MainNavigation mainNavigation;
-
-    private Configuration configuration;
-    private Boolean inited = false;
-
-    public MainViewModel() {
-        configurationRepository = ServiceLocator.getInstance().getConfigurationRepository();
-    }
-
-    void init(MainNavigation mainNavigation) {
-        this.mainNavigation = mainNavigation;
+    fun init(mainNavigation: MainNavigation) {
+        this.mainNavigation = mainNavigation
         if (!inited) {
-            inited = true;
-            mainNavigation.goConfiguration();
+            inited = true
+            mainNavigation.goConfiguration()
         }
     }
 
-    void goShowFile(@NonNull UsedeskFile usedeskFile) {
-        mainNavigation.goShowFile(usedeskFile);
+    fun goShowFile(usedeskFile: UsedeskFile) {
+        mainNavigation.goShowFile(usedeskFile)
     }
 
-    void goSdk() {
-        disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
-            UsedeskChatConfiguration defaultChatConfiguration = new UsedeskChatConfiguration(
-                    configuration.getUrlChat(),
-                    configuration.getUrlOfflineForm(),
-                    configuration.getClientEmail()
-            );
-            String urlToSendFile = configuration.getUrlToSendFile();
+    fun goSdk() {
+        disposables.add(configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
+            val defaultChatConfiguration = UsedeskChatConfiguration(
+                    urlChat = configuration.urlChat,
+                    companyId = configuration.companyId,
+                    channelId = configuration.channelId,
+            )
+            var urlToSendFile = configuration.urlToSendFile
             if (urlToSendFile.isEmpty()) {
-                urlToSendFile = defaultChatConfiguration.getUrlToSendFile();
+                urlToSendFile = defaultChatConfiguration.urlToSendFile
             }
-            String urlOfflineForm = configuration.getUrlOfflineForm();
+            var urlOfflineForm = configuration.urlOfflineForm
             if (urlOfflineForm.isEmpty()) {
-                urlOfflineForm = defaultChatConfiguration.getUrlOfflineForm();
+                urlOfflineForm = defaultChatConfiguration.urlOfflineForm
             }
-            UsedeskChatConfiguration usedeskChatConfiguration = new UsedeskChatConfiguration(
-                    configuration.getUrlChat(),
+            val usedeskChatConfiguration = UsedeskChatConfiguration(
+                    configuration.urlChat,
                     urlOfflineForm,
                     urlToSendFile,
-                    configuration.getCompanyId(),
-                    configuration.getChannelId(),
-                    configuration.getClientSignature(),
-                    configuration.getClientEmail(),
-                    configuration.getClientName(),
-                    configuration.getClientNote(),
-                    configuration.getClientPhoneNumber(),
-                    configuration.getClientAdditionalId(),
-                    configuration.getClientInitMessage());
-
+                    configuration.companyId,
+                    configuration.channelId,
+                    configuration.clientSignature,
+                    configuration.clientEmail,
+                    configuration.clientName,
+                    configuration.clientNote,
+                    configuration.clientPhoneNumber,
+                    configuration.clientAdditionalId,
+                    configuration.clientInitMessage)
             if (usedeskChatConfiguration.validate().isAllValid()) {
-                this.configuration = configuration;
-                initUsedeskConfiguration(usedeskChatConfiguration, configuration.getWithKb());
-
-                configurationLiveData.postValue(configuration);
-                if (this.configuration.getWithKb()) {
-                    mainNavigation.goKnowledgeBase(configuration.getWithKbSupportButton(),
-                            configuration.getWithKbArticleRating());
+                this.configuration = configuration
+                initUsedeskConfiguration(usedeskChatConfiguration, configuration.withKb)
+                configurationLiveData.postValue(configuration)
+                if (this.configuration.withKb) {
+                    mainNavigation.goKnowledgeBase(configuration.withKbSupportButton,
+                            configuration.withKbArticleRating)
                 } else {
-                    mainNavigation.goChat(configuration.getCustomAgentName());
+                    mainNavigation.goChat(configuration.customAgentName)
                 }
             } else {
-                errorLiveData.postValue(new UsedeskSingleLifeEvent<>("Invalid configuration"));
+                errorLiveData.postValue(UsedeskSingleLifeEvent("Invalid configuration"))
             }
-        }));
+        })
     }
 
-    public void goChat() {
-        disposables.add(configurationRepository.getConfiguration().subscribe(configuration -> {
-            mainNavigation.goChat(configuration.getCustomAgentName());
-        }));
+    fun goChat() {
+        disposables.add(configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
+            mainNavigation.goChat(configuration.customAgentName)
+        })
     }
 
-    void onBackPressed() {
-        mainNavigation.onBackPressed();
+    fun onBackPressed() {
+        mainNavigation.onBackPressed()
     }
 
-    private void initUsedeskConfiguration(@NonNull UsedeskChatConfiguration usedeskChatConfiguration,
-                                          boolean withKnowledgeBase) {
-        UsedeskChatSdk.setConfiguration(usedeskChatConfiguration);
-
+    private fun initUsedeskConfiguration(usedeskChatConfiguration: UsedeskChatConfiguration,
+                                         withKnowledgeBase: Boolean) {
+        setConfiguration(usedeskChatConfiguration)
         if (withKnowledgeBase) {
-            UsedeskKnowledgeBaseConfiguration defaultConfiguration = new UsedeskKnowledgeBaseConfiguration(
-                    configuration.getAccountId(),
-                    configuration.getToken(),
-                    configuration.getClientEmail()
-            );
-            String urlApi = configuration.getUrlApi();
+            val defaultConfiguration = UsedeskKnowledgeBaseConfiguration(
+                    configuration.accountId,
+                    configuration.token,
+                    configuration.clientEmail
+            )
+            var urlApi = configuration.urlApi
             if (urlApi.isEmpty()) {
-                urlApi = defaultConfiguration.getUrlApi();
+                urlApi = defaultConfiguration.urlApi
             }
-            UsedeskKnowledgeBaseSdk.setConfiguration(new UsedeskKnowledgeBaseConfiguration(
+            setConfiguration(UsedeskKnowledgeBaseConfiguration(
                     urlApi,
-                    configuration.getAccountId(),
-                    configuration.getToken(),
-                    configuration.getClientEmail(),
-                    configuration.getClientName()));
+                    configuration.accountId,
+                    configuration.token,
+                    configuration.clientEmail,
+                    configuration.clientName))
         }
     }
 
-    private Long getLong(@Nullable String value) {
-        return value == null || value.isEmpty()
-                ? null
-                : Long.valueOf(value);
+    fun getConfigurationLiveData(): LiveData<Configuration> {
+        return configurationLiveData
     }
 
-    @NonNull
-    LiveData<Configuration> getConfigurationLiveData() {
-        return configurationLiveData;
+    fun getErrorLiveData(): LiveData<UsedeskEvent<String>> {
+        return errorLiveData
     }
 
-    @NonNull
-    LiveData<UsedeskEvent<String>> getErrorLiveData() {
-        return errorLiveData;
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
-        disposables.dispose();
+    override fun onCleared() {
+        super.onCleared()
+        disposables.dispose()
     }
 }

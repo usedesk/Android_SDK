@@ -1,13 +1,10 @@
-package ru.usedesk.sample;
+package ru.usedesk.sample
 
-import androidx.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication
 
-public class App extends MultiDexApplication {
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        ServiceLocator.init(this);
+class App : MultiDexApplication() {
+    override fun onCreate() {
+        super.onCreate()
+        ServiceLocator.init(this)
     }
 }

@@ -9,7 +9,7 @@ class ConfigurationRepository(private val sharedPreferences: SharedPreferences,
                               private val workScheduler: Scheduler) {
     private var configuration: Configuration? = null
 
-    fun getConfiguration(): Single<Configuration?> {
+    fun getConfiguration(): Single<Configuration> {
         return Single.create { emitter: SingleEmitter<Configuration> ->
             val configuration = configuration ?: try {
                 val json = sharedPreferences.getString(KEY_DATA, "")

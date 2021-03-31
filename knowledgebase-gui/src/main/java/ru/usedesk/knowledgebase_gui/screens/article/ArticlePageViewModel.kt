@@ -7,9 +7,9 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 internal class ArticlePageViewModel : UsedeskViewModel() {
 
-    val articlesLiveData = MutableLiveData<List<UsedeskArticleInfo>>()
-    val selectedPositionLiveData = MutableLiveData(0)
-    val selectedArticleLiveData = MutableLiveData<UsedeskArticleInfo>()
+    val articlesLiveData = MutableLiveData<List<UsedeskArticleInfo>?>()
+    val selectedPositionLiveData = MutableLiveData<Int?>(0)
+    val selectedArticleLiveData = MutableLiveData<UsedeskArticleInfo?>()
 
     fun init(categoryId: Long,
              articleId: Long) {

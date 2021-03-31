@@ -1,6 +1,5 @@
 package ru.usedesk.sample.ui.main
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -17,10 +16,11 @@ import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository
 
 class MainViewModel : ViewModel() {
     private val configurationRepository: ConfigurationRepository = ServiceLocator.configurationRepository
-    private val configurationLiveData = MutableLiveData<Configuration>()
-    private val errorLiveData = MutableLiveData<UsedeskEvent<String>>()
     private val disposables = CompositeDisposable()
     private var inited = false
+
+    val configurationLiveData = MutableLiveData<Configuration?>()
+    val errorLiveData = MutableLiveData<UsedeskEvent<String>?>()
 
     private lateinit var mainNavigation: MainNavigation
     private lateinit var configuration: Configuration
@@ -111,14 +111,6 @@ class MainViewModel : ViewModel() {
                     configuration.clientEmail,
                     configuration.clientName))
         }
-    }
-
-    fun getConfigurationLiveData(): LiveData<Configuration> {
-        return configurationLiveData
-    }
-
-    fun getErrorLiveData(): LiveData<UsedeskEvent<String>> {
-        return errorLiveData
     }
 
     override fun onCleared() {

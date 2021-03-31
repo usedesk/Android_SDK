@@ -31,15 +31,15 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
             Binding(rootView, defaultStyleId)
         }
 
-        argsGetLong(CATEGORY_ID_KEY)?.also { categoryId ->
-            argsGetLong(ARTICLE_ID_KEY)?.also { articleId ->
+        argsGetLong(CATEGORY_ID_KEY)?.let { categoryId ->
+            argsGetLong(ARTICLE_ID_KEY)?.let { articleId ->
                 init(categoryId, articleId)
             }
         }
 
         articlePagesAdapter.onLiveData(viewModel, viewLifecycleOwner)
         viewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { article ->
-            article?.also {
+            article?.let {
                 getParentListener<IOnTitleChangeListener>()?.onTitle(it.title)
             }
         }

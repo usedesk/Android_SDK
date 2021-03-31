@@ -84,7 +84,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         }
 
         viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-            showSearchQuery(it)
+            it?.let {
+                showSearchQuery(it)
+            }
         })
 
         return binding.rootView

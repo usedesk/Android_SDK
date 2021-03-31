@@ -30,14 +30,21 @@ class ConfigurationScreen : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.screen_configuration,
                 container, false)
 
-        viewModel.getConfiguration().observe(viewLifecycleOwner, {
-            onNewConfiguration(it)
+        viewModel.configurationLiveData.observe(viewLifecycleOwner, {
+            it?.let {
+                onNewConfiguration(it)
+                viewModel.configurationLiveData.removeObservers(viewLifecycleOwner)
+            }
         })
-        viewModel.getConfigurationValidation().observe(viewLifecycleOwner, {
-            onNewConfigurationValidation(it)
+        viewModel.configurationValidation.observe(viewLifecycleOwner, {
+            it?.let {
+                onNewConfigurationValidation(it)
+            }
         })
-        viewModel.getGoToSdkEvent().observe(viewLifecycleOwner, {
-            onGoToSdkEvent(it)
+        viewModel.goToSdkEvent.observe(viewLifecycleOwner, {
+            it?.let {
+                onGoToSdkEvent(it)
+            }
         })
         binding.btnGoToSdk.setOnClickListener {
             onGoToSdk()
@@ -123,12 +130,11 @@ class ConfigurationScreen : Fragment() {
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
-        viewModel.getConfiguration().removeObservers(viewLifecycleOwner)
     }
 
     private fun initTil(inputLayout: TextInputLayout) {
         inputLayout.editText?.apply {
-            onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
+            onFocusChangeListener = OnFocusChangeListener { _: View?, hasFocus: Boolean ->
                 if (hasFocus) {
                     inputLayout.error = null
                 }
@@ -154,39 +160,41 @@ class ConfigurationScreen : Fragment() {
     }
 
     private fun onNewConfigurationValidation(configurationValidation: ConfigurationValidation) {
-        val chatValidation = configurationValidation.chatConfigurationValidation
-        showError(binding.tilUrlChat,
-                chatValidation.validUrlChat,
-                R.string.validation_url_error)
-        showError(binding.tilUrlOfflineForm,
-                chatValidation.validUrlOfflineForm,
-                R.string.validation_url_error)
-        showError(binding.tilUrlToSendFile,
-                chatValidation.validUrlToSendFile,
-                R.string.validation_url_error)
-        showError(binding.tilCompanyId,
-                chatValidation.validCompanyId,
-                R.string.validation_empty_error)
-        showError(binding.tilChannelId,
-                chatValidation.validChannelId,
-                R.string.validation_empty_error)
-        showError(binding.tilClientEmail,
-                chatValidation.validClientEmail,
-                R.string.validation_email_error)
-        showError(binding.tilClientPhoneNumber,
-                chatValidation.validClientPhoneNumber,
-                R.string.validation_phone_error)
+        configurationValidation.chatConfigurationValidation.run {
+            showError(binding.tilUrlChat,
+                    validUrlChat,
+                    R.string.validation_url_error)
+            showError(binding.tilUrlOfflineForm,
+                    validUrlOfflineForm,
+                    R.string.validation_url_error)
+            showError(binding.tilUrlToSendFile,
+                    validUrlToSendFile,
+                    R.string.validation_url_error)
+            showError(binding.tilCompanyId,
+                    validCompanyId,
+                    R.string.validation_empty_error)
+            showError(binding.tilChannelId,
+                    validChannelId,
+                    R.string.validation_empty_error)
+            showError(binding.tilClientEmail,
+                    validClientEmail,
+                    R.string.validation_email_error)
+            showError(binding.tilClientPhoneNumber,
+                    validClientPhoneNumber,
+                    R.string.validation_phone_error)
+        }
 
-        val knowledgebaseValidation = configurationValidation.knowledgeBaseConfiguration
-        showError(binding.tilUrlApi,
-                knowledgebaseValidation.validUrlApi,
-                R.string.validation_empty_error)
-        showError(binding.tilAccountId,
-                knowledgebaseValidation.validAccountId,
-                R.string.validation_empty_error)
-        showError(binding.tilToken,
-                knowledgebaseValidation.validToken,
-                R.string.validation_empty_error)
+        configurationValidation.knowledgeBaseConfiguration.run {
+            showError(binding.tilUrlApi,
+                    validUrlApi,
+                    R.string.validation_empty_error)
+            showError(binding.tilAccountId,
+                    validAccountId,
+                    R.string.validation_empty_error)
+            showError(binding.tilToken,
+                    validToken,
+                    R.string.validation_empty_error)
+        }
     }
 
     interface IOnGoToSdkListener {

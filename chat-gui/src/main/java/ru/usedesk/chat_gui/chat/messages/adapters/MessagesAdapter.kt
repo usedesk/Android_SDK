@@ -47,8 +47,10 @@ internal class MessagesAdapter(
     }
 
     override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
-        viewModel.messagesLiveData.observe(lifecycleOwner) { messages ->
-            onMessages(messages ?: listOf())
+        viewModel.messagesLiveData.observe(lifecycleOwner) {
+            it?.let {
+                onMessages(it)
+            }
         }
     }
 

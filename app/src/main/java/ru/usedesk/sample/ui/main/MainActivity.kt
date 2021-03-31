@@ -34,13 +34,17 @@ class MainActivity : AppCompatActivity(),
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         StrictMode.setVmPolicy(VmPolicy.Builder().build())
 
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
 
-        viewModel.getConfigurationLiveData().observe(this, {
-            onConfiguration(it)
+        viewModel.configurationLiveData.observe(this, {
+            it?.let {
+                onConfiguration(it)
+            }
         })
-        viewModel.getErrorLiveData().observe(this, {
-            onError(it)
+        viewModel.errorLiveData.observe(this, {
+            it?.let {
+                onError(it)
+            }
         })
         viewModel.init(MainNavigation(this, R.id.container))
     }

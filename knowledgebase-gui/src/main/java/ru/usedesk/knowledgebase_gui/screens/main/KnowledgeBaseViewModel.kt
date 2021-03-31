@@ -6,7 +6,7 @@ import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk.release
 
 internal class KnowledgeBaseViewModel : UsedeskViewModel() {
 
-    val searchQueryLiveData = MutableLiveData<String>()
+    val searchQueryLiveData = MutableLiveData<String?>()
 
     override fun onCleared() {
         super.onCleared()

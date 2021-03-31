@@ -26,9 +26,9 @@ internal class SectionsAdapter(
 
     override fun onLiveData(viewModel: SectionsViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.sectionsLiveData.observe(lifecycleOwner) {
-            (it ?: listOf()).apply {
-                if (sectionList != this) {
-                    sectionList = this
+            it?.let {
+                if (sectionList != it) {
+                    sectionList = it
                     notifyDataSetChanged()
                 }
             }

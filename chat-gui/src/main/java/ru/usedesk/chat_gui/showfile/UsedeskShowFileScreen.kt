@@ -75,7 +75,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
 
         initAndObserve(viewLifecycleOwner, viewModel.errorLiveData) {
-            onError(it)
+            it?.let {
+                onError(it)
+            }
         }
 
         initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {

@@ -16,10 +16,10 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 internal class OfflineFormViewModel : UsedeskViewModel() {
 
-    val offlineFormStateLiveData = MutableLiveData(OfflineFormState.DEFAULT)
-    val offlineFormSettings = MutableLiveData<UsedeskOfflineFormSettings>()
-    val fieldsLiveData = MutableLiveData<List<OfflineFormItem>>()
-    val sendEnabledLiveData = MutableLiveData(false)
+    val offlineFormStateLiveData = MutableLiveData<OfflineFormState?>(OfflineFormState.DEFAULT)
+    val offlineFormSettings = MutableLiveData<UsedeskOfflineFormSettings?>()
+    val fieldsLiveData = MutableLiveData<List<OfflineFormItem>?>()
+    val sendEnabledLiveData = MutableLiveData<Boolean?>(false)
 
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
     private var actionListenerRx: IUsedeskActionListenerRx? = null

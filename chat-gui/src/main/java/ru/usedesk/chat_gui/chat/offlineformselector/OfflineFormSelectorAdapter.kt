@@ -51,7 +51,9 @@ internal class OfflineFormSelectorAdapter(
     override fun onLiveData(viewModel: OfflineFormSelectorViewModel,
                             lifecycleOwner: LifecycleOwner) {
         viewModel.selectedIndexLiveData.observe(lifecycleOwner) {
-            onSelected(it)
+            it?.let {
+                onSelected(it)
+            }
         }
     }
 

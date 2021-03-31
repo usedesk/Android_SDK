@@ -10,10 +10,10 @@ import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class MessagesViewModel : UsedeskViewModel() {
 
-    val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>>()
-    val messagesLiveData = MutableLiveData<List<UsedeskMessage>>(listOf())
-    val messageUpdate = MutableLiveData<UsedeskMessage>()
-    val messageLiveData = MutableLiveData("")
+    val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>?>()
+    val messagesLiveData = MutableLiveData<List<UsedeskMessage>?>(listOf())
+    var message = ""
+        private set
 
     private val actionListenerRx: IUsedeskActionListenerRx
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
@@ -33,18 +33,12 @@ internal class MessagesViewModel : UsedeskViewModel() {
                     messagesLiveData.postValue(messages)
                 }
             }
-
-            override fun onMessageUpdateObservable(messageUpdateObservable: Observable<UsedeskMessage>): Disposable? {
-                return messageUpdateObservable.subscribe {
-                    messageUpdate.postValue(it)
-                }
-            }
         }
         usedeskChat.addActionListener(actionListenerRx)
     }
 
     fun onMessageChanged(message: String) {
-        messageLiveData.value = message
+        this.message = message
     }
 
     private fun clearFileInfoList() {

@@ -7,9 +7,9 @@ import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 internal class ShowFileViewModel : UsedeskViewModel() {
 
-    val fileLiveData = MutableLiveData<UsedeskSingleLifeEvent<UsedeskFile>>()
-    val errorLiveData = MutableLiveData(false)
-    val panelShowLiveData = MutableLiveData(true)
+    val fileLiveData = MutableLiveData<UsedeskSingleLifeEvent<UsedeskFile>?>()
+    val errorLiveData = MutableLiveData<Boolean?>(false)
+    val panelShowLiveData = MutableLiveData<Boolean?>(true)
 
     fun init(file: UsedeskFile?) {
         doInit {

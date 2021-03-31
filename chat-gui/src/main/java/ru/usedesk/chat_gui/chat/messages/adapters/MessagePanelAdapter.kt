@@ -24,7 +24,7 @@ internal class MessagePanelAdapter(
         binding.ivSend.setOnClickListener {
             onSendClick()
         }
-        binding.etMessage.setText(viewModel.messageLiveData.value)
+        binding.etMessage.setText(viewModel.message)
         binding.etMessage.addTextChangedListener(UsedeskTextChangeListener {
             viewModel.onMessageChanged(it)
         })

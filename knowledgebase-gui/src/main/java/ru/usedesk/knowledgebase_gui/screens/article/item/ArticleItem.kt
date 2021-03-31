@@ -108,26 +108,23 @@ internal class ArticleItem : UsedeskFragment() {
         }
 
         viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
+            it?.let {
                 when (it.state) {
                     ArticleItemViewModel.ArticleContentState.State.LOADING -> {
                         showInstead(binding.pbLoading, binding.lContent, gone = false)
                     }
                     ArticleItemViewModel.ArticleContentState.State.LOADED -> {
                         showInstead(binding.lContent, binding.pbLoading, gone = false)
-                        it.articleContent?.apply {
-                            onArticleContent(this)
+                        it.articleContent?.let { articleContent ->
+                            onArticleContent(articleContent)
                         }
-                    }
-                    else -> {
-
                     }
                 }
             }
         }
 
         parentViewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { articleInfo ->
-            currentArticleId?.also {
+            currentArticleId?.let {
                 if (articleInfo?.id != it) {
                     showQuestion(it)
                 }
@@ -138,7 +135,7 @@ internal class ArticleItem : UsedeskFragment() {
     }
 
     private fun updateFab() {
-        binding.apply {
+        binding.run {
             val dif = max(lContentScrollable.height, lContentScrollable.minimumHeight) - (scrollY + lContent.height)
             btnSupport.y = (rootView.height - btnSupport.height - btnSupport.marginBottom + min(0, dif)).toFloat()
         }
@@ -146,7 +143,7 @@ internal class ArticleItem : UsedeskFragment() {
 
     private fun onArticleContent(articleContent: UsedeskArticleContent) {
         updateFab()
-        binding.wvContent.apply {
+        binding.wvContent.run {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)

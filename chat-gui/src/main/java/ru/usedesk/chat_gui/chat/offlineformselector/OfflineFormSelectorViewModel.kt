@@ -6,11 +6,9 @@ import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class OfflineFormSelectorViewModel : UsedeskViewModel() {
 
-    private val usedeskChat = UsedeskChatSdk.requireInstance()
-
     val configuration = UsedeskChatSdk.requireConfiguration()
 
-    val selectedIndexLiveData = MutableLiveData<Int>()
+    val selectedIndexLiveData = MutableLiveData<Int?>()
 
     fun onSelected(selectedIndex: Int) {
         selectedIndexLiveData.value = selectedIndex

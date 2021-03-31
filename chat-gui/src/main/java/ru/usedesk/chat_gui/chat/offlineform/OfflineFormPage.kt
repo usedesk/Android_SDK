@@ -69,7 +69,9 @@ internal class OfflineFormPage : UsedeskFragment() {
         fieldsAdapter.onLiveData(viewModel, viewLifecycleOwner)
 
         viewModel.offlineFormStateLiveData.observe(viewLifecycleOwner) {
-            onState(it)
+            it?.let {
+                onState(it)
+            }
         }
 
         viewModel.sendEnabledLiveData.observe(viewLifecycleOwner) {
@@ -77,7 +79,7 @@ internal class OfflineFormPage : UsedeskFragment() {
         }
 
         viewModel.offlineFormSettings.observe(viewLifecycleOwner) {
-            binding.tvOfflineText.text = it.callbackGreeting
+            binding.tvOfflineText.text = it?.callbackGreeting
         }
     }
 
@@ -107,7 +109,7 @@ internal class OfflineFormPage : UsedeskFragment() {
         binding.tvSend.visibility = visibleGone(send)
     }
 
-    private fun onState(it: OfflineFormViewModel.OfflineFormState?) {
+    private fun onState(it: OfflineFormViewModel.OfflineFormState) {
         when (it) {
             OfflineFormViewModel.OfflineFormState.DEFAULT -> {
                 showViews(

@@ -25,9 +25,9 @@ internal class CategoriesAdapter internal constructor(
 
     override fun onLiveData(viewModel: CategoriesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.categoriesLiveData.observe(lifecycleOwner) {
-            (it ?: listOf()).apply {
-                if (categories != this) {
-                    categories = this
+            it?.let {
+                if (categories != it) {
+                    categories = it
                     notifyDataSetChanged()
                 }
             }

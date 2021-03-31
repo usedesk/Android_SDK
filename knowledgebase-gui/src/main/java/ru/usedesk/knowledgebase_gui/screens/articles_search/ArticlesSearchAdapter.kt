@@ -25,9 +25,9 @@ internal class ArticlesSearchAdapter(
 
     override fun onLiveData(viewModel: ArticlesSearchViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.articlesLiveData.observe(lifecycleOwner) {
-            (it ?: listOf()).apply {
-                if (articles != this) {
-                    articles = this
+            it?.let {
+                if (articles != it) {
+                    articles = it
                     notifyDataSetChanged()
                 }
             }

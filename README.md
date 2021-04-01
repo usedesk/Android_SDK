@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.1.6)
+# Android Usedesk SDK (v3.1.8)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -398,3 +398,6 @@ UsedeskKnowledgeBaseSdk.release()
   - В README.md [добавлен раздел](#gui_localization) "Локализация"
   - Исправлена инициализации чата в случае отсутствия сообщений
   - **Внимание!** В конфигурацию чата добавлен **обязательный** параметр `channelId`
+- v3.1.8
+  - Исправлена ошибка NullSafeMutableLiveData
+  - Добавлена валидация на companyId и channelId в конфигурации Чата

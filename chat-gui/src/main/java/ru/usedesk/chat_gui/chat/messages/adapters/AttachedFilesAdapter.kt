@@ -24,7 +24,9 @@ internal class AttachedFilesAdapter(
 
     override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
-            onItems(it ?: listOf())
+            it?.let {
+                onItems(it)
+            }
         }
     }
 

@@ -73,7 +73,9 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     private fun onLiveData() {
         viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
-            onException(it)
+            it?.let {
+                onException(it)
+            }
         }
 
         viewModel.pageLiveData.observe(viewLifecycleOwner) {
@@ -85,10 +87,10 @@ class UsedeskChatScreen : UsedeskFragment(),
                                 .getString(android.R.attr.text)
                     }
                     ChatNavigation.Page.OFFLINE_FORM -> {
-                        viewModel.offlineFormSettingsLiveData.value?.callbackTitle
+                        viewModel.offlineFormSettings?.callbackTitle
                     }
                     ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
-                        viewModel.offlineFormSettingsLiveData.value?.topicsTitle
+                        viewModel.offlineFormSettings?.topicsTitle
                     }
                 }
                 toolbarAdapter.setTitle(title)

@@ -29,11 +29,15 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
                 validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
                 validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
                 validUrlToSendFile = UsedeskValidatorUtil.isValidUrlNecessary(urlToSendFile),
-                validCompanyId = companyId.isNotEmpty(),
-                validChannelId = channelId.isNotEmpty(),
+                validCompanyId = isNotEmptyNumber(companyId),
+                validChannelId = isNotEmptyNumber(channelId),
                 validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
                 validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
         )
+    }
+
+    private fun isNotEmptyNumber(value: String): Boolean {
+        return value.isNotEmpty() && value.all { it in '0'..'9' }
     }
 
     companion object {

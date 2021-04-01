@@ -38,9 +38,9 @@ internal class ArticlePagesAdapter(
 
     override fun onLiveData(viewModel: ArticlePageViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.articlesLiveData.observe(lifecycleOwner) {
-            (it ?: listOf()).apply {
-                if (items != this) {
-                    items = this
+            it?.let {
+                if (items != it) {
+                    items = it
                     notifyDataSetChanged()
                 }
             }

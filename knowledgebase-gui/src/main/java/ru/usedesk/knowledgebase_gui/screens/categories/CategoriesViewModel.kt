@@ -7,7 +7,7 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesViewModel : UsedeskViewModel() {
 
-    val categoriesLiveData = MutableLiveData<List<UsedeskCategory>>()
+    val categoriesLiveData = MutableLiveData<List<UsedeskCategory>?>()
 
     fun init(sectionId: Long) {
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()

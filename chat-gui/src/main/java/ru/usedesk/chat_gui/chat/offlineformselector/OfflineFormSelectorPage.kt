@@ -55,7 +55,7 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
         adapter.onLiveData(viewModel, viewLifecycleOwner)
 
         viewModel.selectedIndexLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
+            it?.let {
                 getParentListener<IItemSelectChangeListener>()?.onItemSelectChange(it)
             }
         }

@@ -7,7 +7,7 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class SectionsViewModel : UsedeskViewModel() {
 
-    val sectionsLiveData = MutableLiveData<List<UsedeskSection>>()
+    val sectionsLiveData = MutableLiveData<List<UsedeskSection>?>()
 
     init {
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()

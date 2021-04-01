@@ -7,7 +7,7 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 internal class ArticlesViewModel : UsedeskViewModel() {
 
-    val articleInfoListLiveData = MutableLiveData<List<UsedeskArticleInfo>>()
+    val articleInfoListLiveData = MutableLiveData<List<UsedeskArticleInfo>?>()
 
     fun init(categoryId: Long) {
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()

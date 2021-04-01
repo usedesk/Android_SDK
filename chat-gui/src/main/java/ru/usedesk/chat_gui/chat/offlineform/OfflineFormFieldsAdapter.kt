@@ -66,7 +66,7 @@ internal class OfflineFormFieldsAdapter(
 
     override fun onLiveData(viewModel: OfflineFormViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.fieldsLiveData.observe(lifecycleOwner) {
-            if (it != null) {
+            it?.let {
                 val oldItems = items
                 items = it
                 if (oldItems.isEmpty()) {

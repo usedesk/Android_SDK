@@ -326,13 +326,7 @@ internal class MessagesAdapter(
 
             val name = messageFile.file.name
             binding.tvFileName.text = name
-            val index = name.lastIndexOf('.')
-            binding.tvExtension.text = if (index >= 0) {
-                name.substring(index + 1)
-                        .toUpperCase(Locale.getDefault())
-            } else {
-                ""
-            }
+            binding.tvExtension.text = name.substringAfterLast('.')
             binding.tvFileSize.text = messageFile.file.size
             binding.rootView.setOnClickListener {
                 onFileClick(messageFile.file)

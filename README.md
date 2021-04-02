@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.1.8)
+# Android Usedesk SDK (v3.1.9)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -401,3 +401,6 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.1.8
   - Исправлена ошибка NullSafeMutableLiveData
   - Добавлена валидация на companyId и channelId в конфигурации Чата
+- v3.1.9
+  - Добавлен парсинг изображений из текста сообщений в Чате
+  - Исправлено отображение расширений файлов в Чате

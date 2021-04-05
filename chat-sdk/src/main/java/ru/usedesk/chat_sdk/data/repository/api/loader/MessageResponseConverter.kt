@@ -36,7 +36,9 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
             val name = from.name ?: ""
             val avatar = from.payload?.avatar ?: ""
 
-            val fileMessage = convertOrNull {
+            val fileMessages = mutableListOf<UsedeskMessageFile>()
+
+            convertOrNull {
                 if (from.file != null) {
                     val file = UsedeskFile.create(from.file!!.content!!,
                             from.file!!.type,
@@ -75,6 +77,8 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                 } else {
                     null
                 }
+            }?.let {
+                fileMessages.add(it)
             }
 
             val textMessage = convertOrNull {
@@ -101,15 +105,51 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                         feedback = null
                     }
 
+                    val imageRegexp = "!\\[[^]]*]\\((.*?)\\s*(\"(?:.*[^\"])\")?\\s*\\)".toRegex()
+
                     var convertedText = from.text!!
-                            .replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
+
+                    var matcher = imageRegexp.find(convertedText)
+                    while (matcher != null) {
+                        val section = matcher.value.removePrefix("![")
+                                .removeSuffix(")")
+                        val fileName = section.substringBefore("](")
+                        val fileUrl = section.substringAfter("](")
+                        convertedText = convertedText.replace(matcher.value, "")
+                        matcher = imageRegexp.find(convertedText)
+
+                        val file = UsedeskFile.create(fileUrl,
+                                "image/*",
+                                "0",
+                                fileName)
+                        fileMessages.add(
+                                if (fromClient) {
+                                    UsedeskMessageClientImage(id,
+                                            messageDate,
+                                            file,
+                                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                            localId)
+                                } else {
+                                    UsedeskMessageAgentImage(id,
+                                            messageDate,
+                                            file,
+                                            name,
+                                            avatar)
+                                }
+                        )
+                    }
+
+                    convertedText = convertedText.replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
                             .replace("</strong>", "</b>")
                             .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
                             .replace("</em>", "</i>")
                             .replace("</p>", "")
                             .removePrefix("<p>")
-                            .trim('\u200B')
-                            .trim()
+                            .trim('\u200B', ' ', '\r', '\n')
+
+                    if (convertedText != from.text) {
+                        println()
+                    }
 
                     buttons.forEach {
                         val show: String
@@ -148,7 +188,7 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                 }
             }
 
-            listOfNotNull(textMessage, fileMessage)
+            (listOf(textMessage) + fileMessages).filterNotNull()
         } ?: listOf()
     }
 

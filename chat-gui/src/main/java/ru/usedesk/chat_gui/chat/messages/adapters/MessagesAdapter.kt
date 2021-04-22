@@ -334,14 +334,13 @@ internal class MessagesAdapter(
                 val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_2)
                 binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
                 binding.tvFileSize.setTextColor(textColor)
-                binding.rootView.setOnClickListener {}
             } else {
                 val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_1)
                 binding.tvFileSize.text = messageFile.file.size
                 binding.tvFileSize.setTextColor(textColor)
-                binding.rootView.setOnClickListener {
-                    onFileClick(messageFile.file)
-                }
+            }
+            binding.rootView.setOnClickListener {
+                onFileClick(messageFile.file)
             }
         }
     }

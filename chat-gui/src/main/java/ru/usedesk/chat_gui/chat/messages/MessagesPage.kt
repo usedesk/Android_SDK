@@ -12,7 +12,6 @@ import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -118,8 +117,8 @@ internal class MessagesPage : UsedeskFragment() {
                 arguments = Bundle().apply {
                     if (agentName != null) {
                         putString(AGENT_NAME_KEY, agentName)
-                        putStringArray(REJECTED_FILE_EXTENSIONS_KEY, rejectedFileExtensions)
                     }
+                    putStringArray(REJECTED_FILE_EXTENSIONS_KEY, rejectedFileExtensions)
                 }
             }
         }

@@ -25,12 +25,17 @@ internal class ChatViewModel : UsedeskViewModel() {
     private lateinit var actionListenerRx: IUsedeskActionListenerRx
 
     private var agentName: String? = null
-
+    private var rejectedFileExtensions: Array<String> = arrayOf()
     private var chatInited = false
 
-    fun init(chatNavigation: ChatNavigation, agentName: String?) {
+    fun init(
+            chatNavigation: ChatNavigation,
+            agentName: String?,
+            rejectedFileExtensions: Array<String>
+    ) {
         this.chatNavigation = chatNavigation
         this.agentName = agentName
+        this.rejectedFileExtensions = rejectedFileExtensions
 
         addDisposable(chatNavigation.pageRx().subscribe {
             pageLiveData.value = it
@@ -55,7 +60,7 @@ internal class ChatViewModel : UsedeskViewModel() {
                 return messagesObservable.subscribe {
                     if (!chatInited) {
                         chatInited = true
-                        chatNavigation.goMessages(agentName)
+                        chatNavigation.goMessages(agentName, rejectedFileExtensions)
                     }
                 }
             }
@@ -102,6 +107,6 @@ internal class ChatViewModel : UsedeskViewModel() {
     }
 
     fun goMessages() {
-        chatNavigation.goMessages(agentName)
+        chatNavigation.goMessages(agentName, rejectedFileExtensions)
     }
 }

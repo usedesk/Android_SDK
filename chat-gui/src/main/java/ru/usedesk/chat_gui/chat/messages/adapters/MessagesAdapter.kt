@@ -25,6 +25,7 @@ internal class MessagesAdapter(
         private val viewModel: MessagesViewModel,
         private val recyclerView: RecyclerView,
         private val customAgentName: String?,
+        private val rejectedFileExtensions: Array<String>,
         private val onFileClick: (UsedeskFile) -> Unit,
         private val onUrlClick: (String) -> Unit
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<MessagesViewModel> {
@@ -319,6 +320,8 @@ internal class MessagesAdapter(
             bindingDate: DateBinding
     ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
 
+        private val textSizeStyleValues = binding.styleValues.getStyleValues(R.attr.usedesk_chat_message_file_size_text)
+
         override fun bind(position: Int) {
             super.bind(position)
 
@@ -327,9 +330,18 @@ internal class MessagesAdapter(
             val name = messageFile.file.name
             binding.tvFileName.text = name
             binding.tvExtension.text = name.substringAfterLast('.')
-            binding.tvFileSize.text = messageFile.file.size
-            binding.rootView.setOnClickListener {
-                onFileClick(messageFile.file)
+            if (rejectedFileExtensions.any { name.endsWith(it) }) {
+                val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_2)
+                binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
+                binding.tvFileSize.setTextColor(textColor)
+                binding.rootView.setOnClickListener {}
+            } else {
+                val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_1)
+                binding.tvFileSize.text = messageFile.file.size
+                binding.tvFileSize.setTextColor(textColor)
+                binding.rootView.setOnClickListener {
+                    onFileClick(messageFile.file)
+                }
             }
         }
     }

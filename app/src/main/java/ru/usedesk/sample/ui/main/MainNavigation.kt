@@ -24,7 +24,7 @@ class MainNavigation internal constructor(private val activity: AppCompatActivit
     }
 
     fun goChat(customAgentName: String?) {
-        switchFragment(newInstance(customAgentName))
+        switchFragment(newInstance(customAgentName, arrayOf("apk", "jar", "dex", "so", "aab")))
     }
 
     fun goKnowledgeBase(withSupportButton: Boolean,

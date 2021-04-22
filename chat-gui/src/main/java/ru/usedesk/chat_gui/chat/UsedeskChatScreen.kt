@@ -191,15 +191,16 @@ class UsedeskChatScreen : UsedeskFragment(),
         @JvmStatic
         fun newInstance(
                 agentName: String? = null,
-                rejectedFileExtensions: Array<String> = arrayOf()
+                rejectedFileExtensions: Array<String>? = null
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
                 arguments = Bundle().apply {
                     if (agentName != null) {
-                        putString(AGENT_NAME_KEY, agentName)
-                        putStringArray(REJECTED_FILE_EXTENSIONS_KEY, rejectedFileExtensions.map {
+                        val extensions = rejectedFileExtensions?.map {
                             '.' + it.trim(' ', '.')
-                        }.toTypedArray())
+                        }?.toTypedArray() ?: arrayOf()
+                        putString(AGENT_NAME_KEY, agentName)
+                        putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
                     }
                 }
             }

@@ -48,8 +48,9 @@ internal class MessagesPage : UsedeskFragment() {
             }
 
             val agentName: String? = argsGetString(AGENT_NAME_KEY)
+            val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
 
-            init(agentName)
+            init(agentName, rejectedFileExtensions)
         }
 
         onLiveData()
@@ -62,23 +63,23 @@ internal class MessagesPage : UsedeskFragment() {
         messagesAdapter.onLiveData(viewModel, viewLifecycleOwner)
     }
 
-    private fun init(agentName: String?) {
+    private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
         UsedeskChatSdk.init(requireContext())
 
         messagePanelAdapter = MessagePanelAdapter(binding.messagePanel, viewModel) {
-
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
         }
 
         messagesAdapter = MessagesAdapter(viewModel,
                 binding.rvMessages,
                 agentName,
-                { file ->
-                    getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(file)
+                rejectedFileExtensions,
+                {
+                    getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
                 },
-                { url ->
-                    getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(url)
-                            ?: this.onUrlClick(url)
+                {
+                    getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
+                            ?: onUrlClick(it)
                 })
     }
 
@@ -106,15 +107,18 @@ internal class MessagesPage : UsedeskFragment() {
 
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"
+        private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
 
-        @JvmOverloads
-        @JvmStatic
-        fun newInstance(agentName: String? = null): MessagesPage {
+        fun newInstance(
+                agentName: String?,
+                rejectedFileExtensions: Array<String>
+        ): MessagesPage {
             return MessagesPage().apply {
                 arguments = Bundle().apply {
                     if (agentName != null) {
                         putString(AGENT_NAME_KEY, agentName)
                     }
+                    putStringArray(REJECTED_FILE_EXTENSIONS_KEY, rejectedFileExtensions)
                 }
             }
         }

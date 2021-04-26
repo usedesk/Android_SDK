@@ -34,7 +34,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun goShowFile(usedeskFile: UsedeskFile) {
-        mainNavigation.goShowFile(usedeskFile)
+        if (REJECTED_FILE_TYPES.all { !usedeskFile.name.endsWith(it) }) {
+            mainNavigation.goShowFile(usedeskFile)
+        }
     }
 
     fun goSdk() {
@@ -73,7 +75,7 @@ class MainViewModel : ViewModel() {
                     mainNavigation.goKnowledgeBase(configuration.withKbSupportButton,
                             configuration.withKbArticleRating)
                 } else {
-                    mainNavigation.goChat(configuration.customAgentName)
+                    mainNavigation.goChat(configuration.customAgentName, REJECTED_FILE_TYPES)
                 }
             } else {
                 errorLiveData.postValue(UsedeskSingleLifeEvent("Invalid configuration"))
@@ -83,7 +85,7 @@ class MainViewModel : ViewModel() {
 
     fun goChat() {
         disposables.add(configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
-            mainNavigation.goChat(configuration.customAgentName)
+            mainNavigation.goChat(configuration.customAgentName, REJECTED_FILE_TYPES)
         })
     }
 
@@ -116,5 +118,9 @@ class MainViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
+    }
+
+    companion object {
+        private val REJECTED_FILE_TYPES = listOf("apk", "jar", "dex", "so", "aab")
     }
 }

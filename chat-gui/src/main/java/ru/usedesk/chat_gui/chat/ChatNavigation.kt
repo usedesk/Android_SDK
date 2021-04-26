@@ -23,8 +23,11 @@ internal class ChatNavigation(
         navigateToRoot(LoadingPage.newInstance())
     }
 
-    fun goMessages(agentName: String?) {
-        navigateToRoot(MessagesPage.newInstance(agentName))
+    fun goMessages(
+            agentName: String?,
+            rejectedFileExtensions: Array<String>
+    ) {
+        navigateToRoot(MessagesPage.newInstance(agentName, rejectedFileExtensions))
     }
 
     fun goOfflineForm() {

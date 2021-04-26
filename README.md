@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.1.9)
+# Android Usedesk SDK (v3.2.0)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -46,6 +46,15 @@ implementation 'ru.usedesk:knowledgebase-sdk:{last_version}'
 ```
 implementation 'ru.usedesk:chat-gui:{last_version}'
 implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
+```
+
+Добавьте в файл Manifest:
+```
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.CAMERA" />
 ```
 
 <a name="chat"></a>
@@ -114,7 +123,9 @@ supportFragmentManager.beginTransaction()
         .commit()
 ```
 
-Метод `newInstance` может принять параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
+Метод `newInstance` может принять:
+- Параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
+- Параметр типа `Collection<String>` со списком расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае).
 
 Для полноценной работы фрагмента необходимо:
 - Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет, например:
@@ -348,7 +359,7 @@ UsedeskKnowledgeBaseSdk.release()
   - Исправлено падение сервиса при отсутствии телефона или доп id клиента в конфигурации
   - Исправлено отображение текста и изображения в сообщении
   - Исправлено отображение текста кнопок в сообщении, если они должны отображаться
-  - Исправлено падение в семпле при переполнении поля Client Addinional ID
+  - Исправлено падение в семпле при переполнении поля Client Additional ID
 - v2.1.12
   - Исправлена ошибка, при которой не отображался прикреплённый к сообщению файл, отправленный из интерфейса тикета
 - v2.1.13
@@ -404,3 +415,7 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.1.9
   - Добавлен парсинг изображений из текста сообщений в Чате
   - Исправлено отображение расширений файлов в Чате
+- v3.2.0
+  - Добавлен параметр `rejectedFileExtensions` в метод `UsedeskChatScreen.newInstance()` для фильтрации опасных файлов
+  - Подправлена вёрстка `usedesk_item_chat_message_file`, добавлены параметры в стиль `Usedesk.Chat.Message.File.Size.Text`
+  - **Внимание!** Обновлён файл `strings_template.xml`

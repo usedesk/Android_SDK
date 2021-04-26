@@ -59,9 +59,10 @@ class UsedeskChatScreen : UsedeskFragment(),
                 }
             }
 
-            val agentName: String? = argsGetString(AGENT_NAME_KEY)
+            val agentName = argsGetString(AGENT_NAME_KEY)
+            val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
 
-            init(agentName)
+            init(agentName, rejectedFileExtensions)
         }
 
         chatNavigation?.fragmentManager = childFragmentManager
@@ -104,13 +105,13 @@ class UsedeskChatScreen : UsedeskFragment(),
         attachment = UsedeskAttachmentDialog.create(this)
     }
 
-    private fun init(agentName: String?) {
+    private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
         UsedeskChatSdk.init(requireContext())
 
         if (chatNavigation == null) {
             ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
                 chatNavigation = it
-                viewModel.init(it, agentName)
+                viewModel.init(it, agentName, rejectedFileExtensions)
             }
         }
     }
@@ -184,15 +185,23 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"
+        private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
 
         @JvmOverloads
         @JvmStatic
-        fun newInstance(agentName: String? = null): UsedeskChatScreen {
+        fun newInstance(
+                agentName: String? = null,
+                rejectedFileExtensions: Collection<String>? = null
+        ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
                 arguments = Bundle().apply {
                     if (agentName != null) {
                         putString(AGENT_NAME_KEY, agentName)
                     }
+                    val extensions = rejectedFileExtensions?.map {
+                        '.' + it.trim(' ', '.')
+                    }?.toTypedArray() ?: arrayOf()
+                    putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
                 }
             }
         }

@@ -22,6 +22,7 @@
     <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
     <string name="usedesk_camera">@string/usedesk_string_camera</string>
     <string name="usedesk_storage">@string/usedesk_string_storage</string>
+    <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
     <!--KnowledgeBase-->
     <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
     <string name="usedesk_cancel">@string/usedesk_string_cancel</string>

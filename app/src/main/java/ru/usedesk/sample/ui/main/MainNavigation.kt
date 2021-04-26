@@ -23,8 +23,11 @@ class MainNavigation internal constructor(private val activity: AppCompatActivit
         switchFragment(ConfigurationScreen.newInstance())
     }
 
-    fun goChat(customAgentName: String?) {
-        switchFragment(newInstance(customAgentName))
+    fun goChat(
+            customAgentName: String?,
+            rejectedFileExtensions: Collection<String>
+    ) {
+        switchFragment(newInstance(customAgentName, rejectedFileExtensions))
     }
 
     fun goKnowledgeBase(withSupportButton: Boolean,

@@ -113,26 +113,26 @@ internal class KnowledgeBaseApiRepository(
             it.getSections(configuration.accountId, configuration.token)
         }.mapNotNull { sectionResponse ->
             valueOrNull {
-                val categories = (sectionResponse.categories ?: arrayOf())
-                        .filterNotNull()
-                        .map { categoryResponse ->
-                            val categoryId = categoryResponse.id!!
-                            val articles = (categoryResponse.articles ?: arrayOf())
-                                    .filterNotNull()
-                                    .map { articleResponse ->
-                                        UsedeskArticleInfo(
-                                                articleResponse.id!!,
-                                                articleResponse.title ?: "",
-                                                categoryId,
-                                                articleResponse.views ?: 0
-                                        )
-                                    }
-                            UsedeskCategory(
-                                    categoryId,
-                                    categoryResponse.title ?: "",
-                                    categoryResponse.description ?: "",
-                                    articles)
-                        }
+                val categories = sectionResponse.categories?.mapNotNull { categoryResponse ->
+                    valueOrNull {
+                        val categoryId = categoryResponse!!.id!!
+                        val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
+                            valueOrNull {
+                                UsedeskArticleInfo(
+                                        articleResponse!!.id!!,
+                                        articleResponse.title ?: "",
+                                        categoryId,
+                                        articleResponse.views ?: 0
+                                )
+                            }
+                        } ?: listOf()
+                        UsedeskCategory(
+                                categoryId,
+                                categoryResponse.title ?: "",
+                                categoryResponse.description ?: "",
+                                articles)
+                    }
+                } ?: listOf()
                 UsedeskSection(
                         sectionResponse.id!!,
                         sectionResponse.title ?: "",

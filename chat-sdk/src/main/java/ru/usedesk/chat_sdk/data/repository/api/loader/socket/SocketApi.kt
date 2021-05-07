@@ -101,7 +101,7 @@ internal class SocketApi(
                 companyId: String,
                 eventListener: EventListener
     ) {
-        socket = socket ?: getSocket(url).also { socket ->
+        socket = (socket ?: getSocket(url)).also { socket ->
             this.eventListener = eventListener
             this.initChatRequest = InitChatRequest(token, companyId, url)
 

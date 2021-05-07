@@ -49,7 +49,7 @@ internal class ChatViewModel : UsedeskViewModel() {
             ): Disposable? {
                 return connectedStateObservable.subscribe {
                     if (!it) {
-                        //doIt(usedeskChat.connectRx())
+                        doIt(usedeskChat.connectRx())
                     }
                 }
             }

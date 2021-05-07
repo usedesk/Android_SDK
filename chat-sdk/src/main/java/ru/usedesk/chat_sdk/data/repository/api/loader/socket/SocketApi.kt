@@ -147,7 +147,7 @@ internal class SocketApi(
     fun sendRequest(baseRequest: BaseRequest) {
         try {
             val rawRequest = gson.toJson(baseRequest)
-            //Log.d("DBG", rawRequest)
+            //Log.d("DBG", baseRequest.javaClass.simpleName + ":" +rawRequest)
             val jsonRequest = JSONObject(rawRequest)
             socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {

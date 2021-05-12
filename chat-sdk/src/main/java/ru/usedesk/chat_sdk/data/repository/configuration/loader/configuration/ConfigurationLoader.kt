@@ -10,15 +10,14 @@ import toothpick.InjectConstructor
 
 @InjectConstructor
 internal class ConfigurationLoader(
-        context: Context
+        context: Context,
+        val gson: Gson
 ) : DataLoader<UsedeskChatConfiguration>(), IConfigurationLoader {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
             PREF_NAME,
             Context.MODE_MULTI_PROCESS
     )
-
-    private val gson: Gson = Gson()
 
     override fun loadData(): UsedeskChatConfiguration? {
         val version = sharedPreferences.getInt(KEY_VERSION, 1)

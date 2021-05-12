@@ -20,7 +20,7 @@ internal class MultipartConverter : IMultipartConverter {
             key: String,
             loadedFile: LoadedFile
     ): MultipartBody.Part {
-        val mediaType: MediaType = MediaType.get(loadedFile.type)
+        val mediaType = MediaType.get(loadedFile.type)
         val requestBody = RequestBody.create(mediaType, loadedFile.bytes)
         return MultipartBody.Part.createFormData(key, loadedFile.name, requestBody)
     }

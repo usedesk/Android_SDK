@@ -20,8 +20,9 @@ class ConfigurationViewModel : ViewModel() {
     val goToSdkEvent = MutableLiveData<UsedeskEvent<Any?>?>()
 
     init {
-        disposables.add(configurationRepository.getConfiguration()
-                .subscribe { value: Configuration -> configurationLiveData.postValue(value) })
+        disposables.add(configurationRepository.getConfiguration().subscribe { value: Configuration ->
+            configurationLiveData.postValue(value)
+        })
     }
 
     fun onGoSdkClick(configuration: Configuration) {

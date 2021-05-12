@@ -57,6 +57,7 @@ internal class SocketApi(
     }
 
     private fun onResponse(rawResponse: String) {
+        //Log.d("RESPONSE", rawResponse)
         val response = process(rawResponse)
         if (response != null) {
             try {
@@ -100,7 +101,7 @@ internal class SocketApi(
                 companyId: String,
                 eventListener: EventListener
     ) {
-        socket = socket ?: getSocket(url).also { socket ->
+        socket = (socket ?: getSocket(url)).also { socket ->
             this.eventListener = eventListener
             this.initChatRequest = InitChatRequest(token, companyId, url)
 
@@ -145,8 +146,10 @@ internal class SocketApi(
     @Throws(UsedeskSocketException::class)
     fun sendRequest(baseRequest: BaseRequest) {
         try {
-            val jsonObject = JSONObject(gson.toJson(baseRequest))
-            socket?.emit(EVENT_SERVER_ACTION, jsonObject)
+            val rawRequest = gson.toJson(baseRequest)
+            //Log.d("DBG", baseRequest.javaClass.simpleName + ":" +rawRequest)
+            val jsonRequest = JSONObject(rawRequest)
+            socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {
             throw UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message)
         }

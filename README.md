@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.2.0)
+# Android Usedesk SDK (v3.2.1)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -419,3 +419,6 @@ UsedeskKnowledgeBaseSdk.release()
   - Добавлен параметр `rejectedFileExtensions` в метод `UsedeskChatScreen.newInstance()` для фильтрации опасных файлов
   - Подправлена вёрстка `usedesk_item_chat_message_file`, добавлены параметры в стиль `Usedesk.Chat.Message.File.Size.Text`
   - **Внимание!** Обновлён файл `strings_template.xml`
+- v3.2.1
+  - Исправлена ошибка при вызове метода `connect()` после `disconnect()`
+  - Добавлен [файл конфигурации ProGuard](https://github.com/usedesk/Android_SDK/blob/master/app/proguard-rules.pro "proguard-rules.pro") для примера обфускации библиотеки

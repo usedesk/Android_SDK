@@ -15,7 +15,8 @@ import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository
 
 class MainViewModel : ViewModel() {
-    private val configurationRepository: ConfigurationRepository = ServiceLocator.configurationRepository
+    private val configurationRepository: ConfigurationRepository =
+        ServiceLocator.configurationRepository
     private val disposables = CompositeDisposable()
     private var inited = false
 
@@ -25,9 +26,12 @@ class MainViewModel : ViewModel() {
     private lateinit var mainNavigation: MainNavigation
     private lateinit var configuration: Configuration
 
-    fun init(mainNavigation: MainNavigation) {
+    fun init(
+        mainNavigation: MainNavigation,
+        initNeeded: Boolean
+    ) {
         this.mainNavigation = mainNavigation
-        if (!inited) {
+        if (!inited && initNeeded) {
             inited = true
             mainNavigation.goConfiguration()
         }
@@ -40,21 +44,22 @@ class MainViewModel : ViewModel() {
     }
 
     fun goSdk() {
-        disposables.add(configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
-            val defaultChatConfiguration = UsedeskChatConfiguration(
+        disposables.add(
+            configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
+                val defaultChatConfiguration = UsedeskChatConfiguration(
                     urlChat = configuration.urlChat,
                     companyId = configuration.companyId,
                     channelId = configuration.channelId,
-            )
-            var urlToSendFile = configuration.urlToSendFile
-            if (urlToSendFile.isEmpty()) {
-                urlToSendFile = defaultChatConfiguration.urlToSendFile
-            }
-            var urlOfflineForm = configuration.urlOfflineForm
-            if (urlOfflineForm.isEmpty()) {
-                urlOfflineForm = defaultChatConfiguration.urlOfflineForm
-            }
-            val usedeskChatConfiguration = UsedeskChatConfiguration(
+                )
+                var urlToSendFile = configuration.urlToSendFile
+                if (urlToSendFile.isEmpty()) {
+                    urlToSendFile = defaultChatConfiguration.urlToSendFile
+                }
+                var urlOfflineForm = configuration.urlOfflineForm
+                if (urlOfflineForm.isEmpty()) {
+                    urlOfflineForm = defaultChatConfiguration.urlOfflineForm
+                }
+                val usedeskChatConfiguration = UsedeskChatConfiguration(
                     configuration.urlChat,
                     urlOfflineForm,
                     urlToSendFile,
@@ -66,52 +71,61 @@ class MainViewModel : ViewModel() {
                     configuration.clientNote,
                     configuration.clientPhoneNumber,
                     configuration.clientAdditionalId,
-                    configuration.clientInitMessage)
-            if (usedeskChatConfiguration.validate().isAllValid()) {
-                this.configuration = configuration
-                initUsedeskConfiguration(usedeskChatConfiguration, configuration.withKb)
-                configurationLiveData.postValue(configuration)
-                if (this.configuration.withKb) {
-                    mainNavigation.goKnowledgeBase(configuration.withKbSupportButton,
-                            configuration.withKbArticleRating)
+                    configuration.clientInitMessage
+                )
+                if (usedeskChatConfiguration.validate().isAllValid()) {
+                    this.configuration = configuration
+                    initUsedeskConfiguration(usedeskChatConfiguration, configuration.withKb)
+                    configurationLiveData.postValue(configuration)
+                    if (this.configuration.withKb) {
+                        mainNavigation.goKnowledgeBase(
+                            configuration.withKbSupportButton,
+                            configuration.withKbArticleRating
+                        )
+                    } else {
+                        mainNavigation.goChat(configuration.customAgentName, REJECTED_FILE_TYPES)
+                    }
                 } else {
-                    mainNavigation.goChat(configuration.customAgentName, REJECTED_FILE_TYPES)
+                    errorLiveData.postValue(UsedeskSingleLifeEvent("Invalid configuration"))
                 }
-            } else {
-                errorLiveData.postValue(UsedeskSingleLifeEvent("Invalid configuration"))
-            }
-        })
+            })
     }
 
     fun goChat() {
-        disposables.add(configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
-            mainNavigation.goChat(configuration.customAgentName, REJECTED_FILE_TYPES)
-        })
+        disposables.add(
+            configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
+                mainNavigation.goChat(configuration.customAgentName, REJECTED_FILE_TYPES)
+            })
     }
 
     fun onBackPressed() {
         mainNavigation.onBackPressed()
     }
 
-    private fun initUsedeskConfiguration(usedeskChatConfiguration: UsedeskChatConfiguration,
-                                         withKnowledgeBase: Boolean) {
+    private fun initUsedeskConfiguration(
+        usedeskChatConfiguration: UsedeskChatConfiguration,
+        withKnowledgeBase: Boolean
+    ) {
         setConfiguration(usedeskChatConfiguration)
         if (withKnowledgeBase) {
             val defaultConfiguration = UsedeskKnowledgeBaseConfiguration(
-                    configuration.accountId,
-                    configuration.token,
-                    configuration.clientEmail
+                configuration.accountId,
+                configuration.token,
+                configuration.clientEmail
             )
             var urlApi = configuration.urlApi
             if (urlApi.isEmpty()) {
                 urlApi = defaultConfiguration.urlApi
             }
-            setConfiguration(UsedeskKnowledgeBaseConfiguration(
+            setConfiguration(
+                UsedeskKnowledgeBaseConfiguration(
                     urlApi,
                     configuration.accountId,
                     configuration.token,
                     configuration.clientEmail,
-                    configuration.clientName))
+                    configuration.clientName
+                )
+            )
         }
     }
 

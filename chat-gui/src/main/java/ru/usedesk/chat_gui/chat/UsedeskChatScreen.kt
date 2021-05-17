@@ -22,10 +22,10 @@ import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
 
 class UsedeskChatScreen : UsedeskFragment(),
-        IUsedeskOnAttachmentClickListener,
-        IOnOfflineFormSelectorClick,
-        IItemSelectChangeListener,
-        IOnGoToChatListener {
+    IUsedeskOnAttachmentClickListener,
+    IOnOfflineFormSelectorClick,
+    IItemSelectChangeListener,
+    IOnGoToChatListener {
 
     private val viewModel: ChatViewModel by viewModels()
 
@@ -37,66 +37,35 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     private var cleared = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_screen_chat,
+            R.style.Usedesk_Chat_Screen
+        ) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_screen_chat,
-                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            toolbarAdapter = UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
+        toolbarAdapter =
+            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
                 setBackButton {
                     requireActivity().onBackPressed()
                 }
             }
 
-            val agentName = argsGetString(AGENT_NAME_KEY)
-            val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
+        val agentName = argsGetString(AGENT_NAME_KEY)
+        val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
 
-            init(agentName, rejectedFileExtensions)
-        }
+        init(agentName, rejectedFileExtensions)
 
         chatNavigation?.fragmentManager = childFragmentManager
 
-        onLiveData()
-
         return binding.rootView
-    }
-
-    private fun onLiveData() {
-        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                onException(it)
-            }
-        }
-
-        viewModel.pageLiveData.observe(viewLifecycleOwner) {
-            it?.let { page ->
-                val title = when (page) {
-                    ChatNavigation.Page.LOADING,
-                    ChatNavigation.Page.MESSAGES -> {
-                        binding.styleValues.getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                                .getString(android.R.attr.text)
-                    }
-                    ChatNavigation.Page.OFFLINE_FORM -> {
-                        viewModel.offlineFormSettings?.callbackTitle
-                    }
-                    ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
-                        viewModel.offlineFormSettings?.topicsTitle
-                    }
-                }
-                toolbarAdapter.setTitle(title)
-            }
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,11 +83,36 @@ class UsedeskChatScreen : UsedeskFragment(),
                 viewModel.init(it, agentName, rejectedFileExtensions)
             }
         }
+
+        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
+            it?.let {
+                onException(it)
+            }
+        }
+
+        viewModel.pageLiveData.observe(viewLifecycleOwner) {
+            it?.let { page ->
+                val title = when (page) {
+                    ChatNavigation.Page.LOADING,
+                    ChatNavigation.Page.MESSAGES -> {
+                        binding.styleValues.getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                            .getString(android.R.attr.text)
+                    }
+                    ChatNavigation.Page.OFFLINE_FORM -> {
+                        viewModel.offlineFormSettings?.callbackTitle
+                    }
+                    ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
+                        viewModel.offlineFormSettings?.topicsTitle
+                    }
+                }
+                toolbarAdapter.setTitle(title)
+            }
+        }
     }
 
     override fun onAttachmentClick() {
         getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-                ?: attachment.show()
+            ?: attachment.show()
     }
 
     override fun onItemSelectChange(index: Int) {
@@ -190,8 +184,8 @@ class UsedeskChatScreen : UsedeskFragment(),
         @JvmOverloads
         @JvmStatic
         fun newInstance(
-                agentName: String? = null,
-                rejectedFileExtensions: Collection<String>? = null
+            agentName: String? = null,
+            rejectedFileExtensions: Collection<String>? = null
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
                 arguments = Bundle().apply {
@@ -207,7 +201,9 @@ class UsedeskChatScreen : UsedeskFragment(),
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val toolbar = UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val toolbar =
+            UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
     }
 }

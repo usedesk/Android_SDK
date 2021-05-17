@@ -9,20 +9,22 @@ import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormItem
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
-import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskCommonFieldListAdapter
 import ru.usedesk.common_gui.UsedeskCommonFieldTextAdapter
 import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormFieldsAdapter(
-        recyclerView: RecyclerView,
-        binding: OfflineFormPage.Binding,
-        private val viewModel: OfflineFormViewModel,
-        private val onSubjectClick: (items: List<String>, selectedIndex: Int) -> Unit
-) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder>(), IUsedeskAdapter<OfflineFormViewModel> {
+    recyclerView: RecyclerView,
+    binding: OfflineFormPage.Binding,
+    private val viewModel: OfflineFormViewModel,
+    lifecycleOwner: LifecycleOwner,
+    private val onSubjectClick: (items: List<String>, selectedIndex: Int) -> Unit
+) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder>() {
 
-    private val textFieldStyle = binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_text_field)
-    private val listFieldStyle = binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_list_field)
+    private val textFieldStyle =
+        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_text_field)
+    private val listFieldStyle =
+        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_list_field)
 
     private var items: List<OfflineFormItem> = listOf()
 
@@ -31,6 +33,23 @@ internal class OfflineFormFieldsAdapter(
             adapter = this@OfflineFormFieldsAdapter
             layoutManager = LinearLayoutManager(recyclerView.context)
             itemAnimator = null
+        }
+        viewModel.fieldsLiveData.observe(lifecycleOwner) {
+            it?.let {
+                val oldItems = items
+                items = it
+                if (oldItems.isEmpty()) {
+                    notifyDataSetChanged()
+                } else {
+                    oldItems.forEachIndexed { index, offlineFormItem ->
+                        if (offlineFormItem is OfflineFormList &&
+                            offlineFormItem != items[index]
+                        ) {
+                            notifyItemChanged(index)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -61,25 +80,6 @@ internal class OfflineFormFieldsAdapter(
             TYPE_LIST
         } else {
             TYPE_TEXT
-        }
-    }
-
-    override fun onLiveData(viewModel: OfflineFormViewModel, lifecycleOwner: LifecycleOwner) {
-        viewModel.fieldsLiveData.observe(lifecycleOwner) {
-            it?.let {
-                val oldItems = items
-                items = it
-                if (oldItems.isEmpty()) {
-                    notifyDataSetChanged()
-                } else {
-                    oldItems.forEachIndexed { index, offlineFormItem ->
-                        if (offlineFormItem is OfflineFormList &&
-                                offlineFormItem != items[index]) {
-                            notifyItemChanged(index)
-                        }
-                    }
-                }
-            }
         }
     }
 

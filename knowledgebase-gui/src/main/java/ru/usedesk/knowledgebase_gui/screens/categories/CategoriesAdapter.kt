@@ -6,24 +6,22 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesAdapter internal constructor(
-        recyclerView: RecyclerView,
-        private val onCategoryClick: (Long, String) -> Unit
-) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>(), IUsedeskAdapter<CategoriesViewModel> {
+    recyclerView: RecyclerView,
+    viewModel: CategoriesViewModel,
+    lifecycleOwner: LifecycleOwner,
+    private val onCategoryClick: (Long, String) -> Unit
+) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
 
     private var categories = listOf<UsedeskCategory>()
 
     init {
         recyclerView.adapter = this
-    }
-
-    override fun onLiveData(viewModel: CategoriesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.categoriesLiveData.observe(lifecycleOwner) {
             it?.let {
                 if (categories != it) {

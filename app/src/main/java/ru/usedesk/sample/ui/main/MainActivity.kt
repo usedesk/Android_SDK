@@ -23,9 +23,9 @@ import ru.usedesk.sample.service.CustomSimpleNotificationsService
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdkListener
 
 class MainActivity : AppCompatActivity(),
-        IOnGoToSdkListener,
-        IUsedeskOnSupportClickListener,
-        IUsedeskOnFileClickListener {
+    IOnGoToSdkListener,
+    IUsedeskOnSupportClickListener,
+    IUsedeskOnFileClickListener {
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity(),
                 onError(it)
             }
         })
-        viewModel.init(MainNavigation(this, R.id.container))
+        viewModel.init(MainNavigation(this, R.id.container), savedInstanceState == null)
     }
 
     private fun onError(error: UsedeskEvent<String>) {
@@ -69,7 +69,8 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun getCurrentFragment(): Fragment? = supportFragmentManager.findFragmentById(R.id.container)
+    private fun getCurrentFragment(): Fragment? =
+        supportFragmentManager.findFragmentById(R.id.container)
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
         viewModel.goShowFile(usedeskFile)
@@ -78,7 +79,8 @@ class MainActivity : AppCompatActivity(),
     override fun onBackPressed() {
         val fragment = getCurrentFragment()
         if (fragment is IUsedeskOnBackPressedListener
-                && (fragment as IUsedeskOnBackPressedListener).onBackPressed()) {
+            && (fragment as IUsedeskOnBackPressedListener).onBackPressed()
+        ) {
             //nothing
         } else {
             viewModel.onBackPressed()

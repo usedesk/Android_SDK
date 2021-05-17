@@ -9,20 +9,21 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.showImage
+import ru.usedesk.common_gui.visibleGone
 
 internal class AttachedFilesAdapter(
-        private val chatViewModel: MessagesViewModel,
-        private val recyclerView: RecyclerView
-) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>(), IUsedeskAdapter<MessagesViewModel> {
+    private val recyclerView: RecyclerView,
+    private val viewModel: MessagesViewModel,
+    lifecycleOwner: LifecycleOwner
+) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>() {
 
     private var files: List<UsedeskFileInfo> = listOf()
 
     init {
         recyclerView.adapter = this
-    }
-
-    override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
             it?.let {
                 onItems(it)
@@ -67,7 +68,7 @@ internal class AttachedFilesAdapter(
                     ignoreCache = true)
 
             binding.ivDetach.setOnClickListener {
-                chatViewModel.detachFile(usedeskFileInfo)
+                viewModel.detachFile(usedeskFileInfo)
             }
             binding.tvTitle.text = if (!usedeskFileInfo.isImage()) {
                 usedeskFileInfo.name

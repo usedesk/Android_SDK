@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/usedesk_common_root_background"
     tools:theme="@style/Usedesk.Chat.Screen">
 
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="?attr/usedesk_chat_screen_messages_background"
         app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
         android:id="@+id/l_message_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/usedesk_chat_screen_message_panel_background"
+        android:background="?attr/usedesk_common_root_background"
         android:clipChildren="true"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"

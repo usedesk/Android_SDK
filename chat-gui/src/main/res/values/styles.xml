@@ -217,24 +217,44 @@
     <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Chat.Screen.Title.Text</item>
 
+        <item name="usedesk_chat_screen_messages_background">@color/usedesk_white_1</item>
+
+        <item name="usedesk_chat_screen_loading_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_screen_loading_text">@style/Usedesk.Chat.Screen.Loading.Text</item>
 
         <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
-        <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
+        <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text
+        </item>
         <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
-        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
+        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2
+        </item>
 
-        <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
-        <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>
-        <item name="usedesk_chat_screen_offline_form_send_text">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text</item>
-        <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar</item>
+        <item name="usedesk_chat_screen_offline_form_background">@color/usedesk_white_1</item>
+        <item name="usedesk_chat_screen_offline_form_selector_background">@color/usedesk_white_1
+        </item>
+        <item name="usedesk_chat_screen_offline_form_action_enabled_background">
+            @color/usedesk_black_2
+        </item>
+        <item name="usedesk_chat_screen_offline_form_action_disabled_background">
+            @color/usedesk_gray_2
+        </item>
+        <item name="usedesk_chat_screen_offline_form_description_text">
+            @style/Usedesk.Chat.Screen.Offline.Form.Description.Text
+        </item>
+        <item name="usedesk_chat_screen_offline_form_send_text">
+            @style/Usedesk.Chat.Screen.Offline.Form.Send.Text
+        </item>
+        <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">
+            @style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar
+        </item>
         <item name="usedesk_chat_screen_offline_form_name">@string/usedesk_name</item>
         <item name="usedesk_chat_screen_offline_form_email">@string/usedesk_email</item>
         <item name="usedesk_chat_screen_offline_form_message">@string/usedesk_message</item>
-        <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Common.Text.Field</item>
-        <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Common.List.Field</item>
+        <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Common.Text.Field
+        </item>
+        <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Common.List.Field
+        </item>
 
         <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
     </style>

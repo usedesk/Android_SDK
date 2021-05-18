@@ -31,6 +31,7 @@
     <attr name="usedesk_knowledgebase_article_content_page_previous_text" format="reference" />
     <attr name="usedesk_knowledgebase_article_content_page_next_image" format="reference" />
     <attr name="usedesk_knowledgebase_article_content_page_next_text" format="reference" />
+    <attr name="usedesk_knowledgebase_article_content_page_item_background" format="reference" />
 
     <attr name="usedesk_knowledgebase_categories_category_title_text" format="reference" />
     <attr name="usedesk_knowledgebase_categories_category_description_text" format="reference" />

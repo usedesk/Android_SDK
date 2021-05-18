@@ -9,6 +9,7 @@
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="?attr/usedesk_chat_screen_messages_background"
         app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,71 +21,62 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             tools:itemCount="1"
-            tools:listitem="@layout/usedesk_item_chat_message_text_client" />
+            tools:listitem="@layout/usedesk_item_chat_message_text_agent" />
     </FrameLayout>
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:id="@+id/l_message_panel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:background="?attr/usedesk_chat_screen_message_panel_background"
+        android:clipChildren="true"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:theme="@style/Usedesk.Chat.Screen">
+        app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="?attr/usedesk_chat_screen_message_panel_divider_background" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/usedesk_chat_screen_message_panel_background"
-            android:clipChildren="true"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="2dp">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="?attr/usedesk_chat_screen_message_panel_divider_background" />
+            <ImageButton
+                android:id="@+id/iv_attach_file"
+                style="?attr/usedesk_chat_screen_attach_image"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="4dp"
-                android:paddingVertical="2dp">
+            <EditText
+                android:id="@+id/et_message"
+                style="?attr/usedesk_chat_screen_message_edit_text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/iv_send"
+                app:layout_constraintStart_toEndOf="@+id/iv_attach_file"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageButton
-                    android:id="@+id/iv_attach_file"
-                    style="?attr/usedesk_chat_screen_attach_image"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <ImageButton
+                android:id="@+id/iv_send"
+                style="?attr/usedesk_chat_screen_send_image"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <EditText
-                    android:id="@+id/et_message"
-                    style="?attr/usedesk_chat_screen_message_edit_text"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/iv_send"
-                    app:layout_constraintStart_toEndOf="@+id/iv_attach_file"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageButton
-                    android:id="@+id/iv_send"
-                    style="?attr/usedesk_chat_screen_send_image"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_attached_files"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="4dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="6"
-                tools:listitem="@layout/usedesk_item_chat_attached_file" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_attached_files"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="4dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="6"
+            tools:listitem="@layout/usedesk_item_chat_attached_file" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

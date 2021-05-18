@@ -15,6 +15,7 @@ import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
 import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
 import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
@@ -60,6 +61,11 @@ class UsedeskChatScreen : UsedeskFragment(),
 
         val agentName = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
+        val configurationJson = argsGetString(CHAT_CONFIGURATION_KEY)
+        val configuration = UsedeskChatConfiguration.fromJson(configurationJson)
+        if (configuration != null) {
+            UsedeskChatSdk.setConfiguration(configuration)
+        }
 
         init(agentName, rejectedFileExtensions)
 
@@ -178,14 +184,16 @@ class UsedeskChatScreen : UsedeskFragment(),
     }
 
     companion object {
-        private const val AGENT_NAME_KEY = "agentNameKey"
-        private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
+        private const val AGENT_NAME_KEY = "71bfed73"
+        private const val REJECTED_FILE_EXTENSIONS_KEY = "22a84bb9"
+        private const val CHAT_CONFIGURATION_KEY = "a5ed81be"
 
         @JvmOverloads
         @JvmStatic
         fun newInstance(
             agentName: String? = null,
-            rejectedFileExtensions: Collection<String>? = null
+            rejectedFileExtensions: Collection<String>? = null,
+            usedeskChatConfiguration: UsedeskChatConfiguration? = null
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
                 arguments = Bundle().apply {
@@ -195,6 +203,10 @@ class UsedeskChatScreen : UsedeskFragment(),
                     val extensions = rejectedFileExtensions?.map {
                         '.' + it.trim(' ', '.')
                     }?.toTypedArray() ?: arrayOf()
+                    if (usedeskChatConfiguration != null) {
+                        val jsonConfiguration = usedeskChatConfiguration.toJson()
+                        putString(CHAT_CONFIGURATION_KEY, jsonConfiguration)
+                    }
                     putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
                 }
             }

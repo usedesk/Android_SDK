@@ -3,20 +3,23 @@ package ru.usedesk.sample.ui.main
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
-import ru.usedesk.chat_gui.chat.UsedeskChatScreen.Companion.newInstance
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen.Companion.newInstance
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen.Companion.newInstance
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen
 
-class MainNavigation internal constructor(private val activity: AppCompatActivity, private val containerId: Int) {
+class MainNavigation internal constructor(
+    private val activity: AppCompatActivity,
+    private val containerId: Int
+) {
     private fun switchFragment(fragment: Fragment) {
         activity.supportFragmentManager
-                .beginTransaction()
-                .addToBackStack(fragment.javaClass.name + ":" + fragment.hashCode())
-                .replace(containerId, fragment)
-                .commit()
+            .beginTransaction()
+            .addToBackStack(fragment.javaClass.name + ":" + fragment.hashCode())
+            .replace(containerId, fragment)
+            .commit()
     }
 
     fun goConfiguration() {
@@ -24,15 +27,29 @@ class MainNavigation internal constructor(private val activity: AppCompatActivit
     }
 
     fun goChat(
-            customAgentName: String?,
-            rejectedFileExtensions: Collection<String>
+        customAgentName: String?,
+        rejectedFileExtensions: Collection<String>,
+        usedeskChatConfiguration: UsedeskChatConfiguration
     ) {
-        switchFragment(newInstance(customAgentName, rejectedFileExtensions))
+        switchFragment(
+            UsedeskChatScreen.newInstance(
+                customAgentName,
+                rejectedFileExtensions,
+                usedeskChatConfiguration
+            )
+        )
     }
 
-    fun goKnowledgeBase(withSupportButton: Boolean,
-                        withArticleRating: Boolean) {
-        switchFragment(newInstance(withSupportButton, withArticleRating))
+    fun goKnowledgeBase(
+        withSupportButton: Boolean,
+        withArticleRating: Boolean
+    ) {
+        switchFragment(
+            UsedeskKnowledgeBaseScreen.newInstance(
+                withSupportButton,
+                withArticleRating
+            )
+        )
     }
 
     fun goShowFile(usedeskFile: UsedeskFile) {

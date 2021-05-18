@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.view.UsedeskNotificationsService
+import ru.usedesk.chat_sdk.service.notifications.view.UsedeskNotificationsService.Companion.USEDESK_CHAT_CONFIGURATION_KEY
 
 open class UsedeskNotificationsServiceFactory {
     fun stopService(context: Context) {
@@ -16,7 +17,8 @@ open class UsedeskNotificationsServiceFactory {
     fun startService(context: Context,
                      usedeskChatConfiguration: UsedeskChatConfiguration) {
         Intent(context, serviceClass).also {
-            usedeskChatConfiguration.serialize(it)
+            val configurationJson = usedeskChatConfiguration.toJson()
+            it.putExtra(USEDESK_CHAT_CONFIGURATION_KEY, configurationJson)
             context.startService(it)
         }
     }

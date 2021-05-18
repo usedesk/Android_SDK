@@ -37,24 +37,26 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
             }
         }
 
-        articlePagesAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        return binding.rootView
+    }
+
+    fun init(categoryId: Long, articleId: Long) {
+        articlePagesAdapter = ArticlePagesAdapter(
+            binding.vpPages,
+            childFragmentManager,
+            viewModel,
+            viewLifecycleOwner,
+            argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true),
+            argsGetBoolean(WITH_ARTICLE_RATING_KEY, true)
+        )
+
+        viewModel.init(categoryId, articleId)
+
         viewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { article ->
             article?.let {
                 getParentListener<IOnTitleChangeListener>()?.onTitle(it.title)
             }
         }
-
-        return binding.rootView
-    }
-
-    fun init(categoryId: Long, articleId: Long) {
-        articlePagesAdapter = ArticlePagesAdapter(binding.vpPages,
-                childFragmentManager,
-                viewModel,
-                argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true),
-                argsGetBoolean(WITH_ARTICLE_RATING_KEY, true))
-
-        viewModel.init(categoryId, articleId)
     }
 
     override fun onPrevious() {

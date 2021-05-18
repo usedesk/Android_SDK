@@ -1,32 +1,61 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Usedesk.Chat.Attachment.Dialog" parent="Usedesk.Common.BottomSheetDialog">
-        <item name="usedesk_chat_attachment_dialog_background">@color/usedesk_white_1</item>
-        <item name="usedesk_chat_attachment_dialog_camera_image">@style/Usedesk.Chat.Attachment.Dialog.Camera.Image</item>
-        <item name="usedesk_chat_attachment_dialog_camera_text">@style/Usedesk.Chat.Attachment.Dialog.Camera.Text</item>
-        <item name="usedesk_chat_attachment_dialog_gallery_image">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Image</item>
-        <item name="usedesk_chat_attachment_dialog_gallery_text">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text</item>
-        <item name="usedesk_chat_attachment_dialog_storage_image">@style/Usedesk.Chat.Attachment.Dialog.Storage.Image</item>
-        <item name="usedesk_chat_attachment_dialog_storage_text">@style/Usedesk.Chat.Attachment.Dialog.Storage.Text</item>
-        <item name="usedesk_common_no_permission_snackbar">@style/Usedesk.Common.No.Permission.Snackbar</item>
+        <item name="usedesk_chat_attachment_dialog_camera_image">
+            @style/Usedesk.Chat.Attachment.Dialog.Camera.Image
+        </item>
+        <item name="usedesk_chat_attachment_dialog_camera_text">
+            @style/Usedesk.Chat.Attachment.Dialog.Camera.Text
+        </item>
+        <item name="usedesk_chat_attachment_dialog_gallery_image">
+            @style/Usedesk.Chat.Attachment.Dialog.Gallery.Image
+        </item>
+        <item name="usedesk_chat_attachment_dialog_gallery_text">
+            @style/Usedesk.Chat.Attachment.Dialog.Gallery.Text
+        </item>
+        <item name="usedesk_chat_attachment_dialog_storage_image">
+            @style/Usedesk.Chat.Attachment.Dialog.Storage.Image
+        </item>
+        <item name="usedesk_chat_attachment_dialog_storage_text">
+            @style/Usedesk.Chat.Attachment.Dialog.Storage.Text
+        </item>
+        <item name="usedesk_common_no_permission_snackbar">
+            @style/Usedesk.Common.No.Permission.Snackbar
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog" parent="Usedesk.Common.BottomSheetDialog">
-        <item name="usedesk_chat_offline_form_success_dialog_ok_image">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Image</item>
-        <item name="usedesk_chat_offline_form_success_dialog_ok_text">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text</item>
-        <item name="usedesk_chat_offline_form_success_dialog_close_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_offline_form_success_dialog_close_text">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text</item>
+        <item name="usedesk_chat_offline_form_success_dialog_ok_image">
+            @style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Image
+        </item>
+        <item name="usedesk_chat_offline_form_success_dialog_ok_text">
+            @style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text
+        </item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_background">
+            @color/usedesk_black_2
+        </item>
+        <item name="usedesk_chat_offline_form_success_dialog_close_text">
+            @style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Attached.File" parent="">
-        <item name="usedesk_chat_attached_file_close_image">@style/Usedesk.Chat.Attached.File.Close.Image</item>
-        <item name="usedesk_chat_attached_file_preview_image">@style/Usedesk.Chat.Attached.File.Preview.Image</item>
-        <item name="usedesk_chat_attached_file_name_text">@style/Usedesk.Chat.Attached.File.Name.Text</item>
+        <item name="usedesk_chat_attached_file_close_image">
+            @style/Usedesk.Chat.Attached.File.Close.Image
+        </item>
+        <item name="usedesk_chat_attached_file_preview_image">
+            @style/Usedesk.Chat.Attached.File.Preview.Image
+        </item>
+        <item name="usedesk_chat_attached_file_name_text">
+            @style/Usedesk.Chat.Attached.File.Name.Text
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message" parent="">
-        <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image</item>
-        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text</item>
+        <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image
+        </item>
+        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text
+        </item>
         <item name="usedesk_chat_message_name_text">@style/Usedesk.Chat.Message.Name.Text</item>
         <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
@@ -67,10 +96,18 @@
     </style>
 
     <style name="Usedesk.Chat.Message.File">
-        <item name="usedesk_chat_message_file_preview_image">@style/Usedesk.Chat.Message.File.Preview.Image</item>
-        <item name="usedesk_chat_message_file_extension_text">@style/Usedesk.Chat.Message.File.Extension.Text</item>
-        <item name="usedesk_chat_message_file_name_text">@style/Usedesk.Chat.Message.File.Name.Text</item>
-        <item name="usedesk_chat_message_file_size_text">@style/Usedesk.Chat.Message.File.Size.Text</item>
+        <item name="usedesk_chat_message_file_preview_image">
+            @style/Usedesk.Chat.Message.File.Preview.Image
+        </item>
+        <item name="usedesk_chat_message_file_extension_text">
+            @style/Usedesk.Chat.Message.File.Extension.Text
+        </item>
+        <item name="usedesk_chat_message_file_name_text">
+            @style/Usedesk.Chat.Message.File.Name.Text
+        </item>
+        <item name="usedesk_chat_message_file_size_text">
+            @style/Usedesk.Chat.Message.File.Size.Text
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Preview.Image" parent="">
@@ -80,12 +117,18 @@
     </style>
 
     <style name="Usedesk.Chat.Message.File.Agent">
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_background">
+            @drawable/usedesk_background_bubble_agent
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Client">
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
-        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
+        <item name="usedesk_chat_message_bubble_background">
+            @drawable/usedesk_background_bubble_client
+        </item>
+        <item name="usedesk_chat_message_client_sent_failed_image">
+            @style/Usedesk.Chat.Message.Client.Sent.Failed
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Client.Sent.Failed" parent="">
@@ -101,10 +144,17 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Image">
-        <item name="usedesk_chat_message_image_error_image">@style/Usedesk.Chat.Message.Image.Error.Image</item>
-        <item name="usedesk_chat_message_image_preview_image">@style/Usedesk.Chat.Message.Image.Preview.Image</item>
-        <item name="usedesk_chat_message_image_time_background">@drawable/usedesk_background_time_dark</item>
-        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text</item>
+        <item name="usedesk_chat_message_image_error_image">
+            @style/Usedesk.Chat.Message.Image.Error.Image
+        </item>
+        <item name="usedesk_chat_message_image_preview_image">
+            @style/Usedesk.Chat.Message.Image.Preview.Image
+        </item>
+        <item name="usedesk_chat_message_image_time_background">
+            @drawable/usedesk_background_time_dark
+        </item>
+        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Preview.Image" parent="">
@@ -126,46 +176,78 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Agent">
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_background">
+            @drawable/usedesk_background_bubble_agent
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client">
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
-        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
+        <item name="usedesk_chat_message_bubble_background">
+            @drawable/usedesk_background_bubble_client
+        </item>
+        <item name="usedesk_chat_message_client_sent_failed_image">
+            @style/Usedesk.Chat.Message.Client.Sent.Failed
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text">
         <item name="usedesk_chat_message_text_button_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_message_text_button_text">@style/Usedesk.Chat.Message.Text.Button.Text</item>
-        <item name="usedesk_chat_message_text_message_text">@style/Usedesk.Chat.Message.Text.Message.Text</item>
-        <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
-        <item name="usedesk_chat_message_feedback_bad_image">@style/Usedesk.Chat.Message.Feedback.Bad.Image</item>
+        <item name="usedesk_chat_message_text_button_text">
+            @style/Usedesk.Chat.Message.Text.Button.Text
+        </item>
+        <item name="usedesk_chat_message_text_message_text">
+            @style/Usedesk.Chat.Message.Text.Message.Text
+        </item>
+        <item name="usedesk_chat_message_feedback_good_image">
+            @style/Usedesk.Chat.Message.Feedback.Good.Image
+        </item>
+        <item name="usedesk_chat_message_feedback_bad_image">
+            @style/Usedesk.Chat.Message.Feedback.Bad.Image
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent">
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="usedesk_chat_message_bubble_background">
+            @drawable/usedesk_background_bubble_agent
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Client">
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
-        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
+        <item name="usedesk_chat_message_bubble_background">
+            @drawable/usedesk_background_bubble_client
+        </item>
+        <item name="usedesk_chat_message_client_sent_failed_image">
+            @style/Usedesk.Chat.Message.Client.Sent.Failed
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Show.File" parent="Usedesk.Common">
-        <item name="usedesk_chat_show_file_root_background">@color/usedesk_white_2</item>
+        <item name="usedesk_common_root_background">@color/usedesk_white_2</item>
         <item name="usedesk_chat_show_file_image_background">@color/usedesk_black_1</item>
         <item name="usedesk_chat_show_file_blur_top_background">@color/usedesk_blur</item>
         <item name="usedesk_chat_show_file_blur_bottom_background">@color/usedesk_blur</item>
-        <item name="usedesk_chat_show_file_file_image">@style/Usedesk.Chat.Show.File.File.Image</item>
-        <item name="usedesk_chat_show_file_share_image">@style/Usedesk.Chat.Show.File.Share.Image</item>
-        <item name="usedesk_chat_show_file_download_image">@style/Usedesk.Chat.Show.File.Download.Image</item>
-        <item name="usedesk_chat_show_file_error_image">@style/Usedesk.Chat.Show.File.Error.Image</item>
-        <item name="usedesk_chat_show_file_back_image">@style/Usedesk.Chat.Show.File.Back.Image</item>
-        <item name="usedesk_chat_show_file_toolbar_text">@style/Usedesk.Chat.Show.File.Toolbar.Text</item>
+        <item name="usedesk_chat_show_file_file_image">@style/Usedesk.Chat.Show.File.File.Image
+        </item>
+        <item name="usedesk_chat_show_file_share_image">@style/Usedesk.Chat.Show.File.Share.Image
+        </item>
+        <item name="usedesk_chat_show_file_download_image">
+            @style/Usedesk.Chat.Show.File.Download.Image
+        </item>
+        <item name="usedesk_chat_show_file_error_image">@style/Usedesk.Chat.Show.File.Error.Image
+        </item>
+        <item name="usedesk_chat_show_file_back_image">@style/Usedesk.Chat.Show.File.Back.Image
+        </item>
+        <item name="usedesk_chat_show_file_toolbar_text">
+            @style/Usedesk.Chat.Show.File.Toolbar.Text
+        </item>
         <item name="usedesk_chat_show_file_name_text">@style/Usedesk.Chat.Show.File.Name.Text</item>
         <item name="usedesk_chat_show_file_size_text">@style/Usedesk.Chat.Show.File.Size.Text</item>
-        <item name="usedesk_chat_show_file_download_status_toast">@style/Usedesk.Chat.Show.File.Download.Status.Toast</item>
-        <item name="usedesk_common_no_permission_snackbar">@style/Usedesk.Common.No.Permission.Snackbar</item>
+        <item name="usedesk_chat_show_file_download_status_toast">
+            @style/Usedesk.Chat.Show.File.Download.Status.Toast
+        </item>
+        <item name="usedesk_common_no_permission_snackbar">
+            @style/Usedesk.Common.No.Permission.Snackbar
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Share.Image" parent="">
@@ -221,22 +303,39 @@
 
         <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
-        <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
-        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
-        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
+        <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text
+        </item>
+        <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2
+        </item>
 
-        <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
-        <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>
-        <item name="usedesk_chat_screen_offline_form_send_text">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text</item>
-        <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">@style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar</item>
+        <item name="usedesk_chat_screen_offline_form_selector_background">@color/usedesk_white_1
+        </item>
+        <item name="usedesk_chat_screen_offline_form_action_enabled_background">
+            @color/usedesk_black_2
+        </item>
+        <item name="usedesk_chat_screen_offline_form_action_disabled_background">
+            @color/usedesk_gray_2
+        </item>
+        <item name="usedesk_chat_screen_offline_form_description_text">
+            @style/Usedesk.Chat.Screen.Offline.Form.Description.Text
+        </item>
+        <item name="usedesk_chat_screen_offline_form_send_text">
+            @style/Usedesk.Chat.Screen.Offline.Form.Send.Text
+        </item>
+        <item name="usedesk_chat_screen_offline_form_send_failed_snackbar">
+            @style/Usedesk.Chat.Screen.Offline.Form.Send.Failed.Snackbar
+        </item>
         <item name="usedesk_chat_screen_offline_form_name">@string/usedesk_name</item>
         <item name="usedesk_chat_screen_offline_form_email">@string/usedesk_email</item>
         <item name="usedesk_chat_screen_offline_form_message">@string/usedesk_message</item>
-        <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Common.Text.Field</item>
-        <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Common.List.Field</item>
+        <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Common.Text.Field
+        </item>
+        <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Common.List.Field
+        </item>
 
-        <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
+        <item name="usedesk_chat_screen_offline_form_selector_checkbox">
+            @style/Usedesk.Common.Field.CheckBox
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.ProgressBar" parent="">

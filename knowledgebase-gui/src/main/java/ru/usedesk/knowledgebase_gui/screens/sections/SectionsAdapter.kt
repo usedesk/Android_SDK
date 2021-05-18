@@ -6,7 +6,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.showImage
@@ -14,17 +13,16 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class SectionsAdapter(
-        recyclerView: RecyclerView,
-        private val onSectionClick: (Long, String) -> Unit
-) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>(), IUsedeskAdapter<SectionsViewModel> {
+    recyclerView: RecyclerView,
+    viewModel: SectionsViewModel,
+    lifecycleOwner: LifecycleOwner,
+    private val onSectionClick: (Long, String) -> Unit
+) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>() {
 
     private var sectionList = listOf<UsedeskSection>()
 
     init {
         recyclerView.adapter = this
-    }
-
-    override fun onLiveData(viewModel: SectionsViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.sectionsLiveData.observe(lifecycleOwner) {
             it?.let {
                 if (sectionList != it) {

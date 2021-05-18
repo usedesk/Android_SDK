@@ -18,41 +18,37 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
     private lateinit var binding: Binding
     private lateinit var adapter: OfflineFormSelectorAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_offline_form_selector,
-                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            val items = argsGetStringArray(KEY_ITEMS, arrayOf())
-            val selectedIndex = argsGetInt(KEY_SELECTED_INDEX, 0)
-
-            adapter = OfflineFormSelectorAdapter(
-                    binding.rvItems,
-                    binding,
-                    viewModel,
-                    items.asList(),
-                    selectedIndex
-            )
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_page_offline_form_selector,
+            R.style.Usedesk_Chat_Screen
+        ) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
 
-        onLiveData()
+        init()
 
         return binding.rootView
     }
 
-    private fun onLiveData() {
-        adapter.onLiveData(viewModel, viewLifecycleOwner)
+    private fun init() {
+        val items = argsGetStringArray(KEY_ITEMS, arrayOf())
+        val selectedIndex = argsGetInt(KEY_SELECTED_INDEX, 0)
+
+        adapter = OfflineFormSelectorAdapter(
+            binding.rvItems,
+            binding,
+            viewModel,
+            viewLifecycleOwner,
+            items.asList(),
+            selectedIndex
+        )
 
         viewModel.selectedIndexLiveData.observe(viewLifecycleOwner) {
             it?.let {
@@ -75,7 +71,8 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
     }
 }

@@ -31,56 +31,51 @@ internal class MessagesPage : UsedeskFragment() {
 
     private var cleared = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_messages,
-                    R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            val agentName: String? = argsGetString(AGENT_NAME_KEY)
-            val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
-
-            init(agentName, rejectedFileExtensions)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_page_messages,
+            R.style.Usedesk_Chat_Screen
+        ) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
 
-        onLiveData()
+        val agentName: String? = argsGetString(AGENT_NAME_KEY)
+        val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
+
+        init(agentName, rejectedFileExtensions)
 
         return binding.rootView
-    }
-
-    private fun onLiveData() {
-        messagePanelAdapter.onLiveData(viewModel, viewLifecycleOwner)
-        messagesAdapter.onLiveData(viewModel, viewLifecycleOwner)
     }
 
     private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
         UsedeskChatSdk.init(requireContext())
 
-        messagePanelAdapter = MessagePanelAdapter(binding.messagePanel, viewModel) {
+        messagePanelAdapter = MessagePanelAdapter(
+            binding.messagePanel,
+            viewModel,
+            viewLifecycleOwner
+        ) {
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
         }
 
         messagesAdapter = MessagesAdapter(viewModel,
-                binding.rvMessages,
-                agentName,
-                rejectedFileExtensions,
-                {
-                    getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
-                },
-                {
-                    getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
-                            ?: onUrlClick(it)
-                })
+            viewLifecycleOwner,
+            binding.rvMessages,
+            agentName,
+            rejectedFileExtensions,
+            {
+                getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
+            },
+            {
+                getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
+                    ?: onUrlClick(it)
+            })
     }
 
     private fun onUrlClick(url: String) {
@@ -110,8 +105,8 @@ internal class MessagesPage : UsedeskFragment() {
         private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
 
         fun newInstance(
-                agentName: String?,
-                rejectedFileExtensions: Array<String>
+            agentName: String?,
+            rejectedFileExtensions: Array<String>
         ): MessagesPage {
             return MessagesPage().apply {
                 arguments = Bundle().apply {
@@ -124,8 +119,10 @@ internal class MessagesPage : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
-        val messagePanel = MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
+        val messagePanel =
+            MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
     }
 }

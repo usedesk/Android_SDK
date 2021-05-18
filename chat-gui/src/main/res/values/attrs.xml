@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="usedesk_chat_attachment_dialog_background" format="reference" />
     <attr name="usedesk_chat_attachment_dialog_gallery_image" format="reference" />
     <attr name="usedesk_chat_attachment_dialog_gallery_text" format="reference" />
     <attr name="usedesk_chat_attachment_dialog_camera_image" format="reference" />
@@ -13,7 +12,6 @@
     <attr name="usedesk_chat_offline_form_success_dialog_close_background" format="reference" />
     <attr name="usedesk_chat_offline_form_success_dialog_close_text" format="reference" />
 
-    <attr name="usedesk_chat_show_file_root_background" format="reference" />
     <attr name="usedesk_chat_show_file_image_background" format="reference" />
     <attr name="usedesk_chat_show_file_blur_top_background" format="reference" />
     <attr name="usedesk_chat_show_file_blur_bottom_background" format="reference" />
@@ -54,12 +52,12 @@
     <attr name="usedesk_chat_message_text_button_text" format="reference" />
 
     <attr name="usedesk_chat_screen_loading_text" format="reference" />
-    <attr name="usedesk_chat_screen_message_edit_text" format="reference" />
     <attr name="usedesk_chat_screen_attach_image" format="reference" />
     <attr name="usedesk_chat_screen_send_image" format="reference" />
-    <attr name="usedesk_chat_screen_message_panel_background" format="reference" />
+    <attr name="usedesk_chat_screen_message_edit_text" format="reference" />
     <attr name="usedesk_chat_screen_message_panel_divider_background" format="reference" />
 
+    <attr name="usedesk_chat_screen_offline_form_selector_background" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_description_text" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_send_text" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_send_failed_snackbar" format="reference" />

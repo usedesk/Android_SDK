@@ -11,6 +11,7 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page" parent="">
+        <item name="usedesk_common_root_background">@color/usedesk_white_1</item>
         <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.List.Page.Message.Text</item>
         <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
     </style>

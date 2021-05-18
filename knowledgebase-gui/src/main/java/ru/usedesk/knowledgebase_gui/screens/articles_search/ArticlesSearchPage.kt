@@ -24,39 +24,45 @@ internal class ArticlesSearchPage : UsedeskFragment() {
 
     private lateinit var articlesSearchAdapter: ArticlesSearchAdapter
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_list,
-                    R.style.Usedesk_KnowledgeBase_Articles_Search_Page) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }.apply {
-                tvMessage.text = styleValues
-                        .getStyleValues(R.attr.usedesk_knowledgebase_list_page_message_text)
-                        .getString(R.attr.usedesk_text_1)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_page_list,
+            R.style.Usedesk_KnowledgeBase_Articles_Search_Page
+        ) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }.apply {
+            tvMessage.text = styleValues
+                .getStyleValues(R.attr.usedesk_knowledgebase_list_page_message_text)
+                .getString(R.attr.usedesk_text_1)
 
-                btnSupport.setOnClickListener {
-                    getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
-                }
-
-                val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-                btnSupport.visibility = visibleGone(withSupportButton)
+            btnSupport.setOnClickListener {
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
 
-            articlesSearchAdapter = ArticlesSearchAdapter(binding.rvItems) { articleContent ->
-                getParentListener<IOnArticleClickListener>()?.onArticleClick(
-                        articleContent.categoryId,
-                        articleContent.id,
-                        articleContent.title)
-            }
-
-            viewModel.onSearchQuery("")
+            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
-        articlesSearchAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        articlesSearchAdapter = ArticlesSearchAdapter(
+            binding.rvItems,
+            viewModel,
+            viewLifecycleOwner
+        ) { articleContent ->
+            getParentListener<IOnArticleClickListener>()?.onArticleClick(
+                articleContent.categoryId,
+                articleContent.id,
+                articleContent.title
+            )
+        }
+
+        viewModel.onSearchQuery("")
+
         viewModel.articlesLiveData.observe(viewLifecycleOwner) {
             when {
                 it == null -> {
@@ -80,11 +86,6 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         return binding.rootView
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
     fun onSearchQueryUpdate(searchQuery: String) {
         viewModel.onSearchQuery(searchQuery)
     }
@@ -101,7 +102,8 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val tvMessage: TextView = rootView.findViewById(R.id.tv_message)

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.service.notifications.view
 
-import android.R
 import android.app.*
 import android.content.Intent
 import android.os.Build
@@ -53,7 +52,8 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val chatConfiguration = UsedeskChatConfiguration.deserialize(intent)
+        val jsonConfiguration = intent.getStringExtra(USEDESK_CHAT_CONFIGURATION_KEY)
+        val chatConfiguration = UsedeskChatConfiguration.fromJson(jsonConfiguration)
         if (chatConfiguration != null) {
             UsedeskChatSdk.setConfiguration(chatConfiguration)
             UsedeskChatSdk.init(this)
@@ -101,9 +101,10 @@ abstract class UsedeskNotificationsService : Service() {
                         setContentIntent(getContentPendingIntent())
                         setDeleteIntent(getDeletePendingIntent())
                         if (showCloseButton) {
-                            addAction(R.drawable.ic_delete,
-                                    "Закрыть",
-                                    getClosePendingIntent()
+                            addAction(
+                                android.R.drawable.ic_delete,
+                                "Закрыть",//TODO: это чё такое
+                                getClosePendingIntent()
                             )
                         }
                     }
@@ -120,5 +121,9 @@ abstract class UsedeskNotificationsService : Service() {
 
         presenter.onClear()
         UsedeskChatSdk.release(false)
+    }
+
+    companion object {
+        const val USEDESK_CHAT_CONFIGURATION_KEY = "a5ed81be"
     }
 }

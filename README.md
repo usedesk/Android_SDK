@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.2.1)
+# Android Usedesk SDK (v3.3.0)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -119,13 +119,14 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 
 ```
 supportFragmentManager.beginTransaction()
-        .replace(R.id.container, UsedeskChatFragment.newInstance())
+        .replace(R.id.container, UsedeskChatScreen.newInstance())
         .commit()
 ```
 
 Метод `newInstance` может принять:
 - Параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
 - Параметр типа `Collection<String>` со списком расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае).
+- Параметр типа `UsedeskChatConfiguration` с конфигурацией чата. В случае если такой параметр задан, `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration` даже после пересоздания.
 
 Для полноценной работы фрагмента необходимо:
 - Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет, например:
@@ -422,3 +423,7 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.2.1
   - Исправлена ошибка при вызове метода `connect()` после `disconnect()`
   - Добавлен [файл конфигурации ProGuard](https://github.com/usedesk/Android_SDK/blob/master/app/proguard-rules.pro "proguard-rules.pro") для примера обфускации библиотеки
+- v3.3.0
+  - **Внимание!** Добавлены аргументы кастомизации для заднего фона вкладок
+  - Исправлено сохранение состояний фрагментов при пересоздании активити
+  - Добавлен параметр конфигурации в `UsedeskChatScreen`

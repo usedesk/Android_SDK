@@ -46,7 +46,10 @@ class MainActivity : AppCompatActivity(),
                 onError(it)
             }
         })
-        viewModel.init(MainNavigation(this, R.id.container), savedInstanceState == null)
+        viewModel.init(
+            MainNavigation(this, R.id.container),
+            supportFragmentManager.backStackEntryCount == 0
+        )
     }
 
     private fun onError(error: UsedeskEvent<String>) {

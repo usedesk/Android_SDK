@@ -74,7 +74,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
         UsedeskKnowledgeBaseSdk.init(requireContext())
 
-        if (savedInstanceState == null) {
+        if (childFragmentManager.backStackEntryCount == 0) {
             val sectionsTitle = binding.styleValues
                 .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                 .getString(R.attr.usedesk_text_1)

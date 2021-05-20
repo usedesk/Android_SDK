@@ -16,9 +16,9 @@ import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.*
+import ru.usedesk.common_sdk.utils.getFromJson
+import ru.usedesk.common_sdk.utils.putAsJson
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -50,6 +50,15 @@ internal class MessagesPage : UsedeskFragment() {
 
         init(agentName, rejectedFileExtensions)
 
+        val savedAttachedFiles = savedInstanceState?.getFromJson(
+            SAVED_ATTACHED_FILES_KEY,
+            Array<FileInfo>::class.java
+        )?.map {
+            it.getUsedeskFileInfo()
+        } ?: listOf()
+
+        viewModel.setAttachedFiles(savedAttachedFiles)
+
         return binding.rootView
     }
 
@@ -78,6 +87,15 @@ internal class MessagesPage : UsedeskFragment() {
             })
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        val attachedFiles = viewModel.getAttachedFiles().map {
+            FileInfo(it)
+        }.toTypedArray()
+        outState.putAsJson(SAVED_ATTACHED_FILES_KEY, attachedFiles)
+    }
+
     private fun onUrlClick(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -103,6 +121,7 @@ internal class MessagesPage : UsedeskFragment() {
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"
         private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
+        private const val SAVED_ATTACHED_FILES_KEY = "savedAttachedFilesKey"
 
         fun newInstance(
             agentName: String?,
@@ -124,5 +143,19 @@ internal class MessagesPage : UsedeskFragment() {
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
+    }
+
+    private class FileInfo(
+        val uri: String,
+        val type: String,
+        val name: String
+    ) {
+        constructor(usedeskFileInfo: UsedeskFileInfo) : this(
+            usedeskFileInfo.uri.toString(),
+            usedeskFileInfo.type,
+            usedeskFileInfo.name
+        )
+
+        fun getUsedeskFileInfo(): UsedeskFileInfo = UsedeskFileInfo(Uri.parse(uri), type, name)
     }
 }

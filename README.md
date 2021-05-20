@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.3.0)
+# Android Usedesk SDK (v3.3.1)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -423,7 +423,7 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.2.1
   - Исправлена ошибка при вызове метода `connect()` после `disconnect()`
   - Добавлен [файл конфигурации ProGuard](https://github.com/usedesk/Android_SDK/blob/master/app/proguard-rules.pro "proguard-rules.pro") для примера обфускации библиотеки
-- v3.3.0
+- v3.3.1
   - **Важно!** Добавлены аргументы кастомизации для заднего фона вкладок
   - Исправлено сохранение состояний фрагментов при пересоздании активити
   - Добавлен параметр конфигурации в `UsedeskChatScreen`

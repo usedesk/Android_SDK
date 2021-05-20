@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.entity
 
+import android.content.Intent
 import com.google.gson.Gson
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
@@ -19,7 +20,10 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
 ) {
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 
-    fun toJson(): String = Gson().toJson(this)
+    @Deprecated("Need to convert manually")
+    fun serialize(intent: Intent) {
+        intent.putExtra(CONFIGURATION_KEY, Gson().toJson(this))
+    }
 
     fun validate(): Validation {
         return Validation(
@@ -38,8 +42,12 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     }
 
     companion object {
+        private const val CONFIGURATION_KEY = "usedeskChatConfigurationKey"
+
         @JvmStatic
-        fun fromJson(json: String?): UsedeskChatConfiguration? {
+        @Deprecated("Need to convert manually")
+        fun deserialize(intent: Intent): UsedeskChatConfiguration? {
+            val json = intent.getStringExtra(CONFIGURATION_KEY)
             return if (json != null) {
                 try {
                     Gson().fromJson(json, UsedeskChatConfiguration::class.java)

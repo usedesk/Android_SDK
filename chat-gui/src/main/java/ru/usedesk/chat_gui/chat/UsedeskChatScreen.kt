@@ -34,7 +34,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     private lateinit var attachment: UsedeskAttachmentDialog
 
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
-    private var chatNavigation: ChatNavigation? = null
+    private lateinit var chatNavigation: ChatNavigation
 
     private var cleared = false
 
@@ -67,9 +67,8 @@ class UsedeskChatScreen : UsedeskFragment(),
             UsedeskChatSdk.setConfiguration(configuration)
         }
 
-        init(agentName, rejectedFileExtensions)
 
-        chatNavigation?.fragmentManager = childFragmentManager
+        init(agentName, rejectedFileExtensions, savedInstanceState != null)
 
         return binding.rootView
     }
@@ -80,14 +79,16 @@ class UsedeskChatScreen : UsedeskFragment(),
         attachment = UsedeskAttachmentDialog.create(this)
     }
 
-    private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
+    private fun init(
+        agentName: String?,
+        rejectedFileExtensions: Array<String>,
+        inited: Boolean
+    ) {
         UsedeskChatSdk.init(requireContext())
 
-        if (chatNavigation == null) {
-            ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
-                chatNavigation = it
-                viewModel.init(it, agentName, rejectedFileExtensions)
-            }
+        ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
+            chatNavigation = it
+            viewModel.init(it, agentName, rejectedFileExtensions, inited)
         }
 
         viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
@@ -184,9 +185,9 @@ class UsedeskChatScreen : UsedeskFragment(),
     }
 
     companion object {
-        private const val AGENT_NAME_KEY = "71bfed73"
-        private const val REJECTED_FILE_EXTENSIONS_KEY = "22a84bb9"
-        private const val CHAT_CONFIGURATION_KEY = "a5ed81be"
+        private const val AGENT_NAME_KEY = "agentNameKey"
+        private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
+        private const val CHAT_CONFIGURATION_KEY = "chatConfigurationKey"
 
         @JvmOverloads
         @JvmStatic

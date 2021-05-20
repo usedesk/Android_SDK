@@ -29,67 +29,73 @@ internal class ChatViewModel : UsedeskViewModel() {
     private var chatInited = false
 
     fun init(
-            chatNavigation: ChatNavigation,
-            agentName: String?,
-            rejectedFileExtensions: Array<String>
+        chatNavigation: ChatNavigation,
+        agentName: String?,
+        rejectedFileExtensions: Array<String>,
+        chatInited: Boolean
     ) {
-        this.chatNavigation = chatNavigation
-        this.agentName = agentName
-        this.rejectedFileExtensions = rejectedFileExtensions
+        doInit {
+            this.chatNavigation = chatNavigation
+            this.agentName = agentName
+            this.rejectedFileExtensions = rejectedFileExtensions
+            this.chatInited = chatInited
 
-        addDisposable(chatNavigation.pageRx().subscribe {
-            pageLiveData.value = it
-        })
+            addDisposable(chatNavigation.pageRx().subscribe {
+                pageLiveData.value = it
+            })
 
-        chatNavigation.goLoading()
+            if (!chatInited) {
+                chatNavigation.goLoading()
+            }
 
-        actionListenerRx = object : IUsedeskActionListenerRx() {
-            override fun onConnectedStateObservable(
+            actionListenerRx = object : IUsedeskActionListenerRx() {
+                override fun onConnectedStateObservable(
                     connectedStateObservable: Observable<Boolean>
-            ): Disposable? {
-                return connectedStateObservable.subscribe {
-                    if (!it) {
-                        doIt(usedeskChat.connectRx())
+                ): Disposable? {
+                    return connectedStateObservable.subscribe {
+                        if (!it) {
+                            doIt(usedeskChat.connectRx())
+                        }
                     }
                 }
-            }
 
-            override fun onMessagesObservable(
+                override fun onMessagesObservable(
                     messagesObservable: Observable<List<UsedeskMessage>>
-            ): Disposable? {
-                return messagesObservable.subscribe {
-                    if (!chatInited) {
-                        chatInited = true
-                        chatNavigation.goMessages(agentName, rejectedFileExtensions)
+                ): Disposable? {
+                    return messagesObservable.subscribe {
+                        if (!this@ChatViewModel.chatInited) {
+                            this@ChatViewModel.chatInited = true
+                            chatNavigation.goMessages(agentName, rejectedFileExtensions)
+                        }
+                    }
+                }
+
+                override fun onOfflineFormExpectedObservable(
+                    offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
+                ): Disposable? {
+                    return offlineFormExpectedObservable.subscribe {
+                        offlineFormSettings = it
+                        chatNavigation.goOfflineForm()
+                    }
+                }
+
+                override fun onExceptionObservable(
+                    exceptionObservable: Observable<Exception>
+                ): Disposable? {
+                    return exceptionObservable.subscribe {
+                        exceptionLiveData.postValue(it)
                     }
                 }
             }
-
-            override fun onOfflineFormExpectedObservable(
-                    offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
-            ): Disposable? {
-                return offlineFormExpectedObservable.subscribe {
-                    offlineFormSettings = it
-                    chatNavigation.goOfflineForm()
-                }
-            }
-
-            override fun onExceptionObservable(
-                    exceptionObservable: Observable<Exception>
-            ): Disposable? {
-                return exceptionObservable.subscribe {
-                    exceptionLiveData.postValue(it)
-                }
-            }
+            usedeskChat.addActionListener(actionListenerRx)
         }
-        usedeskChat.addActionListener(actionListenerRx)
     }
 
     override fun onCleared() {
         super.onCleared()
 
         UsedeskChatSdk.getInstance()
-                ?.removeActionListener(actionListenerRx)
+            ?.removeActionListener(actionListenerRx)
 
         UsedeskChatSdk.release(false)
     }

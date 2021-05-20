@@ -124,6 +124,6 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     companion object {
-        const val USEDESK_CHAT_CONFIGURATION_KEY = "a5ed81be"
+        const val USEDESK_CHAT_CONFIGURATION_KEY = "usedeskChatConfigurationKey"
     }
 }

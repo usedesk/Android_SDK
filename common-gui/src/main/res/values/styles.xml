@@ -61,8 +61,11 @@
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox" parent="">
-        <item name="usedesk_common_field_checkbox_text">@style/Usedesk.Common.Field.CheckBox.Text</item>
-        <item name="usedesk_common_field_checkbox_image">@style/Usedesk.Common.Field.CheckBox.Image</item>
+        <item name="usedesk_common_field_checkbox_text">@style/Usedesk.Common.Field.CheckBox.Text
+        </item>
+        <item name="usedesk_common_field_checkbox_image">
+            @style/Usedesk.Common.Field.CheckBox.Image
+        </item>
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.Text" parent="">
@@ -84,9 +87,15 @@
     </style>
 
     <style name="Usedesk.Common.List.Field" parent="">
-        <item name="usedesk_common_field_list_title_text">@style/Usedesk.Common.Field.List.Title.Text</item>
-        <item name="usedesk_common_field_list_value_text">@style/Usedesk.Common.Field.List.Value.Text</item>
-        <item name="usedesk_common_field_list_arrow_image">@style/Usedesk.Common.Field.List.Arrow.Image</item>
+        <item name="usedesk_common_field_list_title_text">
+            @style/Usedesk.Common.Field.List.Title.Text
+        </item>
+        <item name="usedesk_common_field_list_value_text">
+            @style/Usedesk.Common.Field.List.Value.Text
+        </item>
+        <item name="usedesk_common_field_list_arrow_image">
+            @style/Usedesk.Common.Field.List.Arrow.Image
+        </item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
     </style>
@@ -119,8 +128,11 @@
     </style>
 
     <style name="Usedesk.Common.Text.Field" parent="">
-        <item name="usedesk_common_field_text_input_layout">@style/Usedesk.Common.Field.Text.InputLayout</item>
-        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
+        <item name="usedesk_common_field_text_input_layout">
+            @style/Usedesk.Common.Field.Text.InputLayout
+        </item>
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText
+        </item>
         <item name="usedesk_text_1">""</item>
         <item name="usedesk_text_2">""</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>

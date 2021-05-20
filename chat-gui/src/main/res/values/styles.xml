@@ -144,6 +144,7 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Image">
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Container3</item>
         <item name="usedesk_chat_message_image_error_image">
             @style/Usedesk.Chat.Message.Image.Error.Image
         </item>
@@ -172,13 +173,37 @@
         <item name="android:focusable">true</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Image.Agent.Container1">
+        <item name="android:layout_marginEnd">32dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Image.Agent.Container2" />
+
+
+    <style name="Usedesk.Chat.Message.Image.Container3">
+        <item name="android:padding">2dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Image.Agent">
         <item name="usedesk_chat_message_bubble_background">
             @drawable/usedesk_background_bubble_agent
         </item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Agent.Container1
+        </item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Image.Agent.Container2
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Image.Client.Container1">
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client">
+        <item name="usedesk_common_container_1">
+            @style/Usedesk.Chat.Message.Image.Client.Container1
+        </item>
         <item name="usedesk_chat_message_bubble_background">
             @drawable/usedesk_background_bubble_client
         </item>
@@ -417,7 +442,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
-        <item name="android:textColor">#BBFFFFFF</item>
+        <item name="android:textColor">#CFD4D0</item>
         <item name="android:textSize">12sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:fontFamily">@font/roboto_regular</item>

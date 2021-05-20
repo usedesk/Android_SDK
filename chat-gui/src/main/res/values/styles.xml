@@ -150,9 +150,6 @@
         <item name="usedesk_chat_message_image_preview_image">
             @style/Usedesk.Chat.Message.Image.Preview.Image
         </item>
-        <item name="usedesk_chat_message_image_time_background">
-            @drawable/usedesk_background_time_dark
-        </item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text
         </item>
     </style>
@@ -305,6 +302,7 @@
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
         <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text
         </item>
+        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2
         </item>
 
@@ -424,6 +422,10 @@
         <item name="android:singleLine">true</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:includeFontPadding">false</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="android:background">@drawable/usedesk_background_time_dark</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending_light</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully_light</item>
     </style>

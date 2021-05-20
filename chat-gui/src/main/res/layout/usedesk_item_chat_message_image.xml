@@ -22,17 +22,8 @@
         android:id="@+id/iv_error"
         style="?attr/usedesk_chat_message_image_error_image" />
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="2dp"
-        android:background="?attr/usedesk_chat_message_image_time_background"
-        android:paddingHorizontal="4dp">
-
-        <TextView
-            android:id="@+id/tv_time"
-            style="?attr/usedesk_chat_message_time_text"
-            tools:text="12:06" />
-    </FrameLayout>
+    <TextView
+        android:id="@+id/tv_time"
+        style="?attr/usedesk_chat_message_time_text"
+        tools:text="12:06" />
 </FrameLayout>

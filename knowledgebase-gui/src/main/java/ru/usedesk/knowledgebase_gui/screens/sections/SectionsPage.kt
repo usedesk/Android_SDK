@@ -19,40 +19,40 @@ internal class SectionsPage : UsedeskFragment() {
 
     private lateinit var sectionsAdapter: SectionsAdapter
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_page_list,
-                    R.style.Usedesk_KnowledgeBase_Sections_Page) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }.apply {
-                btnSupport.setOnClickListener {
-                    getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
-                }
-
-                val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-                btnSupport.visibility = visibleGone(withSupportButton)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_page_list,
+            R.style.Usedesk_KnowledgeBase_Sections_Page
+        ) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
+        }.apply {
+            btnSupport.setOnClickListener {
+                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
 
-            sectionsAdapter = SectionsAdapter(binding.rvItems) { id, title ->
-                getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
-            }
+            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
-        sectionsAdapter.onLiveData(viewModel, viewLifecycleOwner)
+        sectionsAdapter = SectionsAdapter(
+            binding.rvItems,
+            viewModel,
+            viewLifecycleOwner
+        ) { id, title ->
+            getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
+        }
+
         viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
             showInstead(binding.rvItems, binding.pbLoading, it != null)
         }
 
         return binding.rootView
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
     }
 
     companion object {
@@ -67,7 +67,8 @@ internal class SectionsPage : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)

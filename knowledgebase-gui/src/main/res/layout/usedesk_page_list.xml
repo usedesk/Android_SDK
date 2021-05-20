@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/usedesk_white_1"
+    android:background="?attr/usedesk_common_root_background"
     android:clickable="true"
     tools:ignore="KeyboardInaccessibleWidget"
     tools:theme="@style/Usedesk.KnowledgeBase.List.Page">

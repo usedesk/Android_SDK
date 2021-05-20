@@ -5,9 +5,9 @@ import android.net.Uri
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 
 data class UsedeskFileInfo(
-        val uri: Uri,
-        val type: String,
-        val name: String
+    val uri: Uri,
+    val type: String,
+    val name: String
 ) {
 
     fun isImage(): Boolean {

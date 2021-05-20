@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.2.1)
+# Android Usedesk SDK (v3.3.1)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -119,13 +119,14 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 
 ```
 supportFragmentManager.beginTransaction()
-        .replace(R.id.container, UsedeskChatFragment.newInstance())
+        .replace(R.id.container, UsedeskChatScreen.newInstance())
         .commit()
 ```
 
 Метод `newInstance` может принять:
 - Параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
 - Параметр типа `Collection<String>` со списком расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае).
+- Параметр типа `UsedeskChatConfiguration` с конфигурацией чата. В случае если такой параметр задан, `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration` даже после пересоздания.
 
 Для полноценной работы фрагмента необходимо:
 - Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет, например:
@@ -400,7 +401,7 @@ UsedeskKnowledgeBaseSdk.release()
   - Исправлен таймаут отправки файлов
   - Отправляемые файлы сразу отображаются в чате
   - Максимальный размер отправляемых файлов ограничен в 100мб
-  - **Внимание!** В README.md [дополнен раздел](#chat_gui_files) "Чат -> Использование с GUI"
+  - **Важно!** В README.md [дополнен раздел](#chat_gui_files) "Чат -> Использование с GUI"
 - v3.1.6
   - Переработана вкладка Формы Обратной Связи, добавлены аргументы и стили кастомизации для новых элементов и удалены старые
   - Изменена логика отображения внутренних вкладок в окне Чата без затрагивания кастомизации
@@ -408,7 +409,7 @@ UsedeskKnowledgeBaseSdk.release()
   - Добавлены Английский, Испанский и Португальский языки, а также шаблон строковых ресурсов
   - В README.md [добавлен раздел](#gui_localization) "Локализация"
   - Исправлена инициализации чата в случае отсутствия сообщений
-  - **Внимание!** В конфигурацию чата добавлен **обязательный** параметр `channelId`
+  - **Важно!** В конфигурацию чата добавлен **обязательный** параметр `channelId`
 - v3.1.8
   - Исправлена ошибка NullSafeMutableLiveData
   - Добавлена валидация на companyId и channelId в конфигурации Чата
@@ -418,7 +419,11 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.2.0
   - Добавлен параметр `rejectedFileExtensions` в метод `UsedeskChatScreen.newInstance()` для фильтрации опасных файлов
   - Подправлена вёрстка `usedesk_item_chat_message_file`, добавлены параметры в стиль `Usedesk.Chat.Message.File.Size.Text`
-  - **Внимание!** Обновлён файл `strings_template.xml`
+  - **Важно!** Обновлён файл `strings_template.xml`
 - v3.2.1
   - Исправлена ошибка при вызове метода `connect()` после `disconnect()`
   - Добавлен [файл конфигурации ProGuard](https://github.com/usedesk/Android_SDK/blob/master/app/proguard-rules.pro "proguard-rules.pro") для примера обфускации библиотеки
+- v3.3.1
+  - **Важно!** Добавлены аргументы кастомизации для заднего фона вкладок
+  - Исправлено сохранение состояний фрагментов при пересоздании активити
+  - Добавлен параметр конфигурации в `UsedeskChatScreen`

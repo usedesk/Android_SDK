@@ -5,25 +5,31 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.common_gui.IUsedeskAdapter
 import ru.usedesk.common_gui.UsedeskCommonFieldCheckBoxAdapter
 import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormSelectorAdapter(
-        recyclerView: RecyclerView,
-        binding: OfflineFormSelectorPage.Binding,
-        private val viewModel: OfflineFormSelectorViewModel,
-        private val items: List<String>,
-        var selectedIndex: Int
-) : RecyclerView.Adapter<OfflineFormSelectorAdapter.ViewHolder>(), IUsedeskAdapter<OfflineFormSelectorViewModel> {
+    recyclerView: RecyclerView,
+    binding: OfflineFormSelectorPage.Binding,
+    private val viewModel: OfflineFormSelectorViewModel,
+    lifecycleOwner: LifecycleOwner,
+    private val items: List<String>,
+    var selectedIndex: Int
+) : RecyclerView.Adapter<OfflineFormSelectorAdapter.ViewHolder>() {
 
-    private val itemStyle = binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_selector_checkbox)
+    private val itemStyle =
+        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_selector_checkbox)
 
     init {
         onSelected(selectedIndex)
         recyclerView.run {
             layoutManager = LinearLayoutManager(recyclerView.context)
             adapter = this@OfflineFormSelectorAdapter
+        }
+        viewModel.selectedIndexLiveData.observe(lifecycleOwner) {
+            it?.let {
+                onSelected(it)
+            }
         }
     }
 
@@ -45,15 +51,6 @@ internal class OfflineFormSelectorAdapter(
             selectedIndex = index
             notifyItemChanged(oldSelectedIndex)
             notifyItemChanged(selectedIndex)
-        }
-    }
-
-    override fun onLiveData(viewModel: OfflineFormSelectorViewModel,
-                            lifecycleOwner: LifecycleOwner) {
-        viewModel.selectedIndexLiveData.observe(lifecycleOwner) {
-            it?.let {
-                onSelected(it)
-            }
         }
     }
 

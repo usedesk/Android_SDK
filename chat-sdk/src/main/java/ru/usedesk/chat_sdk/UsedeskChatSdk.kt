@@ -13,7 +13,10 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
-        chatConfiguration.validate()
+        val validation = chatConfiguration.validate()
+        if (!validation.isAllValid()) {
+            throw RuntimeException("Invalid chat configuration: $validation")
+        }
         this.chatConfiguration = chatConfiguration
     }
 

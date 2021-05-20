@@ -5,34 +5,35 @@ import com.google.gson.Gson
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
-        val urlChat: String,
-        val urlOfflineForm: String = "https://secure.usedesk.ru/",
-        val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
-        val companyId: String,
-        val channelId: String,
-        val clientSignature: String? = null,
-        val clientEmail: String? = null,
-        val clientName: String? = null,
-        val clientNote: String? = null,
-        val clientPhoneNumber: Long? = null,
-        val clientAdditionalId: Long? = null,
-        val clientInitMessage: String? = null
+    val urlChat: String,
+    val urlOfflineForm: String = "https://secure.usedesk.ru/",
+    val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
+    val companyId: String,
+    val channelId: String,
+    val clientSignature: String? = null,
+    val clientEmail: String? = null,
+    val clientName: String? = null,
+    val clientNote: String? = null,
+    val clientPhoneNumber: Long? = null,
+    val clientAdditionalId: Long? = null,
+    val clientInitMessage: String? = null
 ) {
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 
+    @Deprecated("Need to convert manually")
     fun serialize(intent: Intent) {
         intent.putExtra(CONFIGURATION_KEY, Gson().toJson(this))
     }
 
     fun validate(): Validation {
         return Validation(
-                validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
-                validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
-                validUrlToSendFile = UsedeskValidatorUtil.isValidUrlNecessary(urlToSendFile),
-                validCompanyId = isNotEmptyNumber(companyId),
-                validChannelId = isNotEmptyNumber(channelId),
-                validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
-                validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
+            validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
+            validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
+            validUrlToSendFile = UsedeskValidatorUtil.isValidUrlNecessary(urlToSendFile),
+            validCompanyId = isNotEmptyNumber(companyId),
+            validChannelId = isNotEmptyNumber(channelId),
+            validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
+            validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
         )
     }
 
@@ -44,6 +45,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         private const val CONFIGURATION_KEY = "usedeskChatConfigurationKey"
 
         @JvmStatic
+        @Deprecated("Need to convert manually")
         fun deserialize(intent: Intent): UsedeskChatConfiguration? {
             val json = intent.getStringExtra(CONFIGURATION_KEY)
             return if (json != null) {
@@ -59,13 +61,13 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     }
 
     class Validation(
-            val validUrlChat: Boolean = false,
-            val validUrlOfflineForm: Boolean = false,
-            val validUrlToSendFile: Boolean = false,
-            val validCompanyId: Boolean = false,
-            val validChannelId: Boolean = false,
-            val validClientEmail: Boolean = false,
-            val validClientPhoneNumber: Boolean = false
+        val validUrlChat: Boolean = false,
+        val validUrlOfflineForm: Boolean = false,
+        val validUrlToSendFile: Boolean = false,
+        val validCompanyId: Boolean = false,
+        val validChannelId: Boolean = false,
+        val validClientEmail: Boolean = false,
+        val validClientPhoneNumber: Boolean = false
     ) {
         fun isAllValid(): Boolean {
             return validUrlChat
@@ -75,6 +77,16 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
                     && validChannelId
                     && validClientEmail
                     && validClientPhoneNumber
+        }
+
+        override fun toString(): String {
+            return "Validation(validUrlChat=$validUrlChat, " +
+                    "validUrlOfflineForm=$validUrlOfflineForm, " +
+                    "validUrlToSendFile=$validUrlToSendFile, " +
+                    "validCompanyId=$validCompanyId, " +
+                    "validChannelId=$validChannelId, " +
+                    "validClientEmail=$validClientEmail, " +
+                    "validClientPhoneNumber=$validClientPhoneNumber)"
         }
     }
 }

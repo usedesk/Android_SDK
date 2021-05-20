@@ -13,9 +13,9 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.hideKeyboard
 
 internal class ChatNavigation(
-        var fragmentManager: FragmentManager,
-        private val rootView: View,
-        private val containerId: Int
+    var fragmentManager: FragmentManager,
+    private val rootView: View,
+    private val containerId: Int
 ) {
     private val pageSubject = BehaviorSubject.create<Page>()
 
@@ -24,8 +24,8 @@ internal class ChatNavigation(
     }
 
     fun goMessages(
-            agentName: String?,
-            rejectedFileExtensions: Array<String>
+        agentName: String?,
+        rejectedFileExtensions: Array<String>
     ) {
         navigateToRoot(MessagesPage.newInstance(agentName, rejectedFileExtensions))
     }
@@ -42,9 +42,9 @@ internal class ChatNavigation(
         rootView.post {
             fragmentManager.beginTransaction().also { transaction ->
                 fragmentManager.fragments.reversed()
-                        .forEach {
-                            transaction.remove(it)
-                        }
+                    .forEach {
+                        transaction.remove(it)
+                    }
                 transaction.add(containerId, fragment)
                 transaction.show(fragment)
                 fragment.view?.run {

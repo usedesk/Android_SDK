@@ -26,47 +26,49 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private lateinit var binding: Binding
     private lateinit var downloadStatusStyleValues: UsedeskResourceManager.StyleValues
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        if (savedInstanceState == null) {
-            binding = inflateItem(inflater,
-                    container,
-                    R.layout.usedesk_screen_show_file,
-                    R.style.Usedesk_Chat_Show_File) { rootView, defaultStyleId ->
-                Binding(rootView, defaultStyleId)
-            }
-
-            downloadStatusStyleValues = binding.styleValues
-                    .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
-
-            binding.ivBack.setOnClickListener {
-                requireActivity().onBackPressed()
-            }
-
-            binding.ivShare.setOnClickListener {
-                onShareFile(viewModel.fileLiveData.value?.data)
-            }
-
-            binding.ivDownload.setOnClickListener {
-                onDownloadFile(viewModel.fileLiveData.value?.data)
-            }
-
-            binding.ivError.setOnClickListener {
-                viewModel.onRetryPreview()
-            }
-
-            setBlur(binding.lToolbar)
-            setBlur(binding.lBottom)
-
-            argsGetString(FILE_URL_KEY)?.also { json ->
-                val fileUrl = UsedeskFile.deserialize(json)
-
-                viewModel.init(fileUrl)
-            }
-
-            hideKeyboard(binding.rootView)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_screen_show_file,
+            R.style.Usedesk_Chat_Show_File
+        ) { rootView, defaultStyleId ->
+            Binding(rootView, defaultStyleId)
         }
+
+        downloadStatusStyleValues = binding.styleValues
+            .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
+
+        binding.ivBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        binding.ivShare.setOnClickListener {
+            onShareFile(viewModel.fileLiveData.value?.data)
+        }
+
+        binding.ivDownload.setOnClickListener {
+            onDownloadFile(viewModel.fileLiveData.value?.data)
+        }
+
+        binding.ivError.setOnClickListener {
+            viewModel.onRetryPreview()
+        }
+
+        setBlur(binding.lToolbar)
+        setBlur(binding.lBottom)
+
+        argsGetString(FILE_URL_KEY)?.also { json ->
+            val fileUrl = UsedeskFile.deserialize(json)
+
+            viewModel.init(fileUrl)
+        }
+
+        hideKeyboard(binding.rootView)
 
         initAndObserve(viewLifecycleOwner, viewModel.fileLiveData) {
             it?.process { file ->
@@ -88,17 +90,12 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         return binding.rootView
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
     private fun setBlur(blurView: BlurView) {
         blurView.setupWith(binding.rootView as ViewGroup)
-                .setFrameClearDrawable(blurView.background)
-                .setBlurAlgorithm(RenderScriptBlur(context))
-                .setBlurRadius(16f)
-                .setHasFixedTransformationMatrix(true)
+            .setFrameClearDrawable(blurView.background)
+            .setBlurAlgorithm(RenderScriptBlur(context))
+            .setBlurRadius(16f)
+            .setHasFixedTransformationMatrix(true)
     }
 
     private fun onError(error: Boolean?) {
@@ -115,12 +112,12 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                     viewModel.onImageClick()
                 }
                 showImage(binding.ivImage,
-                        0,
-                        usedeskFile.content,
-                        binding.pbLoading,
-                        binding.ivError,
-                        { viewModel.onLoaded(true) },
-                        { viewModel.onLoaded(false) })
+                    0,
+                    usedeskFile.content,
+                    binding.pbLoading,
+                    binding.ivError,
+                    { viewModel.onLoaded(true) },
+                    { viewModel.onLoaded(false) })
             } else {
                 showInstead(binding.lImage, binding.lFile, false)
 
@@ -134,10 +131,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private fun onShareFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
             ShareCompat.IntentBuilder
-                    .from(requireActivity())
-                    .setType(usedeskFile.type)
-                    .setText(usedeskFile.content)
-                    .startChooser()
+                .from(requireActivity())
+                .setType(usedeskFile.type)
+                .setText(usedeskFile.content)
+                .startChooser()
         }
     }
 
@@ -146,21 +143,33 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             UsedeskPermissionUtil.needWriteExternalPermission(binding, this) {
                 try {
                     val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
-                        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, usedeskFile.name)
+                        setDestinationInExternalPublicDir(
+                            Environment.DIRECTORY_DOWNLOADS,
+                            usedeskFile.name
+                        )
                         allowScanningByMediaScanner()
                         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                         setTitle(usedeskFile.name)
                     }
 
-                    val downloadManager = (requireActivity().getSystemService(DOWNLOAD_SERVICE) as DownloadManager?)
+                    val downloadManager =
+                        (requireActivity().getSystemService(DOWNLOAD_SERVICE) as DownloadManager?)
                     val id = downloadManager?.enqueue(request)
                     if (id != null) {
                         val description = downloadStatusStyleValues.getString(R.attr.usedesk_text_1)
-                        Toast.makeText(context, "$description:\n${usedeskFile.name}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "$description:\n${usedeskFile.name}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } catch (e: Exception) {
                     val description = downloadStatusStyleValues.getString(R.attr.usedesk_text_2)
-                    Toast.makeText(context, "$description:\n${usedeskFile.name}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "$description:\n${usedeskFile.name}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -179,7 +188,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val lToolbar: BlurView = rootView.findViewById(R.id.l_toolbar)
         val lBottom: BlurView = rootView.findViewById(R.id.l_bottom)
         val lImage: ViewGroup = rootView.findViewById(R.id.l_image)

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.service.notifications.view
 
-import android.R
 import android.app.*
 import android.content.Intent
 import android.os.Build
@@ -12,6 +11,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
 import ru.usedesk.chat_sdk.entity.UsedeskMessageText
 import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsModel
 import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsPresenter
+import ru.usedesk.common_sdk.utils.getFromJsonExtra
 
 abstract class UsedeskNotificationsService : Service() {
     private lateinit var presenter: UsedeskNotificationsPresenter
@@ -37,9 +37,9 @@ abstract class UsedeskNotificationsService : Service() {
     private fun registerNotification() {
         if (Build.VERSION.SDK_INT >= 26) {
             val notificationChannel = NotificationChannel(
-                    channelId,
-                    channelTitle,
-                    NotificationManager.IMPORTANCE_DEFAULT
+                channelId,
+                channelTitle,
+                NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
                 enableLights(true)
                 enableVibration(true)
@@ -53,7 +53,10 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val chatConfiguration = UsedeskChatConfiguration.deserialize(intent)
+        val chatConfiguration = intent.getFromJsonExtra(
+            USEDESK_CHAT_CONFIGURATION_KEY,
+            UsedeskChatConfiguration::class.java
+        )
         if (chatConfiguration != null) {
             UsedeskChatSdk.setConfiguration(chatConfiguration)
             UsedeskChatSdk.init(this)
@@ -94,22 +97,23 @@ abstract class UsedeskNotificationsService : Service() {
                 title += " (" + model.count + ")"
             }
             NotificationCompat.Builder(this, channelId)
-                    .apply {
-                        setSmallIcon(android.R.drawable.ic_dialog_email)
-                        setContentTitle(title)
-                        setContentText(text)
-                        setContentIntent(getContentPendingIntent())
-                        setDeleteIntent(getDeletePendingIntent())
-                        if (showCloseButton) {
-                            addAction(R.drawable.ic_delete,
-                                    "Закрыть",
-                                    getClosePendingIntent()
-                            )
-                        }
+                .apply {
+                    setSmallIcon(android.R.drawable.ic_dialog_email)
+                    setContentTitle(title)
+                    setContentText(text)
+                    setContentIntent(getContentPendingIntent())
+                    setDeleteIntent(getDeletePendingIntent())
+                    if (showCloseButton) {
+                        addAction(
+                            android.R.drawable.ic_delete,
+                            "Закрыть",//TODO: это чё такое
+                            getClosePendingIntent()
+                        )
                     }
-                    .build().apply {
-                        flags = flags or Notification.FLAG_AUTO_CANCEL
-                    }
+                }
+                .build().apply {
+                    flags = flags or Notification.FLAG_AUTO_CANCEL
+                }
         } else {
             null
         }
@@ -120,5 +124,9 @@ abstract class UsedeskNotificationsService : Service() {
 
         presenter.onClear()
         UsedeskChatSdk.release(false)
+    }
+
+    companion object {
+        const val USEDESK_CHAT_CONFIGURATION_KEY = "usedeskChatConfigurationKey"
     }
 }

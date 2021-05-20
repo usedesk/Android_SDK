@@ -22,13 +22,14 @@ import java.util.*
 
 
 internal class MessagesAdapter(
-        private val viewModel: MessagesViewModel,
-        private val recyclerView: RecyclerView,
-        private val customAgentName: String?,
-        private val rejectedFileExtensions: Array<String>,
-        private val onFileClick: (UsedeskFile) -> Unit,
-        private val onUrlClick: (String) -> Unit
-) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>(), IUsedeskAdapter<MessagesViewModel> {
+    private val viewModel: MessagesViewModel,
+    lifecycleOwner: LifecycleOwner,
+    private val recyclerView: RecyclerView,
+    private val customAgentName: String?,
+    private val rejectedFileExtensions: Array<String>,
+    private val onFileClick: (UsedeskFile) -> Unit,
+    private val onUrlClick: (String) -> Unit
+) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
@@ -45,9 +46,6 @@ internal class MessagesAdapter(
                 }
             }
         }
-    }
-
-    override fun onLiveData(viewModel: MessagesViewModel, lifecycleOwner: LifecycleOwner) {
         viewModel.messagesLiveData.observe(lifecycleOwner) {
             it?.let {
                 onMessages(it)

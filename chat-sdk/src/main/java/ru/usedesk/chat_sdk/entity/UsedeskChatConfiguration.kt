@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.entity
 
-import com.google.gson.Gson
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 data class UsedeskChatConfiguration @JvmOverloads constructor(
@@ -19,8 +18,6 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
 ) {
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 
-    fun toJson(): String = Gson().toJson(this)
-
     fun validate(): Validation {
         return Validation(
             validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
@@ -35,21 +32,6 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
 
     private fun isNotEmptyNumber(value: String): Boolean {
         return value.isNotEmpty() && value.all { it in '0'..'9' }
-    }
-
-    companion object {
-        @JvmStatic
-        fun fromJson(json: String?): UsedeskChatConfiguration? {
-            return if (json != null) {
-                try {
-                    Gson().fromJson(json, UsedeskChatConfiguration::class.java)
-                } catch (e: Exception) {
-                    null
-                }
-            } else {
-                null
-            }
-        }
     }
 
     class Validation(

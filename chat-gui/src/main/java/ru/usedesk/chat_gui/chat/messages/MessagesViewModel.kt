@@ -10,7 +10,7 @@ import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class MessagesViewModel : UsedeskViewModel() {
 
-    val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>?>()
+    val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>?>(listOf())
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>?>(listOf())
     var message = ""
         private set
@@ -26,7 +26,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
         clearFileInfoList()
         actionListenerRx = object : IUsedeskActionListenerRx() {
             override fun onMessagesObservable(
-                    messagesObservable: Observable<List<UsedeskMessage>>
+                messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
                 return messagesObservable.subscribe {
                     messages = it
@@ -45,9 +45,13 @@ internal class MessagesViewModel : UsedeskViewModel() {
         fileInfoListLiveData.value = listOf()
     }
 
+    fun getAttachedFiles(): List<UsedeskFileInfo> {
+        return fileInfoListLiveData.value ?: listOf()
+    }
+
     fun setAttachedFiles(usedeskFileInfoList: List<UsedeskFileInfo>) {
         val attached = (fileInfoListLiveData.value
-                ?: listOf()) + usedeskFileInfoList
+            ?: listOf()) + usedeskFileInfoList
         fileInfoListLiveData.postValue(attached.distinct())
     }
 
@@ -56,7 +60,8 @@ internal class MessagesViewModel : UsedeskViewModel() {
     }
 
     fun detachFile(usedeskFileInfo: UsedeskFileInfo) {
-        val attachedFileInfoList: MutableList<UsedeskFileInfo> = fileInfoListLiveData.value?.toMutableList()
+        val attachedFileInfoList: MutableList<UsedeskFileInfo> =
+            fileInfoListLiveData.value?.toMutableList()
                 ?: mutableListOf()
         attachedFileInfoList.remove(usedeskFileInfo)
         fileInfoListLiveData.postValue(attachedFileInfoList)
@@ -77,7 +82,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     override fun onCleared() {
         super.onCleared()
         UsedeskChatSdk.getInstance()
-                ?.removeActionListener(actionListenerRx)
+            ?.removeActionListener(actionListenerRx)
 
         UsedeskChatSdk.release(false)
     }

@@ -21,6 +21,8 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_sdk.utils.getFromJson
+import ru.usedesk.common_sdk.utils.putAsJson
 
 class UsedeskChatScreen : UsedeskFragment(),
     IUsedeskOnAttachmentClickListener,
@@ -61,12 +63,13 @@ class UsedeskChatScreen : UsedeskFragment(),
 
         val agentName = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
-        val configurationJson = argsGetString(CHAT_CONFIGURATION_KEY)
-        val configuration = UsedeskChatConfiguration.fromJson(configurationJson)
+        val configuration = arguments?.getFromJson(
+            CHAT_CONFIGURATION_KEY,
+            UsedeskChatConfiguration::class.java
+        )
         if (configuration != null) {
             UsedeskChatSdk.setConfiguration(configuration)
         }
-
 
         init(agentName, rejectedFileExtensions, savedInstanceState != null)
 
@@ -205,8 +208,7 @@ class UsedeskChatScreen : UsedeskFragment(),
                         '.' + it.trim(' ', '.')
                     }?.toTypedArray() ?: arrayOf()
                     if (usedeskChatConfiguration != null) {
-                        val jsonConfiguration = usedeskChatConfiguration.toJson()
-                        putString(CHAT_CONFIGURATION_KEY, jsonConfiguration)
+                        putAsJson(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
                     }
                     putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
                 }

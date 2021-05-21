@@ -15,7 +15,7 @@
     </style>
 
     <style name="Usedesk.Common.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-        <item name="usedesk_common_root_background">@color/usedesk_white_1</item>
+        <item name="usedesk_common_container_root">@null</item>
     </style>
 
     <style name="Usedesk.Common.No.Permission.Snackbar" parent="">

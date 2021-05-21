@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -50,17 +51,17 @@ internal class ArticleItem : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }.apply {
             messageStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
 
             yesStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_yes_text)
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_yes_button)
 
             noStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_no_text)
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_no_button)
 
             lRating.visibility = visibleGone(argsGetBoolean(WITH_ARTICLE_RATING_KEY, true))
-            lRatingYes.visibility = View.GONE
-            lRatingNo.visibility = View.GONE
+            btnRatingYes.visibility = View.GONE
+            btnRatingNo.visibility = View.GONE
             etRating.visibility = View.GONE
             tvRatingTitle.visibility = View.GONE
 
@@ -163,46 +164,46 @@ internal class ArticleItem : UsedeskFragment() {
 
     private fun showQuestion(articleId: Long) {
         binding.tvRatingTitle.text = messageStyleValues.getString(R.attr.usedesk_text_1)
-        binding.tvRatingYes.text = yesStyleValues.getString(R.attr.usedesk_text_1)
-        binding.tvRatingNo.text = noStyleValues.getString(R.attr.usedesk_text_1)
+        binding.btnRatingYes.text = yesStyleValues.getString(R.attr.usedesk_text_1)
+        binding.btnRatingNo.text = noStyleValues.getString(R.attr.usedesk_text_1)
 
-        binding.tvRatingYes.setOnClickListener {
+        binding.btnRatingYes.setOnClickListener {
             viewModel.sendArticleRating(articleId, true)
 
             showThanks()
         }
-        binding.tvRatingNo.setOnClickListener {
+        binding.btnRatingNo.setOnClickListener {
             viewModel.sendArticleRating(articleId, false)
 
             showWhatsWrong(articleId)
         }
 
         binding.tvRatingTitle.visibility = View.VISIBLE
-        binding.lRatingYes.visibility = View.VISIBLE
-        binding.lRatingNo.visibility = View.VISIBLE
+        binding.btnRatingYes.visibility = View.VISIBLE
+        binding.btnRatingNo.visibility = View.VISIBLE
         binding.etRating.visibility = View.GONE
     }
 
     private fun showWhatsWrong(articleId: Long) {
         binding.tvRatingTitle.text = messageStyleValues.getString(R.attr.usedesk_text_2)
-        binding.tvRatingYes.text = yesStyleValues.getString(R.attr.usedesk_text_2)
+        binding.btnRatingYes.text = yesStyleValues.getString(R.attr.usedesk_text_2)
 
-        binding.tvRatingYes.setOnClickListener {
+        binding.btnRatingYes.setOnClickListener {
             viewModel.sendArticleRating(articleId, binding.etRating.text.toString())
 
             showThanks()
         }
 
-        binding.lRatingNo.visibility = View.GONE
+        binding.btnRatingNo.visibility = View.GONE
         binding.tvRatingTitle.visibility = View.VISIBLE
-        binding.lRatingYes.visibility = View.VISIBLE
+        binding.btnRatingYes.visibility = View.VISIBLE
         binding.etRating.visibility = View.VISIBLE
     }
 
     private fun showThanks() {
         binding.tvRatingTitle.text = messageStyleValues.getString(R.attr.usedesk_text_3)
-        binding.lRatingYes.visibility = View.GONE
-        binding.lRatingNo.visibility = View.GONE
+        binding.btnRatingYes.visibility = View.GONE
+        binding.btnRatingNo.visibility = View.GONE
         binding.etRating.visibility = View.GONE
         binding.tvRatingTitle.visibility = View.VISIBLE
     }
@@ -240,10 +241,8 @@ internal class ArticleItem : UsedeskFragment() {
         val lRating: ViewGroup = rootView.findViewById(R.id.l_rating)
         val tvRatingTitle: TextView = rootView.findViewById(R.id.tv_rating_title)
         val etRating: EditText = rootView.findViewById(R.id.et_rating_message)
-        val lRatingYes: View = rootView.findViewById(R.id.l_rating_yes)
-        val tvRatingYes: TextView = rootView.findViewById(R.id.tv_rating_yes)
-        val lRatingNo: View = rootView.findViewById(R.id.l_rating_no)
-        val tvRatingNo: TextView = rootView.findViewById(R.id.tv_rating_no)
+        val btnRatingYes: Button = rootView.findViewById(R.id.btn_rating_yes)
+        val btnRatingNo: Button = rootView.findViewById(R.id.btn_rating_no)
         val lPrevious: View = rootView.findViewById(R.id.l_previous)
         val tvPrevious: TextView = rootView.findViewById(R.id.tv_previous)
         val lNext: View = rootView.findViewById(R.id.l_next)

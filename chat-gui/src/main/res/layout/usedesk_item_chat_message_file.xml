@@ -1,62 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_3"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="?attr/usedesk_chat_message_bubble_background"
-    android:paddingLeft="8dp"
-    android:paddingTop="4dp"
+    android:orientation="horizontal"
     tools:theme="@style/Usedesk.Chat.Message.File">
 
-    <LinearLayout
+    <FrameLayout
+        style="?attr/usedesk_common_container_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="6dp">
+        android:layout_gravity="center">
 
-        <FrameLayout
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_gravity="center"
-            android:layout_marginEnd="8dp">
+        <ImageView
+            android:id="@+id/iv_file_type"
+            style="?attr/usedesk_chat_message_file_preview_image" />
 
-            <ImageView
-                android:id="@+id/iv_file_type"
-                style="?attr/usedesk_chat_message_file_preview_image" />
+        <TextView
+            android:id="@+id/tv_extension"
+            style="?attr/usedesk_chat_message_file_extension_text"
+            tools:text="EXTENSION" />
+    </FrameLayout>
 
-            <TextView
-                android:id="@+id/tv_extension"
-                style="?attr/usedesk_chat_message_file_extension_text"
-                tools:text="EXTENSION" />
-        </FrameLayout>
+    <LinearLayout
+        style="?attr/usedesk_common_container_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_file_name"
+            style="?attr/usedesk_chat_message_file_name_text"
+            android:paddingRight="16dp"
+            tools:text="Сводная таблица.xls" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingRight="16dp"
-                android:paddingBottom="2dp">
+        <TextView
+            android:id="@+id/tv_file_size"
+            style="?attr/usedesk_chat_message_file_size_text"
+            android:paddingRight="16dp"
+            android:paddingBottom="2dp"
+            tools:text="384 кб" />
 
-                <TextView
-                    android:id="@+id/tv_file_name"
-                    style="?attr/usedesk_chat_message_file_name_text"
-                    tools:text="Сводная таблица.xls" />
-
-                <TextView
-                    android:id="@+id/tv_file_size"
-                    style="?attr/usedesk_chat_message_file_size_text"
-                    tools:text="384 кб" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_time"
-                style="?attr/usedesk_chat_message_time_text"
-                tools:text="12:06" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_time"
+            style="?attr/usedesk_chat_message_time_text"
+            tools:text="12:06" />
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

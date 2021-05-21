@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -12,10 +13,9 @@
         tools:text="Вчера" />
 
     <LinearLayout
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="4dp"
         android:orientation="horizontal">
 
         <com.makeramen.roundedimageview.RoundedImageView
@@ -24,7 +24,8 @@
             tools:src="@drawable/usedesk_background_avatar_def" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            style="?attr/usedesk_common_container_2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 

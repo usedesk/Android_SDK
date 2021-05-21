@@ -300,7 +300,27 @@
         <item name="android:paddingEnd">12dp</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8" parent="">
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container6" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="cardBackgroundColor">#e9f8e5</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">2dp</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container7" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="cardBackgroundColor">#fceeed</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">2dp</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
@@ -313,12 +333,14 @@
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.ContainerRoot</item>
         <item name="usedesk_common_container_5">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5</item>
-        <item name="usedesk_common_container_8">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8</item>
-        <item name="usedesk_common_container_9">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8</item>
+        <item name="usedesk_common_container_6">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container6</item>
+        <item name="usedesk_common_container_7">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container7</item>
+        <item name="usedesk_common_container_10">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
+        <item name="usedesk_common_container_11">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
-        <item name="usedesk_knowledgebase_article_content_page_rating_yes_button">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Button</item>
-        <item name="usedesk_knowledgebase_article_content_page_rating_no_button">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Button</item>
+        <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
+        <item name="usedesk_knowledgebase_article_content_page_rating_no_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_previous_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_previous_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_next_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Image</item>
@@ -398,10 +420,14 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button" parent="">
-        <item name="android:layout_width">68dp</item>
-        <item name="android:layout_height">36dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+        <item name="android:gravity">center</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginEnd">4dp</item>
@@ -410,15 +436,13 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Button" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
-        <item name="android:background">@drawable/usedesk_background_rating_yes</item>
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
         <item name="android:textColor">@color/usedesk_green</item>
         <item name="usedesk_text_1">@string/usedesk_yes</item>
         <item name="usedesk_text_2">@string/usedesk_send</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Button" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
-        <item name="android:background">@drawable/usedesk_background_rating_no</item>
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Text" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
         <item name="android:textColor">@color/usedesk_red</item>
         <item name="usedesk_text_1">@string/usedesk_no</item>
     </style>

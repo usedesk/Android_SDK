@@ -60,7 +60,19 @@
         <item name="usedesk_chat_offline_form_success_dialog_close_text">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text</item>
     </style>
 
+    <style name="Usedesk.Chat.Attached.File.ContainerRoot" parent="">
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Attached.File.Container1" parent="">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">80dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Attached.File" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Attached.File.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Attached.File.Container1</item>
         <item name="usedesk_chat_attached_file_close_image">@style/Usedesk.Chat.Attached.File.Close.Image</item>
         <item name="usedesk_chat_attached_file_preview_image">@style/Usedesk.Chat.Attached.File.Preview.Image</item>
         <item name="usedesk_chat_attached_file_name_text">@style/Usedesk.Chat.Attached.File.Name.Text</item>
@@ -275,11 +287,25 @@
         <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Message.Text.Container4</item>
         <item name="usedesk_common_container_5">@style/Usedesk.Chat.Message.Text.Container5</item>
-        <item name="usedesk_chat_message_text_button_background">@color/usedesk_black_2</item>
-        <item name="usedesk_chat_message_text_button_text">@style/Usedesk.Chat.Message.Text.Button.Text</item>
+        <item name="usedesk_common_container_6">@null</item>
         <item name="usedesk_chat_message_text_message_text">@style/Usedesk.Chat.Message.Text.Message.Text</item>
         <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
         <item name="usedesk_chat_message_feedback_bad_image">@style/Usedesk.Chat.Message.Feedback.Bad.Image</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Button.Container1" parent="">
+        <item name="cardBackgroundColor">@color/usedesk_black_2</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Button" parent="">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Button.Container1</item>
+        <item name="usedesk_chat_message_text_button_text">@style/Usedesk.Chat.Message.Text.Button.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent.Container1" parent="">
@@ -423,7 +449,6 @@
         <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
         <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
-        <item name="usedesk_chat_screen_message_panel_background">@color/usedesk_white_1</item>
         <item name="usedesk_chat_screen_message_panel_divider_background">@color/usedesk_gray_2</item>
     </style>
 
@@ -475,7 +500,7 @@
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Selector.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Screen.Offline.Form.Selector.Page.ContainerRoot</item>
-        <item name="usedesk_chat_screen_offline_form_selector_background">@color/usedesk_white_1</item>
+        <item name="usedesk_common_container_1">@null</item>
         <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
     </style>
 
@@ -657,12 +682,13 @@
 
     <style name="Usedesk.Chat.Message.Text.Button.Text" parent="">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
         <item name="android:layout_marginLeft">4dp</item>
         <item name="android:layout_marginRight">4dp</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
         <item name="android:textColor">@color/usedesk_white_1</item>
         <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:textSize">17sp</item>

@@ -16,6 +16,8 @@
     <attr name="usedesk_common_container_7" format="reference" />
     <attr name="usedesk_common_container_8" format="reference" />
     <attr name="usedesk_common_container_9" format="reference" />
+    <attr name="usedesk_common_container_10" format="reference" />
+    <attr name="usedesk_common_container_11" format="reference" />
 
     <attr name="usedesk_common_no_permission_snackbar" format="reference" />
 

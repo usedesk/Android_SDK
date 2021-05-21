@@ -2,12 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/usedesk_common_root_background"
     tools:theme="@style/Usedesk.Chat.Screen">
 
     <FrameLayout
+        style="?attr/usedesk_common_container_1"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
@@ -26,9 +27,9 @@
 
     <LinearLayout
         android:id="@+id/l_message_panel"
+        style="?attr/usedesk_common_container_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/usedesk_common_root_background"
         android:clipChildren="true"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -41,10 +42,9 @@
             android:background="?attr/usedesk_chat_screen_message_panel_divider_background" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            style="?attr/usedesk_common_container_3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="4dp"
-            android:paddingVertical="2dp">
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/iv_attach_file"
@@ -71,10 +71,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_attached_files"
+            style="?attr/usedesk_common_container_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingVertical="4dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="6"
             tools:listitem="@layout/usedesk_item_chat_attached_file" />

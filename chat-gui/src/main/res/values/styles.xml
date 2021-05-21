@@ -336,7 +336,32 @@
         <item name="usedesk_text_2">@string/usedesk_download_failed</item>
     </style>
 
+    <style name="Usedesk.Chat.Screen.ContainerRoot">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Container1">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Container3">
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Container4">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Screen" parent="Usedesk.Common">
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Screen.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@null</item>
+        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Screen.Container3</item>
+        <item name="usedesk_common_container_4">@style/Usedesk.Chat.Screen.Container4</item>
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Chat.Screen.Title.Text</item>
         <item name="usedesk_chat_screen_loading_text">@style/Usedesk.Chat.Screen.Loading.Text</item>
         <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>

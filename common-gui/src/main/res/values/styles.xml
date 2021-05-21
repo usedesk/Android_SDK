@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Usedesk.Common" parent="">
-        <item name="usedesk_common_root_background">@color/usedesk_white_1</item>
+        <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_toolbar_root_background">@color/usedesk_white_2</item>
         <item name="usedesk_common_toolbar_divider_background">@color/usedesk_gray_2</item>
         <item name="usedesk_common_toolbar_back_image">@style/Usedesk.Common.Toolbar.Back.Image

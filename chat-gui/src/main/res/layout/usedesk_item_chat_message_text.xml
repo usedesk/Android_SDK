@@ -5,7 +5,6 @@
     style="?attr/usedesk_common_container_3"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?attr/usedesk_chat_message_bubble_background"
     tools:theme="@style/Usedesk.Chat.Message.Text">
 
     <LinearLayout

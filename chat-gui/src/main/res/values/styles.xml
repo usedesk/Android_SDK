@@ -65,17 +65,19 @@
         <item name="usedesk_drawable_1">@drawable/usedesk_background_avatar_def</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.File.Container3" parent="">
-        <item name="android:paddingStart">6dp</item>
-    </style>
-
     <style name="Usedesk.Chat.Message.File.Container4" parent="">
         <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Container5" parent="">
+        <item name="android:layout_marginTop">8dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File">
-        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.File.Container3</item>
+        <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Message.File.Container4</item>
+        <item name="usedesk_common_container_5">@style/Usedesk.Chat.Message.File.Container5</item>
         <item name="usedesk_chat_message_file_preview_image">@style/Usedesk.Chat.Message.File.Preview.Image</item>
         <item name="usedesk_chat_message_file_extension_text">@style/Usedesk.Chat.Message.File.Extension.Text</item>
         <item name="usedesk_chat_message_file_name_text">@style/Usedesk.Chat.Message.File.Name.Text</item>
@@ -93,11 +95,16 @@
         <item name="android:layout_marginBottom">4dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.File.Agent.Container3">
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.File.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.File.Agent.Container1</item>
         <item name="usedesk_common_container_2">@null</item>
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.File.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Client.Container1" parent="">
@@ -105,10 +112,15 @@
         <item name="android:layout_marginBottom">4dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.File.Client.Container3" parent="">
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:background">@drawable/usedesk_background_bubble_client</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.File.Client">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.File.Client.Container1</item>
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.File.Client.Container3</item>
         <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
     </style>
 
@@ -125,7 +137,7 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Image">
-        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Container3</item>
+        <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_chat_message_image_error_image">@style/Usedesk.Chat.Message.Image.Error.Image</item>
         <item name="usedesk_chat_message_image_preview_image">@style/Usedesk.Chat.Message.Image.Preview.Image</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text</item>
@@ -156,8 +168,8 @@
 
     <style name="Usedesk.Chat.Message.Image.Agent.Container2" />
 
-
-    <style name="Usedesk.Chat.Message.Image.Container3">
+    <style name="Usedesk.Chat.Message.Image.Agent.Container3" parent="">
+        <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
         <item name="android:padding">2dp</item>
     </style>
 
@@ -165,7 +177,7 @@
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Agent.Container1</item>
         <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Image.Agent.Container2</item>
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client.Container1">
@@ -173,10 +185,15 @@
         <item name="android:layout_marginBottom">4dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Image.Client.Container3" parent="">
+        <item name="android:background">@drawable/usedesk_background_bubble_client</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Image.Client">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Client.Container1</item>
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Client.Container3</item>
         <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
     </style>
 
@@ -191,6 +208,26 @@
         <item name="android:layout_width">136dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="Usedesk.Common.Container.Wrap" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Usedesk.Common.Container.Match" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="Usedesk.Common.Container.Wide" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Usedesk.Common.Container.Tall" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text">
@@ -209,11 +246,15 @@
         <item name="android:layout_marginBottom">4dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Text.Agent.Container3">
+        <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Text.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Agent.Container1</item>
         <item name="usedesk_common_container_2">@null</item>
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Text.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Client.Container1">
@@ -221,10 +262,14 @@
         <item name="android:layout_marginBottom">4dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Text.Client.Container3">
+        <item name="android:background">@drawable/usedesk_background_bubble_client</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Text.Client">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Client.Container1</item>
-        <item name="usedesk_chat_message_bubble_background">@drawable/usedesk_background_bubble_client</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Text.Client.Container3</item>
         <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
     </style>
 

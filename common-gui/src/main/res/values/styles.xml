@@ -204,4 +204,11 @@
     <style name="Usedesk.Common.Divider.MarginStart" parent="Usedesk.Common.Divider">
         <item name="android:layout_marginStart">16dp</item>
     </style>
+
+    <style name="Usedesk.Common.ProgressBar" parent="">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="colorAccent">@color/usedesk_red</item>
+    </style>
 </resources>

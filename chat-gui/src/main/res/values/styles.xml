@@ -193,6 +193,7 @@
 
     <style name="Usedesk.Chat.Message.Image">
         <item name="usedesk_common_container_3">@null</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_chat_message_image_error_image">@style/Usedesk.Chat.Message.Image.Error.Image</item>
         <item name="usedesk_chat_message_image_preview_image">@style/Usedesk.Chat.Message.Image.Preview.Image</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text</item>
@@ -366,6 +367,7 @@
         <item name="usedesk_common_container_2">@style/Usedesk.Chat.Show.File.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Show.File.Container3</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Show.File.Container4</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_chat_show_file_file_image">@style/Usedesk.Chat.Show.File.File.Image</item>
         <item name="usedesk_chat_show_file_share_image">@style/Usedesk.Chat.Show.File.Share.Image</item>
         <item name="usedesk_chat_show_file_download_image">@style/Usedesk.Chat.Show.File.Download.Image</item>
@@ -482,6 +484,7 @@
         <item name="usedesk_common_container_2">@null</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Screen.Offline.Form.Page.Container3</item>
         <item name="usedesk_common_container_4">@null</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
         <item name="usedesk_chat_screen_offline_form_description_text">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text</item>

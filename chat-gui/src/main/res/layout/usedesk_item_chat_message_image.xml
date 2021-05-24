@@ -13,9 +13,8 @@
 
     <ProgressBar
         android:id="@+id/pb_loading"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center" />
+        style="?attr/usedesk_common_progressbar"
+        android:theme="?attr/usedesk_common_progressbar" />
 
     <ImageView
         android:id="@+id/iv_error"

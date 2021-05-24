@@ -20,6 +20,8 @@
 
     <attr name="usedesk_common_divider" format="reference" />
 
+    <attr name="usedesk_common_progressbar" format="reference" />
+
     <attr name="usedesk_common_no_permission_snackbar" format="reference" />
 
     <attr name="usedesk_common_field_text_input_layout" format="reference" />

@@ -5,13 +5,9 @@
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_toolbar_root_background">@color/usedesk_white_2</item>
         <item name="usedesk_common_toolbar_divider_background">@color/usedesk_gray_2</item>
-        <item name="usedesk_common_toolbar_back_image">@style/Usedesk.Common.Toolbar.Back.Image
-        </item>
-        <item name="usedesk_common_toolbar_action_image">
-            @style/Usedesk.Common.Toolbar.Action.Image
-        </item>
-        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Common.Toolbar.Title.Text
-        </item>
+        <item name="usedesk_common_toolbar_back_image">@style/Usedesk.Common.Toolbar.Back.Image</item>
+        <item name="usedesk_common_toolbar_action_image">@style/Usedesk.Common.Toolbar.Action.Image</item>
+        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Common.Toolbar.Title.Text</item>
     </style>
 
     <style name="Usedesk.Common.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
@@ -60,12 +56,21 @@
         <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
     </style>
 
+    <style name="Usedesk.Common.Field.CheckBox.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.CheckBox.Container1" parent="">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
     <style name="Usedesk.Common.Field.CheckBox" parent="">
-        <item name="usedesk_common_field_checkbox_text">@style/Usedesk.Common.Field.CheckBox.Text
-        </item>
-        <item name="usedesk_common_field_checkbox_image">
-            @style/Usedesk.Common.Field.CheckBox.Image
-        </item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Common.Field.CheckBox.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Common.Field.CheckBox.Container1</item>
+        <item name="usedesk_common_field_checkbox_text">@style/Usedesk.Common.Field.CheckBox.Text</item>
+        <item name="usedesk_common_field_checkbox_image">@style/Usedesk.Common.Field.CheckBox.Image</item>
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.Text" parent="">
@@ -86,16 +91,30 @@
         <item name="usedesk_drawable_2">@drawable/ic_checked</item>
     </style>
 
+    <style name="Usedesk.Common.List.Field.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
+    <style name="Usedesk.Common.List.Field.Container1" parent="">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Usedesk.Common.List.Field.Container2" parent="">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
     <style name="Usedesk.Common.List.Field" parent="">
-        <item name="usedesk_common_field_list_title_text">
-            @style/Usedesk.Common.Field.List.Title.Text
-        </item>
-        <item name="usedesk_common_field_list_value_text">
-            @style/Usedesk.Common.Field.List.Value.Text
-        </item>
-        <item name="usedesk_common_field_list_arrow_image">
-            @style/Usedesk.Common.Field.List.Arrow.Image
-        </item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Common.List.Field.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Common.List.Field.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Common.List.Field.Container2</item>
+        <item name="usedesk_common_field_list_title_text">@style/Usedesk.Common.Field.List.Title.Text</item>
+        <item name="usedesk_common_field_list_value_text">@style/Usedesk.Common.Field.List.Value.Text</item>
+        <item name="usedesk_common_field_list_arrow_image">@style/Usedesk.Common.Field.List.Arrow.Image</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
     </style>
@@ -121,18 +140,19 @@
 
     <style name="Usedesk.Common.Field.List.Arrow.Image" parent="">
         <item name="android:layout_width">32dp</item>
-        <item name="android:layout_height">60dp</item>
-        <item name="android:paddingTop">28dp</item>
+        <item name="android:layout_height">32dp</item>
         <item name="android:layout_marginBottom">4dp</item>
         <item name="srcCompat">@drawable/usedesk_ic_arrow_angular</item>
     </style>
 
+    <style name="Usedesk.Common.Text.Field.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
     <style name="Usedesk.Common.Text.Field" parent="">
-        <item name="usedesk_common_field_text_input_layout">
-            @style/Usedesk.Common.Field.Text.InputLayout
-        </item>
-        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText
-        </item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Common.Text.Field.ContainerRoot</item>
+        <item name="usedesk_common_field_text_input_layout">@style/Usedesk.Common.Field.Text.InputLayout</item>
+        <item name="usedesk_common_field_text_edit_text">@style/Usedesk.Common.Field.Text.EditText</item>
         <item name="usedesk_text_1">""</item>
         <item name="usedesk_text_2">""</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>

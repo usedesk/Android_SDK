@@ -608,6 +608,7 @@
         <item name="android:textColor">@color/usedesk_black_1</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:textSize">18sp</item>
+        <item name="android:paddingEnd">16dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Size.Text" parent="">
@@ -615,6 +616,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">2dp</item>
         <item name="usedesk_text_1">@string/usedesk_dangerous_file</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_3</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>

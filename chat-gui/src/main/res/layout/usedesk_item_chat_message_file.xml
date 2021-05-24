@@ -32,14 +32,11 @@
         <TextView
             android:id="@+id/tv_file_name"
             style="?attr/usedesk_chat_message_file_name_text"
-            android:paddingRight="16dp"
             tools:text="Сводная таблица.xls" />
 
         <TextView
             android:id="@+id/tv_file_size"
             style="?attr/usedesk_chat_message_file_size_text"
-            android:paddingRight="16dp"
-            android:paddingBottom="2dp"
             tools:text="384 кб" />
 
         <TextView

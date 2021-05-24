@@ -24,8 +24,8 @@ import java.net.URISyntaxException
 
 @InjectConstructor
 internal class SocketApi(
-        private val gson: Gson,
-        private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
+    private val gson: Gson,
+    private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
 ) {
 
     private val emitterListeners: MutableMap<String, Emitter.Listener> = hashMapOf()
@@ -64,15 +64,25 @@ internal class SocketApi(
                 when (response.type) {
                     ErrorResponse.TYPE -> {
                         val errorResponse = response as ErrorResponse
-                        val usedeskSocketException: UsedeskSocketException = when (errorResponse.code) {
-                            HttpURLConnection.HTTP_FORBIDDEN -> {
-                                eventListener.onTokenError()
-                                UsedeskSocketException(UsedeskSocketException.Error.FORBIDDEN_ERROR, errorResponse.message)
+                        val usedeskSocketException: UsedeskSocketException =
+                            when (errorResponse.code) {
+                                HttpURLConnection.HTTP_FORBIDDEN -> {
+                                    eventListener.onTokenError()
+                                    UsedeskSocketException(
+                                        UsedeskSocketException.Error.FORBIDDEN_ERROR,
+                                        errorResponse.message
+                                    )
+                                }
+                                HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(
+                                    UsedeskSocketException.Error.BAD_REQUEST_ERROR,
+                                    errorResponse.message
+                                )
+                                HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(
+                                    UsedeskSocketException.Error.INTERNAL_SERVER_ERROR,
+                                    errorResponse.message
+                                )
+                                else -> UsedeskSocketException(errorResponse.message)
                             }
-                            HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(UsedeskSocketException.Error.BAD_REQUEST_ERROR, errorResponse.message)
-                            HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(UsedeskSocketException.Error.INTERNAL_SERVER_ERROR, errorResponse.message)
-                            else -> UsedeskSocketException(errorResponse.message)
-                        }
                         eventListener.onException(usedeskSocketException)
                     }
                     InitChatResponse.TYPE -> {
@@ -96,42 +106,44 @@ internal class SocketApi(
         return socket?.connected() == true
     }
 
-    fun connect(url: String,
-                token: String?,
-                companyId: String,
-                eventListener: EventListener
+    fun connect(
+        url: String,
+        token: String?,
+        companyId: String,
+        eventListener: EventListener
     ) {
-        socket = (socket ?: getSocket(url)).also { socket ->
-            this.eventListener = eventListener
-            this.initChatRequest = InitChatRequest(token, companyId, url)
+        if (socket == null) {
+            try {
+                usedeskOkHttpClientFactory.createInstance().also {
+                    IO.setDefaultOkHttpWebSocketFactory(it)
+                    IO.setDefaultOkHttpCallFactory(it)
+                }
 
-            emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
-            emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
-            emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
-            emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
-            emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
+                val options = IO.Options().apply {
+                    transports = arrayOf(WebSocket.NAME)
+                }
 
-            for (event in emitterListeners.keys) {
-                socket.on(event, emitterListeners[event])
+                socket = IO.socket(url, options).also {
+                    this@SocketApi.eventListener = eventListener
+                    this@SocketApi.initChatRequest = InitChatRequest(token, companyId, url)
+
+                    emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
+                    emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
+                    emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
+                    emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
+                    emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
+
+                    for (event in emitterListeners.keys) {
+                        it.on(event, emitterListeners[event])
+                    }
+                    it.connect()
+                }
+            } catch (e: URISyntaxException) {
+                throw UsedeskSocketException(
+                    UsedeskSocketException.Error.SOCKET_INIT_ERROR,
+                    e.message
+                )
             }
-            socket.connect()
-        }
-    }
-
-    private fun getSocket(url: String): Socket {
-        return try {
-            usedeskOkHttpClientFactory.createInstance().also {
-                IO.setDefaultOkHttpWebSocketFactory(it)
-                IO.setDefaultOkHttpCallFactory(it)
-            }
-
-            val options = IO.Options().apply {
-                transports = arrayOf(WebSocket.NAME)
-            }
-
-            IO.socket(url, options)
-        } catch (e: URISyntaxException) {
-            throw UsedeskSocketException(UsedeskSocketException.Error.SOCKET_INIT_ERROR, e.message)
         }
     }
 
@@ -141,13 +153,13 @@ internal class SocketApi(
         }
         emitterListeners.clear()
         socket?.disconnect()
+        socket = null
     }
 
     @Throws(UsedeskSocketException::class)
     fun sendRequest(baseRequest: BaseRequest) {
         try {
             val rawRequest = gson.toJson(baseRequest)
-            //Log.d("DBG", baseRequest.javaClass.simpleName + ":" +rawRequest)
             val jsonRequest = JSONObject(rawRequest)
             socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {
@@ -169,7 +181,12 @@ internal class SocketApi(
                 return gson.fromJson(rawResponse, it)
             }
         } catch (e: JsonParseException) {
-            eventListener.onException(UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message))
+            eventListener.onException(
+                UsedeskSocketException(
+                    UsedeskSocketException.Error.JSON_ERROR,
+                    e.message
+                )
+            )
         }
         return null
     }

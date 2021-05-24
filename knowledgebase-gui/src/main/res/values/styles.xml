@@ -381,6 +381,10 @@
         <item name="android:padding">12dp</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider" parent="Usedesk.Common.Divider.MarginStart">
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.ContainerRoot</item>
         <item name="usedesk_common_container_5">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5</item>
@@ -388,6 +392,7 @@
         <item name="usedesk_common_container_7">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container7</item>
         <item name="usedesk_common_container_10">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_container_11">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
+        <item name="usedesk_common_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>

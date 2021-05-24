@@ -93,13 +93,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="4dp"
-                    android:background="@color/usedesk_gray_2" />
+                <View style="?attr/usedesk_common_divider" />
 
                 <LinearLayout
                     style="?attr/usedesk_common_container_9"

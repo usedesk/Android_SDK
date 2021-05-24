@@ -45,9 +45,7 @@
 
             <View
                 android:id="@+id/v_divider"
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="?attr/usedesk_common_toolbar_divider_background"
+                style="?attr/usedesk_common_divider"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

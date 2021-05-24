@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="usedesk_common_toolbar_root_background" format="reference" />
-    <attr name="usedesk_common_toolbar_divider_background" format="reference" />
     <attr name="usedesk_common_toolbar_back_image" format="reference" />
     <attr name="usedesk_common_toolbar_action_image" format="reference" />
     <attr name="usedesk_common_toolbar_title_text" format="reference" />
@@ -18,6 +17,8 @@
     <attr name="usedesk_common_container_9" format="reference" />
     <attr name="usedesk_common_container_10" format="reference" />
     <attr name="usedesk_common_container_11" format="reference" />
+
+    <attr name="usedesk_common_divider" format="reference" />
 
     <attr name="usedesk_common_no_permission_snackbar" format="reference" />
 

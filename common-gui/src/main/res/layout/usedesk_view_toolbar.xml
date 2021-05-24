@@ -5,20 +5,15 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
+        style="?attr/usedesk_common_container_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/usedesk_common_toolbar_root_background"
-        android:saveEnabled="false"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetRight="0dp"
-        app:contentInsetStart="0dp"
-        app:title=""
-        tools:theme="@style/Usedesk.Common">
+        app:theme="?attr/usedesk_common_toolbar"
+        tools:theme="@style/Usedesk.Common.Toolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            style="?attr/usedesk_common_container_1"
+            android:layout_width="match_parent">
 
             <ImageView
                 android:id="@+id/iv_back"
@@ -50,6 +45,5 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.appcompat.widget.Toolbar>
 </merge>

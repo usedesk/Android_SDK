@@ -7,6 +7,7 @@
     tools:theme="@style/Usedesk.KnowledgeBase.Articles.Page.Article">
 
     <LinearLayout
+        android:id="@+id/l_clickable"
         style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -51,13 +51,14 @@ internal class ArticlesAdapter(
 
         fun bind(articleInfo: UsedeskArticleInfo) {
             binding.tvTitle.text = articleInfo.title
-            binding.rootView.setOnClickListener {
+            binding.lClickable.setOnClickListener {
                 onArticleInfoClick(articleInfo)
             }
         }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
     }
 }

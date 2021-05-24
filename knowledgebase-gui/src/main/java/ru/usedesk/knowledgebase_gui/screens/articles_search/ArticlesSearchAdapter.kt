@@ -53,13 +53,14 @@ internal class ArticlesSearchAdapter(
         fun bind(articleContent: UsedeskArticleContent) {
             binding.tvTitle.text = articleContent.title
             binding.tvDescription.text = Html.fromHtml(articleContent.text).trim()
-            binding.rootView.setOnClickListener {
+            binding.lClickable.setOnClickListener {
                 onArticleClick(articleContent)
             }
         }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val tvDescription: TextView = rootView.findViewById(R.id.tv_description)
         val tvPath: TextView = rootView.findViewById(R.id.tv_path)

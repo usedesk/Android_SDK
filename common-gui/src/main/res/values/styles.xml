@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_2</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetEnd">0dp</item>
+        <item name="title">@null</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1" parent="">
+        <item name="android:layout_height">56dp</item>
+    </style>
+
+    <style name="Usedesk.Common.Toolbar" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1</item>
+        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
+    </style>
+
     <style name="Usedesk.Common" parent="">
         <item name="usedesk_common_container_root">@null</item>
-        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
-        <item name="usedesk_common_toolbar_root_background">@color/usedesk_white_2</item>
+        <item name="usedesk_common_toolbar">@style/Usedesk.Common.Toolbar</item>
         <item name="usedesk_common_toolbar_back_image">@style/Usedesk.Common.Toolbar.Back.Image</item>
         <item name="usedesk_common_toolbar_action_image">@style/Usedesk.Common.Toolbar.Action.Image</item>
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.Common.Toolbar.Title.Text</item>
@@ -104,8 +121,8 @@
 
     <style name="Usedesk.Common.List.Field.Container2" parent="">
         <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginBottom">10dp</item>
     </style>
 
@@ -132,7 +149,6 @@
     <style name="Usedesk.Common.Field.List.Value.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">4dp</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:singleLine">true</item>
@@ -167,8 +183,8 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:layout_marginTop">12dp</item>
-        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
         <item name="android:ellipsize">end</item>
         <item name="hintTextAppearance">@style/Usedesk.Common.Field.Text.InputLayout.FontSize</item>
         <item name="boxStrokeColor">@drawable/usedesk_text_input_layout_empty</item>

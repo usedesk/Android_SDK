@@ -54,13 +54,14 @@ internal class CategoriesAdapter internal constructor(
             binding.tvTitle.text = category.title
             binding.tvDescription.text = Html.fromHtml(category.description).trim()
             binding.tvCount.text = category.articles.size.toString()
-            binding.rootView.setOnClickListener {
+            binding.lClickable.setOnClickListener {
                 onCategoryClick(category.id, category.title)
             }
         }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val tvDescription: TextView = rootView.findViewById(R.id.tv_description)
         val tvCount: TextView = rootView.findViewById(R.id.tv_count)

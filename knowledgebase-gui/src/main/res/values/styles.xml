@@ -4,15 +4,41 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
-        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title.Text</item>
-        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title.Text</item>
-        <item name="usedesk_knowledgebase_screen_toolbar_search_background">@drawable/usedesk_background_search_input</item>
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_2</item>
+        <item name="android:saveEnabled">false</item>
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetEnd">0dp</item>
+        <item name="title">@null</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1" parent="">
+        <item name="android:layout_height">56dp</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container2" parent="">
+        <item name="android:background">@drawable/usedesk_background_search_input</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container2</item>
+        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_query_edit_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_cancel_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
-        <item name="usedesk_knowledgebase_screen_toolbar_search_divider">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Divider</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
+        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.ContainerRoot</item>
+        <item name="usedesk_common_toolbar_title_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title.Text</item>
         <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Action.Image</item>
+        <item name="usedesk_knowledgebase_screen_toolbar_search">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page.ContainerRoot" parent="">
@@ -226,7 +252,17 @@
         <item name="usedesk_text_1">@string/usedesk_articles_not_found</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Container1" parent="">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Container1</item>
         <item name="usedesk_knowledgebase_article_search_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text</item>
         <item name="usedesk_knowledgebase_article_search_page_article_description">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text</item>
         <item name="usedesk_knowledgebase_article_search_page_article_path">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text</item>

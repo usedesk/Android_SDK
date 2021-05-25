@@ -7,6 +7,5 @@
 
     <path
         android:fillColor="@color/usedesk_gray_2"
-        android:fillType="evenOdd"
         android:pathData="M13.0669 10.8705L14.46 9.5L21.0669 16L14.46 22.5L13.0669 21.1295L18.2807 16L13.0669 10.8705Z" />
 </vector>

@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/usedesk_common_root_background"
-    tools:theme="@style/Usedesk.Chat.Screen">
+    style="?attr/usedesk_common_container_root"
+    tools:theme="@style/Usedesk.Chat.Screen.Loading.Page">
 
     <TextView
         android:id="@+id/tv_loading"

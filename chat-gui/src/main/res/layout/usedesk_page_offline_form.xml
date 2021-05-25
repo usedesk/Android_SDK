@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/usedesk_common_root_background"
-    tools:theme="@style/Usedesk.Chat.Screen">
+    tools:theme="@style/Usedesk.Chat.Screen.Offline.Form.Page">
 
     <LinearLayout
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -18,6 +18,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_fields"
+            style="?attr/usedesk_common_container_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -27,24 +28,19 @@
             tools:listitem="@layout/usedesk_item_field_text" />
 
         <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp">
+            style="?attr/usedesk_common_container_3"
+            android:layout_width="match_parent">
 
             <FrameLayout
                 android:id="@+id/l_offline_form_send"
+                style="?attr/usedesk_common_container_4"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <ProgressBar
                     android:id="@+id/pb_offline_form_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:theme="@style/Usedesk.Chat.Screen.Offline.Form.ProgressBar" />
+                    style="?attr/usedesk_common_progressbar"
+                    android:theme="?attr/usedesk_common_progressbar" />
 
                 <TextView
                     android:id="@+id/tv_offline_form_send"

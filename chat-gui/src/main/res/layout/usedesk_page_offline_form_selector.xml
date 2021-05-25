@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/usedesk_chat_screen_offline_form_selector_background"
-    tools:theme="@style/Usedesk.Chat.Screen">
+    tools:theme="@style/Usedesk.Chat.Screen.Offline.Form.Selector.Page">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_items"
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:itemCount="10"

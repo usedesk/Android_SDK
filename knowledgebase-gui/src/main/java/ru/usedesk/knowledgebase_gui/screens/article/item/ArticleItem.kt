@@ -50,13 +50,13 @@ internal class ArticleItem : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }.apply {
             messageStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
 
             yesStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_yes_text)
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_yes_text)
 
             noStyleValues = styleValues
-                    .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_no_text)
+                .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_no_text)
 
             lRating.visibility = visibleGone(argsGetBoolean(WITH_ARTICLE_RATING_KEY, true))
             lRatingYes.visibility = View.GONE

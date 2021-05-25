@@ -2,6 +2,7 @@ package ru.usedesk.common_gui
 
 import android.text.Html
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 
 class UsedeskCommonFieldListAdapter(
@@ -16,7 +17,7 @@ class UsedeskCommonFieldListAdapter(
     }
 
     fun setOnClickListener(onClickListener: () -> Unit) {
-        binding.rootView.setOnClickListener {
+        binding.lClickable.setOnClickListener {
             onClickListener()
         }
     }
@@ -38,6 +39,7 @@ class UsedeskCommonFieldListAdapter(
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val tvValue: TextView = rootView.findViewById(R.id.tv_value)
     }

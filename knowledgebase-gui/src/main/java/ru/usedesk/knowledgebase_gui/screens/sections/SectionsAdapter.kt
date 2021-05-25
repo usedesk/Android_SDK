@@ -34,9 +34,11 @@ internal class SectionsAdapter(
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
-        val binding = inflateItem(viewGroup,
-                R.layout.usedesk_item_section,
-                R.style.Usedesk_KnowledgeBase_Sections_Page_Section) { rootView, defaultStyleId ->
+        val binding = inflateItem(
+            viewGroup,
+            R.layout.usedesk_item_section,
+            R.style.Usedesk_KnowledgeBase_Sections_Page_Section
+        ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
         return SectionViewHolder(binding)
@@ -49,12 +51,12 @@ internal class SectionsAdapter(
     override fun getItemCount(): Int = sectionList.size
 
     inner class SectionViewHolder(
-            private val binding: Binding
+        private val binding: Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         private val noThumbnailId = binding.styleValues
-                .getStyleValues(R.attr.usedesk_knowledgebase_sections_page_section_thumbnail_image)
-                .getId(R.attr.usedesk_drawable_1)
+            .getStyleValues(R.attr.usedesk_knowledgebase_sections_page_section_thumbnail_image)
+            .getId(R.attr.usedesk_drawable_1)
 
         fun bind(section: UsedeskSection) {
             binding.ivIcon.setImageBitmap(null)
@@ -63,20 +65,24 @@ internal class SectionsAdapter(
             binding.tvInitials.text = section.title
             section.thumbnail?.also {
                 showImage(binding.ivIcon,
-                        noThumbnailId,
-                        it,
-                        onSuccess = {
-                            binding.tvInitials.text = ""
-                        }
+                    noThumbnailId,
+                    it,
+                    onSuccess = {
+                        binding.tvInitials.text = ""
+                    }
                 )
             }
-            binding.rootView.setOnClickListener {
+            binding.lClickable.setOnClickListener {
                 onSectionClick(section.id, section.title)
             }
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(
+        rootView: View,
+        defaultStyleId: Int
+    ) : UsedeskBinding(rootView, defaultStyleId) {
+        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
         val ivIcon: ImageView = rootView.findViewById(R.id.iv_icon)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val tvInitials: TextView = rootView.findViewById(R.id.tv_initials)

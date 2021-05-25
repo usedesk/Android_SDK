@@ -2,22 +2,22 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/usedesk_common_root_background"
     android:clickable="true"
     tools:ignore="KeyboardInaccessibleWidget"
     tools:theme="@style/Usedesk.Chat.Show.File">
 
     <LinearLayout
         android:id="@+id/l_file"
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="32dp"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <androidx.appcompat.widget.AppCompatImageView style="?attr/usedesk_chat_show_file_file_image" />
 
@@ -35,11 +35,11 @@
 
     <FrameLayout
         android:id="@+id/l_image"
+        style="?attr/usedesk_common_container_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/usedesk_chat_show_file_image_background"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/iv_image"
@@ -54,16 +54,15 @@
 
         <ProgressBar
             android:id="@+id/pb_loading"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center" />
+            style="?attr/usedesk_common_progressbar"
+            android:theme="?attr/usedesk_common_progressbar" />
     </FrameLayout>
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/l_toolbar"
+        style="?attr/usedesk_common_container_3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/usedesk_chat_show_file_blur_top_background">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -90,10 +89,10 @@
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/l_bottom"
+        style="?attr/usedesk_common_container_4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="?attr/usedesk_chat_show_file_blur_bottom_background">
+        android:layout_gravity="bottom">
 
         <ImageView
             android:id="@+id/iv_share"

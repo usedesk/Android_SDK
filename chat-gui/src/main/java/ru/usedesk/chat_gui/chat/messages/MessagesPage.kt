@@ -40,7 +40,7 @@ internal class MessagesPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_messages,
-            R.style.Usedesk_Chat_Screen
+            R.style.Usedesk_Chat_Screen_Messages_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }

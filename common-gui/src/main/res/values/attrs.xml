@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="usedesk_common_root_background" format="reference" />
-    <attr name="usedesk_common_toolbar_root_background" format="reference" />
-    <attr name="usedesk_common_toolbar_divider_background" format="reference" />
     <attr name="usedesk_common_toolbar_back_image" format="reference" />
     <attr name="usedesk_common_toolbar_action_image" format="reference" />
     <attr name="usedesk_common_toolbar_title_text" format="reference" />
+
+    <attr name="usedesk_common_container_root" format="reference" />
+    <attr name="usedesk_common_container_1" format="reference" />
+    <attr name="usedesk_common_container_2" format="reference" />
+    <attr name="usedesk_common_container_3" format="reference" />
+    <attr name="usedesk_common_container_4" format="reference" />
+    <attr name="usedesk_common_container_5" format="reference" />
+    <attr name="usedesk_common_container_6" format="reference" />
+    <attr name="usedesk_common_container_7" format="reference" />
+    <attr name="usedesk_common_container_8" format="reference" />
+    <attr name="usedesk_common_container_9" format="reference" />
+    <attr name="usedesk_common_container_10" format="reference" />
+    <attr name="usedesk_common_container_11" format="reference" />
+
+    <attr name="usedesk_common_divider" format="reference" />
+
+    <attr name="usedesk_common_progressbar" format="reference" />
+
+    <attr name="usedesk_common_toolbar" format="reference" />
 
     <attr name="usedesk_common_no_permission_snackbar" format="reference" />
 

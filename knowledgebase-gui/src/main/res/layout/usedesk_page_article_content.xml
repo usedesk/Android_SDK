@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/usedesk_common_root_background"
     tools:theme="@style/Usedesk.KnowledgeBase.Article.Content.Page">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/vp_pages"
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </FrameLayout>

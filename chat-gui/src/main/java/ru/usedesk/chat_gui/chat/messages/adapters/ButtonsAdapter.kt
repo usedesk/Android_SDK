@@ -26,9 +26,11 @@ internal class ButtonsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ButtonViewHolder {
-        return ButtonViewHolder(inflateItem(parent,
-                R.layout.usedesk_item_chat_button,
-                R.style.Usedesk_Chat_Message) { rootView, defaultStyleId ->
+        return ButtonViewHolder(inflateItem(
+            parent,
+            R.layout.usedesk_item_chat_button,
+            R.style.Usedesk_Chat_Message_Text_Button
+        ) { rootView, defaultStyleId ->
             ButtonBinding(rootView, defaultStyleId)
         })
     }
@@ -45,7 +47,7 @@ internal class ButtonsAdapter(
 
         fun bind(button: UsedeskMessageButton) {
             binding.tvTitle.text = button.text
-            binding.lClickable.setOnClickListener {
+            binding.tvTitle.setOnClickListener {
                 onClick(button)
             }
         }
@@ -53,6 +55,6 @@ internal class ButtonsAdapter(
 
     internal class ButtonBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
-        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
+        //val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
     }
 }

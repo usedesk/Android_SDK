@@ -1,59 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     tools:theme="@style/Usedesk.KnowledgeBase.Sections.Page.Section">
 
-    <FrameLayout
-        android:id="@+id/l_thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/l_clickable"
+        style="?attr/usedesk_common_container_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/iv_icon"
-            style="?attr/usedesk_knowledgebase_sections_page_section_thumbnail_image"
+        <FrameLayout
+            android:id="@+id/l_thumbnail"
+            style="?attr/usedesk_common_container_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/usedesk_background_no_thumbnail" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                style="?attr/usedesk_knowledgebase_sections_page_section_thumbnail_image"
+                tools:srcCompat="@drawable/usedesk_background_no_thumbnail" />
+
+            <TextView
+                android:id="@+id/tv_initials"
+                style="?attr/usedesk_knowledgebase_sections_page_section_initials_text"
+                tools:text="П" />
+        </FrameLayout>
 
         <TextView
-            android:id="@+id/tv_initials"
-            style="?attr/usedesk_knowledgebase_sections_page_section_initials_text"
-            tools:text="П" />
-    </FrameLayout>
+            android:id="@+id/tv_title"
+            style="?attr/usedesk_knowledgebase_sections_page_section_title_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
+            app:layout_constraintStart_toEndOf="@+id/l_thumbnail"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Section title" />
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="?attr/usedesk_knowledgebase_sections_page_section_title_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
-        app:layout_constraintStart_toEndOf="@+id/l_thumbnail"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Section title" />
+        <ImageView
+            android:id="@+id/iv_arrow"
+            style="?attr/usedesk_knowledgebase_sections_page_section_forward_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_arrow"
-        style="?attr/usedesk_knowledgebase_sections_page_section_forward_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        style="?attr/usedesk_knowledgebase_sections_page_section_divider"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tv_title" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            style="?attr/usedesk_knowledgebase_sections_page_section_divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tv_title" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

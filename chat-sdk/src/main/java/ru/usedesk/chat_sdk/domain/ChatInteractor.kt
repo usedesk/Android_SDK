@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit
 
 @InjectConstructor
 internal class ChatInteractor(
-        private val configuration: UsedeskChatConfiguration,
-        private val userInfoRepository: IUserInfoRepository,
-        private val apiRepository: IApiRepository
+    private val configuration: UsedeskChatConfiguration,
+    private val userInfoRepository: IUserInfoRepository,
+    private val apiRepository: IApiRepository
 ) : IUsedeskChat {
 
     private var token: String? = null
@@ -152,10 +152,13 @@ internal class ChatInteractor(
             this@ChatInteractor.onMessageUpdate(message)
         }
 
-        override fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings,
-                                   chatInited: ChatInited) {
+        override fun onOfflineForm(
+            offlineFormSettings: UsedeskOfflineFormSettings,
+            chatInited: ChatInited
+        ) {
             this@ChatInteractor.chatInited = chatInited
-            this@ChatInteractor.offlineFormToChat = offlineFormSettings.workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+            this@ChatInteractor.offlineFormToChat =
+                offlineFormSettings.workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
             offlineFormExpectedSubject.onNext(offlineFormSettings)
         }
 
@@ -189,20 +192,27 @@ internal class ChatInteractor(
                 signature = this.configuration.clientSignature
             }
         } else if (configuration != null
-                && this.configuration.getCompanyAndChannel() == configuration.getCompanyAndChannel()
-                && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
-                        || isFieldEquals(this.configuration.clientPhoneNumber, configuration.clientPhoneNumber)
-                        || isFieldEquals(this.configuration.clientAdditionalId, configuration.clientAdditionalId)
-                        || (this.configuration.clientEmail == configuration.clientEmail
-                        && this.configuration.clientPhoneNumber == configuration.clientPhoneNumber
-                        && this.configuration.clientAdditionalId == configuration.clientAdditionalId))) {
+            && this.configuration.getCompanyAndChannel() == configuration.getCompanyAndChannel()
+            && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
+                    || isFieldEquals(
+                this.configuration.clientPhoneNumber,
+                configuration.clientPhoneNumber
+            )
+                    || isFieldEquals(
+                this.configuration.clientAdditionalId,
+                configuration.clientAdditionalId
+            )
+                    || (this.configuration.clientEmail == configuration.clientEmail
+                    && this.configuration.clientPhoneNumber == configuration.clientPhoneNumber
+                    && this.configuration.clientAdditionalId == configuration.clientAdditionalId))
+        ) {
             token = userInfoRepository.getToken()
         }
         apiRepository.connect(
-                this.configuration.urlChat,
-                token,
-                this.configuration,
-                eventListener
+            this.configuration.urlChat,
+            token,
+            this.configuration,
+            eventListener
         )
     }
 
@@ -224,9 +234,14 @@ internal class ChatInteractor(
 
     private fun onMessageUpdate(message: UsedeskMessage) {
         lastMessages = lastMessages.map {
-            if (it is UsedeskMessageClient &&
-                    message is UsedeskMessageClient &&
-                    it.localId == message.localId) {
+            if ((it is UsedeskMessageClient &&
+                        message is UsedeskMessageClient &&
+                        it.localId == message.localId)
+                || (it is UsedeskMessageAgent &&
+                        message is UsedeskMessageAgent &&
+                        it.id == message.id
+                        )
+            ) {
                 message
             } else {
                 it
@@ -238,8 +253,10 @@ internal class ChatInteractor(
 
     private val sendingMessagesTimeout = CompositeDisposable()
 
-    private fun onMessagesNew(messages: List<UsedeskMessage>,
-                              isInited: Boolean) {
+    private fun onMessagesNew(
+        messages: List<UsedeskMessage>,
+        isInited: Boolean
+    ) {
         lastMessages = lastMessages + messages
         messages.forEach { message ->
             messageSubject.onNext(message)
@@ -252,9 +269,9 @@ internal class ChatInteractor(
 
     private fun runTimeout(message: UsedeskMessage) {
         sendingMessagesTimeout.add(
-                Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
-                    onMessageSendingFailed(message)
-                }
+            Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
+                onMessageSendingFailed(message)
+            }
         )
     }
 
@@ -273,14 +290,14 @@ internal class ChatInteractor(
     override fun addActionListener(listener: IUsedeskActionListenerRx) {
         actionListenersRx.add(listener)
         listener.onObservables(
-                connectedStateSubject,
-                messageSubject,
-                newMessageSubject,
-                messagesSubject,
-                messageUpdateSubject,
-                offlineFormExpectedSubject,
-                feedbackSubject,
-                exceptionSubject
+            connectedStateSubject,
+            messageSubject,
+            newMessageSubject,
+            messagesSubject,
+            messageUpdateSubject,
+            offlineFormExpectedSubject,
+            feedbackSubject,
+            exceptionSubject
         )
     }
 
@@ -352,30 +369,31 @@ internal class ChatInteractor(
             it.id == sendingMessage.id
         }
         if (failedMessage is UsedeskMessageClient &&
-                failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
+            failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT
+        ) {
             when (failedMessage) {
                 is UsedeskMessageClientText -> {
                     UsedeskMessageClientText(
-                            failedMessage.id,
-                            failedMessage.createdAt,
-                            failedMessage.text,
-                            UsedeskMessageClient.Status.SEND_FAILED
+                        failedMessage.id,
+                        failedMessage.createdAt,
+                        failedMessage.text,
+                        UsedeskMessageClient.Status.SEND_FAILED
                     )
                 }
                 is UsedeskMessageClientFile -> {
                     UsedeskMessageClientFile(
-                            failedMessage.id,
-                            failedMessage.createdAt,
-                            failedMessage.file,
-                            UsedeskMessageClient.Status.SEND_FAILED
+                        failedMessage.id,
+                        failedMessage.createdAt,
+                        failedMessage.file,
+                        UsedeskMessageClient.Status.SEND_FAILED
                     )
                 }
                 is UsedeskMessageClientImage -> {
                     UsedeskMessageClientImage(
-                            failedMessage.id,
-                            failedMessage.createdAt,
-                            failedMessage.file,
-                            UsedeskMessageClient.Status.SEND_FAILED
+                        failedMessage.id,
+                        failedMessage.createdAt,
+                        failedMessage.file,
+                        UsedeskMessageClient.Status.SEND_FAILED
                     )
                 }
                 else -> null
@@ -389,7 +407,8 @@ internal class ChatInteractor(
         token?.also {
             apiRepository.send(it, agentMessage.id, feedback)
 
-            onMessageUpdate(UsedeskMessageAgentText(
+            onMessageUpdate(
+                UsedeskMessageAgentText(
                     agentMessage.id,
                     agentMessage.createdAt,
                     agentMessage.text,
@@ -398,7 +417,8 @@ internal class ChatInteractor(
                     feedback,
                     agentMessage.name,
                     agentMessage.avatar
-            ))
+                )
+            )
         }
     }
 
@@ -413,7 +433,7 @@ internal class ChatInteractor(
                 initClientOfflineForm = (listOf(clientName, clientEmail, topic)
                         + fields
                         + offlineForm.message)
-                        .joinToString(separator = "\n")
+                    .joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
         } else {
@@ -426,34 +446,35 @@ internal class ChatInteractor(
             it.id == id
         }
         if (message is UsedeskMessageClient
-                && message.status == UsedeskMessageClient.Status.SEND_FAILED) {
+            && message.status == UsedeskMessageClient.Status.SEND_FAILED
+        ) {
             when (message) {
                 is UsedeskMessageClientText -> {
                     val sendingMessage = UsedeskMessageClientText(
-                            message.id,
-                            message.createdAt,
-                            message.text,
-                            UsedeskMessageClient.Status.SENDING
+                        message.id,
+                        message.createdAt,
+                        message.text,
+                        UsedeskMessageClient.Status.SENDING
                     )
                     onMessageUpdate(sendingMessage)
                     sendText(sendingMessage)
                 }
                 is UsedeskMessageClientImage -> {
                     val sendingMessage = UsedeskMessageClientImage(
-                            message.id,
-                            message.createdAt,
-                            message.file,
-                            UsedeskMessageClient.Status.SENDING
+                        message.id,
+                        message.createdAt,
+                        message.file,
+                        UsedeskMessageClient.Status.SENDING
                     )
                     onMessageUpdate(sendingMessage)
                     sendFile(sendingMessage)
                 }
                 is UsedeskMessageClientFile -> {
                     val sendingMessage = UsedeskMessageClientFile(
-                            message.id,
-                            message.createdAt,
-                            message.file,
-                            UsedeskMessageClient.Status.SENDING
+                        message.id,
+                        message.createdAt,
+                        message.file,
+                        UsedeskMessageClient.Status.SENDING
                     )
                     onMessageUpdate(sendingMessage)
                     sendFile(sendingMessage)
@@ -465,17 +486,22 @@ internal class ChatInteractor(
     private fun createSendingMessage(text: String): UsedeskMessageText {
         localId--
         val calendar = Calendar.getInstance()
-        return UsedeskMessageClientText(localId, calendar, text, UsedeskMessageClient.Status.SENDING)
+        return UsedeskMessageClientText(
+            localId,
+            calendar,
+            text,
+            UsedeskMessageClient.Status.SENDING
+        )
     }
 
     private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessageFile {
         localId--
         val calendar = Calendar.getInstance()
         val file = UsedeskFile.create(
-                fileInfo.uri.toString(),
-                fileInfo.type,
-                "",
-                fileInfo.name
+            fileInfo.uri.toString(),
+            fileInfo.type,
+            "",
+            fileInfo.name
         )
         return if (fileInfo.isImage()) {
             UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
@@ -502,7 +528,10 @@ internal class ChatInteractor(
         }
     }
 
-    override fun sendRx(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback): Completable {
+    override fun sendRx(
+        agentMessage: UsedeskMessageAgentText,
+        feedback: UsedeskFeedback
+    ): Completable {
         return safeCompletable {
             send(agentMessage, feedback)
         }
@@ -528,13 +557,15 @@ internal class ChatInteractor(
 
     private fun sendUserEmail() {
         try {
-            apiRepository.send(token,
-                    signature,
-                    configuration.clientEmail,
-                    configuration.clientName,
-                    configuration.clientNote,
-                    configuration.clientPhoneNumber,
-                    configuration.clientAdditionalId)
+            apiRepository.send(
+                token,
+                signature,
+                configuration.clientEmail,
+                configuration.clientName,
+                configuration.clientNote,
+                configuration.clientPhoneNumber,
+                configuration.clientAdditionalId
+            )
         } catch (e: UsedeskException) {
             exceptionSubject.onNext(e)
         }
@@ -559,7 +590,8 @@ internal class ChatInteractor(
             null
         }
         if (initClientMessage?.equals(initClientMessageOld) == true ||
-                initClientOfflineForm != null) {
+            initClientOfflineForm != null
+        ) {
             initClientMessage = null
         }
         userInfoRepository.setConfiguration(configuration)

@@ -1,28 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:theme="@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article">
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="?attr/usedesk_knowledgebase_article_search_page_article_title"
-        tools:text="Подключение почты" />
+    <LinearLayout
+        android:id="@+id/l_clickable"
+        style="?attr/usedesk_common_container_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_description"
-        style="?attr/usedesk_knowledgebase_article_search_page_article_description"
-        tools:text="Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты " />
+        <TextView
+            android:id="@+id/tv_title"
+            style="?attr/usedesk_knowledgebase_article_search_page_article_title"
+            tools:text="Подключение почты" />
 
-    <TextView
-        android:id="@+id/tv_path"
-        style="?attr/usedesk_knowledgebase_article_search_page_article_path"
-        tools:text="Подключение почты" />
+        <TextView
+            android:id="@+id/tv_description"
+            style="?attr/usedesk_knowledgebase_article_search_page_article_description"
+            tools:text="Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты Подключение почты " />
 
-    <View
-        android:id="@+id/v_divider"
-        style="?attr/usedesk_knowledgebase_article_search_page_article_divider" />
+        <TextView
+            android:id="@+id/tv_path"
+            style="?attr/usedesk_knowledgebase_article_search_page_article_path"
+            tools:text="Подключение почты" />
 
-</LinearLayout>
+        <View
+            android:id="@+id/v_divider"
+            style="?attr/usedesk_knowledgebase_article_search_page_article_divider" />
+    </LinearLayout>
+</FrameLayout>

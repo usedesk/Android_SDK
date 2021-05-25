@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.3.1)
+# Android Usedesk SDK (v3.4.0)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -427,3 +427,14 @@ UsedeskKnowledgeBaseSdk.release()
   - **Важно!** Добавлены аргументы кастомизации для заднего фона вкладок
   - Исправлено сохранение состояний фрагментов при пересоздании активити
   - Добавлен параметр конфигурации в `UsedeskChatScreen`
+- v3.4.0
+  - **Важно!** Изменена кастомизация:
+    - Некоторые атрибуты удалены, а их функционал перенесён в стили.
+    - От стиля `Usedesk.Chat.Screen` отделены некоторые атрибуты и перенесены в отдельные стили:
+      - `Usedesk.Chat.Screen.Loading.Page`
+      - `Usedesk.Chat.Screen.Messages.Page`
+      - `Usedesk.Chat.Screen.Offline.Form.Page`
+      - `Usedesk.Chat.Screen.Offline.Form.Selector.Page`
+    - Добавлена кастомизация для всех недостающих элементов (Layout, Toolbar, View).
+  - Исправлена ошибка сброса оценки в чате.
+  - Исправлена ошибка задваивания сообщений агента в чате после сворачивания.

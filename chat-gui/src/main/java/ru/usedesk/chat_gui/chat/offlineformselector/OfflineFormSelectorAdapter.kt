@@ -34,7 +34,10 @@ internal class OfflineFormSelectorAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(inflateItem(parent, R.layout.usedesk_item_field_checkbox, itemStyle) { rootView, defaultStyleId ->
+        return ViewHolder(inflateItem(
+            parent, R.layout.usedesk_item_field_checkbox,
+            itemStyle
+        ) { rootView, defaultStyleId ->
             UsedeskCommonFieldCheckBoxAdapter.Binding(rootView, defaultStyleId)
         })
     }
@@ -55,7 +58,7 @@ internal class OfflineFormSelectorAdapter(
     }
 
     inner class ViewHolder(
-            binding: UsedeskCommonFieldCheckBoxAdapter.Binding
+        binding: UsedeskCommonFieldCheckBoxAdapter.Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         private val adapter = UsedeskCommonFieldCheckBoxAdapter(binding)
@@ -64,11 +67,13 @@ internal class OfflineFormSelectorAdapter(
             adapter.setTitle(items[index])
             adapter.setChecked(index == selectedIndex)
             adapter.setOnClickListener {
-                viewModel.onSelected(if (selectedIndex != index) {
-                    index
-                } else {
-                    -1
-                })
+                viewModel.onSelected(
+                    if (selectedIndex != index) {
+                        index
+                    } else {
+                        -1
+                    }
+                )
             }
         }
     }

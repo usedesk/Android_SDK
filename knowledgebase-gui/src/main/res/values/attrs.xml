@@ -12,15 +12,12 @@
     <attr name="usedesk_knowledgebase_sections_page_section_initials_text" format="reference" />
     <attr name="usedesk_knowledgebase_sections_page_section_title_text" format="reference" />
     <attr name="usedesk_knowledgebase_sections_page_section_forward_image" format="reference" />
-    <attr name="usedesk_knowledgebase_sections_page_section_divider" format="reference" />
 
     <attr name="usedesk_knowledgebase_article_search_page_article_title" format="reference" />
     <attr name="usedesk_knowledgebase_article_search_page_article_description" format="reference" />
     <attr name="usedesk_knowledgebase_article_search_page_article_path" format="reference" />
-    <attr name="usedesk_knowledgebase_article_search_page_article_divider" format="reference" />
 
     <attr name="usedesk_knowledgebase_articles_page_article_title" format="reference" />
-    <attr name="usedesk_knowledgebase_articles_page_article_divider" format="reference" />
 
     <attr name="usedesk_knowledgebase_article_content_page_rating_title_text" format="reference" />
     <attr name="usedesk_knowledgebase_article_content_page_rating_message_edit_text" format="reference" />
@@ -35,5 +32,4 @@
     <attr name="usedesk_knowledgebase_categories_category_description_text" format="reference" />
     <attr name="usedesk_knowledgebase_categories_category_forward_image" format="reference" />
     <attr name="usedesk_knowledgebase_categories_category_count_text" format="reference" />
-    <attr name="usedesk_knowledgebase_categories_category_divider" format="reference" />
 </resources>

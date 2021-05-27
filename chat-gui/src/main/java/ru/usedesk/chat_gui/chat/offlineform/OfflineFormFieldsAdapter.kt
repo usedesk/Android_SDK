@@ -55,14 +55,18 @@ internal class OfflineFormFieldsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when (viewType) {
-            TYPE_TEXT -> TextViewHolder(inflateItem(parent,
-                    R.layout.usedesk_item_field_text,
-                    textFieldStyle) { rootView, defaultStyleId ->
+            TYPE_TEXT -> TextViewHolder(inflateItem(
+                parent,
+                R.layout.usedesk_item_field_text,
+                textFieldStyle
+            ) { rootView, defaultStyleId ->
                 UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
             })
-            TYPE_LIST -> ListViewHolder(inflateItem(parent,
-                    R.layout.usedesk_item_field_list,
-                    listFieldStyle) { rootView, defaultStyleId ->
+            TYPE_LIST -> ListViewHolder(inflateItem(
+                parent,
+                R.layout.usedesk_item_field_list,
+                listFieldStyle
+            ) { rootView, defaultStyleId ->
                 UsedeskCommonFieldListAdapter.Binding(rootView, defaultStyleId)
             })
             else -> throw RuntimeException("Unknown list type")
@@ -84,7 +88,7 @@ internal class OfflineFormFieldsAdapter(
     }
 
     inner class TextViewHolder(
-            binding: UsedeskCommonFieldTextAdapter.Binding
+        binding: UsedeskCommonFieldTextAdapter.Binding
     ) : BaseViewHolder(binding.rootView) {
         private val adapter = UsedeskCommonFieldTextAdapter(binding)
 
@@ -100,7 +104,7 @@ internal class OfflineFormFieldsAdapter(
     }
 
     inner class ListViewHolder(
-            binding: UsedeskCommonFieldListAdapter.Binding
+        binding: UsedeskCommonFieldListAdapter.Binding
     ) : BaseViewHolder(binding.rootView) {
         private val adapter = UsedeskCommonFieldListAdapter(binding)
 

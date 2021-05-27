@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:theme="@style/Usedesk.Chat.Offline.Form.Success.Dialog">
 
-    <LinearLayout
+    <ImageView style="?attr/usedesk_chat_offline_form_success_dialog_ok_image" />
+
+    <TextView style="?attr/usedesk_chat_offline_form_success_dialog_ok_text" />
+
+    <androidx.cardview.widget.CardView
         style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <ImageView style="?attr/usedesk_chat_offline_form_success_dialog_ok_image" />
-
-        <TextView style="?attr/usedesk_chat_offline_form_success_dialog_ok_text" />
-
-        <androidx.cardview.widget.CardView
+        <FrameLayout
             style="?attr/usedesk_common_container_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <FrameLayout
-                style="?attr/usedesk_common_container_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tv_close"
-                    style="?attr/usedesk_chat_offline_form_success_dialog_close_text" />
-            </FrameLayout>
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
-</FrameLayout>
+            <TextView
+                android:id="@+id/tv_close"
+                style="?attr/usedesk_chat_offline_form_success_dialog_close_text" />
+        </FrameLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

@@ -50,7 +50,7 @@ dependencies {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "file://localhost/Android/Projects/Android_SDK_Maven/")
+            repository(url: "file://localhost/W:/Android/Projects/Android_SDK_Maven")
         }
     }
 }

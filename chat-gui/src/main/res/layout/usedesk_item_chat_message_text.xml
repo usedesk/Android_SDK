@@ -2,26 +2,22 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_3"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?attr/usedesk_chat_message_bubble_background"
     tools:theme="@style/Usedesk.Chat.Message.Text">
 
     <LinearLayout
+        style="?attr/usedesk_common_container_4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginBottom="8dp"
         android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/l_feedback"
-            android:layout_width="136dp"
+            style="?attr/usedesk_common_container_5"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginVertical="16dp">
+            android:layout_gravity="center">
 
             <ImageView
                 android:id="@+id/iv_dislike"
@@ -32,7 +28,6 @@
                 android:id="@+id/iv_like"
                 style="?attr/usedesk_chat_message_feedback_good_image"
                 tools:src="@drawable/usedesk_ic_smile_happy" />
-
         </FrameLayout>
 
         <TextView
@@ -42,6 +37,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_buttons"
+            style="?attr/usedesk_common_container_6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

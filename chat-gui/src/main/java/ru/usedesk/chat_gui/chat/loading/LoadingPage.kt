@@ -12,10 +12,12 @@ import ru.usedesk.common_gui.inflateItem
 
 internal class LoadingPage : UsedeskFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_page_loading,
-                R.style.Usedesk_Chat_Screen) { rootView, defaultStyleId ->
+        val binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_page_loading,
+            R.style.Usedesk_Chat_Screen_Loading_Page
+        ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
 

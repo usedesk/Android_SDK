@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     tools:theme="@style/Usedesk.Common.Field.CheckBox">
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="?attr/usedesk_common_field_checkbox_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/iv_check"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Abra Kadabra" />
-
-    <ImageView
-        android:id="@+id/iv_check"
-        style="?attr/usedesk_common_field_checkbox_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/ic_checked" />
-
-    <View
-        android:id="@+id/v_divider"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/l_clickable"
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/usedesk_gray_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="?attr/usedesk_common_field_checkbox_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_check"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Abra Kadabra" />
+
+        <ImageView
+            android:id="@+id/iv_check"
+            style="?attr/usedesk_common_field_checkbox_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/ic_checked" />
+
+        <View
+            android:id="@+id/v_divider"
+            style="?attr/usedesk_common_divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

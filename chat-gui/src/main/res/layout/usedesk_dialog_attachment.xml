@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/usedesk_common_root_background"
     android:baselineAligned="true"
     android:orientation="horizontal"
     tools:theme="@style/Usedesk.Chat.Attachment.Dialog">
 
     <LinearLayout
         android:id="@+id/l_gallery"
+        style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
         <ImageView
             style="?attr/usedesk_chat_attachment_dialog_gallery_image"
@@ -32,16 +26,10 @@
 
     <LinearLayout
         android:id="@+id/l_camera"
+        style="?attr/usedesk_common_container_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
         <ImageView
             style="?attr/usedesk_chat_attachment_dialog_camera_image"
@@ -54,16 +42,10 @@
 
     <LinearLayout
         android:id="@+id/l_storage"
+        style="?attr/usedesk_common_container_3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp">
+        android:orientation="vertical">
 
         <ImageView
             style="?attr/usedesk_chat_attachment_dialog_storage_image"

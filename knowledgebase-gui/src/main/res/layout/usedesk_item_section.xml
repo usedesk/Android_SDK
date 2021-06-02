@@ -50,7 +50,8 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
-            style="?attr/usedesk_knowledgebase_sections_page_section_divider"
+            style="?attr/usedesk_common_divider"
+            android:layout_width="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_title" />

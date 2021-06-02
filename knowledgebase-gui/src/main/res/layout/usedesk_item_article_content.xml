@@ -30,6 +30,6 @@
 
         <View
             android:id="@+id/v_divider"
-            style="?attr/usedesk_knowledgebase_article_search_page_article_divider" />
+            style="?attr/usedesk_common_divider" />
     </LinearLayout>
 </FrameLayout>

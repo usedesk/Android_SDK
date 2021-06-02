@@ -105,7 +105,9 @@ class UsedeskChatScreen : UsedeskFragment(),
                 val title = when (page) {
                     ChatNavigation.Page.LOADING,
                     ChatNavigation.Page.MESSAGES -> {
-                        binding.styleValues.getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                        binding.styleValues
+                            .getStyleValues(R.attr.usedesk_common_toolbar)
+                            .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                             .getString(android.R.attr.text)
                     }
                     ChatNavigation.Page.OFFLINE_FORM -> {

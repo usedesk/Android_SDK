@@ -34,10 +34,14 @@
         <item name="usedesk_knowledgebase_screen_toolbar_search_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Image</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
-        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.ContainerRoot</item>
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar" parent="Usedesk.Common.Toolbar">
         <item name="usedesk_common_toolbar_title_text">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Title.Text</item>
         <item name="usedesk_common_toolbar_action_image">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Action.Image</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen" parent="Usedesk.Common">
+        <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.ContainerRoot</item>
+        <item name="usedesk_common_toolbar">@style/Usedesk.KnowledgeBase.Screen.Toolbar</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search</item>
     </style>
 
@@ -150,15 +154,19 @@
         <item name="android:layout_marginBottom">16dp</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Divider" parent="Usedesk.Common.Divider">
+        <item name="android:layout_width">0dp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Sections.Page.Section.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Container1</item>
         <item name="usedesk_common_container_2">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Container2</item>
+        <item name="usedesk_common_divider">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Divider</item>
         <item name="usedesk_knowledgebase_sections_page_section_thumbnail_image">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Thumbnail.Image</item>
         <item name="usedesk_knowledgebase_sections_page_section_initials_text">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Initials.Text</item>
         <item name="usedesk_knowledgebase_sections_page_section_title_text">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Title.Text</item>
         <item name="usedesk_knowledgebase_sections_page_section_forward_image">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Forward.Image</item>
-        <item name="usedesk_knowledgebase_sections_page_section_divider">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Divider</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Title.Text" parent="">
@@ -200,12 +208,6 @@
         <item name="srcCompat">@drawable/usedesk_ic_arrow_forward</item>
     </style>
 
-    <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Divider" parent="">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">0.5dp</item>
-        <item name="android:background">@color/usedesk_gray_2</item>
-    </style>
-
     <style name="Usedesk.KnowledgeBase.Articles.Page" parent="Usedesk.KnowledgeBase.List.Page" />
 
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article.ContainerRoot" parent="">
@@ -221,8 +223,8 @@
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Articles.Page.Article.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Container1</item>
+        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider.MarginStart</item>
         <item name="usedesk_knowledgebase_articles_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text</item>
-        <item name="usedesk_knowledgebase_articles_page_article_divider">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Divider</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text" parent="">
@@ -235,13 +237,6 @@
         <item name="android:layout_marginBottom">16dp</item>
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
-    </style>
-
-    <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Divider" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0.5dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page" parent="Usedesk.KnowledgeBase.List.Page">
@@ -263,10 +258,10 @@
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Container1</item>
+        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider.MarginStart</item>
         <item name="usedesk_knowledgebase_article_search_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text</item>
         <item name="usedesk_knowledgebase_article_search_page_article_description">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text</item>
         <item name="usedesk_knowledgebase_article_search_page_article_path">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text</item>
-        <item name="usedesk_knowledgebase_article_search_page_article_divider">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Divider</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text" parent="">
@@ -330,18 +325,11 @@
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Categories.Page.Category.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Container1</item>
+        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider.MarginStart</item>
         <item name="usedesk_knowledgebase_categories_category_title_text">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Title.Text</item>
         <item name="usedesk_knowledgebase_categories_category_description_text">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Description.Text</item>
         <item name="usedesk_knowledgebase_categories_category_count_text">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Count.Text</item>
         <item name="usedesk_knowledgebase_categories_category_forward_image">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Forward.Image</item>
-        <item name="usedesk_knowledgebase_categories_category_divider">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Divider</item>
-    </style>
-
-    <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Divider" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0.5dp</item>
-        <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Count.Text" parent="">
@@ -424,9 +412,15 @@
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@null</item>
+        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_3">@null</item>
+        <item name="usedesk_common_container_4">@null</item>
         <item name="usedesk_common_container_5">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5</item>
         <item name="usedesk_common_container_6">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container6</item>
         <item name="usedesk_common_container_7">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container7</item>
+        <item name="usedesk_common_container_8">@null</item>
+        <item name="usedesk_common_container_9">@null</item>
         <item name="usedesk_common_container_10">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_container_11">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider</item>

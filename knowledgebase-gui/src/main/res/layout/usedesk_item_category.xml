@@ -49,5 +49,5 @@
 
     <View
         android:id="@+id/v_divider"
-        style="?attr/usedesk_knowledgebase_categories_category_divider" />
+        style="?attr/usedesk_common_divider" />
 </LinearLayout>

@@ -58,47 +58,45 @@ internal class SocketApi(
 
     private fun onResponse(rawResponse: String) {
         //Log.d("RESPONSE", rawResponse)
-        val response = process(rawResponse)
-        if (response != null) {
-            try {
-                when (response.type) {
-                    ErrorResponse.TYPE -> {
-                        val errorResponse = response as ErrorResponse
-                        val usedeskSocketException: UsedeskSocketException =
-                            when (errorResponse.code) {
-                                HttpURLConnection.HTTP_FORBIDDEN -> {
-                                    eventListener.onTokenError()
-                                    UsedeskSocketException(
-                                        UsedeskSocketException.Error.FORBIDDEN_ERROR,
-                                        errorResponse.message
-                                    )
-                                }
-                                HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(
-                                    UsedeskSocketException.Error.BAD_REQUEST_ERROR,
+        try {
+            val response = process(rawResponse)
+            when (response.type) {
+                ErrorResponse.TYPE -> {
+                    val errorResponse = response as ErrorResponse
+                    val usedeskSocketException: UsedeskSocketException =
+                        when (errorResponse.code) {
+                            HttpURLConnection.HTTP_FORBIDDEN -> {
+                                eventListener.onTokenError()
+                                UsedeskSocketException(
+                                    UsedeskSocketException.Error.FORBIDDEN_ERROR,
                                     errorResponse.message
                                 )
-                                HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(
-                                    UsedeskSocketException.Error.INTERNAL_SERVER_ERROR,
-                                    errorResponse.message
-                                )
-                                else -> UsedeskSocketException(errorResponse.message)
                             }
-                        eventListener.onException(usedeskSocketException)
-                    }
-                    InitChatResponse.TYPE -> {
-                        eventListener.onInited(response as InitChatResponse)
-                    }
-                    SetEmailResponse.TYPE -> {
-                        eventListener.onSetEmailSuccess()
-                    }
-                    MessageResponse.TYPE -> {
-                        eventListener.onNew(response as MessageResponse)
-                    }
-                    FeedbackResponse.TYPE -> eventListener.onFeedback()
+                            HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(
+                                UsedeskSocketException.Error.BAD_REQUEST_ERROR,
+                                errorResponse.message
+                            )
+                            HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(
+                                UsedeskSocketException.Error.INTERNAL_SERVER_ERROR,
+                                errorResponse.message
+                            )
+                            else -> UsedeskSocketException(errorResponse.message)
+                        }
+                    eventListener.onException(usedeskSocketException)
                 }
-            } catch (e: Exception) {
-                eventListener.onException(e)
+                InitChatResponse.TYPE -> {
+                    eventListener.onInited(response as InitChatResponse)
+                }
+                SetEmailResponse.TYPE -> {
+                    eventListener.onSetEmailSuccess()
+                }
+                MessageResponse.TYPE -> {
+                    eventListener.onNew(response as MessageResponse)
+                }
+                FeedbackResponse.TYPE -> eventListener.onFeedback()
             }
+        } catch (e: Exception) {
+            eventListener.onException(e)
         }
     }
 
@@ -129,7 +127,7 @@ internal class SocketApi(
 
                     emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
-                    emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
+                    //emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
                     emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
 
@@ -167,28 +165,28 @@ internal class SocketApi(
         }
     }
 
-    private fun process(rawResponse: String): BaseResponse? {
-        try {
-            val baseRequest = gson.fromJson(rawResponse, BaseRequest::class.java)
-            when (baseRequest.type) {
+    private fun process(rawResponse: String): BaseResponse {
+        return try {
+            val baseResponse = gson.fromJson(rawResponse, BaseResponse::class.java)
+            val responseClass = when (baseResponse.type) {
                 InitChatResponse.TYPE -> InitChatResponse::class.java
                 ErrorResponse.TYPE -> ErrorResponse::class.java
                 MessageResponse.TYPE -> MessageResponse::class.java
                 FeedbackResponse.TYPE -> FeedbackResponse::class.java
                 SetEmailResponse.TYPE -> SetEmailResponse::class.java
                 else -> null
-            }?.also {
-                return gson.fromJson(rawResponse, it)
+            }
+            if (responseClass != null) {
+                gson.fromJson(rawResponse, responseClass)
+            } else {
+                throw UsedeskSocketException("Unknown response body: $rawResponse")
             }
         } catch (e: JsonParseException) {
-            eventListener.onException(
-                UsedeskSocketException(
-                    UsedeskSocketException.Error.JSON_ERROR,
-                    e.message
-                )
+            throw UsedeskSocketException(
+                UsedeskSocketException.Error.JSON_ERROR,
+                e.message
             )
         }
-        return null
     }
 
     companion object {

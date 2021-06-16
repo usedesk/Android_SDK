@@ -10,7 +10,7 @@ android {
         applicationId "ru.usedesk.sample"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 102
+        versionCode 103
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -56,7 +56,7 @@ dependencies {
     implementation project(":knowledgebase-sdk")
     implementation project(":knowledgebase-gui")
     //implementation "ru.usedesk:chat-gui:$project.version"
-    //implementation "ru.usedesk:knowledgebase-gui:$project.version"    
+    //implementation "ru.usedesk:knowledgebase-gui:$project.version"
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 

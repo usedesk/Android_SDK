@@ -127,7 +127,6 @@ internal class SocketApi(
 
                     emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
-                    //emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
                     emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
 

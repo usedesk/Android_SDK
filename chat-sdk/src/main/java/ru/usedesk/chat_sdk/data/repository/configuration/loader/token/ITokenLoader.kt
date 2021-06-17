@@ -5,6 +5,8 @@ interface ITokenLoader {
 
     fun getData(): String
 
+    fun getDataNullable(): String?
+
     fun setData(data: String?)
 
     fun clearData()

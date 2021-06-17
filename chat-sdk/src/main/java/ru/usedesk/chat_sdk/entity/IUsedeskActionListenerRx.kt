@@ -10,39 +10,49 @@ abstract class IUsedeskActionListenerRx {
     private val disposables = CompositeDisposable()
 
     fun onObservables(
-            connectedStateObservable: Observable<Boolean>,
-            messageObservable: Observable<UsedeskMessage>,
-            newMessageObservable: Observable<UsedeskMessage>,
-            messagesObservable: Observable<List<UsedeskMessage>>,
-            messageUpdateObservable: Observable<UsedeskMessage>,
-            offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>,
-            feedbackObservable: Observable<UsedeskEvent<Any?>>,
-            exceptionObservable: Observable<Exception>
+        connectedStateObservable: Observable<Boolean>,
+        clientTokenObservable: Observable<String>,
+        messageObservable: Observable<UsedeskMessage>,
+        newMessageObservable: Observable<UsedeskMessage>,
+        messagesObservable: Observable<List<UsedeskMessage>>,
+        messageUpdateObservable: Observable<UsedeskMessage>,
+        offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>,
+        feedbackObservable: Observable<UsedeskEvent<Any?>>,
+        exceptionObservable: Observable<Exception>
     ) {
-        listOfNotNull(onConnectedStateObservable(connectedStateObservable),
-                onMessageObservable(messageObservable),
-                onNewMessageObservable(newMessageObservable),
-                onMessagesObservable(messagesObservable),
-                onMessageUpdateObservable(messageUpdateObservable),
-                onOfflineFormExpectedObservable(offlineFormExpectedObservable),
-                onFeedbackObservable(feedbackObservable),
-                onExceptionObservable(exceptionObservable)
+        listOfNotNull(
+            onConnectedStateObservable(connectedStateObservable),
+            onClientTokenObservable(clientTokenObservable),
+            onMessageObservable(messageObservable),
+            onNewMessageObservable(newMessageObservable),
+            onMessagesObservable(messagesObservable),
+            onMessageUpdateObservable(messageUpdateObservable),
+            onOfflineFormExpectedObservable(offlineFormExpectedObservable),
+            onFeedbackObservable(feedbackObservable),
+            onExceptionObservable(exceptionObservable)
         ).forEach {
             disposables.add(it)
         }
     }
 
-    open fun onConnectedStateObservable(connectedStateObservable: Observable<Boolean>): Disposable? = null
+    open fun onConnectedStateObservable(connectedStateObservable: Observable<Boolean>): Disposable? =
+        null
+
+    open fun onClientTokenObservable(clientTokenObservable: Observable<String>): Disposable? = null
 
     open fun onMessageObservable(messageObservable: Observable<UsedeskMessage>): Disposable? = null
 
-    open fun onNewMessageObservable(newMessageObservable: Observable<UsedeskMessage>): Disposable? = null
+    open fun onNewMessageObservable(newMessageObservable: Observable<UsedeskMessage>): Disposable? =
+        null
 
-    open fun onMessagesObservable(messagesObservable: Observable<List<UsedeskMessage>>): Disposable? = null
+    open fun onMessagesObservable(messagesObservable: Observable<List<UsedeskMessage>>): Disposable? =
+        null
 
-    open fun onMessageUpdateObservable(messageUpdateObservable: Observable<UsedeskMessage>): Disposable? = null
+    open fun onMessageUpdateObservable(messageUpdateObservable: Observable<UsedeskMessage>): Disposable? =
+        null
 
-    open fun onOfflineFormExpectedObservable(offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>): Disposable? = null
+    open fun onOfflineFormExpectedObservable(offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>): Disposable? =
+        null
 
     open fun onFeedbackObservable(feedbackObservable: Observable<UsedeskEvent<Any?>>): Disposable? = null
 

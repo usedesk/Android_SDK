@@ -13,7 +13,6 @@ internal interface IApiRepository {
              token: String?)
 
     fun send(token: String?,
-             signature: String?,
              email: String?,
              name: String?,
              note: String?,

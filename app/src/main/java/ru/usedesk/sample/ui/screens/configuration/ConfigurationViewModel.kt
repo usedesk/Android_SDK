@@ -20,9 +20,10 @@ class ConfigurationViewModel : ViewModel() {
     val goToSdkEvent = MutableLiveData<UsedeskEvent<Any?>?>()
 
     init {
-        disposables.add(configurationRepository.getConfiguration().subscribe { value: Configuration ->
-            configurationLiveData.postValue(value)
+        disposables.add(configurationRepository.getConfigurationObservable().subscribe {
+            configurationLiveData.postValue(it)
         })
+        configurationRepository.getConfiguration().subscribe()
     }
 
     fun onGoSdkClick(configuration: Configuration) {
@@ -43,18 +44,18 @@ class ConfigurationViewModel : ViewModel() {
 
     private fun validate(configuration: Configuration): ConfigurationValidation {
         val chatValidation = UsedeskChatConfiguration(
-                configuration.urlChat,
-                configuration.urlOfflineForm,
-                configuration.urlToSendFile,
-                configuration.companyId,
-                configuration.channelId,
-                configuration.clientSignature,
-                configuration.clientEmail,
-                configuration.clientName,
-                configuration.clientNote,
-                configuration.clientPhoneNumber,
-                configuration.clientAdditionalId,
-                configuration.clientInitMessage
+            configuration.urlChat,
+            configuration.urlOfflineForm,
+            configuration.urlToSendFile,
+            configuration.companyId,
+            configuration.channelId,
+            configuration.clientToken,
+            configuration.clientEmail,
+            configuration.clientName,
+            configuration.clientNote,
+            configuration.clientPhoneNumber,
+            configuration.clientAdditionalId,
+            configuration.clientInitMessage
         ).validate()
         val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(
                 configuration.urlApi,

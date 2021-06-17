@@ -12,10 +12,14 @@ internal abstract class DataLoader<T> {
 
     @Throws(UsedeskDataNotFoundException::class)
     fun getData(): T {
+        return getDataNullable() ?: throw UsedeskDataNotFoundException("Data not found")
+    }
+
+    fun getDataNullable(): T? {
         if (data == null) {
             data = loadData()
         }
-        return data ?: throw UsedeskDataNotFoundException("Data not found")
+        return data
     }
 
     fun setData(data: T?) {

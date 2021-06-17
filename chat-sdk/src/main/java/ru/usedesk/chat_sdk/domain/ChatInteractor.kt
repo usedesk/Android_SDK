@@ -26,7 +26,6 @@ internal class ChatInteractor(
 ) : IUsedeskChat {
 
     private var token: String? = null
-    private var signature: String? = null
     private var initClientMessage: String? = configuration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
@@ -34,6 +33,7 @@ internal class ChatInteractor(
     private var actionListenersRx = mutableSetOf<IUsedeskActionListenerRx>()
 
     private val connectedStateSubject = BehaviorSubject.createDefault(false)
+    private val clientTokenSubject = BehaviorSubject.create<String>()
     private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
@@ -183,30 +183,10 @@ internal class ChatInteractor(
     override fun connect() {
         reconnectDisposable?.dispose()
         reconnectDisposable = null
-        val configuration = userInfoRepository.getConfigurationNullable()
-        if (!isStringEmpty(this.configuration.clientSignature)) {
-            if (this.configuration.clientSignature == configuration?.clientSignature) {
-                token = this.configuration.clientSignature
-            } else {
-                token = this.configuration.clientSignature
-                signature = this.configuration.clientSignature
-            }
-        } else if (configuration != null
-            && this.configuration.getCompanyAndChannel() == configuration.getCompanyAndChannel()
-            && (isFieldEquals(this.configuration.clientEmail, configuration.clientEmail)
-                    || isFieldEquals(
-                this.configuration.clientPhoneNumber,
-                configuration.clientPhoneNumber
-            )
-                    || isFieldEquals(
-                this.configuration.clientAdditionalId,
-                configuration.clientAdditionalId
-            )
-                    || (this.configuration.clientEmail == configuration.clientEmail
-                    && this.configuration.clientPhoneNumber == configuration.clientPhoneNumber
-                    && this.configuration.clientAdditionalId == configuration.clientAdditionalId))
-        ) {
-            token = userInfoRepository.getToken()
+        token = if (!isStringEmpty(this.configuration.clientToken)) {
+            this.configuration.clientToken
+        } else {
+            userInfoRepository.getConfigurationNullable(configuration)?.clientToken
         }
         apiRepository.connect(
             this.configuration.urlChat,
@@ -218,18 +198,6 @@ internal class ChatInteractor(
 
     private fun isStringEmpty(text: String?): Boolean {
         return text?.isEmpty() != false
-    }
-
-    private fun isFieldEquals(field1: String?, field2: String?): Boolean {
-        return if (isStringEmpty(field1)) {
-            isStringEmpty(field2)
-        } else {
-            field1 == field2
-        }
-    }
-
-    private fun isFieldEquals(field1: Long?, field2: Long?): Boolean {
-        return field1 != null && field1 == field2
     }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
@@ -279,7 +247,9 @@ internal class ChatInteractor(
         apiRepository.disconnect()
     }
 
-    override fun addActionListener(listener: IUsedeskActionListener) {
+    override fun addActionListener(
+        listener: IUsedeskActionListener
+    ) {
         actionListeners.add(listener)
     }
 
@@ -287,10 +257,13 @@ internal class ChatInteractor(
         actionListeners.remove(listener)
     }
 
-    override fun addActionListener(listener: IUsedeskActionListenerRx) {
+    override fun addActionListener(
+        listener: IUsedeskActionListenerRx
+    ) {
         actionListenersRx.add(listener)
         listener.onObservables(
             connectedStateSubject,
+            clientTokenSubject,
             messageSubject,
             newMessageSubject,
             messagesSubject,
@@ -559,7 +532,6 @@ internal class ChatInteractor(
         try {
             apiRepository.send(
                 token,
-                signature,
                 configuration.clientEmail,
                 configuration.clientName,
                 configuration.clientNote,
@@ -573,8 +545,7 @@ internal class ChatInteractor(
 
     private fun onChatInited(chatInited: ChatInited) {
         this.token = chatInited.token
-
-        userInfoRepository.setToken(token)
+        clientTokenSubject.onNext(chatInited.token)
 
         val ids = lastMessages.map {
             it.id
@@ -584,17 +555,14 @@ internal class ChatInteractor(
         }
         onMessagesNew(filteredMessages, true)
 
-        val initClientMessageOld = try {
-            userInfoRepository.getConfiguration().clientInitMessage
-        } catch (ignore: UsedeskException) {
-            null
-        }
-        if (initClientMessage?.equals(initClientMessageOld) == true ||
+        if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
+                initClientMessage
+            ) == true ||
             initClientOfflineForm != null
         ) {
             initClientMessage = null
         }
-        userInfoRepository.setConfiguration(configuration)
+        userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
         if (chatInited.waitingEmail) {
             sendUserEmail()

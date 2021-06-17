@@ -56,11 +56,7 @@ class MainViewModel : ViewModel() {
                             configuration.withKbArticleRating
                         )
                     } else {
-                        mainNavigation.goChat(
-                            configuration.customAgentName,
-                            REJECTED_FILE_TYPES,
-                            usedeskChatConfiguration
-                        )
+                        goChat(configuration.customAgentName, usedeskChatConfiguration)
                     }
                 } else {
                     errorLiveData.postValue(UsedeskSingleLifeEvent("Invalid configuration"))
@@ -89,7 +85,7 @@ class MainViewModel : ViewModel() {
             urlToSendFile,
             configuration.companyId,
             configuration.channelId,
-            configuration.clientSignature,
+            configuration.clientToken,
             configuration.clientEmail,
             configuration.clientName,
             configuration.clientNote,
@@ -103,12 +99,19 @@ class MainViewModel : ViewModel() {
         disposables.add(
             configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
                 val usedeskChatConfiguration = getChatConfiguration(configuration)
-                mainNavigation.goChat(
-                    configuration.customAgentName,
-                    REJECTED_FILE_TYPES,
-                    usedeskChatConfiguration
-                )
+                goChat(configuration.customAgentName, usedeskChatConfiguration)
             })
+    }
+
+    private fun goChat(
+        customAgentName: String,
+        chatConfiguration: UsedeskChatConfiguration
+    ) {
+        mainNavigation.goChat(
+            customAgentName,
+            REJECTED_FILE_TYPES,
+            chatConfiguration
+        )
     }
 
     fun onBackPressed() {
@@ -141,6 +144,14 @@ class MainViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
+    }
+
+    fun onClientToken(clientToken: String) {
+        val ignore = configurationRepository.getConfiguration().map {
+            it.copy(clientToken = clientToken)
+        }.subscribe { newConfiguration ->
+            configurationRepository.setConfiguration(newConfiguration).subscribe()
+        }
     }
 
     companion object {

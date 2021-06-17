@@ -1,19 +1,22 @@
 package ru.usedesk.chat_sdk.entity
 
 interface IUsedeskActionListener {
-    fun onConnectedState(connected: Boolean)
 
-    fun onMessageReceived(message: UsedeskMessage)
+    fun onConnectedState(connected: Boolean) {}
 
-    fun onNewMessageReceived(message: UsedeskMessage)
+    fun onClientTokenReceived(clientToken: String) {}
 
-    fun onMessagesReceived(messages: List<UsedeskMessage>)
+    fun onMessageReceived(message: UsedeskMessage) {}
 
-    fun onMessageUpdated(message: UsedeskMessage)
+    fun onNewMessageReceived(message: UsedeskMessage) {}
 
-    fun onFeedbackReceived()
+    fun onMessagesReceived(messages: List<UsedeskMessage>) {}
 
-    fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings)
+    fun onMessageUpdated(message: UsedeskMessage) {}
 
-    fun onException(usedeskException: Exception)
+    fun onFeedbackReceived() {}
+
+    fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {}
+
+    fun onException(usedeskException: Exception) {}
 }

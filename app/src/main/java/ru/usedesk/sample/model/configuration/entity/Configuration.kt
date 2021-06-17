@@ -9,7 +9,7 @@ data class Configuration(
         val channelId: String = "6202",
         val accountId: String = "4",
         val token: String = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75",
-        val clientSignature: String = "",
+        val clientToken: String = "",
         val clientEmail: String = "android_sdk@usedesk.ru",
         val clientName: String = "Иван Иванов",
         val clientNote: String = "",

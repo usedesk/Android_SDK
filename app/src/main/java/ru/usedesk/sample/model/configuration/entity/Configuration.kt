@@ -1,7 +1,7 @@
 package ru.usedesk.sample.model.configuration.entity
 
 data class Configuration(
-        val urlChat: String = "https://pubsub.usedesk.ru:1992",
+        val urlChat: String = "https://pubsubsec.usedesk.ru",
         val urlOfflineForm: String = "https://secure.usedesk.ru/",
         val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
         val urlApi: String = "https://api.usedesk.ru/",
@@ -9,7 +9,7 @@ data class Configuration(
         val channelId: String = "6202",
         val accountId: String = "4",
         val token: String = "11eb3f39dec94ecf0fe4a80349903e6ad5ce6d75",
-        val clientSignature: String = "",
+        val clientToken: String = "",
         val clientEmail: String = "android_sdk@usedesk.ru",
         val clientName: String = "Иван Иванов",
         val clientNote: String = "",
@@ -20,4 +20,5 @@ data class Configuration(
         val foregroundService: Boolean = false,
         val withKb: Boolean = true,
         val withKbSupportButton: Boolean = true,
-        val withKbArticleRating: Boolean = true)
+        val withKbArticleRating: Boolean = true
+)

@@ -88,25 +88,25 @@ class ConfigurationScreen : Fragment() {
     }
 
     private fun getConfiguration(): Configuration = Configuration(
-            binding.etUrlChat.text.toString(),
-            binding.etUrlOfflineForm.text.toString(),
-            binding.etUrlToSendFile.text.toString(),
-            binding.etUrlApi.text.toString(),
-            binding.etCompanyId.text.toString(),
-            binding.etChannelId.text.toString(),
-            binding.etAccountId.text.toString(),
-            binding.etToken.text.toString(),
-            binding.etClientSignature.text.toString(),
-            binding.etClientEmail.text.toString(),
-            binding.etClientName.text.toString(),
-            binding.etClientNote.text.toString(),
-            binding.etClientPhoneNumber.text.toString().toLongOrNull(),
-            binding.etClientAdditionalId.text.toString().toLongOrNull(),
-            binding.etClientInitMessage.text.toString(),
-            binding.etCustomAgentName.text.toString(),
-            binding.switchForeground.isChecked,
-            binding.switchKb.isChecked,
-            binding.switchKbWithSupportButton.isChecked,
+        binding.etUrlChat.text.toString(),
+        binding.etUrlOfflineForm.text.toString(),
+        binding.etUrlToSendFile.text.toString(),
+        binding.etUrlApi.text.toString(),
+        binding.etCompanyId.text.toString(),
+        binding.etChannelId.text.toString(),
+        binding.etAccountId.text.toString(),
+        binding.etToken.text.toString(),
+        binding.etClientToken.text.toString(),
+        binding.etClientEmail.text.toString(),
+        binding.etClientName.text.toString(),
+        binding.etClientNote.text.toString(),
+        binding.etClientPhoneNumber.text.toString().toLongOrNull(),
+        binding.etClientAdditionalId.text.toString().toLongOrNull(),
+        binding.etClientInitMessage.text.toString(),
+        binding.etCustomAgentName.text.toString(),
+        binding.switchForeground.isChecked,
+        binding.switchKb.isChecked,
+        binding.switchKbWithSupportButton.isChecked,
             binding.switchKbWithArticleRating.isChecked)
 
 
@@ -119,7 +119,7 @@ class ConfigurationScreen : Fragment() {
         binding.etChannelId.setText(configuration.channelId)
         binding.etAccountId.setText(configuration.accountId)
         binding.etToken.setText(configuration.token)
-        binding.etClientSignature.setText(configuration.clientSignature)
+        binding.etClientToken.setText(configuration.clientToken)
         binding.etClientEmail.setText(configuration.clientEmail)
         binding.etClientName.setText(configuration.clientName)
         binding.etClientPhoneNumber.setText(configuration.clientPhoneNumber?.toString() ?: "")

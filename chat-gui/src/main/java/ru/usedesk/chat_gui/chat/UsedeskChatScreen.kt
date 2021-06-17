@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
+import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
@@ -118,6 +119,12 @@ class UsedeskChatScreen : UsedeskFragment(),
                     }
                 }
                 toolbarAdapter.setTitle(title)
+            }
+        }
+
+        viewModel.clientTokenLiveData.observe(viewLifecycleOwner) {
+            if (it != null) {
+                getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(it)
             }
         }
     }

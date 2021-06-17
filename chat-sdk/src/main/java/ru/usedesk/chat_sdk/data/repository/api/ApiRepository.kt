@@ -136,18 +136,12 @@ internal class ApiRepository(
     }
 
     override fun send(token: String?,
-                      signature: String?,
                       email: String?,
                       name: String?,
                       note: String?,
                       phone: Long?,
                       additionalId: Long?) {
-        socketApi.sendRequest(SetClientRequest(
-                if (signature?.isNotEmpty() == true) {
-                    null
-                } else {
-                    token
-                }, signature, email, name, note, phone, additionalId))
+        socketApi.sendRequest(SetClientRequest(token, email, name, note, phone, additionalId))
     }
 
     override fun send(configuration: UsedeskChatConfiguration,

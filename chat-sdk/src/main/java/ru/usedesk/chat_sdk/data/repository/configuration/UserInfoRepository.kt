@@ -8,41 +8,55 @@ import toothpick.InjectConstructor
 
 @InjectConstructor
 internal class UserInfoRepository(
-        private val configurationDataLoader: IConfigurationLoader,
-        private val tokenDataLoader: ITokenLoader
+    private val configurationDataLoader: IConfigurationLoader,
+    private val tokenDataLoader: ITokenLoader
 ) : IUserInfoRepository {
 
     @Throws(UsedeskDataNotFoundException::class)
-    override fun getToken(): String {
-        return tokenDataLoader.getData()
+    override fun getConfiguration(
+        configuration: UsedeskChatConfiguration
+    ): UsedeskChatConfiguration {
+        return getConfigurationNullable(configuration) ?: throw UsedeskDataNotFoundException()
     }
 
-    override fun setToken(token: String?) {
-        if (token == null) {
-            tokenDataLoader.clearData()
+    override fun getConfigurationNullable(
+        configuration: UsedeskChatConfiguration
+    ): UsedeskChatConfiguration? {
+        configurationDataLoader.initLegacyData {
+            tokenDataLoader.getDataNullable()
+        }
+        val configurations = configurationDataLoader.getDataNullable()
+        return configurations?.firstOrNull {
+            isConfigurationEquals(configuration, it)
+        }
+    }
+
+    override fun setConfiguration(configuration: UsedeskChatConfiguration) {
+        var configurations = (configurationDataLoader.getDataNullable() ?: arrayOf()).map {
+            if (isConfigurationEquals(configuration, it)) {
+                configuration
+            } else {
+                it
+            }
+        }
+        configurations = if (configuration !in configurations) {
+            configurations + configuration
         } else {
-            tokenDataLoader.setData(token)
+            configurations
         }
-    }
-
-    @Throws(UsedeskDataNotFoundException::class)
-    override fun getConfiguration(): UsedeskChatConfiguration {
-        return configurationDataLoader.getData()
-    }
-
-    override fun getConfigurationNullable(): UsedeskChatConfiguration? {
-        return try {
-            getConfiguration()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    override fun setConfiguration(configuration: UsedeskChatConfiguration?) {
-        if (configuration == null) {
+        if (configurations.isEmpty()) {
             configurationDataLoader.clearData()
         } else {
-            configurationDataLoader.setData(configuration)
+            configurationDataLoader.setData(configurations.toTypedArray())
         }
+    }
+
+    private fun isConfigurationEquals(
+        configurationA: UsedeskChatConfiguration,
+        configurationB: UsedeskChatConfiguration
+    ): Boolean {
+        return configurationA.clientEmail == configurationB.clientEmail &&
+                configurationA.clientPhoneNumber == configurationB.clientPhoneNumber &&
+                configurationA.clientName == configurationB.clientName
     }
 }

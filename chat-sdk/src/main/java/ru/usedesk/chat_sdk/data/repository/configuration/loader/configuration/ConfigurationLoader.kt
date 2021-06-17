@@ -10,16 +10,27 @@ import toothpick.InjectConstructor
 
 @InjectConstructor
 internal class ConfigurationLoader(
-        context: Context,
-        val gson: Gson
-) : DataLoader<UsedeskChatConfiguration>(), IConfigurationLoader {
+    context: Context,
+    val gson: Gson
+) : DataLoader<Array<UsedeskChatConfiguration>>(), IConfigurationLoader {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-            PREF_NAME,
-            Context.MODE_MULTI_PROCESS
+        PREF_NAME,
+        Context.MODE_MULTI_PROCESS
     )
 
-    override fun loadData(): UsedeskChatConfiguration? {
+    private var inited = false
+    private var legacyClientToken: String? = null
+
+    override fun initLegacyData(onGetClientToken: () -> String?) {
+        if (!inited) {
+            inited = true
+
+            legacyClientToken = onGetClientToken()
+        }
+    }
+
+    override fun loadData(): Array<UsedeskChatConfiguration>? {
         val version = sharedPreferences.getInt(KEY_VERSION, 1)
         if (version < CURRENT_VERSION) {
             migrate(version)
@@ -27,7 +38,7 @@ internal class ConfigurationLoader(
 
         return try {
             val json = sharedPreferences.getString(KEY_DATA, null)
-            gson.fromJson(json, UsedeskChatConfiguration::class.java)
+            gson.fromJson(json, Array<UsedeskChatConfiguration>::class.java)
         } catch (e: Exception) {
             null
         }
@@ -42,23 +53,23 @@ internal class ConfigurationLoader(
         }
     }
 
-    override fun saveData(data: UsedeskChatConfiguration) {
+    override fun saveData(data: Array<UsedeskChatConfiguration>) {
         val json = gson.toJson(data)
 
         sharedPreferences.edit()
-                .putString(KEY_DATA, json)
-                .putInt(KEY_VERSION, CURRENT_VERSION)
-                .apply()
+            .putString(KEY_DATA, json)
+            .putInt(KEY_VERSION, CURRENT_VERSION)
+            .apply()
     }
 
     override fun clearData() {
         sharedPreferences.edit()
-                .putInt(KEY_VERSION, CURRENT_VERSION)
-                .remove(KEY_DATA)
-                .apply()
+            .putInt(KEY_VERSION, CURRENT_VERSION)
+            .remove(KEY_DATA)
+            .apply()
     }
 
-    private fun loadLegacy(oldVersion: Int): UsedeskChatConfiguration? {
+    private fun loadLegacy(oldVersion: Int): Array<UsedeskChatConfiguration>? {
         if (oldVersion == 1) {
             val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
             val urlOfflineForm = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
@@ -66,8 +77,9 @@ internal class ConfigurationLoader(
             val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
             val clientInitMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
             if (urlChat != null
-                    && urlOfflineForm != null
-                    && companyId != null) {
+                && urlOfflineForm != null
+                && companyId != null
+            ) {
                 var clientName: String? = null
                 var clientPhone: String? = null
                 var clientAdditionalId: String? = null
@@ -77,42 +89,57 @@ internal class ConfigurationLoader(
                     clientAdditionalId = sharedPreferences.getString(KEY_ADDITIONAL_ID, null)
                 } catch (e: ClassCastException) {
                     try {
-                        clientPhone = sharedPreferences.getLong(KEY_PHONE, 0).toString() //Для миграции с версий, где хранился Long
-                        clientAdditionalId = sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0).toString()
+                        clientPhone = sharedPreferences.getLong(KEY_PHONE, 0)
+                            .toString() //Для миграции с версий, где хранился Long
+                        clientAdditionalId =
+                            sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0).toString()
                     } catch (e1: ClassCastException) {
                         e.printStackTrace()
                     }
                 }
-                return UsedeskChatConfiguration(
-                        urlChat,
-                        urlOfflineForm,
-                        "https://secure.usedesk.ru/uapi/v1/send_file",
-                        companyId,
-                        "",
-                        null,
-                        clientEmail,
-                        clientName,
-                        null,
-                        clientPhone?.toLongOrNull(),
-                        clientAdditionalId?.toLongOrNull(),
-                        clientInitMessage)
+                return arrayOf(
+                    UsedeskChatConfiguration(
+                        urlChat = urlChat,
+                        urlOfflineForm = urlOfflineForm,
+                        companyId = companyId,
+                        channelId = "",
+                        clientToken = legacyClientToken,
+                        clientEmail = clientEmail,
+                        clientName = clientName,
+                        clientNote = null,
+                        clientPhoneNumber = clientPhone?.toLongOrNull(),
+                        clientAdditionalId = clientAdditionalId?.toLongOrNull(),
+                        clientInitMessage = clientInitMessage
+                    )
+                )
             }
         } else if (oldVersion == 2) {
             return try {
                 val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
                 val json = gson.fromJson(jsonRaw, JsonObject::class.java)
                 json.addProperty("channelId", "")
-                return gson.fromJson(json, UsedeskChatConfiguration::class.java)
+                return arrayOf(
+                    gson.fromJson(json, UsedeskChatConfiguration::class.java).copy(
+                        clientToken = legacyClientToken
+                    )
+                )
             } catch (e: Exception) {
                 null
             }
+        } else if (oldVersion == 3) {
+            val json = sharedPreferences.getString(KEY_DATA, null)
+            return arrayOf(
+                gson.fromJson(json, UsedeskChatConfiguration::class.java).copy(
+                    clientToken = legacyClientToken
+                )
+            )
         }
 
         return null
     }
 
     companion object {
-        private const val CURRENT_VERSION = 3
+        private const val CURRENT_VERSION = 4
 
         private const val PREF_NAME = "usedeskSdkConfiguration"
 

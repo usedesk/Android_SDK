@@ -3,13 +3,13 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
 
 internal class SetClientRequest(
-        token: String?,
-        email: String?,
-        name: String?,
-        note: String?,
-        phone: Long?,
-        additionalId: Long?
-) : BaseRequest(TYPE, token) {
+    token: String?,
+    email: String?,
+    name: String?,
+    note: String?,
+    phone: Long?,
+    additionalId: Long?
+) : BaseRequest(TYPE) {
 
     private val payload: Payload = Payload(token, email, name, note, phone, additionalId)
 

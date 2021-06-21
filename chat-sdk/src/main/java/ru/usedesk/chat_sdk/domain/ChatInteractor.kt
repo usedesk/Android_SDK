@@ -292,15 +292,13 @@ internal class ChatInteractor(
     }
 
     private fun sendText(sendingMessage: UsedeskMessageText) {
-        token?.also {
-            runTimeout(sendingMessage)
+        runTimeout(sendingMessage)
 
-            try {
-                apiRepository.send(it, sendingMessage)
-            } catch (e: Exception) {
-                onMessageSendingFailed(sendingMessage)
-                throw e
-            }
+        try {
+            apiRepository.send(sendingMessage)
+        } catch (e: Exception) {
+            onMessageSendingFailed(sendingMessage)
+            throw e
         }
     }
 
@@ -377,22 +375,20 @@ internal class ChatInteractor(
     }
 
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
-        token?.also {
-            apiRepository.send(it, agentMessage.id, feedback)
+        apiRepository.send(agentMessage.id, feedback)
 
-            onMessageUpdate(
-                UsedeskMessageAgentText(
-                    agentMessage.id,
-                    agentMessage.createdAt,
-                    agentMessage.text,
-                    agentMessage.buttons,
-                    false,
-                    feedback,
-                    agentMessage.name,
-                    agentMessage.avatar
-                )
+        onMessageUpdate(
+            UsedeskMessageAgentText(
+                agentMessage.id,
+                agentMessage.createdAt,
+                agentMessage.text,
+                agentMessage.buttons,
+                false,
+                feedback,
+                agentMessage.name,
+                agentMessage.avatar
             )
-        }
+        )
     }
 
     override fun send(offlineForm: UsedeskOfflineForm) {

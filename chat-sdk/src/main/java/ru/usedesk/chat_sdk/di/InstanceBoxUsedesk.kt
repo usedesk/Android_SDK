@@ -22,7 +22,7 @@ internal class InstanceBoxUsedesk(
     }
 
     override fun release() {
-        usedeskChatSdk.disconnectRx()
+        usedeskChatSdk.releaseRx()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()

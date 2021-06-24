@@ -1,7 +1,6 @@
 package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -43,7 +42,7 @@ internal class ChatInteractor(
     private val exceptionSubject = BehaviorSubject.create<Exception>()
 
     private var reconnectDisposable: Disposable? = null
-    private val listenersDisposables = CompositeDisposable()
+    private val listenersDisposables = mutableListOf<Disposable>()
 
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -54,53 +53,53 @@ internal class ChatInteractor(
 
     init {
         listenersDisposables.apply {
-            connectedStateSubject.subscribe {
+            add(connectedStateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onConnectedState(it)
                 }
-            }
+            })
 
-            messagesSubject.subscribe {
+            add(messagesSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessagesReceived(it)
                 }
-            }
+            })
 
-            messageSubject.subscribe {
+            add(messageSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessageReceived(it)
                 }
-            }
+            })
 
-            newMessageSubject.subscribe {
+            add(newMessageSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onNewMessageReceived(it)
                 }
-            }
+            })
 
-            messageUpdateSubject.subscribe {
+            add(messageUpdateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessageUpdated(it)
                 }
-            }
+            })
 
-            offlineFormExpectedSubject.subscribe {
+            add(offlineFormExpectedSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onOfflineFormExpected(it)
                 }
-            }
+            })
 
-            feedbackSubject.subscribe {
+            add(feedbackSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onFeedbackReceived()
                 }
-            }
+            })
 
-            exceptionSubject.subscribe {
+            add(exceptionSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onException(it)
                 }
-            }
+            })
         }
     }
 
@@ -219,8 +218,6 @@ internal class ChatInteractor(
         messageUpdateSubject.onNext(message)
     }
 
-    private val sendingMessagesTimeout = CompositeDisposable()
-
     private fun onMessagesNew(
         messages: List<UsedeskMessage>,
         isInited: Boolean
@@ -236,11 +233,9 @@ internal class ChatInteractor(
     }
 
     private fun runTimeout(message: UsedeskMessage) {
-        sendingMessagesTimeout.add(
-            Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
-                onMessageSendingFailed(message)
-            }
-        )
+        val ignore = Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
+            onMessageSendingFailed(message)
+        }
     }
 
     override fun disconnect() {
@@ -524,6 +519,22 @@ internal class ChatInteractor(
 
     override fun disconnectRx(): Completable {
         return safeCompletable {
+            disconnect()
+        }
+    }
+
+    override fun release() {
+        disconnect()
+        listenersDisposables.forEach {
+            it.dispose()
+        }
+    }
+
+    override fun releaseRx(): Completable {
+        return safeCompletable {
+            listenersDisposables.forEach {
+                it.dispose()
+            }
             disconnect()
         }
     }

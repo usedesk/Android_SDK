@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
+import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -11,7 +12,6 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
-import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletable
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import toothpick.InjectConstructor
 import java.util.*
@@ -21,7 +21,8 @@ import java.util.concurrent.TimeUnit
 internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
-    private val apiRepository: IApiRepository
+    private val apiRepository: IApiRepository,
+    private val ioScheduler: Scheduler
 ) : IUsedeskChat {
 
     private var token: String? = null
@@ -479,19 +480,19 @@ internal class ChatInteractor(
     }
 
     override fun connectRx(): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             connect()
         }
     }
 
     override fun sendRx(textMessage: String): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             send(textMessage)
         }
     }
 
     override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
-        return safeCompletableIo {
+        return safeCompletableIo(ioScheduler) {
             send(usedeskFileInfoList)
         }
     }
@@ -500,25 +501,25 @@ internal class ChatInteractor(
         agentMessage: UsedeskMessageAgentText,
         feedback: UsedeskFeedback
     ): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             send(agentMessage, feedback)
         }
     }
 
     override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
-        return safeCompletableIo {
+        return safeCompletableIo(ioScheduler) {
             send(offlineForm)
         }
     }
 
     override fun sendAgainRx(id: Long): Completable {
-        return safeCompletableIo {
+        return safeCompletableIo(ioScheduler) {
             sendAgain(id)
         }
     }
 
     override fun disconnectRx(): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             disconnect()
         }
     }
@@ -531,7 +532,7 @@ internal class ChatInteractor(
     }
 
     override fun releaseRx(): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             listenersDisposables.forEach {
                 it.dispose()
             }

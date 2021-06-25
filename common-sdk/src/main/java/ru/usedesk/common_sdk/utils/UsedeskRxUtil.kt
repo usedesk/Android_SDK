@@ -2,9 +2,9 @@ package ru.usedesk.common_sdk.utils
 
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 object UsedeskRxUtil {
 
@@ -20,10 +20,10 @@ object UsedeskRxUtil {
         }
     }
 
-    fun <T : Any> safeSingleIo(run: () -> T): Single<T> {
+    fun <T : Any> safeSingleIo(ioScheduler: Scheduler, run: () -> T): Single<T> {
         return safeSingle(run)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(ioScheduler)
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun safeCompletable(run: () -> Unit): Completable {
@@ -39,9 +39,9 @@ object UsedeskRxUtil {
         }
     }
 
-    fun safeCompletableIo(run: () -> Unit): Completable {
+    fun safeCompletableIo(ioScheduler: Scheduler, run: () -> Unit): Completable {
         return safeCompletable(run)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(ioScheduler)
+            .observeOn(AndroidSchedulers.mainThread())
     }
 }

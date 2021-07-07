@@ -1,13 +1,12 @@
 package ru.usedesk.chat_sdk.entity
 
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 
 abstract class IUsedeskActionListenerRx {
 
-    private val disposables = CompositeDisposable()
+    private val disposables = mutableListOf<Disposable>()
 
     fun onObservables(
         connectedStateObservable: Observable<Boolean>,
@@ -54,11 +53,14 @@ abstract class IUsedeskActionListenerRx {
     open fun onOfflineFormExpectedObservable(offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>): Disposable? =
         null
 
-    open fun onFeedbackObservable(feedbackObservable: Observable<UsedeskEvent<Any?>>): Disposable? = null
+    open fun onFeedbackObservable(feedbackObservable: Observable<UsedeskEvent<Any?>>): Disposable? =
+        null
 
     open fun onExceptionObservable(exceptionObservable: Observable<Exception>): Disposable? = null
 
     open fun onDispose() {
-        disposables.dispose()
+        disposables.forEach {
+            it.dispose()
+        }
     }
 }

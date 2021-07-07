@@ -2,7 +2,7 @@ package ru.usedesk.sample.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_sdk.entity.UsedeskEvent
@@ -16,7 +16,7 @@ import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository
 class MainViewModel : ViewModel() {
     private val configurationRepository: ConfigurationRepository =
         ServiceLocator.configurationRepository
-    private val disposables = CompositeDisposable()
+    private val disposables = mutableListOf<Disposable>()
     private var inited = false
 
     val configurationLiveData = MutableLiveData<Configuration?>()
@@ -143,7 +143,9 @@ class MainViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        disposables.dispose()
+        disposables.forEach {
+            it.dispose()
+        }
     }
 
     fun onClientToken(clientToken: String) {

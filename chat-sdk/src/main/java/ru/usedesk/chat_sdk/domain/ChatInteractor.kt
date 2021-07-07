@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -12,7 +12,6 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
-import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletable
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import toothpick.InjectConstructor
 import java.util.*
@@ -22,7 +21,8 @@ import java.util.concurrent.TimeUnit
 internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
-    private val apiRepository: IApiRepository
+    private val apiRepository: IApiRepository,
+    private val ioScheduler: Scheduler
 ) : IUsedeskChat {
 
     private var token: String? = null
@@ -43,7 +43,7 @@ internal class ChatInteractor(
     private val exceptionSubject = BehaviorSubject.create<Exception>()
 
     private var reconnectDisposable: Disposable? = null
-    private val listenersDisposables = CompositeDisposable()
+    private val listenersDisposables = mutableListOf<Disposable>()
 
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -54,53 +54,53 @@ internal class ChatInteractor(
 
     init {
         listenersDisposables.apply {
-            connectedStateSubject.subscribe {
+            add(connectedStateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onConnectedState(it)
                 }
-            }
+            })
 
-            messagesSubject.subscribe {
+            add(messagesSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessagesReceived(it)
                 }
-            }
+            })
 
-            messageSubject.subscribe {
+            add(messageSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessageReceived(it)
                 }
-            }
+            })
 
-            newMessageSubject.subscribe {
+            add(newMessageSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onNewMessageReceived(it)
                 }
-            }
+            })
 
-            messageUpdateSubject.subscribe {
+            add(messageUpdateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessageUpdated(it)
                 }
-            }
+            })
 
-            offlineFormExpectedSubject.subscribe {
+            add(offlineFormExpectedSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onOfflineFormExpected(it)
                 }
-            }
+            })
 
-            feedbackSubject.subscribe {
+            add(feedbackSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onFeedbackReceived()
                 }
-            }
+            })
 
-            exceptionSubject.subscribe {
+            add(exceptionSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onException(it)
                 }
-            }
+            })
         }
     }
 
@@ -219,8 +219,6 @@ internal class ChatInteractor(
         messageUpdateSubject.onNext(message)
     }
 
-    private val sendingMessagesTimeout = CompositeDisposable()
-
     private fun onMessagesNew(
         messages: List<UsedeskMessage>,
         isInited: Boolean
@@ -236,11 +234,9 @@ internal class ChatInteractor(
     }
 
     private fun runTimeout(message: UsedeskMessage) {
-        sendingMessagesTimeout.add(
-            Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
-                onMessageSendingFailed(message)
-            }
-        )
+        val ignore = Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
+            onMessageSendingFailed(message)
+        }
     }
 
     override fun disconnect() {
@@ -480,19 +476,19 @@ internal class ChatInteractor(
     }
 
     override fun connectRx(): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             connect()
         }
     }
 
     override fun sendRx(textMessage: String): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             send(textMessage)
         }
     }
 
     override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
-        return safeCompletableIo {
+        return safeCompletableIo(ioScheduler) {
             send(usedeskFileInfoList)
         }
     }
@@ -501,25 +497,41 @@ internal class ChatInteractor(
         agentMessage: UsedeskMessageAgentText,
         feedback: UsedeskFeedback
     ): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
             send(agentMessage, feedback)
         }
     }
 
     override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
-        return safeCompletableIo {
+        return safeCompletableIo(ioScheduler) {
             send(offlineForm)
         }
     }
 
     override fun sendAgainRx(id: Long): Completable {
-        return safeCompletableIo {
+        return safeCompletableIo(ioScheduler) {
             sendAgain(id)
         }
     }
 
     override fun disconnectRx(): Completable {
-        return safeCompletable {
+        return safeCompletableIo(ioScheduler) {
+            disconnect()
+        }
+    }
+
+    override fun release() {
+        disconnect()
+        listenersDisposables.forEach {
+            it.dispose()
+        }
+    }
+
+    override fun releaseRx(): Completable {
+        return safeCompletableIo(ioScheduler) {
+            listenersDisposables.forEach {
+                it.dispose()
+            }
             disconnect()
         }
     }

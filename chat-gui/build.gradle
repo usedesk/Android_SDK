@@ -32,18 +32,18 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation "androidx.core:core-ktx:1.5.0"
-    implementation "androidx.fragment:fragment-ktx:1.3.4"
+    implementation "androidx.core:core-ktx:1.6.0"
+    implementation "androidx.fragment:fragment-ktx:1.3.5"
     implementation "androidx.appcompat:appcompat:1.3.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
 
-    implementation "com.google.android.material:material:1.3.0"
+    implementation "com.google.android.material:material:1.4.0"
 
     implementation "io.reactivex.rxjava2:rxjava:2.2.20"
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
 
-    implementation "com.eightbitlab:blurview:1.6.6"
+    implementation "com.github.Dimezis:BlurView:version-1.6.6"
 
     implementation "com.github.chrisbanes:PhotoView:2.3.0"
 
@@ -56,8 +56,4 @@ uploadArchives {
             repository(url: "file://localhost/W:/Android/Projects/Android_SDK_Maven")
         }
     }
-}
-
-repositories {
-    mavenCentral()
 }

@@ -41,4 +41,8 @@ interface IUsedeskChat {
     fun sendAgain(id: Long)
 
     fun sendAgainRx(id: Long): Completable
+
+    fun release()
+
+    fun releaseRx(): Completable
 }

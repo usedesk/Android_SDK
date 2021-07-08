@@ -14,6 +14,7 @@ internal class ChatViewModel : UsedeskViewModel() {
 
     val exceptionLiveData = MutableLiveData<Exception?>()
     val pageLiveData = MutableLiveData<ChatNavigation.Page?>()
+    val clientTokenLiveData = MutableLiveData<String?>()
 
     val configuration = UsedeskChatSdk.requireConfiguration()
     var offlineFormSettings: UsedeskOfflineFormSettings? = null
@@ -56,6 +57,14 @@ internal class ChatViewModel : UsedeskViewModel() {
                         if (!it) {
                             doIt(usedeskChat.connectRx())
                         }
+                    }
+                }
+
+                override fun onClientTokenObservable(
+                    clientTokenObservable: Observable<String>
+                ): Disposable? {
+                    return clientTokenObservable.subscribe {
+                        clientTokenLiveData.postValue(it)
                     }
                 }
 

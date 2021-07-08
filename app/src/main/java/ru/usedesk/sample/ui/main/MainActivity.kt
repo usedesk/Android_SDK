@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
@@ -25,7 +26,8 @@ import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdk
 class MainActivity : AppCompatActivity(),
     IOnGoToSdkListener,
     IUsedeskOnSupportClickListener,
-    IUsedeskOnFileClickListener {
+    IUsedeskOnFileClickListener,
+    IUsedeskOnClientTokenListener {
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -96,5 +98,9 @@ class MainActivity : AppCompatActivity(),
 
     override fun goToSdk() {
         viewModel.goSdk()
+    }
+
+    override fun onClientToken(clientToken: String) {
+        viewModel.onClientToken(clientToken)
     }
 }

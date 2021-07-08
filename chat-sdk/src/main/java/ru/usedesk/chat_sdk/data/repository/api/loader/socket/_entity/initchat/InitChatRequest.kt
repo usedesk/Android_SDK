@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
 
 internal class InitChatRequest(
-        token: String?,
-        @SerializedName(KEY_COMPANY_ID)
-        val companyId: String,
-        val url: String
-) : BaseRequest(TYPE, token) {
+    val token: String?,
+    @SerializedName(KEY_COMPANY_ID)
+    val companyId: String,
+    val url: String
+) : BaseRequest(TYPE) {
 
     private val payload: Payload = Payload()
 

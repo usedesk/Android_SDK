@@ -2,7 +2,7 @@ package ru.usedesk.sample.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_sdk.entity.UsedeskEvent
@@ -16,7 +16,7 @@ import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository
 class MainViewModel : ViewModel() {
     private val configurationRepository: ConfigurationRepository =
         ServiceLocator.configurationRepository
-    private val disposables = CompositeDisposable()
+    private val disposables = mutableListOf<Disposable>()
     private var inited = false
 
     val configurationLiveData = MutableLiveData<Configuration?>()
@@ -56,11 +56,7 @@ class MainViewModel : ViewModel() {
                             configuration.withKbArticleRating
                         )
                     } else {
-                        mainNavigation.goChat(
-                            configuration.customAgentName,
-                            REJECTED_FILE_TYPES,
-                            usedeskChatConfiguration
-                        )
+                        goChat(configuration.customAgentName, usedeskChatConfiguration)
                     }
                 } else {
                     errorLiveData.postValue(UsedeskSingleLifeEvent("Invalid configuration"))
@@ -89,7 +85,7 @@ class MainViewModel : ViewModel() {
             urlToSendFile,
             configuration.companyId,
             configuration.channelId,
-            configuration.clientSignature,
+            configuration.clientToken,
             configuration.clientEmail,
             configuration.clientName,
             configuration.clientNote,
@@ -103,12 +99,19 @@ class MainViewModel : ViewModel() {
         disposables.add(
             configurationRepository.getConfiguration().subscribe { configuration: Configuration ->
                 val usedeskChatConfiguration = getChatConfiguration(configuration)
-                mainNavigation.goChat(
-                    configuration.customAgentName,
-                    REJECTED_FILE_TYPES,
-                    usedeskChatConfiguration
-                )
+                goChat(configuration.customAgentName, usedeskChatConfiguration)
             })
+    }
+
+    private fun goChat(
+        customAgentName: String,
+        chatConfiguration: UsedeskChatConfiguration
+    ) {
+        mainNavigation.goChat(
+            customAgentName,
+            REJECTED_FILE_TYPES,
+            chatConfiguration
+        )
     }
 
     fun onBackPressed() {
@@ -140,7 +143,17 @@ class MainViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        disposables.dispose()
+        disposables.forEach {
+            it.dispose()
+        }
+    }
+
+    fun onClientToken(clientToken: String) {
+        val ignore = configurationRepository.getConfiguration().map {
+            it.copy(clientToken = clientToken)
+        }.subscribe { newConfiguration ->
+            configurationRepository.setConfiguration(newConfiguration).subscribe()
+        }
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import io.socket.client.IO
@@ -57,7 +58,7 @@ internal class SocketApi(
     }
 
     private fun onResponse(rawResponse: String) {
-        //Log.d("RESPONSE", rawResponse)
+        Log.d("DBG", "RESPONSE:\n$rawResponse")
         try {
             val response = process(rawResponse)
             when (response.type) {
@@ -127,7 +128,6 @@ internal class SocketApi(
 
                     emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener
-                    //emitterListeners[Socket.EVENT_CONNECT_TIMEOUT] = connectErrorEmitterListener
                     emitterListeners[Socket.EVENT_DISCONNECT] = disconnectEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT] = connectEmitterListener
 
@@ -158,6 +158,7 @@ internal class SocketApi(
     fun sendRequest(baseRequest: BaseRequest) {
         try {
             val rawRequest = gson.toJson(baseRequest)
+            Log.d("DBG", "REQUEST:\n$rawRequest")
             val jsonRequest = JSONObject(rawRequest)
             socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {

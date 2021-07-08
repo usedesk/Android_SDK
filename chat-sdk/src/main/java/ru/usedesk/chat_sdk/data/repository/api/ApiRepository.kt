@@ -105,17 +105,17 @@ internal class ApiRepository(
                 configuration.urlChat))
     }
 
-    override fun send(token: String,
-                      messageId: Long,
-                      feedback: UsedeskFeedback) {
+    override fun send(
+        messageId: Long,
+        feedback: UsedeskFeedback
+    ) {
         checkConnection()
-        socketApi.sendRequest(FeedbackRequest(token, messageId, feedback))
+        socketApi.sendRequest(FeedbackRequest(messageId, feedback))
     }
 
-    override fun send(token: String,
-                      messageText: UsedeskMessageText) {
+    override fun send(messageText: UsedeskMessageText) {
         checkConnection()
-        val request = MessageRequest(token, messageText.text, messageText.id)
+        val request = MessageRequest(messageText.text, messageText.id)
         socketApi.sendRequest(request)
     }
 
@@ -136,18 +136,12 @@ internal class ApiRepository(
     }
 
     override fun send(token: String?,
-                      signature: String?,
                       email: String?,
                       name: String?,
                       note: String?,
                       phone: Long?,
                       additionalId: Long?) {
-        socketApi.sendRequest(SetClientRequest(
-                if (signature?.isNotEmpty() == true) {
-                    null
-                } else {
-                    token
-                }, signature, email, name, note, phone, additionalId))
+        socketApi.sendRequest(SetClientRequest(token, email, name, note, phone, additionalId))
     }
 
     override fun send(configuration: UsedeskChatConfiguration,

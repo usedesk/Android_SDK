@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.4.2)
+# Android Usedesk SDK (v3.5.1)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -78,7 +78,8 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
 | companyId \* | String | Идентификатор компании |
 | channelId \* | String | Идентификатор канала (добавлен в **v3.1.6**) |
-| clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе |
+| clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе (удалён в **v3.5.1**)|
+| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе (добавлен в **v3.5.1**). Указав null библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
 | clientNote | String? | Заметка о клиенте |
@@ -429,14 +430,17 @@ UsedeskKnowledgeBaseSdk.release()
   - Добавлен параметр конфигурации в `UsedeskChatScreen`
 - v3.4.1
   - **Важно!** Изменена кастомизация:
-    - Некоторые атрибуты удалены, а их функционал перенесён в стили.
+    - Некоторые атрибуты удалены, а их функционал перенесён в стили
     - От стиля `Usedesk.Chat.Screen` отделены некоторые атрибуты и перенесены в отдельные стили:
       - `Usedesk.Chat.Screen.Loading.Page`
       - `Usedesk.Chat.Screen.Messages.Page`
       - `Usedesk.Chat.Screen.Offline.Form.Page`
       - `Usedesk.Chat.Screen.Offline.Form.Selector.Page`
-    - Добавлена кастомизация для всех недостающих элементов (Layout, Toolbar, View).
-  - Исправлена ошибка сброса оценки в чате.
-  - Исправлена ошибка задваивания сообщений агента в чате после сворачивания.
+    - Добавлена кастомизация для всех недостающих элементов (Layout, Toolbar, View)
+  - Исправлена ошибка сброса оценки в чате
+  - Исправлена ошибка задваивания сообщений агента в чате после сворачивания
 - v3.4.2
   - Исправлена обработка ответов от сервера по сокету
+- v3.5.1
+  - Обновлён клиент socket.io для работы с версиями 3.x/4.x
+  - В [конфигурации чата](#chat_configuration) параметр `clientSignature` заменён на `clientToken` с новой логикой работы.

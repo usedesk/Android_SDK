@@ -13,7 +13,6 @@ internal interface IApiRepository {
              token: String?)
 
     fun send(token: String?,
-             signature: String?,
              email: String?,
              name: String?,
              note: String?,
@@ -24,12 +23,12 @@ internal interface IApiRepository {
              companyId: String,
              offlineForm: UsedeskOfflineForm)
 
-    fun send(token: String,
-             messageId: Long,
-             feedback: UsedeskFeedback)
+    fun send(
+        messageId: Long,
+        feedback: UsedeskFeedback
+    )
 
-    fun send(token: String,
-             messageText: UsedeskMessageText)
+    fun send(messageText: UsedeskMessageText)
 
     fun send(configuration: UsedeskChatConfiguration,
              token: String,

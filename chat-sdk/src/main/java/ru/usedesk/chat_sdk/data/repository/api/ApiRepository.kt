@@ -27,13 +27,13 @@ import java.util.*
 
 @InjectConstructor
 internal class ApiRepository(
-        private val socketApi: SocketApi,
-        private val multipartConverter: IMultipartConverter,
-        private val initChatResponseConverter: InitChatResponseConverter,
-        private val messageResponseConverter: MessageResponseConverter,
-        private val fileLoader: IFileLoader,
-        apiFactory: IUsedeskApiFactory,
-        gson: Gson
+    private val socketApi: SocketApi,
+    private val multipartConverter: IMultipartConverter,
+    private val initChatResponseConverter: InitChatResponseConverter,
+    private val messageResponseConverter: MessageResponseConverter,
+    private val fileLoader: IFileLoader,
+    apiFactory: IUsedeskApiFactory,
+    gson: Gson
 ) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
 
     private fun isConnected() = socketApi.isConnected()
@@ -64,9 +64,12 @@ internal class ApiRepository(
         override fun onInited(initChatResponse: InitChatResponse) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
             chatInited.offlineFormSettings.run {
-                if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES && noOperators)
-                        || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
-                        || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT) {
+                if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES
+                            && noOperators)
+                    || (workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+                            && initChatResponse.setup?.ticket?.statusId in STATUSES_FOR_FORM)
+                    || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
+                ) {
                     eventListener.onOfflineForm(this, chatInited)
                 } else {
                     eventListener.onChatInited(chatInited)
@@ -90,19 +93,27 @@ internal class ApiRepository(
         }
     }
 
-    override fun connect(url: String,
-                         token: String?,
-                         configuration: UsedeskChatConfiguration,
-                         eventListener: IApiRepository.EventListener) {
+    override fun connect(
+        url: String,
+        token: String?,
+        configuration: UsedeskChatConfiguration,
+        eventListener: IApiRepository.EventListener
+    ) {
         this.eventListener = eventListener
         socketApi.connect(url, token, configuration.getCompanyAndChannel(), socketEventListener)
     }
 
-    override fun init(configuration: UsedeskChatConfiguration,
-                      token: String?) {
-        socketApi.sendRequest(InitChatRequest(token,
+    override fun init(
+        configuration: UsedeskChatConfiguration,
+        token: String?
+    ) {
+        socketApi.sendRequest(
+            InitChatRequest(
+                token,
                 configuration.companyId,
-                configuration.urlChat))
+                configuration.urlChat
+            )
+        )
     }
 
     override fun send(
@@ -119,42 +130,48 @@ internal class ApiRepository(
         socketApi.sendRequest(request)
     }
 
-    override fun send(configuration: UsedeskChatConfiguration,
-                      token: String,
-                      messageFile: UsedeskMessageFile) {
+    override fun send(
+        configuration: UsedeskChatConfiguration,
+        token: String,
+        messageFile: UsedeskMessageFile
+    ) {
         checkConnection()
 
         val loadedFile = fileLoader.load(Uri.parse(messageFile.file.content))
         val parts = listOf(
-                multipartConverter.convert("chat_token", token),
-                multipartConverter.convert("file", loadedFile),
-                multipartConverter.convert("message_id", messageFile.id)
+            multipartConverter.convert("chat_token", token),
+            multipartConverter.convert("file", loadedFile),
+            multipartConverter.convert("message_id", messageFile.id)
         )
         doRequest(configuration.urlToSendFile, FileResponse::class.java) {
             it.postFile(parts)
         }
     }
 
-    override fun send(token: String?,
-                      email: String?,
-                      name: String?,
-                      note: String?,
-                      phone: Long?,
-                      additionalId: Long?) {
+    override fun send(
+        token: String?,
+        email: String?,
+        name: String?,
+        note: String?,
+        phone: Long?,
+        additionalId: Long?
+    ) {
         socketApi.sendRequest(SetClientRequest(token, email, name, note, phone, additionalId))
     }
 
-    override fun send(configuration: UsedeskChatConfiguration,
-                      companyId: String,
-                      offlineForm: UsedeskOfflineForm) {
+    override fun send(
+        configuration: UsedeskChatConfiguration,
+        companyId: String,
+        offlineForm: UsedeskOfflineForm
+    ) {
         try {
             doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
                 val params = mapOf(
-                        "email" to getCorrectStringValue(offlineForm.clientEmail),
-                        "name" to getCorrectStringValue(offlineForm.clientName),
-                        "company_id" to getCorrectStringValue(companyId),
-                        "message" to getCorrectStringValue(offlineForm.message),
-                        "topic" to getCorrectStringValue(offlineForm.topic)
+                    "email" to getCorrectStringValue(offlineForm.clientEmail),
+                    "name" to getCorrectStringValue(offlineForm.clientName),
+                    "company_id" to getCorrectStringValue(companyId),
+                    "message" to getCorrectStringValue(offlineForm.message),
+                    "topic" to getCorrectStringValue(offlineForm.topic)
                 )
                 val customFields = offlineForm.fields.filter { field ->
                     field.value.isNotEmpty()
@@ -182,5 +199,9 @@ internal class ApiRepository(
         if (!isConnected()) {
             throw UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED)
         }
+    }
+
+    companion object {
+        private val STATUSES_FOR_FORM = listOf(null, 2, 3, 4, 7, 9, 10)
     }
 }

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +33,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     private val viewModel: ChatViewModel by viewModels()
 
     private lateinit var binding: Binding
-    private lateinit var attachment: UsedeskAttachmentDialog
+    private lateinit var attachmentDialog: UsedeskAttachmentDialog
 
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
@@ -80,7 +79,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        attachment = UsedeskAttachmentDialog.create(this)
+        attachmentDialog = UsedeskAttachmentDialog.create(this)
     }
 
     private fun init(
@@ -131,7 +130,7 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     override fun onAttachmentClick() {
         getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-            ?: attachment.show()
+            ?: attachmentDialog.show()
     }
 
     override fun onItemSelectChange(index: Int) {
@@ -140,6 +139,24 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     private fun onException(exception: Exception) {
         exception.printStackTrace()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val uriList = attachmentDialog.getAttachedUri(true)
+        if (uriList.isNotEmpty()) {
+            getCurrentFragment()?.let {
+                if (it is MessagesPage) {
+                    it.setAttachedFiles(uriList.map { uri ->
+                        UsedeskFileInfo.create(
+                            requireContext(),
+                            uri
+                        )
+                    })
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -154,18 +171,6 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     override fun onBackPressed(): Boolean {
         return viewModel.onBackPressed()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        attachment.onActivityResult(requestCode, resultCode, data)
-    }
-
-    fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
-        getCurrentFragment()?.let {
-            if (it is MessagesPage) {
-                it.setAttachedFiles(attachedFiles)
-            }
-        }
     }
 
     private fun getCurrentFragment(): Fragment? {

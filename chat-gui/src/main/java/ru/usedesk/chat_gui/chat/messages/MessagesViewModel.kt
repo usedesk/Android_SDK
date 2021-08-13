@@ -12,6 +12,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
 
     val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>?>(listOf())
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>?>(listOf())
+    val fabToBottomLiveData = MutableLiveData<Boolean?>(false)
     var message = ""
         private set
 
@@ -85,5 +86,9 @@ internal class MessagesViewModel : UsedeskViewModel() {
             ?.removeActionListener(actionListenerRx)
 
         UsedeskChatSdk.release(false)
+    }
+
+    fun showToBottomButton(show: Boolean) {
+
     }
 }

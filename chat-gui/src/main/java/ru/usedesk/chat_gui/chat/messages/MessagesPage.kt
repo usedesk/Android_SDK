@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -26,7 +28,6 @@ internal class MessagesPage : UsedeskFragment() {
 
     private lateinit var binding: Binding
 
-    private lateinit var messagePanelAdapter: MessagePanelAdapter
     private lateinit var messagesAdapter: MessagesAdapter
 
     private var cleared = false
@@ -65,7 +66,13 @@ internal class MessagesPage : UsedeskFragment() {
     private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
         UsedeskChatSdk.init(requireContext())
 
-        messagePanelAdapter = MessagePanelAdapter(
+        FabToBottomAdapter(
+            binding.fabToBottom,
+            viewModel,
+            viewLifecycleOwner
+        )
+
+        MessagePanelAdapter(
             binding.messagePanel,
             viewModel,
             viewLifecycleOwner
@@ -73,7 +80,8 @@ internal class MessagesPage : UsedeskFragment() {
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
         }
 
-        messagesAdapter = MessagesAdapter(viewModel,
+        messagesAdapter = MessagesAdapter(
+            viewModel,
             viewLifecycleOwner,
             binding.rvMessages,
             agentName,
@@ -141,6 +149,7 @@ internal class MessagesPage : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
+        val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
     }

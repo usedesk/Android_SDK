@@ -33,10 +33,11 @@ internal class MessagesAdapter(
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
+    private val layoutManager = LinearLayoutManager(recyclerView.context)
 
     init {
         recyclerView.apply {
-            layoutManager = LinearLayoutManager(recyclerView.context)
+            layoutManager = this@MessagesAdapter.layoutManager
             adapter = this@MessagesAdapter
             setHasFixedSize(false)
             addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
@@ -46,6 +47,12 @@ internal class MessagesAdapter(
                 }
             }
         }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val lastItemIndex = layoutManager.findLastVisibleItemPosition()
+                viewModel.showToBottomButton(lastItemIndex < items.size - 1)
+            }
+        })
         viewModel.messagesLiveData.observe(lifecycleOwner) {
             it?.let {
                 onMessages(it)

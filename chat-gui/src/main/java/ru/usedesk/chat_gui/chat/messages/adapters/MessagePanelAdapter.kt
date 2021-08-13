@@ -48,8 +48,4 @@ internal class MessagePanelAdapter(
         val etMessage: EditText = rootView.findViewById(R.id.et_message)
         val rvAttachedFiles: RecyclerView = rootView.findViewById(R.id.rv_attached_files)
     }
-
-    companion object {
-        private const val MESSAGE_KEY = "messageKey"
-    }
 }

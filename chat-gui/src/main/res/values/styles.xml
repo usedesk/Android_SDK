@@ -852,6 +852,8 @@
         <item name="colorAccent">@color/usedesk_gray_1</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+        <item name="usedesk_animation_in">@anim/usedesk_fab_to_bottom_in</item>
+        <item name="usedesk_animation_out">@anim/usedesk_fab_to_bottom_out</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Loading.Text" parent="">

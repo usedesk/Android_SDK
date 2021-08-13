@@ -171,6 +171,10 @@ internal class MessagesAdapter(
 
     override fun getItemViewType(position: Int) = items[position].type.value
 
+    fun scrollToBottom() {
+        recyclerView.smoothScrollToPosition(items.size - 1)
+    }
+
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {

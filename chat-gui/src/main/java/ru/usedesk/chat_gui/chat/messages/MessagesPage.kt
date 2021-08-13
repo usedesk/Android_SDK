@@ -66,12 +66,6 @@ internal class MessagesPage : UsedeskFragment() {
     private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
         UsedeskChatSdk.init(requireContext())
 
-        FabToBottomAdapter(
-            binding.fabToBottom,
-            viewModel,
-            viewLifecycleOwner
-        )
-
         MessagePanelAdapter(
             binding.messagePanel,
             viewModel,
@@ -93,6 +87,14 @@ internal class MessagesPage : UsedeskFragment() {
                 getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
             })
+        FabToBottomAdapter(
+            binding.fabToBottom,
+            binding.styleValues,
+            viewModel,
+            viewLifecycleOwner
+        ) {
+            messagesAdapter.scrollToBottom()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

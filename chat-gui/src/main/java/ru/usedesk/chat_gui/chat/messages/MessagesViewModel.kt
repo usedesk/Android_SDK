@@ -89,6 +89,6 @@ internal class MessagesViewModel : UsedeskViewModel() {
     }
 
     fun showToBottomButton(show: Boolean) {
-
+        fabToBottomLiveData.value = show
     }
 }

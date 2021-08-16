@@ -15,6 +15,7 @@ internal class InitChatResponse : BaseResponse() {
     class Setup {
         var noOperators: Boolean? = null
         var messages: List<MessageResponse.Message?>? = null
+        var ticket: Ticket? = null
 
         @SerializedName("callback_settings")
         var callbackSettings: CallbackSettings? = null
@@ -51,6 +52,13 @@ internal class InitChatResponse : BaseResponse() {
                 var text: String? = null
                 var checked: Boolean? = null
             }
+        }
+
+        class Ticket {
+            var id: Long? = null
+
+            @SerializedName("status_id")
+            var statusId: Int? = null
         }
     }
 }

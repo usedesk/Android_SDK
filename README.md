@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.5.1)
+# Android Usedesk SDK (v3.6.0)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -443,4 +443,8 @@ UsedeskKnowledgeBaseSdk.release()
   - Исправлена обработка ответов от сервера по сокету
 - v3.5.1
   - Обновлён клиент socket.io для работы с версиями 3.x/4.x
-  - В [конфигурации чата](#chat_configuration) параметр `clientSignature` заменён на `clientToken` с новой логикой работы.
+  - В [конфигурации чата](#chat_configuration) параметр `clientSignature` заменён на `clientToken` с
+    новой логикой работы.
+- v3.6.0
+  - Добавлена фильтрация событий отображения ФОС по статусу тикета
+  - Обновлены методы прикрепления файлов

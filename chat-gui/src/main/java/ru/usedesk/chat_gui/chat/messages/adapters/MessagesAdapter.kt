@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.Corner
@@ -61,25 +62,51 @@ internal class MessagesAdapter(
     }
 
     private fun onMessages(messages: List<UsedeskMessage>) {
-        val lastItems = items
+        val oldItems = items
         items = messages
 
-        if (lastItems.isEmpty()) {
-            notifyDataSetChanged()
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = oldItems.size
+
+            override fun getNewListSize() = items.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                val old = oldItems[oldItemPosition]
+                val new = items[newItemPosition]
+                return old.id == new.id ||
+                        (old is UsedeskMessageClient &&
+                                new is UsedeskMessageClient &&
+                                old.localId == new.localId)
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                val old = oldItems[oldItemPosition]
+                val new = items[newItemPosition]
+                if (new is UsedeskMessageText &&
+                    old is UsedeskMessageText &&
+                    new.text != old.text
+                ) {
+                    return false
+                }
+                if (new is UsedeskMessageFile &&
+                    old is UsedeskMessageFile &&
+                    new.file.content != old.file.content
+                ) {
+                    return false
+                }
+                if (new is UsedeskMessageClient &&
+                    old is UsedeskMessageClient &&
+                    new.status != old.status
+                ) {
+                    return false
+                }
+                return true
+            }
+        })
+        diffResult.dispatchUpdatesTo(this)
+        if (oldItems.isEmpty()) {
             recyclerView.scrollToPosition(items.size - 1)
         } else {
-            items.forEachIndexed { index, item ->
-                if (item !in lastItems
-                    && (item !is UsedeskMessageAgentText ||
-                            item.feedback == null)
-                ) {
-                    notifyItemChanged(index)
-                }
-            }
-            (lastItems.size until items.size).forEach { index ->
-                notifyItemChanged(index - 1)
-                notifyItemInserted(index)
-            }
             val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
             val contentHeight = recyclerView.computeVerticalScrollRange()
             if (visibleBottom >= contentHeight) {//Если чат был внизу

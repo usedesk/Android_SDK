@@ -6,15 +6,14 @@ import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class MessagesViewModel : UsedeskViewModel() {
 
-    val fileInfoListLiveData = MutableLiveData<List<UsedeskFileInfo>?>(listOf())
     val messagesLiveData = MutableLiveData<List<UsedeskMessage>?>(listOf())
     val fabToBottomLiveData = MutableLiveData<Boolean?>(false)
-    var message = ""
-        private set
+    val messageDraftLiveData = UsedeskLiveData(UsedeskMessageDraft())
 
     private val actionListenerRx: IUsedeskActionListenerRx
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
@@ -24,7 +23,6 @@ internal class MessagesViewModel : UsedeskViewModel() {
     private var messages: List<UsedeskMessage> = listOf()
 
     init {
-        clearFileInfoList()
         actionListenerRx = object : IUsedeskActionListenerRx() {
             override fun onMessagesObservable(
                 messagesObservable: Observable<List<UsedeskMessage>>
@@ -36,44 +34,44 @@ internal class MessagesViewModel : UsedeskViewModel() {
             }
         }
         usedeskChat.addActionListener(actionListenerRx)
+        messageDraftLiveData.value = usedeskChat.getMessageDraft()
     }
 
     fun onMessageChanged(message: String) {
-        this.message = message
+        messageDraftLiveData.value = messageDraftLiveData.value.copy(
+            text = message
+        )
+        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
     }
 
-    private fun clearFileInfoList() {
-        fileInfoListLiveData.value = listOf()
-    }
-
-    fun getAttachedFiles(): List<UsedeskFileInfo> {
-        return fileInfoListLiveData.value ?: listOf()
-    }
-
-    fun setAttachedFiles(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        val attached = (fileInfoListLiveData.value
-            ?: listOf()) + usedeskFileInfoList
-        fileInfoListLiveData.postValue(attached.distinct())
+    fun addAttachedFiles(files: List<UsedeskFileInfo>) {
+        val messageDraft = messageDraftLiveData.value
+        messageDraftLiveData.value = messageDraft.copy(
+            files = (messageDraft.files + files).toSet().toList()
+        )
+        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
     }
 
     fun sendFeedback(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
         doIt(usedeskChat.sendRx(message, feedback))
     }
 
-    fun detachFile(usedeskFileInfo: UsedeskFileInfo) {
-        val attachedFileInfoList: MutableList<UsedeskFileInfo> =
-            fileInfoListLiveData.value?.toMutableList()
-                ?: mutableListOf()
-        attachedFileInfoList.remove(usedeskFileInfo)
-        fileInfoListLiveData.postValue(attachedFileInfoList)
+    fun detachFile(file: UsedeskFileInfo) {
+        val messageDraft = messageDraftLiveData.value
+        messageDraftLiveData.value = messageDraft.copy(
+            files = messageDraft.files.filter {
+                it != file
+            }
+        )
+        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
     }
 
-    fun onSend(textMessage: String) {
-        doIt(usedeskChat.sendRx(textMessage))
-        fileInfoListLiveData.value?.also {
-            doIt(usedeskChat.sendRx(it))
-        }
-        clearFileInfoList()
+    fun onSend(message: String = messageDraftLiveData.value.text) {
+        doIt(usedeskChat.sendRx(message))
+        doIt(usedeskChat.sendRx(messageDraftLiveData.value.files))
+
+        messageDraftLiveData.value = UsedeskMessageDraft()
+        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
     }
 
     fun onSendAgain(id: Long) {

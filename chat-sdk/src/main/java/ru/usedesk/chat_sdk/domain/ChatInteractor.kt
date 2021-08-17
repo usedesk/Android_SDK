@@ -2,17 +2,20 @@ package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
 import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
+import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
 import toothpick.InjectConstructor
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -22,6 +25,7 @@ internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
+    private val messagesRepository: IUsedeskMessagesRepository,
     private val ioScheduler: Scheduler
 ) : IUsedeskChat {
 
@@ -280,8 +284,9 @@ internal class ChatInteractor(
     }
 
     override fun send(textMessage: String) {
-        if (textMessage.trim().isNotEmpty()) {
-            val sendingMessage = createSendingMessage(textMessage)
+        val message = textMessage.trim()
+        if (message.isNotEmpty()) {
+            val sendingMessage = createSendingMessage(message)
             eventListener.onMessagesReceived(listOf(sendingMessage))
             sendText(sendingMessage)
         }
@@ -445,6 +450,26 @@ internal class ChatInteractor(
                     sendFile(sendingMessage)
                 }
             }
+        }
+    }
+
+    override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
+        messagesRepository.setDraft(messageDraft)
+    }
+
+    override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
+        return safeCompletableIo(ioScheduler) {
+            setMessageDraft(messageDraft)
+        }
+    }
+
+    override fun getMessageDraft(): UsedeskMessageDraft {
+        return messagesRepository.getDraft() ?: UsedeskMessageDraft()
+    }
+
+    override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
+        return safeSingleIo(ioScheduler) {
+            getMessageDraft()
         }
     }
 

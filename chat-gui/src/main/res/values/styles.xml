@@ -294,9 +294,8 @@
         <item name="cardBackgroundColor">@color/usedesk_black_2</item>
         <item name="cardCornerRadius">8dp</item>
         <item name="cardElevation">0dp</item>
-        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button" parent="">
@@ -689,10 +688,12 @@
 
     <style name="Usedesk.Chat.Message.Text.Button.Text" parent="">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginLeft">4dp</item>
-        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>

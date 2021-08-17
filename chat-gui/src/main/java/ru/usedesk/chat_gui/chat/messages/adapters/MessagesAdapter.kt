@@ -214,8 +214,7 @@ internal class MessagesAdapter(
                         else -> {
                             val dateFormat: DateFormat =
                                 SimpleDateFormat("dd MMMM", Locale.getDefault())
-                            val formatted = dateFormat.format(message.createdAt.time)
-                            formatted
+                            dateFormat.format(message.createdAt.time)
                         }
                     }
                     View.VISIBLE

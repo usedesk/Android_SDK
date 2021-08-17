@@ -18,9 +18,9 @@ import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.*
-import ru.usedesk.common_sdk.utils.getFromJson
-import ru.usedesk.common_sdk.utils.putAsJson
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.inflateItem
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -50,15 +50,6 @@ internal class MessagesPage : UsedeskFragment() {
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
 
         init(agentName, rejectedFileExtensions)
-
-        val savedAttachedFiles = savedInstanceState?.getFromJson(
-            SAVED_ATTACHED_FILES_KEY,
-            Array<FileInfo>::class.java
-        )?.map {
-            it.getUsedeskFileInfo()
-        } ?: listOf()
-
-        viewModel.setAttachedFiles(savedAttachedFiles)
 
         return binding.rootView
     }
@@ -97,15 +88,6 @@ internal class MessagesPage : UsedeskFragment() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        val attachedFiles = viewModel.getAttachedFiles().map {
-            FileInfo(it)
-        }.toTypedArray()
-        outState.putAsJson(SAVED_ATTACHED_FILES_KEY, attachedFiles)
-    }
-
     private fun onUrlClick(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -113,7 +95,7 @@ internal class MessagesPage : UsedeskFragment() {
     }
 
     fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
-        viewModel.setAttachedFiles(attachedFiles)
+        viewModel.addAttachedFiles(attachedFiles)
     }
 
     override fun onDestroyView() {
@@ -131,7 +113,6 @@ internal class MessagesPage : UsedeskFragment() {
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"
         private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
-        private const val SAVED_ATTACHED_FILES_KEY = "savedAttachedFilesKey"
 
         fun newInstance(
             agentName: String?,

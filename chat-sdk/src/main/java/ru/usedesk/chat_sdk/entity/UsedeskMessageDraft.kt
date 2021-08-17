@@ -1,0 +1,6 @@
+package ru.usedesk.chat_sdk.entity
+
+data class UsedeskMessageDraft(
+    val text: String = "",
+    val files: List<UsedeskFileInfo> = listOf()
+)

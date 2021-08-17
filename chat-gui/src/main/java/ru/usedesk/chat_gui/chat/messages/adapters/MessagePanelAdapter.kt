@@ -24,20 +24,19 @@ internal class MessagePanelAdapter(
         binding.ivSend.setOnClickListener {
             onSendClick()
         }
-        binding.etMessage.setText(viewModel.message)
         binding.etMessage.addTextChangedListener(UsedeskTextChangeListener {
             viewModel.onMessageChanged(it)
         })
-        attachedFilesAdapter =
-            AttachedFilesAdapter(
-                binding.rvAttachedFiles,
-                viewModel,
-                lifecycleOwner
-            )
+        attachedFilesAdapter = AttachedFilesAdapter(
+            binding.rvAttachedFiles,
+            viewModel,
+            lifecycleOwner
+        )
+        binding.etMessage.setText(viewModel.messageDraftLiveData.value.text)
     }
 
     private fun onSendClick() {
-        viewModel.onSend(binding.etMessage.text.toString().trim { it <= ' ' })
+        viewModel.onSend()
         binding.etMessage.setText("")
     }
 

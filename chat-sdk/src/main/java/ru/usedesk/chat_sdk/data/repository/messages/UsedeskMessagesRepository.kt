@@ -2,15 +2,19 @@ package ru.usedesk.chat_sdk.data.repository.messages
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import com.google.gson.Gson
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
 import toothpick.InjectConstructor
+import java.io.File
 import java.util.*
 
 @InjectConstructor
 internal class UsedeskMessagesRepository(
     private val appContext: Context,
-    private val gson: Gson
+    private val gson: Gson,
+    private val fileLoader: IFileLoader
 ) : IUsedeskMessagesRepository {
 
     private val sharedPreferences = appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -60,9 +64,11 @@ internal class UsedeskMessagesRepository(
 
         sharedPreferences.edit()
             .putString(DRAFT_TEXT_KEY, messageDraft.text)
-            .putStringSet(DRAFT_FILES_KEY, messageDraft.files.map {
-                it.uri.toString()
-            }.toSet()).apply()
+            .putStringSet(
+                DRAFT_FILES_KEY, messageDraft.files.map {
+                    it.uri.toString()
+                }.toSet()
+            ).apply()
     }
 
     @Synchronized
@@ -70,6 +76,21 @@ internal class UsedeskMessagesRepository(
         initIfNeeded()
 
         return draft
+    }
+
+    override fun addFileToCache(uri: Uri): Uri {
+        val cachedFile = File(appContext.cacheDir.absolutePath, uri.hashCode().toString())
+        try {
+            fileLoader.copy(uri, cachedFile.toUri())
+            return uri
+        } catch (e: Exception) {
+            cachedFile.delete()
+            throw e
+        }
+    }
+
+    override fun removeFileFromCache(uri: Uri) {
+        File(uri.toString()).delete()
     }
 
     private fun initIfNeeded() {
@@ -90,12 +111,17 @@ internal class UsedeskMessagesRepository(
             val draftFiles = sharedPreferences.getStringSet(DRAFT_FILES_KEY, setOf()) ?: setOf()
             draft = UsedeskMessageDraft(
                 draftText,
-                draftFiles.map {
-                    val uri = Uri.parse(it)
-                    UsedeskFileInfo.create(
-                        appContext,
-                        uri
-                    )//TODO: Доступ по uri протухает после перезапуска приложения
+                draftFiles.mapNotNull {
+                    try {
+                        val uri = Uri.parse(it)
+                        UsedeskFileInfo.create(
+                            appContext,
+                            uri
+                        )//TODO: Доступ по uri протухает после перезапуска приложения
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
+                    }
                 }
             )
         }

@@ -171,7 +171,7 @@ internal class UsedeskMessagesRepository(
                     clientMessageClient.localId,
                     file = fileToJson(clientMessageClient.file)
                 )
-            }//TODO: глянуть где выпадет ошибка
+            }
             else -> throw RuntimeException("Unknown client message class: ${clientMessageClient::class.java}")
         }
     }
@@ -204,7 +204,7 @@ internal class UsedeskMessagesRepository(
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
-            else -> {//TODO: глянуть где выпадет ошибка
+            else -> {
                 throw RuntimeException("Empty message")
             }
         }

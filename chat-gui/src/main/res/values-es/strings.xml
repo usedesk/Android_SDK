@@ -5,7 +5,6 @@
     <string name="usedesk_name">@string/usedesk_string_name</string>
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
-    <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
@@ -24,7 +23,6 @@
     <string name="usedesk_string_name">Nombre</string>
     <string name="usedesk_string_email">Correo</string>
     <string name="usedesk_string_message">Mensaje</string>
-    <string name="usedesk_string_close">Cerrar</string>
     <string name="usedesk_string_message_input">Escribir…</string>
     <string name="usedesk_string_loading">Cargando…</string>
     <string name="usedesk_string_today">Hoy</string>

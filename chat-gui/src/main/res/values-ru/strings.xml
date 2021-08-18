@@ -5,7 +5,6 @@
     <string name="usedesk_name">@string/usedesk_string_name</string>
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
-    <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
@@ -24,7 +23,6 @@
     <string name="usedesk_string_name">Имя</string>
     <string name="usedesk_string_email">Почта</string>
     <string name="usedesk_string_message">Сообщение</string>
-    <string name="usedesk_string_close">Закрыть</string>
     <string name="usedesk_string_message_input">Написать…</string>
     <string name="usedesk_string_loading">Загрузка…</string>
     <string name="usedesk_string_today">Сегодня</string>

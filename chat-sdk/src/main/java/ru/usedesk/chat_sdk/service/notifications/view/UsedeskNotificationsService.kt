@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import ru.usedesk.chat_sdk.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
@@ -96,24 +97,22 @@ abstract class UsedeskNotificationsService : Service() {
             if (model.count > 1) {
                 title += " (" + model.count + ")"
             }
-            NotificationCompat.Builder(this, channelId)
-                .apply {
-                    setSmallIcon(android.R.drawable.ic_dialog_email)
-                    setContentTitle(title)
-                    setContentText(text)
-                    setContentIntent(getContentPendingIntent())
-                    setDeleteIntent(getDeletePendingIntent())
-                    if (showCloseButton) {
-                        addAction(
-                            android.R.drawable.ic_delete,
-                            "Закрыть",//TODO: это чё такое
-                            getClosePendingIntent()
-                        )
-                    }
+            NotificationCompat.Builder(this, channelId).apply {
+                setSmallIcon(android.R.drawable.ic_dialog_email)
+                setContentTitle(title)
+                setContentText(text)
+                setContentIntent(getContentPendingIntent())
+                setDeleteIntent(getDeletePendingIntent())
+                if (showCloseButton) {
+                    addAction(
+                        android.R.drawable.ic_delete,
+                        getString(R.string.usedesk_close),
+                        getClosePendingIntent()
+                    )
                 }
-                .build().apply {
-                    flags = flags or Notification.FLAG_AUTO_CANCEL
-                }
+            }.build().apply {
+                flags = flags or Notification.FLAG_AUTO_CANCEL
+            }
         } else {
             null
         }

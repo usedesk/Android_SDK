@@ -26,8 +26,7 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_to_bottom"
-            style="?attr/usedesk_chat_screen_floating_action_button"
-            android:theme="?attr/usedesk_chat_screen_floating_action_button" />
+            style="?attr/usedesk_chat_screen_floating_action_button" />
     </FrameLayout>
 
     <LinearLayout

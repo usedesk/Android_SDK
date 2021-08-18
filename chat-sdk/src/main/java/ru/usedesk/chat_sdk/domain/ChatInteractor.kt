@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.domain
 
+import android.net.Uri
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -50,8 +51,6 @@ internal class ChatInteractor(
     private val listenersDisposables = mutableListOf<Disposable>()
 
     private var lastMessages = listOf<UsedeskMessage>()
-
-    private var localId = -1000L
 
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
@@ -237,7 +236,7 @@ internal class ChatInteractor(
         messagesSubject.onNext(lastMessages)
     }
 
-    private fun runTimeout(message: UsedeskMessage) {
+    private fun runTimeout(message: UsedeskMessageClient) {
         val ignore = Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
             onMessageSendingFailed(message)
         }
@@ -292,11 +291,13 @@ internal class ChatInteractor(
         }
     }
 
-    private fun sendText(sendingMessage: UsedeskMessageText) {
-        runTimeout(sendingMessage)
+    private fun sendText(sendingMessage: UsedeskMessageClientText) {
+        //runTimeout(sendingMessage)
 
         try {
+            messagesRepository.addNotSentMessage(sendingMessage)
             apiRepository.send(sendingMessage)
+            messagesRepository.removeNotSentMessage(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -326,9 +327,26 @@ internal class ChatInteractor(
 
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
         token?.also { token ->
+            sendingMessage as UsedeskMessageClient
             try {
-                apiRepository.send(configuration, token, sendingMessage)
-                runTimeout(sendingMessage)
+                val cachedUri =
+                    messagesRepository.addFileToCache(Uri.parse(sendingMessage.file.content))
+                val cachedMessage = UsedeskMessageClientFile(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    UsedeskFile(
+                        cachedUri.toString(),
+                        sendingMessage.file.type,
+                        sendingMessage.file.size,
+                        sendingMessage.file.name
+                    ),
+                    sendingMessage.status,
+                    sendingMessage.localId
+                )
+                messagesRepository.addNotSentMessage(cachedMessage)
+                apiRepository.send(configuration, token, cachedMessage)
+                messagesRepository.removeNotSentMessage(cachedMessage)
+                messagesRepository.removeFileFromCache(cachedUri)
             } catch (e: Exception) {
                 onMessageSendingFailed(sendingMessage)
                 throw e
@@ -336,42 +354,35 @@ internal class ChatInteractor(
         }
     }
 
-    private fun onMessageSendingFailed(sendingMessage: UsedeskMessage) {
-        val failedMessage = lastMessages.firstOrNull {
-            it.id == sendingMessage.id
-        }
-        if (failedMessage is UsedeskMessageClient &&
-            failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT
-        ) {
-            when (failedMessage) {
-                is UsedeskMessageClientText -> {
-                    UsedeskMessageClientText(
-                        failedMessage.id,
-                        failedMessage.createdAt,
-                        failedMessage.text,
-                        UsedeskMessageClient.Status.SEND_FAILED
-                    )
-                }
-                is UsedeskMessageClientFile -> {
-                    UsedeskMessageClientFile(
-                        failedMessage.id,
-                        failedMessage.createdAt,
-                        failedMessage.file,
-                        UsedeskMessageClient.Status.SEND_FAILED
-                    )
-                }
-                is UsedeskMessageClientImage -> {
-                    UsedeskMessageClientImage(
-                        failedMessage.id,
-                        failedMessage.createdAt,
-                        failedMessage.file,
-                        UsedeskMessageClient.Status.SEND_FAILED
-                    )
-                }
-                else -> null
-            }?.let {
-                onMessageUpdate(it)
+    private fun onMessageSendingFailed(sendingMessage: UsedeskMessageClient) {
+        when (sendingMessage) {
+            is UsedeskMessageClientText -> {
+                UsedeskMessageClientText(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.text,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
             }
+            is UsedeskMessageClientFile -> {
+                UsedeskMessageClientFile(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            is UsedeskMessageClientImage -> {
+                UsedeskMessageClientImage(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            else -> null
+        }?.let {
+            onMessageUpdate(it)
         }
     }
 
@@ -473,8 +484,8 @@ internal class ChatInteractor(
         }
     }
 
-    private fun createSendingMessage(text: String): UsedeskMessageText {
-        localId--
+    private fun createSendingMessage(text: String): UsedeskMessageClientText {
+        val localId = messagesRepository.getNextLocalId()
         val calendar = Calendar.getInstance()
         return UsedeskMessageClientText(
             localId,
@@ -485,7 +496,7 @@ internal class ChatInteractor(
     }
 
     private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessageFile {
-        localId--
+        val localId = messagesRepository.getNextLocalId()
         val calendar = Calendar.getInstance()
         val file = UsedeskFile.create(
             fileInfo.uri.toString(),
@@ -586,7 +597,13 @@ internal class ChatInteractor(
         val filteredMessages = chatInited.messages.filter {
             it.id !in ids
         }
-        onMessagesNew(filteredMessages, true)
+        val notSentMessages = messagesRepository.getNotSentMessages().map {
+            it as UsedeskMessage
+        }
+        val filteredNotSentMessages = notSentMessages.filter {
+            it.id !in ids
+        }
+        onMessagesNew(filteredMessages + filteredNotSentMessages, true)
 
         if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
                 initClientMessage
@@ -601,6 +618,10 @@ internal class ChatInteractor(
             sendUserEmail()
         } else {
             eventListener.onSetEmailSuccess()
+        }
+
+        notSentMessages.forEach {
+            sendAgainRx(it.id).subscribe({}, {})
         }
     }
 

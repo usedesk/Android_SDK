@@ -14,4 +14,9 @@ interface IUsedeskMessagesRepository {
 
     fun addFileToCache(uri: Uri): Uri
     fun removeFileFromCache(uri: Uri)
+
+    /**
+     * Return a negative value
+     */
+    fun getNextLocalId(): Long
 }

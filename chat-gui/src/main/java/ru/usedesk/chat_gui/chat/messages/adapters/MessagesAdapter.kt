@@ -82,6 +82,9 @@ internal class MessagesAdapter(
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
+                if ((oldItemPosition == oldListSize - 1) != (newItemPosition == newListSize - 1)) {
+                    return false
+                }
                 if (new is UsedeskMessageText &&
                     old is UsedeskMessageText &&
                     new.text != old.text

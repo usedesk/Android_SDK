@@ -6,9 +6,11 @@ import androidx.core.net.toUri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import toothpick.InjectConstructor
 import java.io.File
 import java.util.*
+import kotlin.math.absoluteValue
 
 @InjectConstructor
 internal class UsedeskMessagesRepository(
@@ -23,6 +25,7 @@ internal class UsedeskMessagesRepository(
 
     private val notSentMessages = hashMapOf<Long, NotSentMessage>()
     private var draft = UsedeskMessageDraft()
+    private var lastLocalId: Long = 0L
 
     @Synchronized
     override fun addNotSentMessage(clientMessage: UsedeskMessageClient) {
@@ -79,13 +82,24 @@ internal class UsedeskMessagesRepository(
     }
 
     override fun addFileToCache(uri: Uri): Uri {
-        val cachedFile = File(appContext.cacheDir.absolutePath, uri.hashCode().toString())
-        try {
-            fileLoader.copy(uri, cachedFile.toUri())
-            return uri
-        } catch (e: Exception) {
-            cachedFile.delete()
-            throw e
+        return if (uri.toString().startsWith("file://" + appContext.cacheDir.absolutePath)) {
+            uri
+        } else {
+            val ext = UsedeskFileUtil.getExtension(appContext, uri)
+            val cachedName = uri.hashCode().absoluteValue.toString() + if (ext.isNotEmpty()) {
+                ".$ext"
+            } else {
+                ""
+            }
+            val cachedFile = File(appContext.cacheDir.absolutePath, cachedName)
+            try {
+                val cachedUri = cachedFile.toUri()
+                fileLoader.copy(uri, cachedUri)
+                cachedUri
+            } catch (e: Exception) {
+                cachedFile.delete()
+                throw e
+            }
         }
     }
 
@@ -93,9 +107,23 @@ internal class UsedeskMessagesRepository(
         File(uri.toString()).delete()
     }
 
+    override fun getNextLocalId(): Long {
+        initIfNeeded()
+
+        lastLocalId--
+
+        sharedPreferences.edit()
+            .putLong(LOCAL_ID_KEY, lastLocalId)
+            .apply()
+
+        return lastLocalId
+    }
+
     private fun initIfNeeded() {
         if (!inited) {
             inited = true
+
+            lastLocalId = sharedPreferences.getLong(LOCAL_ID_KEY, 0L)
 
             val notSentMessagesJson = sharedPreferences.getString(NOT_SENT_MESSAGES_KEY, null)
 
@@ -117,7 +145,7 @@ internal class UsedeskMessagesRepository(
                         UsedeskFileInfo.create(
                             appContext,
                             uri
-                        )//TODO: Доступ по uri протухает после перезапуска приложения
+                        )
                     } catch (e: Exception) {
                         e.printStackTrace()
                         null
@@ -133,14 +161,17 @@ internal class UsedeskMessagesRepository(
                 clientMessageClient.localId,
                 text = clientMessageClient.text
             )
-            is UsedeskMessageClientFile -> NotSentMessage(
-                clientMessageClient.localId,
-                file = fileToJson(clientMessageClient.file)
-            )
-            is UsedeskMessageClientImage -> NotSentMessage(
-                clientMessageClient.localId,
-                image = fileToJson(clientMessageClient.file)
-            )//TODO: глянуть где выпадет ошибка
+            is UsedeskMessageFile -> if (clientMessageClient.file.isImage()) {
+                NotSentMessage(
+                    clientMessageClient.localId,
+                    image = fileToJson(clientMessageClient.file)
+                )
+            } else {
+                NotSentMessage(
+                    clientMessageClient.localId,
+                    file = fileToJson(clientMessageClient.file)
+                )
+            }//TODO: глянуть где выпадет ошибка
             else -> throw RuntimeException("Unknown client message class: ${clientMessageClient::class.java}")
         }
     }
@@ -155,18 +186,18 @@ internal class UsedeskMessagesRepository(
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
-            notSentMessage.file != null -> {
-                val file = jsonToFile(notSentMessage.file)
-                UsedeskMessageClientFile(
+            notSentMessage.image != null -> {
+                val file = jsonToFile(notSentMessage.image)
+                UsedeskMessageClientImage(
                     notSentMessage.localId,
                     Calendar.getInstance(),
                     file,
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
-            notSentMessage.image != null -> {
-                val file = jsonToFile(notSentMessage.image)
-                UsedeskMessageClientImage(
+            notSentMessage.file != null -> {
+                val file = jsonToFile(notSentMessage.file)
+                UsedeskMessageClientFile(
                     notSentMessage.localId,
                     Calendar.getInstance(),
                     file,
@@ -190,6 +221,7 @@ internal class UsedeskMessagesRepository(
     companion object {
         private const val PREF_NAME = "UsedeskMessagesRepository"
 
+        private const val LOCAL_ID_KEY = "localIdKey"
         private const val NOT_SENT_MESSAGES_KEY = "notSentMessagesKey"
         private const val DRAFT_TEXT_KEY = "draftTextKey"
         private const val DRAFT_FILES_KEY = "draftFilesKey"

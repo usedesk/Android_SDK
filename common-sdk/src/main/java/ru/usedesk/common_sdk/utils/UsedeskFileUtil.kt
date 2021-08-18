@@ -43,6 +43,10 @@ object UsedeskFileUtil {
         return getMimeType(context.contentResolver, uri)
     }
 
+    fun getExtension(context: Context, uri: Uri): String {
+        val mimeType = getMimeType(context, uri)
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: ""
+    }
 
     fun getMimeType(contentResolver: ContentResolver, uri: Uri): String {
         return if (ContentResolver.SCHEME_CONTENT == uri.scheme) {

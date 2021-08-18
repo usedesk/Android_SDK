@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.data
+package ru.usedesk.chat_sdk.data.repository._extra
 
 internal abstract class Converter<FROM, TO> {
 

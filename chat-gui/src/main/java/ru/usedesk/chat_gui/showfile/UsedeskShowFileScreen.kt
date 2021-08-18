@@ -62,10 +62,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
 
-        argsGetString(FILE_URL_KEY)?.also { json ->
-            val fileUrl = UsedeskFile.deserialize(json)
-
-            viewModel.init(fileUrl)
+        argsGetObject(FILE_KEY, UsedeskFile::class.java)?.let { file ->
+            viewModel.init(file)
         }
 
         hideKeyboard(binding.rootView)
@@ -176,13 +174,13 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     }
 
     companion object {
-        private const val FILE_URL_KEY = "fileUrlKey"
+        private const val FILE_KEY = "fileUrlKey"
 
         @JvmStatic
         fun newInstance(usedeskFile: UsedeskFile): UsedeskShowFileScreen {
             return UsedeskShowFileScreen().apply {
                 arguments = Bundle().apply {
-                    putString(FILE_URL_KEY, usedeskFile.serialize())
+                    argsPutObject(this, FILE_KEY, usedeskFile)
                 }
             }
         }

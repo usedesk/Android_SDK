@@ -8,17 +8,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.*
-import ru.usedesk.common_sdk.utils.getFromJson
-import ru.usedesk.common_sdk.utils.putAsJson
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.inflateItem
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -26,7 +28,6 @@ internal class MessagesPage : UsedeskFragment() {
 
     private lateinit var binding: Binding
 
-    private lateinit var messagePanelAdapter: MessagePanelAdapter
     private lateinit var messagesAdapter: MessagesAdapter
 
     private var cleared = false
@@ -50,22 +51,13 @@ internal class MessagesPage : UsedeskFragment() {
 
         init(agentName, rejectedFileExtensions)
 
-        val savedAttachedFiles = savedInstanceState?.getFromJson(
-            SAVED_ATTACHED_FILES_KEY,
-            Array<FileInfo>::class.java
-        )?.map {
-            it.getUsedeskFileInfo()
-        } ?: listOf()
-
-        viewModel.setAttachedFiles(savedAttachedFiles)
-
         return binding.rootView
     }
 
     private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
         UsedeskChatSdk.init(requireContext())
 
-        messagePanelAdapter = MessagePanelAdapter(
+        MessagePanelAdapter(
             binding.messagePanel,
             viewModel,
             viewLifecycleOwner
@@ -73,7 +65,8 @@ internal class MessagesPage : UsedeskFragment() {
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
         }
 
-        messagesAdapter = MessagesAdapter(viewModel,
+        messagesAdapter = MessagesAdapter(
+            viewModel,
             viewLifecycleOwner,
             binding.rvMessages,
             agentName,
@@ -85,15 +78,14 @@ internal class MessagesPage : UsedeskFragment() {
                 getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
             })
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        val attachedFiles = viewModel.getAttachedFiles().map {
-            FileInfo(it)
-        }.toTypedArray()
-        outState.putAsJson(SAVED_ATTACHED_FILES_KEY, attachedFiles)
+        FabToBottomAdapter(
+            binding.fabToBottom,
+            binding.styleValues,
+            viewModel,
+            viewLifecycleOwner
+        ) {
+            messagesAdapter.scrollToBottom()
+        }
     }
 
     private fun onUrlClick(url: String) {
@@ -103,7 +95,7 @@ internal class MessagesPage : UsedeskFragment() {
     }
 
     fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
-        viewModel.setAttachedFiles(attachedFiles)
+        viewModel.addAttachedFiles(attachedFiles)
     }
 
     override fun onDestroyView() {
@@ -121,7 +113,6 @@ internal class MessagesPage : UsedeskFragment() {
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"
         private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
-        private const val SAVED_ATTACHED_FILES_KEY = "savedAttachedFilesKey"
 
         fun newInstance(
             agentName: String?,
@@ -141,6 +132,7 @@ internal class MessagesPage : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
+        val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
     }

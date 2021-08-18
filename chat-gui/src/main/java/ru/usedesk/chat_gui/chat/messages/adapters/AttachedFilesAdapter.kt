@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -24,17 +25,37 @@ internal class AttachedFilesAdapter(
 
     init {
         recyclerView.adapter = this
-        viewModel.fileInfoListLiveData.observe(lifecycleOwner) {
-            it?.let {
-                onItems(it)
-            }
+        viewModel.messageDraftLiveData.initAndObserve(lifecycleOwner) {
+            onItems(it.files)
         }
     }
 
     private fun onItems(attachedFiles: List<UsedeskFileInfo>) {
         if (files != attachedFiles) {
+            val oldFiles = files
             files = attachedFiles
-            notifyDataSetChanged()
+
+            val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() = oldFiles.size
+
+                override fun getNewListSize() = files.size
+
+                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                    val old = oldFiles[oldItemPosition]
+                    val new = files[newItemPosition]
+                    return old.uri == new.uri
+                }
+
+                override fun areContentsTheSame(
+                    oldItemPosition: Int,
+                    newItemPosition: Int
+                ): Boolean {
+                    val old = oldFiles[oldItemPosition]
+                    val new = files[newItemPosition]
+                    return old.uri == new.uri
+                }
+            })
+            diffResult.dispatchUpdatesTo(this)
             recyclerView.visibility = visibleGone(files.isNotEmpty())
         }
     }

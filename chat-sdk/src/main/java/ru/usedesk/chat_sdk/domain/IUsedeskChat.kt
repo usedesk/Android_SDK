@@ -51,6 +51,10 @@ interface IUsedeskChat {
 
     fun getMessageDraftRx(): Single<UsedeskMessageDraft>
 
+    fun sendMessageDraft()
+
+    fun sendMessageDraftRx(): Completable
+
     fun release()
 
     fun releaseRx(): Completable

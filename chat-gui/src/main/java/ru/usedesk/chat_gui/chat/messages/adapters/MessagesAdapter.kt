@@ -493,7 +493,7 @@ internal class MessagesAdapter(
             if (it.url.isNotEmpty()) {
                 onUrlClick(it.url)
             } else {
-                viewModel.onSend(it.text)
+                viewModel.onSendButton(it.text)
             }
         }
 

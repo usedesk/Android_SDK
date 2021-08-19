@@ -55,6 +55,13 @@ internal class ChatInteractor(
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
 
+    private var messageDraft: UsedeskMessageDraft =
+        messagesRepository.getDraft() ?: UsedeskMessageDraft()
+
+    private val cachedFileUriMap = messageDraft.files.map {
+        it.uri to it.uri
+    }.toMap().toMutableMap()
+
     init {
         listenersDisposables.apply {
             add(connectedStateSubject.subscribe {
@@ -142,15 +149,18 @@ internal class ChatInteractor(
             exceptionSubject.onNext(exception)
         }
 
+        @Synchronized
         override fun onChatInited(chatInited: ChatInited) {
             this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.onChatInited(chatInited)
         }
 
+        @Synchronized
         override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
             this@ChatInteractor.onMessagesNew(newMessages, false)
         }
 
+        @Synchronized
         override fun onMessageUpdated(message: UsedeskMessage) {
             this@ChatInteractor.onMessageUpdate(message)
         }
@@ -236,12 +246,6 @@ internal class ChatInteractor(
         messagesSubject.onNext(lastMessages)
     }
 
-    private fun runTimeout(message: UsedeskMessageClient) {
-        val ignore = Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
-            onMessageSendingFailed(message)
-        }
-    }
-
     override fun disconnect() {
         apiRepository.disconnect()
     }
@@ -292,8 +296,6 @@ internal class ChatInteractor(
     }
 
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
-        //runTimeout(sendingMessage)
-
         try {
             messagesRepository.addNotSentMessage(sendingMessage)
             apiRepository.send(sendingMessage)
@@ -329,8 +331,8 @@ internal class ChatInteractor(
         token?.also { token ->
             sendingMessage as UsedeskMessageClient
             try {
-                val cachedUri =
-                    messagesRepository.addFileToCache(Uri.parse(sendingMessage.file.content))
+                val uri = Uri.parse(sendingMessage.file.content)
+                val cachedUri = cachedFileUriMap[uri] ?: messagesRepository.addFileToCache(uri)
                 val cachedMessage = UsedeskMessageClientFile(
                     sendingMessage.id,
                     sendingMessage.createdAt,
@@ -411,10 +413,8 @@ internal class ChatInteractor(
                 }.map { field ->
                     field.value
                 }
-                initClientOfflineForm = (listOf(clientName, clientEmail, topic)
-                        + fields
-                        + offlineForm.message)
-                    .joinToString(separator = "\n")
+                val strings = listOf(clientName, clientEmail, topic) + fields + offlineForm.message
+                initClientOfflineForm = strings.joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
         } else {
@@ -464,8 +464,52 @@ internal class ChatInteractor(
         }
     }
 
+    private var draftDisposable: Disposable? = null
+
+    private fun updateMessageDraft(now: Boolean) {
+        draftDisposable?.dispose()
+        if (now) {
+            synchronized(this) {
+                draftDisposable = null
+                val messageDraft = UsedeskMessageDraft(this.messageDraft.text,
+                    this.messageDraft.files.map {
+                        val cachedUri = cachedFileUriMap[it.uri]
+                        it.copy(uri = cachedUri ?: it.uri)
+                    })
+                messagesRepository.setDraft(messageDraft)
+            }
+        } else {
+            draftDisposable = Completable.timer(2, TimeUnit.SECONDS).subscribe {
+                updateMessageDraft(true)
+            }
+        }
+    }
+
+    @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
-        messagesRepository.setDraft(messageDraft)
+        val oldFiles = this.messageDraft.files.map {
+            it.uri
+        }
+        val newFiles = messageDraft.files.map {
+            it.uri
+        }
+        oldFiles.filter {
+            it !in newFiles
+        }.forEach {
+            val cachedUri = cachedFileUriMap[it]
+            cachedFileUriMap.remove(it)
+            if (cachedUri != null) {
+                messagesRepository.removeFileFromCache(cachedUri)
+            }
+        }
+        newFiles.filter {
+            it !in oldFiles
+        }.forEach {
+            val cachedUri = messagesRepository.addFileToCache(it)
+            cachedFileUriMap[it] = cachedUri
+        }
+        this.messageDraft = messageDraft
+        updateMessageDraft(false)
     }
 
     override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
@@ -481,6 +525,22 @@ internal class ChatInteractor(
     override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
         return safeSingleIo(ioScheduler) {
             getMessageDraft()
+        }
+    }
+
+    override fun sendMessageDraft() {
+        val oldMessageDraft = messageDraft
+        messageDraft = UsedeskMessageDraft()
+        updateMessageDraft(true)
+        listenersDisposables.add(sendRx(oldMessageDraft.text).subscribe({}, {}))
+        listenersDisposables.addAll(oldMessageDraft.files.map {
+            sendRx(listOf(it)).subscribe({}, {})
+        })
+    }
+
+    override fun sendMessageDraftRx(): Completable {
+        return safeCompletableIo(ioScheduler) {
+            sendMessageDraft()
         }
     }
 
@@ -557,18 +617,15 @@ internal class ChatInteractor(
     }
 
     override fun release() {
-        disconnect()
         listenersDisposables.forEach {
             it.dispose()
         }
+        disconnect()
     }
 
     override fun releaseRx(): Completable {
         return safeCompletableIo(ioScheduler) {
-            listenersDisposables.forEach {
-                it.dispose()
-            }
-            disconnect()
+            release()
         }
     }
 
@@ -623,9 +680,5 @@ internal class ChatInteractor(
         notSentMessages.forEach {
             sendAgainRx(it.id).subscribe({}, {})
         }
-    }
-
-    companion object {
-        private const val SENDING_TIMEOUT_SECONDS = 60L
     }
 }

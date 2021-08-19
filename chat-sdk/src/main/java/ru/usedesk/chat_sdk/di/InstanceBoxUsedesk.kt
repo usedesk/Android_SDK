@@ -13,7 +13,8 @@ import toothpick.ktp.delegate.inject
 internal class InstanceBoxUsedesk(
     context: Context,
     usedeskChatConfiguration: UsedeskChatConfiguration,
-    usedeskMessagesRepository: IUsedeskMessagesRepository?
+    usedeskMessagesRepository: IUsedeskMessagesRepository?,
+    cacheMessagesWithFile: Boolean
 ) : UsedeskInjectBox() {
 
     val usedeskChatSdk: IUsedeskChat by inject()
@@ -26,7 +27,8 @@ internal class InstanceBoxUsedesk(
             UsedeskCommonModule(appContext),
             MainModule(
                 usedeskChatConfiguration,
-                usedeskMessagesRepository
+                usedeskMessagesRepository,
+                cacheMessagesWithFile
             )
         )
     }

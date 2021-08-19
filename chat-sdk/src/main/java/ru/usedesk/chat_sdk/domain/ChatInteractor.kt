@@ -11,6 +11,7 @@ import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
+import ru.usedesk.chat_sdk.di.MainModule
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -27,7 +28,8 @@ internal class ChatInteractor(
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
     private val messagesRepository: IUsedeskMessagesRepository,
-    private val ioScheduler: Scheduler
+    private val ioScheduler: Scheduler,
+    private val constants: MainModule.Constants
 ) : IUsedeskChat {
 
     private var token: String? = null
@@ -327,12 +329,26 @@ internal class ChatInteractor(
         }
     }
 
+    private fun addFileToCache(uri: Uri): Uri {
+        return if (constants.cacheMessagesWithFile) {
+            messagesRepository.addFileToCache(uri)
+        } else {
+            uri
+        }
+    }
+
+    private fun removeFileFromCache(uri: Uri) {
+        if (constants.cacheMessagesWithFile) {
+            messagesRepository.removeFileFromCache(uri)
+        }
+    }
+
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
         token?.also { token ->
             sendingMessage as UsedeskMessageClient
             try {
                 val uri = Uri.parse(sendingMessage.file.content)
-                val cachedUri = cachedFileUriMap[uri] ?: messagesRepository.addFileToCache(uri)
+                val cachedUri = cachedFileUriMap[uri] ?: addFileToCache(uri)
                 val cachedMessage = UsedeskMessageClientFile(
                     sendingMessage.id,
                     sendingMessage.createdAt,
@@ -348,7 +364,7 @@ internal class ChatInteractor(
                 messagesRepository.addNotSentMessage(cachedMessage)
                 apiRepository.send(configuration, token, cachedMessage)
                 messagesRepository.removeNotSentMessage(cachedMessage)
-                messagesRepository.removeFileFromCache(cachedUri)
+                removeFileFromCache(cachedUri)
             } catch (e: Exception) {
                 onMessageSendingFailed(sendingMessage)
                 throw e
@@ -479,7 +495,7 @@ internal class ChatInteractor(
                 messagesRepository.setDraft(messageDraft)
             }
         } else {
-            draftDisposable = Completable.timer(2, TimeUnit.SECONDS).subscribe {
+            draftDisposable = Completable.timer(1, TimeUnit.SECONDS).subscribe {
                 updateMessageDraft(true)
             }
         }
@@ -499,14 +515,13 @@ internal class ChatInteractor(
             val cachedUri = cachedFileUriMap[it]
             cachedFileUriMap.remove(it)
             if (cachedUri != null) {
-                messagesRepository.removeFileFromCache(cachedUri)
+                removeFileFromCache(cachedUri)
             }
         }
         newFiles.filter {
             it !in oldFiles
         }.forEach {
-            val cachedUri = messagesRepository.addFileToCache(it)
-            cachedFileUriMap[it] = cachedUri
+            cachedFileUriMap[it] = addFileToCache(it)
         }
         this.messageDraft = messageDraft
         updateMessageDraft(false)
@@ -678,7 +693,7 @@ internal class ChatInteractor(
         }
 
         notSentMessages.forEach {
-            sendAgainRx(it.id).subscribe({}, {})
+            listenersDisposables.add(sendAgainRx(it.id).subscribe({}, {}))
         }
     }
 }

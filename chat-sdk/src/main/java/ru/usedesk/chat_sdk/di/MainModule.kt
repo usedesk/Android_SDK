@@ -22,10 +22,17 @@ import toothpick.config.Module
 
 internal class MainModule(
     usedeskChatConfiguration: UsedeskChatConfiguration,
-    usedeskMessagesRepository: IUsedeskMessagesRepository?
+    usedeskMessagesRepository: IUsedeskMessagesRepository?,
+    cacheMessagesWithFile: Boolean
 ) : Module() {
 
     init {
+        val constants = Constants(
+            cacheMessagesWithFile = cacheMessagesWithFile
+        )
+        bind(Constants::class.java)
+            .toInstance(constants)
+
         bind(UsedeskChatConfiguration::class.java)
             .toInstance(usedeskChatConfiguration)
 
@@ -71,4 +78,8 @@ internal class MainModule(
             .to(ChatInteractor::class.java)
             .singleton()
     }
+
+    class Constants(
+        val cacheMessagesWithFile: Boolean
+    )
 }

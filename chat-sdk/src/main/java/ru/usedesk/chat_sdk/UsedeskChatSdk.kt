@@ -12,6 +12,7 @@ object UsedeskChatSdk {
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
     private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
+    private var cacheMessagesWithFile: Boolean = true
 
     @JvmStatic
     fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
@@ -23,6 +24,11 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
+    fun setCacheMessagesWithFile(cacheMessagesWithFile: Boolean) {
+        this.cacheMessagesWithFile = cacheMessagesWithFile
+    }
+
+    @JvmStatic
     fun requireConfiguration(): UsedeskChatConfiguration {
         return chatConfiguration
             ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
@@ -31,7 +37,12 @@ object UsedeskChatSdk {
     @JvmStatic
     fun init(context: Context): IUsedeskChat {
         return (instanceBox
-            ?: InstanceBoxUsedesk(context, requireConfiguration(), usedeskMessagesRepository).also {
+            ?: InstanceBoxUsedesk(
+                context,
+                requireConfiguration(),
+                usedeskMessagesRepository,
+                cacheMessagesWithFile
+            ).also {
                 instanceBox = it
             }).usedeskChatSdk
     }

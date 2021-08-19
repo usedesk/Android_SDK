@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
+import ru.usedesk.chat_sdk.di.MainModule
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import toothpick.InjectConstructor
@@ -16,7 +17,8 @@ import kotlin.math.absoluteValue
 internal class UsedeskMessagesRepository(
     private val appContext: Context,
     private val gson: Gson,
-    private val fileLoader: IFileLoader
+    private val fileLoader: IFileLoader,
+    private val constants: MainModule.Constants
 ) : IUsedeskMessagesRepository {
 
     private val sharedPreferences = appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -31,13 +33,15 @@ internal class UsedeskMessagesRepository(
     override fun addNotSentMessage(clientMessage: UsedeskMessageClient) {
         initIfNeeded()
 
-        val message = toMessage(clientMessage)
+        if (constants.cacheMessagesWithFile || clientMessage is UsedeskMessageClientText) {
+            val message = toMessage(clientMessage)
 
-        notSentMessages[message.localId] = message
+            notSentMessages[message.localId] = message
 
-        sharedPreferences.edit()
-            .putString(NOT_SENT_MESSAGES_KEY, gson.toJson(notSentMessages.values))
-            .apply()
+            sharedPreferences.edit()
+                .putString(NOT_SENT_MESSAGES_KEY, gson.toJson(notSentMessages.values))
+                .apply()
+        }
     }
 
     @Synchronized
@@ -70,7 +74,7 @@ internal class UsedeskMessagesRepository(
             if (oldMessageDraft.text != messageDraft.text) {
                 putString(DRAFT_TEXT_KEY, messageDraft.text)
             }
-            if (oldMessageDraft.files != messageDraft.files) {
+            if (constants.cacheMessagesWithFile && oldMessageDraft.files != messageDraft.files) {
                 putStringSet(
                     DRAFT_FILES_KEY, messageDraft.files.map {
                         it.uri.toString()

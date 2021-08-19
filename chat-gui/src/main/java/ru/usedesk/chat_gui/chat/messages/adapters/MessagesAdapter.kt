@@ -20,9 +20,9 @@ import java.util.*
 
 
 internal class MessagesAdapter(
+    private val recyclerView: RecyclerView,
     private val viewModel: MessagesViewModel,
     lifecycleOwner: LifecycleOwner,
-    private val recyclerView: RecyclerView,
     private val customAgentName: String?,
     private val rejectedFileExtensions: Array<String>,
     private val onFileClick: (UsedeskFile) -> Unit,

@@ -12,7 +12,6 @@ object UsedeskChatSdk {
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
     private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
-    private var cacheMessagesWithFile: Boolean = true
 
     @JvmStatic
     fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
@@ -21,11 +20,6 @@ object UsedeskChatSdk {
             throw RuntimeException("Invalid chat configuration: $validation")
         }
         this.chatConfiguration = chatConfiguration
-    }
-
-    @JvmStatic
-    fun setCacheMessagesWithFile(cacheMessagesWithFile: Boolean) {
-        this.cacheMessagesWithFile = cacheMessagesWithFile
     }
 
     @JvmStatic
@@ -40,8 +34,7 @@ object UsedeskChatSdk {
             ?: InstanceBoxUsedesk(
                 context,
                 requireConfiguration(),
-                usedeskMessagesRepository,
-                cacheMessagesWithFile
+                usedeskMessagesRepository
             ).also {
                 instanceBox = it
             }).usedeskChatSdk

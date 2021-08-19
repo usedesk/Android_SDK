@@ -3,8 +3,9 @@ package ru.usedesk.chat_sdk.domain
 import android.net.Uri
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
+import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
-import ru.usedesk.chat_sdk.di.MainModule
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 import toothpick.InjectConstructor
@@ -13,31 +14,53 @@ import java.util.concurrent.TimeUnit
 @InjectConstructor
 internal class CachedMessagesInteractor(
     private val messagesRepository: IUsedeskMessagesRepository,
-    private val constants: MainModule.Constants
+    private val userInfoRepository: IUserInfoRepository,
+    private val configuration: UsedeskChatConfiguration
 ) : ICachedMessagesInteractor {
 
-    private var messageDraft: UsedeskMessageDraft =
-        messagesRepository.getDraft() ?: UsedeskMessageDraft()
+    private var messageDraft: UsedeskMessageDraft
 
     private var draftDisposable: Disposable? = null
 
-    private val cachedFileUriMap = messageDraft.files.map {
-        it.uri to it.uri
-    }.toMap().toMutableMap()
+    private val cachedFileUriMap = LinkedHashMap<Uri, Uri>()
+
+    init {
+        val token = getUserKey()
+        messageDraft = if (token != null) {
+            messagesRepository.getDraft(token)
+        } else {
+            null
+        } ?: UsedeskMessageDraft()
+
+        cachedFileUriMap.putAll(messageDraft.files.map {
+            it.uri to it.uri
+        })
+    }
 
     @Synchronized
     override fun getNotSentMessages(): List<UsedeskMessageClient> {
-        return messagesRepository.getNotSentMessages()
+        val token = getUserKey()
+        return if (token != null) {
+            messagesRepository.getNotSentMessages(token)
+        } else {
+            listOf()
+        }
     }
 
     @Synchronized
     override fun addNotSentMessage(notSentMessage: UsedeskMessageClient) {
-        messagesRepository.addNotSentMessage(notSentMessage)
+        val token = getUserKey()
+        if (token != null) {
+            messagesRepository.addNotSentMessage(token, notSentMessage)
+        }
     }
 
     @Synchronized
     override fun removeNotSentMessage(notSentMessage: UsedeskMessageClient) {
-        messagesRepository.removeNotSentMessage(notSentMessage)
+        val token = getUserKey()
+        if (token != null) {
+            messagesRepository.removeNotSentMessage(token, notSentMessage)
+        }
     }
 
     @Synchronized
@@ -47,7 +70,7 @@ internal class CachedMessagesInteractor(
 
     @Synchronized
     override fun addFileToCache(uri: Uri): Uri {
-        return if (constants.cacheMessagesWithFile) {
+        return if (configuration.cacheMessagesWithFile) {
             messagesRepository.addFileToCache(uri)
         } else {
             uri
@@ -56,7 +79,7 @@ internal class CachedMessagesInteractor(
 
     @Synchronized
     override fun removeFileFromCache(uri: Uri) {
-        if (constants.cacheMessagesWithFile) {
+        if (configuration.cacheMessagesWithFile) {
             messagesRepository.removeFileFromCache(uri)
         }
     }
@@ -80,7 +103,11 @@ internal class CachedMessagesInteractor(
                 val cachedUri = cachedFileUriMap[it.uri]
                 it.copy(uri = cachedUri ?: it.uri)
             })
-        messagesRepository.setDraft(messageDraft)
+        val configuration = userInfoRepository.getConfiguration(this.configuration)
+        val token = configuration.clientToken
+        if (token != null) {
+            messagesRepository.setDraft(token, messageDraft)
+        }
     }
 
     @Synchronized
@@ -118,6 +145,22 @@ internal class CachedMessagesInteractor(
 
     @Synchronized
     override fun getNextLocalId(): Long {
-        return messagesRepository.getNextLocalId()
+        val token = getUserKey()
+        return if (token != null) {
+            messagesRepository.getNextLocalId(token)
+        } else {
+            -1L
+        }
+    }
+
+    private fun getUserKey(): String? {
+        val config = userInfoRepository.getConfigurationNullable(this.configuration)
+            ?: configuration
+        val token = config.clientToken
+        return if (token?.isNotEmpty() == true) {
+            token
+        } else {
+            null
+        }
     }
 }

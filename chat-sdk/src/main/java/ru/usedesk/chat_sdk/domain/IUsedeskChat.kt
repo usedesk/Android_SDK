@@ -43,6 +43,10 @@ interface IUsedeskChat {
 
     fun sendAgainRx(id: Long): Completable
 
+    fun removeMessage(id: Long)
+
+    fun removeMessageRx(id: Long): Completable
+
     fun setMessageDraft(messageDraft: UsedeskMessageDraft)
 
     fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable

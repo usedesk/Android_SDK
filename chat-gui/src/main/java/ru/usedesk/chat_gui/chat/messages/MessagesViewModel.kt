@@ -76,8 +76,12 @@ internal class MessagesViewModel : UsedeskViewModel() {
         messageDraftLiveData.value = UsedeskMessageDraft()
     }
 
-    fun onSendAgain(id: Long) {
+    fun sendAgain(id: Long) {
         doIt(usedeskChat.sendAgainRx(id))
+    }
+
+    fun removeMessage(id: Long) {
+        doIt(usedeskChat.removeMessageRx(id))
     }
 
     override fun onCleared() {

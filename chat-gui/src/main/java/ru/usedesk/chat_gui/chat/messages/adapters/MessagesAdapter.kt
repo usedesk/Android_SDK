@@ -3,10 +3,7 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 import android.text.Html
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -328,7 +325,21 @@ internal class MessagesAdapter(
                     visibility =
                         visibleInvisible(clientMessage.status == UsedeskMessageClient.Status.SEND_FAILED)
                     setOnClickListener {
-                        viewModel.onSendAgain(clientMessage.localId)
+                        PopupMenu(it.context, it).apply {
+                            inflate(R.menu.usedesk_messages_error_popup)
+                            setOnMenuItemClickListener { item ->
+                                when (item.itemId) {
+                                    R.id.send_again -> {
+                                        viewModel.sendAgain(clientMessage.localId)
+                                    }
+                                    R.id.remove_message -> {
+                                        viewModel.removeMessage(clientMessage.localId)
+                                    }
+                                }
+                                true
+                            }
+                            show()
+                        }
                     }
                 }
                 vEmpty.visibility = visibleGone(lastOfGroup)

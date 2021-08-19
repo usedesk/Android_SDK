@@ -42,6 +42,7 @@ internal class ChatInteractor(
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
     private val messageUpdateSubject = PublishSubject.create<UsedeskMessage>()
+    private val messageRemovedSubject = PublishSubject.create<UsedeskMessage>()
     private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskOfflineFormSettings>()
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<Exception>()
@@ -54,6 +55,7 @@ internal class ChatInteractor(
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
 
+    private var initedNotSentMessages = listOf<UsedeskMessage>()
 
     init {
         listenersDisposables.apply {
@@ -84,6 +86,12 @@ internal class ChatInteractor(
             add(messageUpdateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessageUpdated(it)
+                }
+            })
+
+            add(messageRemovedSubject.subscribe {
+                actionListeners.forEach { listener ->
+                    listener.onMessageRemoved()
                 }
             })
 
@@ -225,6 +233,14 @@ internal class ChatInteractor(
         messageUpdateSubject.onNext(message)
     }
 
+    private fun onMessageRemove(message: UsedeskMessage) {
+        lastMessages = lastMessages.filter {
+            it.id != message.id
+        }
+        messagesSubject.onNext(lastMessages)
+        messageRemovedSubject.onNext(message)
+    }
+
     private fun onMessagesNew(
         messages: List<UsedeskMessage>,
         isInited: Boolean
@@ -264,6 +280,7 @@ internal class ChatInteractor(
             newMessageSubject,
             messagesSubject,
             messageUpdateSubject,
+            messageRemovedSubject,
             offlineFormExpectedSubject,
             feedbackSubject,
             exceptionSubject
@@ -347,6 +364,7 @@ internal class ChatInteractor(
     private fun sendCached(cachedMessage: UsedeskMessageFile) {
         cachedMessage as UsedeskMessageClient
         try {
+            cachedMessages.addNotSentMessage(cachedMessage)
             apiRepository.send(configuration, token!!, cachedMessage)
             cachedMessages.removeNotSentMessage(cachedMessage)
             cachedMessages.removeFileFromCache(Uri.parse(cachedMessage.file.content))
@@ -358,6 +376,7 @@ internal class ChatInteractor(
 
     private fun sendCached(cachedMessage: UsedeskMessageClientText) {
         try {
+            cachedMessages.addNotSentMessage(cachedMessage)
             apiRepository.send(cachedMessage)
             cachedMessages.removeNotSentMessage(cachedMessage)
         } catch (e: Exception) {
@@ -471,6 +490,21 @@ internal class ChatInteractor(
                     sendFile(sendingMessage)
                 }
             }
+        }
+    }
+
+    override fun removeMessage(id: Long) {
+        cachedMessages.getNotSentMessages().firstOrNull {
+            it.localId == id
+        }?.let {
+            cachedMessages.removeNotSentMessage(it)
+            onMessageRemove(it as UsedeskMessage)
+        }
+    }
+
+    override fun removeMessageRx(id: Long): Completable {
+        return safeCompletableIo(ioScheduler) {
+            removeMessage(id)
         }
     }
 
@@ -646,6 +680,15 @@ internal class ChatInteractor(
         this.token = chatInited.token
         clientTokenSubject.onNext(chatInited.token)
 
+        if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
+                initClientMessage
+            ) == true ||
+            initClientOfflineForm != null
+        ) {
+            initClientMessage = null
+        }
+        userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
+
         val ids = lastMessages.map {
             it.id
         }
@@ -658,25 +701,28 @@ internal class ChatInteractor(
         val filteredNotSentMessages = notSentMessages.filter {
             it.id !in ids
         }
+        val needToResendMessages = lastMessages.isNotEmpty()
         onMessagesNew(filteredMessages + filteredNotSentMessages, true)
-
-        if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
-                initClientMessage
-            ) == true ||
-            initClientOfflineForm != null
-        ) {
-            initClientMessage = null
-        }
-        userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
         if (chatInited.waitingEmail) {
             sendUserEmail()
         } else {
             eventListener.onSetEmailSuccess()
         }
-
-        notSentMessages.forEach {
-            listenersDisposables.add(sendAgainRx(it.id).subscribe({}, {}))
+        if (needToResendMessages) {
+            notSentMessages.filter {
+                initedNotSentMessages.all { initedNotSentMessage ->
+                    it.id != initedNotSentMessage.id
+                }
+            }.forEach {
+                listenersDisposables.add(
+                    sendAgainRx(it.id).subscribe({}, { throwable ->
+                        throwable.printStackTrace()
+                    })
+                )
+            }
+        } else {
+            initedNotSentMessages = notSentMessages
         }
     }
 }

@@ -14,6 +14,8 @@ interface IUsedeskActionListener {
 
     fun onMessageUpdated(message: UsedeskMessage) {}
 
+    fun onMessageRemoved() {}
+
     fun onFeedbackReceived() {}
 
     fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {}

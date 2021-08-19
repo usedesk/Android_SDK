@@ -10,8 +10,6 @@ import io.reactivex.subjects.PublishSubject
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
-import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
-import ru.usedesk.chat_sdk.di.MainModule
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -27,9 +25,8 @@ internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
-    private val messagesRepository: IUsedeskMessagesRepository,
     private val ioScheduler: Scheduler,
-    private val constants: MainModule.Constants
+    private val cachedMessages: CachedMessagesInteractor
 ) : IUsedeskChat {
 
     private var token: String? = null
@@ -57,12 +54,6 @@ internal class ChatInteractor(
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
 
-    private var messageDraft: UsedeskMessageDraft =
-        messagesRepository.getDraft() ?: UsedeskMessageDraft()
-
-    private val cachedFileUriMap = messageDraft.files.map {
-        it.uri to it.uri
-    }.toMap().toMutableMap()
 
     init {
         listenersDisposables.apply {
@@ -299,9 +290,8 @@ internal class ChatInteractor(
 
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
-            messagesRepository.addNotSentMessage(sendingMessage)
-            apiRepository.send(sendingMessage)
-            messagesRepository.removeNotSentMessage(sendingMessage)
+            cachedMessages.addNotSentMessage(sendingMessage)
+            sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -329,46 +319,50 @@ internal class ChatInteractor(
         }
     }
 
-    private fun addFileToCache(uri: Uri): Uri {
-        return if (constants.cacheMessagesWithFile) {
-            messagesRepository.addFileToCache(uri)
-        } else {
-            uri
-        }
-    }
-
-    private fun removeFileFromCache(uri: Uri) {
-        if (constants.cacheMessagesWithFile) {
-            messagesRepository.removeFileFromCache(uri)
-        }
-    }
-
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
-        token?.also { token ->
-            sendingMessage as UsedeskMessageClient
-            try {
-                val uri = Uri.parse(sendingMessage.file.content)
-                val cachedUri = cachedFileUriMap[uri] ?: addFileToCache(uri)
-                val cachedMessage = UsedeskMessageClientFile(
-                    sendingMessage.id,
-                    sendingMessage.createdAt,
-                    UsedeskFile(
-                        cachedUri.toString(),
-                        sendingMessage.file.type,
-                        sendingMessage.file.size,
-                        sendingMessage.file.name
-                    ),
-                    sendingMessage.status,
-                    sendingMessage.localId
-                )
-                messagesRepository.addNotSentMessage(cachedMessage)
-                apiRepository.send(configuration, token, cachedMessage)
-                messagesRepository.removeNotSentMessage(cachedMessage)
-                removeFileFromCache(cachedUri)
-            } catch (e: Exception) {
-                onMessageSendingFailed(sendingMessage)
-                throw e
-            }
+        sendingMessage as UsedeskMessageClient
+        try {
+            val uri = Uri.parse(sendingMessage.file.content)
+            val cachedUri = cachedMessages.getCachedUri(uri)
+            val cachedMessage = UsedeskMessageClientFile(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                UsedeskFile(
+                    cachedUri.toString(),
+                    sendingMessage.file.type,
+                    sendingMessage.file.size,
+                    sendingMessage.file.name
+                ),
+                sendingMessage.status,
+                sendingMessage.localId
+            )
+            cachedMessages.addNotSentMessage(cachedMessage)
+            sendCached(cachedMessage)
+        } catch (e: Exception) {
+            onMessageSendingFailed(sendingMessage)
+            throw e
+        }
+    }
+
+    private fun sendCached(cachedMessage: UsedeskMessageFile) {
+        cachedMessage as UsedeskMessageClient
+        try {
+            apiRepository.send(configuration, token!!, cachedMessage)
+            cachedMessages.removeNotSentMessage(cachedMessage)
+            cachedMessages.removeFileFromCache(Uri.parse(cachedMessage.file.content))
+        } catch (e: Exception) {
+            onMessageSendingFailed(cachedMessage)
+            throw e
+        }
+    }
+
+    private fun sendCached(cachedMessage: UsedeskMessageClientText) {
+        try {
+            apiRepository.send(cachedMessage)
+            cachedMessages.removeNotSentMessage(cachedMessage)
+        } catch (e: Exception) {
+            onMessageSendingFailed(cachedMessage)
+            throw e
         }
     }
 
@@ -480,51 +474,9 @@ internal class ChatInteractor(
         }
     }
 
-    private var draftDisposable: Disposable? = null
-
-    private fun updateMessageDraft(now: Boolean) {
-        draftDisposable?.dispose()
-        if (now) {
-            synchronized(this) {
-                draftDisposable = null
-                val messageDraft = UsedeskMessageDraft(this.messageDraft.text,
-                    this.messageDraft.files.map {
-                        val cachedUri = cachedFileUriMap[it.uri]
-                        it.copy(uri = cachedUri ?: it.uri)
-                    })
-                messagesRepository.setDraft(messageDraft)
-            }
-        } else {
-            draftDisposable = Completable.timer(1, TimeUnit.SECONDS).subscribe {
-                updateMessageDraft(true)
-            }
-        }
-    }
-
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
-        val oldFiles = this.messageDraft.files.map {
-            it.uri
-        }
-        val newFiles = messageDraft.files.map {
-            it.uri
-        }
-        oldFiles.filter {
-            it !in newFiles
-        }.forEach {
-            val cachedUri = cachedFileUriMap[it]
-            cachedFileUriMap.remove(it)
-            if (cachedUri != null) {
-                removeFileFromCache(cachedUri)
-            }
-        }
-        newFiles.filter {
-            it !in oldFiles
-        }.forEach {
-            cachedFileUriMap[it] = addFileToCache(it)
-        }
-        this.messageDraft = messageDraft
-        updateMessageDraft(false)
+        cachedMessages.setMessageDraft(messageDraft, true)
     }
 
     override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
@@ -534,7 +486,7 @@ internal class ChatInteractor(
     }
 
     override fun getMessageDraft(): UsedeskMessageDraft {
-        return messagesRepository.getDraft() ?: UsedeskMessageDraft()
+        return cachedMessages.getMessageDraft()
     }
 
     override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
@@ -544,13 +496,44 @@ internal class ChatInteractor(
     }
 
     override fun sendMessageDraft() {
-        val oldMessageDraft = messageDraft
-        messageDraft = UsedeskMessageDraft()
-        updateMessageDraft(true)
-        listenersDisposables.add(sendRx(oldMessageDraft.text).subscribe({}, {}))
-        listenersDisposables.addAll(oldMessageDraft.files.map {
-            sendRx(listOf(it)).subscribe({}, {})
+        val messageDraft = cachedMessages.getMessageDraft()
+        cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
+
+        val sendingMessages = mutableListOf<UsedeskMessage>()
+
+        val message = messageDraft.text.trim()
+        if (message.isNotEmpty()) {
+            val sendingMessage = createSendingMessage(message)
+            sendingMessages.add(sendingMessage)
+        }
+
+        sendingMessages.addAll(messageDraft.files.map {
+            createSendingMessage(it)
         })
+
+        eventListener.onMessagesReceived(sendingMessages)
+
+        sendingMessages.mapNotNull {
+            when (it) {
+                is UsedeskMessageClientText -> {
+                    safeCompletableIo(ioScheduler) {
+                        sendCached(it)
+                    }
+                }
+                is UsedeskMessageFile -> {
+                    safeCompletableIo(ioScheduler) {
+                        sendCached(it)
+                    }
+                }
+                else -> {
+                    null
+                }
+            }
+        }.forEach {
+            listenersDisposables.add(it.subscribe({}, { throwable ->
+                throwable.printStackTrace()
+            }))
+        }
     }
 
     override fun sendMessageDraftRx(): Completable {
@@ -560,7 +543,7 @@ internal class ChatInteractor(
     }
 
     private fun createSendingMessage(text: String): UsedeskMessageClientText {
-        val localId = messagesRepository.getNextLocalId()
+        val localId = cachedMessages.getNextLocalId()
         val calendar = Calendar.getInstance()
         return UsedeskMessageClientText(
             localId,
@@ -571,7 +554,7 @@ internal class ChatInteractor(
     }
 
     private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessageFile {
-        val localId = messagesRepository.getNextLocalId()
+        val localId = cachedMessages.getNextLocalId()
         val calendar = Calendar.getInstance()
         val file = UsedeskFile.create(
             fileInfo.uri.toString(),
@@ -669,7 +652,7 @@ internal class ChatInteractor(
         val filteredMessages = chatInited.messages.filter {
             it.id !in ids
         }
-        val notSentMessages = messagesRepository.getNotSentMessages().map {
+        val notSentMessages = cachedMessages.getNotSentMessages().map {
             it as UsedeskMessage
         }
         val filteredNotSentMessages = notSentMessages.filter {

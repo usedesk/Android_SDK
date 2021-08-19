@@ -24,7 +24,7 @@ internal class UsedeskMessagesRepository(
     private var inited = false
 
     private val notSentMessages = hashMapOf<Long, NotSentMessage>()
-    private var draft = UsedeskMessageDraft()
+    private var messageDraft = UsedeskMessageDraft()
     private var lastLocalId: Long = 0L
 
     @Synchronized
@@ -63,22 +63,28 @@ internal class UsedeskMessagesRepository(
     override fun setDraft(messageDraft: UsedeskMessageDraft) {
         initIfNeeded()
 
-        draft = messageDraft
+        val oldMessageDraft = this.messageDraft
+        this.messageDraft = messageDraft
 
-        sharedPreferences.edit()
-            .putString(DRAFT_TEXT_KEY, messageDraft.text)
-            .putStringSet(
-                DRAFT_FILES_KEY, messageDraft.files.map {
-                    it.uri.toString()
-                }.toSet()
-            ).apply()
+        sharedPreferences.edit().apply {
+            if (oldMessageDraft.text != messageDraft.text) {
+                putString(DRAFT_TEXT_KEY, messageDraft.text)
+            }
+            if (oldMessageDraft.files != messageDraft.files) {
+                putStringSet(
+                    DRAFT_FILES_KEY, messageDraft.files.map {
+                        it.uri.toString()
+                    }.toSet()
+                )
+            }
+        }.apply()
     }
 
     @Synchronized
     override fun getDraft(): UsedeskMessageDraft {
         initIfNeeded()
 
-        return draft
+        return messageDraft
     }
 
     override fun addFileToCache(uri: Uri): Uri {
@@ -137,7 +143,7 @@ internal class UsedeskMessagesRepository(
             }
             val draftText = sharedPreferences.getString(DRAFT_TEXT_KEY, "") ?: ""
             val draftFiles = sharedPreferences.getStringSet(DRAFT_FILES_KEY, setOf()) ?: setOf()
-            draft = UsedeskMessageDraft(
+            messageDraft = UsedeskMessageDraft(
                 draftText,
                 draftFiles.mapNotNull {
                     try {

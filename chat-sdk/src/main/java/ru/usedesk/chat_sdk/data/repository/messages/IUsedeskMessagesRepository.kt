@@ -5,12 +5,12 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 
 interface IUsedeskMessagesRepository {
-    fun addNotSentMessage(clientMessage: UsedeskMessageClient)
-    fun removeNotSentMessage(clientMessage: UsedeskMessageClient)
-    fun getNotSentMessages(): List<UsedeskMessageClient>
+    fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient)
+    fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient)
+    fun getNotSentMessages(userKey: String): List<UsedeskMessageClient>
 
-    fun setDraft(messageDraft: UsedeskMessageDraft)
-    fun getDraft(): UsedeskMessageDraft?
+    fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft)
+    fun getDraft(userKey: String): UsedeskMessageDraft?
 
     fun addFileToCache(uri: Uri): Uri
     fun removeFileFromCache(uri: Uri)
@@ -18,5 +18,5 @@ interface IUsedeskMessagesRepository {
     /**
      * Return a negative value
      */
-    fun getNextLocalId(): Long
+    fun getNextLocalId(userKey: String): Long
 }

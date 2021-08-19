@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.data.repository.messages
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import androidx.core.net.toUri
 import com.google.gson.Gson
@@ -16,69 +17,80 @@ import kotlin.math.absoluteValue
 internal class UsedeskMessagesRepository(
     private val appContext: Context,
     private val gson: Gson,
-    private val fileLoader: IFileLoader
+    private val fileLoader: IFileLoader,
+    private val configuration: UsedeskChatConfiguration
 ) : IUsedeskMessagesRepository {
-
-    private val sharedPreferences = appContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
     private var inited = false
 
     private val notSentMessages = hashMapOf<Long, NotSentMessage>()
-    private var draft = UsedeskMessageDraft()
+    private var messageDraft = UsedeskMessageDraft()
     private var lastLocalId: Long = 0L
 
-    @Synchronized
-    override fun addNotSentMessage(clientMessage: UsedeskMessageClient) {
-        initIfNeeded()
-
-        val message = toMessage(clientMessage)
-
-        notSentMessages[message.localId] = message
-
-        sharedPreferences.edit()
-            .putString(NOT_SENT_MESSAGES_KEY, gson.toJson(notSentMessages.values))
-            .apply()
+    private fun getSharedPreferences(userKey: String): SharedPreferences {
+        return appContext.getSharedPreferences(PREF_NAME + userKey, Context.MODE_PRIVATE)
     }
 
     @Synchronized
-    override fun removeNotSentMessage(clientMessage: UsedeskMessageClient) {
-        initIfNeeded()
+    override fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient) {
+        initIfNeeded(userKey)
+
+        if (configuration.cacheMessagesWithFile || clientMessage is UsedeskMessageClientText) {
+            val message = toMessage(clientMessage)
+
+            notSentMessages[message.localId] = message
+
+            getSharedPreferences(userKey).edit()
+                .putString(NOT_SENT_MESSAGES_KEY, gson.toJson(notSentMessages.values))
+                .apply()
+        }
+    }
+
+    @Synchronized
+    override fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient) {
+        initIfNeeded(userKey)
 
         notSentMessages.remove(clientMessage.localId)
 
-        sharedPreferences.edit()
+        getSharedPreferences(userKey).edit()
             .putString(NOT_SENT_MESSAGES_KEY, gson.toJson(notSentMessages.values))
             .apply()
     }
 
     @Synchronized
-    override fun getNotSentMessages(): List<UsedeskMessageClient> {
-        initIfNeeded()
+    override fun getNotSentMessages(userKey: String): List<UsedeskMessageClient> {
+        initIfNeeded(userKey)
         return notSentMessages.values.map {
             toClientMessage(it)
         }
     }
 
     @Synchronized
-    override fun setDraft(messageDraft: UsedeskMessageDraft) {
-        initIfNeeded()
+    override fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft) {
+        initIfNeeded(userKey)
 
-        draft = messageDraft
+        val oldMessageDraft = this.messageDraft
+        this.messageDraft = messageDraft
 
-        sharedPreferences.edit()
-            .putString(DRAFT_TEXT_KEY, messageDraft.text)
-            .putStringSet(
-                DRAFT_FILES_KEY, messageDraft.files.map {
-                    it.uri.toString()
-                }.toSet()
-            ).apply()
+        getSharedPreferences(userKey).edit().apply {
+            if (oldMessageDraft.text != messageDraft.text) {
+                putString(DRAFT_TEXT_KEY, messageDraft.text)
+            }
+            if (configuration.cacheMessagesWithFile && oldMessageDraft.files != messageDraft.files) {
+                putStringSet(
+                    DRAFT_FILES_KEY, messageDraft.files.map {
+                        it.uri.toString()
+                    }.toSet()
+                )
+            }
+        }.apply()
     }
 
     @Synchronized
-    override fun getDraft(): UsedeskMessageDraft {
-        initIfNeeded()
+    override fun getDraft(userKey: String): UsedeskMessageDraft {
+        initIfNeeded(userKey)
 
-        return draft
+        return messageDraft
     }
 
     override fun addFileToCache(uri: Uri): Uri {
@@ -107,21 +119,23 @@ internal class UsedeskMessagesRepository(
         File(uri.toString()).delete()
     }
 
-    override fun getNextLocalId(): Long {
-        initIfNeeded()
+    override fun getNextLocalId(userKey: String): Long {
+        initIfNeeded(userKey)
 
         lastLocalId--
 
-        sharedPreferences.edit()
+        getSharedPreferences(userKey).edit()
             .putLong(LOCAL_ID_KEY, lastLocalId)
             .apply()
 
         return lastLocalId
     }
 
-    private fun initIfNeeded() {
+    private fun initIfNeeded(userKey: String) {
         if (!inited) {
             inited = true
+
+            val sharedPreferences = getSharedPreferences(userKey)
 
             lastLocalId = sharedPreferences.getLong(LOCAL_ID_KEY, 0L)
 
@@ -137,7 +151,7 @@ internal class UsedeskMessagesRepository(
             }
             val draftText = sharedPreferences.getString(DRAFT_TEXT_KEY, "") ?: ""
             val draftFiles = sharedPreferences.getStringSet(DRAFT_FILES_KEY, setOf()) ?: setOf()
-            draft = UsedeskMessageDraft(
+            messageDraft = UsedeskMessageDraft(
                 draftText,
                 draftFiles.mapNotNull {
                     try {

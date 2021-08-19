@@ -31,7 +31,11 @@ object UsedeskChatSdk {
     @JvmStatic
     fun init(context: Context): IUsedeskChat {
         return (instanceBox
-            ?: InstanceBoxUsedesk(context, requireConfiguration(), usedeskMessagesRepository).also {
+            ?: InstanceBoxUsedesk(
+                context,
+                requireConfiguration(),
+                usedeskMessagesRepository
+            ).also {
                 instanceBox = it
             }).usedeskChatSdk
     }

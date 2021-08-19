@@ -66,9 +66,9 @@ internal class MessagesPage : UsedeskFragment() {
         }
 
         messagesAdapter = MessagesAdapter(
+            binding.rvMessages,
             viewModel,
             viewLifecycleOwner,
-            binding.rvMessages,
             agentName,
             rejectedFileExtensions,
             {

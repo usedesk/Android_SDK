@@ -65,11 +65,10 @@ class MainViewModel : ViewModel() {
     }
 
     private fun getChatConfiguration(configuration: Configuration): UsedeskChatConfiguration {
-
         val defaultChatConfiguration = UsedeskChatConfiguration(
             urlChat = configuration.urlChat,
             companyId = configuration.companyId,
-            channelId = configuration.channelId,
+            channelId = configuration.channelId
         )
         var urlToSendFile = configuration.urlToSendFile
         if (urlToSendFile.isEmpty()) {
@@ -91,7 +90,8 @@ class MainViewModel : ViewModel() {
             configuration.clientNote,
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
-            configuration.clientInitMessage
+            configuration.clientInitMessage,
+            configuration.cacheFiles//TODO: такой параметр в конфигурации может вызвать краш, проверь его
         )
     }
 

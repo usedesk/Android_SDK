@@ -15,7 +15,9 @@ import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoad
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.TokenLoader
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.UsedeskMessagesRepository
+import ru.usedesk.chat_sdk.domain.CachedMessagesInteractor
 import ru.usedesk.chat_sdk.domain.ChatInteractor
+import ru.usedesk.chat_sdk.domain.ICachedMessagesInteractor
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import toothpick.config.Module
@@ -66,6 +68,10 @@ internal class MainModule(
             .to(ApiRepository::class.java)
             .singleton()
 
+
+        bind(ICachedMessagesInteractor::class.java)
+            .to(CachedMessagesInteractor::class.java)
+            .singleton()
 
         bind(IUsedeskChat::class.java)
             .to(ChatInteractor::class.java)

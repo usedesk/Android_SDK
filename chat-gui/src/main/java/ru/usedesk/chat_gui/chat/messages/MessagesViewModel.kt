@@ -66,16 +66,22 @@ internal class MessagesViewModel : UsedeskViewModel() {
         doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
     }
 
-    fun onSend(message: String = messageDraftLiveData.value.text) {
+    fun onSendButton(message: String) {
         doIt(usedeskChat.sendRx(message))
-        doIt(usedeskChat.sendRx(messageDraftLiveData.value.files))
-
-        messageDraftLiveData.value = UsedeskMessageDraft()
-        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
     }
 
-    fun onSendAgain(id: Long) {
+    fun onSend() {
+        doIt(usedeskChat.sendMessageDraftRx())
+
+        messageDraftLiveData.value = UsedeskMessageDraft()
+    }
+
+    fun sendAgain(id: Long) {
         doIt(usedeskChat.sendAgainRx(id))
+    }
+
+    fun removeMessage(id: Long) {
+        doIt(usedeskChat.removeMessageRx(id))
     }
 
     override fun onCleared() {

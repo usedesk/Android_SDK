@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -25,10 +24,14 @@ class ConfigurationScreen : Fragment() {
     private val viewModel: ConfigurationViewModel by viewModels()
     private lateinit var binding: ScreenConfigurationBinding
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.screen_configuration,
-                container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.screen_configuration,
+            container, false
+        )
 
         viewModel.configurationLiveData.observe(viewLifecycleOwner, {
             it?.let {
@@ -49,12 +52,12 @@ class ConfigurationScreen : Fragment() {
         binding.btnGoToSdk.setOnClickListener {
             onGoToSdk()
         }
-        binding.switchForeground.setOnCheckedChangeListener { _: CompoundButton?, _: Boolean ->
+        binding.switchForeground.setOnCheckedChangeListener { _, _ ->
             stopService(requireContext())
         }
         try {
             val version = requireContext().packageManager
-                    .getPackageInfo(requireContext().packageName, 0).versionName
+                .getPackageInfo(requireContext().packageName, 0).versionName
             binding.tvVersion.text = "v$version"
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
@@ -105,9 +108,11 @@ class ConfigurationScreen : Fragment() {
         binding.etClientInitMessage.text.toString(),
         binding.etCustomAgentName.text.toString(),
         binding.switchForeground.isChecked,
+        binding.switchCacheFiles.isChecked,
         binding.switchKb.isChecked,
         binding.switchKbWithSupportButton.isChecked,
-            binding.switchKbWithArticleRating.isChecked)
+        binding.switchKbWithArticleRating.isChecked
+    )
 
 
     private fun onNewConfiguration(configuration: Configuration) {
@@ -127,6 +132,7 @@ class ConfigurationScreen : Fragment() {
         binding.etClientInitMessage.setText(configuration.clientInitMessage)
         binding.etCustomAgentName.setText(configuration.customAgentName)
         binding.switchForeground.isChecked = configuration.foregroundService
+        binding.switchCacheFiles.isChecked = configuration.cacheFiles
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
@@ -140,7 +146,14 @@ class ConfigurationScreen : Fragment() {
                 }
             }
             addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable) {
                     inputLayout.error = null
@@ -149,9 +162,11 @@ class ConfigurationScreen : Fragment() {
         }
     }
 
-    private fun showError(textInputLayout: TextInputLayout,
-                          isValid: Boolean,
-                          errorStringId: Int) {
+    private fun showError(
+        textInputLayout: TextInputLayout,
+        isValid: Boolean,
+        errorStringId: Int
+    ) {
         textInputLayout.error = if (isValid) {
             null
         } else {
@@ -161,39 +176,59 @@ class ConfigurationScreen : Fragment() {
 
     private fun onNewConfigurationValidation(configurationValidation: ConfigurationValidation) {
         configurationValidation.chatConfigurationValidation.run {
-            showError(binding.tilUrlChat,
-                    validUrlChat,
-                    R.string.validation_url_error)
-            showError(binding.tilUrlOfflineForm,
-                    validUrlOfflineForm,
-                    R.string.validation_url_error)
-            showError(binding.tilUrlToSendFile,
-                    validUrlToSendFile,
-                    R.string.validation_url_error)
-            showError(binding.tilCompanyId,
-                    validCompanyId,
-                    R.string.validation_empty_error)
-            showError(binding.tilChannelId,
-                    validChannelId,
-                    R.string.validation_empty_error)
-            showError(binding.tilClientEmail,
-                    validClientEmail,
-                    R.string.validation_email_error)
-            showError(binding.tilClientPhoneNumber,
-                    validClientPhoneNumber,
-                    R.string.validation_phone_error)
+            showError(
+                binding.tilUrlChat,
+                validUrlChat,
+                R.string.validation_url_error
+            )
+            showError(
+                binding.tilUrlOfflineForm,
+                validUrlOfflineForm,
+                R.string.validation_url_error
+            )
+            showError(
+                binding.tilUrlToSendFile,
+                validUrlToSendFile,
+                R.string.validation_url_error
+            )
+            showError(
+                binding.tilCompanyId,
+                validCompanyId,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilChannelId,
+                validChannelId,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilClientEmail,
+                validClientEmail,
+                R.string.validation_email_error
+            )
+            showError(
+                binding.tilClientPhoneNumber,
+                validClientPhoneNumber,
+                R.string.validation_phone_error
+            )
         }
 
         configurationValidation.knowledgeBaseConfiguration.run {
-            showError(binding.tilUrlApi,
-                    validUrlApi,
-                    R.string.validation_empty_error)
-            showError(binding.tilAccountId,
-                    validAccountId,
-                    R.string.validation_empty_error)
-            showError(binding.tilToken,
-                    validToken,
-                    R.string.validation_empty_error)
+            showError(
+                binding.tilUrlApi,
+                validUrlApi,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilAccountId,
+                validAccountId,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilToken,
+                validToken,
+                R.string.validation_empty_error
+            )
         }
     }
 

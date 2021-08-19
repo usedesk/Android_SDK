@@ -18,6 +18,7 @@ data class Configuration(
     val clientInitMessage: String,
     val customAgentName: String,
     val foregroundService: Boolean,
+    val cacheFiles: Boolean,
     val withKb: Boolean,
     val withKbSupportButton: Boolean,
     val withKbArticleRating: Boolean
@@ -41,6 +42,7 @@ data class Configuration(
             clientInitMessage = "",
             customAgentName = "",
             foregroundService = false,
+            cacheFiles = true,
             withKb = true,
             withKbSupportButton = true,
             withKbArticleRating = true

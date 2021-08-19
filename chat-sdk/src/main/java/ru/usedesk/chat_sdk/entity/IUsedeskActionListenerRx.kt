@@ -15,6 +15,7 @@ abstract class IUsedeskActionListenerRx {
         newMessageObservable: Observable<UsedeskMessage>,
         messagesObservable: Observable<List<UsedeskMessage>>,
         messageUpdateObservable: Observable<UsedeskMessage>,
+        messageRemoveObservable: Observable<UsedeskMessage>,
         offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>,
         feedbackObservable: Observable<UsedeskEvent<Any?>>,
         exceptionObservable: Observable<Exception>
@@ -26,6 +27,7 @@ abstract class IUsedeskActionListenerRx {
             onNewMessageObservable(newMessageObservable),
             onMessagesObservable(messagesObservable),
             onMessageUpdateObservable(messageUpdateObservable),
+            onMessageRemoveObservable(messageRemoveObservable),
             onOfflineFormExpectedObservable(offlineFormExpectedObservable),
             onFeedbackObservable(feedbackObservable),
             onExceptionObservable(exceptionObservable)
@@ -48,6 +50,9 @@ abstract class IUsedeskActionListenerRx {
         null
 
     open fun onMessageUpdateObservable(messageUpdateObservable: Observable<UsedeskMessage>): Disposable? =
+        null
+
+    open fun onMessageRemoveObservable(messageRemoveObservable: Observable<UsedeskMessage>): Disposable? =
         null
 
     open fun onOfflineFormExpectedObservable(offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>): Disposable? =

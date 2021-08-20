@@ -91,7 +91,7 @@ class MainViewModel : ViewModel() {
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
             configuration.clientInitMessage,
-            configuration.cacheFiles//TODO: такой параметр в конфигурации может вызвать краш, проверь его
+            configuration.cacheFiles
         )
     }
 

@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.6.0)
+# Android Usedesk SDK (v3.7.2)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -79,7 +79,7 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | companyId \* | String | Идентификатор компании |
 | channelId \* | String | Идентификатор канала (добавлен в **v3.1.6**) |
 | clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе (удалён в **v3.5.1**)|
-| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе (добавлен в **v3.5.1**). Указав null библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. |
+| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе (добавлен в **v3.5.1**). Указав null библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. Для первого входа указывается null, для последующих - полученный с сервера токен |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
 | clientNote | String? | Заметка о клиенте |
@@ -231,7 +231,7 @@ UsedeskChatSdk.release(false)
 | onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из чата при каждом изменении |
 | onMessageUpdated | UsedeskMessage | Обновление полученного ранее сообщения |
 | onFeedbackReceived | - | Отзыв доставлен |
-| onOfflineFormExpected | UUsedeskOfflineFormSettings| Ожидается Форма Обратной Связи |
+| onOfflineFormExpected | UsedeskOfflineFormSettings | Ожидается Форма Обратной Связи |
 | onException | UsedeskException | Возникшее исключение |
 
 [IUsedeskActionListenerRx](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListenerRx.kt) - класс для прослушивания событий чата:
@@ -448,3 +448,8 @@ UsedeskKnowledgeBaseSdk.release()
 - v3.6.0
   - Добавлена фильтрация событий отображения ФОС по статусу тикета
   - Обновлены методы прикрепления файлов
+- v3.7.2
+  - Добавлены статусы сообщений (черновик, не отправлено, отправлено) с возможностью заменить
+    дефолтное хранилище сообщений
+  - Добавлена кнопка скролла вниз чата
+  - Исправлен краш приложения на версии API 19

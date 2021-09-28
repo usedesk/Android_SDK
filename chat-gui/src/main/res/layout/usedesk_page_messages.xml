@@ -23,6 +23,10 @@
             android:layout_gravity="bottom"
             tools:itemCount="1"
             tools:listitem="@layout/usedesk_item_chat_message_text_agent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_to_bottom"
+            style="?attr/usedesk_chat_screen_floating_action_button" />
     </FrameLayout>
 
     <LinearLayout
@@ -71,7 +75,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_attached_files"
             style="?attr/usedesk_common_container_4"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

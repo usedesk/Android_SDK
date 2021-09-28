@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
-import ru.usedesk.chat_sdk.data.Converter
+import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse

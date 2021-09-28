@@ -56,17 +56,19 @@ internal class KnowledgeBaseApiRepository(
 
     override fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent> {
         val articlesSearchResponse = doRequest(configuration.urlApi, ArticlesSearchResponse::class.java) {
-            it.getArticles(configuration.accountId,
-                    configuration.token,
-                    searchQueryRequest.query,
-                    searchQueryRequest.count,
-                    searchQueryRequest.sectionIds?.joinToString(","),
-                    searchQueryRequest.categoryIds?.joinToString(","),
-                    searchQueryRequest.articleIds?.joinToString(","),
-                    searchQueryRequest.page,
-                    searchQueryRequest.type?.name?.toLowerCase(),
-                    searchQueryRequest.sort?.name?.toLowerCase(),
-                    searchQueryRequest.order?.name?.toLowerCase())
+            it.getArticles(
+                configuration.accountId,
+                configuration.token,
+                searchQueryRequest.query,
+                searchQueryRequest.count,
+                searchQueryRequest.sectionIds?.joinToString(","),
+                searchQueryRequest.categoryIds?.joinToString(","),
+                searchQueryRequest.articleIds?.joinToString(","),
+                searchQueryRequest.page,
+                searchQueryRequest.type?.name?.lowercase(),
+                searchQueryRequest.sort?.name?.lowercase(),
+                searchQueryRequest.order?.name?.lowercase()
+            )
         }
 
         return (articlesSearchResponse.articles ?: arrayOf()).mapNotNull {

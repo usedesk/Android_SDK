@@ -261,6 +261,15 @@
                     android:text="@string/foreground_service_hint"
                     android:textSize="18sp" />
 
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_cache_files"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="14dp"
+                    android:checked="true"
+                    android:text="@string/foreground_cache_files_hint"
+                    android:textSize="18sp" />
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

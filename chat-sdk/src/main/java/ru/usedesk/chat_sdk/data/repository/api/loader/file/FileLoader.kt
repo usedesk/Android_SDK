@@ -9,7 +9,7 @@ import toothpick.InjectConstructor
 
 @InjectConstructor
 internal class FileLoader(
-        private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver
 ) : IFileLoader {
 
     override fun load(uri: Uri): LoadedFile {
@@ -25,6 +25,25 @@ internal class FileLoader(
             val type = UsedeskFileUtil.getMimeType(contentResolver, uri)
             val bytes = inputStream.readBytes()
             return LoadedFile(name, size, type, bytes)
+        }
+    }
+
+    override fun copy(uriSource: Uri, uriDestination: Uri) {
+        contentResolver.openInputStream(uriSource).use { inputStream ->
+            if (inputStream == null) {
+                throw UsedeskDataNotFoundException("Can't read file: $uriSource")
+            }
+            val size = inputStream.available()
+            if (size > MAX_FILE_SIZE) {
+                throw UsedeskDataNotFoundException("Max file size = $MAX_FILE_SIZE")
+            }
+            contentResolver.openOutputStream(uriDestination).use { outputStream ->
+                if (outputStream == null) {
+                    throw UsedeskDataNotFoundException("Can't write to file: $outputStream")
+                }
+                val bytes = inputStream.readBytes()
+                outputStream.write(bytes)
+            }
         }
     }
 

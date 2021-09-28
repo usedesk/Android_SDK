@@ -5,7 +5,6 @@
     <string name="usedesk_name">@string/usedesk_string_name</string>
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
-    <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
@@ -18,13 +17,14 @@
     <string name="usedesk_camera">@string/usedesk_string_camera</string>
     <string name="usedesk_storage">@string/usedesk_string_storage</string>
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
+    <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
+    <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
 
     <string name="usedesk_string_offline_form_send_successed">Tu mensaje ha sido enviado.\nLe responderemos dentro de un día hábil.</string>
     <string name="usedesk_string_offline_form_send_failed">No se pudo enviar su solicitud. Inténtalo de nuevo.</string>
     <string name="usedesk_string_name">Nombre</string>
     <string name="usedesk_string_email">Correo</string>
     <string name="usedesk_string_message">Mensaje</string>
-    <string name="usedesk_string_close">Cerrar</string>
     <string name="usedesk_string_message_input">Escribir…</string>
     <string name="usedesk_string_loading">Cargando…</string>
     <string name="usedesk_string_today">Hoy</string>
@@ -37,4 +37,6 @@
     <string name="usedesk_string_camera">Cámara</string>
     <string name="usedesk_string_storage">Almacenamiento</string>
     <string name="usedesk_string_dangerous_file">Este tipo de archivo puede dañar</string>
+    <string name="usedesk_string_send_again">Reenviar</string>
+    <string name="usedesk_string_delete_message">Borrar mensaje</string>
 </resources>

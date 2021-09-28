@@ -14,7 +14,8 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientNote: String? = null,
     val clientPhoneNumber: Long? = null,
     val clientAdditionalId: Long? = null,
-    val clientInitMessage: String? = null
+    val clientInitMessage: String? = null,
+    val cacheMessagesWithFile: Boolean = true
 ) {
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 

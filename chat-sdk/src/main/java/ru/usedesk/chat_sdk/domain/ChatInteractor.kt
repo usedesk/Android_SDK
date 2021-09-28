@@ -1,7 +1,9 @@
 package ru.usedesk.chat_sdk.domain
 
+import android.net.Uri
 import io.reactivex.Completable
 import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
@@ -13,6 +15,7 @@ import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
+import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
 import toothpick.InjectConstructor
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -22,7 +25,8 @@ internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
-    private val ioScheduler: Scheduler
+    private val ioScheduler: Scheduler,
+    private val cachedMessages: CachedMessagesInteractor
 ) : IUsedeskChat {
 
     private var token: String? = null
@@ -38,6 +42,7 @@ internal class ChatInteractor(
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
     private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
     private val messageUpdateSubject = PublishSubject.create<UsedeskMessage>()
+    private val messageRemovedSubject = PublishSubject.create<UsedeskMessage>()
     private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskOfflineFormSettings>()
     private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
     private val exceptionSubject = BehaviorSubject.create<Exception>()
@@ -47,10 +52,10 @@ internal class ChatInteractor(
 
     private var lastMessages = listOf<UsedeskMessage>()
 
-    private var localId = -1000L
-
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
+
+    private var initedNotSentMessages = listOf<UsedeskMessage>()
 
     init {
         listenersDisposables.apply {
@@ -81,6 +86,12 @@ internal class ChatInteractor(
             add(messageUpdateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onMessageUpdated(it)
+                }
+            })
+
+            add(messageRemovedSubject.subscribe {
+                actionListeners.forEach { listener ->
+                    listener.onMessageRemoved()
                 }
             })
 
@@ -139,15 +150,18 @@ internal class ChatInteractor(
             exceptionSubject.onNext(exception)
         }
 
+        @Synchronized
         override fun onChatInited(chatInited: ChatInited) {
             this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.onChatInited(chatInited)
         }
 
+        @Synchronized
         override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
             this@ChatInteractor.onMessagesNew(newMessages, false)
         }
 
+        @Synchronized
         override fun onMessageUpdated(message: UsedeskMessage) {
             this@ChatInteractor.onMessageUpdate(message)
         }
@@ -219,6 +233,14 @@ internal class ChatInteractor(
         messageUpdateSubject.onNext(message)
     }
 
+    private fun onMessageRemove(message: UsedeskMessage) {
+        lastMessages = lastMessages.filter {
+            it.id != message.id
+        }
+        messagesSubject.onNext(lastMessages)
+        messageRemovedSubject.onNext(message)
+    }
+
     private fun onMessagesNew(
         messages: List<UsedeskMessage>,
         isInited: Boolean
@@ -231,12 +253,6 @@ internal class ChatInteractor(
             }
         }
         messagesSubject.onNext(lastMessages)
-    }
-
-    private fun runTimeout(message: UsedeskMessage) {
-        val ignore = Completable.timer(SENDING_TIMEOUT_SECONDS, TimeUnit.SECONDS).subscribe {
-            onMessageSendingFailed(message)
-        }
     }
 
     override fun disconnect() {
@@ -264,6 +280,7 @@ internal class ChatInteractor(
             newMessageSubject,
             messagesSubject,
             messageUpdateSubject,
+            messageRemovedSubject,
             offlineFormExpectedSubject,
             feedbackSubject,
             exceptionSubject
@@ -280,18 +297,18 @@ internal class ChatInteractor(
     }
 
     override fun send(textMessage: String) {
-        if (textMessage.trim().isNotEmpty()) {
-            val sendingMessage = createSendingMessage(textMessage)
+        val message = textMessage.trim()
+        if (message.isNotEmpty()) {
+            val sendingMessage = createSendingMessage(message)
             eventListener.onMessagesReceived(listOf(sendingMessage))
             sendText(sendingMessage)
         }
     }
 
-    private fun sendText(sendingMessage: UsedeskMessageText) {
-        runTimeout(sendingMessage)
-
+    private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
-            apiRepository.send(sendingMessage)
+            cachedMessages.addNotSentMessage(sendingMessage)
+            sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -320,53 +337,83 @@ internal class ChatInteractor(
     }
 
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
-        token?.also { token ->
-            try {
-                apiRepository.send(configuration, token, sendingMessage)
-                runTimeout(sendingMessage)
-            } catch (e: Exception) {
-                onMessageSendingFailed(sendingMessage)
-                throw e
-            }
+        sendingMessage as UsedeskMessageClient
+        try {
+            val uri = Uri.parse(sendingMessage.file.content)
+            val cachedUri = cachedMessages.getCachedUri(uri)
+            val cachedMessage = UsedeskMessageClientFile(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                UsedeskFile(
+                    cachedUri.toString(),
+                    sendingMessage.file.type,
+                    sendingMessage.file.size,
+                    sendingMessage.file.name
+                ),
+                sendingMessage.status,
+                sendingMessage.localId
+            )
+            cachedMessages.addNotSentMessage(cachedMessage)
+            sendCached(cachedMessage)
+        } catch (e: Exception) {
+            onMessageSendingFailed(sendingMessage)
+            throw e
         }
     }
 
-    private fun onMessageSendingFailed(sendingMessage: UsedeskMessage) {
-        val failedMessage = lastMessages.firstOrNull {
-            it.id == sendingMessage.id
+    private fun sendCached(cachedMessage: UsedeskMessageFile) {
+        cachedMessage as UsedeskMessageClient
+        try {
+            cachedMessages.addNotSentMessage(cachedMessage)
+            apiRepository.send(configuration, token!!, cachedMessage)
+            cachedMessages.removeNotSentMessage(cachedMessage)
+            cachedMessages.removeFileFromCache(Uri.parse(cachedMessage.file.content))
+        } catch (e: Exception) {
+            onMessageSendingFailed(cachedMessage)
+            throw e
         }
-        if (failedMessage is UsedeskMessageClient &&
-            failedMessage.status != UsedeskMessageClient.Status.SUCCESSFULLY_SENT
-        ) {
-            when (failedMessage) {
-                is UsedeskMessageClientText -> {
-                    UsedeskMessageClientText(
-                        failedMessage.id,
-                        failedMessage.createdAt,
-                        failedMessage.text,
-                        UsedeskMessageClient.Status.SEND_FAILED
-                    )
-                }
-                is UsedeskMessageClientFile -> {
-                    UsedeskMessageClientFile(
-                        failedMessage.id,
-                        failedMessage.createdAt,
-                        failedMessage.file,
-                        UsedeskMessageClient.Status.SEND_FAILED
-                    )
-                }
-                is UsedeskMessageClientImage -> {
-                    UsedeskMessageClientImage(
-                        failedMessage.id,
-                        failedMessage.createdAt,
-                        failedMessage.file,
-                        UsedeskMessageClient.Status.SEND_FAILED
-                    )
-                }
-                else -> null
-            }?.let {
-                onMessageUpdate(it)
+    }
+
+    private fun sendCached(cachedMessage: UsedeskMessageClientText) {
+        try {
+            cachedMessages.addNotSentMessage(cachedMessage)
+            apiRepository.send(cachedMessage)
+            cachedMessages.removeNotSentMessage(cachedMessage)
+        } catch (e: Exception) {
+            onMessageSendingFailed(cachedMessage)
+            throw e
+        }
+    }
+
+    private fun onMessageSendingFailed(sendingMessage: UsedeskMessageClient) {
+        when (sendingMessage) {
+            is UsedeskMessageClientText -> {
+                UsedeskMessageClientText(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.text,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
             }
+            is UsedeskMessageClientFile -> {
+                UsedeskMessageClientFile(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            is UsedeskMessageClientImage -> {
+                UsedeskMessageClientImage(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            else -> null
+        }?.let {
+            onMessageUpdate(it)
         }
     }
 
@@ -395,10 +442,8 @@ internal class ChatInteractor(
                 }.map { field ->
                     field.value
                 }
-                initClientOfflineForm = (listOf(clientName, clientEmail, topic)
-                        + fields
-                        + offlineForm.message)
-                    .joinToString(separator = "\n")
+                val strings = listOf(clientName, clientEmail, topic) + fields + offlineForm.message
+                initClientOfflineForm = strings.joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
         } else {
@@ -448,8 +493,91 @@ internal class ChatInteractor(
         }
     }
 
-    private fun createSendingMessage(text: String): UsedeskMessageText {
-        localId--
+    override fun removeMessage(id: Long) {
+        cachedMessages.getNotSentMessages().firstOrNull {
+            it.localId == id
+        }?.let {
+            cachedMessages.removeNotSentMessage(it)
+            onMessageRemove(it as UsedeskMessage)
+        }
+    }
+
+    override fun removeMessageRx(id: Long): Completable {
+        return safeCompletableIo(ioScheduler) {
+            removeMessage(id)
+        }
+    }
+
+    @Synchronized
+    override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
+        cachedMessages.setMessageDraft(messageDraft, true)
+    }
+
+    override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
+        return safeCompletableIo(ioScheduler) {
+            setMessageDraft(messageDraft)
+        }
+    }
+
+    override fun getMessageDraft(): UsedeskMessageDraft {
+        return cachedMessages.getMessageDraft()
+    }
+
+    override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
+        return safeSingleIo(ioScheduler) {
+            getMessageDraft()
+        }
+    }
+
+    override fun sendMessageDraft() {
+        val messageDraft = cachedMessages.getMessageDraft()
+        cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
+
+        val sendingMessages = mutableListOf<UsedeskMessage>()
+
+        val message = messageDraft.text.trim()
+        if (message.isNotEmpty()) {
+            val sendingMessage = createSendingMessage(message)
+            sendingMessages.add(sendingMessage)
+        }
+
+        sendingMessages.addAll(messageDraft.files.map {
+            createSendingMessage(it)
+        })
+
+        eventListener.onMessagesReceived(sendingMessages)
+
+        sendingMessages.mapNotNull {
+            when (it) {
+                is UsedeskMessageClientText -> {
+                    safeCompletableIo(ioScheduler) {
+                        sendCached(it)
+                    }
+                }
+                is UsedeskMessageFile -> {
+                    safeCompletableIo(ioScheduler) {
+                        sendCached(it)
+                    }
+                }
+                else -> {
+                    null
+                }
+            }
+        }.forEach {
+            listenersDisposables.add(it.subscribe({}, { throwable ->
+                throwable.printStackTrace()
+            }))
+        }
+    }
+
+    override fun sendMessageDraftRx(): Completable {
+        return safeCompletableIo(ioScheduler) {
+            sendMessageDraft()
+        }
+    }
+
+    private fun createSendingMessage(text: String): UsedeskMessageClientText {
+        val localId = cachedMessages.getNextLocalId()
         val calendar = Calendar.getInstance()
         return UsedeskMessageClientText(
             localId,
@@ -460,7 +588,7 @@ internal class ChatInteractor(
     }
 
     private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessageFile {
-        localId--
+        val localId = cachedMessages.getNextLocalId()
         val calendar = Calendar.getInstance()
         val file = UsedeskFile.create(
             fileInfo.uri.toString(),
@@ -521,18 +649,15 @@ internal class ChatInteractor(
     }
 
     override fun release() {
-        disconnect()
         listenersDisposables.forEach {
             it.dispose()
         }
+        disconnect()
     }
 
     override fun releaseRx(): Completable {
         return safeCompletableIo(ioScheduler) {
-            listenersDisposables.forEach {
-                it.dispose()
-            }
-            disconnect()
+            release()
         }
     }
 
@@ -555,14 +680,6 @@ internal class ChatInteractor(
         this.token = chatInited.token
         clientTokenSubject.onNext(chatInited.token)
 
-        val ids = lastMessages.map {
-            it.id
-        }
-        val filteredMessages = chatInited.messages.filter {
-            it.id !in ids
-        }
-        onMessagesNew(filteredMessages, true)
-
         if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
                 initClientMessage
             ) == true ||
@@ -572,14 +689,40 @@ internal class ChatInteractor(
         }
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
+        val ids = lastMessages.map {
+            it.id
+        }
+        val filteredMessages = chatInited.messages.filter {
+            it.id !in ids
+        }
+        val notSentMessages = cachedMessages.getNotSentMessages().map {
+            it as UsedeskMessage
+        }
+        val filteredNotSentMessages = notSentMessages.filter {
+            it.id !in ids
+        }
+        val needToResendMessages = lastMessages.isNotEmpty()
+        onMessagesNew(filteredMessages + filteredNotSentMessages, true)
+
         if (chatInited.waitingEmail) {
             sendUserEmail()
         } else {
             eventListener.onSetEmailSuccess()
         }
-    }
-
-    companion object {
-        private const val SENDING_TIMEOUT_SECONDS = 60L
+        if (needToResendMessages) {
+            notSentMessages.filter {
+                initedNotSentMessages.all { initedNotSentMessage ->
+                    it.id != initedNotSentMessage.id
+                }
+            }.forEach {
+                listenersDisposables.add(
+                    sendAgainRx(it.id).subscribe({}, { throwable ->
+                        throwable.printStackTrace()
+                    })
+                )
+            }
+        } else {
+            initedNotSentMessages = notSentMessages
+        }
     }
 }

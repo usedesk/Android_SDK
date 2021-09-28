@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk
 
 import android.content.Context
+import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.di.InstanceBoxUsedesk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
@@ -10,6 +11,7 @@ object UsedeskChatSdk {
     private var instanceBox: InstanceBoxUsedesk? = null
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
+    private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
 
     @JvmStatic
     fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
@@ -23,15 +25,19 @@ object UsedeskChatSdk {
     @JvmStatic
     fun requireConfiguration(): UsedeskChatConfiguration {
         return chatConfiguration
-                ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
+            ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
     }
 
     @JvmStatic
     fun init(context: Context): IUsedeskChat {
         return (instanceBox
-                ?: InstanceBoxUsedesk(context, requireConfiguration()).also {
-                    instanceBox = it
-                }).usedeskChatSdk
+            ?: InstanceBoxUsedesk(
+                context,
+                requireConfiguration(),
+                usedeskMessagesRepository
+            ).also {
+                instanceBox = it
+            }).usedeskChatSdk
     }
 
     @JvmStatic
@@ -62,6 +68,11 @@ object UsedeskChatSdk {
     @JvmStatic
     fun setNotificationsServiceFactory(notificationsServiceFactory: UsedeskNotificationsServiceFactory) {
         this.notificationsServiceFactory = notificationsServiceFactory
+    }
+
+    @JvmStatic
+    fun setUsedeskMessagesRepository(usedeskMessagesRepository: IUsedeskMessagesRepository?) {
+        this.usedeskMessagesRepository = usedeskMessagesRepository
     }
 
     @JvmStatic

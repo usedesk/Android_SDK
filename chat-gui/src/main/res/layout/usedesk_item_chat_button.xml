@@ -13,6 +13,6 @@
         <TextView
             android:id="@+id/tv_title"
             style="?attr/usedesk_chat_message_text_button_text"
-            tools:text="Button" />
+            tools:text="ButtonButtonButtonButtonButtonButtonButtonButtonButtonButtonButtonButtonButton" />
     </androidx.cardview.widget.CardView>
 </FrameLayout>

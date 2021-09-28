@@ -3,11 +3,9 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 import android.text.Html
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.Corner
@@ -22,9 +20,9 @@ import java.util.*
 
 
 internal class MessagesAdapter(
+    private val recyclerView: RecyclerView,
     private val viewModel: MessagesViewModel,
     lifecycleOwner: LifecycleOwner,
-    private val recyclerView: RecyclerView,
     private val customAgentName: String?,
     private val rejectedFileExtensions: Array<String>,
     private val onFileClick: (UsedeskFile) -> Unit,
@@ -33,10 +31,11 @@ internal class MessagesAdapter(
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
+    private val layoutManager = LinearLayoutManager(recyclerView.context)
 
     init {
         recyclerView.apply {
-            layoutManager = LinearLayoutManager(recyclerView.context)
+            layoutManager = this@MessagesAdapter.layoutManager
             adapter = this@MessagesAdapter
             setHasFixedSize(false)
             addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
@@ -46,6 +45,12 @@ internal class MessagesAdapter(
                 }
             }
         }
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val lastItemIndex = layoutManager.findLastVisibleItemPosition()
+                viewModel.showToBottomButton(lastItemIndex < items.size - 1)
+            }
+        })
         viewModel.messagesLiveData.observe(lifecycleOwner) {
             it?.let {
                 onMessages(it)
@@ -54,25 +59,54 @@ internal class MessagesAdapter(
     }
 
     private fun onMessages(messages: List<UsedeskMessage>) {
-        val lastItems = items
+        val oldItems = items
         items = messages
 
-        if (lastItems.isEmpty()) {
-            notifyDataSetChanged()
+        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getOldListSize() = oldItems.size
+
+            override fun getNewListSize() = items.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                val old = oldItems[oldItemPosition]
+                val new = items[newItemPosition]
+                return old.id == new.id ||
+                        (old is UsedeskMessageClient &&
+                                new is UsedeskMessageClient &&
+                                old.localId == new.localId)
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                val old = oldItems[oldItemPosition]
+                val new = items[newItemPosition]
+                if ((oldItemPosition == oldListSize - 1) != (newItemPosition == newListSize - 1)) {
+                    return false
+                }
+                if (new is UsedeskMessageText &&
+                    old is UsedeskMessageText &&
+                    new.text != old.text
+                ) {
+                    return false
+                }
+                if (new is UsedeskMessageFile &&
+                    old is UsedeskMessageFile &&
+                    new.file.content != old.file.content
+                ) {
+                    return false
+                }
+                if (new is UsedeskMessageClient &&
+                    old is UsedeskMessageClient &&
+                    new.status != old.status
+                ) {
+                    return false
+                }
+                return true
+            }
+        })
+        diffResult.dispatchUpdatesTo(this)
+        if (oldItems.isEmpty()) {
             recyclerView.scrollToPosition(items.size - 1)
         } else {
-            items.forEachIndexed { index, item ->
-                if (item !in lastItems
-                    && (item !is UsedeskMessageAgentText ||
-                            item.feedback == null)
-                ) {
-                    notifyItemChanged(index)
-                }
-            }
-            (lastItems.size until items.size).forEach { index ->
-                notifyItemChanged(index - 1)
-                notifyItemInserted(index)
-            }
             val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
             val contentHeight = recyclerView.computeVerticalScrollRange()
             if (visibleBottom >= contentHeight) {//Если чат был внизу
@@ -164,6 +198,10 @@ internal class MessagesAdapter(
 
     override fun getItemViewType(position: Int) = items[position].type.value
 
+    fun scrollToBottom() {
+        recyclerView.smoothScrollToPosition(items.size - 1)
+    }
+
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
@@ -203,8 +241,7 @@ internal class MessagesAdapter(
                         else -> {
                             val dateFormat: DateFormat =
                                 SimpleDateFormat("dd MMMM", Locale.getDefault())
-                            val formatted = dateFormat.format(message.createdAt.time)
-                            formatted
+                            dateFormat.format(message.createdAt.time)
                         }
                     }
                     View.VISIBLE
@@ -288,7 +325,21 @@ internal class MessagesAdapter(
                     visibility =
                         visibleInvisible(clientMessage.status == UsedeskMessageClient.Status.SEND_FAILED)
                     setOnClickListener {
-                        viewModel.onSendAgain(clientMessage.localId)
+                        PopupMenu(it.context, it).apply {
+                            inflate(R.menu.usedesk_messages_error_popup)
+                            setOnMenuItemClickListener { item ->
+                                when (item.itemId) {
+                                    R.id.send_again -> {
+                                        viewModel.sendAgain(clientMessage.localId)
+                                    }
+                                    R.id.remove_message -> {
+                                        viewModel.removeMessage(clientMessage.localId)
+                                    }
+                                }
+                                true
+                            }
+                            show()
+                        }
                     }
                 }
                 vEmpty.visibility = visibleGone(lastOfGroup)
@@ -453,7 +504,7 @@ internal class MessagesAdapter(
             if (it.url.isNotEmpty()) {
                 onUrlClick(it.url)
             } else {
-                viewModel.onSend(it.text)
+                viewModel.onSendButton(it.text)
             }
         }
 

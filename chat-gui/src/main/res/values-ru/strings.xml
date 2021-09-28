@@ -5,7 +5,6 @@
     <string name="usedesk_name">@string/usedesk_string_name</string>
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
-    <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
@@ -18,13 +17,14 @@
     <string name="usedesk_camera">@string/usedesk_string_camera</string>
     <string name="usedesk_storage">@string/usedesk_string_storage</string>
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
+    <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
+    <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
 
     <string name="usedesk_string_offline_form_send_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
     <string name="usedesk_string_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
     <string name="usedesk_string_name">Имя</string>
     <string name="usedesk_string_email">Почта</string>
     <string name="usedesk_string_message">Сообщение</string>
-    <string name="usedesk_string_close">Закрыть</string>
     <string name="usedesk_string_message_input">Написать…</string>
     <string name="usedesk_string_loading">Загрузка…</string>
     <string name="usedesk_string_today">Сегодня</string>
@@ -37,4 +37,6 @@
     <string name="usedesk_string_camera">Камера</string>
     <string name="usedesk_string_storage">Файлы</string>
     <string name="usedesk_string_dangerous_file">Файл этого типа может нанести вред</string>
+    <string name="usedesk_string_send_again">Отправить повторно</string>
+    <string name="usedesk_string_delete_message">Удалить сообщение</string>
 </resources>

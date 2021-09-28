@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
 import io.reactivex.Completable
+import io.reactivex.Single
 import ru.usedesk.chat_sdk.entity.*
 
 interface IUsedeskChat {
@@ -41,6 +42,22 @@ interface IUsedeskChat {
     fun sendAgain(id: Long)
 
     fun sendAgainRx(id: Long): Completable
+
+    fun removeMessage(id: Long)
+
+    fun removeMessageRx(id: Long): Completable
+
+    fun setMessageDraft(messageDraft: UsedeskMessageDraft)
+
+    fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable
+
+    fun getMessageDraft(): UsedeskMessageDraft
+
+    fun getMessageDraftRx(): Single<UsedeskMessageDraft>
+
+    fun sendMessageDraft()
+
+    fun sendMessageDraftRx(): Completable
 
     fun release()
 

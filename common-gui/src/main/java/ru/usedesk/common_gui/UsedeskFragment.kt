@@ -1,10 +1,15 @@
 package ru.usedesk.common_gui
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 
 abstract class UsedeskFragment : Fragment() {
 
     open fun onBackPressed(): Boolean = false
+
+    private val gson: Gson = GsonBuilder().create()
 
     protected fun argsGetInt(key: String, default: Int): Int {
         return arguments?.getInt(key, default) ?: default
@@ -53,6 +58,26 @@ abstract class UsedeskFragment : Fragment() {
         return arguments?.getString(key)
     }
 
+    protected fun <T> argsGetObject(key: String, clazz: Class<T>): T? {
+        try {
+            val json = argsGetString(key)
+            if (json != null) {
+                return gson.fromJson(json, clazz)
+            }
+        } catch (e: Exception) {
+
+        }
+        return null
+    }
+
+    protected fun <T> argsGetObject(key: String, clazz: Class<T>, default: T): T {
+        return argsGetObject(key, clazz) ?: default
+    }
+
+    protected fun argsPutObject(args: Bundle, key: String, obj: Any) {
+        args.putString(key, gson.toJson(obj))
+    }
+
     protected fun argsGetStringArray(key: String): Array<String>? {
         return arguments?.getStringArray(key)
     }
@@ -63,10 +88,10 @@ abstract class UsedeskFragment : Fragment() {
 
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
         UsedeskSnackbar.create(
-                this@UsedeskFragment,
-                styleValues.getColor(R.attr.usedesk_background_color_1),
-                styleValues.getString(R.attr.usedesk_text_1),
-                styleValues.getColor(R.attr.usedesk_text_color_1)
+            this@UsedeskFragment,
+            styleValues.getColor(R.attr.usedesk_background_color_1),
+            styleValues.getString(R.attr.usedesk_text_1),
+            styleValues.getColor(R.attr.usedesk_text_color_1)
         ).show()
     }
 

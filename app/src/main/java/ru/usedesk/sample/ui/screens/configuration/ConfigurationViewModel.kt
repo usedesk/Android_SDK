@@ -56,7 +56,8 @@ class ConfigurationViewModel : ViewModel() {
             configuration.clientNote,
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
-            configuration.clientInitMessage
+            configuration.clientInitMessage,
+            configuration.cacheFiles
         ).validate()
         val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(
             configuration.urlApi,

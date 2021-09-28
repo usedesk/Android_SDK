@@ -294,9 +294,8 @@
         <item name="cardBackgroundColor">@color/usedesk_black_2</item>
         <item name="cardCornerRadius">8dp</item>
         <item name="cardElevation">0dp</item>
-        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button" parent="">
@@ -448,6 +447,7 @@
         <item name="usedesk_chat_screen_attach_image">@style/Usedesk.Chat.Screen.Attach.Image</item>
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
         <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
+        <item name="usedesk_chat_screen_floating_action_button">@style/Usedesk.Chat.Screen.FloatingActionButton</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Loading.Page.ContainerRoot" parent="">
@@ -688,10 +688,12 @@
 
     <style name="Usedesk.Chat.Message.Text.Button.Text" parent="">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginLeft">4dp</item>
-        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -838,6 +840,21 @@
         <item name="android:maxLines">5</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:hint">@string/usedesk_message_input</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.FloatingActionButton" parent="">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="fabCustomSize">36dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="backgroundTint">@color/usedesk_gray_1</item>
+        <item name="srcCompat">@drawable/usedesk_ic_arrow_bottom</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="usedesk_animation_in">@anim/usedesk_fab_to_bottom_in</item>
+        <item name="usedesk_animation_out">@anim/usedesk_fab_to_bottom_out</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Loading.Text" parent="">

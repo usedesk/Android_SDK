@@ -14,11 +14,13 @@ object UsedeskFileUtil {
     fun getFileName(contentResolver: ContentResolver, uri: Uri): String {
         var result: String? = null
         if (uri.scheme == "content") {
-            contentResolver.query(uri,
-                    null,
-                    null,
-                    null,
-                    null)?.use { cursor ->
+            contentResolver.query(
+                uri,
+                null,
+                null,
+                null,
+                null
+            )?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
@@ -41,12 +43,16 @@ object UsedeskFileUtil {
         return getMimeType(context.contentResolver, uri)
     }
 
+    fun getExtension(context: Context, uri: Uri): String {
+        val mimeType = getMimeType(context, uri)
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: ""
+    }
 
     fun getMimeType(contentResolver: ContentResolver, uri: Uri): String {
         return if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
             contentResolver.getType(uri)
         } else {
-            val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString()).toLowerCase()
+            val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString()).lowercase()
             MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
         } ?: ""
     }

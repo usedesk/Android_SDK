@@ -30,5 +30,12 @@
     <string name="validation_phone_error">Invalid phone number</string>
     <string name="chat">Chat</string>
     <string name="knowledgebase">KnowledgeBase</string>
+    <string name="additional_fields">Additional Fields</string>
+    <string name="additional_nested_fields">Additional Nested Fields</string>
+    <string name="id">Id</string>
+    <string name="id1">Id 1</string>
+    <string name="id2">Id 2</string>
+    <string name="id3">Id 3</string>
+    <string name="value">Value</string>
     <string name="common">Common</string>
 </resources>

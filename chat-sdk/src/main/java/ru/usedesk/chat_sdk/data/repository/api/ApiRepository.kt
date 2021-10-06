@@ -1,9 +1,12 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
+import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
+import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
@@ -186,6 +189,28 @@ internal class ApiRepository(
             }
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
+        }
+    }
+
+    override fun send(
+        token: String?,
+        configuration: UsedeskChatConfiguration,
+        additionalFields: Map<Long, String>,
+        additionalNestedFields: List<Map<Long, String>>
+    ) {
+        val response = doRequest(configuration.urlToSendFile, AdditionalFieldsResponse::class.java) {
+            if (token != null) {
+                val totalFields =
+                    (additionalFields.toList() + additionalNestedFields.flatMap { fields ->
+                        fields.toList()
+                    }).map { field ->
+                        AdditionalFieldsRequest.AdditionalField(field.first, field.second)
+                    }
+                val request = AdditionalFieldsRequest(token, totalFields)
+                it.postAdditionalFields(request)
+            } else {
+                throw UsedeskHttpException("Token is null")
+            }
         }
     }
 

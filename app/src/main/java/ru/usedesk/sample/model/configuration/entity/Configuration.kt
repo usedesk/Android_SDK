@@ -19,6 +19,8 @@ data class Configuration(
     val customAgentName: String,
     val foregroundService: Boolean,
     val cacheFiles: Boolean,
+    val additionalFields: Map<Long, String>,
+    val additionalNestedFields: List<Map<Long, String>>,
     val withKb: Boolean,
     val withKbSupportButton: Boolean,
     val withKbArticleRating: Boolean
@@ -43,6 +45,8 @@ data class Configuration(
             customAgentName = "",
             foregroundService = false,
             cacheFiles = true,
+            additionalFields = mapOf(),
+            additionalNestedFields = listOf(),
             withKb = true,
             withKbSupportButton = true,
             withKbArticleRating = true

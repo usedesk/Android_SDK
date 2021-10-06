@@ -147,10 +147,6 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                             .removePrefix("<p>")
                             .trim('\u200B', ' ', '\r', '\n')
 
-                    if (convertedText != from.text) {
-                        println()
-                    }
-
                     buttons.forEach {
                         val show: String
                         val replaceBy: String

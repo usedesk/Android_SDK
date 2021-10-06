@@ -8,24 +8,26 @@ import ru.usedesk.common_sdk.api.entity.ApiError
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 
 abstract class UsedeskApiRepository<API>(
-        private val apiFactory: IUsedeskApiFactory,
-        private val gson: Gson,
-        private val apiClass: Class<API>
+    private val apiFactory: IUsedeskApiFactory,
+    private val gson: Gson,
+    private val apiClass: Class<API>
 ) {
 
     protected fun <RESPONSE> doRequest(
-            urlApi: String,
-            responseClass: Class<RESPONSE>,
-            getCall: (API) -> Call<ResponseBody>
+        urlApi: String,
+        responseClass: Class<RESPONSE>,
+        getCall: (API) -> Call<ResponseBody>
     ): RESPONSE {
         return execute(gson, responseClass) {
             getCall(apiFactory.getInstance(urlApi, apiClass))
         }
     }
 
-    private fun <RESPONSE> execute(gson: Gson,
-                                   tClass: Class<RESPONSE>,
-                                   onGetCall: () -> Call<ResponseBody>): RESPONSE {
+    private fun <RESPONSE> execute(
+        gson: Gson,
+        tClass: Class<RESPONSE>,
+        onGetCall: () -> Call<ResponseBody>
+    ): RESPONSE {
         return try {
             val response = (0 until MAX_ATTEMPTS).asSequence().map { attempt ->
                 if (attempt != 0) {
@@ -35,7 +37,10 @@ abstract class UsedeskApiRepository<API>(
             }.filter {
                 val filter = it.isSuccessful && it.code() == 200 && it.body() != null
                 if (!filter) {
-                    Log.d("Response", "failed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}")
+                    Log.d(
+                        "Response",
+                        "failed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
+                    )
                 }
                 filter
             }.firstOrNull() ?: throw UsedeskHttpException()

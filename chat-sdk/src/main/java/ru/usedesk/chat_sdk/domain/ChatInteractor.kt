@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
+import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -56,6 +57,8 @@ internal class ChatInteractor(
     private var offlineFormToChat = false
 
     private var initedNotSentMessages = listOf<UsedeskMessage>()
+
+    private var firstMessage: Boolean = true
 
     init {
         listenersDisposables.apply {
@@ -309,9 +312,31 @@ internal class ChatInteractor(
         try {
             cachedMessages.addNotSentMessage(sendingMessage)
             sendCached(sendingMessage)
+            sendAdditionalFieldsIfNeeded()
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
+        }
+    }
+
+    private fun sendAdditionalFieldsIfNeeded() {
+        if (firstMessage) {
+            firstMessage = false
+            if (configuration.additionalFields.isNotEmpty() ||
+                configuration.additionalNestedFields.isNotEmpty()
+            ) {
+                try {
+                    apiRepository.send(
+                        token,
+                        configuration,
+                        configuration.additionalFields,
+                        configuration.additionalNestedFields
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    firstMessage = true
+                }
+            }
         }
     }
 
@@ -355,6 +380,7 @@ internal class ChatInteractor(
             )
             cachedMessages.addNotSentMessage(cachedMessage)
             sendCached(cachedMessage)
+            sendAdditionalFieldsIfNeeded()
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -568,6 +594,7 @@ internal class ChatInteractor(
                 throwable.printStackTrace()
             }))
         }
+        sendAdditionalFieldsIfNeeded()
     }
 
     override fun sendMessageDraftRx(): Completable {
@@ -680,10 +707,10 @@ internal class ChatInteractor(
         this.token = chatInited.token
         clientTokenSubject.onNext(chatInited.token)
 
-        if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
-                initClientMessage
-            ) == true ||
-            initClientOfflineForm != null
+        if (initClientOfflineForm != null ||
+            userInfoRepository.getConfigurationNullable(configuration)
+                ?.clientInitMessage
+                ?.equals(initClientMessage) == true
         ) {
             initClientMessage = null
         }

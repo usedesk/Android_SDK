@@ -4,24 +4,32 @@ import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.*
 
 internal interface IApiRepository {
-    fun connect(url: String,
-                token: String?,
-                configuration: UsedeskChatConfiguration,
-                eventListener: EventListener)
+    fun connect(
+        url: String,
+        token: String?,
+        configuration: UsedeskChatConfiguration,
+        eventListener: EventListener
+    )
 
-    fun init(configuration: UsedeskChatConfiguration,
-             token: String?)
+    fun init(
+        configuration: UsedeskChatConfiguration,
+        token: String?
+    )
 
-    fun send(token: String?,
-             email: String?,
-             name: String?,
-             note: String?,
-             phone: Long?,
-             additionalId: Long?)
+    fun send(
+        token: String?,
+        email: String?,
+        name: String?,
+        note: String?,
+        phone: Long?,
+        additionalId: Long?
+    )
 
-    fun send(configuration: UsedeskChatConfiguration,
-             companyId: String,
-             offlineForm: UsedeskOfflineForm)
+    fun send(
+        configuration: UsedeskChatConfiguration,
+        companyId: String,
+        offlineForm: UsedeskOfflineForm
+    )
 
     fun send(
         messageId: Long,
@@ -30,9 +38,18 @@ internal interface IApiRepository {
 
     fun send(messageText: UsedeskMessageText)
 
-    fun send(configuration: UsedeskChatConfiguration,
-             token: String,
-             messageFile: UsedeskMessageFile)
+    fun send(
+        configuration: UsedeskChatConfiguration,
+        token: String,
+        messageFile: UsedeskMessageFile
+    )
+
+    fun send(
+        token: String?,
+        configuration: UsedeskChatConfiguration,
+        additionalFields: Map<Long, String>,
+        additionalNestedFields: List<Map<Long, String>>
+    )
 
     fun disconnect()
 

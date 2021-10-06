@@ -91,7 +91,9 @@ class MainViewModel : ViewModel() {
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
             configuration.clientInitMessage,
-            configuration.cacheFiles
+            configuration.cacheFiles,
+            configuration.additionalFields,
+            configuration.additionalNestedFields
         )
     }
 

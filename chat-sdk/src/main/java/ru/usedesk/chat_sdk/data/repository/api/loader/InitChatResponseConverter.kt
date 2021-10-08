@@ -10,20 +10,23 @@ import toothpick.InjectConstructor
 
 @InjectConstructor
 internal class InitChatResponseConverter(
-        private val messageResponseConverter: MessageResponseConverter
+    private val messageResponseConverter: MessageResponseConverter
 ) : Converter<InitChatResponse, ChatInited>() {
 
     override fun convert(from: InitChatResponse): ChatInited {
         return ChatInited(
-                from.token!!,
-                true,
-                convert(from.setup?.messages ?: listOf()),
-                convert(from.setup?.callbackSettings, from.setup!!.noOperators)
+            from.token!!,
+            true,
+            convert(from.setup?.messages ?: listOf()),
+            convert(from.setup?.callbackSettings, from.setup!!.noOperators),
+            from.setup?.ticket?.statusId
         )
     }
 
-    private fun convert(callbackSettings: InitChatResponse.Setup.CallbackSettings?,
-                        noOperators: Boolean?): UsedeskOfflineFormSettings {
+    private fun convert(
+        callbackSettings: InitChatResponse.Setup.CallbackSettings?,
+        noOperators: Boolean?
+    ): UsedeskOfflineFormSettings {
         return convertOrNull {
             val topics = callbackSettings!!.topics?.filter {
                 it?.checked == true
@@ -37,10 +40,10 @@ internal class InitChatResponseConverter(
                 convertOrNull {
                     val required = customField!!.required == true
                     UsedeskOfflineFormSettings.CustomField(
-                            "custom_field_$index",
-                            required,
-                            customField.checked ?: false,
-                            customField.placeholder ?: ""
+                        "custom_field_$index",
+                        required,
+                        customField.checked ?: false,
+                        customField.placeholder ?: ""
                     )
                 }
             }?.filterNotNull(
@@ -49,18 +52,18 @@ internal class InitChatResponseConverter(
             } ?: listOf()
             val required = callbackSettings.topicsRequired == 1
             UsedeskOfflineFormSettings(
-                    noOperators == true,
-                    workType,
-                    callbackSettings.callbackTitle ?: "",
-                    callbackSettings.callbackGreeting ?: "",
-                    customFields,
-                    topics,
-                    callbackSettings.topicsTitle ?: "",
-                    required
+                noOperators == true,
+                workType,
+                callbackSettings.callbackTitle ?: "",
+                callbackSettings.callbackGreeting ?: "",
+                customFields,
+                topics,
+                callbackSettings.topicsTitle ?: "",
+                required
             )
         } ?: UsedeskOfflineFormSettings(
-                noOperators == true,
-                UsedeskOfflineFormSettings.WorkType.NEVER
+            noOperators == true,
+            UsedeskOfflineFormSettings.WorkType.NEVER
         )
     }
 

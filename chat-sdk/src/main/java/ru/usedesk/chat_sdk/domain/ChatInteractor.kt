@@ -736,11 +736,6 @@ internal class ChatInteractor(
         } else {
             eventListener.onSetEmailSuccess()
         }
-        if (chatInited.status in TICKET_ACTIVE_STATUSES) {
-            try {
-                sendAdditionalFieldsIfNeeded()
-            } catch (e: Exception) { }
-        }
         if (needToResendMessages) {
             notSentMessages.filter {
                 initedNotSentMessages.all { initedNotSentMessage ->
@@ -756,9 +751,5 @@ internal class ChatInteractor(
         } else {
             initedNotSentMessages = notSentMessages
         }
-    }
-
-    companion object {
-        private val TICKET_ACTIVE_STATUSES = listOf(1, 5, 6, 8, 9, 10)
     }
 }

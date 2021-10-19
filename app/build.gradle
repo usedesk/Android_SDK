@@ -10,7 +10,7 @@ android {
         applicationId "ru.usedesk.sample"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 111
+        versionCode 112
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -31,7 +31,7 @@ android {
     }
     android.applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "${variant.applicationId}_v${variant.versionName}_c.${variant.versionCode}.apk"
+            outputFileName = "${variant.applicationId}_v${variant.versionName}_c${variant.versionCode}.apk"
         }
     }
     compileOptions {

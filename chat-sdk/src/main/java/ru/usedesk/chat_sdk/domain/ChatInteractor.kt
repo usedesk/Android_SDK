@@ -1,7 +1,6 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
-import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 import io.reactivex.Single
@@ -311,8 +310,8 @@ internal class ChatInteractor(
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
             cachedMessages.addNotSentMessage(sendingMessage)
-            sendCached(sendingMessage)
             sendAdditionalFieldsIfNeeded()
+            sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -335,6 +334,7 @@ internal class ChatInteractor(
                 } catch (e: Exception) {
                     e.printStackTrace()
                     firstMessage = true
+                    throw e
                 }
             }
         }
@@ -379,8 +379,8 @@ internal class ChatInteractor(
                 sendingMessage.localId
             )
             cachedMessages.addNotSentMessage(cachedMessage)
-            sendCached(cachedMessage)
             sendAdditionalFieldsIfNeeded()
+            sendCached(cachedMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -572,6 +572,7 @@ internal class ChatInteractor(
         })
 
         eventListener.onMessagesReceived(sendingMessages)
+        sendAdditionalFieldsIfNeeded()
 
         sendingMessages.mapNotNull {
             when (it) {
@@ -594,7 +595,6 @@ internal class ChatInteractor(
                 throwable.printStackTrace()
             }))
         }
-        sendAdditionalFieldsIfNeeded()
     }
 
     override fun sendMessageDraftRx(): Completable {

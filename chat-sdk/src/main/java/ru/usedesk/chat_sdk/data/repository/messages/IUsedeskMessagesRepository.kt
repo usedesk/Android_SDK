@@ -10,7 +10,7 @@ interface IUsedeskMessagesRepository {
     fun getNotSentMessages(userKey: String): List<UsedeskMessageClient>
 
     fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft)
-    fun getDraft(userKey: String): UsedeskMessageDraft?
+    fun getDraft(userKey: String): UsedeskMessageDraft
 
     fun addFileToCache(uri: Uri): Uri
     fun removeFileFromCache(uri: Uri)

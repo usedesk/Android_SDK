@@ -108,16 +108,12 @@ internal class UsedeskAttachmentDialog private constructor(
 
     private fun getTakePhotoUri(context: Context): Uri {
         val fileName = "camera_${System.currentTimeMillis()}.jpg"
-        return Uri.fromFile(File(context.externalCacheDir, fileName)).apply {
-            cameraFileUri = this
-        }
+        return Uri.fromFile(File(context.externalCacheDir, fileName))
     }
 
     companion object {
         private const val MIME_TYPE_ALL_IMAGES = "image/*"
         private const val MIME_TYPE_ALL_DOCS = "*/*"
-
-        private var cameraFileUri: Uri? = null
 
         fun create(screen: UsedeskChatScreen): UsedeskAttachmentDialog {
             val dialogStyle = UsedeskResourceManager.getResourceId(

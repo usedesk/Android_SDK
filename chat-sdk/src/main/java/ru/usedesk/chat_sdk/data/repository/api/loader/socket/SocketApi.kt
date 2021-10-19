@@ -58,7 +58,7 @@ internal class SocketApi(
     }
 
     private fun onResponse(rawResponse: String) {
-        Log.d("DBG", "RESPONSE:\n$rawResponse")
+        //Log.d("DBG", "RESPONSE:\n$rawResponse")
         try {
             val response = process(rawResponse)
             when (response.type) {
@@ -158,7 +158,7 @@ internal class SocketApi(
     fun sendRequest(baseRequest: BaseRequest) {
         try {
             val rawRequest = gson.toJson(baseRequest)
-            Log.d("DBG", "REQUEST:\n$rawRequest")
+            //Log.d("DBG", "REQUEST:\n$rawRequest")
             val jsonRequest = JSONObject(rawRequest)
             socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {

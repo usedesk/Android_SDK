@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.7.2)
+# Android Usedesk SDK (v3.8.1)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -73,7 +73,7 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
-| urlChat \* | String | Адрес сервера Чата |
+| urlChat \* | String | Адрес сервера Чата в формате `pubsubsec.usedesk.ru` |
 | urlOfflineForm \* | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
 | urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
 | companyId \* | String | Идентификатор компании |
@@ -86,6 +86,8 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | clientPhoneNumber | Long? | Телефонный номер клиента |
 | clientAdditionalId | Long? | Дополнительный идентификатор клиента |
 | clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |
+| additionalFields | Map<Long, String> | Коллекция дополнительных полей, где key - Id поля, value - значение поля. Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст. (добавлен в **v3.8.0**) |
+| additionalNestedFields | List<Map<Long, String>> | Список коллекций вложенных списков, где каждый элемент списка - это коллекия значений одного вложенного списка, где key - Id поля, value - значение поля с текстом, точно совпадающим с текстом значения списка. (добавлен в **v3.8.0**) |
 
 \* - обязательный параметр
 
@@ -453,3 +455,5 @@ UsedeskKnowledgeBaseSdk.release()
     дефолтное хранилище сообщений
   - Добавлена кнопка скролла вниз чата
   - Исправлен краш приложения на версии API 19
+- v3.8.1
+  - Добавлена возможность передачи дополнительных полей в конфигурацию чата

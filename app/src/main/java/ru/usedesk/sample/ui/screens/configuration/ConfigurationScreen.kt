@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -90,29 +91,57 @@ class ConfigurationScreen : Fragment() {
         viewModel.onGoSdkClick(getConfiguration())
     }
 
-    private fun getConfiguration(): Configuration = Configuration(
-        binding.etUrlChat.text.toString(),
-        binding.etUrlOfflineForm.text.toString(),
-        binding.etUrlToSendFile.text.toString(),
-        binding.etUrlApi.text.toString(),
-        binding.etCompanyId.text.toString(),
-        binding.etChannelId.text.toString(),
-        binding.etAccountId.text.toString(),
-        binding.etToken.text.toString(),
-        binding.etClientToken.text.toString(),
-        binding.etClientEmail.text.toString(),
-        binding.etClientName.text.toString(),
-        binding.etClientNote.text.toString(),
-        binding.etClientPhoneNumber.text.toString().toLongOrNull(),
-        binding.etClientAdditionalId.text.toString().toLongOrNull(),
-        binding.etClientInitMessage.text.toString(),
-        binding.etCustomAgentName.text.toString(),
-        binding.switchForeground.isChecked,
-        binding.switchCacheFiles.isChecked,
-        binding.switchKb.isChecked,
-        binding.switchKbWithSupportButton.isChecked,
-        binding.switchKbWithArticleRating.isChecked
-    )
+    private fun getConfiguration(): Configuration {
+        val additionalFields = mapOf(
+            binding.etAdditionalField1Id.text.toString().trim() to
+                    binding.etAdditionalField1Value.text.toString().trim(),
+            binding.etAdditionalField2Id.text.toString().trim() to
+                    binding.etAdditionalField2Value.text.toString().trim(),
+            binding.etAdditionalField3Id.text.toString().trim() to
+                    binding.etAdditionalField3Value.text.toString().trim()
+        ).filter {
+            it.key.isNotEmpty()
+        }.map {
+            it.key.toLong() to it.value
+        }.toMap()
+        val additionalNestedFields = mapOf(
+            binding.etAdditionalNestedField1Id.text.toString().trim() to
+                    binding.etAdditionalNestedField1Value.text.toString().trim(),
+            binding.etAdditionalNestedField2Id.text.toString().trim() to
+                    binding.etAdditionalNestedField2Value.text.toString().trim(),
+            binding.etAdditionalNestedField3Id.text.toString().trim() to
+                    binding.etAdditionalNestedField3Value.text.toString().trim()
+        ).filter {
+            it.key.isNotEmpty()
+        }.map {
+            it.key.toLong() to it.value
+        }.toMap()
+        return Configuration(
+            binding.etUrlChat.text.toString(),
+            binding.etUrlOfflineForm.text.toString(),
+            binding.etUrlToSendFile.text.toString(),
+            binding.etUrlApi.text.toString(),
+            binding.etCompanyId.text.toString(),
+            binding.etChannelId.text.toString(),
+            binding.etAccountId.text.toString(),
+            binding.etToken.text.toString(),
+            binding.etClientToken.text.toString(),
+            binding.etClientEmail.text.toString(),
+            binding.etClientName.text.toString(),
+            binding.etClientNote.text.toString(),
+            binding.etClientPhoneNumber.text.toString().toLongOrNull(),
+            binding.etClientAdditionalId.text.toString().toLongOrNull(),
+            binding.etClientInitMessage.text.toString(),
+            binding.etCustomAgentName.text.toString(),
+            binding.switchForeground.isChecked,
+            binding.switchCacheFiles.isChecked,
+            additionalFields,
+            listOf(additionalNestedFields),
+            binding.switchKb.isChecked,
+            binding.switchKbWithSupportButton.isChecked,
+            binding.switchKbWithArticleRating.isChecked
+        )
+    }
 
 
     private fun onNewConfiguration(configuration: Configuration) {
@@ -133,9 +162,60 @@ class ConfigurationScreen : Fragment() {
         binding.etCustomAgentName.setText(configuration.customAgentName)
         binding.switchForeground.isChecked = configuration.foregroundService
         binding.switchCacheFiles.isChecked = configuration.cacheFiles
+        setAdditionalField(
+            binding.etAdditionalField1Id,
+            binding.etAdditionalField1Value,
+            configuration.additionalFields,
+            0
+        )
+        setAdditionalField(
+            binding.etAdditionalField2Id,
+            binding.etAdditionalField2Value,
+            configuration.additionalFields,
+            1
+        )
+        setAdditionalField(
+            binding.etAdditionalField3Id,
+            binding.etAdditionalField3Value,
+            configuration.additionalFields,
+            2
+        )
+        val nested = configuration.additionalNestedFields.firstOrNull() ?: mapOf()
+        setAdditionalField(
+            binding.etAdditionalNestedField1Id,
+            binding.etAdditionalNestedField1Value,
+            nested,
+            0
+        )
+        setAdditionalField(
+            binding.etAdditionalNestedField2Id,
+            binding.etAdditionalNestedField2Value,
+            nested,
+            1
+        )
+        setAdditionalField(
+            binding.etAdditionalNestedField3Id,
+            binding.etAdditionalNestedField3Value,
+            nested,
+            2
+        )
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
+    }
+
+    private fun setAdditionalField(
+        etId: EditText,
+        etValue: EditText,
+        fields: Map<Long, String>,
+        index: Int
+    ) {
+        val id = fields.keys.toList().getOrNull(index)
+        if (id != null) {
+            val value = fields[id]
+            etId.setText(id.toString())
+            etValue.setText(value.toString())
+        }
     }
 
     private fun initTil(inputLayout: TextInputLayout) {

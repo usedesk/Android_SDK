@@ -57,6 +57,8 @@ internal class ChatInteractor(
 
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
+    private var firstMessage: Boolean = true
+
     init {
         listenersDisposables.apply {
             add(connectedStateSubject.subscribe {
@@ -308,10 +310,33 @@ internal class ChatInteractor(
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
             cachedMessages.addNotSentMessage(sendingMessage)
+            sendAdditionalFieldsIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
+        }
+    }
+
+    private fun sendAdditionalFieldsIfNeeded() {
+        if (firstMessage) {
+            firstMessage = false
+            if (configuration.additionalFields.isNotEmpty() ||
+                configuration.additionalNestedFields.isNotEmpty()
+            ) {
+                try {
+                    apiRepository.send(
+                        token,
+                        configuration,
+                        configuration.additionalFields,
+                        configuration.additionalNestedFields
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    firstMessage = true
+                    throw e
+                }
+            }
         }
     }
 
@@ -354,6 +379,7 @@ internal class ChatInteractor(
                 sendingMessage.localId
             )
             cachedMessages.addNotSentMessage(cachedMessage)
+            sendAdditionalFieldsIfNeeded()
             sendCached(cachedMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
@@ -546,6 +572,7 @@ internal class ChatInteractor(
         })
 
         eventListener.onMessagesReceived(sendingMessages)
+        sendAdditionalFieldsIfNeeded()
 
         sendingMessages.mapNotNull {
             when (it) {
@@ -680,10 +707,10 @@ internal class ChatInteractor(
         this.token = chatInited.token
         clientTokenSubject.onNext(chatInited.token)
 
-        if (userInfoRepository.getConfigurationNullable(configuration)?.clientInitMessage?.equals(
-                initClientMessage
-            ) == true ||
-            initClientOfflineForm != null
+        if (initClientOfflineForm != null ||
+            userInfoRepository.getConfigurationNullable(configuration)
+                ?.clientInitMessage
+                ?.equals(initClientMessage) == true
         ) {
             initClientMessage = null
         }

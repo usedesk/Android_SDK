@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.makeramen.roundedimageview.Corner
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -481,8 +480,6 @@ internal class MessagesAdapter(
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
-
-            binding.content.ivPreview.setCornerRadius(Corner.BOTTOM_RIGHT, 0.0f)
         }
     }
 
@@ -675,8 +672,6 @@ internal class MessagesAdapter(
         override fun bind(position: Int) {
             super.bind(position)
             bindAgent(position, binding.agent)
-
-            binding.content.ivPreview.setCornerRadius(Corner.BOTTOM_LEFT, 0.0f)
         }
     }
 

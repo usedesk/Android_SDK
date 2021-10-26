@@ -57,7 +57,9 @@ internal class ChatInteractor(
 
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
-    private var firstMessage: Boolean = true
+    private var additionalFieldsNeeded: Boolean = true
+    private var avatarSendNeeded: Boolean = false
+    private var avatarLock = Any()
 
     init {
         listenersDisposables.apply {
@@ -311,6 +313,7 @@ internal class ChatInteractor(
         try {
             cachedMessages.addNotSentMessage(sendingMessage)
             sendAdditionalFieldsIfNeeded()
+            sendAvatarIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
@@ -318,9 +321,35 @@ internal class ChatInteractor(
         }
     }
 
+    private fun sendAvatarIfNeeded() {
+        if (avatarSendNeeded) {
+            Completable.create {
+                synchronized(avatarLock) {
+                    if (avatarSendNeeded) {
+                        avatarSendNeeded = false
+
+                        try {
+                            val avatar = configuration.clientAvatar
+                            if (avatar != null) {
+                                apiRepository.send(
+                                    token,
+                                    configuration,
+                                    avatar
+                                )
+                            }
+                        } catch (e: Exception) {
+                            avatarSendNeeded = true
+                        }
+                    }
+                }
+            }.observeOn(ioScheduler)
+                .subscribe()
+        }
+    }
+
     private fun sendAdditionalFieldsIfNeeded() {
-        if (firstMessage) {
-            firstMessage = false
+        if (additionalFieldsNeeded) {
+            additionalFieldsNeeded = false
             if (configuration.additionalFields.isNotEmpty() ||
                 configuration.additionalNestedFields.isNotEmpty()
             ) {
@@ -333,7 +362,7 @@ internal class ChatInteractor(
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    firstMessage = true
+                    additionalFieldsNeeded = true
                     throw e
                 }
             }
@@ -380,6 +409,7 @@ internal class ChatInteractor(
             )
             cachedMessages.addNotSentMessage(cachedMessage)
             sendAdditionalFieldsIfNeeded()
+            sendAvatarIfNeeded()
             sendCached(cachedMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
@@ -573,6 +603,7 @@ internal class ChatInteractor(
 
         eventListener.onMessagesReceived(sendingMessages)
         sendAdditionalFieldsIfNeeded()
+        sendAvatarIfNeeded()
 
         sendingMessages.mapNotNull {
             when (it) {
@@ -707,13 +738,15 @@ internal class ChatInteractor(
         this.token = chatInited.token
         clientTokenSubject.onNext(chatInited.token)
 
+        val oldConfiguration = userInfoRepository.getConfigurationNullable(configuration)
+
         if (initClientOfflineForm != null ||
-            userInfoRepository.getConfigurationNullable(configuration)
-                ?.clientInitMessage
-                ?.equals(initClientMessage) == true
+            oldConfiguration?.clientInitMessage == initClientMessage
         ) {
             initClientMessage = null
         }
+        avatarSendNeeded = oldConfiguration?.clientAvatar != configuration.clientAvatar
+
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
         val ids = lastMessages.map {

@@ -51,6 +51,12 @@ internal interface IApiRepository {
         additionalNestedFields: List<Map<Long, String>>
     )
 
+    fun send(
+        token: String?,
+        configuration: UsedeskChatConfiguration,
+        avatarUri: String
+    )
+
     fun disconnect()
 
     interface EventListener {

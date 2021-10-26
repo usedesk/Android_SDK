@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import io.socket.client.IO
@@ -16,7 +15,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.Fe
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetEmailResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientResponse
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
@@ -88,7 +87,7 @@ internal class SocketApi(
                 InitChatResponse.TYPE -> {
                     eventListener.onInited(response as InitChatResponse)
                 }
-                SetEmailResponse.TYPE -> {
+                SetClientResponse.TYPE -> {
                     eventListener.onSetEmailSuccess()
                 }
                 MessageResponse.TYPE -> {
@@ -174,7 +173,7 @@ internal class SocketApi(
                 ErrorResponse.TYPE -> ErrorResponse::class.java
                 MessageResponse.TYPE -> MessageResponse::class.java
                 FeedbackResponse.TYPE -> FeedbackResponse::class.java
-                SetEmailResponse.TYPE -> SetEmailResponse::class.java
+                SetClientResponse.TYPE -> SetClientResponse::class.java
                 else -> null
             }
             if (responseClass != null) {

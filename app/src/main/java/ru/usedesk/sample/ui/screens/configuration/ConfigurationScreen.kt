@@ -1,5 +1,6 @@
 package ru.usedesk.sample.ui.screens.configuration
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
@@ -9,10 +10,20 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.R
@@ -25,8 +36,22 @@ class ConfigurationScreen : Fragment() {
     private val viewModel: ConfigurationViewModel by viewModels()
     private lateinit var binding: ScreenConfigurationBinding
 
+    private lateinit var getContent: ActivityResultLauncher<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        getContent =
+            requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+                if (uri != null) {
+                    onAvatar(uri.toString())
+                }
+            }
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(
@@ -62,6 +87,32 @@ class ConfigurationScreen : Fragment() {
             binding.tvVersion.text = "v$version"
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
+        }
+        binding.ivClientAvatar.setOnClickListener {
+            Dexter.withContext(requireContext())
+                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(object : PermissionListener {
+                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                        getContent.launch("image/*")
+                    }
+
+                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                        Toast.makeText(requireContext(), "Need permissions", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        p0: PermissionRequest?,
+                        p1: PermissionToken?
+                    ) {
+                    }
+                }).check()
+        }
+        binding.ivClientAvatarReset.setOnClickListener {
+            onAvatar(null)
+        }
+        binding.ivClientAvatarClear.setOnClickListener {
+            onAvatar("")
         }
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
@@ -104,7 +155,7 @@ class ConfigurationScreen : Fragment() {
         }.map {
             it.key.toLong() to it.value
         }.toMap()
-        val additionalNestedFields = mapOf(
+        val nestedFields = mapOf(
             binding.etAdditionalNestedField1Id.text.toString().trim() to
                     binding.etAdditionalNestedField1Value.text.toString().trim(),
             binding.etAdditionalNestedField2Id.text.toString().trim() to
@@ -116,6 +167,11 @@ class ConfigurationScreen : Fragment() {
         }.map {
             it.key.toLong() to it.value
         }.toMap()
+        val additionalNestedFields = if (nestedFields.isEmpty()) {
+            listOf()
+        } else {
+            listOf(nestedFields)
+        }
         return Configuration(
             binding.etUrlChat.text.toString(),
             binding.etUrlOfflineForm.text.toString(),
@@ -132,17 +188,37 @@ class ConfigurationScreen : Fragment() {
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
             binding.etClientAdditionalId.text.toString().toLongOrNull(),
             binding.etClientInitMessage.text.toString(),
+            viewModel.avatarLiveData.value,
             binding.etCustomAgentName.text.toString(),
             binding.switchForeground.isChecked,
             binding.switchCacheFiles.isChecked,
             additionalFields,
-            listOf(additionalNestedFields),
+            additionalNestedFields,
             binding.switchKb.isChecked,
             binding.switchKbWithSupportButton.isChecked,
             binding.switchKbWithArticleRating.isChecked
         )
     }
 
+    private fun onAvatar(avatar: String?) {
+        viewModel.setAvatar(avatar)
+        when (avatar) {
+            null -> {
+                binding.ivClientAvatar.setImageResource(R.drawable.usedesk_background_avatar_def)
+                binding.tvClientAvatar.text = "Do not change client avatar"
+            }
+            "" -> {
+                binding.ivClientAvatar.setImageResource(R.drawable.usedesk_background_avatar_def)
+                binding.tvClientAvatar.text = "Reset client avatar"
+            }
+            else -> {
+                Glide.with(requireContext().applicationContext)
+                    .load(avatar)
+                    .into(binding.ivClientAvatar)
+                binding.tvClientAvatar.text = "Change client avatar"
+            }
+        }
+    }
 
     private fun onNewConfiguration(configuration: Configuration) {
         binding.etUrlChat.setText(configuration.urlChat)
@@ -202,6 +278,7 @@ class ConfigurationScreen : Fragment() {
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
+        onAvatar(configuration.clientAvatar)
     }
 
     private fun setAdditionalField(

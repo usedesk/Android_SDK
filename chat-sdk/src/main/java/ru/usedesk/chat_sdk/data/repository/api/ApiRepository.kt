@@ -1,16 +1,17 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
-import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.PostSetClientResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.entity.LoadedFile
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
@@ -198,7 +199,7 @@ internal class ApiRepository(
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
     ) {
-        val response = doRequest(configuration.urlToSendFile, AdditionalFieldsResponse::class.java) {
+        val response = doRequest(configuration.urlToSendFile, SetClientResponse::class.java) {
             if (token != null) {
                 val totalFields =
                     (additionalFields.toList() + additionalNestedFields.flatMap { fields ->
@@ -211,6 +212,28 @@ internal class ApiRepository(
             } else {
                 throw UsedeskHttpException("Token is null")
             }
+        }
+    }
+
+    override fun send(
+        token: String?,
+        configuration: UsedeskChatConfiguration,
+        avatarUri: String
+    ) {
+        val loadedAvatar = if (avatarUri.isEmpty()) {
+            LoadedFile("", 0, "", ByteArray(0))//try to clear avatar
+        } else {
+            fileLoader.load(Uri.parse(avatarUri))
+        }
+        val parts = listOf(
+            multipartConverter.convert(
+                "token",
+                token ?: throw UsedeskHttpException("Token is null")
+            ),
+            multipartConverter.convert("avatar", loadedAvatar)
+        )
+        val response = doRequest(configuration.urlOfflineForm, PostSetClientResponse::class.java) {
+            it.postSetClient(parts)
         }
     }
 

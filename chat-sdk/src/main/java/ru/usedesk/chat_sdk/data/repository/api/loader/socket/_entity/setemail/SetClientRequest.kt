@@ -8,10 +8,11 @@ internal class SetClientRequest(
     name: String?,
     note: String?,
     phone: Long?,
-    additionalId: Long?
+    additionalId: Long?,
+    avatar: String?
 ) : BaseRequest(TYPE) {
 
-    private val payload: Payload = Payload(token, email, name, note, phone, additionalId)
+    private val payload: Payload = Payload(token, email, name, note, phone, additionalId, avatar)
 
     companion object {
         private const val TYPE = "@@server/chat/SET_CLIENT"
@@ -23,6 +24,7 @@ internal class SetClientRequest(
         private val username: String?,
         private val note: String?,
         private val phone: Long?,
-        private val additionalId: Long?
+        private val additionalId: Long?,
+        private val avatar: String?
     )
 }

@@ -17,11 +17,12 @@ internal interface IApiRepository {
     )
 
     fun send(
-        token: String?,
+        token: String,
         email: String?,
         name: String?,
         note: String?,
         phone: Long?,
+        avatar: String?,
         additionalId: Long?
     )
 
@@ -49,12 +50,6 @@ internal interface IApiRepository {
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
-    )
-
-    fun send(
-        token: String?,
-        configuration: UsedeskChatConfiguration,
-        avatarUri: String
     )
 
     fun disconnect()

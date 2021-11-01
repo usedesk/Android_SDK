@@ -59,7 +59,6 @@ internal class ChatInteractor(
 
     private var additionalFieldsNeeded: Boolean = true
     private var avatarSendNeeded: Boolean = false
-    private var avatarLock = Any()
 
     init {
         listenersDisposables.apply {
@@ -313,37 +312,10 @@ internal class ChatInteractor(
         try {
             cachedMessages.addNotSentMessage(sendingMessage)
             sendAdditionalFieldsIfNeeded()
-            sendAvatarIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
-        }
-    }
-
-    private fun sendAvatarIfNeeded() {
-        if (avatarSendNeeded) {
-            Completable.create {
-                synchronized(avatarLock) {
-                    if (avatarSendNeeded) {
-                        avatarSendNeeded = false
-
-                        try {
-                            val avatar = configuration.clientAvatar
-                            if (avatar != null) {
-                                apiRepository.send(
-                                    token,
-                                    configuration,
-                                    avatar
-                                )
-                            }
-                        } catch (e: Exception) {
-                            avatarSendNeeded = true
-                        }
-                    }
-                }
-            }.observeOn(ioScheduler)
-                .subscribe()
         }
     }
 
@@ -409,7 +381,6 @@ internal class ChatInteractor(
             )
             cachedMessages.addNotSentMessage(cachedMessage)
             sendAdditionalFieldsIfNeeded()
-            sendAvatarIfNeeded()
             sendCached(cachedMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
@@ -603,7 +574,6 @@ internal class ChatInteractor(
 
         eventListener.onMessagesReceived(sendingMessages)
         sendAdditionalFieldsIfNeeded()
-        sendAvatarIfNeeded()
 
         sendingMessages.mapNotNull {
             when (it) {
@@ -721,14 +691,21 @@ internal class ChatInteractor(
 
     private fun sendUserEmail() {
         try {
-            apiRepository.send(
-                token,
-                configuration.clientEmail,
-                configuration.clientName,
-                configuration.clientNote,
-                configuration.clientPhoneNumber,
-                configuration.clientAdditionalId
-            )
+            token?.let {
+                apiRepository.send(
+                    it,
+                    configuration.clientEmail,
+                    configuration.clientName,
+                    configuration.clientNote,
+                    configuration.clientPhoneNumber,
+                    if (avatarSendNeeded) {
+                        configuration.clientAvatar
+                    } else {
+                        null
+                    },
+                    configuration.clientAdditionalId
+                )
+            }
         } catch (e: UsedeskException) {
             exceptionSubject.onNext(e)
         }

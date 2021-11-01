@@ -1,17 +1,16 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
+import android.util.Base64.encodeToString
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
-import ru.usedesk.chat_sdk.data.repository.api.entity.PostSetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
-import ru.usedesk.chat_sdk.data.repository.api.loader.file.entity.LoadedFile
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
@@ -153,14 +152,42 @@ internal class ApiRepository(
     }
 
     override fun send(
-        token: String?,
+        token: String,
         email: String?,
         name: String?,
         note: String?,
         phone: Long?,
+        avatar: String?,
         additionalId: Long?
     ) {
-        socketApi.sendRequest(SetClientRequest(token, email, name, note, phone, additionalId))
+        val avatarBase64 = when {
+            avatar == null -> {
+                null
+            }
+            avatar.isNotEmpty() -> {
+                try {
+                    val avatarLoaded = fileLoader.load(Uri.parse(avatar))
+                    encodeToString(avatarLoaded.bytes, 0)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+            else -> {
+                ""
+            }
+        }
+        socketApi.sendRequest(
+            SetClientRequest(
+                token,
+                email,
+                name,
+                note,
+                phone,
+                additionalId,
+                avatarBase64
+            )
+        )
     }
 
     override fun send(
@@ -212,28 +239,6 @@ internal class ApiRepository(
             } else {
                 throw UsedeskHttpException("Token is null")
             }
-        }
-    }
-
-    override fun send(
-        token: String?,
-        configuration: UsedeskChatConfiguration,
-        avatarUri: String
-    ) {
-        val loadedAvatar = if (avatarUri.isEmpty()) {
-            LoadedFile("", 0, "", ByteArray(0))//try to clear avatar
-        } else {
-            fileLoader.load(Uri.parse(avatarUri))
-        }
-        val parts = listOf(
-            multipartConverter.convert(
-                "token",
-                token ?: throw UsedeskHttpException("Token is null")
-            ),
-            multipartConverter.convert("avatar", loadedAvatar)
-        )
-        val response = doRequest(configuration.urlOfflineForm, PostSetClientResponse::class.java) {
-            it.postSetClient(parts)
         }
     }
 

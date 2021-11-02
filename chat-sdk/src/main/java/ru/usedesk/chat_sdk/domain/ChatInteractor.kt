@@ -438,6 +438,22 @@ internal class ChatInteractor(
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
+            is UsedeskMessageClientVideo -> {
+                UsedeskMessageClientVideo(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            is UsedeskMessageClientAudio -> {
+                UsedeskMessageClientAudio(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
             else -> null
         }?.let {
             onMessageUpdate(it)
@@ -498,6 +514,16 @@ internal class ChatInteractor(
                 }
                 is UsedeskMessageClientImage -> {
                     val sendingMessage = UsedeskMessageClientImage(
+                        message.id,
+                        message.createdAt,
+                        message.file,
+                        UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
+                }
+                is UsedeskMessageClientVideo -> {
+                    val sendingMessage = UsedeskMessageClientVideo(
                         message.id,
                         message.createdAt,
                         message.file,
@@ -624,10 +650,39 @@ internal class ChatInteractor(
             "",
             fileInfo.name
         )
-        return if (fileInfo.isImage()) {
-            UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
-        } else {
-            UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
+        return when {
+            fileInfo.isImage() -> {
+                UsedeskMessageClientImage(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
+            fileInfo.isVideo() -> {
+                UsedeskMessageClientVideo(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
+            fileInfo.isAudio() -> {
+                UsedeskMessageClientAudio(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
+            else -> {
+                UsedeskMessageClientFile(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
         }
     }
 

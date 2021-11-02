@@ -209,6 +209,24 @@ internal class UsedeskMessagesRepository(
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
+            notSentMessage.video != null -> {
+                val file = jsonToFile(notSentMessage.video)
+                UsedeskMessageClientVideo(
+                    notSentMessage.localId,
+                    Calendar.getInstance(),
+                    file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            notSentMessage.audio != null -> {
+                val file = jsonToFile(notSentMessage.audio)
+                UsedeskMessageClientAudio(
+                    notSentMessage.localId,
+                    Calendar.getInstance(),
+                    file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
             notSentMessage.file != null -> {
                 val file = jsonToFile(notSentMessage.file)
                 UsedeskMessageClientFile(
@@ -245,6 +263,8 @@ internal class UsedeskMessagesRepository(
         val localId: Long,
         val text: String? = null,
         val file: String? = null,
-        val image: String? = null
+        val image: String? = null,
+        val audio: String? = null,
+        val video: String? = null
     )
 }

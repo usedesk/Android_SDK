@@ -2,6 +2,8 @@ package ru.usedesk.sample.model.configuration.repository
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import io.reactivex.*
 import io.reactivex.subjects.BehaviorSubject
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -16,8 +18,16 @@ class ConfigurationRepository(
     fun getConfiguration(): Single<Configuration> {
         return Single.create { emitter: SingleEmitter<Configuration> ->
             val configuration = configuration ?: try {
-                val json = sharedPreferences.getString(KEY_DATA, "")
-                Gson().fromJson(json, Configuration::class.java)
+                val gson = Gson()
+                val jsonRaw = sharedPreferences.getString(KEY_DATA, "")
+                val json = gson.fromJson(jsonRaw, JsonObject::class.java)
+                if (!json.has("additionalFields")) {
+                    json.add("additionalFields", JsonObject())
+                }
+                if (!json.has("additionalNestedFields")) {
+                    json.add("additionalNestedFields", JsonArray())
+                }
+                gson.fromJson(json, Configuration::class.java)
             } catch (e: Exception) {
                 null
             } ?: Configuration()

@@ -112,7 +112,7 @@ internal class UsedeskAttachmentDialog private constructor(
     }
 
     companion object {
-        private const val MIME_TYPE_ALL_IMAGES = "image/*"
+        private const val MIME_TYPE_ALL_IMAGES = "*/*"
         private const val MIME_TYPE_ALL_DOCS = "*/*"
 
         fun create(screen: UsedeskChatScreen): UsedeskAttachmentDialog {

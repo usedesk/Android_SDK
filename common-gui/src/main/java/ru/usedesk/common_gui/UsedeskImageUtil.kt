@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
@@ -58,23 +57,47 @@ fun showImage(ivTarget: ImageView,
     }
 
     glide.listener(AppRequestListener(vLoading, vError, onSuccess, onError))
-            .apply {
-                if (loadingId != 0) {
-                    placeholder(loadingId)
-                }
+        .apply {
+            if (loadingId != 0) {
+                placeholder(loadingId)
             }
-            .into(ivTarget)
+        }
+        .into(ivTarget)
+}
+
+
+fun showThumbnail(
+    target: ImageView,
+    url: String,
+    onSuccess: () -> Unit = {},
+    onError: () -> Unit = {}
+) {
+    Glide.with(target.context.applicationContext)
+        .asBitmap()
+        .load(url)
+        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .centerCrop()
+        .thumbnail(0f)
+        .listener(
+            AppRequestListener(
+                onSuccess = onSuccess,
+                onError = onError
+            )
+        )
+        .into(target)
 }
 
 fun clearImage(ivTarget: ImageView) {
     Glide.with(ivTarget.context.applicationContext)
-            .clear(ivTarget)
+        .clear(ivTarget)
 }
 
-private fun showImageStatus(vLoading: View?,
-                            loadingShow: Boolean,
-                            vError: View?,
-                            errorShow: Boolean) {
+private fun showImageStatus(
+    vLoading: View?,
+    loadingShow: Boolean,
+    vError: View?,
+    errorShow: Boolean
+) {
     if (vLoading != null) {
         vLoading.visibility = visibleGone(loadingShow)
     }
@@ -91,18 +114,18 @@ private fun onAction(action: () -> Unit) {
     }
 }
 
-internal class AppRequestListener(
-        private val vLoading: View? = null,
-        private val vError: View? = null,
-        private val onSuccess: () -> Unit = {},
-        private val onError: () -> Unit = {}
-) : RequestListener<Drawable?> {
+internal class AppRequestListener<T>(
+    private val vLoading: View? = null,
+    private val vError: View? = null,
+    private val onSuccess: () -> Unit = {},
+    private val onError: () -> Unit = {}
+) : RequestListener<T?> {
 
     override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable?>?,
-            isFirstResource: Boolean
+        e: GlideException?,
+        model: Any?,
+        target: Target<T?>?,
+        isFirstResource: Boolean,
     ): Boolean {
         showImageStatus(vLoading, false, vError, true)
         onAction(onError)
@@ -110,11 +133,11 @@ internal class AppRequestListener(
     }
 
     override fun onResourceReady(
-            resource: Drawable?,
-            model: Any?,
-            target: Target<Drawable?>?,
-            dataSource: DataSource?,
-            isFirstResource: Boolean
+        resource: T?,
+        model: Any?,
+        target: Target<T?>?,
+        dataSource: DataSource?,
+        isFirstResource: Boolean,
     ): Boolean {
         showImageStatus(vLoading, false, vError, false)
         onAction(onSuccess)

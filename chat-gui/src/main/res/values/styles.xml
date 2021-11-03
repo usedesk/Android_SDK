@@ -187,12 +187,31 @@
         <item name="srcCompat">@drawable/usedesk_ic_sent_failed</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Video">
+        <item name="usedesk_common_container_3">@null</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio">
+        <item name="usedesk_common_container_3">@null</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text
+        </item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Image">
         <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
-        <item name="usedesk_chat_message_image_error_image">@style/Usedesk.Chat.Message.Image.Error.Image</item>
-        <item name="usedesk_chat_message_image_preview_image">@style/Usedesk.Chat.Message.Image.Preview.Image</item>
-        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text</item>
+        <item name="usedesk_chat_message_image_error_image">
+            @style/Usedesk.Chat.Message.Image.Error.Image
+        </item>
+        <item name="usedesk_chat_message_image_preview_image">
+            @style/Usedesk.Chat.Message.Image.Preview.Image
+        </item>
+        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Preview.Image" parent="">
@@ -223,11 +242,51 @@
         <item name="android:padding">2dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Video.Agent.Container1" parent="">
+        <item name="android:layout_marginEnd">32dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Agent.Container3" parent="">
+        <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Agent.Container1" parent="">
+        <item name="android:layout_marginEnd">32dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Agent.Container3" parent="">
+        <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Image.Agent">
         <item name="usedesk_common_container_root">@null</item>
-        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Agent.Container1</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Agent.Container1
+        </item>
         <item name="usedesk_common_container_2">@null</item>
-        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Agent.Container3</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Agent.Container3
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Agent">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Video.Agent.Container1
+        </item>
+        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Video.Agent.Container3
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Agent">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Audio.Agent.Container1
+        </item>
+        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Audio.Agent.Container3
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client.Container1" parent="">
@@ -240,11 +299,63 @@
         <item name="android:padding">2dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Video.Client.Container1" parent="">
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Client.Container3" parent="">
+        <item name="android:background">@drawable/usedesk_background_bubble_client</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Client.Container1" parent="">
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Client.Container3" parent="">
+        <item name="android:background">@drawable/usedesk_background_bubble_client</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Image.Client">
         <item name="usedesk_common_container_root">@null</item>
-        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Client.Container1</item>
-        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Client.Container3</item>
-        <item name="usedesk_chat_message_client_sent_failed_image">@style/Usedesk.Chat.Message.Client.Sent.Failed</item>
+        <item name="usedesk_common_container_1">
+            @style/Usedesk.Chat.Message.Image.Client.Container1
+        </item>
+        <item name="usedesk_common_container_3">
+            @style/Usedesk.Chat.Message.Image.Client.Container3
+        </item>
+        <item name="usedesk_chat_message_client_sent_failed_image">
+            @style/Usedesk.Chat.Message.Client.Sent.Failed
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Client">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_container_1">
+            @style/Usedesk.Chat.Message.Video.Client.Container1
+        </item>
+        <item name="usedesk_common_container_3">
+            @style/Usedesk.Chat.Message.Video.Client.Container3
+        </item>
+        <item name="usedesk_chat_message_client_sent_failed_image">
+            @style/Usedesk.Chat.Message.Client.Sent.Failed
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Client">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_container_1">
+            @style/Usedesk.Chat.Message.Audio.Client.Container1
+        </item>
+        <item name="usedesk_common_container_3">
+            @style/Usedesk.Chat.Message.Audio.Client.Container3
+        </item>
+        <item name="usedesk_chat_message_client_sent_failed_image">
+            @style/Usedesk.Chat.Message.Client.Sent.Failed
+        </item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Container4" parent="">

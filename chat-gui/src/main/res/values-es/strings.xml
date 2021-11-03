@@ -14,6 +14,7 @@
     <string name="usedesk_chat">@string/usedesk_string_chat</string>
     <string name="usedesk_feedback_thanks">@string/usedesk_string_feedback_thanks</string>
     <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
+    <string name="usedesk_download">@string/usedesk_string_download</string>
     <string name="usedesk_camera">@string/usedesk_string_camera</string>
     <string name="usedesk_storage">@string/usedesk_string_storage</string>
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
@@ -39,4 +40,5 @@
     <string name="usedesk_string_dangerous_file">Este tipo de archivo puede dañar</string>
     <string name="usedesk_string_send_again">Reenviar</string>
     <string name="usedesk_string_delete_message">Borrar mensaje</string>
+    <string name="usedesk_string_download">Descargar</string>
 </resources>

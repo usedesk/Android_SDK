@@ -1,14 +1,24 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
+import android.content.res.Resources
+import android.graphics.Rect
+import android.support.v4.media.session.PlaybackStateCompat
 import android.text.Html
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.core.view.updatePadding
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ui.PlayerView
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -33,6 +43,11 @@ internal class MessagesAdapter(
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
     private val layoutManager = LinearLayoutManager(recyclerView.context)
 
+    private val mediaHolders = mutableListOf<MessageVideoViewHolder>()
+    private val videoPlayer = SimpleExoPlayer.Builder(recyclerView.context)
+        .setUseLazyPreparation(true)
+        .build()
+
     init {
         recyclerView.apply {
             layoutManager = this@MessagesAdapter.layoutManager
@@ -49,6 +64,17 @@ internal class MessagesAdapter(
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val lastItemIndex = layoutManager.findLastVisibleItemPosition()
                 viewModel.showToBottomButton(lastItemIndex < items.size - 1)
+            }
+        })
+        videoPlayer.addListener(object : Player.Listener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                if (playWhenReady && playbackState == PlaybackStateCompat.STATE_PLAYING) {
+                    if (mediaHolders.all {
+                            !it.hasPlayer() || !it.isVisibleGlobal()
+                        }) {
+                        videoPlayer.stop()
+                    }
+                }
             }
         })
         viewModel.messagesLiveData.observe(lifecycleOwner) {
@@ -155,6 +181,24 @@ internal class MessagesAdapter(
                     MessageImageAgentBinding(rootView, defaultStyleId)
                 })
             }
+            UsedeskMessage.Type.TYPE_AGENT_VIDEO.value -> {
+                MessageVideoAgentViewHolder(inflateItem(
+                    parent,
+                    R.layout.usedesk_item_chat_message_video_agent,
+                    R.style.Usedesk_Chat_Message_Video_Agent
+                ) { rootView, defaultStyleId ->
+                    MessageVideoAgentBinding(rootView, defaultStyleId)
+                })
+            }
+            UsedeskMessage.Type.TYPE_AGENT_AUDIO.value -> {
+                MessageAudioAgentViewHolder(inflateItem(
+                    parent,
+                    R.layout.usedesk_item_chat_message_audio_agent,
+                    R.style.Usedesk_Chat_Message_Audio_Agent
+                ) { rootView, defaultStyleId ->
+                    MessageAudioAgentBinding(rootView, defaultStyleId)
+                })
+            }
             UsedeskMessage.Type.TYPE_CLIENT_TEXT.value -> {
                 MessageTextClientViewHolder(inflateItem(
                     parent,
@@ -180,6 +224,24 @@ internal class MessagesAdapter(
                     R.style.Usedesk_Chat_Message_Image_Client
                 ) { rootView, defaultStyleId ->
                     MessageImageClientBinding(rootView, defaultStyleId)
+                })
+            }
+            UsedeskMessage.Type.TYPE_CLIENT_VIDEO.value -> {
+                MessageVideoClientViewHolder(inflateItem(
+                    parent,
+                    R.layout.usedesk_item_chat_message_video_client,
+                    R.style.Usedesk_Chat_Message_Video_Client
+                ) { rootView, defaultStyleId ->
+                    MessageVideoClientBinding(rootView, defaultStyleId)
+                })
+            }
+            UsedeskMessage.Type.TYPE_CLIENT_AUDIO.value -> {
+                MessageAudioClientViewHolder(inflateItem(
+                    parent,
+                    R.layout.usedesk_item_chat_message_audio_client,
+                    R.style.Usedesk_Chat_Message_Audio_Client
+                ) { rootView, defaultStyleId ->
+                    MessageAudioClientBinding(rootView, defaultStyleId)
                 })
             }
             else -> {
@@ -457,6 +519,187 @@ internal class MessagesAdapter(
         }
     }
 
+    internal abstract inner class MessageVideoViewHolder(
+        itemView: View,
+        private val binding: MessageVideoBinding,
+        bindingDate: DateBinding
+    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+
+        private val fullscreen: View = binding.pvVideo.findViewById(R.id.exo_fullscreen_icon)
+        private lateinit var commentFile: UsedeskFile
+        private var lastVisible = false
+
+        init {
+            binding.pvVideo.init { visible ->
+                val paddingBottom = if (visible) {
+                    32f
+                } else {
+                    0f
+                }
+                binding.lTimeContainer.updatePadding(
+                    0,
+                    0,
+                    0,
+                    dpToPixels(recyclerView.resources, paddingBottom).toInt()
+                )
+            }
+
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val visible = isVisible()
+                    if (!visible && lastVisible) {
+                        reset()
+                    }
+                    lastVisible = visible
+                }
+            })
+
+            fullscreen.setOnClickListener {
+                Toast.makeText(recyclerView.context, "FULLSCREEN", Toast.LENGTH_SHORT).show()
+                //activity.fullscreenVideo(binding.pvVideo)
+            }
+        }
+
+        override fun bind(position: Int) {
+            super.bind(position)
+            val messageFile = items[position] as UsedeskMessageFile
+            this.commentFile = messageFile.file
+            reset()
+        }
+
+        override fun clear() {
+            //clearImage(binding.ivPreview)
+        }
+
+        private fun isVisible(): Boolean {
+            val rectParent = Rect()
+            recyclerView.getGlobalVisibleRect(rectParent)
+            val rectItem = Rect()
+            binding.rootView.getGlobalVisibleRect(rectItem)
+            return rectParent.contains(rectItem)
+        }
+
+        fun hasPlayer(): Boolean = binding.pvVideo.player != null
+
+        fun isVisibleGlobal(): Boolean = lastVisible
+
+        private fun changeElements(
+            showStub: Boolean = false,
+            showPreview: Boolean = false,
+            showPlay: Boolean = false,
+            showVideo: Boolean = false
+        ) {
+            binding.lStub.visibility = visibleInvisible(showStub)
+            binding.ivPreview.visibility = visibleInvisible(showPreview)
+            binding.ivPlay.visibility = visibleInvisible(showPlay)
+            binding.pvVideo.visibility = visibleInvisible(showVideo)
+        }
+
+        fun reset() {//TODO: вместе с AudioViewHolder сделать интерфейс MediaHolder чтобы ресетить сразу всё
+            binding.pvVideo.player?.stop()
+            binding.pvVideo.player = null
+
+            changeElements(
+                showStub = true,
+                showPlay = true,
+            )
+
+            showThumbnail(binding.ivPreview,
+                commentFile.content,
+                onSuccess = {
+                    if (binding.pvVideo.visibility != View.VISIBLE) {
+                        changeElements(
+                            showPreview = true,
+                            showPlay = true
+                        )
+                    }
+                }
+            )
+
+            binding.ivPlay.setOnClickListener {
+                changeElements(showVideo = true)
+
+                videoPlayer.stop()
+                binding.pvVideo.player = null
+                (mediaHolders - this).forEach {
+                    it.reset()
+                }
+                videoPlayer.setMediaItem(MediaItem.fromUri(commentFile.content))
+                binding.pvVideo.player = videoPlayer
+                videoPlayer.prepare()
+                videoPlayer.play()
+                binding.pvVideo.hideController()
+            }
+        }
+    }
+
+    fun dpToPixels(resources: Resources, dp: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
+    }
+
+    fun PlayerView.init(
+        onControlsVisibilityChanged: (Boolean) -> Unit = {}
+    ) {
+        onControlsVisibilityChanged(false)
+        setControllerVisibilityListener { visibility ->
+            val visible = visibility == View.VISIBLE
+            findViewById<View>(R.id.exo_controller).startAnimation(
+                AnimationUtils.loadAnimation(
+                    context,
+                    if (visible) {
+                        R.anim.fade_in
+                    } else {
+                        R.anim.fade_out
+                    }
+                )
+            )
+            onControlsVisibilityChanged(visible)
+        }
+    }
+
+    internal abstract inner class MessageAudioViewHolder(
+        itemView: View,
+        private val binding: MessageAudioBinding,
+        bindingDate: DateBinding
+    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindImage(position)
+        }
+
+        private fun bindImage(position: Int) {
+            /*val messageFile = items[position] as UsedeskMessageFile
+
+            binding.ivPreview.setOnClickListener(null)
+            binding.ivError.setOnClickListener(null)
+
+            showImage(binding.ivPreview,
+                loadingImageId,
+                messageFile.file.content,
+                binding.pbLoading,
+                binding.ivError, {
+                    binding.ivPreview.setOnClickListener {
+                        onFileClick(messageFile.file)
+                    }
+                }, {
+                    binding.ivError.setOnClickListener {
+                        bindImage(position)
+                    }
+                })*/
+        }
+
+        override fun clear() {
+            //clearImage(binding.ivPreview)
+        }
+    }
+
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content, binding.date) {
@@ -478,6 +721,24 @@ internal class MessagesAdapter(
     internal inner class MessageImageClientViewHolder(
         private val binding: MessageImageClientBinding
     ) : MessageImageViewHolder(binding.rootView, binding.content, binding.date) {
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindClient(position, binding.client)
+        }
+    }
+
+    internal inner class MessageVideoClientViewHolder(
+        private val binding: MessageVideoClientBinding
+    ) : MessageVideoViewHolder(binding.rootView, binding.content, binding.date) {
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindClient(position, binding.client)
+        }
+    }
+
+    internal inner class MessageAudioClientViewHolder(
+        private val binding: MessageAudioClientBinding
+    ) : MessageAudioViewHolder(binding.rootView, binding.content, binding.date) {
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
@@ -679,6 +940,26 @@ internal class MessagesAdapter(
         }
     }
 
+    internal inner class MessageVideoAgentViewHolder(
+        private val binding: MessageVideoAgentBinding
+    ) : MessageVideoViewHolder(binding.rootView, binding.content, binding.date) {
+
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindAgent(position, binding.agent)
+        }
+    }
+
+    internal inner class MessageAudioAgentViewHolder(
+        private val binding: MessageAudioAgentBinding
+    ) : MessageAudioViewHolder(binding.rootView, binding.content, binding.date) {
+
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindAgent(position, binding.agent)
+        }
+    }
+
     companion object {
         private fun isToday(calendar: Calendar): Boolean {
             val today = Calendar.getInstance()
@@ -753,6 +1034,23 @@ internal class MessagesAdapter(
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
     }
 
+    internal class MessageVideoBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
+        val lTimeContainer: ViewGroup = rootView.findViewById(R.id.l_time_container)
+        val pvVideo: PlayerView = rootView.findViewById(R.id.pv_video)
+        val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
+        val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
+        val lStub: ViewGroup = rootView.findViewById(R.id.l_stub)
+    }
+
+    internal class MessageAudioBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
+        val pvVideo: PlayerView = rootView.findViewById(R.id.pv_video)
+        val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
+    }
+
     internal class MessageImageClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
@@ -760,9 +1058,37 @@ internal class MessagesAdapter(
         val date = DateBinding(rootView, defaultStyleId)
     }
 
+    internal class MessageVideoClientBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageVideoBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val client = ClientBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
+    }
+
+    internal class MessageAudioClientBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageAudioBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val client = ClientBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
+    }
+
     internal class MessageImageAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val agent = AgentBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
+    }
+
+    internal class MessageVideoAgentBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageVideoBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val agent = AgentBinding(rootView, defaultStyleId)
+        val date = DateBinding(rootView, defaultStyleId)
+    }
+
+    internal class MessageAudioAgentBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val content = MessageAudioBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
         val date = DateBinding(rootView, defaultStyleId)
     }

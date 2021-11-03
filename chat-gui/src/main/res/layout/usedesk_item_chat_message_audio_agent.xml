@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:background="@color/usedesk_white_1"
+    tools:theme="@style/Usedesk.Chat.Message.Audio.Agent">
+
+    <TextView
+        android:id="@+id/tv_date"
+        style="?attr/usedesk_chat_message_date_text"
+        tools:text="Вчера" />
+
+    <LinearLayout
+        style="?attr/usedesk_common_container_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/iv_avatar"
+            style="?attr/usedesk_chat_message_avatar_image"
+            tools:src="@drawable/usedesk_background_avatar_def" />
+
+        <LinearLayout
+            style="?attr/usedesk_common_container_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_name"
+                style="?attr/usedesk_chat_message_name_text"
+                tools:text="Алена Ошева" />
+
+            <include
+                android:id="@+id/content"
+                layout="@layout/usedesk_item_chat_message_audio" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/v_empty"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+</LinearLayout>

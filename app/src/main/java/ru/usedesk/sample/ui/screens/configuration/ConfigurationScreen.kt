@@ -111,9 +111,6 @@ class ConfigurationScreen : Fragment() {
         binding.ivClientAvatarReset.setOnClickListener {
             onAvatar(null)
         }
-        binding.ivClientAvatarClear.setOnClickListener {
-            onAvatar("")
-        }
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
         initTil(binding.tilUrlToSendFile)

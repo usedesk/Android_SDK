@@ -9,7 +9,7 @@ internal class SetClientRequest(
     note: String?,
     phone: Long?,
     additionalId: Long?,
-    avatar: String?
+    avatar: Avatar?
 ) : BaseRequest(TYPE) {
 
     private val payload: Payload = Payload(token, email, name, note, phone, additionalId, avatar)
@@ -25,6 +25,11 @@ internal class SetClientRequest(
         private val note: String?,
         private val phone: Long?,
         private val additionalId: Long?,
-        private val avatar: String?
+        private val avatar: Avatar?
+    )
+
+    internal class Avatar(
+        private val name: String,
+        private val content: String
     )
 }

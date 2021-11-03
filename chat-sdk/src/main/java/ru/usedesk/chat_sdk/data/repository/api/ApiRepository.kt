@@ -161,20 +161,18 @@ internal class ApiRepository(
         additionalId: Long?
     ) {
         val avatarBase64 = when {
-            avatar == null -> {
-                null
-            }
-            avatar.isNotEmpty() -> {
+            avatar?.isNotEmpty() == true -> {
                 try {
                     val avatarLoaded = fileLoader.load(Uri.parse(avatar))
-                    encodeToString(avatarLoaded.bytes, 0)
+                    val content = encodeToString(avatarLoaded.bytes, 0)
+                    SetClientRequest.Avatar(avatarLoaded.name, content)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     null
                 }
             }
             else -> {
-                ""
+                null
             }
         }
         socketApi.sendRequest(

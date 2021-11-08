@@ -13,7 +13,6 @@ import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
-import ru.usedesk.common_gui.IUsedeskOnBackPressedListener
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.sample.R
@@ -82,14 +81,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        val fragment = getCurrentFragment()
-        if (fragment is IUsedeskOnBackPressedListener
-            && (fragment as IUsedeskOnBackPressedListener).onBackPressed()
-        ) {
-            //nothing
-        } else {
-            viewModel.onBackPressed()
-        }
+        viewModel.onBackPressed()
     }
 
     override fun onSupportClick() {

@@ -137,7 +137,7 @@ supportFragmentManager.beginTransaction()
 ```
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
-    if (fragment is IUsedeskOnBackPressedListener && fragment.onBackPressed()) {
+    if (fragment is UsedeskFragment && fragment.onBackPressed()) {
           return
     }
 }
@@ -298,7 +298,7 @@ supportFragmentManager().beginTransaction()
 ```
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
-    if (fragment is IUsedeskOnBackPressedListener && fragment.onBackPressed()) {
+    if (fragment is UsedeskFragment && fragment.onBackPressed()) {
           return
     }
 }

@@ -17,11 +17,12 @@ internal interface IApiRepository {
     )
 
     fun send(
-        token: String?,
+        token: String,
         email: String?,
         name: String?,
         note: String?,
         phone: Long?,
+        avatar: String?,
         additionalId: Long?
     )
 

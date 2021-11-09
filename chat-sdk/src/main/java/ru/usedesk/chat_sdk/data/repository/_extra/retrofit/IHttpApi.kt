@@ -18,6 +18,10 @@ internal interface IHttpApi {
     @POST("send_file")
     fun postFile(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 
-    @POST("addFieldsToChat ")
+    @POST("addFieldsToChat")
     fun postAdditionalFields(@Body body: AdditionalFieldsRequest): Call<ResponseBody>
+
+    @Multipart
+    @POST("/v1/chat/setEmail")
+    fun postSetClient(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 }

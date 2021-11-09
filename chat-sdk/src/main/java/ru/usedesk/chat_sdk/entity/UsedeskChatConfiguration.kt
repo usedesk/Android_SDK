@@ -15,6 +15,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientPhoneNumber: Long? = null,
     val clientAdditionalId: Long? = null,
     val clientInitMessage: String? = null,
+    //val clientAvatar: String? = null,
     val cacheMessagesWithFile: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),
     val additionalNestedFields: List<Map<Long, String>> = listOf()

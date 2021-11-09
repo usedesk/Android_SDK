@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.text.Html
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -8,7 +9,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.makeramen.roundedimageview.Corner
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -481,8 +481,6 @@ internal class MessagesAdapter(
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
-
-            binding.content.ivPreview.setCornerRadius(Corner.BOTTOM_RIGHT, 0.0f)
         }
     }
 
@@ -508,6 +506,10 @@ internal class MessagesAdapter(
             }
         }
 
+        private val goodAtStart = binding.styleValues
+            .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
+            .getInt(android.R.attr.layout_gravity) in arrayOf(Gravity.START, Gravity.LEFT)
+
         override fun bind(position: Int) {
             super.bind(position)
             bindAgent(position, binding.agent)
@@ -516,15 +518,14 @@ internal class MessagesAdapter(
             buttonsAdapter.update(messageAgentText.buttons)
 
             binding.content.rootView.layoutParams.apply {
-                width =
-                    if (messageAgentText.buttons.isEmpty()
-                        && !messageAgentText.feedbackNeeded
-                        && messageAgentText.feedback == null
-                    ) {
-                        FrameLayout.LayoutParams.WRAP_CONTENT
-                    } else {
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    }
+                width = if (messageAgentText.buttons.isEmpty()
+                    && !messageAgentText.feedbackNeeded
+                    && messageAgentText.feedback == null
+                ) {
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                } else {
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                }
             }
 
             val ivLike = binding.content.ivLike
@@ -561,7 +562,7 @@ internal class MessagesAdapter(
                         ivLike,
                         ivDislike,
                         binding.content.lFeedback,
-                        false,
+                        goodAtStart,
                         goodImage,
                         goodColoredImage
                     ) {
@@ -573,7 +574,7 @@ internal class MessagesAdapter(
                         ivDislike,
                         ivLike,
                         binding.content.lFeedback,
-                        true,
+                        !goodAtStart,
                         badImage,
                         badColoredImage
                     ) {
@@ -675,8 +676,6 @@ internal class MessagesAdapter(
         override fun bind(position: Int) {
             super.bind(position)
             bindAgent(position, binding.agent)
-
-            binding.content.ivPreview.setCornerRadius(Corner.BOTTOM_LEFT, 0.0f)
         }
     }
 

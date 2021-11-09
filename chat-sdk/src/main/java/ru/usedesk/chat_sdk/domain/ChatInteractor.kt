@@ -699,7 +699,7 @@ internal class ChatInteractor(
                     configuration.clientNote,
                     configuration.clientPhoneNumber,
                     if (avatarSendNeeded) {
-                        configuration.clientAvatar
+                        null//configuration.clientAvatar
                     } else {
                         null
                     },
@@ -722,7 +722,7 @@ internal class ChatInteractor(
         ) {
             initClientMessage = null
         }
-        avatarSendNeeded = oldConfiguration?.clientAvatar != configuration.clientAvatar
+        avatarSendNeeded = false//oldConfiguration?.clientAvatar != configuration.clientAvatar
 
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 

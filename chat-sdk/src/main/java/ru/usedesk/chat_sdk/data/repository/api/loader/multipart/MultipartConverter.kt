@@ -17,8 +17,8 @@ internal class MultipartConverter : IMultipartConverter {
     }
 
     override fun convert(
-            key: String,
-            loadedFile: LoadedFile
+        key: String,
+        loadedFile: LoadedFile
     ): MultipartBody.Part {
         val mediaType = MediaType.get(loadedFile.type)
         val requestBody = RequestBody.create(mediaType, loadedFile.bytes)

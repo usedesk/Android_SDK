@@ -1,13 +1,13 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
-import android.util.Log
+import android.util.Base64.encodeToString
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
-import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
@@ -152,14 +152,40 @@ internal class ApiRepository(
     }
 
     override fun send(
-        token: String?,
+        token: String,
         email: String?,
         name: String?,
         note: String?,
         phone: Long?,
+        avatar: String?,
         additionalId: Long?
     ) {
-        socketApi.sendRequest(SetClientRequest(token, email, name, note, phone, additionalId))
+        val avatarBase64 = when {
+            avatar?.isNotEmpty() == true -> {
+                try {
+                    val avatarLoaded = fileLoader.load(Uri.parse(avatar))
+                    val content = encodeToString(avatarLoaded.bytes, 0)
+                    SetClientRequest.Avatar(avatarLoaded.name, content)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+            else -> {
+                null
+            }
+        }
+        socketApi.sendRequest(
+            SetClientRequest(
+                token,
+                email,
+                name,
+                note,
+                phone,
+                additionalId,
+                avatarBase64
+            )
+        )
     }
 
     override fun send(
@@ -198,7 +224,7 @@ internal class ApiRepository(
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
     ) {
-        val response = doRequest(configuration.urlToSendFile, AdditionalFieldsResponse::class.java) {
+        val response = doRequest(configuration.urlToSendFile, SetClientResponse::class.java) {
             if (token != null) {
                 val totalFields =
                     (additionalFields.toList() + additionalNestedFields.flatMap { fields ->

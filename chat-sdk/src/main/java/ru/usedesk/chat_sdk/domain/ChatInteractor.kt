@@ -57,7 +57,8 @@ internal class ChatInteractor(
 
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
-    private var firstMessage: Boolean = true
+    private var additionalFieldsNeeded: Boolean = true
+    private var avatarSendNeeded: Boolean = false
 
     init {
         listenersDisposables.apply {
@@ -319,8 +320,8 @@ internal class ChatInteractor(
     }
 
     private fun sendAdditionalFieldsIfNeeded() {
-        if (firstMessage) {
-            firstMessage = false
+        if (additionalFieldsNeeded) {
+            additionalFieldsNeeded = false
             if (configuration.additionalFields.isNotEmpty() ||
                 configuration.additionalNestedFields.isNotEmpty()
             ) {
@@ -333,7 +334,7 @@ internal class ChatInteractor(
                     )
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    firstMessage = true
+                    additionalFieldsNeeded = true
                     throw e
                 }
             }
@@ -690,14 +691,21 @@ internal class ChatInteractor(
 
     private fun sendUserEmail() {
         try {
-            apiRepository.send(
-                token,
-                configuration.clientEmail,
-                configuration.clientName,
-                configuration.clientNote,
-                configuration.clientPhoneNumber,
-                configuration.clientAdditionalId
-            )
+            token?.let {
+                apiRepository.send(
+                    it,
+                    configuration.clientEmail,
+                    configuration.clientName,
+                    configuration.clientNote,
+                    configuration.clientPhoneNumber,
+                    if (avatarSendNeeded) {
+                        null//configuration.clientAvatar
+                    } else {
+                        null
+                    },
+                    configuration.clientAdditionalId
+                )
+            }
         } catch (e: UsedeskException) {
             exceptionSubject.onNext(e)
         }
@@ -707,13 +715,15 @@ internal class ChatInteractor(
         this.token = chatInited.token
         clientTokenSubject.onNext(chatInited.token)
 
+        val oldConfiguration = userInfoRepository.getConfigurationNullable(configuration)
+
         if (initClientOfflineForm != null ||
-            userInfoRepository.getConfigurationNullable(configuration)
-                ?.clientInitMessage
-                ?.equals(initClientMessage) == true
+            oldConfiguration?.clientInitMessage == initClientMessage
         ) {
             initClientMessage = null
         }
+        avatarSendNeeded = false//oldConfiguration?.clientAvatar != configuration.clientAvatar
+
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
         val ids = lastMessages.map {

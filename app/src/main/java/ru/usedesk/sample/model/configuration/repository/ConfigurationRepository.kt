@@ -30,7 +30,7 @@ class ConfigurationRepository(
                 gson.fromJson(json, Configuration::class.java)
             } catch (e: Exception) {
                 null
-            } ?: Configuration.default
+            } ?: Configuration()
 
             configurationSubject.onNext(configuration)
             this.configuration = configuration

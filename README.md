@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.8.2)
+# Android Usedesk SDK (v3.9.0)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -137,8 +137,8 @@ supportFragmentManager.beginTransaction()
 ```
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
-    if (fragment is IUsedeskOnBackPressedListener && fragment.onBackPressed()) {
-          return
+    if (fragment is UsedeskFragment && fragment.onBackPressed()) {
+        return
     }
 }
 ```
@@ -156,16 +156,13 @@ override fun onFileClick(usedeskFile: UsedeskFile ) {
 - Вызывать метод `clear()` перед выходом из фрагмента, для освобождения ресурсов изображений и остановки загрузок, например:
 
 ```
-fun onBackPressed() {
-    val fragmentManager = activity.getSupportFragmentManager()
-    if (fragmentManager.backStackEntryCount > 1) {
-        val fragment = fragmentManager.fragments[0]
-        if (fragment is UsedeskChatScreen) {
-            fragment.clear()
-        }
-        fragmentManager.popBackStack()
-    } else {
-        activity.finish()
+override fun onBackPressed() {
+    val fragment = getCurrentFragment()
+    if (fragment is UsedeskFragment && fragment.onBackPressed()) {
+        return
+    } else if (fragment is UsedeskChatScreen) {
+        fragment.clear()
+        goPreviousFragment()
     }
 }
 ```
@@ -298,8 +295,8 @@ supportFragmentManager().beginTransaction()
 ```
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
-    if (fragment is IUsedeskOnBackPressedListener && fragment.onBackPressed()) {
-          return
+    if (fragment is UsedeskFragment && fragment.onBackPressed()) {
+        return
     }
 }
 ```
@@ -459,3 +456,7 @@ UsedeskKnowledgeBaseSdk.release()
   - Добавлена возможность передачи дополнительных полей в конфигурацию чата
 - v3.8.2
   - Исправлена ошибка миграции конфигурации чата
+
+- v3.9.0
+  - Убран сброс скругления изображения в сообщении
+  - Добавлена реакция кнопок оценки в чате на значения `layout_gravity=start/end/left/right` для перестановки

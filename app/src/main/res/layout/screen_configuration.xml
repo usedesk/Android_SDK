@@ -238,6 +238,38 @@
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_client_avatar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_client_avatar_reset"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:srcCompat="@android:drawable/ic_delete" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_client_avatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_custom_agent_name"
                     android:layout_width="match_parent"

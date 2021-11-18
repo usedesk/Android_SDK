@@ -9,10 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
-import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.*
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
@@ -65,12 +62,17 @@ internal class MessagesPage : UsedeskFragment() {
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
         }
 
+        val mediaPlayerAdapter =
+            getParentListener<IUsedeskMediaPlayerAdapterKeeper>()?.getMediaPlayerAdapter()
+                ?: throw RuntimeException("Parent must implement IUsedeskMediaPlayerAdapterKeeper")
+
         messagesAdapter = MessagesAdapter(
             binding.rvMessages,
             viewModel,
             viewLifecycleOwner,
             agentName,
             rejectedFileExtensions,
+            mediaPlayerAdapter,
             {
                 getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
             },

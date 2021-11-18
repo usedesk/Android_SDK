@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/usedesk_white_1"
@@ -12,5 +12,11 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/l_fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/usedesk_black_1" />
+    </FrameLayout>
 </layout>

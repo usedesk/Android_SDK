@@ -21,26 +21,52 @@
                 android:id="@+id/exo_play"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/usedesk_ic_play_dark" />
 
             <ImageView
                 android:id="@+id/exo_pause"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/usedesk_ic_pause_dark" />
         </FrameLayout>
 
-        <View
-            android:id="@+id/exo_progress_placeholder"
+        <FrameLayout
+            android:id="@+id/l_placeholder"
             android:layout_width="0dp"
             android:layout_height="18dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/l_play"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:id="@+id/exo_progress_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <View
+                android:id="@+id/stub_progress"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="4dp"
+                android:background="@color/usedesk_gray_1"
+                android:visibility="invisible"
+                tools:visibility="visible" />
+
+            <View
+                android:id="@+id/stub_scrubber"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="2dp"
+                android:background="@drawable/usedesk_ic_stub_scrubber"
+                android:visibility="invisible"
+                tools:visibility="visible" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/exo_position"
@@ -50,11 +76,11 @@
             android:fontFamily="@font/sf_ui_display_medium"
             android:includeFontPadding="false"
             android:singleLine="true"
-            android:textColor="@color/usedesk_gray_cold_2"
+            android:textColor="@color/usedesk_gray_cold_1"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/l_play"
-            app:layout_constraintTop_toBottomOf="@+id/exo_progress_placeholder"
+            app:layout_constraintTop_toBottomOf="@+id/l_placeholder"
             app:layout_goneMarginStart="2dp"
             tools:text="115:05" />
 
@@ -71,8 +97,8 @@
             android:text="@string/usedesk_download"
             android:textColor="@color/usedesk_blue"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/exo_position"
             app:layout_constraintStart_toEndOf="@+id/exo_position"
-            app:layout_constraintTop_toBottomOf="@+id/exo_progress_placeholder" />
+            app:layout_constraintTop_toTopOf="@+id/exo_position" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

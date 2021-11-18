@@ -10,23 +10,29 @@
     app:cardElevation="0dp"
     tools:theme="@style/Usedesk.Chat.Message.Video">
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/pv_video"
+    <FrameLayout
+        android:id="@+id/l_video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:controller_layout_id="@layout/usedesk_view_player_video_controls"
-        app:show_buffering="always" />
+        android:background="@color/usedesk_black_1" />
 
-    <ImageView
-        android:id="@+id/iv_preview"
+    <FrameLayout
+        android:id="@+id/l_preview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@color/usedesk_black_1">
+
+        <ImageView
+            android:id="@+id/iv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/l_stub"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/usedesk_gray_3">
+        android:background="@color/usedesk_gray_2">
 
         <ImageView
             android:layout_width="176dp"

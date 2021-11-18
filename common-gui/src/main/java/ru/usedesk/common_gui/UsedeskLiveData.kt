@@ -30,4 +30,14 @@ class UsedeskLiveData<T>(
             }
         }
     }
+
+    fun initAndObserveWithOld(lifecycleOwner: LifecycleOwner, onData: (T?, T) -> Unit) {
+        var old: T? = null
+        initAndObserve(lifecycleOwner) {
+            if (it != null) {
+                onData(old, it)
+                old = it
+            }
+        }
+    }
 }

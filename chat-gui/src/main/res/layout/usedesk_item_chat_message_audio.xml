@@ -7,18 +7,14 @@
     android:layout_height="56dp"
     tools:theme="@style/Usedesk.Chat.Message.Audio">
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/pv_audio"
+    <FrameLayout
+        android:id="@+id/l_audio"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:buffered_color="@color/usedesk_gray_2"
-        app:controller_layout_id="@layout/usedesk_view_player_audio_controls"
-        app:hide_on_touch="false"
-        app:played_color="@color/usedesk_black_1"
-        app:scrubber_color="@color/usedesk_black_1"
-        app:show_buffering="when_playing"
-        app:show_timeout="0"
-        app:unplayed_color="@color/usedesk_gray_1" />
+        android:layout_height="match_parent" />
+
+    <include
+        android:id="@+id/stub"
+        layout="@layout/usedesk_view_player_audio_controls" />
 
     <ImageView
         android:id="@+id/iv_play"
@@ -26,7 +22,7 @@
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
         android:layout_margin="4dp"
-        android:background="?attr/selectableItemBackground"
+        android:background="?attr/selectableItemBackgroundBorderless"
         app:srcCompat="@drawable/usedesk_ic_play_dark" />
 
     <FrameLayout

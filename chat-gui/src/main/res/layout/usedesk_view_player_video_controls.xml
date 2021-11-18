@@ -20,13 +20,15 @@
         android:paddingBottom="32dp">
 
         <ImageButton
-            android:id="@+id/exo_play"
+            android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:srcCompat="@drawable/usedesk_ic_play_light" />
 
         <ImageButton
-            android:id="@+id/exo_pause"
+            android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:srcCompat="@drawable/usedesk_ic_pause_light" />
     </LinearLayout>
 

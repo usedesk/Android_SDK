@@ -18,7 +18,7 @@ class ConfigurationViewModel : ViewModel() {
     val configurationLiveData = MutableLiveData<Configuration?>()
     val configurationValidation = MutableLiveData<ConfigurationValidation?>()
     val goToSdkEvent = MutableLiveData<UsedeskEvent<Any?>?>()
-    val avatarLiveData = MutableLiveData<String>()
+    val avatarLiveData = MutableLiveData<String?>()
 
     init {
         disposables.add(configurationRepository.getConfigurationObservable().subscribe {
@@ -62,7 +62,7 @@ class ConfigurationViewModel : ViewModel() {
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
             configuration.clientInitMessage,
-            configuration.clientAvatar,
+            //configuration.clientAvatar,
             configuration.cacheFiles
         ).validate()
         val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(

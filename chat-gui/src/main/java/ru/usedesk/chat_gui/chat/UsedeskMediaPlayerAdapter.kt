@@ -11,10 +11,11 @@ import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
+import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.visibleGone
@@ -23,27 +24,20 @@ import ru.usedesk.common_gui.visibleInvisible
 class UsedeskMediaPlayerAdapter(
     activity: AppCompatActivity,
     private val lFullscreen: ViewGroup,
-    private val onFullscreenMode: (Boolean) -> Unit
+    private val onFullscreenMode: (Boolean) -> Unit,
+    private val onDownload: (String, String) -> Unit
 ) : IUsedeskMediaPlayerAdapter {
 
     private val playerViewModel: PlayerViewModel by activity.viewModels()
 
-    private val pvVideoExoPlayer = activity.layoutInflater.inflate(
-        R.layout.usedesk_view_player_video,
-        lFullscreen,
-        false
-    ) as PlayerView
+    private val pvVideoExoPlayer = lFullscreen.findViewById<PlayerView>(R.id.pv_video)
 
-    private val pvAudioExoPlayer = activity.layoutInflater.inflate(
-        R.layout.usedesk_view_player_audio,
-        lFullscreen,
-        false
-    ) as PlayerView
+    private val pvAudioExoPlayer = lFullscreen.findViewById<PlayerView>(R.id.pv_audio)
 
     /*private val pvYouTubePlayer =
         inflater.inflate(R.layout.view_player_youtube, lFullscreen, false) as YouTubePlayerView*/
 
-    private val exoPlayer: SimpleExoPlayer = SimpleExoPlayer.Builder(lFullscreen.context)
+    private val exoPlayer: ExoPlayer = ExoPlayer.Builder(lFullscreen.context)
         .setUseLazyPreparation(true)
         .build()
 
@@ -94,6 +88,16 @@ class UsedeskMediaPlayerAdapter(
                 )
             )
             currentMinimizeView?.doOnControlsVisibilityChanged?.invoke(visible)
+        }
+
+        videoExoPlayerViews.ivDownload.setOnClickListener {
+            val model = playerViewModel.modelLiveData.value
+            onDownload(model.key, model.name)
+        }
+
+        audioExoPlayerViews.tvDownload.setOnClickListener {
+            val model = playerViewModel.modelLiveData.value
+            onDownload(model.key, model.name)
         }
 
         videoExoPlayerViews.fullscreenButton.setOnClickListener {
@@ -158,6 +162,10 @@ class UsedeskMediaPlayerAdapter(
                 }
             }
         }
+    }
+
+    fun download(mediaKey: String, name: String) {
+        onDownload(mediaKey, name)
     }
 
     private fun onPause() {
@@ -234,13 +242,12 @@ class UsedeskMediaPlayerAdapter(
         }
     }
 
-    override fun onBackPressed(): Boolean {
-        return playerViewModel.onBackPressed()
-    }
+    override fun onBackPressed(): Boolean = playerViewModel.onBackPressed()
 
     override fun applyPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
+        mediaName: String,
         playerType: IUsedeskMediaPlayerAdapter.PlayerType,
         doOnApply: () -> Unit,
         doOnCancelPlay: () -> Unit,
@@ -260,10 +267,10 @@ class UsedeskMediaPlayerAdapter(
 
         when (playerType) {
             IUsedeskMediaPlayerAdapter.PlayerType.VIDEO -> {
-                playerViewModel.videoApply(mediaKey)
+                playerViewModel.videoApply(mediaKey, mediaName)
             }
             IUsedeskMediaPlayerAdapter.PlayerType.AUDIO -> {
-                playerViewModel.audioApply(mediaKey)
+                playerViewModel.audioApply(mediaKey, mediaName)
             }
             /*PlayerType.YOUTUBE -> {
                 playerViewModel.youTubeApply(mediaKey)
@@ -328,10 +335,12 @@ class UsedeskMediaPlayerAdapter(
         val fullscreenButton = exoPlayerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
         val controls = exoPlayerView.findViewById<View>(R.id.exo_controller)
         val pbLoading = exoPlayerView.findViewById<ProgressBar>(R.id.loading)
+        val ivDownload = exoPlayerView.findViewById<View>(R.id.iv_download)
     }
 
     private class AudioExoPlayerViews(exoPlayerView: PlayerView) {
         val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
+        val tvDownload = exoPlayerView.findViewById<View>(R.id.tv_download)
     }
 
     /*private class YouTubePlayerViews(youTubePlayerView: YouTubePlayerView) {

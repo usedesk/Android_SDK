@@ -15,11 +15,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
+import java.lang.String.format
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,12 +34,14 @@ internal class MessagesAdapter(
     private val rejectedFileExtensions: Array<String>,
     private val mediaPlayerAdapter: IUsedeskMediaPlayerAdapter,
     private val onFileClick: (UsedeskFile) -> Unit,
-    private val onUrlClick: (String) -> Unit
+    private val onUrlClick: (String) -> Unit,
+    private val onFileDownloadClick: (UsedeskFile) -> Unit
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
     private val layoutManager = LinearLayoutManager(recyclerView.context)
+    private val audioDurationCache = AudioDurationCache()
 
     init {
         recyclerView.apply {
@@ -127,10 +130,11 @@ internal class MessagesAdapter(
         return dateFormat.format(calendar.time)
     }
 
-    fun clear() {
+    fun release() {
         viewHolders.forEach {
-            it.clear()
+            it.release()
         }
+        audioDurationCache.release()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -259,7 +263,7 @@ internal class MessagesAdapter(
 
         abstract fun bind(position: Int)
 
-        open fun clear() {}
+        open fun release() {}
     }
 
     internal abstract inner class MessageViewHolder(
@@ -503,7 +507,7 @@ internal class MessagesAdapter(
                 })
         }
 
-        override fun clear() {
+        override fun release() {
             clearImage(binding.ivPreview)
         }
     }
@@ -514,11 +518,109 @@ internal class MessagesAdapter(
         bindingDate: DateBinding
     ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
 
-        override fun bind(position: Int) {
-            super.bind(position)
+        private lateinit var usedeskFile: UsedeskFile
+        private var lastVisible = false
+
+        //private val timePadding = dpToPixels(recyclerView.resources, 32f).toInt()//TODO: сделать кастомизируемым
+
+        init {
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+
+                    val visible = isVisibleChild(binding.rootView)
+                    if (!visible && lastVisible) {
+                        mediaPlayerAdapter.cancelPlayer(usedeskFile.content)
+                    }
+                    lastVisible = visible
+                }
+            })
         }
 
-        override fun clear() {
+        private fun bindVideo(messageFile: UsedeskMessageFile) {
+            this.usedeskFile = messageFile.file
+
+            changeElements(
+                showStub = true,
+                showPlay = true,
+            )
+
+            val doOnApply = {
+                changeElements(showVideo = true)
+            }
+
+            val doOnCancelPlay = {
+                showPreview()
+            }
+
+            val doOnControlsVisibilityChanged: ((Boolean) -> Unit) = {}
+            /*binding.timeContainer.updatePadding(
+                bottom = if (it) {
+                    timePadding
+                } else {
+                    0
+                }
+            )
+        }*/
+
+            binding.ivPlay.setOnClickListener {
+                mediaPlayerAdapter.applyPlayer(
+                    binding.lVideo,
+                    usedeskFile.content,
+                    usedeskFile.name,
+                    IUsedeskMediaPlayerAdapter.PlayerType.VIDEO,
+                    doOnApply,
+                    doOnCancelPlay,
+                    doOnControlsVisibilityChanged
+                )
+            }
+
+            mediaPlayerAdapter.reapplyPlayer(
+                binding.lVideo,
+                usedeskFile.content,
+                doOnApply,
+                doOnCancelPlay,
+                doOnControlsVisibilityChanged
+            )
+        }
+
+        private fun showPreview() {
+            changeElements(
+                showStub = true,
+                showPlay = true,
+            )
+            /*//TODO: Не раскомменчивать до весны
+            GlideUtil.showThumbnail(binding.ivPreview,
+                usedeskFile.content,
+                onSuccess = {
+                    if (binding.pvVideo.visibility != View.VISIBLE) {
+                        changeElements(
+                            showPreview = true,
+                            showPlay = true
+                        )
+                    }
+                }
+            )*/
+        }
+
+        private fun changeElements(
+            showStub: Boolean = false,
+            showPreview: Boolean = false,
+            showPlay: Boolean = false,
+            showVideo: Boolean = false
+        ) {
+            binding.lStub.visibility = visibleInvisible(showStub)
+            binding.lPreview.visibility = visibleInvisible(showPreview)
+            binding.ivPlay.visibility = visibleInvisible(showPlay)
+            binding.lVideo.visibility = visibleInvisible(showVideo)
+        }
+
+        override fun bind(position: Int) {
+            super.bind(position)
+            bindVideo(items[position] as UsedeskMessageFile)
+        }
+
+        override fun release() {
 
         }
     }
@@ -546,92 +648,86 @@ internal class MessagesAdapter(
                     lastVisible = visible
                 }
             })
-            binding.stub.stubProgress.visibility = View.VISIBLE
-            binding.stub.stubScrubber.visibility = View.VISIBLE
+            binding.stubProgress.visibility = View.VISIBLE
+            binding.stubScrubber.visibility = View.VISIBLE
         }
 
         override fun bind(position: Int) {
             super.bind(position)
-            clear()
+            release()
             val audioMessage = items[position] as UsedeskMessageFile
             bindAudio(audioMessage)
         }
 
-        override fun clear() {
+        override fun release() {
             previewJob?.cancel()
             previewJob = null
         }
 
-        protected abstract fun getContentBinding(binding: BINDING): ItemTicketCommentAudioBinding
+        private fun bindAudio(messageFile: UsedeskMessageFile) {
+            this.usedeskFile = messageFile.file
 
-        private fun bindAudio(commentFile: CommentFile) {
-            this.usedeskFile = commentFile
-
-            /*contentBinding.pvAudio.player?.stop()
-            contentBinding.pvAudio.player = null
-            contentBinding.pvAudio.showController()*/
-
-            contentBinding.ivPlay.visibility = View.VISIBLE
+            binding.ivPlay.visibility = View.VISIBLE
 
             previewJob?.cancel()
-            contentBinding.stub.exoPosition.text = "00:00"
+            binding.exoPosition.text = "00:00"
             previewJob = previewScope.async {
-                val totalSeconds = audioDurationCache.getAudioDuration(commentFile.fileUrl.url)
+                val totalSeconds = audioDurationCache.getAudioDuration(usedeskFile.content)
                 val seconds: Int = totalSeconds % 60
                 val minutes: Int = totalSeconds / 60
-                contentBinding.stub.exoPosition.post {
-                    contentBinding.stub.exoPosition.text = format("%02d:%02d", minutes, seconds)
+                binding.exoPosition.post {
+                    binding.exoPosition.text = format("%02d:%02d", minutes, seconds)
                 }
             }
 
-            contentBinding.stub.tvDownload.setOnClickListener {
-                onFileDownloadClick(commentFile)
+            binding.tvDownload.setOnClickListener {
+                onFileDownloadClick(usedeskFile)
             }
 
             val doOnApply = {
-                contentBinding.ivPlay.visibility = View.GONE
-                contentBinding.stub.root.visibility = View.GONE
-                //contentBinding.pvAudio.showController()
+                binding.ivPlay.visibility = View.GONE
+                binding.lStub.visibility = View.GONE
             }
 
             val doOnCancel = {
-                contentBinding.ivPlay.visibility = View.VISIBLE
-                contentBinding.stub.root.visibility = View.VISIBLE
-                //contentBinding.pvAudio.showController()
+                binding.ivPlay.visibility = View.VISIBLE
+                binding.lStub.visibility = View.VISIBLE
             }
 
-            contentBinding.ivPlay.setOnClickListener {
+            binding.ivPlay.setOnClickListener {
                 mediaPlayerAdapter.applyPlayer(
-                    contentBinding.lAudio,
-                    commentFile.fileUrl.url,
-                    MediaPlayerAdapter.PlayerType.AUDIO,
+                    binding.lAudio,
+                    usedeskFile.content,
+                    usedeskFile.name,
+                    IUsedeskMediaPlayerAdapter.PlayerType.AUDIO,
                     doOnApply,
                     doOnCancel
                 )
             }
 
             mediaPlayerAdapter.reapplyPlayer(
-                contentBinding.lAudio,
-                commentFile.fileUrl.url,
+                binding.lAudio,
+                usedeskFile.content,
                 doOnApply,
                 doOnCancel
             )
 
-            val backgroundColorId = if (commentFile.other != null) {
-                if (commentFile.private) {
+            //TODO: тут только 2 цвета фона, которые вообще может получится сделать прозрачными?
+            /*val backgroundColorId = if (usedeskFile.other != null) {
+                if (usedeskFile.private) {
                     R.color.color_private
                 } else {
                     R.color.white_3
                 }
             } else {
-                if (commentFile.private) {
+                if (usedeskFile.private) {
                     R.color.color_private
                 } else {
                     R.color.color_your
                 }
             }
 
-            contentBinding.stub.root.setBackgroundColor(getColor(binding, backgroundColorId))
+            binding.stub.root.setBackgroundColor(getColor(binding, backgroundColorId))*/
         }
     }
 
@@ -976,6 +1072,7 @@ internal class MessagesAdapter(
 
         val lVideo: ViewGroup = rootView.findViewById(R.id.l_video)
         val lStub: ViewGroup = rootView.findViewById(R.id.l_stub)
+        val lPreview: ViewGroup = rootView.findViewById(R.id.l_preview)
         val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
         val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
     }
@@ -983,8 +1080,12 @@ internal class MessagesAdapter(
     internal class MessageAudioBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val lVideo: ViewGroup = rootView.findViewById(R.id.l_video)
+        val lAudio: ViewGroup = rootView.findViewById(R.id.l_audio)
         val lStub: ViewGroup = rootView.findViewById(R.id.l_stub)
+        val stubProgress: View = rootView.findViewById(R.id.stub_progress)
+        val stubScrubber: View = rootView.findViewById(R.id.stub_scrubber)
+        val exoPosition: TextView = rootView.findViewById(R.id.exo_position)
+        val tvDownload: TextView = rootView.findViewById(R.id.tv_download)
         val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
     }
 

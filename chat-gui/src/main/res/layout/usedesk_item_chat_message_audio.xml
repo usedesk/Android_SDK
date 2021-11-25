@@ -12,9 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include
-        android:id="@+id/stub"
-        layout="@layout/usedesk_view_player_audio_controls" />
+    <FrameLayout
+        android:id="@+id/l_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/stub"
+            layout="@layout/usedesk_view_player_audio_controls" />
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/iv_play"

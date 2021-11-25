@@ -38,4 +38,6 @@
     <string name="id3">Id 3</string>
     <string name="value">Value</string>
     <string name="common">Common</string>
+    <string name="download_started">Download started</string>
+    <string name="download_failed">Download failed</string>
 </resources>

@@ -23,17 +23,6 @@ fun <T> justInit(liveData: LiveData<T?>,
     lambda(liveData.value)
 }
 
-fun <T> initFirst(lifecycleOwner: LifecycleOwner,
-                  liveData: LiveData<T?>,
-                  lambda: (T?) -> (Boolean)) {
-    var inited = false
-    initAndObserve(lifecycleOwner, liveData) {
-        if (!inited) {
-            inited = lambda(it)
-        }
-    }
-}
-
 fun <T> observe(lifecycleOwner: LifecycleOwner,
                 liveData: LiveData<T?>,
                 lambda: (T?) -> (Unit)) {

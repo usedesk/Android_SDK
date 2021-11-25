@@ -1,7 +1,11 @@
 package ru.usedesk.sample.ui.main
 
+import android.app.DownloadManager
+import android.content.Context
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.view.View
@@ -10,10 +14,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
-import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapterKeeper
-import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.chat.IUsedeskMediaPlayerAdapter
+import ru.usedesk.chat_gui.*
 import ru.usedesk.chat_gui.chat.UsedeskMediaPlayerAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
@@ -31,27 +32,32 @@ class MainActivity : AppCompatActivity(),
     IUsedeskOnSupportClickListener,
     IUsedeskOnFileClickListener,
     IUsedeskOnClientTokenListener,
-    IUsedeskMediaPlayerAdapterKeeper {
+    IUsedeskMediaPlayerAdapterKeeper,
+    IUsedeskOnDownloadListener {
 
     private val viewModel: MainViewModel by viewModels()
 
-    private lateinit var playerAdapter: IUsedeskMediaPlayerAdapter
+    private lateinit var binding: ActivityMainBinding
+
+    private lateinit var mediaPlayerAdapter: IUsedeskMediaPlayerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         StrictMode.setVmPolicy(VmPolicy.Builder().build())
 
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(
+        binding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_main
         )
 
-        playerAdapter = UsedeskMediaPlayerAdapter(
+        mediaPlayerAdapter = UsedeskMediaPlayerAdapter(
             this,
             binding.lFullscreen,
             this::fullscreenMode
-        )
+        ) { url, name ->
+
+        }
 
         viewModel.configurationLiveData.observe(this, {
             it?.let {
@@ -67,6 +73,28 @@ class MainActivity : AppCompatActivity(),
             MainNavigation(this, R.id.container),
             supportFragmentManager.backStackEntryCount == 0
         )
+    }
+
+    override fun onDownload(url: String, name: String) {
+        try {
+            val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val request = DownloadManager.Request(Uri.parse(url))
+                .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                .setTitle(name)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+                .setAllowedOverMetered(true)
+                .setAllowedOverRoaming(false)
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, name)
+            val downloadID = downloadManager.enqueue(request)
+            fileToast(R.string.download_started, name)
+        } catch (e: Exception) {
+            fileToast(R.string.download_failed, name)
+        }
+    }
+
+    private fun fileToast(descriptionId: Int, name: String) {
+        val description = resources.getString(descriptionId)
+        Toast.makeText(this, "$description:\n${name}", Toast.LENGTH_SHORT).show()
     }
 
     private fun onError(error: UsedeskEvent<String>) {
@@ -89,9 +117,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun getMediaPlayerAdapter(): IUsedeskMediaPlayerAdapter {
-        TODO("Not yet implemented")
-    }
+    override fun getMediaPlayerAdapter() = mediaPlayerAdapter
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
         viewModel.goShowFile(usedeskFile)

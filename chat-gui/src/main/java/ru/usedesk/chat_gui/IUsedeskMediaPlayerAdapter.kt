@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat
+package ru.usedesk.chat_gui
 
 import android.view.ViewGroup
 
@@ -9,6 +9,7 @@ interface IUsedeskMediaPlayerAdapter {
     fun applyPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
+        mediaName: String,
         playerType: PlayerType,
         doOnApply: () -> Unit,
         doOnCancelPlay: () -> Unit,

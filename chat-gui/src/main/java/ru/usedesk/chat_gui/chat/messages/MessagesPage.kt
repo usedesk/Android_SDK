@@ -79,6 +79,8 @@ internal class MessagesPage : UsedeskFragment() {
             {
                 getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
+            }, {
+
             })
         FabToBottomAdapter(
             binding.fabToBottom,
@@ -104,7 +106,7 @@ internal class MessagesPage : UsedeskFragment() {
         super.onDestroyView()
 
         if (cleared) {
-            messagesAdapter.clear()
+            messagesAdapter.release()
         }
     }
 

@@ -11,21 +11,23 @@ class PlayerViewModel : UsedeskViewModel() {
         modelLiveData.value = onUpdate(modelLiveData.value)
     }
 
-    fun videoApply(videoKey: String) {
+    fun videoApply(videoKey: String, name: String) {
         setModel { model ->
             model.copy(
                 mode = Mode.VIDEO_EXO_PLAYER,
                 key = videoKey,
+                name = name,
                 fullscreen = false
             )
         }
     }
 
-    fun audioApply(audioKey: String) {
+    fun audioApply(audioKey: String, name: String) {
         setModel { model ->
             model.copy(
                 mode = Mode.AUDIO_EXO_PLAYER,
                 key = audioKey,
+                name = name,
                 fullscreen = false
             )
         }
@@ -36,6 +38,7 @@ class PlayerViewModel : UsedeskViewModel() {
             model.copy(
                 mode = Mode.YOU_TUBE_PLAYER,
                 key = youTubeKey,
+                name = "",
                 fullscreen = false
             )
         }
@@ -72,6 +75,7 @@ class PlayerViewModel : UsedeskViewModel() {
             model.copy(
                 mode = Mode.NONE,
                 key = "",
+                name = "",
                 fullscreen = false
             )
         }
@@ -80,7 +84,8 @@ class PlayerViewModel : UsedeskViewModel() {
     data class Model(
         val mode: Mode = Mode.NONE,
         val fullscreen: Boolean = false,
-        val key: String = ""
+        val key: String = "",
+        val name: String = ""
     )
 
     enum class Mode {

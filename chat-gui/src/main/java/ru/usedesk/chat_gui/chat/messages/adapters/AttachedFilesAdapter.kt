@@ -25,8 +25,10 @@ internal class AttachedFilesAdapter(
 
     init {
         recyclerView.adapter = this
-        viewModel.messageDraftLiveData.initAndObserve(lifecycleOwner) {
-            onItems(it.files)
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.messageDraft?.files != new.messageDraft.files) {
+                onItems(new.messageDraft.files)
+            }
         }
     }
 

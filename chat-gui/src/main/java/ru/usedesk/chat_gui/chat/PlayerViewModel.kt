@@ -33,17 +33,6 @@ class PlayerViewModel : UsedeskViewModel() {
         }
     }
 
-    /*fun youTubeApply(youTubeKey: String) {
-        setModel { model ->
-            model.copy(
-                mode = Mode.YOU_TUBE_PLAYER,
-                key = youTubeKey,
-                name = "",
-                fullscreen = false
-            )
-        }
-    }*/
-
     fun fullscreen() {
         setModel { model ->
             model.copy(
@@ -90,8 +79,6 @@ class PlayerViewModel : UsedeskViewModel() {
 
     enum class Mode {
         NONE,
-
-        //YOU_TUBE_PLAYER,
         VIDEO_EXO_PLAYER,
         AUDIO_EXO_PLAYER
     }

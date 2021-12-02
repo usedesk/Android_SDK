@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-import androidx.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -11,9 +10,7 @@ import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class MessagesViewModel : UsedeskViewModel() {
 
-    val messagesLiveData = MutableLiveData<List<UsedeskMessage>?>(listOf())
-    val fabToBottomLiveData = MutableLiveData<Boolean?>(false)
-    val messageDraftLiveData = UsedeskLiveData(UsedeskMessageDraft())
+    val modelLiveData = UsedeskLiveData(Model())
 
     private val actionListenerRx: IUsedeskActionListenerRx
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
@@ -23,33 +20,42 @@ internal class MessagesViewModel : UsedeskViewModel() {
     private var messages: List<UsedeskMessage> = listOf()
 
     init {
+        setModel { model ->//TODO: ATTENTION!!! NO MAIN THREAD
+            model.copy(messageDraft = usedeskChat.getMessageDraft())
+        }
+
         actionListenerRx = object : IUsedeskActionListenerRx() {
             override fun onMessagesObservable(
                 messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
                 return messagesObservable.subscribe {
                     messages = it
-                    messagesLiveData.postValue(messages)
+                    setModel { model ->//TODO: ATTENTION!!! MAY BE NON-MAIN THREAD
+                        model.copy(messages = messages)
+                    }
+                    //messagesLiveData.postValue(messages)
                 }
             }
         }
         usedeskChat.addActionListener(actionListenerRx)
-        messageDraftLiveData.value = usedeskChat.getMessageDraft()
+    }
+
+    private fun setModel(onUpdate: (Model) -> Model) {
+        modelLiveData.value = onUpdate(modelLiveData.value)
     }
 
     fun onMessageChanged(message: String) {
-        messageDraftLiveData.value = messageDraftLiveData.value.copy(
-            text = message
-        )
-        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
+        setModel { model ->
+            model.copy(messageDraft = model.messageDraft.copy(text = message))
+        }
+        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
     fun addAttachedFiles(files: List<UsedeskFileInfo>) {
-        val messageDraft = messageDraftLiveData.value
-        messageDraftLiveData.value = messageDraft.copy(
-            files = (messageDraft.files + files).toSet().toList()
-        )
-        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
+        setModel { model ->
+            model.copy(messageDraft = model.messageDraft.copy(files = files.toSet().toList()))
+        }
+        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
     fun sendFeedback(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
@@ -57,13 +63,14 @@ internal class MessagesViewModel : UsedeskViewModel() {
     }
 
     fun detachFile(file: UsedeskFileInfo) {
-        val messageDraft = messageDraftLiveData.value
-        messageDraftLiveData.value = messageDraft.copy(
-            files = messageDraft.files.filter {
-                it != file
-            }
-        )
-        doIt(usedeskChat.setMessageDraftRx(messageDraftLiveData.value))
+        setModel { model ->
+            model.copy(
+                messageDraft = model.messageDraft.copy(
+                    files = model.messageDraft.files - file
+                )
+            )
+        }
+        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
     fun onSendButton(message: String) {
@@ -73,7 +80,9 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun onSend() {
         doIt(usedeskChat.sendMessageDraftRx())
 
-        messageDraftLiveData.value = UsedeskMessageDraft()
+        setModel { model ->
+            model.copy(messageDraft = UsedeskMessageDraft())
+        }
     }
 
     fun sendAgain(id: Long) {
@@ -93,6 +102,15 @@ internal class MessagesViewModel : UsedeskViewModel() {
     }
 
     fun showToBottomButton(show: Boolean) {
-        fabToBottomLiveData.value = show
+        setModel { model ->
+            model.copy(fabToBottom = show)
+        }
     }
+
+    data class Model(
+        val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
+        val fabToBottom: Boolean = false,
+        val messages: List<UsedeskMessage> = listOf(),
+        val messagesScroll: Long = 0L
+    )
 }

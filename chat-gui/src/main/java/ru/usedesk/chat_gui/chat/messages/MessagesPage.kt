@@ -46,12 +46,20 @@ internal class MessagesPage : UsedeskFragment() {
         val agentName: String? = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
 
-        init(agentName, rejectedFileExtensions)
+        init(
+            agentName,
+            rejectedFileExtensions,
+            savedInstanceState
+        )
 
         return binding.rootView
     }
 
-    private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
+    private fun init(
+        agentName: String?,
+        rejectedFileExtensions: Array<String>,
+        savedInstanceState: Bundle?
+    ) {
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
@@ -81,7 +89,10 @@ internal class MessagesPage : UsedeskFragment() {
                     ?: onUrlClick(it)
             }, {
 
-            })
+            },
+            savedInstanceState
+        )
+
         FabToBottomAdapter(
             binding.fabToBottom,
             binding.styleValues,
@@ -90,6 +101,12 @@ internal class MessagesPage : UsedeskFragment() {
         ) {
             messagesAdapter.scrollToBottom()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        messagesAdapter.onSave(outState)
     }
 
     private fun onUrlClick(url: String) {

@@ -1,6 +1,8 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.graphics.Rect
+import android.os.Bundle
+import android.os.Parcelable
 import android.text.Html
 import android.view.Gravity
 import android.view.View
@@ -35,13 +37,20 @@ internal class MessagesAdapter(
     private val mediaPlayerAdapter: IUsedeskMediaPlayerAdapter,
     private val onFileClick: (UsedeskFile) -> Unit,
     private val onUrlClick: (String) -> Unit,
-    private val onFileDownloadClick: (UsedeskFile) -> Unit
+    private val onFileDownloadClick: (UsedeskFile) -> Unit,
+    savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     private var items: List<UsedeskMessage> = listOf()
     private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
-    private val layoutManager = LinearLayoutManager(recyclerView.context)
+    private val layoutManager = LinearLayoutManager(recyclerView.context).apply {
+        val parcelable = savedStated?.getParcelable<Parcelable>(Keys.RECYCLER_VIEW.key)
+        if (parcelable != null) {
+            onRestoreInstanceState(parcelable)
+        }
+    }
     private val audioDurationCache = AudioDurationCache()
+    private val saved = savedStated != null
 
     init {
         recyclerView.apply {
@@ -61,11 +70,15 @@ internal class MessagesAdapter(
                 viewModel.showToBottomButton(lastItemIndex < items.size - 1)
             }
         })
-        viewModel.messagesLiveData.observe(lifecycleOwner) {
-            it?.let {
-                onMessages(it)
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.messages != new.messages) {
+                onMessages(new.messages)
             }
         }
+    }
+
+    fun onSave(outState: Bundle) {
+        outState.putParcelable(Keys.RECYCLER_VIEW.key, layoutManager.onSaveInstanceState())
     }
 
     private fun onMessages(messages: List<UsedeskMessage>) {
@@ -115,7 +128,9 @@ internal class MessagesAdapter(
         })
         diffResult.dispatchUpdatesTo(this)
         if (oldItems.isEmpty()) {
-            recyclerView.scrollToPosition(items.size - 1)
+            if (!saved) {
+                recyclerView.scrollToPosition(items.size - 1)
+            }
         } else {
             val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
             val contentHeight = recyclerView.computeVerticalScrollRange()
@@ -526,8 +541,6 @@ internal class MessagesAdapter(
         init {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
                         mediaPlayerAdapter.cancelPlayer(usedeskFile.content)
@@ -639,8 +652,6 @@ internal class MessagesAdapter(
         init {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
                         mediaPlayerAdapter.cancelPlayer(usedeskFile.content)
@@ -1142,5 +1153,11 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val vEmpty: View = rootView.findViewById(R.id.v_empty)
         val ivSentFailed: ImageView = rootView.findViewById(R.id.iv_sent_failed)
+    }
+
+    private enum class Keys {
+        RECYCLER_VIEW;
+
+        val key = "${Keys::class.java.name}.$name"
     }
 }

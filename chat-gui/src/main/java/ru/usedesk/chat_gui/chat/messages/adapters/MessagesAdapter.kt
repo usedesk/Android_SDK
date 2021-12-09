@@ -543,7 +543,7 @@ internal class MessagesAdapter(
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
-                        mediaPlayerAdapter.cancelPlayer(usedeskFile.content)
+                        mediaPlayerAdapter.detachPlayer(usedeskFile.content)
                     }
                     lastVisible = visible
                 }
@@ -557,10 +557,6 @@ internal class MessagesAdapter(
                 showStub = true,
                 showPlay = true,
             )
-
-            val doOnApply = {
-                changeElements(showVideo = true)
-            }
 
             val doOnCancelPlay = {
                 showPreview()
@@ -577,24 +573,26 @@ internal class MessagesAdapter(
         }*/
 
             binding.ivPlay.setOnClickListener {
-                mediaPlayerAdapter.applyPlayer(
+                mediaPlayerAdapter.attachPlayer(
                     binding.lVideo,
                     usedeskFile.content,
                     usedeskFile.name,
                     IUsedeskMediaPlayerAdapter.PlayerType.VIDEO,
-                    doOnApply,
                     doOnCancelPlay,
                     doOnControlsVisibilityChanged
                 )
+                changeElements(showVideo = true)
             }
 
-            mediaPlayerAdapter.reapplyPlayer(
-                binding.lVideo,
-                usedeskFile.content,
-                doOnApply,
-                doOnCancelPlay,
-                doOnControlsVisibilityChanged
-            )
+            if (mediaPlayerAdapter.reattachPlayer(
+                    binding.lVideo,
+                    usedeskFile.content,
+                    doOnCancelPlay,
+                    doOnControlsVisibilityChanged
+                )
+            ) {
+                changeElements(showVideo = true)
+            }
         }
 
         private fun showPreview() {
@@ -654,7 +652,7 @@ internal class MessagesAdapter(
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
-                        mediaPlayerAdapter.cancelPlayer(usedeskFile.content)
+                        mediaPlayerAdapter.detachPlayer(usedeskFile.content)
                     }
                     lastVisible = visible
                 }
@@ -678,7 +676,9 @@ internal class MessagesAdapter(
         private fun bindAudio(messageFile: UsedeskMessageFile) {
             this.usedeskFile = messageFile.file
 
-            binding.ivPlay.visibility = View.VISIBLE
+            changeElements(
+                play = true
+            )
 
             previewJob?.cancel()
             binding.exoPosition.text = "00:00"
@@ -695,33 +695,32 @@ internal class MessagesAdapter(
                 onFileDownloadClick(usedeskFile)
             }
 
-            val doOnApply = {
-                binding.ivPlay.visibility = View.GONE
-                binding.lStub.visibility = View.GONE
-            }
-
             val doOnCancel = {
-                binding.ivPlay.visibility = View.VISIBLE
-                binding.lStub.visibility = View.VISIBLE
+                changeElements(
+                    play = true,
+                    stub = true
+                )
             }
 
             binding.ivPlay.setOnClickListener {
-                mediaPlayerAdapter.applyPlayer(
+                mediaPlayerAdapter.attachPlayer(
                     binding.lAudio,
                     usedeskFile.content,
                     usedeskFile.name,
                     IUsedeskMediaPlayerAdapter.PlayerType.AUDIO,
-                    doOnApply,
                     doOnCancel
                 )
+                changeElements()
             }
 
-            mediaPlayerAdapter.reapplyPlayer(
-                binding.lAudio,
-                usedeskFile.content,
-                doOnApply,
-                doOnCancel
-            )
+            if (mediaPlayerAdapter.reattachPlayer(
+                    binding.lAudio,
+                    usedeskFile.content,
+                    doOnCancel
+                )
+            ) {
+                changeElements()
+            }
 
             //TODO: тут только 2 цвета фона, которые вообще может получится сделать прозрачными?
             /*val backgroundColorId = if (usedeskFile.other != null) {
@@ -739,6 +738,14 @@ internal class MessagesAdapter(
             }
 
             binding.stub.root.setBackgroundColor(getColor(binding, backgroundColorId))*/
+        }
+
+        private fun changeElements(
+            play: Boolean = false,
+            stub: Boolean = false
+        ) {
+            binding.ivPlay.visibility = visibleGone(play)
+            binding.lStub.visibility = visibleGone(stub)
         }
     }
 

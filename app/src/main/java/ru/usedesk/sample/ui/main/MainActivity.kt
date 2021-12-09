@@ -124,7 +124,9 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        viewModel.onBackPressed()
+        if (!mediaPlayerAdapter.onBackPressed()) {
+            viewModel.onBackPressed()
+        }
     }
 
     override fun onSupportClick() {

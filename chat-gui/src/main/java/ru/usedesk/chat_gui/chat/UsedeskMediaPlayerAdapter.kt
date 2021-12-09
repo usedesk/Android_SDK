@@ -34,22 +34,23 @@ class UsedeskMediaPlayerAdapter(
 
     private val pvAudioExoPlayer = lFullscreen.findViewById<PlayerView>(R.id.pv_audio)
 
-    /*private val pvYouTubePlayer =
-        inflater.inflate(R.layout.view_player_youtube, lFullscreen, false) as YouTubePlayerView*/
+    private var restored = true
 
-    private val exoPlayer: ExoPlayer = ExoPlayer.Builder(lFullscreen.context)
-        .setUseLazyPreparation(true)
-        .build()
+    private val exoPlayer: ExoPlayer =
+        playerViewModel.exoPlayer ?: ExoPlayer.Builder(lFullscreen.context)
+            .setUseLazyPreparation(true)
+            .build().also {
+                playerViewModel.exoPlayer = it
+                restored = false
+            }
 
     private var lastMinimizeView: MinimizeView? = null
     private var currentMinimizeView: MinimizeView? = null
 
     private val videoExoPlayerViews = VideoExoPlayerViews(pvVideoExoPlayer)
     private val audioExoPlayerViews = AudioExoPlayerViews(pvAudioExoPlayer)
-    // private val youTubePlayerViews = YouTubePlayerViews(pvYouTubePlayer)
 
     init {
-        //lifecycle.addObserver(pvYouTubePlayer)
         activity.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 when (event) {
@@ -104,43 +105,13 @@ class UsedeskMediaPlayerAdapter(
             playerViewModel.fullscreen()
         }
 
-        /*youTubePlayerViews.fullscreenButton.setOnClickListener {
-            playerViewModel.fullscreen()
-        }
-
-        youTubePlayerViews.progress?.updateLayoutParams {
-            width = 0
-            height = 0
-        }
-
-        youTubePlayerViews.youTubeButton.setOnClickListener {
-            val intent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://www.youtube.com/watch?v=${playerViewModel.modelLiveData.value.key}")
-            )
-            try {
-                it.context.startActivity(intent)
-            } catch (e: Exception) {
-                Log.e(javaClass.simpleName, e.message ?: "Can't open url on YouTube")
-            }
-        }*/
-
         playerViewModel.modelLiveData.initAndObserveWithOld(activity) { old, new ->
-            if (old?.mode != new.mode) {
+            if (!restored && old?.mode != new.mode) {
                 resetPlayer()
             }
             if (new.key.isNotEmpty()) {
-                if (old?.key != new.key) {
+                if (!restored && old?.key != new.key) {
                     when (new.mode) {
-                        /*PlayerViewModel.Mode.YOU_TUBE_PLAYER -> {
-                            pvYouTubePlayer.getYouTubePlayerWhenReady(object :
-                                YouTubePlayerCallback {
-                                override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                                    youTubePlayer.loadVideo(new.key, 0.0f)
-                                }
-                            })
-                            changeFullscreen(false)
-                        }*/
                         PlayerViewModel.Mode.VIDEO_EXO_PLAYER,
                         PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
                             exoPlayer.run {
@@ -157,8 +128,11 @@ class UsedeskMediaPlayerAdapter(
                         }
                     }
                 }//Фулскрин обрабатываем только если не был обновлён videoKey
-                else if (old.fullscreen != new.fullscreen) {
+                else if (old?.fullscreen != new.fullscreen) {
                     changeFullscreen(new.fullscreen)
+                    if (old?.fullscreen == null && restored && playerViewModel.lastPlaying) {
+                        exoPlayer.play()
+                    }
                 }
             }
         }
@@ -170,15 +144,9 @@ class UsedeskMediaPlayerAdapter(
 
     private fun onPause() {
         when (playerViewModel.modelLiveData.value.mode) {
-            /*PlayerViewModel.Mode.YOU_TUBE_PLAYER -> {
-                pvYouTubePlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-                    override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                        youTubePlayer.pause()
-                    }
-                })
-            }*/
             PlayerViewModel.Mode.VIDEO_EXO_PLAYER,
             PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
+                playerViewModel.lastPlaying = exoPlayer.isPlaying
                 exoPlayer.pause()
             }
         }
@@ -187,29 +155,17 @@ class UsedeskMediaPlayerAdapter(
     private fun onResume() {
         val model = playerViewModel.modelLiveData.value
         if (model.fullscreen &&
-            (//model.mode == PlayerViewModel.Mode.YOU_TUBE_PLAYER ||
-                    model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
+            (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
         ) {
             onFullscreenMode(true)
+        }
+        if (playerViewModel.lastPlaying) {
+            exoPlayer.play()
         }
     }
 
     private fun changeFullscreen(fullscreen: Boolean) {
         when (playerViewModel.modelLiveData.value.mode) {
-            /*PlayerViewModel.Mode.YOU_TUBE_PLAYER -> {
-                (pvYouTubePlayer.parent as? ViewGroup)?.removeView(pvYouTubePlayer)
-
-                if (fullscreen) {
-                    lFullscreen.addView(pvYouTubePlayer)
-                    youTubePlayerViews.fullscreenButton?.setImageResource(R.drawable.ayp_ic_fullscreen_exit_24dp)
-                } else {
-                    currentMinimizeView?.lVideoMinimized?.addView(pvYouTubePlayer)
-                    youTubePlayerViews.fullscreenButton?.setImageResource(R.drawable.ayp_ic_fullscreen_24dp)
-                }
-                pvYouTubePlayer.enterFullScreen()//Устанавливает максимальный размер по родителю
-                lFullscreen.visibility = visibleGone(fullscreen)
-                onFullscreenMode(fullscreen)
-            }*/
             PlayerViewModel.Mode.VIDEO_EXO_PLAYER -> {
                 (pvVideoExoPlayer.parent as? ViewGroup)?.removeView(pvVideoExoPlayer)
 
@@ -244,14 +200,13 @@ class UsedeskMediaPlayerAdapter(
 
     override fun onBackPressed(): Boolean = playerViewModel.onBackPressed()
 
-    override fun applyPlayer(
+    override fun attachPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
         mediaName: String,
         playerType: IUsedeskMediaPlayerAdapter.PlayerType,
-        doOnApply: () -> Unit,
-        doOnCancelPlay: () -> Unit,
-        doOnControlsVisibilityChanged: ((Boolean) -> Unit)
+        onCancel: () -> Unit,
+        onControlsVisibilityChanged: ((Boolean) -> Unit)
     ) {
         hideKeyboard(lFullscreen)
 
@@ -263,7 +218,7 @@ class UsedeskMediaPlayerAdapter(
 
         //Сохраним данные для нового воспроизведения
         currentMinimizeView =
-            MinimizeView(lMinimized, doOnCancelPlay, doOnControlsVisibilityChanged)
+            MinimizeView(lMinimized, onCancel, onControlsVisibilityChanged)
 
         when (playerType) {
             IUsedeskMediaPlayerAdapter.PlayerType.VIDEO -> {
@@ -272,12 +227,7 @@ class UsedeskMediaPlayerAdapter(
             IUsedeskMediaPlayerAdapter.PlayerType.AUDIO -> {
                 playerViewModel.audioApply(mediaKey, mediaName)
             }
-            /*PlayerType.YOUTUBE -> {
-                playerViewModel.youTubeApply(mediaKey)
-            }*/
         }
-
-        doOnApply()
     }
 
     private fun resetPlayer() {
@@ -286,19 +236,21 @@ class UsedeskMediaPlayerAdapter(
         pvAudioExoPlayer.player = null
         (pvVideoExoPlayer.parent as? ViewGroup)?.removeView(pvVideoExoPlayer)
         (pvAudioExoPlayer.parent as? ViewGroup)?.removeView(pvAudioExoPlayer)
-        //(pvYouTubePlayer.parent as? ViewGroup)?.removeView(pvYouTubePlayer)
         lastMinimizeView?.release()
         lastMinimizeView = null
         lFullscreen.visibility = View.GONE
     }
 
-    override fun cancelPlayer(key: String) {
+    override fun detachPlayer(key: String): Boolean {
         val model = playerViewModel.modelLiveData.value
-        if (model.key == key && !model.fullscreen) {
+        return if (model.key == key && !model.fullscreen) {
             lastMinimizeView = currentMinimizeView
             resetPlayer()
 
             playerViewModel.reset()
+            true
+        } else {
+            false
         }
     }
 
@@ -306,20 +258,19 @@ class UsedeskMediaPlayerAdapter(
      * Вызывается для того, чтобы прикрепиться к адаптеру, для реакции на minimize или переключения
      * плеера
      */
-    override fun reapplyPlayer(
-        lVideoMinimized: ViewGroup,
+    override fun reattachPlayer(
+        lMinimized: ViewGroup,
         mediaKey: String,
-        doOnReapply: () -> Unit,
-        doOnCancelPlay: () -> Unit,
-        doOnControlsVisibilityChanged: ((Boolean) -> Unit)
-    ) {
+        onCancel: () -> Unit,
+        onControlsVisibilityChanged: ((Boolean) -> Unit)
+    ): Boolean {
         val model = playerViewModel.modelLiveData.value
-        if (model.key == mediaKey) {
+        return if (model.key == mediaKey) {
             //Сохраним данные для плеера
             currentMinimizeView = MinimizeView(
-                lVideoMinimized,
-                doOnCancelPlay,
-                doOnControlsVisibilityChanged
+                lMinimized,
+                onCancel,
+                onControlsVisibilityChanged
             )
 
             if (model.fullscreen) {
@@ -327,7 +278,9 @@ class UsedeskMediaPlayerAdapter(
             } else {
                 changeFullscreen(false)
             }
-            doOnReapply()
+            true
+        } else {
+            false
         }
     }
 
@@ -342,12 +295,6 @@ class UsedeskMediaPlayerAdapter(
         val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
         val tvDownload = exoPlayerView.findViewById<View>(R.id.tv_download)
     }
-
-    /*private class YouTubePlayerViews(youTubePlayerView: YouTubePlayerView) {
-        val youTubeButton = youTubePlayerView.findViewById<ImageView>(R.id.youtube_button)
-        val fullscreenButton = youTubePlayerView.findViewById<ImageView>(R.id.fullscreen_button)
-        val progress = youTubePlayerView.findViewById<View>(R.id.progress)
-    }*/
 
     private class MinimizeView(
         val lVideoMinimized: ViewGroup,

@@ -1,11 +1,15 @@
 package ru.usedesk.chat_gui.chat
 
+import com.google.android.exoplayer2.ExoPlayer
 import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 
 class PlayerViewModel : UsedeskViewModel() {
 
     val modelLiveData = UsedeskLiveData(Model())
+
+    var exoPlayer: ExoPlayer? = null
+    var lastPlaying: Boolean = false
 
     private fun setModel(onUpdate: (Model) -> Model) {
         modelLiveData.value = onUpdate(modelLiveData.value)
@@ -68,6 +72,12 @@ class PlayerViewModel : UsedeskViewModel() {
                 fullscreen = false
             )
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        exoPlayer?.release()
     }
 
     data class Model(

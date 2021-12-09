@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
@@ -20,7 +21,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     private var messages: List<UsedeskMessage> = listOf()
 
     init {
-        setModel { model ->//TODO: ATTENTION!!! NO MAIN THREAD
+        setModel { model ->
             model.copy(messageDraft = usedeskChat.getMessageDraft())
         }
 
@@ -28,12 +29,11 @@ internal class MessagesViewModel : UsedeskViewModel() {
             override fun onMessagesObservable(
                 messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
-                return messagesObservable.subscribe {
+                return messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
                     messages = it
                     setModel { model ->//TODO: ATTENTION!!! MAY BE NON-MAIN THREAD
                         model.copy(messages = messages)
                     }
-                    //messagesLiveData.postValue(messages)
                 }
             }
         }

@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.view.updatePadding
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -536,7 +537,7 @@ internal class MessagesAdapter(
         private lateinit var usedeskFile: UsedeskFile
         private var lastVisible = false
 
-        //private val timePadding = dpToPixels(recyclerView.resources, 32f).toInt()//TODO: сделать кастомизируемым
+        private val defaultTimeBottomPadding = binding.lTimeContainer.paddingBottom
 
         init {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -562,15 +563,11 @@ internal class MessagesAdapter(
                 showPreview()
             }
 
-            val doOnControlsVisibilityChanged: ((Boolean) -> Unit) = {}
-            /*binding.timeContainer.updatePadding(
-                bottom = if (it) {
-                    timePadding
-                } else {
-                    0
-                }
-            )
-        }*/
+            val doOnControlsVisibilityChanged: ((Int) -> Unit) = { height ->
+                binding.lTimeContainer.updatePadding(
+                    bottom = defaultTimeBottomPadding + height
+                )
+            }
 
             binding.ivPlay.setOnClickListener {
                 mediaPlayerAdapter.attachPlayer(
@@ -659,6 +656,7 @@ internal class MessagesAdapter(
             })
             binding.stubProgress.visibility = View.VISIBLE
             binding.stubScrubber.visibility = View.VISIBLE
+            binding.ivExoPause.visibility = View.INVISIBLE
         }
 
         override fun bind(position: Int) {
@@ -677,7 +675,7 @@ internal class MessagesAdapter(
             this.usedeskFile = messageFile.file
 
             changeElements(
-                play = true
+                stub = true
             )
 
             previewJob?.cancel()
@@ -697,12 +695,11 @@ internal class MessagesAdapter(
 
             val doOnCancel = {
                 changeElements(
-                    play = true,
                     stub = true
                 )
             }
 
-            binding.ivPlay.setOnClickListener {
+            binding.ivExoPlay.setOnClickListener {
                 mediaPlayerAdapter.attachPlayer(
                     binding.lAudio,
                     usedeskFile.content,
@@ -710,7 +707,7 @@ internal class MessagesAdapter(
                     IUsedeskMediaPlayerAdapter.PlayerType.AUDIO,
                     doOnCancel
                 )
-                changeElements()
+                changeElements(audio = true)
             }
 
             if (mediaPlayerAdapter.reattachPlayer(
@@ -719,7 +716,7 @@ internal class MessagesAdapter(
                     doOnCancel
                 )
             ) {
-                changeElements()
+                changeElements(audio = true)
             }
 
             //TODO: тут только 2 цвета фона, которые вообще может получится сделать прозрачными?
@@ -741,10 +738,10 @@ internal class MessagesAdapter(
         }
 
         private fun changeElements(
-            play: Boolean = false,
+            audio: Boolean = false,
             stub: Boolean = false
         ) {
-            binding.ivPlay.visibility = visibleGone(play)
+            binding.lAudio.visibility = visibleGone(audio)
             binding.lStub.visibility = visibleGone(stub)
         }
     }
@@ -1104,7 +1101,8 @@ internal class MessagesAdapter(
         val stubScrubber: View = rootView.findViewById(R.id.stub_scrubber)
         val exoPosition: TextView = rootView.findViewById(R.id.exo_position)
         val tvDownload: TextView = rootView.findViewById(R.id.tv_download)
-        val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
+        val ivExoPlay: ImageView = rootView.findViewById(R.id.exo_play)
+        val ivExoPause: ImageView = rootView.findViewById(R.id.exo_pause)
     }
 
     internal class MessageImageClientBinding(rootView: View, defaultStyleId: Int) :

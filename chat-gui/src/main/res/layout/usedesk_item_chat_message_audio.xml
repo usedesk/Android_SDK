@@ -4,32 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="?attr/usedesk_common_container_3"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="wrap_content"
     tools:theme="@style/Usedesk.Chat.Message.Audio">
 
     <FrameLayout
         android:id="@+id/l_audio"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical" />
 
     <FrameLayout
         android:id="@+id/l_stub"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
 
         <include
             android:id="@+id/stub"
             layout="@layout/usedesk_view_player_audio_controls" />
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/iv_play"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:srcCompat="@drawable/usedesk_ic_play_dark" />
 
     <FrameLayout
         android:id="@+id/time_container"

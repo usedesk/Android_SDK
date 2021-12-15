@@ -88,7 +88,15 @@ class UsedeskMediaPlayerAdapter(
                     }
                 )
             )
-            currentMinimizeView?.doOnControlsVisibilityChanged?.invoke(visible)
+            lFullscreen.post {
+                currentMinimizeView?.onControlsHeightChanged?.invoke(
+                    if (visible) {
+                        videoExoPlayerViews.lBottomBar?.height ?: 0
+                    } else {
+                        0
+                    }
+                )
+            }
         }
 
         videoExoPlayerViews.ivDownload.setOnClickListener {
@@ -128,7 +136,8 @@ class UsedeskMediaPlayerAdapter(
                         }
                     }
                 }//Фулскрин обрабатываем только если не был обновлён videoKey
-                else if (old?.fullscreen != new.fullscreen) {
+                else if (restored || old?.fullscreen != new.fullscreen) {
+                    restored = false
                     changeFullscreen(new.fullscreen)
                     if (old?.fullscreen == null && restored && playerViewModel.lastPlaying) {
                         exoPlayer.play()
@@ -146,7 +155,7 @@ class UsedeskMediaPlayerAdapter(
         when (playerViewModel.modelLiveData.value.mode) {
             PlayerViewModel.Mode.VIDEO_EXO_PLAYER,
             PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
-                playerViewModel.lastPlaying = exoPlayer.isPlaying
+                playerViewModel.lastPlaying = exoPlayer.isPlaying || exoPlayer.isLoading
                 exoPlayer.pause()
             }
         }
@@ -206,7 +215,7 @@ class UsedeskMediaPlayerAdapter(
         mediaName: String,
         playerType: IUsedeskMediaPlayerAdapter.PlayerType,
         onCancel: () -> Unit,
-        onControlsVisibilityChanged: ((Boolean) -> Unit)
+        onControlsHeightChanged: ((Int) -> Unit)
     ) {
         hideKeyboard(lFullscreen)
 
@@ -218,7 +227,7 @@ class UsedeskMediaPlayerAdapter(
 
         //Сохраним данные для нового воспроизведения
         currentMinimizeView =
-            MinimizeView(lMinimized, onCancel, onControlsVisibilityChanged)
+            MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
 
         when (playerType) {
             IUsedeskMediaPlayerAdapter.PlayerType.VIDEO -> {
@@ -262,7 +271,7 @@ class UsedeskMediaPlayerAdapter(
         lMinimized: ViewGroup,
         mediaKey: String,
         onCancel: () -> Unit,
-        onControlsVisibilityChanged: ((Boolean) -> Unit)
+        onControlsHeightChanged: ((Int) -> Unit)
     ): Boolean {
         val model = playerViewModel.modelLiveData.value
         return if (model.key == mediaKey) {
@@ -270,7 +279,7 @@ class UsedeskMediaPlayerAdapter(
             currentMinimizeView = MinimizeView(
                 lMinimized,
                 onCancel,
-                onControlsVisibilityChanged
+                onControlsHeightChanged
             )
 
             if (model.fullscreen) {
@@ -287,6 +296,7 @@ class UsedeskMediaPlayerAdapter(
     private class VideoExoPlayerViews(exoPlayerView: PlayerView) {
         val fullscreenButton = exoPlayerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
         val controls = exoPlayerView.findViewById<View>(R.id.exo_controller)
+        val lBottomBar = exoPlayerView.findViewById<View>(R.id.l_bottom_bar)
         val pbLoading = exoPlayerView.findViewById<ProgressBar>(R.id.loading)
         val ivDownload = exoPlayerView.findViewById<View>(R.id.iv_download)
     }
@@ -298,12 +308,12 @@ class UsedeskMediaPlayerAdapter(
 
     private class MinimizeView(
         val lVideoMinimized: ViewGroup,
-        val doOnCancelPlay: () -> Unit,
-        val doOnControlsVisibilityChanged: (Boolean) -> Unit
+        val onCancelPlay: () -> Unit,
+        val onControlsHeightChanged: (Int) -> Unit
     ) {
         fun release() {
-            doOnControlsVisibilityChanged.invoke(false)
-            doOnCancelPlay.invoke()
+            onControlsHeightChanged.invoke(0)
+            onCancelPlay.invoke()
         }
     }
 }

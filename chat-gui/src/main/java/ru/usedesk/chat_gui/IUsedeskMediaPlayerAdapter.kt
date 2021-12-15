@@ -17,7 +17,7 @@ interface IUsedeskMediaPlayerAdapter {
      * @param mediaName Video/audio name
      * @param playerType Video/audio type
      * @param onCancel Called when the player cancels playing the current media
-     * @param onControlsVisibilityChanged When player controls are visible
+     * @param onControlsHeightChanged Called when player controls are visible
      */
     fun attachPlayer(
         lMinimized: ViewGroup,
@@ -25,7 +25,7 @@ interface IUsedeskMediaPlayerAdapter {
         mediaName: String,
         playerType: PlayerType,
         onCancel: () -> Unit,
-        onControlsVisibilityChanged: ((Boolean) -> Unit) = {}
+        onControlsHeightChanged: ((Int) -> Unit) = {}
     )
 
     /**
@@ -34,7 +34,7 @@ interface IUsedeskMediaPlayerAdapter {
      * @param lMinimized Parent view for minimized player
      * @param mediaKey URL of the video/audio source
      * @param onCancel Called when the player cancels playing the current media
-     * @param onControlsVisibilityChanged When player controls are visible
+     * @param onControlsHeightChanged Called when player controls are visible
      *
      * @return true if player was reattached
      */
@@ -42,7 +42,7 @@ interface IUsedeskMediaPlayerAdapter {
         lMinimized: ViewGroup,
         mediaKey: String,
         onCancel: () -> Unit,
-        onControlsVisibilityChanged: ((Boolean) -> Unit) = {}
+        onControlsHeightChanged: ((Int) -> Unit) = {}
     ): Boolean
 
     /**

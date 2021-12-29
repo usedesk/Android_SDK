@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:bar_height="2dp"
-        app:buffered_color="@color/usedesk_gray_2"
+        app:buffered_color="@color/usedesk_black_3"
         app:controller_layout_id="@layout/usedesk_view_player_audio_controls"
         app:hide_on_touch="false"
         app:played_color="@color/usedesk_black_2"
@@ -19,7 +19,7 @@
         app:scrubber_enabled_size="12dp"
         app:show_buffering="when_playing"
         app:show_timeout="0"
-        app:unplayed_color="@color/usedesk_gray_1" />
+        app:unplayed_color="@color/usedesk_black_4" />
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/pv_video"
@@ -28,5 +28,4 @@
         app:player_layout_id="@layout/usedesk_view_player_video_content"
         app:resize_mode="fit"
         app:show_buffering="always" />
-
 </merge>

@@ -88,7 +88,7 @@ internal class MessagesPage : UsedeskFragment() {
                 getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
             }, {
-
+                getParentListener<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
             },
             savedInstanceState
         )

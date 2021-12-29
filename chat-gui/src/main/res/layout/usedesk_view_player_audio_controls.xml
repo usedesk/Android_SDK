@@ -51,7 +51,7 @@
             android:layout_height="2dp"
             android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="4dp"
-            android:background="@color/usedesk_gray_1"
+            android:background="@color/usedesk_black_4"
             android:visibility="invisible"
             tools:visibility="visible" />
 
@@ -70,12 +70,12 @@
         android:id="@+id/exo_position"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="8dp"
         android:layout_marginBottom="4dp"
         android:fontFamily="@font/sf_ui_display_medium"
         android:includeFontPadding="false"
         android:singleLine="true"
-        android:textColor="@color/usedesk_gray_cold_1"
+        android:textColor="@color/usedesk_black_3"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/l_play"

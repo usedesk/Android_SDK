@@ -54,10 +54,9 @@ class MainActivity : AppCompatActivity(),
         mediaPlayerAdapter = UsedeskMediaPlayerAdapter(
             this,
             binding.lFullscreen,
-            this::fullscreenMode
-        ) { url, name ->
-
-        }
+            this::fullscreenMode,
+            this::onDownload
+        )
 
         viewModel.configurationLiveData.observe(this, {
             it?.let {

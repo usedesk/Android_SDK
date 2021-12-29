@@ -17,9 +17,7 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerView
 import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.R
-import ru.usedesk.common_gui.hideKeyboard
-import ru.usedesk.common_gui.visibleGone
-import ru.usedesk.common_gui.visibleInvisible
+import ru.usedesk.common_gui.*
 
 class UsedeskMediaPlayerAdapter(
     activity: AppCompatActivity,
@@ -28,16 +26,27 @@ class UsedeskMediaPlayerAdapter(
     private val onDownload: (String, String) -> Unit
 ) : IUsedeskMediaPlayerAdapter {
 
+    //TODO:
+
     private val playerViewModel: PlayerViewModel by activity.viewModels()
 
-    private val pvVideoExoPlayer = lFullscreen.findViewById<PlayerView>(R.id.pv_video)
-
-    private val pvAudioExoPlayer = lFullscreen.findViewById<PlayerView>(R.id.pv_audio)
+    private val pvVideoExoPlayer: PlayerView = lFullscreen.findViewById<PlayerView>(R.id.pv_video)
+    private val pvAudioExoPlayer: PlayerView = lFullscreen.findViewById<PlayerView>(R.id.pv_audio)
 
     private var restored = true
 
-    private val exoPlayer: ExoPlayer =
-        playerViewModel.exoPlayer ?: ExoPlayer.Builder(lFullscreen.context)
+    init {
+        inflateItem(
+            lFullscreen,
+            R.layout.usedesk_fullscreen_media,
+            0//TODO: DEBUG
+        ) { rootView, defaultStyleId ->
+            UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
+        }
+    }
+
+    private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
+        ?: ExoPlayer.Builder(lFullscreen.context)
             .setUseLazyPreparation(true)
             .build().also {
                 playerViewModel.exoPlayer = it
@@ -147,10 +156,6 @@ class UsedeskMediaPlayerAdapter(
         }
     }
 
-    fun download(mediaKey: String, name: String) {
-        onDownload(mediaKey, name)
-    }
-
     private fun onPause() {
         when (playerViewModel.modelLiveData.value.mode) {
             PlayerViewModel.Mode.VIDEO_EXO_PLAYER,
@@ -226,8 +231,7 @@ class UsedeskMediaPlayerAdapter(
         resetPlayer()
 
         //Сохраним данные для нового воспроизведения
-        currentMinimizeView =
-            MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
+        currentMinimizeView = MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
 
         when (playerType) {
             IUsedeskMediaPlayerAdapter.PlayerType.VIDEO -> {
@@ -263,10 +267,6 @@ class UsedeskMediaPlayerAdapter(
         }
     }
 
-    /**
-     * Вызывается для того, чтобы прикрепиться к адаптеру, для реакции на minimize или переключения
-     * плеера
-     */
     override fun reattachPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,

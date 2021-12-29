@@ -707,7 +707,7 @@ internal class MessagesAdapter(
                     IUsedeskMediaPlayerAdapter.PlayerType.AUDIO,
                     doOnCancel
                 )
-                changeElements(audio = true)
+                changeElements()
             }
 
             if (mediaPlayerAdapter.reattachPlayer(
@@ -716,7 +716,7 @@ internal class MessagesAdapter(
                     doOnCancel
                 )
             ) {
-                changeElements(audio = true)
+                changeElements()
             }
 
             //TODO: тут только 2 цвета фона, которые вообще может получится сделать прозрачными?
@@ -738,10 +738,8 @@ internal class MessagesAdapter(
         }
 
         private fun changeElements(
-            audio: Boolean = false,
             stub: Boolean = false
         ) {
-            binding.lAudio.visibility = visibleGone(audio)
             binding.lStub.visibility = visibleGone(stub)
         }
     }
@@ -1096,7 +1094,7 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val lAudio: ViewGroup = rootView.findViewById(R.id.l_audio)
-        val lStub: ViewGroup = rootView.findViewById(R.id.l_stub)
+        val lStub: ViewGroup = rootView.findViewById(R.id.stub)
         val stubProgress: View = rootView.findViewById(R.id.stub_progress)
         val stubScrubber: View = rootView.findViewById(R.id.stub_scrubber)
         val exoPosition: TextView = rootView.findViewById(R.id.exo_position)

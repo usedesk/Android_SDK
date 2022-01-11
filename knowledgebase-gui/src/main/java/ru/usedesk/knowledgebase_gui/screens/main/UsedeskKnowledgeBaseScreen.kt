@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
@@ -53,10 +52,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
         withArticleRating = argsGetBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
 
-        toolbarDefaultAdapter = UsedeskToolbarAdapter(
-            requireActivity() as AppCompatActivity,
-            binding.toolbar
-        ).apply {
+        toolbarDefaultAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
             setBackButton {
                 requireActivity().onBackPressed()
             }

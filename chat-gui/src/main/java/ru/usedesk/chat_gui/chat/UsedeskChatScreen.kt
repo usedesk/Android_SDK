@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
@@ -54,12 +53,11 @@ class UsedeskChatScreen : UsedeskFragment(),
             Binding(rootView, defaultStyleId)
         }
 
-        toolbarAdapter =
-            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-                setBackButton {
-                    requireActivity().onBackPressed()
-                }
+        toolbarAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
+            setBackButton {
+                requireActivity().onBackPressed()
             }
+        }
 
         val agentName = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())

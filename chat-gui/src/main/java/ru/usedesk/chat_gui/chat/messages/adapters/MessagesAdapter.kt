@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.RoundedImageView
-import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
@@ -31,7 +31,7 @@ internal class MessagesAdapter(
     lifecycleOwner: LifecycleOwner,
     private val customAgentName: String?,
     private val rejectedFileExtensions: Array<String>,
-    private val mediaPlayerAdapter: IUsedeskMediaPlayerAdapter,
+    private val mediaPlayerAdapter: MediaPlayerAdapter,
     private val onFileClick: (UsedeskFile) -> Unit,
     private val onUrlClick: (String) -> Unit,
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
@@ -555,7 +555,7 @@ internal class MessagesAdapter(
                     binding.lVideo,
                     usedeskFile.content,
                     usedeskFile.name,
-                    IUsedeskMediaPlayerAdapter.PlayerType.VIDEO,
+                    MediaPlayerAdapter.PlayerType.VIDEO,
                     doOnCancelPlay,
                     doOnControlsVisibilityChanged
                 )
@@ -674,7 +674,7 @@ internal class MessagesAdapter(
                     binding.lAudio,
                     usedeskFile.content,
                     usedeskFile.name,
-                    IUsedeskMediaPlayerAdapter.PlayerType.AUDIO,
+                    MediaPlayerAdapter.PlayerType.AUDIO,
                     doOnCancel
                 )
                 changeElements()

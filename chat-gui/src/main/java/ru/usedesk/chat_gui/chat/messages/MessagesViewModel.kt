@@ -107,7 +107,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     override fun onCleared() {
         super.onCleared()
 
-        audioDurationCache.cancelAll()//TODO: тут короч прерывается только при полном закрытии, а не при удалении, а при перевороте будут вызыавться калбеки
+        audioDurationCache.cancelAll()
 
         UsedeskChatSdk.getInstance()
             ?.removeActionListener(actionListenerRx)

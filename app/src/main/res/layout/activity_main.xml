@@ -14,16 +14,10 @@
             android:layout_height="match_parent" />
 
         <FrameLayout
-            android:visibility="invisible"
             android:id="@+id/l_fullscreen"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/usedesk_black_1">
-
-            <include
-                layout="@layout/usedesk_fullscreen_media"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
+            android:background="@color/usedesk_black_1"
+            android:visibility="invisible" />
     </FrameLayout>
 </layout>

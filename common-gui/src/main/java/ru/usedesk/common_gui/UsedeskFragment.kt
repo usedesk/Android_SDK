@@ -95,7 +95,7 @@ abstract class UsedeskFragment : Fragment() {
         ).show()
     }
 
-    protected inline fun <reified T> getParentListener(): T? {
+    inline fun <reified T> getParentListener(): T? {
         var listener: T? = null
 
         var parent = parentFragment

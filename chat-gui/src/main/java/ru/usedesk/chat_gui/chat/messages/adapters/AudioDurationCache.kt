@@ -1,7 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.media.MediaPlayer
-import android.util.Log
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -64,13 +63,11 @@ internal class AudioDurationCache {
                 setDataSource(url)
                 prepare()
             }
-            Log.d("DBG_DUR", "OK")
             yield()
             val duration = mediaPlayer.duration / 1000
             mediaPlayer.release()
             duration
         } catch (e: Exception) {
-            Log.d("DBG_DUR", "!OK")
             null
         }
     }

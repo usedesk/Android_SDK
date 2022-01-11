@@ -14,8 +14,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
-import ru.usedesk.chat_gui.*
-import ru.usedesk.chat_gui.chat.UsedeskMediaPlayerAdapter
+import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
+import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
+import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
+import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_sdk.entity.UsedeskEvent
@@ -32,14 +34,12 @@ class MainActivity : AppCompatActivity(),
     IUsedeskOnSupportClickListener,
     IUsedeskOnFileClickListener,
     IUsedeskOnClientTokenListener,
-    IUsedeskMediaPlayerAdapterKeeper,
-    IUsedeskOnDownloadListener {
+    IUsedeskOnDownloadListener,
+    IUsedeskOnFullscreenListener {
 
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var binding: ActivityMainBinding
-
-    private lateinit var mediaPlayerAdapter: IUsedeskMediaPlayerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,13 +49,6 @@ class MainActivity : AppCompatActivity(),
         binding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_main
-        )
-
-        mediaPlayerAdapter = UsedeskMediaPlayerAdapter(
-            this,
-            binding.lFullscreen,
-            this::fullscreenMode,
-            this::onDownload
         )
 
         viewModel.configurationLiveData.observe(this, {
@@ -116,16 +109,18 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun getMediaPlayerAdapter() = mediaPlayerAdapter
+    override fun getFullscreenLayout() = binding.lFullscreen
+
+    override fun onFullscreenChanged(fullscreen: Boolean) {
+        fullscreenMode(fullscreen)
+    }
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
         viewModel.goShowFile(usedeskFile)
     }
 
     override fun onBackPressed() {
-        if (!mediaPlayerAdapter.onBackPressed()) {
-            viewModel.onBackPressed()
-        }
+        viewModel.onBackPressed()
     }
 
     override fun onSupportClick() {

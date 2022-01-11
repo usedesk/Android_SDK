@@ -38,6 +38,8 @@ class UsedeskChatScreen : UsedeskFragment(),
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
 
+    val mediaPlayerAdapter: MediaPlayerAdapter by lazy { MediaPlayerAdapter(this) }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -168,7 +170,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     }
 
     override fun onBackPressed(): Boolean {
-        return viewModel.onBackPressed()
+        return mediaPlayerAdapter.onBackPressed() || viewModel.onBackPressed()
     }
 
     private fun getCurrentFragment(): Fragment? {

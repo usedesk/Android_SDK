@@ -1,5 +1,25 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="Usedesk.Chat.Player.Video" parent="">
+        <item name="player_layout_id">@layout/usedesk_view_player_video_content</item>
+        <item name="resize_mode">fit</item>
+        <item name="show_buffering">always</item>
+    </style>
+
+    <style name="Usedesk.Chat.Player.Audio" parent="">
+        <item name="bar_height">2dp</item>
+        <item name="buffered_color">@color/usedesk_black_3</item>
+        <item name="controller_layout_id">@layout/usedesk_view_player_audio_controls</item>
+        <item name="hide_on_touch">false</item>
+        <item name="played_color">@color/usedesk_black_2</item>
+        <item name="resize_mode">fit</item>
+        <item name="scrubber_color">@color/usedesk_black_2</item>
+        <item name="scrubber_enabled_size">12dp</item>
+        <item name="show_buffering">when_playing</item>
+        <item name="show_timeout">0</item>
+        <item name="unplayed_color">@color/usedesk_black_4</item>
+    </style>
+
     <style name="Usedesk.Chat.Attachment.Dialog.ContainerRoot" parent="">
         <item name="android:background">@color/usedesk_white_1</item>
     </style>

@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.ProgressBar
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -15,40 +14,42 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerView
-import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
+import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
+import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.hideKeyboard
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible
 
-class UsedeskMediaPlayerAdapter(
-    activity: AppCompatActivity,
-    private val lFullscreen: ViewGroup,
-    private val onFullscreenMode: (Boolean) -> Unit,
-    private val onDownload: (String, String) -> Unit
-) : IUsedeskMediaPlayerAdapter {
+class MediaPlayerAdapter(
+    chatScreen: UsedeskChatScreen
+) {
+    private val playerViewModel: PlayerViewModel by chatScreen.viewModels()
 
-    //TODO: инфлейтить плееры фулскрина нужно самостоятельно внутри адаптера. При этом адаптер создавать так же внутри ChatScreen, а fullscreenLayout искать через всех родителей фрагмента или в активити по id.
+    private val fullscreenListener = chatScreen.getParentListener<IUsedeskOnFullscreenListener>()
+    private val downloadListener = chatScreen.getParentListener<IUsedeskOnDownloadListener>()
 
-    private val playerViewModel: PlayerViewModel by activity.viewModels()
+    private val pvVideoExoPlayer: PlayerView = inflateItem(
+        chatScreen.view as ViewGroup,
+        R.layout.usedesk_view_player,
+        R.style.Usedesk_Chat_Player_Video
+    ) { rootView, defaultStyleId ->
+        rootView as PlayerView
+    }
 
-    private val pvVideoExoPlayer: PlayerView = lFullscreen.findViewById(R.id.pv_video)
-    private val pvAudioExoPlayer: PlayerView = lFullscreen.findViewById(R.id.pv_audio)
+    private val pvAudioExoPlayer: PlayerView = inflateItem(
+        chatScreen.view as ViewGroup,
+        R.layout.usedesk_view_player,
+        R.style.Usedesk_Chat_Player_Audio
+    ) { rootView, defaultStyleId ->
+        rootView as PlayerView
+    }
 
     private var restored = true
 
-    init {
-        /*inflateItem(
-            lFullscreen,
-            R.layout.usedesk_fullscreen_media,
-            0//TODO: DEBUG
-        ) { rootView, defaultStyleId ->
-            UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
-        }*/
-    }
-
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
-        ?: ExoPlayer.Builder(lFullscreen.context)
+        ?: ExoPlayer.Builder(chatScreen.requireContext())
             .setUseLazyPreparation(true)
             .build().also {
                 playerViewModel.exoPlayer = it
@@ -58,11 +59,11 @@ class UsedeskMediaPlayerAdapter(
     private var lastMinimizeView: MinimizeView? = null
     private var currentMinimizeView: MinimizeView? = null
 
-    private val videoExoPlayerViews = VideoExoPlayerViews(pvVideoExoPlayer)
-    private val audioExoPlayerViews = AudioExoPlayerViews(pvAudioExoPlayer)
+    private val videoBinding = VideoExoPlayerBinding(pvVideoExoPlayer)
+    private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
 
     init {
-        activity.lifecycle.addObserver(object : LifecycleEventObserver {
+        chatScreen.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
                 when (event) {
                     Lifecycle.Event.ON_PAUSE -> {
@@ -75,23 +76,23 @@ class UsedeskMediaPlayerAdapter(
             }
         })
 
-        audioExoPlayerViews.contentFrame.updateLayoutParams {
+        audioBinding.contentFrame.updateLayoutParams {
             width = 0
             height = 0
         }
 
         exoPlayer.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
-                videoExoPlayerViews.pbLoading.visibility =
+                videoBinding.pbLoading.visibility =
                     visibleInvisible(playbackState == Player.STATE_BUFFERING)
             }
         })
 
         pvVideoExoPlayer.setControllerVisibilityListener { visibility ->
             val visible = visibility == View.VISIBLE
-            videoExoPlayerViews.controls.startAnimation(
+            videoBinding.controls.startAnimation(
                 AnimationUtils.loadAnimation(
-                    lFullscreen.context,
+                    chatScreen.requireContext(),
                     if (visible) {
                         R.anim.fade_in
                     } else {
@@ -99,10 +100,10 @@ class UsedeskMediaPlayerAdapter(
                     }
                 )
             )
-            lFullscreen.post {
+            pvVideoExoPlayer.post {
                 currentMinimizeView?.onControlsHeightChanged?.invoke(
                     if (visible) {
-                        videoExoPlayerViews.lBottomBar?.height ?: 0
+                        videoBinding.lBottomBar?.height ?: 0
                     } else {
                         0
                     }
@@ -110,21 +111,24 @@ class UsedeskMediaPlayerAdapter(
             }
         }
 
-        videoExoPlayerViews.ivDownload.setOnClickListener {
+        videoBinding.ivDownload.setOnClickListener {
             val model = playerViewModel.modelLiveData.value
-            onDownload(model.key, model.name)
+            downloadListener?.onDownload(model.key, model.name)
         }
+        videoBinding.ivDownload.visibility = visibleGone(downloadListener != null)
 
-        audioExoPlayerViews.tvDownload.setOnClickListener {
+        audioBinding.tvDownload.setOnClickListener {
             val model = playerViewModel.modelLiveData.value
-            onDownload(model.key, model.name)
+            downloadListener?.onDownload(model.key, model.name)
         }
+        audioBinding.tvDownload.visibility = visibleGone(downloadListener != null)
 
-        videoExoPlayerViews.fullscreenButton.setOnClickListener {
+        videoBinding.fullscreenButton.setOnClickListener {
             playerViewModel.fullscreen()
         }
+        videoBinding.fullscreenButton.visibility = visibleGone(fullscreenListener != null)
 
-        playerViewModel.modelLiveData.initAndObserveWithOld(activity) { old, new ->
+        playerViewModel.modelLiveData.initAndObserveWithOld(chatScreen) { old, new ->
             if (!restored && old?.mode != new.mode) {
                 resetPlayer()
             }
@@ -135,8 +139,8 @@ class UsedeskMediaPlayerAdapter(
                         PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
                             exoPlayer.run {
                                 setMediaItem(MediaItem.fromUri(new.key))
-                                exoPlayer.prepare()
-                                exoPlayer.play()
+                                prepare()
+                                play()
                             }
                             if (new.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER) {
                                 pvVideoExoPlayer.hideController()
@@ -173,7 +177,7 @@ class UsedeskMediaPlayerAdapter(
         if (model.fullscreen &&
             (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
         ) {
-            onFullscreenMode(true)
+            fullscreenListener?.onFullscreenChanged(true)
         }
         if (playerViewModel.lastPlaying) {
             exoPlayer.play()
@@ -186,45 +190,58 @@ class UsedeskMediaPlayerAdapter(
                 (pvVideoExoPlayer.parent as? ViewGroup)?.removeView(pvVideoExoPlayer)
 
                 if (fullscreen) {
-                    lFullscreen.addView(pvVideoExoPlayer)
-                    videoExoPlayerViews.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_exit)
+                    fullscreenListener?.getFullscreenLayout()?.addView(pvVideoExoPlayer)
+                    videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_exit)
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvVideoExoPlayer)
-                    videoExoPlayerViews.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_enter)
+                    videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_enter)
                 }
                 //Каждый раз задаём плеер, иначе он не поймёт что только что произошло
                 pvVideoExoPlayer.player = exoPlayer
-                lFullscreen.visibility = visibleGone(fullscreen)
-                onFullscreenMode(fullscreen)
+                fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
+                fullscreenListener?.onFullscreenChanged(fullscreen)
             }
             PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
                 (pvAudioExoPlayer.parent as? ViewGroup)?.removeView(pvAudioExoPlayer)
 
                 if (fullscreen) {
-                    lFullscreen.addView(pvAudioExoPlayer)
+                    fullscreenListener?.getFullscreenLayout()?.addView(pvAudioExoPlayer)
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvAudioExoPlayer)
                 }
                 //Каждый раз задаём плеер, иначе он не поймёт что только что произошло
                 pvAudioExoPlayer.player = exoPlayer
-                lFullscreen.visibility = visibleGone(fullscreen)
-                onFullscreenMode(fullscreen)
+                fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
+                fullscreenListener?.onFullscreenChanged(fullscreen)
                 pvAudioExoPlayer.showController()
             }
         }
     }
 
-    override fun onBackPressed(): Boolean = playerViewModel.onBackPressed()
+    /**
+     * @return true if event was handled
+     */
+    fun onBackPressed(): Boolean = playerViewModel.onBackPressed()
 
-    override fun attachPlayer(
+    /**
+     * Resets the current playback and switches the player's view to lMinimized.
+     *
+     * @param lMinimized Parent view for minimized player
+     * @param mediaKey URL of the video/audio source
+     * @param mediaName Video/audio name
+     * @param playerType Video/audio type
+     * @param onCancel Called when the player cancels playing the current media
+     * @param onControlsHeightChanged Called when player controls are visible
+     */
+    fun attachPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
         mediaName: String,
-        playerType: IUsedeskMediaPlayerAdapter.PlayerType,
+        playerType: PlayerType,
         onCancel: () -> Unit,
-        onControlsHeightChanged: ((Int) -> Unit)
+        onControlsHeightChanged: ((Int) -> Unit) = {}
     ) {
-        hideKeyboard(lFullscreen)
+        hideKeyboard(pvVideoExoPlayer)
 
         //Текущий плеер станет старым
         lastMinimizeView = currentMinimizeView
@@ -236,10 +253,10 @@ class UsedeskMediaPlayerAdapter(
         currentMinimizeView = MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
 
         when (playerType) {
-            IUsedeskMediaPlayerAdapter.PlayerType.VIDEO -> {
+            PlayerType.VIDEO -> {
                 playerViewModel.videoApply(mediaKey, mediaName)
             }
-            IUsedeskMediaPlayerAdapter.PlayerType.AUDIO -> {
+            PlayerType.AUDIO -> {
                 playerViewModel.audioApply(mediaKey, mediaName)
             }
         }
@@ -253,10 +270,13 @@ class UsedeskMediaPlayerAdapter(
         (pvAudioExoPlayer.parent as? ViewGroup)?.removeView(pvAudioExoPlayer)
         lastMinimizeView?.release()
         lastMinimizeView = null
-        lFullscreen.visibility = View.GONE
+        fullscreenListener?.getFullscreenLayout()?.visibility = View.GONE
     }
 
-    override fun detachPlayer(key: String): Boolean {
+    /**
+     * Detach current player view if mediaKey is equal to the mediaKey of current player.
+     */
+    fun detachPlayer(key: String): Boolean {
         val model = playerViewModel.modelLiveData.value
         return if (model.key == key && !model.fullscreen) {
             lastMinimizeView = currentMinimizeView
@@ -269,11 +289,21 @@ class UsedeskMediaPlayerAdapter(
         }
     }
 
-    override fun reattachPlayer(
+    /**
+     * Places player view inside lMinimized if mediaKey is equal to the mediaKey of current player.
+     *
+     * @param lMinimized Parent view for minimized player
+     * @param mediaKey URL of the video/audio source
+     * @param onCancel Called when the player cancels playing the current media
+     * @param onControlsHeightChanged Called when player controls are visible
+     *
+     * @return true if player was reattached
+     */
+    fun reattachPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
         onCancel: () -> Unit,
-        onControlsHeightChanged: ((Int) -> Unit)
+        onControlsHeightChanged: ((Int) -> Unit) = {}
     ): Boolean {
         val model = playerViewModel.modelLiveData.value
         return if (model.key == mediaKey) {
@@ -295,7 +325,7 @@ class UsedeskMediaPlayerAdapter(
         }
     }
 
-    private class VideoExoPlayerViews(exoPlayerView: PlayerView) {
+    private class VideoExoPlayerBinding(exoPlayerView: PlayerView) {
         val fullscreenButton = exoPlayerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
         val controls = exoPlayerView.findViewById<View>(R.id.exo_controller)
         val lBottomBar = exoPlayerView.findViewById<View>(R.id.l_bottom_bar)
@@ -303,7 +333,7 @@ class UsedeskMediaPlayerAdapter(
         val ivDownload = exoPlayerView.findViewById<View>(R.id.iv_download)
     }
 
-    private class AudioExoPlayerViews(exoPlayerView: PlayerView) {
+    private class AudioExoPlayerBinding(exoPlayerView: PlayerView) {
         val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
         val tvDownload = exoPlayerView.findViewById<View>(R.id.tv_download)
     }
@@ -317,5 +347,10 @@ class UsedeskMediaPlayerAdapter(
             onControlsHeightChanged.invoke(0)
             onCancelPlay.invoke()
         }
+    }
+
+    enum class PlayerType {
+        VIDEO,
+        AUDIO
     }
 }

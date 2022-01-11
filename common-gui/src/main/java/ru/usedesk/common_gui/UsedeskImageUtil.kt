@@ -10,42 +10,45 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
-fun setImage(imageImageView: ImageView,
-             pictureUrl: String,
-             errorResId: Int,
-             onError: (() -> Unit)? = null,
-             onSuccess: (() -> Unit)? = null) {
+fun setImage(
+    imageImageView: ImageView,
+    pictureUrl: String,
+    errorResId: Int,
+    onError: (() -> Unit)? = null,
+    onSuccess: (() -> Unit)? = null
+) {
     imageImageView.setImageResource(errorResId)
     if (!TextUtils.isEmpty(pictureUrl)) {
-        Glide.with(imageImageView.context.applicationContext)
-                .load(pictureUrl)
-                .error(errorResId)
-                .listener(AppRequestListener(onError = {
-                    onError?.invoke()
-                }, onSuccess = {
-                    onSuccess?.invoke()
-                }))
-                .into(imageImageView)
+        Glide.with(imageImageView.context)
+            .load(pictureUrl)
+            .error(errorResId)
+            .listener(AppRequestListener(onError = {
+                onError?.invoke()
+            }, onSuccess = {
+                onSuccess?.invoke()
+            }))
+            .into(imageImageView)
     }
 }
 
-
-fun showImage(ivTarget: ImageView,
-              loadingId: Int,
-              url: String,
-              vLoading: View? = null,
-              vError: View? = null,
-              onSuccess: () -> Unit = {},
-              onError: () -> Unit = {},
-              ignoreCache: Boolean = false) {
+fun showImage(
+    ivTarget: ImageView,
+    loadingId: Int,
+    url: String,
+    vLoading: View? = null,
+    vError: View? = null,
+    onSuccess: () -> Unit = {},
+    onError: () -> Unit = {},
+    ignoreCache: Boolean = false
+) {
     showImageStatus(vLoading, true, vError, false)
 
-    var glide = Glide.with(ivTarget.context.applicationContext)
-            .load(url)
+    var glide = Glide.with(ivTarget.context)
+        .load(url)
 
     glide = if (ignoreCache) {
         glide.skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
     } else {
         glide.diskCacheStrategy(DiskCacheStrategy.ALL)
     }
@@ -63,28 +66,6 @@ fun showImage(ivTarget: ImageView,
             }
         }
         .into(ivTarget)
-}
-
-
-fun showThumbnail(
-    target: ImageView,
-    url: String,
-    onSuccess: () -> Unit = {},
-    onError: () -> Unit = {}
-) {
-    Glide.with(target.context.applicationContext)
-        .asBitmap()
-        .load(url)
-        .diskCacheStrategy(DiskCacheStrategy.ALL)
-        .centerCrop()
-        .thumbnail(0f)
-        .listener(
-            AppRequestListener(
-                onSuccess = onSuccess,
-                onError = onError
-            )
-        )
-        .into(target)
 }
 
 fun clearImage(ivTarget: ImageView) {

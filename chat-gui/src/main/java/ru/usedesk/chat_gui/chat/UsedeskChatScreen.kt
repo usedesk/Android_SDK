@@ -38,8 +38,6 @@ class UsedeskChatScreen : UsedeskFragment(),
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
 
-    private var cleared = false
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -183,22 +181,6 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     override fun onGoToMessages() {
         viewModel.goMessages()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        if (cleared) {
-            getCurrentFragment()?.let {
-                if (it is MessagesPage) {
-                    it.clear()
-                }
-            }
-        }
-    }
-
-    fun clear() {
-        cleared = true
     }
 
     companion object {

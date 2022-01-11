@@ -17,7 +17,9 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerView
 import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.R
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.hideKeyboard
+import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.visibleInvisible
 
 class UsedeskMediaPlayerAdapter(
     activity: AppCompatActivity,
@@ -26,23 +28,23 @@ class UsedeskMediaPlayerAdapter(
     private val onDownload: (String, String) -> Unit
 ) : IUsedeskMediaPlayerAdapter {
 
-    //TODO:
+    //TODO: инфлейтить плееры фулскрина нужно самостоятельно внутри адаптера. При этом адаптер создавать так же внутри ChatScreen, а fullscreenLayout искать через всех родителей фрагмента или в активити по id.
 
     private val playerViewModel: PlayerViewModel by activity.viewModels()
 
-    private val pvVideoExoPlayer: PlayerView = lFullscreen.findViewById<PlayerView>(R.id.pv_video)
-    private val pvAudioExoPlayer: PlayerView = lFullscreen.findViewById<PlayerView>(R.id.pv_audio)
+    private val pvVideoExoPlayer: PlayerView = lFullscreen.findViewById(R.id.pv_video)
+    private val pvAudioExoPlayer: PlayerView = lFullscreen.findViewById(R.id.pv_audio)
 
     private var restored = true
 
     init {
-        inflateItem(
+        /*inflateItem(
             lFullscreen,
             R.layout.usedesk_fullscreen_media,
             0//TODO: DEBUG
         ) { rootView, defaultStyleId ->
             UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
-        }
+        }*/
     }
 
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer

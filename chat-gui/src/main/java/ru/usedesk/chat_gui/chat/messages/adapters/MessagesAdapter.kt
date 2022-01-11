@@ -14,10 +14,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.RoundedImageView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import ru.usedesk.chat_gui.IUsedeskMediaPlayerAdapter
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -43,14 +39,13 @@ internal class MessagesAdapter(
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     private var items: List<UsedeskMessage> = listOf()
-    private val viewHolders: MutableList<BaseViewHolder> = mutableListOf()
     private val layoutManager = LinearLayoutManager(recyclerView.context).apply {
         val parcelable = savedStated?.getParcelable<Parcelable>(Keys.RECYCLER_VIEW.key)
         if (parcelable != null) {
             onRestoreInstanceState(parcelable)
         }
     }
-    private val audioDurationCache = AudioDurationCache()
+
     private val saved = savedStated != null
 
     init {
@@ -144,13 +139,6 @@ internal class MessagesAdapter(
     private fun getFormattedTime(calendar: Calendar): String {
         val dateFormat: DateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
         return dateFormat.format(calendar.time)
-    }
-
-    fun release() {
-        viewHolders.forEach {
-            it.release()
-        }
-        audioDurationCache.release()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -248,8 +236,6 @@ internal class MessagesAdapter(
             else -> {
                 throw RuntimeException("Unknown view type:$viewType")
             }
-        }.apply {
-            viewHolders.add(this)
         }
     }
 
@@ -278,8 +264,6 @@ internal class MessagesAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
 
         abstract fun bind(position: Int)
-
-        open fun release() {}
     }
 
     internal abstract inner class MessageViewHolder(
@@ -503,6 +487,7 @@ internal class MessagesAdapter(
         }
 
         private fun bindImage(position: Int) {
+            clearImage(binding.ivPreview)
             val messageFile = items[position] as UsedeskMessageFile
 
             binding.ivPreview.setOnClickListener(null)
@@ -521,10 +506,6 @@ internal class MessagesAdapter(
                         bindImage(position)
                     }
                 })
-        }
-
-        override fun release() {
-            clearImage(binding.ivPreview)
         }
     }
 
@@ -627,10 +608,6 @@ internal class MessagesAdapter(
             super.bind(position)
             bindVideo(items[position] as UsedeskMessageFile)
         }
-
-        override fun release() {
-
-        }
     }
 
     internal abstract inner class MessageAudioViewHolder(
@@ -639,10 +616,8 @@ internal class MessagesAdapter(
         bindingDate: DateBinding
     ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
 
-        private lateinit var usedeskFile: UsedeskFile
+        private var usedeskFile: UsedeskFile = UsedeskFile("", "", "", "")
         private var lastVisible = false
-        private var previewJob: Job? = null
-        private val previewScope = CoroutineScope(Dispatchers.IO)
 
         init {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -661,30 +636,25 @@ internal class MessagesAdapter(
 
         override fun bind(position: Int) {
             super.bind(position)
-            release()
+
             val audioMessage = items[position] as UsedeskMessageFile
             bindAudio(audioMessage)
         }
 
-        override fun release() {
-            previewJob?.cancel()
-            previewJob = null
-        }
-
         private fun bindAudio(messageFile: UsedeskMessageFile) {
+            viewModel.audioDurationCache.cancel(this.usedeskFile.content)
+
             this.usedeskFile = messageFile.file
 
             changeElements(
                 stub = true
             )
 
-            previewJob?.cancel()
             binding.exoPosition.text = "00:00"
-            previewJob = previewScope.async {
-                val totalSeconds = audioDurationCache.getAudioDuration(usedeskFile.content)
-                val seconds: Int = totalSeconds % 60
-                val minutes: Int = totalSeconds / 60
+            viewModel.audioDurationCache.loadDuration(usedeskFile.content) { totalSeconds ->
                 binding.exoPosition.post {
+                    val seconds: Int = totalSeconds % 60
+                    val minutes: Int = totalSeconds / 60
                     binding.exoPosition.text = format("%02d:%02d", minutes, seconds)
                 }
             }

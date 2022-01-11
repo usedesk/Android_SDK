@@ -1,31 +1,77 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.media.MediaPlayer
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import android.util.Log
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 internal class AudioDurationCache {
-    private val audioPreviews = hashMapOf<String, Int>()
-    private val mediaPlayer: MediaPlayer by lazy { MediaPlayer() }
+    private val durations = hashMapOf<String, Int>()
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val jobs = hashMapOf<String, Job>()
+    private val mutex = Mutex()
 
-    suspend fun getAudioDuration(url: String): Int {
-        return suspendCoroutine { continuation ->
-            val preview = audioPreviews[url] ?: loadAudioDuration(url)
-            continuation.resume(preview)
+    fun loadDuration(url: String, onLoaded: (Int) -> Unit) {
+        val cachedDuration = durations[url]
+        if (cachedDuration != null) {
+            onLoaded(cachedDuration)
+        } else {
+            runBlocking {
+                mutex.withLock {
+                    jobs[url] = jobs[url] ?: ioScope.launch {
+                        val duration = loadAudioDuration(url)
+                        mutex.withLock {
+                            if (duration != null) {
+                                durations[url] = duration
+                            }
+                            jobs.remove(url)
+                        }
+                        yield()
+
+                        onLoaded(duration ?: 0)
+                    }
+                }
+            }
         }
     }
 
-    private fun loadAudioDuration(url: String): Int {
+    fun cancel(url: String) {
+        runBlocking {
+            mutex.withLock {
+                jobs[url]?.let { job ->
+                    jobs.remove(url)
+                    job.cancel()
+                }
+            }
+        }
+    }
+
+    fun cancelAll() {
+        runBlocking {
+            mutex.withLock {
+                jobs.values.forEach { job ->
+                    job.cancel()
+                }
+                jobs.clear()
+            }
+        }
+    }
+
+    private suspend fun loadAudioDuration(url: String): Int? {
         return try {
-            mediaPlayer.setDataSource(url)
-            mediaPlayer.prepare()
-            mediaPlayer.duration / 1000
+            val mediaPlayer = MediaPlayer().apply {
+                setDataSource(url)
+                prepare()
+            }
+            Log.d("DBG_DUR", "OK")
+            yield()
+            val duration = mediaPlayer.duration / 1000
+            mediaPlayer.release()
+            duration
         } catch (e: Exception) {
-            0
+            Log.d("DBG_DUR", "!OK")
+            null
         }
-    }
-
-    fun release() {
-        mediaPlayer.release()
     }
 }

@@ -209,7 +209,7 @@ class ConfigurationScreen : Fragment() {
                 binding.tvClientAvatar.text = "Reset client avatar"
             }
             else -> {
-                Glide.with(requireContext().applicationContext)
+                Glide.with(requireContext())
                     .load(avatar)
                     .into(binding.ivClientAvatar)
                 binding.tvClientAvatar.text = "Change client avatar"

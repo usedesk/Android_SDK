@@ -63,9 +63,6 @@ class MainNavigation internal constructor(
             if (fragment is UsedeskFragment && fragment.onBackPressed()) {
                 return
             }
-            if (fragment is UsedeskChatScreen) {
-                fragment.clear()
-            }
             fragmentManager.popBackStack()
         } else {
             activity.finish()

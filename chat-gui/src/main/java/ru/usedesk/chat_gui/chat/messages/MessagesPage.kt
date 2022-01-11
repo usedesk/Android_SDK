@@ -27,8 +27,6 @@ internal class MessagesPage : UsedeskFragment() {
 
     private lateinit var messagesAdapter: MessagesAdapter
 
-    private var cleared = false
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -109,6 +107,12 @@ internal class MessagesPage : UsedeskFragment() {
         messagesAdapter.onSave(outState)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        viewModel.audioDurationCache.cancelAll()
+    }
+
     private fun onUrlClick(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -117,18 +121,6 @@ internal class MessagesPage : UsedeskFragment() {
 
     fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
         viewModel.addAttachedFiles(attachedFiles)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        if (cleared) {
-            messagesAdapter.release()
-        }
-    }
-
-    fun clear() {
-        cleared = true
     }
 
     companion object {
@@ -156,19 +148,5 @@ internal class MessagesPage : UsedeskFragment() {
         val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
-    }
-
-    private class FileInfo(
-        val uri: String,
-        val type: String,
-        val name: String
-    ) {
-        constructor(usedeskFileInfo: UsedeskFileInfo) : this(
-            usedeskFileInfo.uri.toString(),
-            usedeskFileInfo.type,
-            usedeskFileInfo.name
-        )
-
-        fun getUsedeskFileInfo(): UsedeskFileInfo = UsedeskFileInfo(Uri.parse(uri), type, name)
     }
 }

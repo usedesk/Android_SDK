@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.chat.messages
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import ru.usedesk.chat_gui.chat.messages.adapters.AudioDurationCache
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -10,6 +11,8 @@ import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class MessagesViewModel : UsedeskViewModel() {
+
+    val audioDurationCache = AudioDurationCache()
 
     val modelLiveData = UsedeskLiveData(Model())
 
@@ -19,6 +22,8 @@ internal class MessagesViewModel : UsedeskViewModel() {
     val configuration = UsedeskChatSdk.requireConfiguration()
 
     private var messages: List<UsedeskMessage> = listOf()
+
+    private var audioDisposable: Disposable? = null
 
     init {
         setModel { model ->
@@ -93,18 +98,21 @@ internal class MessagesViewModel : UsedeskViewModel() {
         doIt(usedeskChat.removeMessageRx(id))
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        UsedeskChatSdk.getInstance()
-            ?.removeActionListener(actionListenerRx)
-
-        UsedeskChatSdk.release(false)
-    }
-
     fun showToBottomButton(show: Boolean) {
         setModel { model ->
             model.copy(fabToBottom = show)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        audioDurationCache.cancelAll()//TODO: тут короч прерывается только при полном закрытии, а не при удалении, а при перевороте будут вызыавться калбеки
+
+        UsedeskChatSdk.getInstance()
+            ?.removeActionListener(actionListenerRx)
+
+        UsedeskChatSdk.release(false)
     }
 
     data class Model(

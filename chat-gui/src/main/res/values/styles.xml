@@ -216,7 +216,6 @@
         <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Message.Audio.Container4</item>
         <item name="usedesk_common_container_6">@style/Usedesk.Chat.Message.Audio.Container5</item>
-        <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text</item>
         <item name="usedesk_chat_message_audio_controls_layout">@layout/usedesk_view_player_audio_controls</item>
     </style>
 

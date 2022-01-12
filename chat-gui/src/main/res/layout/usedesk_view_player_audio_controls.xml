@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/l_controls_root"
     android:layout_width="match_parent"
-    android:layout_height="56dp">
+    android:layout_height="48dp">
 
     <FrameLayout
         android:id="@+id/l_play"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="4dp"
+        android:layout_marginStart="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -71,7 +71,7 @@
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="2dp"
         android:fontFamily="@font/sf_ui_display_medium"
         android:includeFontPadding="false"
         android:singleLine="true"
@@ -86,7 +86,8 @@
         android:id="@+id/tv_download"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="2dp"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
@@ -95,7 +96,7 @@
         android:text="@string/usedesk_download"
         android:textColor="@color/usedesk_blue"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/exo_position"
-        app:layout_constraintStart_toEndOf="@+id/exo_position"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/exo_position" />
 </androidx.constraintlayout.widget.ConstraintLayout>

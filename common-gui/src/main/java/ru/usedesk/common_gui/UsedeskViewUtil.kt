@@ -11,26 +11,32 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 
-fun <T> initAndObserve(lifecycleOwner: LifecycleOwner,
-                       liveData: LiveData<T?>,
-                       lambda: (T?) -> (Unit)) {
+fun <T> initAndObserve(
+    lifecycleOwner: LifecycleOwner,
+    liveData: LiveData<T?>,
+    lambda: (T?) -> (Unit)
+) {
     justInit(liveData, lambda)
     observe(lifecycleOwner, liveData, lambda)
 }
 
-fun <T> justInit(liveData: LiveData<T?>,
-                 lambda: (T?) -> (Unit)) {
+fun <T> justInit(
+    liveData: LiveData<T?>,
+    lambda: (T?) -> (Unit)
+) {
     lambda(liveData.value)
 }
 
-fun <T> observe(lifecycleOwner: LifecycleOwner,
-                liveData: LiveData<T?>,
-                lambda: (T?) -> (Unit)) {
+fun <T> observe(
+    lifecycleOwner: LifecycleOwner,
+    liveData: LiveData<T?>,
+    lambda: (T?) -> (Unit)
+) {
     liveData.observe(lifecycleOwner, Observer(lambda))
 }
 
 private fun getInputMethodManager(view: View) =
-        view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
+    view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
 
 fun showKeyboard(editText: EditText) {
     editText.postDelayed({
@@ -67,10 +73,12 @@ fun visibleInvisible(visible: Boolean): Int {
     }
 }
 
-fun showInstead(viewVisible: View,
-                viewGone: View,
-                firstShow: Boolean = true,
-                gone: Boolean = true) {
+fun showInstead(
+    viewVisible: View,
+    viewGone: View,
+    firstShow: Boolean = true,
+    gone: Boolean = true
+) {
     viewVisible.visibility = if (gone) {
         visibleGone(firstShow)
     } else {
@@ -83,24 +91,31 @@ fun showInstead(viewVisible: View,
     }
 }
 
-fun <BINDING> inflateItem(container: ViewGroup,
-                          defaultLayoutId: Int,
-                          defaultStyleId: Int,
-                          createBinding: (View, Int) -> BINDING): BINDING {
-    return inflateItem(LayoutInflater.from(container.context),
-            container,
-            defaultLayoutId,
-            defaultStyleId,
-            createBinding)
+fun <BINDING> inflateItem(
+    container: ViewGroup,
+    defaultLayoutId: Int,
+    defaultStyleId: Int,
+    createBinding: (View, Int) -> BINDING
+): BINDING {
+    return inflateItem(
+        LayoutInflater.from(container.context),
+        container,
+        defaultLayoutId,
+        defaultStyleId,
+        createBinding
+    )
 }
 
-fun <BINDING> inflateItem(inflater: LayoutInflater,
-                          container: ViewGroup?,
-                          defaultLayoutId: Int,
-                          defaultStyleId: Int,
-                          createBinding: (View, Int) -> BINDING): BINDING {
+fun <BINDING> inflateItem(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    defaultLayoutId: Int,
+    defaultStyleId: Int,
+    createBinding: (View, Int) -> BINDING
+): BINDING {
     val customStyleId = UsedeskResourceManager.getResourceId(defaultStyleId)
-    val localInflater = inflater.cloneInContext(ContextThemeWrapper(inflater.context, customStyleId))
+    val wrapper = ContextThemeWrapper(inflater.context, customStyleId)
+    val localInflater = inflater.cloneInContext(wrapper)
     val layoutId = UsedeskResourceManager.getResourceId(defaultLayoutId)
     val view = localInflater.inflate(layoutId, container, false)
     return createBinding(view, defaultStyleId)

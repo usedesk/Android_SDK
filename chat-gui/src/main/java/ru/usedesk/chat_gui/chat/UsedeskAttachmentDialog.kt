@@ -19,7 +19,7 @@ import ru.usedesk.common_gui.inflateItem
 import java.io.File
 
 internal class UsedeskAttachmentDialog private constructor(
-    private val screen: UsedeskChatScreen,
+    screen: UsedeskChatScreen,
     dialogStyle: Int
 ) : BottomSheetDialog(screen.requireContext(), dialogStyle) {
 

@@ -6,10 +6,6 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -22,15 +18,14 @@ import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible
 
-class MediaPlayerAdapter(
-    chatScreen: UsedeskChatScreen
+internal class MediaPlayerAdapter(
+    chatScreen: UsedeskChatScreen,
+    val playerViewModel: PlayerViewModel
 ) {
-    private val playerViewModel: PlayerViewModel by chatScreen.viewModels()
+    private var fullscreenListener = chatScreen.getParentListener<IUsedeskOnFullscreenListener>()
+    private var downloadListener = chatScreen.getParentListener<IUsedeskOnDownloadListener>()
 
-    private val fullscreenListener = chatScreen.getParentListener<IUsedeskOnFullscreenListener>()
-    private val downloadListener = chatScreen.getParentListener<IUsedeskOnDownloadListener>()
-
-    private val pvVideoExoPlayer: PlayerView = inflateItem(
+    private val pvVideoExoPlayer = inflateItem(
         chatScreen.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Video
@@ -38,7 +33,7 @@ class MediaPlayerAdapter(
         rootView as PlayerView
     }
 
-    private val pvAudioExoPlayer: PlayerView = inflateItem(
+    private val pvAudioExoPlayer = inflateItem(
         chatScreen.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Audio
@@ -56,6 +51,13 @@ class MediaPlayerAdapter(
                 restored = false
             }
 
+    private val playerListener = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            videoBinding.pbLoading.visibility =
+                visibleInvisible(playbackState == Player.STATE_BUFFERING)
+        }
+    }
+
     private var lastMinimizeView: MinimizeView? = null
     private var currentMinimizeView: MinimizeView? = null
 
@@ -63,30 +65,12 @@ class MediaPlayerAdapter(
     private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
 
     init {
-        chatScreen.lifecycle.addObserver(object : LifecycleEventObserver {
-            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                when (event) {
-                    Lifecycle.Event.ON_PAUSE -> {
-                        onPause()
-                    }
-                    Lifecycle.Event.ON_RESUME -> {
-                        onResume()
-                    }
-                }
-            }
-        })
-
         audioBinding.contentFrame.updateLayoutParams {
             width = 0
             height = 0
         }
 
-        exoPlayer.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                videoBinding.pbLoading.visibility =
-                    visibleInvisible(playbackState == Player.STATE_BUFFERING)
-            }
-        })
+        exoPlayer.addListener(playerListener)
 
         pvVideoExoPlayer.setControllerVisibilityListener { visibility ->
             val visible = visibility == View.VISIBLE
@@ -162,7 +146,7 @@ class MediaPlayerAdapter(
         }
     }
 
-    private fun onPause() {
+    fun onPause() {
         when (playerViewModel.modelLiveData.value.mode) {
             PlayerViewModel.Mode.VIDEO_EXO_PLAYER,
             PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
@@ -172,7 +156,7 @@ class MediaPlayerAdapter(
         }
     }
 
-    private fun onResume() {
+    fun onResume() {
         val model = playerViewModel.modelLiveData.value
         if (model.fullscreen &&
             (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
@@ -323,6 +307,17 @@ class MediaPlayerAdapter(
         } else {
             false
         }
+    }
+
+    fun release() {
+        resetPlayer()
+        pvVideoExoPlayer.setControllerVisibilityListener(null)
+        exoPlayer.removeListener(playerListener)
+        exoPlayer.release()
+        fullscreenListener = null
+        downloadListener = null
+        lastMinimizeView = null
+        currentMinimizeView = null
     }
 
     private class VideoExoPlayerBinding(exoPlayerView: PlayerView) {

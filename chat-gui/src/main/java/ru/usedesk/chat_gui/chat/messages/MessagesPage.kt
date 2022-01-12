@@ -26,7 +26,7 @@ internal class MessagesPage : UsedeskFragment() {
 
     private lateinit var binding: Binding
 
-    private lateinit var messagesAdapter: MessagesAdapter
+    private var messagesAdapter: MessagesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,7 +77,7 @@ internal class MessagesPage : UsedeskFragment() {
             viewLifecycleOwner,
             agentName,
             rejectedFileExtensions,
-            mediaPlayerAdapter,
+            mediaPlayerAdapter!!,
             {
                 getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
             },
@@ -96,20 +96,20 @@ internal class MessagesPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) {
-            messagesAdapter.scrollToBottom()
+            messagesAdapter?.scrollToBottom()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        messagesAdapter.onSave(outState)
+        messagesAdapter?.onSave(outState)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
 
-        viewModel.audioDurationCache.cancelAll()
+        messagesAdapter = null
     }
 
     private fun onUrlClick(url: String) {

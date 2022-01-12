@@ -30,6 +30,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     IOnGoToChatListener {
 
     private val viewModel: ChatViewModel by viewModels()
+    private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding
     private lateinit var attachmentDialog: UsedeskAttachmentDialog
@@ -37,7 +38,12 @@ class UsedeskChatScreen : UsedeskFragment(),
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
 
-    val mediaPlayerAdapter: MediaPlayerAdapter by lazy { MediaPlayerAdapter(this) }
+    internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
+        MediaPlayerAdapter(
+            this,
+            playerViewModel
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -139,8 +145,16 @@ class UsedeskChatScreen : UsedeskFragment(),
         exception.printStackTrace()
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        mediaPlayerAdapter.onPause()
+    }
+
     override fun onResume() {
         super.onResume()
+
+        mediaPlayerAdapter.onResume()
 
         val uriList = attachmentDialog.getAttachedUri(true)
         if (uriList.isNotEmpty()) {
@@ -165,6 +179,12 @@ class UsedeskChatScreen : UsedeskFragment(),
     override fun onStop() {
         super.onStop()
         UsedeskChatSdk.startService(requireContext())
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        mediaPlayerAdapter.release()
     }
 
     override fun onBackPressed(): Boolean {

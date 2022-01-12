@@ -19,7 +19,6 @@ import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
-import java.lang.String.format
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -642,22 +641,13 @@ internal class MessagesAdapter(
         }
 
         private fun bindAudio(messageFile: UsedeskMessageFile) {
-            viewModel.audioDurationCache.cancel(this.usedeskFile.content)
-
             this.usedeskFile = messageFile.file
 
             changeElements(
                 stub = true
             )
 
-            binding.exoPosition.text = "00:00"
-            viewModel.audioDurationCache.loadDuration(usedeskFile.content) { totalSeconds ->
-                binding.exoPosition.post {
-                    val seconds: Int = totalSeconds % 60
-                    val minutes: Int = totalSeconds / 60
-                    binding.exoPosition.text = format("%02d:%02d", minutes, seconds)
-                }
-            }
+            binding.exoPosition.text = ""
 
             binding.tvDownload.setOnClickListener {
                 onFileDownloadClick(usedeskFile)

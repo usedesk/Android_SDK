@@ -41,6 +41,10 @@ object UsedeskPermissionUtil {
         }
     }
 
+    fun release() {//TODO:
+        //permissionResult?.unregister()
+    }
+
     fun needWriteExternalPermission(
         fragment: Fragment,
         onGranted: () -> Unit

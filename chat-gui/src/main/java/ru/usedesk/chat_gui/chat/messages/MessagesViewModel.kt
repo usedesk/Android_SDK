@@ -53,13 +53,6 @@ internal class MessagesViewModel : UsedeskViewModel() {
         doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
-    fun addAttachedFiles(files: List<UsedeskFileInfo>) {
-        setModel { model ->
-            model.copy(messageDraft = model.messageDraft.copy(files = files.toSet().toList()))
-        }
-        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
-    }
-
     fun sendFeedback(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
         doIt(usedeskChat.sendRx(message, feedback))
     }
@@ -101,6 +94,93 @@ internal class MessagesViewModel : UsedeskViewModel() {
         }
     }
 
+    fun showAttachmentPanel(show: Boolean) {
+        setModel { model ->
+            model.copy(
+                attachmentPanelVisible = show
+            )
+        }
+    }
+
+    fun fromCamera() {
+        setModel { model ->
+            model.copy(
+                action = Action.FROM_CAMERA_PERMISSION,
+                attachmentPanelVisible = false,
+                cameraUri = null
+            )
+        }
+    }
+
+    fun fromCameraAvailable() {
+        setModel { model ->
+            model.copy(
+                action = Action.FROM_CAMERA,
+                cameraUri = "camera_${System.currentTimeMillis()}.jpg"
+            )
+        }
+    }
+
+    fun fromGallery() {
+        setModel { model ->
+            model.copy(
+                action = Action.FROM_GALLERY_PERMISSION,
+                attachmentPanelVisible = false
+            )
+        }
+    }
+
+    fun fromGalleryAvailable() {
+        setModel { model ->
+            model.copy(
+                action = Action.FROM_GALLERY,
+                attachmentPanelVisible = false,
+                cameraUri = null
+            )
+        }
+    }
+
+    fun fromStorage() {
+        setModel { model ->
+            model.copy(
+                action = Action.FROM_STORAGE_PERMISSION,
+                attachmentPanelVisible = false
+            )
+        }
+    }
+
+    fun fromStorageAvailable() {
+        setModel { model ->
+            model.copy(
+                action = Action.FROM_STORAGE,
+                attachmentPanelVisible = false,
+                cameraUri = null
+            )
+        }
+    }
+
+    fun resetAction() {
+        setModel { model ->
+            model.copy(
+                action = null,
+                attachmentPanelVisible = false,
+                cameraUri = null
+            )
+        }
+    }
+
+    fun actionCompleted(uriList: List<UsedeskFileInfo>) {
+        setModel { model ->
+            model.copy(
+                messageDraft = model.messageDraft.copy(files = uriList.toSet().toList()),
+                cameraUri = null,
+                action = null,
+                attachmentPanelVisible = false
+            )
+        }
+        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
+    }
+
     override fun onCleared() {
         super.onCleared()
 
@@ -114,6 +194,18 @@ internal class MessagesViewModel : UsedeskViewModel() {
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val messages: List<UsedeskMessage> = listOf(),
-        val messagesScroll: Long = 0L
+        val messagesScroll: Long = 0L,
+        val attachmentPanelVisible: Boolean = false,
+        val action: Action? = null,
+        val cameraUri: String? = null
     )
+
+    enum class Action {
+        FROM_CAMERA_PERMISSION,
+        FROM_GALLERY_PERMISSION,
+        FROM_STORAGE_PERMISSION,
+        FROM_CAMERA,
+        FROM_GALLERY,
+        FROM_STORAGE
+    }
 }

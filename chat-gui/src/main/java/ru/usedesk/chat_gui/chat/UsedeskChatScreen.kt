@@ -4,24 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
 import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
 import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.*
 import ru.usedesk.common_sdk.utils.getFromJson
 import ru.usedesk.common_sdk.utils.putAsJson
 
 class UsedeskChatScreen : UsedeskFragment(),
-    IUsedeskOnAttachmentClickListener,
     IOnOfflineFormSelectorClick,
     IItemSelectChangeListener,
     IOnGoToChatListener {
@@ -30,7 +25,6 @@ class UsedeskChatScreen : UsedeskFragment(),
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding
-    private lateinit var attachmentDialog: UsedeskAttachmentDialog
 
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
@@ -77,14 +71,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         return binding.rootView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        attachmentDialog = UsedeskAttachmentDialog.create(this)
-
-        UsedeskPermissionUtil.register(this)
-    }
-
     private fun init(
         agentName: String?,
         rejectedFileExtensions: Array<String>,
@@ -129,11 +115,8 @@ class UsedeskChatScreen : UsedeskFragment(),
                 getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(it)
             }
         }
-    }
 
-    override fun onAttachmentClick() {
-        getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-            ?: attachmentDialog.show()
+        UsedeskPermissionUtil.register(this)
     }
 
     override fun onItemSelectChange(index: Int) {
@@ -150,26 +133,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         mediaPlayerAdapter.onPause()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        mediaPlayerAdapter.onResume()
-
-        val uriList = attachmentDialog.getAttachedUri(true)
-        if (uriList.isNotEmpty()) {
-            getCurrentFragment()?.let {
-                if (it is MessagesPage) {
-                    it.setAttachedFiles(uriList.map { uri ->
-                        UsedeskFileInfo.create(
-                            requireContext(),
-                            uri
-                        )
-                    })
-                }
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
         UsedeskChatSdk.stopService(requireContext())
@@ -184,14 +147,11 @@ class UsedeskChatScreen : UsedeskFragment(),
         super.onDestroyView()
 
         mediaPlayerAdapter.release()
+        UsedeskPermissionUtil.release()
     }
 
     override fun onBackPressed(): Boolean {
         return mediaPlayerAdapter.onBackPressed() || viewModel.onBackPressed()
-    }
-
-    private fun getCurrentFragment(): Fragment? {
-        return childFragmentManager.findFragmentById(R.id.page_container)
     }
 
     override fun onOfflineFormSelectorClick(items: List<String>, selectedIndex: Int) {

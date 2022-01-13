@@ -15,7 +15,6 @@ import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
@@ -27,6 +26,8 @@ internal class MessagesPage : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private var messagesAdapter: MessagesAdapter? = null
+
+    private lateinit var attachmentDialog: UsedeskAttachmentDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +55,29 @@ internal class MessagesPage : UsedeskFragment() {
         return binding.rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        attachmentDialog = UsedeskAttachmentDialog.create(
+            this,
+            viewModel
+        ).apply {
+            setOnDismissListener {
+                viewModel.showAttachmentPanel(false)
+            }
+        }
+
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
+                if (new.attachmentPanelVisible) {
+                    attachmentDialog.show()
+                } else {
+                    attachmentDialog.hide()
+                }
+            }
+        }
+    }
+
     private fun init(
         agentName: String?,
         rejectedFileExtensions: Array<String>,
@@ -67,6 +91,7 @@ internal class MessagesPage : UsedeskFragment() {
             viewLifecycleOwner
         ) {
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
+                ?: viewModel.showAttachmentPanel(true)
         }
 
         val mediaPlayerAdapter = (parentFragment as UsedeskChatScreen).mediaPlayerAdapter
@@ -77,7 +102,7 @@ internal class MessagesPage : UsedeskFragment() {
             viewLifecycleOwner,
             agentName,
             rejectedFileExtensions,
-            mediaPlayerAdapter!!,
+            mediaPlayerAdapter,
             {
                 getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
             },
@@ -116,10 +141,6 @@ internal class MessagesPage : UsedeskFragment() {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
-    }
-
-    fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
-        viewModel.addAttachedFiles(attachedFiles)
     }
 
     companion object {

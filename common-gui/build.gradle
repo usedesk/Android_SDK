@@ -52,8 +52,6 @@ dependencies {
         exclude group: "glide-parent"
     }
     kapt "com.github.bumptech.glide:compiler:4.12.0"
-
-    implementation "com.karumi:dexter:6.2.2"
 }
 
 uploadArchives {

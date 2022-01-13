@@ -1,6 +1,5 @@
 package ru.usedesk.sample.ui.screens.configuration
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
@@ -18,13 +16,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
+import ru.usedesk.common_gui.UsedeskPermissionUtil
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
@@ -89,24 +82,9 @@ class ConfigurationScreen : Fragment() {
             e.printStackTrace()
         }
         binding.ivClientAvatar.setOnClickListener {
-            Dexter.withContext(requireContext())
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                        getContent.launch("image/*")
-                    }
-
-                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                        Toast.makeText(requireContext(), "Need permissions", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        p0: PermissionRequest?,
-                        p1: PermissionToken?
-                    ) {
-                    }
-                }).check()
+            UsedeskPermissionUtil.needReadExternalPermission(this) {
+                getContent.launch("image/*")
+            }
         }
         binding.ivClientAvatarReset.setOnClickListener {
             onAvatar(null)

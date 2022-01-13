@@ -16,10 +16,7 @@ import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.UsedeskToolbarAdapter
-import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.*
 import ru.usedesk.common_sdk.utils.getFromJson
 import ru.usedesk.common_sdk.utils.putAsJson
 
@@ -84,6 +81,8 @@ class UsedeskChatScreen : UsedeskFragment(),
         super.onViewCreated(view, savedInstanceState)
 
         attachmentDialog = UsedeskAttachmentDialog.create(this)
+
+        UsedeskPermissionUtil.register(this)
     }
 
     private fun init(

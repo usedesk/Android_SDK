@@ -51,20 +51,20 @@ internal class UsedeskAttachmentDialog private constructor(
 
         binding.lGallery.setOnClickListener {
             dismiss()
-            UsedeskPermissionUtil.needReadExternalPermission(binding, screen) {
+            UsedeskPermissionUtil.needReadExternalPermission(screen) {
                 pickImage()
             }
         }
 
         binding.lCamera.setOnClickListener {
             dismiss()
-            UsedeskPermissionUtil.needCameraPermission(binding, screen) {
+            UsedeskPermissionUtil.needCameraPermission(screen) {
                 takePhoto(screen)
             }
         }
         binding.lStorage.setOnClickListener {
             dismiss()
-            UsedeskPermissionUtil.needReadExternalPermission(binding, screen) {
+            UsedeskPermissionUtil.needReadExternalPermission(screen) {
                 pickDocument()
             }
         }

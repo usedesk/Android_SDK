@@ -88,7 +88,7 @@ abstract class UsedeskFragment : Fragment() {
 
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
         UsedeskSnackbar.create(
-            this@UsedeskFragment,
+            requireView(),
             styleValues.getColor(R.attr.usedesk_background_color_1),
             styleValues.getString(R.attr.usedesk_text_1),
             styleValues.getColor(R.attr.usedesk_text_color_1)

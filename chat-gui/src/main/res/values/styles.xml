@@ -45,7 +45,6 @@
         <item name="usedesk_chat_attachment_dialog_gallery_text">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text</item>
         <item name="usedesk_chat_attachment_dialog_storage_image">@style/Usedesk.Chat.Attachment.Dialog.Storage.Image</item>
         <item name="usedesk_chat_attachment_dialog_storage_text">@style/Usedesk.Chat.Attachment.Dialog.Storage.Text</item>
-        <item name="usedesk_common_no_permission_snackbar">@style/Usedesk.Common.No.Permission.Snackbar</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.ContainerRoot" parent="">
@@ -489,7 +488,6 @@
         <item name="usedesk_chat_show_file_name_text">@style/Usedesk.Chat.Show.File.Name.Text</item>
         <item name="usedesk_chat_show_file_size_text">@style/Usedesk.Chat.Show.File.Size.Text</item>
         <item name="usedesk_chat_show_file_download_status_toast">@style/Usedesk.Chat.Show.File.Download.Status.Toast</item>
-        <item name="usedesk_common_no_permission_snackbar">@style/Usedesk.Common.No.Permission.Snackbar</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Share.Image" parent="">

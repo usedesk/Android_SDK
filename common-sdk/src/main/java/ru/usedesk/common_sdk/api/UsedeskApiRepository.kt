@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.Call
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.entity.ApiError
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 
@@ -28,6 +29,7 @@ abstract class UsedeskApiRepository<API>(
         tClass: Class<RESPONSE>,
         onGetCall: () -> Call<ResponseBody>
     ): RESPONSE {
+        var rawResponseBody = ""
         return try {
             val response = (0 until MAX_ATTEMPTS).asSequence().map { attempt ->
                 if (attempt != 0) {
@@ -43,21 +45,25 @@ abstract class UsedeskApiRepository<API>(
                     )
                 }
                 filter
-            }.firstOrNull() ?: throw UsedeskHttpException()
+            }.firstOrNull() ?: throw UsedeskHttpException("Failed to get a response")
 
-            val rawResponseBody = response.body()?.string() ?: ""
-            //largeLog("RESPONSE", rawResponseBody)
+            rawResponseBody = response.body()?.string() ?: ""
             try {
                 val errorResponse = gson.fromJson(rawResponseBody, ApiError::class.java)
                 val code = errorResponse.code
                 if (code != null && errorResponse.error != null) {
                     throw UsedeskHttpException(errorResponse.error)
                 }
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 //nothing
             }
             gson.fromJson(rawResponseBody, tClass)
         } catch (e: Exception) {
+            if (rawResponseBody.isNotEmpty()) {
+                UsedeskLog.e("Failed to parse the response") {
+                    rawResponseBody
+                }
+            }
             e.printStackTrace()
             throw UsedeskHttpException()
         }

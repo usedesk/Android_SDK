@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail
 
+import com.google.gson.annotations.SerializedName
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
 
 internal class SetClientRequest(
@@ -8,11 +9,10 @@ internal class SetClientRequest(
     name: String?,
     note: String?,
     phone: Long?,
-    additionalId: Long?,
-    avatar: Avatar?
+    additionalId: Long?
 ) : BaseRequest(TYPE) {
 
-    private val payload: Payload = Payload(token, email, name, note, phone, additionalId, avatar)
+    private val payload: Payload = Payload(token, email, name, note, phone, additionalId)
 
     companion object {
         private const val TYPE = "@@server/chat/SET_CLIENT"
@@ -24,12 +24,7 @@ internal class SetClientRequest(
         private val username: String?,
         private val note: String?,
         private val phone: Long?,
-        private val additionalId: Long?,
-        private val avatar: Avatar?
-    )
-
-    internal class Avatar(
-        private val name: String,
-        private val content: String
+        @SerializedName("additional_id")
+        private val additionalId: Long?
     )
 }

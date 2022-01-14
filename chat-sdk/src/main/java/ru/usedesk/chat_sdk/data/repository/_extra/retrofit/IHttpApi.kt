@@ -20,8 +20,4 @@ internal interface IHttpApi {
 
     @POST("addFieldsToChat")
     fun postAdditionalFields(@Body body: AdditionalFieldsRequest): Call<ResponseBody>
-
-    @Multipart
-    @POST("/v1/chat/setEmail")
-    fun postSetClient(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 }

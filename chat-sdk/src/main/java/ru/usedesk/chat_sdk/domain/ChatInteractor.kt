@@ -753,11 +753,6 @@ internal class ChatInteractor(
                     configuration.clientName,
                     configuration.clientNote,
                     configuration.clientPhoneNumber,
-                    if (avatarSendNeeded) {
-                        null//configuration.clientAvatar
-                    } else {
-                        null
-                    },
                     configuration.clientAdditionalId
                 )
             }

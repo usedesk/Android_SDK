@@ -1,7 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.net.Uri
-import android.util.Base64.encodeToString
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
@@ -157,24 +156,8 @@ internal class ApiRepository(
         name: String?,
         note: String?,
         phone: Long?,
-        avatar: String?,
         additionalId: Long?
     ) {
-        val avatarBase64 = when {
-            avatar?.isNotEmpty() == true -> {
-                try {
-                    val avatarLoaded = fileLoader.load(Uri.parse(avatar))
-                    val content = encodeToString(avatarLoaded.bytes, 0)
-                    SetClientRequest.Avatar(avatarLoaded.name, content)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
-            }
-            else -> {
-                null
-            }
-        }
         socketApi.sendRequest(
             SetClientRequest(
                 token,
@@ -182,8 +165,7 @@ internal class ApiRepository(
                 name,
                 note,
                 phone,
-                additionalId,
-                avatarBase64
+                additionalId
             )
         )
     }

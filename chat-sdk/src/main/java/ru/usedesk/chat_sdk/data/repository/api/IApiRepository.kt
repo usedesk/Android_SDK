@@ -22,7 +22,6 @@ internal interface IApiRepository {
         name: String?,
         note: String?,
         phone: Long?,
-        avatar: String?,
         additionalId: Long?
     )
 

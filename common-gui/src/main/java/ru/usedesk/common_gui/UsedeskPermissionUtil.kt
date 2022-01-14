@@ -19,7 +19,6 @@ object UsedeskPermissionUtil {
             if (isGranted) {
                 onGranted?.invoke()
             } else {
-                //TODO: activity leak?
                 val snackbarStyleId = UsedeskResourceManager.getResourceId(
                     R.style.Usedesk_Common_No_Permission_Snackbar
                 )
@@ -41,8 +40,8 @@ object UsedeskPermissionUtil {
         }
     }
 
-    fun release() {//TODO:
-        //permissionResult?.unregister()
+    fun release() {
+        permissionResult?.unregister()
     }
 
     fun needWriteExternalPermission(

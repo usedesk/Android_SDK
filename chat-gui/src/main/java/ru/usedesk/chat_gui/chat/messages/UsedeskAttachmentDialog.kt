@@ -38,12 +38,12 @@ internal class UsedeskAttachmentDialog private constructor(
 
     private val fromCamera = screen.registerForActivityResult(TakePicture()) {
         val fileName = viewModel.modelLiveData.value.cameraUri
-        if (!it && fileName != null) {
+        if (it && fileName != null) {
             val uri = Uri.fromFile(File(context.externalCacheDir, fileName))
             val file = UsedeskFileInfo.create(
                 context,
                 uri
-            )//TODO: не прикрепляется фото с камеры
+            )
             viewModel.actionCompleted(listOf(file))
         } else {
             viewModel.resetAction()
@@ -80,31 +80,33 @@ internal class UsedeskAttachmentDialog private constructor(
         }
 
         viewModel.modelLiveData.initAndObserveWithOld(screen.viewLifecycleOwner) { old, new ->
-            if (old?.action != new.action) {
-                when (new.action) {//TODO: при перевороте задваиваются действия
-                    MessagesViewModel.Action.FROM_CAMERA_PERMISSION -> {
-                        UsedeskPermissionUtil.needCameraPermission(screen) {
-                            viewModel.fromCameraAvailable()
+            if (old?.actionEvent != new.actionEvent) {
+                new.actionEvent?.process { action ->
+                    when (action) {
+                        MessagesViewModel.Action.FROM_CAMERA_PERMISSION -> {
+                            UsedeskPermissionUtil.needCameraPermission(screen) {
+                                viewModel.fromCameraAvailable()
+                            }
                         }
-                    }
-                    MessagesViewModel.Action.FROM_GALLERY_PERMISSION -> {
-                        UsedeskPermissionUtil.needReadExternalPermission(screen) {
-                            viewModel.fromGalleryAvailable()
+                        MessagesViewModel.Action.FROM_GALLERY_PERMISSION -> {
+                            UsedeskPermissionUtil.needReadExternalPermission(screen) {
+                                viewModel.fromGalleryAvailable()
+                            }
                         }
-                    }
-                    MessagesViewModel.Action.FROM_STORAGE_PERMISSION -> {
-                        UsedeskPermissionUtil.needReadExternalPermission(screen) {
-                            viewModel.fromStorageAvailable()
+                        MessagesViewModel.Action.FROM_STORAGE_PERMISSION -> {
+                            UsedeskPermissionUtil.needReadExternalPermission(screen) {
+                                viewModel.fromStorageAvailable()
+                            }
                         }
-                    }
-                    MessagesViewModel.Action.FROM_CAMERA -> {
-                        fromCamera()
-                    }
-                    MessagesViewModel.Action.FROM_GALLERY -> {
-                        fromGallery()
-                    }
-                    MessagesViewModel.Action.FROM_STORAGE -> {
-                        fromStorage()
+                        MessagesViewModel.Action.FROM_CAMERA -> {
+                            fromCamera()
+                        }
+                        MessagesViewModel.Action.FROM_GALLERY -> {
+                            fromGallery()
+                        }
+                        MessagesViewModel.Action.FROM_STORAGE -> {
+                            fromStorage()
+                        }
                     }
                 }
             }
@@ -126,7 +128,6 @@ internal class UsedeskAttachmentDialog private constructor(
 
     private fun fromCamera() {
         val applicationContext = context.applicationContext
-        viewModel.fromCameraAvailable()
         val fileName = viewModel.modelLiveData.value.cameraUri
         val uri = Uri.fromFile(File(context.externalCacheDir, fileName))
         val photoUri = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {

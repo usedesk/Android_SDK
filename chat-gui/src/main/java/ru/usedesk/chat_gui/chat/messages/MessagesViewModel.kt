@@ -8,19 +8,17 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 internal class MessagesViewModel : UsedeskViewModel() {
-
-    val modelLiveData = UsedeskLiveData(Model())
 
     private val actionListenerRx: IUsedeskActionListenerRx
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
 
-    val configuration = UsedeskChatSdk.requireConfiguration()
-
     private var messages: List<UsedeskMessage> = listOf()
 
-    private var audioDisposable: Disposable? = null
+    val configuration = UsedeskChatSdk.requireConfiguration()
+    val modelLiveData = UsedeskLiveData(Model())
 
     init {
         setModel { model ->
@@ -33,7 +31,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
             ): Disposable? {
                 return messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
                     messages = it
-                    setModel { model ->//TODO: ATTENTION!!! MAY BE NON-MAIN THREAD
+                    setModel { model ->
                         model.copy(messages = messages)
                     }
                 }
@@ -105,7 +103,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun fromCamera() {
         setModel { model ->
             model.copy(
-                action = Action.FROM_CAMERA_PERMISSION,
+                actionEvent = UsedeskSingleLifeEvent(Action.FROM_CAMERA_PERMISSION),
                 attachmentPanelVisible = false,
                 cameraUri = null
             )
@@ -115,7 +113,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun fromCameraAvailable() {
         setModel { model ->
             model.copy(
-                action = Action.FROM_CAMERA,
+                actionEvent = UsedeskSingleLifeEvent(Action.FROM_CAMERA),
                 cameraUri = "camera_${System.currentTimeMillis()}.jpg"
             )
         }
@@ -124,7 +122,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun fromGallery() {
         setModel { model ->
             model.copy(
-                action = Action.FROM_GALLERY_PERMISSION,
+                actionEvent = UsedeskSingleLifeEvent(Action.FROM_GALLERY_PERMISSION),
                 attachmentPanelVisible = false
             )
         }
@@ -133,7 +131,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun fromGalleryAvailable() {
         setModel { model ->
             model.copy(
-                action = Action.FROM_GALLERY,
+                actionEvent = UsedeskSingleLifeEvent(Action.FROM_GALLERY),
                 attachmentPanelVisible = false,
                 cameraUri = null
             )
@@ -143,7 +141,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun fromStorage() {
         setModel { model ->
             model.copy(
-                action = Action.FROM_STORAGE_PERMISSION,
+                actionEvent = UsedeskSingleLifeEvent(Action.FROM_STORAGE_PERMISSION),
                 attachmentPanelVisible = false
             )
         }
@@ -152,7 +150,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun fromStorageAvailable() {
         setModel { model ->
             model.copy(
-                action = Action.FROM_STORAGE,
+                actionEvent = UsedeskSingleLifeEvent(Action.FROM_STORAGE),
                 attachmentPanelVisible = false,
                 cameraUri = null
             )
@@ -162,7 +160,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
     fun resetAction() {
         setModel { model ->
             model.copy(
-                action = null,
+                actionEvent = null,
                 attachmentPanelVisible = false,
                 cameraUri = null
             )
@@ -171,10 +169,11 @@ internal class MessagesViewModel : UsedeskViewModel() {
 
     fun actionCompleted(uriList: List<UsedeskFileInfo>) {
         setModel { model ->
+            val newFiles = (model.messageDraft.files + uriList).toSet().toList()
             model.copy(
-                messageDraft = model.messageDraft.copy(files = uriList.toSet().toList()),
+                messageDraft = model.messageDraft.copy(files = newFiles),
                 cameraUri = null,
-                action = null,
+                actionEvent = null,
                 attachmentPanelVisible = false
             )
         }
@@ -196,7 +195,7 @@ internal class MessagesViewModel : UsedeskViewModel() {
         val messages: List<UsedeskMessage> = listOf(),
         val messagesScroll: Long = 0L,
         val attachmentPanelVisible: Boolean = false,
-        val action: Action? = null,
+        val actionEvent: UsedeskSingleLifeEvent<Action>? = null,
         val cameraUri: String? = null
     )
 

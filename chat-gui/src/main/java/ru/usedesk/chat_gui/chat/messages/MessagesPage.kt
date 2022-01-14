@@ -135,6 +135,7 @@ internal class MessagesPage : UsedeskFragment() {
         super.onDestroyView()
 
         messagesAdapter = null
+        attachmentDialog.release()
     }
 
     private fun onUrlClick(url: String) {

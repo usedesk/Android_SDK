@@ -130,8 +130,8 @@ internal class CachedMessagesInteractor(
             }
             newFiles.filter {
                 it !in oldFiles
-            }.forEach {
-                cachedFileUriMap[it] = addFileToCache(it)
+            }.forEach { uri ->
+                cachedFileUriMap[uri] = addFileToCache(uri)
             }
         }
         this.messageDraft = messageDraft

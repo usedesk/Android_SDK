@@ -3,15 +3,12 @@ package ru.usedesk.chat_sdk.data.repository.messages
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import androidx.core.net.toUri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.common_sdk.utils.UsedeskFileUtil
 import toothpick.InjectConstructor
 import java.io.File
 import java.util.*
-import kotlin.math.absoluteValue
 
 @InjectConstructor
 internal class UsedeskMessagesRepository(
@@ -97,21 +94,7 @@ internal class UsedeskMessagesRepository(
         return if (uri.toString().startsWith("file://" + appContext.cacheDir.absolutePath)) {
             uri
         } else {
-            val ext = UsedeskFileUtil.getExtension(appContext, uri)
-            val cachedName = uri.hashCode().absoluteValue.toString() + if (ext.isNotEmpty()) {
-                ".$ext"
-            } else {
-                ""
-            }
-            val cachedFile = File(appContext.cacheDir.absolutePath, cachedName)
-            try {
-                val cachedUri = cachedFile.toUri()
-                fileLoader.copy(uri, cachedUri)
-                cachedUri
-            } catch (e: Exception) {
-                cachedFile.delete()
-                throw e
-            }
+            fileLoader.toCache(uri)
         }
     }
 

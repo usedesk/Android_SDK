@@ -1,8 +1,10 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
@@ -24,6 +26,7 @@ import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import toothpick.InjectConstructor
+import java.io.File
 import java.io.IOException
 import java.util.*
 
@@ -135,15 +138,17 @@ internal class ApiRepository(
     override fun send(
         configuration: UsedeskChatConfiguration,
         token: String,
-        messageFile: UsedeskMessageFile
+        fileInfo: UsedeskFileInfo,
+        messageId: Long
     ) {
         checkConnection()
 
-        val loadedFile = fileLoader.load(Uri.parse(messageFile.file.content))
+        val file = File(fileInfo.uri.path)
+        val fileRequestBody = RequestBody.create(MediaType.parse(fileInfo.type), file)
         val parts = listOf(
             multipartConverter.convert("chat_token", token),
-            multipartConverter.convert("file", loadedFile),
-            multipartConverter.convert("message_id", messageFile.id)
+            MultipartBody.Part.createFormData("file", fileInfo.name, fileRequestBody),
+            multipartConverter.convert("message_id", messageId)
         )
         doRequest(configuration.urlToSendFile, FileResponse::class.java) {
             it.postFile(parts)

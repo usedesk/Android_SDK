@@ -392,7 +392,13 @@ internal class ChatInteractor(
         cachedMessage as UsedeskMessageClient
         try {
             cachedMessages.addNotSentMessage(cachedMessage)
-            apiRepository.send(configuration, token!!, cachedMessage)
+            val cacheduri = cachedMessages.getCachedUri(Uri.parse(cachedMessage.file.content))
+            apiRepository.send(
+                configuration,
+                token!!,
+                UsedeskFileInfo(cacheduri, cachedMessage.file.type, cachedMessage.file.name),
+                cachedMessage.localId
+            )
             cachedMessages.removeNotSentMessage(cachedMessage)
             cachedMessages.removeFileFromCache(Uri.parse(cachedMessage.file.content))
         } catch (e: Exception) {

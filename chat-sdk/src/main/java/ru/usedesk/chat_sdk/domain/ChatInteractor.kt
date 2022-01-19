@@ -7,6 +7,7 @@ import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
@@ -366,12 +367,11 @@ internal class ChatInteractor(
         sendingMessage as UsedeskMessageClient
         try {
             val uri = Uri.parse(sendingMessage.file.content)
-            val cachedUri = cachedMessages.getCachedUri(uri)
             val cachedMessage = UsedeskMessageClientFile(
                 sendingMessage.id,
                 sendingMessage.createdAt,
                 UsedeskFile(
-                    cachedUri.toString(),
+                    uri.toString(),
                     sendingMessage.file.type,
                     sendingMessage.file.size,
                     sendingMessage.file.name
@@ -388,21 +388,37 @@ internal class ChatInteractor(
         }
     }
 
-    private fun sendCached(cachedMessage: UsedeskMessageFile) {
-        cachedMessage as UsedeskMessageClient
+    private fun sendCached(fileMessage: UsedeskMessageClientFile) {
         try {
-            cachedMessages.addNotSentMessage(cachedMessage)
-            val cacheduri = cachedMessages.getCachedUri(Uri.parse(cachedMessage.file.content))
+            cachedMessages.addNotSentMessage(fileMessage)
+            val cachedUri = runBlocking {
+                val uri = Uri.parse(fileMessage.file.content)
+                val deferredCachedUri = cachedMessages.getCachedFile(uri)
+                deferredCachedUri.await()
+            }
+            val cachedNotSentMessage = UsedeskMessageClientFile(
+                fileMessage.id,
+                fileMessage.createdAt,
+                fileMessage.file.copy(content = cachedUri.toString()),
+                fileMessage.status,
+                fileMessage.localId
+            )
+            cachedMessages.updateNotSentMessage(cachedNotSentMessage)
+            eventListener.onMessageUpdated(cachedNotSentMessage)
             apiRepository.send(
                 configuration,
                 token!!,
-                UsedeskFileInfo(cacheduri, cachedMessage.file.type, cachedMessage.file.name),
-                cachedMessage.localId
+                UsedeskFileInfo(
+                    cachedUri,
+                    cachedNotSentMessage.file.type,
+                    cachedNotSentMessage.file.name
+                ),
+                cachedNotSentMessage.localId
             )
-            cachedMessages.removeNotSentMessage(cachedMessage)
-            cachedMessages.removeFileFromCache(Uri.parse(cachedMessage.file.content))
+            cachedMessages.removeNotSentMessage(cachedNotSentMessage)
+            cachedMessages.removeFileFromCache(Uri.parse(cachedNotSentMessage.file.content))
         } catch (e: Exception) {
-            onMessageSendingFailed(cachedMessage)
+            onMessageSendingFailed(fileMessage)
             throw e
         }
     }
@@ -569,7 +585,9 @@ internal class ChatInteractor(
 
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
-        cachedMessages.setMessageDraft(messageDraft, true)
+        runBlocking {
+            cachedMessages.setMessageDraft(messageDraft, true)
+        }
     }
 
     override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
@@ -590,7 +608,9 @@ internal class ChatInteractor(
 
     override fun sendMessageDraft() {
         val messageDraft = cachedMessages.getMessageDraft()
-        cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
+        runBlocking {
+            cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
+        }
 
         val sendingMessages = mutableListOf<UsedeskMessage>()
 
@@ -616,7 +636,7 @@ internal class ChatInteractor(
                 }
                 is UsedeskMessageFile -> {
                     safeCompletableIo(ioScheduler) {
-                        sendCached(it)
+                        sendCached(it as UsedeskMessageClientFile)
                     }
                 }
                 else -> {

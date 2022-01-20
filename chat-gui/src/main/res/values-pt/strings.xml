@@ -7,6 +7,8 @@
     <string name="usedesk_message">@string/usedesk_string_message</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
+    <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
+    <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
     <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
     <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
@@ -28,6 +30,8 @@
     <string name="usedesk_string_message">Mensagem</string>
     <string name="usedesk_string_message_input">Escrever…</string>
     <string name="usedesk_string_loading">Carregando…</string>
+    <string name="usedesk_string_no_internet_title">Sem internet</string>
+    <string name="usedesk_string_no_internet_text">Tente desligar o modo avião, ligue o Wi-Fi ou a internet móvel e verifique a força do sinal da rede</string>
     <string name="usedesk_string_today">Hoje</string>
     <string name="usedesk_string_yesterday">Ontem</string>
     <string name="usedesk_string_download_started">Download inciado</string>

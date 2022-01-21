@@ -19,7 +19,7 @@ import javax.net.ssl.X509TrustManager
 
 @InjectConstructor
 class UsedeskOkHttpClientFactory(
-        private val appContext: Context
+    private val appContext: Context
 ) {
     fun createInstance(): OkHttpClient {
         return OkHttpClient.Builder().apply {
@@ -44,11 +44,17 @@ class UsedeskOkHttpClientFactory(
                 override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
 
                 @SuppressLint("TrustAllX509TrustManager")
-                override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {
+                override fun checkClientTrusted(
+                    chain: Array<X509Certificate?>?,
+                    authType: String?
+                ) {
                 }
 
                 @SuppressLint("TrustAllX509TrustManager")
-                override fun checkServerTrusted(chain: Array<out X509Certificate?>?, authType: String?) {
+                override fun checkServerTrusted(
+                    chain: Array<out X509Certificate?>?,
+                    authType: String?
+                ) {
                 }
             }
 
@@ -66,15 +72,16 @@ class UsedeskOkHttpClientFactory(
     }
 
     internal class ProtocolSocketFactory constructor(
-            private val sslSocketFactory: SSLSocketFactory,
-            protocolName: String
+        private val sslSocketFactory: SSLSocketFactory,
+        protocolName: String
     ) : SSLSocketFactory() {
 
         private val protocols = arrayOf(protocolName)
 
         override fun getDefaultCipherSuites(): Array<String> = sslSocketFactory.defaultCipherSuites
 
-        override fun getSupportedCipherSuites(): Array<String> = sslSocketFactory.supportedCipherSuites
+        override fun getSupportedCipherSuites(): Array<String> =
+            sslSocketFactory.supportedCipherSuites
 
         override fun createSocket(s: Socket, host: String, port: Int, autoClose: Boolean): Socket? {
             return enableProtocolOnSocket(sslSocketFactory.createSocket(s, host, port, autoClose))
@@ -84,16 +91,40 @@ class UsedeskOkHttpClientFactory(
             return enableProtocolOnSocket(sslSocketFactory.createSocket(host, port))
         }
 
-        override fun createSocket(host: String, port: Int, localHost: InetAddress, localPort: Int): Socket? {
-            return enableProtocolOnSocket(sslSocketFactory.createSocket(host, port, localHost, localPort))
+        override fun createSocket(
+            host: String,
+            port: Int,
+            localHost: InetAddress,
+            localPort: Int
+        ): Socket? {
+            return enableProtocolOnSocket(
+                sslSocketFactory.createSocket(
+                    host,
+                    port,
+                    localHost,
+                    localPort
+                )
+            )
         }
 
         override fun createSocket(host: InetAddress, port: Int): Socket? {
             return enableProtocolOnSocket(sslSocketFactory.createSocket(host, port))
         }
 
-        override fun createSocket(address: InetAddress, port: Int, localAddress: InetAddress, localPort: Int): Socket? {
-            return enableProtocolOnSocket(sslSocketFactory.createSocket(address, port, localAddress, localPort))
+        override fun createSocket(
+            address: InetAddress,
+            port: Int,
+            localAddress: InetAddress,
+            localPort: Int
+        ): Socket? {
+            return enableProtocolOnSocket(
+                sslSocketFactory.createSocket(
+                    address,
+                    port,
+                    localAddress,
+                    localPort
+                )
+            )
         }
 
         private fun enableProtocolOnSocket(socket: Socket?): Socket? {

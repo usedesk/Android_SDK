@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.loading
 
+import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -79,11 +80,12 @@ internal class LoadingPage : UsedeskFragment() {
         resourceId: Int
     ) {
         if (resourceId == 0) {
-            setImageDrawable(null)
             visibility = View.GONE
+            setImageDrawable(null)
         } else {
-            setImageResource(resourceId)
             visibility = View.VISIBLE
+            setImageResource(resourceId)
+            (drawable as? Animatable)?.start()
         }
     }
 

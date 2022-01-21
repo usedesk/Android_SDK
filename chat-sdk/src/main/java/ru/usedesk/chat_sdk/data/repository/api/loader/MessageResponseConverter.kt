@@ -4,9 +4,7 @@ import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
-import toothpick.InjectConstructor
 
-@InjectConstructor
 internal class MessageResponseConverter :
     Converter<MessageResponse.Message?, List<UsedeskMessage>>() {
 

@@ -6,11 +6,9 @@ import android.net.Uri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
-import toothpick.InjectConstructor
 import java.io.File
 import java.util.*
 
-@InjectConstructor
 internal class UsedeskMessagesRepository(
     private val appContext: Context,
     private val gson: Gson,

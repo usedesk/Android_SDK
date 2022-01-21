@@ -6,7 +6,6 @@ import android.os.Build
 import com.google.android.gms.security.ProviderInstaller
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
-import toothpick.InjectConstructor
 import java.net.InetAddress
 import java.net.Socket
 import java.security.SecureRandom
@@ -16,8 +15,6 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
-
-@InjectConstructor
 class UsedeskOkHttpClientFactory(
     private val appContext: Context
 ) {

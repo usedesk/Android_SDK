@@ -2,9 +2,9 @@ package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
 import io.reactivex.Completable
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.runBlocking
@@ -17,19 +17,17 @@ import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
-import toothpick.InjectConstructor
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@InjectConstructor
 internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
-    private val ioScheduler: Scheduler,
-    private val cachedMessages: CachedMessagesInteractor
+    private val cachedMessages: ICachedMessagesInteractor
 ) : IUsedeskChat {
 
+    private val ioScheduler = Schedulers.io()
     private var token: String? = null
     private var initClientMessage: String? = configuration.clientInitMessage
     private var initClientOfflineForm: String? = null

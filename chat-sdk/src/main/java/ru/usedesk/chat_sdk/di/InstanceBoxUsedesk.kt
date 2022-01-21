@@ -1,41 +1,33 @@
 package ru.usedesk.chat_sdk.di
 
 import android.content.Context
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_sdk.di.UsedeskCommonModule
-import ru.usedesk.common_sdk.di.UsedeskInjectBox
-import toothpick.ktp.delegate.inject
+import javax.inject.Inject
 
 internal class InstanceBoxUsedesk(
     context: Context,
     usedeskChatConfiguration: UsedeskChatConfiguration,
     usedeskMessagesRepository: IUsedeskMessagesRepository?
-) : UsedeskInjectBox() {
+) {
 
-    val usedeskChatSdk: IUsedeskChat by inject()
+    private val ioScheduler = Schedulers.io()
 
-    private val ioScheduler: Scheduler by inject()
+    @Inject
+    lateinit var usedeskChatSdk: IUsedeskChat
 
     init {
-        val appContext = context.applicationContext
-        init(
-            UsedeskCommonModule(appContext),
-            MainModule(
-                usedeskChatConfiguration,
-                usedeskMessagesRepository
-            )
-        )
+        //DaggerChatComponent
+        
     }
 
-    override fun release() {
+    fun release() {
         usedeskChatSdk.releaseRx()
             .subscribeOn(ioScheduler)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()
-        super.release()
     }
 }

@@ -25,12 +25,10 @@ import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
-import toothpick.InjectConstructor
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-@InjectConstructor
 internal class ApiRepository(
     private val socketApi: SocketApi,
     private val multipartConverter: IMultipartConverter,

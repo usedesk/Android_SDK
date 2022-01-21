@@ -3,10 +3,8 @@ package ru.usedesk.chat_sdk.data.repository.api.loader
 import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.entity.*
-import toothpick.InjectConstructor
 import java.util.*
 
-@InjectConstructor
 internal class FileResponseConverter : Converter<FileResponse, UsedeskMessage>() {
 
     override fun convert(from: FileResponse): UsedeskMessage {

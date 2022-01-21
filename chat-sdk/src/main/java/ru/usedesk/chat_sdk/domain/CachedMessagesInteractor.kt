@@ -9,13 +9,11 @@ import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
-import toothpick.InjectConstructor
 
-@InjectConstructor
 internal class CachedMessagesInteractor(
+    private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
-    private val userInfoRepository: IUserInfoRepository,
-    private val configuration: UsedeskChatConfiguration
+    private val userInfoRepository: IUserInfoRepository
 ) : ICachedMessagesInteractor {
 
     private var messageDraft: UsedeskMessageDraft

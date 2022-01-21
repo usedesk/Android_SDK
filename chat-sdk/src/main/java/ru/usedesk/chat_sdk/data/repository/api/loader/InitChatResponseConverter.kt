@@ -6,9 +6,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
-import toothpick.InjectConstructor
 
-@InjectConstructor
 internal class InitChatResponseConverter(
     private val messageResponseConverter: MessageResponseConverter
 ) : Converter<InitChatResponse, ChatInited>() {

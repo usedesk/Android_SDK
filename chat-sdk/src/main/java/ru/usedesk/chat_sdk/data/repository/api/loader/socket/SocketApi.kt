@@ -18,11 +18,9 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.Se
 import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
-import toothpick.InjectConstructor
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
 
-@InjectConstructor
 internal class SocketApi(
     private val gson: Gson,
     private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory

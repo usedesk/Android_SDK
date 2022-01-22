@@ -20,7 +20,7 @@ import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IC
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoader
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.TokenLoader
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
-import ru.usedesk.chat_sdk.data.repository.messages.UsedeskMessagesRepository
+import ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository
 import ru.usedesk.chat_sdk.domain.CachedMessagesInteractor
 import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.domain.ICachedMessagesInteractor
@@ -28,6 +28,7 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.di.UsedeskCustom
 
 @Module
 internal object ChatModule {
@@ -60,17 +61,18 @@ internal object ChatModule {
 
     @Provides
     fun provideMessagesRepository(
+        customMessagesRepository: UsedeskCustom<IUsedeskMessagesRepository>,
         appContext: Context,
         gson: Gson,
         fileLoader: IFileLoader,
         chatConfiguration: UsedeskChatConfiguration
     ): IUsedeskMessagesRepository {
-        return if (false) {
-            //TODO: return custom repository
-            throw RuntimeException("TODO EPTA")
-        } else {
-            UsedeskMessagesRepository(appContext, gson, fileLoader, chatConfiguration)
-        }
+        return customMessagesRepository.customInstance ?: MessagesRepository(
+            appContext,
+            gson,
+            fileLoader,
+            chatConfiguration
+        )
     }
 
     @Provides

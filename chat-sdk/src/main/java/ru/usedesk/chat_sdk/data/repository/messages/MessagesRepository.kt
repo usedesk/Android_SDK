@@ -9,7 +9,7 @@ import ru.usedesk.chat_sdk.entity.*
 import java.io.File
 import java.util.*
 
-internal class UsedeskMessagesRepository(
+internal class MessagesRepository(
     private val appContext: Context,
     private val gson: Gson,
     private val fileLoader: IFileLoader,

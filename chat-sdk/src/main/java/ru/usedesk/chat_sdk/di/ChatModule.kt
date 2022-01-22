@@ -32,10 +32,6 @@ import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 @Module
 internal object ChatModule {
 
-    //TODO: appContext
-    //TODO: UsedeskChatConfiguration
-    //TODO: IUsedeskMessagesRepository
-
     @Provides
     fun provideSocketApi(
         gson: Gson,
@@ -69,7 +65,7 @@ internal object ChatModule {
         fileLoader: IFileLoader,
         chatConfiguration: UsedeskChatConfiguration
     ): IUsedeskMessagesRepository {
-        return if (true) {
+        return if (false) {
             //TODO: return custom repository
             throw RuntimeException("TODO EPTA")
         } else {

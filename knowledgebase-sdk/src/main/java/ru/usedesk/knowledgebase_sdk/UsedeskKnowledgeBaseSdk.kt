@@ -24,12 +24,12 @@ object UsedeskKnowledgeBaseSdk {
     fun init(context: Context): IUsedeskKnowledgeBase {
         return (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
             injectBox = it
-        }).knowledgeBaseSdk
+        }).knowledgeBaseInteractor
     }
 
     @JvmStatic
     fun getInstance(): IUsedeskKnowledgeBase? {
-        return injectBox?.knowledgeBaseSdk
+        return injectBox?.knowledgeBaseInteractor
     }
 
     @JvmStatic

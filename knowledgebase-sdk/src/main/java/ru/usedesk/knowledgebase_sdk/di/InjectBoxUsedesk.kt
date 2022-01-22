@@ -6,16 +6,15 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import javax.inject.Inject
 
 internal class InjectBoxUsedesk(
-    context: Context, knowledgeBaseConfiguration:
-    UsedeskKnowledgeBaseConfiguration
+    appContext: Context,
+    knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration
 ) {
+    private val knowledgeBaseComponent = DaggerKnowledgeBaseComponent.builder()
+        .bindAppContext(appContext)
+        .bindKnowledgeBaseConfiguration(knowledgeBaseConfiguration)
+        .build()
 
-    @Inject
-    lateinit var knowledgeBaseSdk: IUsedeskKnowledgeBase
-
-    init {
-
-    }
+    val knowledgeBaseInteractor = knowledgeBaseComponent.knowledgeBaseInteractor
 
     fun release() {
 

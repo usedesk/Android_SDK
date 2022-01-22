@@ -12,7 +12,6 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 @Module
 internal object KnowledgeBaseModule {
-    //TODO: UsedeskKnowledgeBaseConfiguration
 
     @Provides
     fun provideApiRepository(

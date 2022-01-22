@@ -10,22 +10,21 @@ import javax.inject.Inject
 
 internal class InstanceBoxUsedesk(
     context: Context,
-    usedeskChatConfiguration: UsedeskChatConfiguration,
-    usedeskMessagesRepository: IUsedeskMessagesRepository?
+    chatConfiguration: UsedeskChatConfiguration,
+    messagesRepository: IUsedeskMessagesRepository?//TODO:
 ) {
 
     private val ioScheduler = Schedulers.io()
 
-    @Inject
-    lateinit var usedeskChatSdk: IUsedeskChat
+    private val daggerChatComponent = DaggerChatComponent.builder()
+        .bindAppContext(context.applicationContext)
+        .bindChatConfiguration(chatConfiguration)
+        .build()
 
-    init {
-        //DaggerChatComponent
-        
-    }
+    val chatInteractor = daggerChatComponent.chatInteractor
 
     fun release() {
-        usedeskChatSdk.releaseRx()
+        chatInteractor.releaseRx()
             .subscribeOn(ioScheduler)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe()

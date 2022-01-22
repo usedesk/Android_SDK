@@ -37,12 +37,12 @@ object UsedeskChatSdk {
                 usedeskMessagesRepository
             ).also {
                 instanceBox = it
-            }).usedeskChatSdk
+            }).chatInteractor
     }
 
     @JvmStatic
     fun getInstance(): IUsedeskChat? {
-        return instanceBox?.usedeskChatSdk
+        return instanceBox?.chatInteractor
     }
 
     @JvmStatic
@@ -58,7 +58,7 @@ object UsedeskChatSdk {
     @JvmOverloads
     fun release(force: Boolean = true) {
         instanceBox?.also {
-            if (force || it.usedeskChatSdk.isNoListeners()) {
+            if (force || it.chatInteractor.isNoListeners()) {
                 it.release()
                 instanceBox = null
             }

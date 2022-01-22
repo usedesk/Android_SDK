@@ -1,11 +1,29 @@
 package ru.usedesk.chat_sdk.di
 
+import android.content.Context
+import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.di.UsedeskCommonModule
 
 @Component(modules = [UsedeskCommonModule::class, ChatModule::class])
-interface ChatComponent {
+internal interface ChatComponent {
 
     val chatInteractor: IUsedeskChat
+
+    @Component.Builder
+    interface Builder {
+
+        @BindsInstance
+        fun bindAppContext(context: Context): Builder
+
+        @BindsInstance
+        fun bindChatConfiguration(
+            chatConfiguration: UsedeskChatConfiguration
+        ): Builder
+
+
+        fun build(): ChatComponent
+    }
 }

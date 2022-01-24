@@ -5,9 +5,10 @@ import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.common_sdk.di.UsedeskCommonModule
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
-import ru.usedesk.knowledgebase_sdk.domain.KnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
+import javax.inject.Scope
 
+@KnowledgeBaseScope
 @Component(modules = [UsedeskCommonModule::class, KnowledgeBaseModule::class])
 internal interface KnowledgeBaseComponent {
 
@@ -28,3 +29,6 @@ internal interface KnowledgeBaseComponent {
         fun build(): KnowledgeBaseComponent
     }
 }
+
+@Scope
+annotation class KnowledgeBaseScope

@@ -8,15 +8,17 @@ import ru.usedesk.chat_sdk.service.notifications.view.UsedeskNotificationsServic
 import ru.usedesk.common_sdk.utils.putAsJsonExtra
 
 open class UsedeskNotificationsServiceFactory {
-    fun stopService(context: Context) {
+    open fun stopService(context: Context) {
         val intent = Intent(context, serviceClass)
         context.stopService(intent)
     }
 
     protected open val serviceClass: Class<*> = UsedeskNotificationsService::class.java
 
-    fun startService(context: Context,
-                     usedeskChatConfiguration: UsedeskChatConfiguration) {
+    open fun startService(
+        context: Context,
+        usedeskChatConfiguration: UsedeskChatConfiguration
+    ) {
         Intent(context, serviceClass).also {
             it.putAsJsonExtra(USEDESK_CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
             context.startService(it)

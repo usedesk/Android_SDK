@@ -8,6 +8,10 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 
 object UsedeskChatSdk {
+
+    const val MAX_FILE_SIZE_MB = 128
+    const val MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
+
     private var instanceBox: InstanceBoxUsedesk? = null
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? = null

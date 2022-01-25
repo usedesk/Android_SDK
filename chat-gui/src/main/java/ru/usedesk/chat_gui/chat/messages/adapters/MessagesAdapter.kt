@@ -683,23 +683,6 @@ internal class MessagesAdapter(
             ) {
                 changeElements()
             }
-
-            //TODO: тут только 2 цвета фона, которые вообще может получится сделать прозрачными?
-            /*val backgroundColorId = if (usedeskFile.other != null) {
-                if (usedeskFile.private) {
-                    R.color.color_private
-                } else {
-                    R.color.white_3
-                }
-            } else {
-                if (usedeskFile.private) {
-                    R.color.color_private
-                } else {
-                    R.color.color_your
-                }
-            }
-
-            binding.stub.root.setBackgroundColor(getColor(binding, backgroundColorId))*/
         }
 
         private fun changeElements(

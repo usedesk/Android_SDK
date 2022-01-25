@@ -55,6 +55,19 @@ internal class MessagesViewModel : UsedeskViewModel() {
         doIt(usedeskChat.sendRx(message, feedback))
     }
 
+    fun attachFiles(uriList: Set<UsedeskFileInfo>) {
+        setModel { model ->
+            val newFiles = (model.messageDraft.files + uriList).toSet().toList()
+            model.copy(
+                messageDraft = model.messageDraft.copy(files = newFiles),
+                cameraUri = null,
+                actionEvent = null,
+                attachmentPanelVisible = false
+            )
+        }
+        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
+    }
+
     fun detachFile(file: UsedeskFileInfo) {
         setModel { model ->
             model.copy(
@@ -165,19 +178,6 @@ internal class MessagesViewModel : UsedeskViewModel() {
                 cameraUri = null
             )
         }
-    }
-
-    fun actionCompleted(uriList: List<UsedeskFileInfo>) {
-        setModel { model ->
-            val newFiles = (model.messageDraft.files + uriList).toSet().toList()
-            model.copy(
-                messageDraft = model.messageDraft.copy(files = newFiles),
-                cameraUri = null,
-                actionEvent = null,
-                attachmentPanelVisible = false
-            )
-        }
-        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
     override fun onCleared() {

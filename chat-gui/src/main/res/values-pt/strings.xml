@@ -22,6 +22,8 @@
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
     <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
     <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
+    <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
+    <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
 
     <string name="usedesk_string_offline_form_send_successed">Sua mensagem foi enviada.\nNós responderemos  dentro de um dia útil.</string>
     <string name="usedesk_string_offline_form_send_failed">Falha ao enviar o seu pedido. Por favor, tente novamente.</string>
@@ -45,4 +47,6 @@
     <string name="usedesk_string_send_again">Reenviar</string>
     <string name="usedesk_string_delete_message">Apagar mensagem</string>
     <string name="usedesk_string_download">Download</string>
+    <string name="usedesk_string_file_size_exceeds">O tamanho do arquivo excede %dMb:</string>
+    <string name="usedesk_string_files_size_exceeds">O tamanho do arquivos excede %dMb:</string>
 </resources>

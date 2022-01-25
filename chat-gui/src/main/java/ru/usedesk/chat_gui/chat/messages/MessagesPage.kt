@@ -3,9 +3,11 @@ package ru.usedesk.chat_gui.chat.messages
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -15,6 +17,8 @@ import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE
+import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE_MB
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
@@ -81,8 +85,8 @@ internal class MessagesPage : UsedeskFragment() {
                     requireContext(),
                     uri
                 )
-            }
-            viewModel.actionCompleted(files)
+            }.toSet()
+            attachFiles(files)
         }, { done ->
             val fileName = viewModel.modelLiveData.value.cameraUri
             if (done && fileName != null) {
@@ -91,11 +95,55 @@ internal class MessagesPage : UsedeskFragment() {
                     requireContext(),
                     uri
                 )
-                viewModel.actionCompleted(listOf(file))
+                attachFiles(setOf(file))
             } else {
                 viewModel.resetAction()
             }
         })
+    }
+
+    private fun attachFiles(files: Set<UsedeskFileInfo>) {
+        val filteredFiles = files.filter {
+            try {
+                if (it.uri.scheme == "content") {
+                    var size: Long = -1
+                    requireContext().contentResolver.query(
+                        it.uri,
+                        null,
+                        null,
+                        null,
+                        null
+                    )?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val columnIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                            if (columnIndex >= 0) {
+                                size = cursor.getLong(columnIndex)
+                            }
+                        }
+                    }
+                    return@filter size in 0..MAX_FILE_SIZE
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            false
+        }.toSet()
+
+        val rejectedFiles = files - filteredFiles
+        if (rejectedFiles.isNotEmpty()) {
+            val message = getString(
+                if (rejectedFiles.size == 1) {
+                    R.string.usedesk_file_size_exceeds
+                } else {
+                    R.string.usedesk_files_size_exceeds
+                }, MAX_FILE_SIZE_MB
+            )
+            val toastText = message + "\n" + rejectedFiles.joinToString(separator = "\n") {
+                it.name
+            }
+            Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.attachFiles(filteredFiles)
     }
 
     override fun onDestroyView() {

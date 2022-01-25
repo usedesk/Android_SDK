@@ -10,8 +10,8 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 
 internal class ButtonsAdapter(
-        recyclerView: RecyclerView,
-        private val onClick: (UsedeskMessageButton) -> Unit
+    recyclerView: RecyclerView,
+    private val onClick: (UsedeskMessageButton) -> Unit
 ) : RecyclerView.Adapter<ButtonsAdapter.ButtonViewHolder>() {
 
     private var buttons: List<UsedeskMessageButton> = listOf()
@@ -42,7 +42,7 @@ internal class ButtonsAdapter(
     override fun getItemCount() = buttons.size
 
     inner class ButtonViewHolder(
-            private val binding: ButtonBinding
+        private val binding: ButtonBinding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         fun bind(button: UsedeskMessageButton) {
@@ -53,8 +53,8 @@ internal class ButtonsAdapter(
         }
     }
 
-    internal class ButtonBinding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class ButtonBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
-        //val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
     }
 }

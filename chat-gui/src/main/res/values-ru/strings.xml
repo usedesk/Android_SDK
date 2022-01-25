@@ -22,6 +22,8 @@
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
     <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
     <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
+    <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
+    <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
 
     <string name="usedesk_string_offline_form_send_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
     <string name="usedesk_string_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
@@ -45,4 +47,6 @@
     <string name="usedesk_string_send_again">Отправить повторно</string>
     <string name="usedesk_string_delete_message">Удалить сообщение</string>
     <string name="usedesk_string_download">Скачать</string>
+    <string name="usedesk_string_file_size_exceeds">Размер файла превышает %dМб:</string>
+    <string name="usedesk_string_files_size_exceeds">Размер файлов превышает %dМб:</string>
 </resources>

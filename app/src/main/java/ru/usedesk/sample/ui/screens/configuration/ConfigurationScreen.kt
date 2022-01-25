@@ -80,14 +80,6 @@ class ConfigurationScreen : UsedeskFragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        //binding.ivClientAvatar.setOnClickListener {
-        //    needReadExternalPermission(this) {
-        //        getContent.launch("image/*")
-        //    }
-        //}
-        //binding.ivClientAvatarReset.setOnClickListener {
-        //    onAvatar(null)
-        //}
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
         initTil(binding.tilUrlToSendFile)
@@ -190,26 +182,6 @@ class ConfigurationScreen : UsedeskFragment() {
         )
     }
 
-    /*private fun onAvatar(avatar: String?) {
-        viewModel.setAvatar(avatar)
-        when (avatar) {
-            null -> {
-                binding.ivClientAvatar.setImageResource(R.drawable.usedesk_background_avatar_def)
-                binding.tvClientAvatar.text = "Do not change client avatar"
-            }
-            "" -> {
-                binding.ivClientAvatar.setImageResource(R.drawable.usedesk_background_avatar_def)
-                binding.tvClientAvatar.text = "Reset client avatar"
-            }
-            else -> {
-                Glide.with(requireContext())
-                    .load(avatar)
-                    .into(binding.ivClientAvatar)
-                binding.tvClientAvatar.text = "Change client avatar"
-            }
-        }
-    }*/
-
     private fun onNewConfiguration(configuration: Configuration) {
         binding.etUrlChat.setText(configuration.urlChat)
         binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
@@ -268,7 +240,6 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
-        //onAvatar(configuration.clientAvatar)
     }
 
     private fun setAdditionalField(

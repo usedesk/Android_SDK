@@ -97,10 +97,12 @@ internal class AttachedFilesAdapter(
             binding.ivDetach.setOnClickListener {
                 viewModel.detachFile(usedeskFileInfo)
             }
-            binding.tvTitle.text = if (!usedeskFileInfo.isImage()) {
-                usedeskFileInfo.name
-            } else {
+            binding.tvTitle.text = if (usedeskFileInfo.isImage() ||
+                usedeskFileInfo.isVideo()
+            ) {
                 ""
+            } else {
+                usedeskFileInfo.name
             }
         }
     }

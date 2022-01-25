@@ -12,7 +12,10 @@ import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
 import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskToolbarAdapter
+import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_sdk.utils.getFromJson
 import ru.usedesk.common_sdk.utils.putAsJson
 
@@ -25,7 +28,6 @@ class UsedeskChatScreen : UsedeskFragment(),
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding
-
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
 
@@ -115,8 +117,6 @@ class UsedeskChatScreen : UsedeskFragment(),
                 getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(it)
             }
         }
-
-        UsedeskPermissionUtil.register(this)
     }
 
     override fun onItemSelectChange(index: Int) {
@@ -147,7 +147,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         super.onDestroyView()
 
         mediaPlayerAdapter.release()
-        UsedeskPermissionUtil.release()
     }
 
     override fun onBackPressed(): Boolean {

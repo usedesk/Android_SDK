@@ -15,9 +15,11 @@ import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import java.io.File
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -27,7 +29,7 @@ internal class MessagesPage : UsedeskFragment() {
 
     private var messagesAdapter: MessagesAdapter? = null
 
-    private lateinit var attachmentDialog: UsedeskAttachmentDialog
+    private var attachmentDialog: UsedeskAttachmentDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,21 +63,49 @@ internal class MessagesPage : UsedeskFragment() {
         attachmentDialog = UsedeskAttachmentDialog.create(
             this,
             viewModel
-        ).apply {
-            setOnDismissListener {
-                viewModel.showAttachmentPanel(false)
-            }
-        }
+        )
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
                 if (new.attachmentPanelVisible) {
-                    attachmentDialog.show()
+                    attachmentDialog?.show()
                 } else {
-                    attachmentDialog.hide()
+                    attachmentDialog?.hide()
                 }
             }
         }
+
+        register({ uriList ->
+            val files = uriList.map { uri ->
+                UsedeskFileInfo.create(
+                    requireContext(),
+                    uri
+                )
+            }
+            viewModel.actionCompleted(files)
+        }, { done ->
+            val fileName = viewModel.modelLiveData.value.cameraUri
+            if (done && fileName != null) {
+                val uri = Uri.fromFile(File(requireContext().externalCacheDir, fileName))
+                val file = UsedeskFileInfo.create(
+                    requireContext(),
+                    uri
+                )
+                viewModel.actionCompleted(listOf(file))
+            } else {
+                viewModel.resetAction()
+            }
+        })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        unregister()
+
+        messagesAdapter = null
+
+        attachmentDialog = null
     }
 
     private fun init(
@@ -129,13 +159,6 @@ internal class MessagesPage : UsedeskFragment() {
         super.onSaveInstanceState(outState)
 
         messagesAdapter?.onSave(outState)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        messagesAdapter = null
-        attachmentDialog.release()
     }
 
     private fun onUrlClick(url: String) {

@@ -61,8 +61,7 @@ internal class MessagesAdapter(
         }
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val lastItemIndex = layoutManager.findLastVisibleItemPosition()
-                viewModel.showToBottomButton(lastItemIndex < items.size - 1)
+                updateToBottomButton()
             }
         })
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
@@ -70,6 +69,11 @@ internal class MessagesAdapter(
                 onMessages(new.messages)
             }
         }
+    }
+
+    private fun updateToBottomButton() {
+        val lastItemIndex = layoutManager.findLastVisibleItemPosition()
+        viewModel.showToBottomButton(lastItemIndex < items.size - 1)
     }
 
     fun onSave(outState: Bundle) {
@@ -133,6 +137,7 @@ internal class MessagesAdapter(
                 recyclerView.scrollToPosition(items.size - 1)
             }
         }
+        updateToBottomButton()
     }
 
     private fun getFormattedTime(calendar: Calendar): String {

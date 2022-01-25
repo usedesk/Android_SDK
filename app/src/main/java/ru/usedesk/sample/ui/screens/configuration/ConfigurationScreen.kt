@@ -9,38 +9,21 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
-import ru.usedesk.common_gui.UsedeskPermissionUtil
+import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
 
-class ConfigurationScreen : Fragment() {
+class ConfigurationScreen : UsedeskFragment() {
 
     private val viewModel: ConfigurationViewModel by viewModels()
     private lateinit var binding: ScreenConfigurationBinding
-
-    private lateinit var getContent: ActivityResultLauncher<String>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        getContent =
-            requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-                if (uri != null) {
-                    onAvatar(uri.toString())
-                }
-            }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,14 +64,14 @@ class ConfigurationScreen : Fragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        binding.ivClientAvatar.setOnClickListener {
-            UsedeskPermissionUtil.needReadExternalPermission(this) {
-                getContent.launch("image/*")
-            }
-        }
-        binding.ivClientAvatarReset.setOnClickListener {
-            onAvatar(null)
-        }
+        //binding.ivClientAvatar.setOnClickListener {
+        //    needReadExternalPermission(this) {
+        //        getContent.launch("image/*")
+        //    }
+        //}
+        //binding.ivClientAvatarReset.setOnClickListener {
+        //    onAvatar(null)
+        //}
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
         initTil(binding.tilUrlToSendFile)
@@ -175,7 +158,7 @@ class ConfigurationScreen : Fragment() {
         )
     }
 
-    private fun onAvatar(avatar: String?) {
+    /*private fun onAvatar(avatar: String?) {
         viewModel.setAvatar(avatar)
         when (avatar) {
             null -> {
@@ -193,7 +176,7 @@ class ConfigurationScreen : Fragment() {
                 binding.tvClientAvatar.text = "Change client avatar"
             }
         }
-    }
+    }*/
 
     private fun onNewConfiguration(configuration: Configuration) {
         binding.etUrlChat.setText(configuration.urlChat)
@@ -253,7 +236,7 @@ class ConfigurationScreen : Fragment() {
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
-        onAvatar(configuration.clientAvatar)
+        //onAvatar(configuration.clientAvatar)
     }
 
     private fun setAdditionalField(

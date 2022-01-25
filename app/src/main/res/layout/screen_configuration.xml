@@ -238,7 +238,7 @@
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.LinearLayoutCompat
+                <!--<androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -268,7 +268,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>-->
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_custom_agent_name"

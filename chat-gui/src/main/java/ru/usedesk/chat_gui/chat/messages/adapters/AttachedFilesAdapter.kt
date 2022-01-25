@@ -27,38 +27,35 @@ internal class AttachedFilesAdapter(
         recyclerView.adapter = this
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
             if (old?.messageDraft?.files != new.messageDraft.files) {
-                onItems(new.messageDraft.files)
+                val oldFiles = files
+                files = new.messageDraft.files
+
+                val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                    override fun getOldListSize() = oldFiles.size
+
+                    override fun getNewListSize() = files.size
+
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldFile = oldFiles[oldItemPosition]
+                        val newFile = files[newItemPosition]
+                        return oldFile.uri == newFile.uri
+                    }
+
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldFile = oldFiles[oldItemPosition]
+                        val newFile = files[newItemPosition]
+                        return oldFile.uri == newFile.uri
+                    }
+                })
+                diffResult.dispatchUpdatesTo(this)
+                recyclerView.visibility = visibleGone(files.isNotEmpty())
             }
-        }
-    }
-
-    private fun onItems(attachedFiles: List<UsedeskFileInfo>) {
-        if (files != attachedFiles) {
-            val oldFiles = files
-            files = attachedFiles
-
-            val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun getOldListSize() = oldFiles.size
-
-                override fun getNewListSize() = files.size
-
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    val old = oldFiles[oldItemPosition]
-                    val new = files[newItemPosition]
-                    return old.uri == new.uri
-                }
-
-                override fun areContentsTheSame(
-                    oldItemPosition: Int,
-                    newItemPosition: Int
-                ): Boolean {
-                    val old = oldFiles[oldItemPosition]
-                    val new = files[newItemPosition]
-                    return old.uri == new.uri
-                }
-            })
-            diffResult.dispatchUpdatesTo(this)
-            recyclerView.visibility = visibleGone(files.isNotEmpty())
         }
     }
 

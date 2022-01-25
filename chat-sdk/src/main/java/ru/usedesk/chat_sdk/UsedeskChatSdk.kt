@@ -10,7 +10,7 @@ import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFact
 object UsedeskChatSdk {
     private var instanceBox: InstanceBoxUsedesk? = null
     private var chatConfiguration: UsedeskChatConfiguration? = null
-    private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
+    private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? = null
     private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
 
     @JvmStatic
@@ -66,7 +66,9 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun setNotificationsServiceFactory(notificationsServiceFactory: UsedeskNotificationsServiceFactory) {
+    fun setNotificationsServiceFactory(
+        notificationsServiceFactory: UsedeskNotificationsServiceFactory?
+    ) {
         this.notificationsServiceFactory = notificationsServiceFactory
     }
 
@@ -77,11 +79,11 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun startService(context: Context) {
-        notificationsServiceFactory.startService(context, requireConfiguration())
+        notificationsServiceFactory?.startService(context, requireConfiguration())
     }
 
     @JvmStatic
     fun stopService(context: Context) {
-        notificationsServiceFactory.stopService(context)
+        notificationsServiceFactory?.stopService(context)
     }
 }

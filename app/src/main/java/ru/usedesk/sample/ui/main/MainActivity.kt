@@ -100,10 +100,16 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun initUsedeskService(configuration: Configuration) {
-        if (configuration.foregroundService) {
-            CustomForegroundNotificationsService.Factory()
-        } else {
-            CustomSimpleNotificationsService.Factory()
+        when (configuration.foregroundService) {
+            true -> {
+                CustomForegroundNotificationsService.Factory()
+            }
+            false -> {
+                CustomSimpleNotificationsService.Factory()
+            }
+            else -> {
+                null
+            }
         }.let { factory ->
             setNotificationsServiceFactory(factory)
         }

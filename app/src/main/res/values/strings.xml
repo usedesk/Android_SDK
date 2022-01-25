@@ -18,7 +18,10 @@
     <string name="client_additional_id">Client Additional Id</string>
     <string name="client_init_message">Client Init Message</string>
     <string name="custom_agent_name">Custom Agent Name</string>
-    <string name="foreground_service_hint">Foreground service</string>
+    <string name="service_type_title">Service type</string>
+    <string name="service_type_none">No service</string>
+    <string name="service_type_simple">Simple service</string>
+    <string name="service_type_foreground">Foreground service</string>
     <string name="foreground_cache_files_hint">Cache Message Files</string>
     <string name="kb_base_hint">With KnowledgeBase</string>
     <string name="kb_support_button">With KnowledgeBase Support Button</string>

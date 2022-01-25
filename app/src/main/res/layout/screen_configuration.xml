@@ -284,21 +284,23 @@
                         android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_foreground"
+                <TextView
+                    android:id="@+id/tv_service_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
+                    android:background="?attr/selectableItemBackground"
                     android:checked="true"
-                    android:text="@string/foreground_service_hint"
+                    android:padding="14dp"
+                    android:text="@string/service_type_title"
+                    android:textColor="@color/usedesk_black_2"
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_cache_files"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
                     android:checked="true"
+                    android:padding="14dp"
                     android:text="@string/foreground_cache_files_hint"
                     android:textSize="18sp" />
 
@@ -588,8 +590,8 @@
                     android:id="@+id/switch_kb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
                     android:checked="true"
+                    android:padding="14dp"
                     android:text="@string/kb_base_hint"
                     android:textSize="18sp" />
 
@@ -597,8 +599,8 @@
                     android:id="@+id/switch_kb_with_support_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
                     android:checked="true"
+                    android:padding="14dp"
                     android:text="@string/kb_support_button"
                     android:textSize="18sp" />
 
@@ -606,8 +608,8 @@
                     android:id="@+id/switch_kb_with_article_rating"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
                     android:checked="true"
+                    android:padding="14dp"
                     android:text="@string/kb_article_rating"
                     android:textSize="18sp" />
 

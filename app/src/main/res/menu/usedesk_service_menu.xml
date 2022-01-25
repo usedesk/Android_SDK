@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/service_none"
+        android:title="@string/service_type_none" />
+    <item
+        android:id="@+id/service_simple"
+        android:title="@string/service_type_simple" />
+    <item
+        android:id="@+id/service_foreground"
+        android:title="@string/service_type_foreground" />
+</menu>

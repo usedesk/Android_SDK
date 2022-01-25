@@ -9,6 +9,7 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.textfield.TextInputLayout
@@ -54,8 +55,23 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.btnGoToSdk.setOnClickListener {
             onGoToSdk()
         }
-        binding.switchForeground.setOnCheckedChangeListener { _, _ ->
-            stopService(requireContext())
+        binding.tvServiceType.setOnClickListener {
+            PopupMenu(requireContext(), binding.tvServiceType).apply {
+                inflate(R.menu.usedesk_service_menu)
+                setOnMenuItemClickListener {
+                    updateServiceValue(
+                        when (it.itemId) {
+                            R.id.service_none -> null
+                            R.id.service_simple -> false
+                            R.id.service_foreground -> true
+                            else -> return@setOnMenuItemClickListener false
+                        }
+                    )
+                    stopService(requireContext())
+                    true
+                }
+                show()
+            }
         }
         try {
             val version = requireContext().packageManager
@@ -83,6 +99,16 @@ class ConfigurationScreen : UsedeskFragment() {
         initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
         return binding.root
+    }
+
+    private fun updateServiceValue(foregroundService: Boolean?) {
+        binding.tvServiceType.text = getString(R.string.service_type_title) + ": " + getString(
+            when (foregroundService) {
+                true -> R.string.service_type_foreground
+                false -> R.string.service_type_simple
+                null -> R.string.service_type_none
+            }
+        )
     }
 
     override fun onPause() {
@@ -148,7 +174,13 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientInitMessage.text.toString(),
             viewModel.avatarLiveData.value,
             binding.etCustomAgentName.text.toString(),
-            binding.switchForeground.isChecked,
+            when {
+                binding.tvServiceType.text.contains(getString(R.string.service_type_foreground)) ->
+                    true
+                binding.tvServiceType.text.contains(getString(R.string.service_type_simple)) ->
+                    false
+                else -> null
+            },
             binding.switchCacheFiles.isChecked,
             additionalFields,
             additionalNestedFields,
@@ -194,7 +226,7 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etClientAdditionalId.setText(configuration.clientAdditionalId?.toString() ?: "")
         binding.etClientInitMessage.setText(configuration.clientInitMessage)
         binding.etCustomAgentName.setText(configuration.customAgentName)
-        binding.switchForeground.isChecked = configuration.foregroundService
+        updateServiceValue(configuration.foregroundService)
         binding.switchCacheFiles.isChecked = configuration.cacheFiles
         setAdditionalField(
             binding.etAdditionalField1Id,

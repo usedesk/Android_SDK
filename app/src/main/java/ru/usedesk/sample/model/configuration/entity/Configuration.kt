@@ -18,7 +18,7 @@ data class Configuration(
     val clientInitMessage: String = "",
     val clientAvatar: String? = null,
     val customAgentName: String = "",
-    val foregroundService: Boolean = false,
+    val foregroundService: Boolean? = null,
     val cacheFiles: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),
     val additionalNestedFields: List<Map<Long, String>> = listOf(),

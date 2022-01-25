@@ -156,17 +156,22 @@ internal class MessagesRepository(
                 clientMessageClient.localId,
                 text = clientMessageClient.text
             )
-            is UsedeskMessageFile -> if (clientMessageClient.file.isImage()) {
-                NotSentMessage(
-                    clientMessageClient.localId,
-                    image = fileToJson(clientMessageClient.file)
-                )
-            } else {
-                NotSentMessage(
-                    clientMessageClient.localId,
-                    file = fileToJson(clientMessageClient.file)
-                )
-            }
+            is UsedeskMessageClientVideo -> NotSentMessage(
+                clientMessageClient.localId,
+                video = fileToJson(clientMessageClient.file)
+            )
+            is UsedeskMessageClientAudio -> NotSentMessage(
+                clientMessageClient.localId,
+                audio = fileToJson(clientMessageClient.file)
+            )
+            is UsedeskMessageClientImage -> NotSentMessage(
+                clientMessageClient.localId,
+                image = fileToJson(clientMessageClient.file)
+            )
+            is UsedeskMessageClientFile -> NotSentMessage(
+                clientMessageClient.localId,
+                file = fileToJson(clientMessageClient.file)
+            )
             else -> throw RuntimeException("Unknown client message class: ${clientMessageClient::class.java}")
         }
     }

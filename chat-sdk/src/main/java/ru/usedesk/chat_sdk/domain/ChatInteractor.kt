@@ -309,7 +309,6 @@ internal class ChatInteractor(
 
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
-            cachedMessages.addNotSentMessage(sendingMessage)
             sendAdditionalFieldsIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
@@ -364,22 +363,8 @@ internal class ChatInteractor(
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
         sendingMessage as UsedeskMessageClient
         try {
-            val uri = Uri.parse(sendingMessage.file.content)
-            val cachedMessage = UsedeskMessageClientFile(
-                sendingMessage.id,
-                sendingMessage.createdAt,
-                UsedeskFile(
-                    uri.toString(),
-                    sendingMessage.file.type,
-                    sendingMessage.file.size,
-                    sendingMessage.file.name
-                ),
-                sendingMessage.status,
-                sendingMessage.localId
-            )
-            cachedMessages.addNotSentMessage(cachedMessage)
             sendAdditionalFieldsIfNeeded()
-            sendCached(cachedMessage)
+            sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
@@ -407,6 +392,15 @@ internal class ChatInteractor(
                 }
                 is UsedeskMessageClientVideo -> {
                     UsedeskMessageClientVideo(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+                is UsedeskMessageClientImage -> {
+                    UsedeskMessageClientImage(
                         fileMessage.id,
                         fileMessage.createdAt,
                         newFile,

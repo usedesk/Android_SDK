@@ -386,21 +386,44 @@ internal class ChatInteractor(
         }
     }
 
-    private fun sendCached(fileMessage: UsedeskMessageClientFile) {
+    private fun sendCached(fileMessage: UsedeskMessageFile) {
         try {
-            cachedMessages.addNotSentMessage(fileMessage)
+            cachedMessages.addNotSentMessage(fileMessage as UsedeskMessageClient)
             val cachedUri = runBlocking {
                 val uri = Uri.parse(fileMessage.file.content)
                 val deferredCachedUri = cachedMessages.getCachedFile(uri)
                 deferredCachedUri.await()
             }
-            val cachedNotSentMessage = UsedeskMessageClientFile(
-                fileMessage.id,
-                fileMessage.createdAt,
-                fileMessage.file.copy(content = cachedUri.toString()),
-                fileMessage.status,
-                fileMessage.localId
-            )
+            val newFile = fileMessage.file.copy(content = cachedUri.toString())
+            val cachedNotSentMessage = when (fileMessage) {
+                is UsedeskMessageClientAudio -> {
+                    UsedeskMessageClientAudio(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+                is UsedeskMessageClientVideo -> {
+                    UsedeskMessageClientVideo(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+                else -> {
+                    UsedeskMessageClientFile(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+            }
             cachedMessages.updateNotSentMessage(cachedNotSentMessage)
             eventListener.onMessageUpdated(cachedNotSentMessage)
             apiRepository.send(
@@ -416,7 +439,7 @@ internal class ChatInteractor(
             cachedMessages.removeNotSentMessage(cachedNotSentMessage)
             cachedMessages.removeFileFromCache(Uri.parse(cachedNotSentMessage.file.content))
         } catch (e: Exception) {
-            onMessageSendingFailed(fileMessage)
+            onMessageSendingFailed(fileMessage as UsedeskMessageClient)
             throw e
         }
     }
@@ -505,7 +528,8 @@ internal class ChatInteractor(
                 }.map { field ->
                     field.value
                 }
-                val strings = listOf(clientName, clientEmail, topic) + fields + offlineForm.message
+                val strings =
+                    listOf(clientName, clientEmail, topic) + fields + offlineForm.message
                 initClientOfflineForm = strings.joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
@@ -544,6 +568,16 @@ internal class ChatInteractor(
                 }
                 is UsedeskMessageClientVideo -> {
                     val sendingMessage = UsedeskMessageClientVideo(
+                        message.id,
+                        message.createdAt,
+                        message.file,
+                        UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
+                }
+                is UsedeskMessageClientAudio -> {
+                    val sendingMessage = UsedeskMessageClientAudio(
                         message.id,
                         message.createdAt,
                         message.file,
@@ -634,7 +668,7 @@ internal class ChatInteractor(
                 }
                 is UsedeskMessageFile -> {
                     safeCompletableIo(ioScheduler) {
-                        sendCached(it as UsedeskMessageClientFile)
+                        sendCached(it)
                     }
                 }
                 else -> {

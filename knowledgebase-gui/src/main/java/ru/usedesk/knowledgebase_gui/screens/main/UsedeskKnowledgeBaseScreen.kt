@@ -22,7 +22,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     IOnSectionClickListener,
     IOnCategoryClickListener,
     IOnArticleClickListener,
-    IUsedeskOnBackPressedListener,
     IUsedeskOnSearchQueryListener,
     IOnTitleChangeListener {
 

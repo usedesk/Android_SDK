@@ -1,12 +1,12 @@
 package ru.usedesk.knowledgebase_sdk
 
 import android.content.Context
-import ru.usedesk.knowledgebase_sdk.di.InstanceBoxUsedesk
+import ru.usedesk.knowledgebase_sdk.di.InjectBoxUsedesk
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 object UsedeskKnowledgeBaseSdk {
-    private var instanceBox: InstanceBoxUsedesk? = null
+    private var injectBox: InjectBoxUsedesk? = null
     private var configuration: UsedeskKnowledgeBaseConfiguration? = null
 
     @JvmStatic
@@ -22,14 +22,14 @@ object UsedeskKnowledgeBaseSdk {
 
     @JvmStatic
     fun init(context: Context): IUsedeskKnowledgeBase {
-        return (instanceBox ?: InstanceBoxUsedesk(context, requireConfiguration()).also {
-            instanceBox = it
-        }).knowledgeBaseSdk
+        return (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
+            injectBox = it
+        }).knowledgeBaseInteractor
     }
 
     @JvmStatic
     fun getInstance(): IUsedeskKnowledgeBase? {
-        return instanceBox?.knowledgeBaseSdk
+        return injectBox?.knowledgeBaseInteractor
     }
 
     @JvmStatic
@@ -40,9 +40,9 @@ object UsedeskKnowledgeBaseSdk {
 
     @JvmStatic
     fun release() {
-        instanceBox?.also {
+        injectBox?.also {
             it.release()
-            instanceBox = null
+            injectBox = null
         }
     }
 }

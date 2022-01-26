@@ -3,18 +3,13 @@ package ru.usedesk.chat_sdk.data.repository.messages
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import androidx.core.net.toUri
 import com.google.gson.Gson
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.common_sdk.utils.UsedeskFileUtil
-import toothpick.InjectConstructor
 import java.io.File
 import java.util.*
-import kotlin.math.absoluteValue
 
-@InjectConstructor
-internal class UsedeskMessagesRepository(
+internal class MessagesRepository(
     private val appContext: Context,
     private val gson: Gson,
     private val fileLoader: IFileLoader,
@@ -97,21 +92,7 @@ internal class UsedeskMessagesRepository(
         return if (uri.toString().startsWith("file://" + appContext.cacheDir.absolutePath)) {
             uri
         } else {
-            val ext = UsedeskFileUtil.getExtension(appContext, uri)
-            val cachedName = uri.hashCode().absoluteValue.toString() + if (ext.isNotEmpty()) {
-                ".$ext"
-            } else {
-                ""
-            }
-            val cachedFile = File(appContext.cacheDir.absolutePath, cachedName)
-            try {
-                val cachedUri = cachedFile.toUri()
-                fileLoader.copy(uri, cachedUri)
-                cachedUri
-            } catch (e: Exception) {
-                cachedFile.delete()
-                throw e
-            }
+            fileLoader.toCache(uri)
         }
     }
 
@@ -175,17 +156,22 @@ internal class UsedeskMessagesRepository(
                 clientMessageClient.localId,
                 text = clientMessageClient.text
             )
-            is UsedeskMessageFile -> if (clientMessageClient.file.isImage()) {
-                NotSentMessage(
-                    clientMessageClient.localId,
-                    image = fileToJson(clientMessageClient.file)
-                )
-            } else {
-                NotSentMessage(
-                    clientMessageClient.localId,
-                    file = fileToJson(clientMessageClient.file)
-                )
-            }
+            is UsedeskMessageClientVideo -> NotSentMessage(
+                clientMessageClient.localId,
+                video = fileToJson(clientMessageClient.file)
+            )
+            is UsedeskMessageClientAudio -> NotSentMessage(
+                clientMessageClient.localId,
+                audio = fileToJson(clientMessageClient.file)
+            )
+            is UsedeskMessageClientImage -> NotSentMessage(
+                clientMessageClient.localId,
+                image = fileToJson(clientMessageClient.file)
+            )
+            is UsedeskMessageClientFile -> NotSentMessage(
+                clientMessageClient.localId,
+                file = fileToJson(clientMessageClient.file)
+            )
             else -> throw RuntimeException("Unknown client message class: ${clientMessageClient::class.java}")
         }
     }
@@ -203,6 +189,24 @@ internal class UsedeskMessagesRepository(
             notSentMessage.image != null -> {
                 val file = jsonToFile(notSentMessage.image)
                 UsedeskMessageClientImage(
+                    notSentMessage.localId,
+                    Calendar.getInstance(),
+                    file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            notSentMessage.video != null -> {
+                val file = jsonToFile(notSentMessage.video)
+                UsedeskMessageClientVideo(
+                    notSentMessage.localId,
+                    Calendar.getInstance(),
+                    file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            notSentMessage.audio != null -> {
+                val file = jsonToFile(notSentMessage.audio)
+                UsedeskMessageClientAudio(
                     notSentMessage.localId,
                     Calendar.getInstance(),
                     file,
@@ -245,6 +249,8 @@ internal class UsedeskMessagesRepository(
         val localId: Long,
         val text: String? = null,
         val file: String? = null,
-        val image: String? = null
+        val image: String? = null,
+        val audio: String? = null,
+        val video: String? = null
     )
 }

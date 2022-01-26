@@ -1,28 +1,30 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
-import io.reactivex.Completable
-import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
-import toothpick.InjectConstructor
-import java.util.concurrent.TimeUnit
 
-@InjectConstructor
 internal class CachedMessagesInteractor(
+    private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
-    private val userInfoRepository: IUserInfoRepository,
-    private val configuration: UsedeskChatConfiguration
+    private val userInfoRepository: IUserInfoRepository
 ) : ICachedMessagesInteractor {
 
     private var messageDraft: UsedeskMessageDraft
 
-    private var draftDisposable: Disposable? = null
+    private var draftJob: Job? = null
+    private var saveJob: Job? = null
 
-    private val cachedFileUriMap = LinkedHashMap<Uri, Uri>()
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val mutex = Mutex()
+
+    private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri>>()
 
     init {
         val token = getUserKey()
@@ -32,12 +34,12 @@ internal class CachedMessagesInteractor(
             null
         } ?: UsedeskMessageDraft()
 
-        cachedFileUriMap.putAll(messageDraft.files.map {
-            it.uri to it.uri
+        deferredCachedUriMap.putAll(messageDraft.files.map {
+            it.uri to CompletableDeferred(it.uri)
         })
     }
 
-    @Synchronized
+
     override fun getNotSentMessages(): List<UsedeskMessageClient> {
         val token = getUserKey()
         return if (token != null) {
@@ -47,7 +49,6 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    @Synchronized
     override fun addNotSentMessage(notSentMessage: UsedeskMessageClient) {
         val token = getUserKey()
         if (token != null) {
@@ -55,7 +56,14 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    @Synchronized
+    override fun updateNotSentMessage(notSentMessage: UsedeskMessageClient) {
+        val token = getUserKey()
+        if (token != null) {
+            messagesRepository.removeNotSentMessage(token, notSentMessage)
+            messagesRepository.addNotSentMessage(token, notSentMessage)
+        }
+    }
+
     override fun removeNotSentMessage(notSentMessage: UsedeskMessageClient) {
         val token = getUserKey()
         if (token != null) {
@@ -63,55 +71,67 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    @Synchronized
-    override fun getCachedUri(uri: Uri): Uri {
-        return cachedFileUriMap[uri] ?: addFileToCache(uri)
-    }
-
-    @Synchronized
-    override fun addFileToCache(uri: Uri): Uri {
-        return if (configuration.cacheMessagesWithFile) {
-            messagesRepository.addFileToCache(uri)
-        } else {
-            uri
+    override suspend fun getCachedFile(uri: Uri): Deferred<Uri> {
+        return mutex.withLock {
+            deferredCachedUriMap[uri] ?: ioScope.async {
+                val cachedFile = messagesRepository.addFileToCache(uri)
+                cachedFile
+            }.also {
+                deferredCachedUriMap[uri] = it
+            }
         }
     }
 
-    @Synchronized
     override fun removeFileFromCache(uri: Uri) {
         if (configuration.cacheMessagesWithFile) {
             messagesRepository.removeFileFromCache(uri)
         }
     }
 
-    @Synchronized
-    override fun updateMessageDraft(now: Boolean) {
+    override suspend fun updateMessageDraft(now: Boolean) {
         if (now) {
-            draftDisposable?.dispose()
-            draftDisposable = null
-            saveMessageDraft()
-        } else if (draftDisposable == null) {
-            draftDisposable = Completable.timer(2, TimeUnit.SECONDS).subscribe {
-                updateMessageDraft(true)
+            mutex.withLock {
+                draftJob?.cancel()
+                draftJob = null
+                saveJob?.cancel()
+                saveJob = ioScope.launch {
+                    val configuration =
+                        userInfoRepository.getConfiguration(this@CachedMessagesInteractor.configuration)
+                    yield()
+                    val token = configuration.clientToken
+                    if (token != null) {
+                        yield()
+                        mutex.withLock {
+                            val messageDraft = this@CachedMessagesInteractor.messageDraft.copy(
+                                files = this@CachedMessagesInteractor.messageDraft.files.mapNotNull {
+                                    val deferredCachedUri = deferredCachedUriMap[it.uri]
+                                    try {
+                                        val cachedUri = deferredCachedUri?.getCompleted()!!
+                                        it.copy(uri = cachedUri)
+                                    } catch (e: Exception) {
+                                        null
+                                    }
+                                }
+                            )
+                            messagesRepository.setDraft(token, messageDraft)
+                        }
+                    }
+                }
+            }
+        } else {
+            mutex.withLock {
+                if (draftJob == null) {
+                    draftJob = ioScope.launch {
+                        delay(2000)
+                        yield()
+                        updateMessageDraft(true)
+                    }
+                }
             }
         }
     }
 
-    private fun saveMessageDraft() {
-        val messageDraft = UsedeskMessageDraft(this.messageDraft.text,
-            this.messageDraft.files.map {
-                val cachedUri = cachedFileUriMap[it.uri]
-                it.copy(uri = cachedUri ?: it.uri)
-            })
-        val configuration = userInfoRepository.getConfiguration(this.configuration)
-        val token = configuration.clientToken
-        if (token != null) {
-            messagesRepository.setDraft(token, messageDraft)
-        }
-    }
-
-    @Synchronized
-    override fun setMessageDraft(messageDraft: UsedeskMessageDraft, cacheFiles: Boolean) {
+    override suspend fun setMessageDraft(messageDraft: UsedeskMessageDraft, cacheFiles: Boolean) {
         if (cacheFiles) {
             val oldFiles = this.messageDraft.files.map {
                 it.uri
@@ -122,28 +142,34 @@ internal class CachedMessagesInteractor(
             oldFiles.filter {
                 it !in newFiles
             }.forEach {
-                val cachedUri = cachedFileUriMap[it]
-                cachedFileUriMap.remove(it)
-                if (cachedUri != null) {
-                    removeFileFromCache(cachedUri)
+                mutex.withLock {
+                    val deferredCachedUri = deferredCachedUriMap[it]
+                    if (deferredCachedUri?.isCompleted == true) {
+                        val cachedUri = deferredCachedUri.await()
+                        removeFileFromCache(cachedUri)
+                    } else {
+                        deferredCachedUri?.cancel()
+                    }
+                    this.deferredCachedUriMap.remove(it)
                 }
             }
             newFiles.filter {
                 it !in oldFiles
-            }.forEach {
-                cachedFileUriMap[it] = addFileToCache(it)
+            }.map { uri ->
+                deferredCachedUriMap[uri] = this.getCachedFile(uri).also {
+                    ioScope.launch {
+                        it.await()
+                        updateMessageDraft(true)
+                    }
+                }
             }
         }
         this.messageDraft = messageDraft
         updateMessageDraft(false)
     }
 
-    @Synchronized
-    override fun getMessageDraft(): UsedeskMessageDraft {
-        return messageDraft
-    }
+    override fun getMessageDraft(): UsedeskMessageDraft = messageDraft
 
-    @Synchronized
     override fun getNextLocalId(): Long {
         val token = getUserKey()
         return if (token != null) {

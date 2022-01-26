@@ -22,7 +22,6 @@ internal interface IApiRepository {
         name: String?,
         note: String?,
         phone: Long?,
-        avatar: String?,
         additionalId: Long?
     )
 
@@ -42,7 +41,8 @@ internal interface IApiRepository {
     fun send(
         configuration: UsedeskChatConfiguration,
         token: String,
-        messageFile: UsedeskMessageFile
+        fileInfo: UsedeskFileInfo,
+        messageId: Long
     )
 
     fun send(

@@ -4,19 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
 import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
 import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
@@ -25,20 +20,23 @@ import ru.usedesk.common_sdk.utils.getFromJson
 import ru.usedesk.common_sdk.utils.putAsJson
 
 class UsedeskChatScreen : UsedeskFragment(),
-    IUsedeskOnAttachmentClickListener,
     IOnOfflineFormSelectorClick,
     IItemSelectChangeListener,
     IOnGoToChatListener {
 
     private val viewModel: ChatViewModel by viewModels()
+    private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding
-    private lateinit var attachmentDialog: UsedeskAttachmentDialog
-
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var chatNavigation: ChatNavigation
 
-    private var cleared = false
+    internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
+        MediaPlayerAdapter(
+            this,
+            playerViewModel
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,12 +52,11 @@ class UsedeskChatScreen : UsedeskFragment(),
             Binding(rootView, defaultStyleId)
         }
 
-        toolbarAdapter =
-            UsedeskToolbarAdapter(requireActivity() as AppCompatActivity, binding.toolbar).apply {
-                setBackButton {
-                    requireActivity().onBackPressed()
-                }
+        toolbarAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
+            setBackButton {
+                requireActivity().onBackPressed()
             }
+        }
 
         val agentName = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
@@ -74,12 +71,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         init(agentName, rejectedFileExtensions, savedInstanceState != null)
 
         return binding.rootView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        attachmentDialog = UsedeskAttachmentDialog.create(this)
     }
 
     private fun init(
@@ -128,11 +119,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         }
     }
 
-    override fun onAttachmentClick() {
-        getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-            ?: attachmentDialog.show()
-    }
-
     override fun onItemSelectChange(index: Int) {
         viewModel.setSubjectIndex(index)
     }
@@ -141,22 +127,10 @@ class UsedeskChatScreen : UsedeskFragment(),
         exception.printStackTrace()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onPause() {
+        super.onPause()
 
-        val uriList = attachmentDialog.getAttachedUri(true)
-        if (uriList.isNotEmpty()) {
-            getCurrentFragment()?.let {
-                if (it is MessagesPage) {
-                    it.setAttachedFiles(uriList.map { uri ->
-                        UsedeskFileInfo.create(
-                            requireContext(),
-                            uri
-                        )
-                    })
-                }
-            }
-        }
+        mediaPlayerAdapter.onPause()
     }
 
     override fun onStart() {
@@ -169,12 +143,14 @@ class UsedeskChatScreen : UsedeskFragment(),
         UsedeskChatSdk.startService(requireContext())
     }
 
-    override fun onBackPressed(): Boolean {
-        return viewModel.onBackPressed()
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        mediaPlayerAdapter.release()
     }
 
-    private fun getCurrentFragment(): Fragment? {
-        return childFragmentManager.findFragmentById(R.id.page_container)
+    override fun onBackPressed(): Boolean {
+        return mediaPlayerAdapter.onBackPressed() || viewModel.onBackPressed()
     }
 
     override fun onOfflineFormSelectorClick(items: List<String>, selectedIndex: Int) {
@@ -183,22 +159,6 @@ class UsedeskChatScreen : UsedeskFragment(),
 
     override fun onGoToMessages() {
         viewModel.goMessages()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        if (cleared) {
-            getCurrentFragment()?.let {
-                if (it is MessagesPage) {
-                    it.clear()
-                }
-            }
-        }
-    }
-
-    fun clear() {
-        cleared = true
     }
 
     companion object {

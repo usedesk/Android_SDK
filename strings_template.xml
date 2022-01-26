@@ -5,14 +5,20 @@
     <string name="usedesk_need_permission">@string/usedesk_string_need_permission</string>
     <string name="usedesk_send">@string/usedesk_string_send</string>
     <!--Chat-->
-    <string name="usedesk_offline_form_send_successed">@string/usedesk_string_offline_form_send_successed</string>
-    <string name="usedesk_offline_form_send_failed">@string/usedesk_string_offline_form_send_failed</string>
+    <string
+        name="usedesk_offline_form_send_successed">@string/usedesk_string_offline_form_send_successed
+    </string>
+    <string
+        name="usedesk_offline_form_send_failed">@string/usedesk_string_offline_form_send_failed
+    </string>
     <string name="usedesk_name">@string/usedesk_string_name</string>
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
     <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
+    <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
+    <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
     <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
     <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
@@ -25,6 +31,7 @@
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
     <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
     <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
+    <string name="usedesk_download">@string/usedesk_string_download</string>
     <!--KnowledgeBase-->
     <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
     <string name="usedesk_cancel">@string/usedesk_string_cancel</string>

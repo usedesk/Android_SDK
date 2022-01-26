@@ -1,7 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
 import com.google.gson.Gson
-import com.google.gson.JsonParseException
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -16,13 +15,12 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientResponse
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
-import toothpick.InjectConstructor
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
 
-@InjectConstructor
 internal class SocketApi(
     private val gson: Gson,
     private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
@@ -57,7 +55,6 @@ internal class SocketApi(
     }
 
     private fun onResponse(rawResponse: String) {
-        //Log.d("DBG", "RESPONSE:\n$rawResponse")
         try {
             val response = process(rawResponse)
             when (response.type) {
@@ -157,7 +154,6 @@ internal class SocketApi(
     fun sendRequest(baseRequest: BaseRequest) {
         try {
             val rawRequest = gson.toJson(baseRequest)
-            //Log.d("DBG", "REQUEST:\n$rawRequest")
             val jsonRequest = JSONObject(rawRequest)
             socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {
@@ -174,14 +170,13 @@ internal class SocketApi(
                 MessageResponse.TYPE -> MessageResponse::class.java
                 FeedbackResponse.TYPE -> FeedbackResponse::class.java
                 SetClientResponse.TYPE -> SetClientResponse::class.java
-                else -> null
+                else -> throw RuntimeException("Could not find response class by type")
             }
-            if (responseClass != null) {
-                gson.fromJson(rawResponse, responseClass)
-            } else {
-                throw UsedeskSocketException("Unknown response body: $rawResponse")
+            gson.fromJson(rawResponse, responseClass)
+        } catch (e: Exception) {
+            UsedeskLog.e("Failed to parse the response") {
+                rawResponse
             }
-        } catch (e: JsonParseException) {
             throw UsedeskSocketException(
                 UsedeskSocketException.Error.JSON_ERROR,
                 e.message

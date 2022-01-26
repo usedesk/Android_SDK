@@ -3,24 +3,27 @@ package ru.usedesk.chat_gui.chat.messages
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
-import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.*
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE
+import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE_MB
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import java.io.File
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -28,9 +31,9 @@ internal class MessagesPage : UsedeskFragment() {
 
     private lateinit var binding: Binding
 
-    private lateinit var messagesAdapter: MessagesAdapter
+    private var messagesAdapter: MessagesAdapter? = null
 
-    private var cleared = false
+    private var attachmentDialog: UsedeskAttachmentDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,12 +52,113 @@ internal class MessagesPage : UsedeskFragment() {
         val agentName: String? = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
 
-        init(agentName, rejectedFileExtensions)
+        init(
+            agentName,
+            rejectedFileExtensions,
+            savedInstanceState
+        )
 
         return binding.rootView
     }
 
-    private fun init(agentName: String?, rejectedFileExtensions: Array<String>) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        attachmentDialog = UsedeskAttachmentDialog.create(
+            this,
+            viewModel
+        )
+
+        register({ uriList ->
+            val files = uriList.map { uri ->
+                UsedeskFileInfo.create(
+                    requireContext(),
+                    uri
+                )
+            }.toSet()
+            attachFiles(files)
+        }, { done ->
+            val fileName = viewModel.modelLiveData.value.cameraUri
+            if (done && fileName != null) {
+                val uri = Uri.fromFile(File(requireContext().externalCacheDir, fileName))
+                val file = UsedeskFileInfo.create(
+                    requireContext(),
+                    uri
+                )
+                attachFiles(setOf(file))
+            } else {
+                viewModel.resetAction()
+            }
+        })
+    }
+
+    private fun attachFiles(files: Set<UsedeskFileInfo>) {
+        val filteredFiles = files.filter { fileInfo ->
+            try {
+                var size = -1L
+                when (fileInfo.uri.scheme) {
+                    "content" -> {
+                        requireContext().contentResolver.query(
+                            fileInfo.uri,
+                            null,
+                            null,
+                            null,
+                            null
+                        )?.use { cursor ->
+                            if (cursor.moveToFirst()) {
+                                val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
+                                size = cursor.getLong(columnIndex)
+                            }
+                        }
+                    }
+                    "file" -> {
+                        requireContext().contentResolver.openAssetFileDescriptor(
+                            fileInfo.uri,
+                            "r"
+                        )?.use {
+                            size = it.length
+                        }
+                    }
+                }
+                return@filter size in 0..MAX_FILE_SIZE
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            false
+        }.toSet()
+
+        val rejectedFiles = files - filteredFiles
+        if (rejectedFiles.isNotEmpty()) {
+            val message = getString(
+                if (rejectedFiles.size == 1) {
+                    R.string.usedesk_file_size_exceeds
+                } else {
+                    R.string.usedesk_files_size_exceeds
+                }, MAX_FILE_SIZE_MB
+            )
+            val toastText = message + "\n" + rejectedFiles.joinToString(separator = "\n") {
+                it.name
+            }
+            Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.attachFiles(filteredFiles)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        unregister()
+
+        messagesAdapter = null
+
+        attachmentDialog = null
+    }
+
+    private fun init(
+        agentName: String?,
+        rejectedFileExtensions: Array<String>,
+        savedInstanceState: Bundle?
+    ) {
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
@@ -63,7 +167,10 @@ internal class MessagesPage : UsedeskFragment() {
             viewLifecycleOwner
         ) {
             getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
+                ?: viewModel.showAttachmentPanel(true)
         }
+
+        val mediaPlayerAdapter = (parentFragment as UsedeskChatScreen).mediaPlayerAdapter
 
         messagesAdapter = MessagesAdapter(
             binding.rvMessages,
@@ -71,43 +178,39 @@ internal class MessagesPage : UsedeskFragment() {
             viewLifecycleOwner,
             agentName,
             rejectedFileExtensions,
+            mediaPlayerAdapter,
             {
                 getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
             },
             {
                 getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
-            })
+            }, {
+                getParentListener<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
+            },
+            savedInstanceState
+        )
+
         FabToBottomAdapter(
             binding.fabToBottom,
             binding.styleValues,
             viewModel,
             viewLifecycleOwner
         ) {
-            messagesAdapter.scrollToBottom()
+            messagesAdapter?.scrollToBottom()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        messagesAdapter?.onSave(outState)
     }
 
     private fun onUrlClick(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
-    }
-
-    fun setAttachedFiles(attachedFiles: List<UsedeskFileInfo>) {
-        viewModel.addAttachedFiles(attachedFiles)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        if (cleared) {
-            messagesAdapter.clear()
-        }
-    }
-
-    fun clear() {
-        cleared = true
     }
 
     companion object {
@@ -135,19 +238,5 @@ internal class MessagesPage : UsedeskFragment() {
         val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
-    }
-
-    private class FileInfo(
-        val uri: String,
-        val type: String,
-        val name: String
-    ) {
-        constructor(usedeskFileInfo: UsedeskFileInfo) : this(
-            usedeskFileInfo.uri.toString(),
-            usedeskFileInfo.type,
-            usedeskFileInfo.name
-        )
-
-        fun getUsedeskFileInfo(): UsedeskFileInfo = UsedeskFileInfo(Uri.parse(uri), type, name)
     }
 }

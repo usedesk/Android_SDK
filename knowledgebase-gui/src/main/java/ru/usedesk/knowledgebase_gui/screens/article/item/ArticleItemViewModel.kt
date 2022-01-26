@@ -7,7 +7,8 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticleItemViewModel : UsedeskViewModel() {
 
-    val articleContentLiveData = MutableLiveData(ArticleContentState.loading())
+    val articleContentLiveData =
+        MutableLiveData<ArticleContentState?>(ArticleContentState.loading())
 
     fun init(articleId: Long) {
         doInit {

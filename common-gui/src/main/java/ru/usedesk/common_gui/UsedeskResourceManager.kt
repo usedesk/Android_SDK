@@ -23,8 +23,8 @@ object UsedeskResourceManager {
     }
 
     class StyleValues(
-            private val context: Context,
-            private val defaultStyleId: Int
+        private val context: Context,
+        private val defaultStyleId: Int
     ) {
 
         fun getString(attrId: Int): String {
@@ -50,6 +50,12 @@ object UsedeskResourceManager {
             }
         }
 
+        fun getIdOrZero(attrId: Int): Int {
+            return getValue(attrId) { attrs, index ->
+                attrs.getResourceId(index, 0)
+            }
+        }
+
         fun getStyle(attrId: Int): Int {
             return getValue(attrId) { attrs, index ->
                 attrs.getResourceIdOrThrow(index)
@@ -68,11 +74,13 @@ object UsedeskResourceManager {
             }
         }
 
-        private fun <T> getValue(attrId: Int,
-                                 onValue: (TypedArray, Int) -> T): T {
+        private fun <T> getValue(
+            attrId: Int,
+            onValue: (TypedArray, Int) -> T
+        ): T {
             val attrs = context.obtainStyledAttributes(
-                    getResourceId(defaultStyleId),
-                    intArrayOf(attrId)
+                getResourceId(defaultStyleId),
+                intArrayOf(attrId)
             )
             val value = onValue(attrs, 0)
             attrs.recycle()

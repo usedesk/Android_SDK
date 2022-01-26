@@ -8,9 +8,13 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 
 object UsedeskChatSdk {
+
+    const val MAX_FILE_SIZE_MB = 128
+    const val MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
+
     private var instanceBox: InstanceBoxUsedesk? = null
     private var chatConfiguration: UsedeskChatConfiguration? = null
-    private var notificationsServiceFactory = UsedeskNotificationsServiceFactory()
+    private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? = null
     private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
 
     @JvmStatic
@@ -37,12 +41,12 @@ object UsedeskChatSdk {
                 usedeskMessagesRepository
             ).also {
                 instanceBox = it
-            }).usedeskChatSdk
+            }).chatInteractor
     }
 
     @JvmStatic
     fun getInstance(): IUsedeskChat? {
-        return instanceBox?.usedeskChatSdk
+        return instanceBox?.chatInteractor
     }
 
     @JvmStatic
@@ -58,7 +62,7 @@ object UsedeskChatSdk {
     @JvmOverloads
     fun release(force: Boolean = true) {
         instanceBox?.also {
-            if (force || it.usedeskChatSdk.isNoListeners()) {
+            if (force || it.chatInteractor.isNoListeners()) {
                 it.release()
                 instanceBox = null
             }
@@ -66,7 +70,9 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun setNotificationsServiceFactory(notificationsServiceFactory: UsedeskNotificationsServiceFactory) {
+    fun setNotificationsServiceFactory(
+        notificationsServiceFactory: UsedeskNotificationsServiceFactory?
+    ) {
         this.notificationsServiceFactory = notificationsServiceFactory
     }
 
@@ -77,11 +83,11 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun startService(context: Context) {
-        notificationsServiceFactory.startService(context, requireConfiguration())
+        notificationsServiceFactory?.startService(context, requireConfiguration())
     }
 
     @JvmStatic
     fun stopService(context: Context) {
-        notificationsServiceFactory.stopService(context)
+        notificationsServiceFactory?.stopService(context)
     }
 }

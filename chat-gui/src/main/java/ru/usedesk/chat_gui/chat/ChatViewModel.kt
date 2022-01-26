@@ -103,8 +103,7 @@ internal class ChatViewModel : UsedeskViewModel() {
     override fun onCleared() {
         super.onCleared()
 
-        UsedeskChatSdk.getInstance()
-            ?.removeActionListener(actionListenerRx)
+        usedeskChat.removeActionListener(actionListenerRx)
 
         UsedeskChatSdk.release(false)
     }

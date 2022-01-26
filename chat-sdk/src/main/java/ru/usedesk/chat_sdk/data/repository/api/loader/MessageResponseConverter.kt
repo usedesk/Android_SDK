@@ -4,10 +4,9 @@ import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
-import toothpick.InjectConstructor
 
-@InjectConstructor
-internal class MessageResponseConverter : Converter<MessageResponse.Message?, List<UsedeskMessage>>() {
+internal class MessageResponseConverter :
+    Converter<MessageResponse.Message?, List<UsedeskMessage>>() {
 
     override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> {
         return convertOrNull {
@@ -40,38 +39,89 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
 
             convertOrNull {
                 if (from.file != null) {
-                    val file = UsedeskFile.create(from.file!!.content!!,
-                            from.file!!.type,
-                            from.file!!.size!!,
-                            from.file!!.name!!)
+                    val file = UsedeskFile.create(
+                        from.file!!.content!!,
+                        from.file!!.type,
+                        from.file!!.size!!,
+                        from.file!!.name!!
+                    )
 
-                    if (file.isImage()) {
-                        if (fromClient) {
-                            UsedeskMessageClientImage(id,
+                    when {
+                        file.isImage() -> {
+                            if (fromClient) {
+                                UsedeskMessageClientImage(
+                                    id,
                                     messageDate,
                                     file,
                                     UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                                    localId)
-                        } else {
-                            UsedeskMessageAgentImage(id,
+                                    localId
+                                )
+                            } else {
+                                UsedeskMessageAgentImage(
+                                    id,
                                     messageDate,
                                     file,
                                     name,
-                                    avatar)
+                                    avatar
+                                )
+                            }
                         }
-                    } else {
-                        if (fromClient) {
-                            UsedeskMessageClientFile(id,
+                        file.isVideo() -> {
+                            if (fromClient) {
+                                UsedeskMessageClientVideo(
+                                    id,
                                     messageDate,
                                     file,
                                     UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                                    localId)
-                        } else {
-                            UsedeskMessageAgentFile(id,
+                                    localId
+                                )
+                            } else {
+                                UsedeskMessageAgentVideo(
+                                    id,
                                     messageDate,
                                     file,
                                     name,
-                                    avatar)
+                                    avatar
+                                )
+                            }
+                        }
+                        file.isAudio() -> {
+                            if (fromClient) {
+                                UsedeskMessageClientAudio(
+                                    id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId
+                                )
+                            } else {
+                                UsedeskMessageAgentAudio(
+                                    id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar
+                                )
+                            }
+                        }
+                        else -> {
+                            if (fromClient) {
+                                UsedeskMessageClientFile(
+                                    id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId
+                                )
+                            } else {
+                                UsedeskMessageAgentFile(
+                                    id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar
+                                )
+                            }
                         }
                     }
                 } else {
@@ -112,40 +162,49 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                     var matcher = imageRegexp.find(convertedText)
                     while (matcher != null) {
                         val section = matcher.value.removePrefix("![")
-                                .removeSuffix(")")
+                            .removeSuffix(")")
                         val fileName = section.substringBefore("](")
                         val fileUrl = section.substringAfter("](")
                         convertedText = convertedText.replace(matcher.value, "")
                         matcher = imageRegexp.find(convertedText)
 
-                        val file = UsedeskFile.create(fileUrl,
-                                "image/*",
-                                "0",
-                                fileName)
+                        val file = UsedeskFile.create(
+                            fileUrl,
+                            "image/*",
+                            "0",
+                            fileName
+                        )
                         fileMessages.add(
-                                if (fromClient) {
-                                    UsedeskMessageClientImage(id,
-                                            messageDate,
-                                            file,
-                                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                                            localId)
-                                } else {
-                                    UsedeskMessageAgentImage(id,
-                                            messageDate,
-                                            file,
-                                            name,
-                                            avatar)
-                                }
+                            if (fromClient) {
+                                UsedeskMessageClientImage(
+                                    id,
+                                    messageDate,
+                                    file,
+                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                                    localId
+                                )
+                            } else {
+                                UsedeskMessageAgentImage(
+                                    id,
+                                    messageDate,
+                                    file,
+                                    name,
+                                    avatar
+                                )
+                            }
                         )
                     }
 
-                    convertedText = convertedText.replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
-                            .replace("</strong>", "</b>")
-                            .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
-                            .replace("</em>", "</i>")
-                            .replace("</p>", "")
-                            .removePrefix("<p>")
-                            .trim('\u200B', ' ', '\r', '\n')
+                    convertedText = convertedText.replace(
+                        "<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">",
+                        "<b>"
+                    )
+                        .replace("</strong>", "</b>")
+                        .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
+                        .replace("</em>", "</i>")
+                        .replace("</p>", "")
+                        .removePrefix("<p>")
+                        .trim('\u200B', ' ', '\r', '\n')
 
                     buttons.forEach {
                         val show: String
@@ -164,20 +223,24 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
                     if (convertedText.isEmpty() && buttons.isEmpty()) {
                         null
                     } else if (fromClient) {
-                        UsedeskMessageClientText(id,
-                                messageDate,
-                                convertedText,
-                                UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                                localId)
+                        UsedeskMessageClientText(
+                            id,
+                            messageDate,
+                            convertedText,
+                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                            localId
+                        )
                     } else {
-                        UsedeskMessageAgentText(id,
-                                messageDate,
-                                convertedText,
-                                buttons,
-                                feedbackNeeded,
-                                feedback,
-                                name,
-                                avatar)
+                        UsedeskMessageAgentText(
+                            id,
+                            messageDate,
+                            convertedText,
+                            buttons,
+                            feedbackNeeded,
+                            feedback,
+                            name,
+                            avatar
+                        )
                     }
                 } else {
                     null
@@ -208,8 +271,8 @@ internal class MessageResponseConverter : Converter<MessageResponse.Message?, Li
 
     private fun getButton(messageText: String): UsedeskMessageButton? {
         val sections = messageText.replace("{{button:", "")
-                .replace("}}", "")
-                .split(";")
+            .replace("}}", "")
+            .split(";")
         return if (sections.size == 4) {
             val text = sections[0]
             val url = sections[1]

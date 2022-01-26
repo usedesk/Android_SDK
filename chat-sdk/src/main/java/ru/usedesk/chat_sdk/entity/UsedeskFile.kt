@@ -12,6 +12,14 @@ data class UsedeskFile(
         return type.startsWith(UsedeskFileInfo.IMAGE_TYPE)
     }
 
+    fun isVideo(): Boolean {
+        return type.startsWith(UsedeskFileInfo.VIDEO_TYPE)
+    }
+
+    fun isAudio(): Boolean {
+        return type.startsWith(UsedeskFileInfo.AUDIO_TYPE)
+    }
+
     companion object {
         fun create(
             content: String,

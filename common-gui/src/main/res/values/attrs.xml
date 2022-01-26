@@ -23,8 +23,6 @@
 
     <attr name="usedesk_common_toolbar" format="reference" />
 
-    <attr name="usedesk_common_no_permission_snackbar" format="reference" />
-
     <attr name="usedesk_common_field_text_input_layout" format="reference" />
     <attr name="usedesk_common_field_text_edit_text" format="reference" />
 

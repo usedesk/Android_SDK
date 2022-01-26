@@ -25,38 +25,37 @@ internal class AttachedFilesAdapter(
 
     init {
         recyclerView.adapter = this
-        viewModel.messageDraftLiveData.initAndObserve(lifecycleOwner) {
-            onItems(it.files)
-        }
-    }
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.messageDraft?.files != new.messageDraft.files) {
+                val oldFiles = files
+                files = new.messageDraft.files
 
-    private fun onItems(attachedFiles: List<UsedeskFileInfo>) {
-        if (files != attachedFiles) {
-            val oldFiles = files
-            files = attachedFiles
+                val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                    override fun getOldListSize() = oldFiles.size
 
-            val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun getOldListSize() = oldFiles.size
+                    override fun getNewListSize() = files.size
 
-                override fun getNewListSize() = files.size
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldFile = oldFiles[oldItemPosition]
+                        val newFile = files[newItemPosition]
+                        return oldFile.uri == newFile.uri
+                    }
 
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    val old = oldFiles[oldItemPosition]
-                    val new = files[newItemPosition]
-                    return old.uri == new.uri
-                }
-
-                override fun areContentsTheSame(
-                    oldItemPosition: Int,
-                    newItemPosition: Int
-                ): Boolean {
-                    val old = oldFiles[oldItemPosition]
-                    val new = files[newItemPosition]
-                    return old.uri == new.uri
-                }
-            })
-            diffResult.dispatchUpdatesTo(this)
-            recyclerView.visibility = visibleGone(files.isNotEmpty())
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldFile = oldFiles[oldItemPosition]
+                        val newFile = files[newItemPosition]
+                        return oldFile.uri == newFile.uri
+                    }
+                })
+                diffResult.dispatchUpdatesTo(this)
+                recyclerView.visibility = visibleGone(files.isNotEmpty())
+            }
         }
     }
 
@@ -95,10 +94,12 @@ internal class AttachedFilesAdapter(
             binding.ivDetach.setOnClickListener {
                 viewModel.detachFile(usedeskFileInfo)
             }
-            binding.tvTitle.text = if (!usedeskFileInfo.isImage()) {
-                usedeskFileInfo.name
-            } else {
+            binding.tvTitle.text = if (usedeskFileInfo.isImage() ||
+                usedeskFileInfo.isVideo()
+            ) {
                 ""
+            } else {
+                usedeskFileInfo.name
             }
         }
     }

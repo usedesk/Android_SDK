@@ -3,13 +3,13 @@ apply plugin: "kotlin-android"
 apply plugin: "kotlin-kapt"
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "ru.usedesk.sample"
         minSdkVersion 19
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 115
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
@@ -80,8 +80,4 @@ dependencies {
     implementation "com.android.support:multidex:1.0.3"
 
     implementation "com.google.code.gson:gson:2.8.6"
-}
-
-repositories {
-    mavenCentral()
 }

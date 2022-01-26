@@ -7,20 +7,19 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.2.2"
+        classpath 'com.android.tools.build:gradle:7.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "3.10.0"
+    project.version = "3.10.1-alpha01"
 
     repositories {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-        maven { url "https://github.com/usedesk/Android_SDK_Maven/raw/master/" }
     }
 }
 

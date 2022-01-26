@@ -1,15 +1,17 @@
-apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
-apply plugin: "kotlin-kapt"
-apply plugin: "maven"
+plugins{
+    id "com.android.library"
+    id "kotlin-android"
+    id "kotlin-kapt"
+    id 'maven-publish'
+}
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 31
+        targetSdkVersion 32
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
@@ -29,8 +31,6 @@ dependencies {
     implementation project(":chat-sdk")
     //implementation "ru.usedesk:chat-sdk:$project.version"
     //implementation "ru.usedesk:common-gui:$project.version"
-    
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "androidx.fragment:fragment-ktx:1.4.0"
@@ -52,10 +52,15 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer:2.16.1"
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "file://localhost/W:/Android/Projects/Android_SDK_Maven")
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = project.group
+                artifactId = "chat-gui"
+                version = project.version
+            }
         }
     }
 }

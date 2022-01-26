@@ -54,6 +54,13 @@ internal class UsedeskAttachmentDialog private constructor(
         }
 
         viewModel.modelLiveData.initAndObserveWithOld(screen.viewLifecycleOwner) { old, new ->
+            if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
+                if (new.attachmentPanelVisible) {
+                    show()
+                } else {
+                    dismiss()
+                }
+            }
             if (old?.actionEvent != new.actionEvent) {
                 new.actionEvent?.process { action ->
                     when (action) {

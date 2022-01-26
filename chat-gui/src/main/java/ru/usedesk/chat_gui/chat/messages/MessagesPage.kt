@@ -69,16 +69,6 @@ internal class MessagesPage : UsedeskFragment() {
             viewModel
         )
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
-                if (new.attachmentPanelVisible) {
-                    attachmentDialog?.show()
-                } else {
-                    attachmentDialog?.hide()
-                }
-            }
-        }
-
         register({ uriList ->
             val files = uriList.map { uri ->
                 UsedeskFileInfo.create(

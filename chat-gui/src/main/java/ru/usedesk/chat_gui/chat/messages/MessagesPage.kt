@@ -93,26 +93,34 @@ internal class MessagesPage : UsedeskFragment() {
     }
 
     private fun attachFiles(files: Set<UsedeskFileInfo>) {
-        val filteredFiles = files.filter {
+        val filteredFiles = files.filter { fileInfo ->
             try {
-                if (it.uri.scheme == "content") {
-                    var size: Long = -1
-                    requireContext().contentResolver.query(
-                        it.uri,
-                        null,
-                        null,
-                        null,
-                        null
-                    )?.use { cursor ->
-                        if (cursor.moveToFirst()) {
-                            val columnIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                            if (columnIndex >= 0) {
+                var size = -1L
+                when (fileInfo.uri.scheme) {
+                    "content" -> {
+                        requireContext().contentResolver.query(
+                            fileInfo.uri,
+                            null,
+                            null,
+                            null,
+                            null
+                        )?.use { cursor ->
+                            if (cursor.moveToFirst()) {
+                                val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
                                 size = cursor.getLong(columnIndex)
                             }
                         }
                     }
-                    return@filter size in 0..MAX_FILE_SIZE
+                    "file" -> {
+                        requireContext().contentResolver.openAssetFileDescriptor(
+                            fileInfo.uri,
+                            "r"
+                        )?.use {
+                            size = it.length
+                        }
+                    }
                 }
+                return@filter size in 0..MAX_FILE_SIZE
             } catch (e: Exception) {
                 e.printStackTrace()
             }

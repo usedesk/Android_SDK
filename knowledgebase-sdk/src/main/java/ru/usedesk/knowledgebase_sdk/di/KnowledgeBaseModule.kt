@@ -9,11 +9,12 @@ import ru.usedesk.knowledgebase_sdk.data.repository.api.KnowledgeBaseApiReposito
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.domain.KnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
+import javax.inject.Scope
 
 @Module
 internal object KnowledgeBaseModule {
 
-    @Provides
+    @[Provides KnowledgeBaseScope]
     fun provideApiRepository(
         knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration,
         apiFactory: IUsedeskApiFactory,
@@ -26,10 +27,13 @@ internal object KnowledgeBaseModule {
         )
     }
 
-    @Provides
+    @[Provides KnowledgeBaseScope]
     fun provideKnowledgeBaseInteractor(
         knowledgeBaseApiRepository: IKnowledgeBaseApiRepository
     ): IUsedeskKnowledgeBase {
         return KnowledgeBaseInteractor(knowledgeBaseApiRepository)
     }
 }
+
+@Scope
+annotation class KnowledgeBaseScope

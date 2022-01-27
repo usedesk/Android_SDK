@@ -8,7 +8,6 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.di.UsedeskCommonModule
 import ru.usedesk.common_sdk.di.UsedeskCustom
-import javax.inject.Scope
 
 @ChatScope
 @Component(modules = [UsedeskCommonModule::class, ChatModule::class])
@@ -35,6 +34,3 @@ internal interface ChatComponent {
         fun build(): ChatComponent
     }
 }
-
-@Scope
-annotation class ChatScope

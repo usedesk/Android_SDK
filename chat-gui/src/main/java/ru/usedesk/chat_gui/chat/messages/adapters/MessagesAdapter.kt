@@ -450,7 +450,7 @@ internal class MessagesAdapter(
 
             val messageText = items[position] as UsedeskMessageText
 
-            binding.tvText.text = Html.fromHtml(messageText.text)
+            binding.tvText.text = Html.fromHtml(messageText.text.replace("\n", "<br>"))
             binding.tvText.visibility = View.VISIBLE
         }
     }

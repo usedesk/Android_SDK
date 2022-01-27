@@ -61,7 +61,9 @@ internal class MessagesAdapter(
         }
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                updateToBottomButton()
+                if (dy != 0) {
+                    updateToBottomButton()
+                }
             }
         })
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
@@ -72,8 +74,17 @@ internal class MessagesAdapter(
     }
 
     private fun updateToBottomButton() {
-        val lastItemIndex = layoutManager.findLastVisibleItemPosition()
-        viewModel.showToBottomButton(lastItemIndex < items.size - 1)
+        viewModel.showToBottomButton(
+            recyclerView.height > 0 &&
+                    items.isNotEmpty() &&
+                    !isAtBottom()
+        )
+    }
+
+    private fun isAtBottom(): Boolean {
+        val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
+        val contentHeight = recyclerView.computeVerticalScrollRange()
+        return visibleBottom >= contentHeight
     }
 
     fun onSave(outState: Bundle) {
@@ -126,18 +137,19 @@ internal class MessagesAdapter(
             }
         })
         diffResult.dispatchUpdatesTo(this)
+        var isScrollToBottom = false
         if (oldItems.isEmpty()) {
             if (!saved) {
-                recyclerView.scrollToPosition(items.size - 1)
+                isScrollToBottom = true
             }
         } else {
-            val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
-            val contentHeight = recyclerView.computeVerticalScrollRange()
-            if (visibleBottom >= contentHeight) {//Если чат был внизу
-                recyclerView.scrollToPosition(items.size - 1)
-            }
+            isScrollToBottom = isAtBottom()
         }
-        updateToBottomButton()
+        if (isScrollToBottom) {
+            recyclerView.scrollToPosition(items.size - 1)
+        } else {
+            updateToBottomButton()
+        }
     }
 
     private fun getFormattedTime(calendar: Calendar): String {

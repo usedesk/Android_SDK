@@ -25,10 +25,7 @@ abstract class UsedeskFragment : Fragment() {
 
     open fun onBackPressed(): Boolean = false
 
-    fun register(
-        onFiles: (List<Uri>) -> Unit,
-        onCamera: (Boolean) -> Unit
-    ) {
+    fun registerPermissions() {
         permissionResult = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
@@ -54,7 +51,12 @@ abstract class UsedeskFragment : Fragment() {
             }
             onGranted = null
         }
+    }
 
+    fun registerFiles(
+        onFiles: (List<Uri>) -> Unit,
+        onCamera: (Boolean) -> Unit
+    ) {
         getContent =
             registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uriList ->
                 onFiles(uriList)

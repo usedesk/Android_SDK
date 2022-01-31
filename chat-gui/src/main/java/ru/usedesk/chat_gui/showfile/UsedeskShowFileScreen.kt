@@ -65,11 +65,19 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
 
+        return binding.rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        registerPermissions()
+
+        hideKeyboard(binding.rootView)
+
         argsGetObject(Keys.FILE.name, UsedeskFile::class.java)?.let { file ->
             viewModel.init(file)
         }
-
-        hideKeyboard(binding.rootView)
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.file != new.file ||
@@ -107,8 +115,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 binding.lBottom.visibility = visibleGone(new.panelShow)
             }
         }
-
-        return binding.rootView
     }
 
     private fun setBlur(blurView: BlurView) {

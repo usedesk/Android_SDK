@@ -14,7 +14,7 @@ data class Configuration(
     val clientName: String = "",
     val clientNote: String = "",
     val clientPhoneNumber: Long? = null,
-    val clientAdditionalId: Long? = null,
+    val clientAdditionalId: String? = null,
     val clientInitMessage: String = "",
     val clientAvatar: String? = null,
     val customAgentName: String = "",

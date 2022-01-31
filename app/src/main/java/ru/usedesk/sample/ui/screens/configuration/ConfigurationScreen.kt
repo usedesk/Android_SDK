@@ -162,7 +162,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientName.text.toString(),
             binding.etClientNote.text.toString(),
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
-            binding.etClientAdditionalId.text.toString().toLongOrNull(),
+            binding.etClientAdditionalId.text.toString(),
             binding.etClientInitMessage.text.toString(),
             viewModel.avatarLiveData.value,
             binding.etCustomAgentName.text.toString(),

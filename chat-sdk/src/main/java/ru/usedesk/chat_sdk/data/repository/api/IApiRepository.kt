@@ -22,7 +22,7 @@ internal interface IApiRepository {
         name: String?,
         note: String?,
         phone: Long?,
-        additionalId: Long?
+        additionalId: String?
     )
 
     fun send(

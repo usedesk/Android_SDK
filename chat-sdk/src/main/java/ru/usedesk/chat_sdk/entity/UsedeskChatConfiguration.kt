@@ -13,7 +13,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientName: String? = null,
     val clientNote: String? = null,
     val clientPhoneNumber: Long? = null,
-    val clientAdditionalId: Long? = null,
+    val clientAdditionalId: String? = null,
     val clientInitMessage: String? = null,
     val cacheMessagesWithFile: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),

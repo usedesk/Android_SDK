@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.entity
 
 interface IUsedeskActionListener {
 
-    fun onConnectedState(connected: Boolean) {}
+    fun onConnectedState(connectionState: UsedeskConnectionState) {}
 
     fun onClientTokenReceived(clientToken: String) {}
 

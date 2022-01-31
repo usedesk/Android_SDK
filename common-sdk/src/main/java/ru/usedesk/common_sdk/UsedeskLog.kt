@@ -3,7 +3,10 @@ package ru.usedesk.common_sdk
 import android.util.Log
 
 object UsedeskLog {
+    private const val LOG_KEY = "USEDESK_DBG"
+
     private var logsEnabled = BuildConfig.DEBUG
+    private var listeners = mutableSetOf<(String) -> Unit>()
 
     fun enable() {
         logsEnabled = true
@@ -13,17 +16,21 @@ object UsedeskLog {
         logsEnabled = false
     }
 
-    fun d(logPrefix: String, logText: () -> String) {
-        if (logsEnabled) {
-            Log.d("USEDESK", getFullLog(logPrefix, logText))
-        }
+    fun addLogListener(logListener: (String) -> Unit) {
+        listeners.add(logListener)
     }
 
-    fun e(logPrefix: String, logText: () -> String) {
-        if (logsEnabled) {
-            Log.e("USEDESK", getFullLog(logPrefix, logText))
-        }
+    fun removeLogListener(logListener: (String) -> Unit) {
+        listeners.remove(logListener)
     }
 
-    private fun getFullLog(logPrefix: String, logText: () -> String) = "$logPrefix: ${logText()}"
+    fun onLog(logPrefix: String, logText: String) {
+        if (logsEnabled) {
+            val fullLog = "$logPrefix: $logText"
+            Log.d(LOG_KEY, fullLog)
+            listeners.forEach { listener ->
+                listener(fullLog)
+            }
+        }
+    }
 }

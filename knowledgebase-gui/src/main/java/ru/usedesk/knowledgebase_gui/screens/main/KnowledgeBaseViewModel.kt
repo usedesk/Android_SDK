@@ -1,12 +1,17 @@
 package ru.usedesk.knowledgebase_gui.screens.main
 
-import androidx.lifecycle.MutableLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk.release
 
-internal class KnowledgeBaseViewModel : UsedeskViewModel() {
+internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.Model>(Model()) {
 
-    val searchQueryLiveData = MutableLiveData<String?>()
+    fun onSearchQuery(query: String) {
+        setModel { model ->
+            model.copy(
+                searchQuery = query
+            )
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -14,7 +19,7 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel() {
         release()
     }
 
-    fun onSearchQuery(query: String) {
-        searchQueryLiveData.value = query
-    }
+    data class Model(
+        val searchQuery: String = ""
+    )
 }

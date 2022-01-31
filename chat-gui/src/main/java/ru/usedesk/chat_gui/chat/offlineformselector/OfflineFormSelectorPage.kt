@@ -7,13 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormSelectorPage : UsedeskFragment() {
 
-    private val viewModel: OfflineFormSelectorViewModel by viewModels()
+    private val viewModel: OfflineFormViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }
+    )
 
     private lateinit var binding: Binding
     private lateinit var adapter: OfflineFormSelectorAdapter
@@ -38,37 +41,12 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
     }
 
     private fun init() {
-        val items = argsGetStringArray(KEY_ITEMS, arrayOf())
-        val selectedIndex = argsGetInt(KEY_SELECTED_INDEX, 0)
-
         adapter = OfflineFormSelectorAdapter(
             binding.rvItems,
             binding,
             viewModel,
-            viewLifecycleOwner,
-            items.asList(),
-            selectedIndex
+            viewLifecycleOwner
         )
-
-        viewModel.selectedIndexLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                getParentListener<IItemSelectChangeListener>()?.onItemSelectChange(it)
-            }
-        }
-    }
-
-    companion object {
-        const val KEY_ITEMS = "keyItems"
-        const val KEY_SELECTED_INDEX = "keySelectedIndex"
-
-        fun newInstance(items: Array<String>, selectedIndex: Int): OfflineFormSelectorPage {
-            return OfflineFormSelectorPage().apply {
-                arguments = Bundle().apply {
-                    putStringArray(KEY_ITEMS, items)
-                    putInt(KEY_SELECTED_INDEX, selectedIndex)
-                }
-            }
-        }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) :

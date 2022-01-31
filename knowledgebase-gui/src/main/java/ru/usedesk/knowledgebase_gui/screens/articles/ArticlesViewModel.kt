@@ -1,18 +1,25 @@
 package ru.usedesk.knowledgebase_gui.screens.articles
 
-import androidx.lifecycle.MutableLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
-internal class ArticlesViewModel : UsedeskViewModel() {
-
-    val articleInfoListLiveData = MutableLiveData<List<UsedeskArticleInfo>?>()
+internal class ArticlesViewModel : UsedeskViewModel<ArticlesViewModel.Model>(Model()) {
 
     fun init(categoryId: Long) {
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()
-                .getArticlesRx(categoryId), onValue = {
-            articleInfoListLiveData.postValue(it)
+            .getArticlesRx(categoryId), onValue = {
+            setModel { model ->
+                model.copy(
+                    articleInfoList = it,
+                    loading = false
+                )
+            }
         })
     }
+
+    data class Model(
+        val articleInfoList: List<UsedeskArticleInfo> = listOf(),
+        val loading: Boolean = true
+    )
 }

@@ -20,13 +20,16 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
     private lateinit var binding: Binding
     private lateinit var articlePagesAdapter: ArticlePagesAdapter
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        binding = inflateItem(inflater,
-                container,
-                R.layout.usedesk_page_article_content,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            inflater,
+            container,
+            R.layout.usedesk_page_article_content,
+            R.style.Usedesk_KnowledgeBase_Article_Content_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }
@@ -52,9 +55,9 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
 
         viewModel.init(categoryId, articleId)
 
-        viewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { article ->
-            article?.let {
-                getParentListener<IOnTitleChangeListener>()?.onTitle(it.title)
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.selectedArticle != new.selectedArticle && new.selectedArticle != null) {
+                getParentListener<IOnTitleChangeListener>()?.onTitle(new.selectedArticle.title)
             }
         }
     }
@@ -73,10 +76,12 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
 
-        fun newInstance(withSupportButton: Boolean,
-                        withArticleRating: Boolean,
-                        categoryId: Long,
-                        articleId: Long): ArticlePage {
+        fun newInstance(
+            withSupportButton: Boolean,
+            withArticleRating: Boolean,
+            categoryId: Long,
+            articleId: Long
+        ): ArticlePage {
             return ArticlePage().apply {
                 arguments = Bundle().apply {
                     putLong(CATEGORY_ID_KEY, categoryId)
@@ -88,7 +93,8 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val vpPages: ViewPager = rootView.findViewById(R.id.vp_pages)
     }
 }

@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.*
+import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
@@ -28,6 +29,10 @@ import java.io.File
 internal class MessagesPage : UsedeskFragment() {
 
     private val viewModel: MessagesViewModel by viewModels()
+
+    private val parentViewModel: ChatViewModel by viewModels(
+        ownerProducer = { requireParentFragment() }//TODO: navFragment может помешать
+    )
 
     private lateinit var binding: Binding
 
@@ -58,6 +63,8 @@ internal class MessagesPage : UsedeskFragment() {
             savedInstanceState
         )
 
+        parentViewModel.modelLiveData.value.toString()
+
         return binding.rootView
     }
 
@@ -69,7 +76,8 @@ internal class MessagesPage : UsedeskFragment() {
             viewModel
         )
 
-        register({ uriList ->
+        registerPermissions()
+        registerFiles({ uriList ->
             val files = uriList.map { uri ->
                 UsedeskFileInfo.create(
                     requireContext(),
@@ -170,7 +178,7 @@ internal class MessagesPage : UsedeskFragment() {
                 ?: viewModel.showAttachmentPanel(true)
         }
 
-        val mediaPlayerAdapter = (parentFragment as UsedeskChatScreen).mediaPlayerAdapter
+        val mediaPlayerAdapter = getParentListener<UsedeskChatScreen>()!!.mediaPlayerAdapter
 
         messagesAdapter = MessagesAdapter(
             binding.rvMessages,

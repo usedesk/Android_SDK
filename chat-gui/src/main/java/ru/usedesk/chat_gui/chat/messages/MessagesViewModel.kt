@@ -6,11 +6,10 @@ import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
-internal class MessagesViewModel : UsedeskViewModel() {
+internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
 
     private val actionListenerRx: IUsedeskActionListenerRx
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
@@ -18,7 +17,6 @@ internal class MessagesViewModel : UsedeskViewModel() {
     private var messages: List<UsedeskMessage> = listOf()
 
     val configuration = UsedeskChatSdk.requireConfiguration()
-    val modelLiveData = UsedeskLiveData(Model())
 
     init {
         setModel { model ->
@@ -38,10 +36,6 @@ internal class MessagesViewModel : UsedeskViewModel() {
             }
         }
         usedeskChat.addActionListener(actionListenerRx)
-    }
-
-    private fun setModel(onUpdate: (Model) -> Model) {
-        modelLiveData.value = onUpdate(modelLiveData.value)
     }
 
     fun onMessageChanged(message: String) {

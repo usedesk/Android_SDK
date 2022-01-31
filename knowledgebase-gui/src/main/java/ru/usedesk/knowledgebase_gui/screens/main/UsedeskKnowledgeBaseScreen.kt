@@ -86,22 +86,18 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
         hideKeyboard(binding.rootView)
 
-        viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-            it?.let {
-                showSearchQuery(it)
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.searchQuery != new.searchQuery) {
+                val fragment = getLastFragment()
+                if (fragment is ArticlesSearchPage) {
+                    fragment.onSearchQueryUpdate(new.searchQuery)
+                } else {
+                    switchPage(ArticlesSearchPage.newInstance(withSupportButton))
+                }
             }
-        })
+        }
 
         return binding.rootView
-    }
-
-    private fun showSearchQuery(query: String) {
-        val fragment = getLastFragment()
-        if (fragment is ArticlesSearchPage) {
-            fragment.onSearchQueryUpdate(query)
-        } else {
-            switchPage(ArticlesSearchPage.newInstance(withSupportButton))
-        }
     }
 
     private fun switchPage(

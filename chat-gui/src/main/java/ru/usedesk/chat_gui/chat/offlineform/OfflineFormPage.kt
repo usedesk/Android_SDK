@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.*
@@ -38,7 +39,7 @@ internal class OfflineFormPage : UsedeskFragment() {
             hideKeyboard(it)
             viewModel.onSendOfflineForm { goToChat ->
                 if (goToChat) {
-                    getParentListener<IOnGoToChatListener>()?.onGoToMessages()
+                    findNavController().navigate(R.id.action_offlineFormPage_to_messagesPage)
                 } else {
                     OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
                         setOnDismissListener {
@@ -69,25 +70,20 @@ internal class OfflineFormPage : UsedeskFragment() {
                 binding,
                 viewModel,
                 viewLifecycleOwner
-            ) { items, selectedIndex ->
-                getParentListener<IOnOfflineFormSelectorClick>()?.onOfflineFormSelectorClick(
-                    items,
-                    selectedIndex
-                )
+            ) {
+                findNavController().navigate(R.id.action_offlineFormPage_to_offlineFormSelectorPage)
             }
 
-        viewModel.offlineFormStateLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                onState(it)
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.offlineFormState != new.offlineFormState) {
+                onState(new.offlineFormState)
             }
-        }
-
-        viewModel.sendEnabledLiveData.observe(viewLifecycleOwner) {
-            updateActionButton(it == true)
-        }
-
-        viewModel.offlineFormSettings.observe(viewLifecycleOwner) {
-            binding.tvOfflineText.text = it?.callbackGreeting
+            if (old?.sendEnabled != new.sendEnabled) {
+                updateActionButton(new.sendEnabled)
+            }
+            if (old?.offlineFormSettings != new.offlineFormSettings) {
+                binding.tvOfflineText.text = new.offlineFormSettings?.callbackGreeting
+            }
         }
     }
 
@@ -154,16 +150,6 @@ internal class OfflineFormPage : UsedeskFragment() {
 
         val colorId = binding.styleValues.getColor(attr)
         binding.lAction.setBackgroundColor(colorId)
-    }
-
-    fun setSubjectIndex(index: Int) {
-        viewModel.onSubjectIndexChanged(index)
-    }
-
-    companion object {
-        fun newInstance(): OfflineFormPage {
-            return OfflineFormPage()
-        }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) :

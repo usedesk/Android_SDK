@@ -38,18 +38,14 @@ internal class ArticlePagesAdapter(
         })
         viewPager.adapter = this
 
-        viewModel.articlesLiveData.observe(lifecycleOwner) {
-            it?.let {
-                if (items != it) {
-                    items = it
-                    notifyDataSetChanged()
-                }
-            }
-        }
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.articles != new.articles) {
+                items = new.articles
 
-        viewModel.selectedPositionLiveData.observe(lifecycleOwner) { position ->
-            if (position != null && viewPager.currentItem != position) {
-                viewPager.setCurrentItem(position, false)
+                notifyDataSetChanged()
+            }
+            if (viewPager.currentItem != new.selectedPosition) {
+                viewPager.setCurrentItem(new.selectedPosition, false)
             }
         }
     }
@@ -60,11 +56,13 @@ internal class ArticlePagesAdapter(
         val previous = items.getOrNull(position - 1)
         val current = items[position]
         val next = items.getOrNull(position + 1)
-        return ArticleItem.newInstance(withSupportButton,
-                withArticleRating,
-                current.id,
-                previous?.title,
-                next?.title)
+        return ArticleItem.newInstance(
+            withSupportButton,
+            withArticleRating,
+            current.id,
+            previous?.title,
+            next?.title
+        )
     }
 
     fun onPrevious() {

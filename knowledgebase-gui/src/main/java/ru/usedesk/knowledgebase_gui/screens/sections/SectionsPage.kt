@@ -48,8 +48,10 @@ internal class SectionsPage : UsedeskFragment() {
             getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
         }
 
-        viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
-            showInstead(binding.rvItems, binding.pbLoading, it != null)
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.loading != new.loading) {
+                showInstead(binding.rvItems, binding.pbLoading, !new.loading)
+            }
         }
 
         return binding.rootView

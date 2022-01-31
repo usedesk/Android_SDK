@@ -29,7 +29,7 @@ internal class ArticleItem : UsedeskFragment() {
 
     private val viewModel: ArticleItemViewModel by viewModels()
     private val parentViewModel: ArticlePageViewModel by viewModels(
-            ownerProducer = { requireParentFragment() }
+        ownerProducer = { requireParentFragment() }
     )
 
     private lateinit var messageStyleValues: UsedeskResourceManager.StyleValues
@@ -40,13 +40,17 @@ internal class ArticleItem : UsedeskFragment() {
 
     private var currentArticleId: Long? = null
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        binding = inflateItem(layoutInflater,
-                container,
-                R.layout.usedesk_page_item_article_content,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item) { rootView, defaultStyleId ->
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = inflateItem(
+            layoutInflater,
+            container,
+            R.layout.usedesk_page_item_article_content,
+            R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item
+        ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }.apply {
             messageStyleValues = styleValues
@@ -90,7 +94,8 @@ internal class ArticleItem : UsedeskFragment() {
             })
 
             lContent.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-                lContentScrollable.minimumHeight = rootView.height - lBottomNavigation.measuredHeight
+                lContentScrollable.minimumHeight =
+                    rootView.height - lBottomNavigation.measuredHeight
                 updateFab()
             }
 
@@ -107,26 +112,27 @@ internal class ArticleItem : UsedeskFragment() {
             viewModel.init(articleId)
         }
 
-        viewModel.articleContentLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                when (it.state) {
-                    ArticleItemViewModel.ArticleContentState.State.LOADING -> {
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.state != new.state) {
+                when (new.state) {
+                    ArticleItemViewModel.State.LOADING -> {
                         showInstead(binding.pbLoading, binding.lContent, gone = false)
                     }
-                    ArticleItemViewModel.ArticleContentState.State.LOADED -> {
+                    ArticleItemViewModel.State.LOADED -> {
                         showInstead(binding.lContent, binding.pbLoading, gone = false)
-                        it.articleContent?.let { articleContent ->
+                        new.articleContent?.let { articleContent ->
                             onArticleContent(articleContent)
                         }
                     }
                 }
             }
         }
-
-        parentViewModel.selectedArticleLiveData.observe(viewLifecycleOwner) { articleInfo ->
-            currentArticleId?.let {
-                if (articleInfo?.id != it) {
-                    showQuestion(it)
+        parentViewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.selectedArticle != new.selectedArticle) {
+                currentArticleId?.let {
+                    if (new.selectedArticle?.id != it) {
+                        showQuestion(it)
+                    }
                 }
             }
         }
@@ -136,8 +142,14 @@ internal class ArticleItem : UsedeskFragment() {
 
     private fun updateFab() {
         binding.run {
-            val dif = max(lContentScrollable.height, lContentScrollable.minimumHeight) - (scrollY + lContent.height)
-            btnSupport.y = (rootView.height - btnSupport.height - btnSupport.marginBottom + min(0, dif)).toFloat()
+            val dif = max(
+                lContentScrollable.height,
+                lContentScrollable.minimumHeight
+            ) - (scrollY + lContent.height)
+            btnSupport.y = (rootView.height - btnSupport.height - btnSupport.marginBottom + min(
+                0,
+                dif
+            )).toFloat()
         }
     }
 
@@ -214,11 +226,13 @@ internal class ArticleItem : UsedeskFragment() {
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
 
-        fun newInstance(withSupportButton: Boolean,
-                        withArticleRating: Boolean,
-                        articleId: Long,
-                        previousTitle: String?,
-                        nextTitle: String?): ArticleItem {
+        fun newInstance(
+            withSupportButton: Boolean,
+            withArticleRating: Boolean,
+            articleId: Long,
+            previousTitle: String?,
+            nextTitle: String?
+        ): ArticleItem {
             return ArticleItem().apply {
                 arguments = Bundle().apply {
                     putLong(ARTICLE_ID_KEY, articleId)
@@ -231,7 +245,8 @@ internal class ArticleItem : UsedeskFragment() {
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    internal class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val lContent: NestedScrollView = rootView.findViewById(R.id.l_content)
         val lContentScrollable: View = rootView.findViewById(R.id.l_content_scrollable)

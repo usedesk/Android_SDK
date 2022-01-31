@@ -63,27 +63,33 @@ internal class ArticlesSearchPage : UsedeskFragment() {
 
         viewModel.onSearchQuery("")
 
-        viewModel.articlesLiveData.observe(viewLifecycleOwner) {
-            when {
-                it == null -> {
-                    binding.pbLoading.visibility = View.VISIBLE
-                    binding.tvMessage.visibility = View.GONE
-                    binding.rvItems.visibility = View.GONE
-                }
-                it.isEmpty() -> {
-                    binding.pbLoading.visibility = View.GONE
-                    binding.tvMessage.visibility = View.VISIBLE
-                    binding.rvItems.visibility = View.GONE
-                }
-                else -> {
-                    binding.pbLoading.visibility = View.GONE
-                    binding.tvMessage.visibility = View.GONE
-                    binding.rvItems.visibility = View.VISIBLE
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.state != new.state) {
+                when (new.state) {
+                    ArticlesSearchViewModel.State.LOADING -> {
+                        updateVisible(showLoading = true)
+                    }
+                    ArticlesSearchViewModel.State.EMPTY -> {
+                        updateVisible(showMessage = true)
+                    }
+                    ArticlesSearchViewModel.State.LOADED -> {
+                        updateVisible(showItems = true)
+                    }
                 }
             }
         }
 
         return binding.rootView
+    }
+
+    private fun updateVisible(
+        showLoading: Boolean = false,
+        showMessage: Boolean = false,
+        showItems: Boolean = false
+    ) {
+        binding.pbLoading.visibility = visibleGone(showLoading)
+        binding.tvMessage.visibility = visibleGone(showMessage)
+        binding.rvItems.visibility = visibleGone(showItems)
     }
 
     fun onSearchQueryUpdate(searchQuery: String) {

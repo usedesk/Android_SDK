@@ -5,31 +5,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
-import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
-import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.utils.getFromJson
 import ru.usedesk.common_sdk.utils.putAsJson
 
-class UsedeskChatScreen : UsedeskFragment(),
-    IOnOfflineFormSelectorClick,
-    IItemSelectChangeListener,
-    IOnGoToChatListener {
+class UsedeskChatScreen : UsedeskFragment() {
 
     private val viewModel: ChatViewModel by viewModels()
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding
     private lateinit var toolbarAdapter: UsedeskToolbarAdapter
-    private lateinit var chatNavigation: ChatNavigation
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
 
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
@@ -52,6 +51,10 @@ class UsedeskChatScreen : UsedeskFragment(),
             Binding(rootView, defaultStyleId)
         }
 
+        navHostFragment =
+            childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
+        navController = navHostFragment.navController
+
         toolbarAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
             setBackButton {
                 requireActivity().onBackPressed()
@@ -68,97 +71,108 @@ class UsedeskChatScreen : UsedeskFragment(),
             UsedeskChatSdk.setConfiguration(configuration)
         }
 
-        init(agentName, rejectedFileExtensions, savedInstanceState != null)
+        init(agentName, rejectedFileExtensions)
 
         return binding.rootView
     }
 
     private fun init(
         agentName: String?,
-        rejectedFileExtensions: Array<String>,
-        inited: Boolean
+        rejectedFileExtensions: Array<String>
     ) {
         UsedeskChatSdk.init(requireContext())
 
-        ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
-            chatNavigation = it
-            viewModel.init(it, agentName, rejectedFileExtensions, inited)
-        }
-
-        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                onException(it)
-            }
-        }
-
-        viewModel.pageLiveData.observe(viewLifecycleOwner) {
-            it?.let { page ->
-                val title = when (page) {
-                    ChatNavigation.Page.LOADING,
-                    ChatNavigation.Page.MESSAGES -> {
-                        binding.styleValues
-                            .getStyleValues(R.attr.usedesk_common_toolbar)
-                            .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                            .getString(android.R.attr.text)
-                    }
-                    ChatNavigation.Page.OFFLINE_FORM -> {
-                        viewModel.offlineFormSettings?.callbackTitle
-                    }
-                    ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
-                        viewModel.offlineFormSettings?.topicsTitle
-                    }
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            val title = when (destination.id) {
+                R.id.dest_loading_page,
+                R.id.dest_messages_page -> {
+                    binding.styleValues
+                        .getStyleValues(R.attr.usedesk_common_toolbar)
+                        .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                        .getString(android.R.attr.text)
                 }
-                toolbarAdapter.setTitle(title)
+                R.id.dest_offline_form_page -> {
+                    viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+                }
+                R.id.dest_offline_form_selector_page -> {
+                    viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
+                }
+                else -> null
+            }
+            toolbarAdapter.setTitle(title)
+        }
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old != null &&
+                new.clientToken != null &&
+                old.clientToken != new.clientToken
+            ) {//TODO: проверить нормально ли вызывается
+                getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
+            }
+            if (old?.offlineFormSettings != new.offlineFormSettings) {
+                updateTitle(navController.currentDestination)
             }
         }
 
-        viewModel.clientTokenLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(it)
+        viewModel.init(agentName, rejectedFileExtensions.toSet())
+    }
+
+    private fun updateTitle(destination: NavDestination?) {
+        val title = when (destination?.id) {
+            R.id.dest_loading_page,
+            R.id.dest_messages_page -> {
+                binding.styleValues
+                    .getStyleValues(R.attr.usedesk_common_toolbar)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                    .getString(android.R.attr.text)
             }
+            R.id.dest_offline_form_page -> {
+                viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+            }
+            R.id.dest_offline_form_selector_page -> {
+                viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
+            }
+            else -> null
         }
+        toolbarAdapter.setTitle(title)
     }
 
-    override fun onItemSelectChange(index: Int) {
-        viewModel.setSubjectIndex(index)
-    }
+    override fun onStart() {
+        super.onStart()
+        UsedeskChatSdk.stopService(requireContext())
 
-    private fun onException(exception: Exception) {
-        exception.printStackTrace()
+        UsedeskLog.onLog("CHAT SCREEN", "ON_START")
     }
 
     override fun onPause() {
         super.onPause()
 
         mediaPlayerAdapter.onPause()
-    }
 
-    override fun onStart() {
-        super.onStart()
-        UsedeskChatSdk.stopService(requireContext())
+        UsedeskLog.onLog("CHAT SCREEN", "ON_PAUSE")
     }
 
     override fun onStop() {
         super.onStop()
         UsedeskChatSdk.startService(requireContext())
+
+        UsedeskLog.onLog("CHAT SCREEN", "ON_STOP")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
 
+        UsedeskLog.onLog("CHAT SCREEN", "ON_DESTROY_VIEW")
         mediaPlayerAdapter.release()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        UsedeskLog.onLog("CHAT SCREEN", "ON_DESTROY")
+    }
+
     override fun onBackPressed(): Boolean {
-        return mediaPlayerAdapter.onBackPressed() || viewModel.onBackPressed()
-    }
-
-    override fun onOfflineFormSelectorClick(items: List<String>, selectedIndex: Int) {
-        viewModel.goOfflineFormSelector(items.toTypedArray(), selectedIndex)
-    }
-
-    override fun onGoToMessages() {
-        viewModel.goMessages()
+        return mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
     }
 
     companion object {
@@ -194,5 +208,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         UsedeskBinding(rootView, defaultStyleId) {
         val toolbar =
             UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+
     }
 }

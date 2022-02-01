@@ -17,8 +17,6 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.common_sdk.utils.getFromJson
-import ru.usedesk.common_sdk.utils.putAsJson
 
 class UsedeskChatScreen : UsedeskFragment() {
 
@@ -63,12 +61,8 @@ class UsedeskChatScreen : UsedeskFragment() {
 
         val agentName = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
-        val configuration = arguments?.getFromJson(
-            CHAT_CONFIGURATION_KEY,
-            UsedeskChatConfiguration::class.java
-        )
-        if (configuration != null) {
-            UsedeskChatSdk.setConfiguration(configuration)
+        argsGetParcelable<UsedeskChatConfiguration>(CHAT_CONFIGURATION_KEY)?.let {
+            UsedeskChatSdk.setConfiguration(it)
         }
 
         init(agentName, rejectedFileExtensions)
@@ -188,18 +182,32 @@ class UsedeskChatScreen : UsedeskFragment() {
             usedeskChatConfiguration: UsedeskChatConfiguration? = null
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
-                arguments = Bundle().apply {
-                    if (agentName != null) {
-                        putString(AGENT_NAME_KEY, agentName)
-                    }
-                    val extensions = rejectedFileExtensions?.map {
-                        '.' + it.trim(' ', '.')
-                    }?.toTypedArray() ?: arrayOf()
-                    if (usedeskChatConfiguration != null) {
-                        putAsJson(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
-                    }
-                    putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
+                arguments = createBundle(
+                    agentName,
+                    rejectedFileExtensions,
+                    usedeskChatConfiguration
+                )
+            }
+        }
+
+        @JvmOverloads
+        @JvmStatic
+        fun createBundle(
+            agentName: String? = null,
+            rejectedFileExtensions: Collection<String>? = null,
+            usedeskChatConfiguration: UsedeskChatConfiguration? = null
+        ): Bundle {
+            return Bundle().apply {
+                if (agentName != null) {
+                    putString(AGENT_NAME_KEY, agentName)
                 }
+                val extensions = rejectedFileExtensions?.map {
+                    '.' + it.trim(' ', '.')
+                }?.toTypedArray() ?: arrayOf()
+                if (usedeskChatConfiguration != null) {
+                    putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
+                }
+                putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
             }
         }
     }

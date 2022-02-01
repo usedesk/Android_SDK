@@ -75,7 +75,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         hideKeyboard(binding.rootView)
 
-        argsGetObject(Keys.FILE.name, UsedeskFile::class.java)?.let { file ->
+        argsGetParcelable<UsedeskFile>(FILE_KEY)?.let { file ->
             viewModel.init(file)
         }
 
@@ -140,16 +140,19 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     }
 
     companion object {
-        private enum class Keys {
-            FILE
-        }
+        private const val FILE_KEY = "fileKey"
 
         @JvmStatic
         fun newInstance(usedeskFile: UsedeskFile): UsedeskShowFileScreen {
             return UsedeskShowFileScreen().apply {
-                arguments = Bundle().apply {
-                    argsPutObject(this, Keys.FILE.name, usedeskFile)
-                }
+                arguments = createBundle(usedeskFile)
+            }
+        }
+
+        @JvmStatic
+        fun createBundle(usedeskFile: UsedeskFile): Bundle {
+            return Bundle().apply {
+                putParcelable(FILE_KEY, usedeskFile)
             }
         }
     }

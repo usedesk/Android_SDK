@@ -14,14 +14,20 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen
+import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -40,6 +46,8 @@ class MainActivity : AppCompatActivity(),
     private val viewModel: MainViewModel by viewModels()
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,21 +58,43 @@ class MainActivity : AppCompatActivity(),
             this,
             R.layout.activity_main
         )
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
+        navController = navHostFragment.navController
 
-        viewModel.configurationLiveData.observe(this, {
-            it?.let {
-                onConfiguration(it)
-            }
-        })
-        viewModel.errorLiveData.observe(this, {
+        viewModel.configurationLiveData.initAndObserve(this) {
+            initUsedeskService(it)
+        }
+        viewModel.errorLiveData.observe(this) {
             it?.let {
                 onError(it)
             }
-        })
-        viewModel.init(
-            MainNavigation(this, R.id.container),
-            supportFragmentManager.backStackEntryCount == 0
-        )
+        }
+        viewModel.goSdkEventLiveData.observe(this) { event ->
+            event?.process {
+                val configuration = viewModel.configurationLiveData.value
+                if (configuration.withKb) {
+                    val kbConfiguration = configuration.toKbConfiguration()
+                    navController.navigate(
+                        R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+                        UsedeskKnowledgeBaseScreen.createBundle(
+                            configuration.withKbSupportButton,
+                            configuration.withKbArticleRating,
+                            kbConfiguration
+                        )
+                    )
+                } else {
+                    val chatConfiguration = configuration.toChatConfiguration()
+                    navController.navigate(
+                        R.id.action_configurationScreen_to_usedeskChatScreen,
+                        UsedeskChatScreen.createBundle(
+                            configuration.customAgentName,
+                            REJECTED_FILE_TYPES,
+                            chatConfiguration
+                        )
+                    )
+                }
+            }
+        }
     }
 
     override fun onDownload(url: String, name: String) {
@@ -95,10 +125,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    private fun onConfiguration(configuration: Configuration) {
-        initUsedeskService(configuration)
-    }
-
     private fun initUsedeskService(configuration: Configuration) {
         when (configuration.foregroundService) {
             true -> {
@@ -122,15 +148,31 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
-        viewModel.goShowFile(usedeskFile)
+        navController.navigate(
+            R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
+            UsedeskShowFileScreen.createBundle(usedeskFile)
+        )
     }
 
     override fun onBackPressed() {
-        viewModel.onBackPressed()
+        val currentFragment = navHostFragment.childFragmentManager.fragments.getOrNull(0)
+                as? UsedeskFragment
+        if (currentFragment?.onBackPressed() != true && !navController.popBackStack()) {
+            super.onBackPressed()
+        }
     }
 
     override fun onSupportClick() {
-        viewModel.goChat()
+        val configuration = viewModel.configurationLiveData.value
+        val chatConfiguration = configuration.toChatConfiguration()
+        navController.navigate(
+            R.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,
+            UsedeskChatScreen.createBundle(
+                configuration.customAgentName,
+                REJECTED_FILE_TYPES,
+                chatConfiguration
+            )
+        )
     }
 
     override fun goToSdk() {
@@ -170,5 +212,9 @@ class MainActivity : AppCompatActivity(),
 
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
         }
+    }
+
+    companion object {
+        private val REJECTED_FILE_TYPES = listOf("apk", "jar", "dex", "so", "aab")
     }
 }

@@ -174,11 +174,11 @@ internal class MessagesPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) {
-            getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
+            findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.showAttachmentPanel(true)
         }
 
-        val mediaPlayerAdapter = getParentListener<UsedeskChatScreen>()!!.mediaPlayerAdapter
+        val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter
 
         messagesAdapter = MessagesAdapter(
             binding.rvMessages,
@@ -188,13 +188,13 @@ internal class MessagesPage : UsedeskFragment() {
             rejectedFileExtensions,
             mediaPlayerAdapter,
             {
-                getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
+                findParent<IUsedeskOnFileClickListener>()?.onFileClick(it)
             },
             {
-                getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
+                findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
             }, {
-                getParentListener<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
+                findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
             },
             savedInstanceState
         )

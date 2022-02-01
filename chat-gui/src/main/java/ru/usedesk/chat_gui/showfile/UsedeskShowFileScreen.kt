@@ -50,7 +50,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         binding.ivDownload.setOnClickListener {
             viewModel.modelLiveData.value.file?.let { file ->
                 needWriteExternalPermission(this) {
-                    getParentListener<IUsedeskOnDownloadListener>()?.onDownload(
+                    findParent<IUsedeskOnDownloadListener>()?.onDownload(
                         file.content,
                         file.name
                     )

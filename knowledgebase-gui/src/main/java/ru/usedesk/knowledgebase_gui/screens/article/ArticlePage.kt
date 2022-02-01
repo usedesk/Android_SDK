@@ -57,7 +57,7 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.selectedArticle != new.selectedArticle && new.selectedArticle != null) {
-                getParentListener<IOnTitleChangeListener>()?.onTitle(new.selectedArticle.title)
+                findParent<IOnTitleChangeListener>()?.onTitle(new.selectedArticle.title)
             }
         }
     }

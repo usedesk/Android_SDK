@@ -72,7 +72,7 @@ internal class ArticleItem : UsedeskFragment() {
             if (previousTitle != null) {
                 tvPrevious.text = previousTitle
                 lPrevious.setOnClickListener {
-                    getParentListener<IOnArticlePagesListener>()?.onPrevious()
+                    findParent<IOnArticlePagesListener>()?.onPrevious()
                 }
             } else {
                 lPrevious.visibility = View.INVISIBLE
@@ -82,7 +82,7 @@ internal class ArticleItem : UsedeskFragment() {
             if (nextTitle != null) {
                 tvNext.text = nextTitle
                 lNext.setOnClickListener {
-                    getParentListener<IOnArticlePagesListener>()?.onNext()
+                    findParent<IOnArticlePagesListener>()?.onNext()
                 }
             } else {
                 lNext.visibility = View.INVISIBLE
@@ -100,7 +100,7 @@ internal class ArticleItem : UsedeskFragment() {
             }
 
             btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
 
             val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)

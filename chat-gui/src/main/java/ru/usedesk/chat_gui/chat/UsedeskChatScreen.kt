@@ -10,6 +10,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskBinding
@@ -21,6 +22,7 @@ import ru.usedesk.common_sdk.UsedeskLog
 class UsedeskChatScreen : UsedeskFragment() {
 
     private val viewModel: ChatViewModel by viewModels()
+    private val offlineFormViewModel: OfflineFormViewModel by viewModels()
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding
@@ -100,7 +102,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 new.clientToken != null &&
                 old.clientToken != new.clientToken
             ) {//TODO: проверить нормально ли вызывается
-                getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
+                findParent<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
             }
             if (old?.offlineFormSettings != new.offlineFormSettings) {
                 updateTitle(navController.currentDestination)
@@ -166,6 +168,7 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     override fun onBackPressed(): Boolean {
+        navHostFragment.childFragmentManager.fragments
         return mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
     }
 

@@ -30,7 +30,7 @@ internal class OfflineFormSelectorAdapter(
         }
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
             if (old?.selectedSubject != new.selectedSubject ||
-                old?.offlineFormSettings?.topics != new.offlineFormSettings?.topics
+                old.offlineFormSettings?.topics != new.offlineFormSettings?.topics
             ) {
                 val oldItems = items
                 val newItems = new.offlineFormSettings?.topics ?: listOf()

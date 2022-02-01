@@ -14,7 +14,11 @@ import ru.usedesk.common_gui.*
 
 internal class OfflineFormPage : UsedeskFragment() {
 
-    private val viewModel: OfflineFormViewModel by viewModels()
+    private val viewModel: OfflineFormViewModel by viewModels(
+        ownerProducer = {
+            requireParentFragment().requireParentFragment()
+        }
+    )
 
     private var rootView: View? = null
     private lateinit var binding: Binding

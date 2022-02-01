@@ -36,22 +36,22 @@ class ConfigurationScreen : UsedeskFragment() {
             container, false
         )
 
-        viewModel.configurationLiveData.observe(viewLifecycleOwner, {
+        viewModel.configurationLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfiguration(it)
                 viewModel.configurationLiveData.removeObservers(viewLifecycleOwner)
             }
-        })
-        viewModel.configurationValidation.observe(viewLifecycleOwner, {
+        }
+        viewModel.configurationValidation.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfigurationValidation(it)
             }
-        })
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner, {
+        }
+        viewModel.goToSdkEvent.observe(viewLifecycleOwner) {
             it?.let {
                 onGoToSdkEvent(it)
             }
-        })
+        }
         binding.btnGoToSdk.setOnClickListener {
             onGoToSdk()
         }

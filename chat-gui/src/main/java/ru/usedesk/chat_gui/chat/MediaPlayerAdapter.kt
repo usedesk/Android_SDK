@@ -22,8 +22,8 @@ internal class MediaPlayerAdapter(
     chatScreen: UsedeskChatScreen,
     val playerViewModel: PlayerViewModel
 ) {
-    private var fullscreenListener = chatScreen.getParentListener<IUsedeskOnFullscreenListener>()
-    private var downloadListener = chatScreen.getParentListener<IUsedeskOnDownloadListener>()
+    private var fullscreenListener = chatScreen.findParent<IUsedeskOnFullscreenListener>()
+    private var downloadListener = chatScreen.findParent<IUsedeskOnDownloadListener>()
 
     private val pvVideoExoPlayer = inflateItem(
         chatScreen.view as ViewGroup,

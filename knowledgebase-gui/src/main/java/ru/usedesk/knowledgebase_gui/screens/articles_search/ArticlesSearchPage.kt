@@ -42,7 +42,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
                 .getString(R.attr.usedesk_text_1)
 
             btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
 
             val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
@@ -54,7 +54,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) { articleContent ->
-            getParentListener<IOnArticleClickListener>()?.onArticleClick(
+            findParent<IOnArticleClickListener>()?.onArticleClick(
                 articleContent.categoryId,
                 articleContent.id,
                 articleContent.title

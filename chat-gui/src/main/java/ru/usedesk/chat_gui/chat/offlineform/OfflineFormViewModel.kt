@@ -147,8 +147,9 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         super.onCleared()
 
         actionListenerRx?.let {
-            UsedeskChatSdk.getInstance()
-                ?.removeActionListener(it)
+            usedeskChat.removeActionListener(it)
+
+            UsedeskChatSdk.release(false)
         }
     }
 

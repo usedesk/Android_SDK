@@ -66,6 +66,8 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
         super.onCleared()
 
         usedeskChat.removeActionListener(actionListener)
+
+        UsedeskChatSdk.release(false)
     }
 
     data class Model(

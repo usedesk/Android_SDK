@@ -177,8 +177,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     override fun onCleared() {
         super.onCleared()
 
-        UsedeskChatSdk.getInstance()
-            ?.removeActionListener(actionListenerRx)
+        usedeskChat.removeActionListener(actionListenerRx)
 
         UsedeskChatSdk.release(false)
     }

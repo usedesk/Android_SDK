@@ -50,7 +50,6 @@ internal class ArticlesSearchAdapter(
                         val oldItem = oldItems[oldItemPosition]
                         val newItem = newItems[newItemPosition]
                         return oldItem.title == newItem.title &&
-                                oldItem.categoryId == newItem.categoryId &&
                                 oldItem.text == newItem.text
                     }
                 }).dispatchUpdatesTo(this)

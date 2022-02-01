@@ -64,6 +64,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, {
             (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(it)
         }, {
+            viewModel.onSearchQuery(null)
             onBackPressed()
         })
 
@@ -88,12 +89,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.searchQuery != new.searchQuery) {
-                val fragment = getLastFragment()
-                if (fragment is ArticlesSearchPage) {
-                    fragment.onSearchQueryUpdate(new.searchQuery)
-                } else {
-                    switchPage(ArticlesSearchPage.newInstance(withSupportButton))
-                }
+                (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(new.searchQuery)
+            }
+            if (old?.showSearch != new.showSearch && new.showSearch) {
+                switchPage(ArticlesSearchPage.newInstance(withSupportButton))
             }
         }
 

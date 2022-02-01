@@ -7,17 +7,35 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticlesSearchViewModel : UsedeskViewModel<ArticlesSearchViewModel.Model>(Model()) {
 
-    private var lastQuery: String = ""
+    private var lastQuery: String? = null
     private var loadingDisposable: Disposable? = null
 
+    init {
+        onSearchQuery("")
+    }
+
     fun onSearchQuery(searchQuery: String) {
-        if (lastQuery != searchQuery && modelLiveData.value.state != State.LOADED) {
+        if (lastQuery != searchQuery || modelLiveData.value.state != State.LOADED) {
             lastQuery = searchQuery
             loadingDisposable?.dispose()
             loadingDisposable = doIt(UsedeskKnowledgeBaseSdk.requireInstance()
                 .getArticlesRx(searchQuery), {
                 setModel { model ->
-                    model.copy()
+                    model.copy(
+                        articles = it,
+                        state = if (it.isEmpty()) {
+                            State.EMPTY
+                        } else {
+                            State.LOADED
+                        }
+                    )
+                }
+            }, {
+                setModel { model ->
+                    model.copy(
+                        articles = listOf(),
+                        state = State.EMPTY
+                    )
                 }
             })
         }

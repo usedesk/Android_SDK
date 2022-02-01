@@ -61,8 +61,6 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             )
         }
 
-        viewModel.onSearchQuery("")
-
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.state != new.state) {
                 when (new.state) {

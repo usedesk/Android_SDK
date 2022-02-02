@@ -30,6 +30,20 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
             }
         }
 
+        override fun onClientTokenObservable(
+            clientTokenObservable: Observable<String>
+        ): Disposable? {
+            return clientTokenObservable.observeOn(
+                mainThread
+            ).subscribe {
+                setModel { model ->
+                    model.copy(
+                        clientToken = it
+                    )
+                }
+            }
+        }
+
         override fun onExceptionObservable(
             exceptionObservable: Observable<Exception>
         ): Disposable? {

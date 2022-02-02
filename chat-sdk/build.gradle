@@ -27,7 +27,7 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation project(":common-sdk")
+    api project(":common-sdk")
 
     implementation("io.socket:socket.io-client:2.0.1") {
         exclude group: "org.json", module: "json"

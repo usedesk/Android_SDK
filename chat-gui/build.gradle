@@ -26,9 +26,8 @@ android {
 dependencies {
     implementation fileTree(include: ["*.jar"], dir: "libs")
 
-    implementation project(":common-sdk")
-    implementation project(":common-gui")
-    implementation project(":chat-sdk")
+    api project(":chat-sdk")
+    api project(":common-gui")
 
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "androidx.fragment:fragment-ktx:1.4.1"

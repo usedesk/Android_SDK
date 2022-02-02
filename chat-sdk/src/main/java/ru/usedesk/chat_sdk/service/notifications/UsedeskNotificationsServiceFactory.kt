@@ -5,7 +5,6 @@ import android.content.Intent
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.view.UsedeskNotificationsService
 import ru.usedesk.chat_sdk.service.notifications.view.UsedeskNotificationsService.Companion.USEDESK_CHAT_CONFIGURATION_KEY
-import ru.usedesk.common_sdk.utils.putAsJsonExtra
 
 open class UsedeskNotificationsServiceFactory {
 
@@ -16,7 +15,7 @@ open class UsedeskNotificationsServiceFactory {
         usedeskChatConfiguration: UsedeskChatConfiguration
     ) {
         Intent(context, serviceClass).also {
-            it.putAsJsonExtra(USEDESK_CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
+            it.putExtra(USEDESK_CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
             context.startService(it)
         }
     }

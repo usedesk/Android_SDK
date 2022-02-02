@@ -4,19 +4,15 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
-
-    private val gson: Gson = GsonBuilder().create()
 
     private var permissionResult: ActivityResultLauncher<String>? = null
     private var onGranted: (() -> Unit)? = null
@@ -25,10 +21,7 @@ abstract class UsedeskFragment : Fragment() {
 
     open fun onBackPressed(): Boolean = false
 
-    fun register(
-        onFiles: (List<Uri>) -> Unit,
-        onCamera: (Boolean) -> Unit
-    ) {
+    fun registerPermissions() {
         permissionResult = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
@@ -54,7 +47,12 @@ abstract class UsedeskFragment : Fragment() {
             }
             onGranted = null
         }
+    }
 
+    fun registerFiles(
+        onFiles: (List<Uri>) -> Unit,
+        onCamera: (Boolean) -> Unit
+    ) {
         getContent =
             registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uriList ->
                 onFiles(uriList)
@@ -185,32 +183,20 @@ abstract class UsedeskFragment : Fragment() {
         }
     }
 
-    protected fun argsGetString(key: String, default: String): String {
-        return arguments?.getString(key) ?: default
-    }
-
     protected fun argsGetString(key: String): String? {
         return arguments?.getString(key)
     }
 
-    protected fun <T> argsGetObject(key: String, clazz: Class<T>): T? {
-        try {
-            val json = argsGetString(key)
-            if (json != null) {
-                return gson.fromJson(json, clazz)
-            }
-        } catch (e: Exception) {
-
-        }
-        return null
+    protected fun argsGetString(key: String, default: String): String {
+        return argsGetString(key) ?: default
     }
 
-    protected fun <T> argsGetObject(key: String, clazz: Class<T>, default: T): T {
-        return argsGetObject(key, clazz) ?: default
+    protected fun <T : Parcelable> argsGetParcelable(key: String): T? {
+        return arguments?.getParcelable(key)
     }
 
-    protected fun argsPutObject(args: Bundle, key: String, obj: Any) {
-        args.putString(key, gson.toJson(obj))
+    protected fun <T : Parcelable> argsGetParcelable(key: String, default: T): T {
+        return argsGetParcelable(key) ?: default
     }
 
     protected fun argsGetStringArray(key: String): Array<String>? {
@@ -218,7 +204,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     protected fun argsGetStringArray(key: String, default: Array<String>): Array<String> {
-        return arguments?.getStringArray(key) ?: default
+        return argsGetStringArray(key) ?: default
     }
 
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
@@ -230,7 +216,7 @@ abstract class UsedeskFragment : Fragment() {
         ).show()
     }
 
-    inline fun <reified T> getParentListener(): T? {
+    inline fun <reified T> findParent(): T? {
         var listener: T? = null
 
         var parent = parentFragment
@@ -243,19 +229,11 @@ abstract class UsedeskFragment : Fragment() {
             }
         }
 
-        if (listener == null) {
-            if (activity is T) {
-                listener = activity as T
-            }
-        }
-
-        return listener
+        return listener ?: activity as? T
     }
 
     companion object {
         private const val MIME_TYPE_ALL_IMAGES = "*/*"
         private const val MIME_TYPE_ALL_DOCS = "*/*"
-
-
     }
 }

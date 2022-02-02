@@ -16,6 +16,7 @@ import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
+import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE
 import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE_MB
@@ -27,7 +28,11 @@ import java.io.File
 
 internal class MessagesPage : UsedeskFragment() {
 
-    private val viewModel: MessagesViewModel by viewModels()
+    private val viewModel: MessagesViewModel by viewModels(
+        ownerProducer = {
+            requireChatViewModelStoreOwner()
+        }
+    )
 
     private lateinit var binding: Binding
 
@@ -69,7 +74,8 @@ internal class MessagesPage : UsedeskFragment() {
             viewModel
         )
 
-        register({ uriList ->
+        registerPermissions()
+        registerFiles({ uriList ->
             val files = uriList.map { uri ->
                 UsedeskFileInfo.create(
                     requireContext(),
@@ -166,11 +172,11 @@ internal class MessagesPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) {
-            getParentListener<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
+            findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.showAttachmentPanel(true)
         }
 
-        val mediaPlayerAdapter = (parentFragment as UsedeskChatScreen).mediaPlayerAdapter
+        val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter
 
         messagesAdapter = MessagesAdapter(
             binding.rvMessages,
@@ -180,13 +186,13 @@ internal class MessagesPage : UsedeskFragment() {
             rejectedFileExtensions,
             mediaPlayerAdapter,
             {
-                getParentListener<IUsedeskOnFileClickListener>()?.onFileClick(it)
+                findParent<IUsedeskOnFileClickListener>()?.onFileClick(it)
             },
             {
-                getParentListener<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
+                findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
             }, {
-                getParentListener<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
+                findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
             },
             savedInstanceState
         )

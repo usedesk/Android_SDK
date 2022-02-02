@@ -33,7 +33,7 @@ internal class SectionsPage : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }.apply {
             btnSupport.setOnClickListener {
-                getParentListener<IUsedeskOnSupportClickListener>()?.onSupportClick()
+                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
             }
 
             val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
@@ -45,11 +45,13 @@ internal class SectionsPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) { id, title ->
-            getParentListener<IOnSectionClickListener>()?.onSectionClick(id, title)
+            findParent<IOnSectionClickListener>()?.onSectionClick(id, title)
         }
 
-        viewModel.sectionsLiveData.observe(viewLifecycleOwner) {
-            showInstead(binding.rvItems, binding.pbLoading, it != null)
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.loading != new.loading) {
+                showInstead(binding.rvItems, binding.pbLoading, !new.loading)
+            }
         }
 
         return binding.rootView

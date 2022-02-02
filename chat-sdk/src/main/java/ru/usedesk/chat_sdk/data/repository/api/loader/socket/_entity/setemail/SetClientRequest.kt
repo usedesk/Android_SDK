@@ -9,7 +9,7 @@ internal class SetClientRequest(
     name: String?,
     note: String?,
     phone: Long?,
-    additionalId: Long?
+    additionalId: String?
 ) : BaseRequest(TYPE) {
 
     private val payload: Payload = Payload(token, email, name, note, phone, additionalId)
@@ -25,6 +25,6 @@ internal class SetClientRequest(
         private val note: String?,
         private val phone: Long?,
         @SerializedName("additional_id")
-        private val additionalId: Long?
+        private val additionalId: String?
     )
 }

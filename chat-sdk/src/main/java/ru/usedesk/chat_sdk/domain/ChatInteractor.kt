@@ -35,7 +35,8 @@ internal class ChatInteractor(
     private var actionListeners = mutableSetOf<IUsedeskActionListener>()
     private var actionListenersRx = mutableSetOf<IUsedeskActionListenerRx>()
 
-    private val connectedStateSubject = BehaviorSubject.createDefault(false)
+    private val connectionStateSubject =
+        BehaviorSubject.createDefault(UsedeskConnectionState.CONNECTING)
     private val clientTokenSubject = BehaviorSubject.create<String>()
     private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
@@ -61,7 +62,7 @@ internal class ChatInteractor(
 
     init {
         listenersDisposables.apply {
-            add(connectedStateSubject.subscribe {
+            add(connectionStateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onConnectedState(it)
                 }
@@ -119,7 +120,7 @@ internal class ChatInteractor(
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
-            connectedStateSubject.onNext(true)
+            connectionStateSubject.onNext(UsedeskConnectionState.CONNECTED)
         }
 
         override fun onDisconnected() {
@@ -133,7 +134,7 @@ internal class ChatInteractor(
                 }
             }
 
-            connectedStateSubject.onNext(false)
+            connectionStateSubject.onNext(UsedeskConnectionState.DISCONNECTED)
         }
 
         override fun onTokenError() {
@@ -197,6 +198,7 @@ internal class ChatInteractor(
     }
 
     override fun connect() {
+        connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
         reconnectDisposable?.dispose()
         reconnectDisposable = null
         token = if (!isStringEmpty(this.configuration.clientToken)) {
@@ -276,7 +278,7 @@ internal class ChatInteractor(
     ) {
         actionListenersRx.add(listener)
         listener.onObservables(
-            connectedStateSubject,
+            connectionStateSubject,
             clientTokenSubject,
             messageSubject,
             newMessageSubject,

@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.chat.offlineform
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
@@ -18,7 +19,7 @@ internal class OfflineFormFieldsAdapter(
     binding: OfflineFormPage.Binding,
     private val viewModel: OfflineFormViewModel,
     lifecycleOwner: LifecycleOwner,
-    private val onSubjectClick: (items: List<String>, selectedIndex: Int) -> Unit
+    private val onSubjectClick: () -> Unit
 ) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder>() {
 
     private val textFieldStyle =
@@ -34,21 +35,37 @@ internal class OfflineFormFieldsAdapter(
             layoutManager = LinearLayoutManager(recyclerView.context)
             itemAnimator = null
         }
-        viewModel.fieldsLiveData.observe(lifecycleOwner) {
-            it?.let {
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.fields != new.fields) {
                 val oldItems = items
-                items = it
-                if (oldItems.isEmpty()) {
-                    notifyDataSetChanged()
-                } else {
-                    oldItems.forEachIndexed { index, offlineFormItem ->
-                        if (offlineFormItem is OfflineFormList &&
-                            offlineFormItem != items[index]
-                        ) {
-                            notifyItemChanged(index)
-                        }
+                val newItems = new.fields
+                items = newItems
+
+                DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                    override fun getOldListSize() = oldItems.size
+
+                    override fun getNewListSize() = newItems.size
+
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldItem = oldItems[oldItemPosition]
+                        val newItem = newItems[newItemPosition]
+                        return oldItem.key == newItem.key
                     }
-                }
+
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldItem = oldItems[oldItemPosition]
+                        val newItem = newItems[newItemPosition]
+                        return oldItem.title != newItem.title &&
+                                (oldItem as? OfflineFormList)?.selected ==
+                                (newItem as? OfflineFormList)?.selected
+                    }
+                })
             }
         }
     }
@@ -113,7 +130,7 @@ internal class OfflineFormFieldsAdapter(
                 adapter.setTitle(it.title, it.required)
                 adapter.setText(it.items.getOrNull(it.selected))
                 adapter.setOnClickListener {
-                    onSubjectClick(it.items, it.selected)
+                    onSubjectClick()
                 }
             }
         }

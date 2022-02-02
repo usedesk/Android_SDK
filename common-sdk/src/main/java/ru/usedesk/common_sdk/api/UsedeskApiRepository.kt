@@ -60,9 +60,7 @@ abstract class UsedeskApiRepository<API>(
             gson.fromJson(rawResponseBody, tClass)
         } catch (e: Exception) {
             if (rawResponseBody.isNotEmpty()) {
-                UsedeskLog.e("Failed to parse the response") {
-                    rawResponseBody
-                }
+                UsedeskLog.onLog("Failed to parse the response", rawResponseBody)
             }
             e.printStackTrace()
             throw UsedeskHttpException()

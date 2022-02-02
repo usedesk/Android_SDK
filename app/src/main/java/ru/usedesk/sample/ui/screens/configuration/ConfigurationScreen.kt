@@ -36,22 +36,22 @@ class ConfigurationScreen : UsedeskFragment() {
             container, false
         )
 
-        viewModel.configurationLiveData.observe(viewLifecycleOwner, {
+        viewModel.configurationLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfiguration(it)
                 viewModel.configurationLiveData.removeObservers(viewLifecycleOwner)
             }
-        })
-        viewModel.configurationValidation.observe(viewLifecycleOwner, {
+        }
+        viewModel.configurationValidation.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfigurationValidation(it)
             }
-        })
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner, {
+        }
+        viewModel.goToSdkEvent.observe(viewLifecycleOwner) {
             it?.let {
                 onGoToSdkEvent(it)
             }
-        })
+        }
         binding.btnGoToSdk.setOnClickListener {
             onGoToSdk()
         }
@@ -162,7 +162,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientName.text.toString(),
             binding.etClientNote.text.toString(),
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
-            binding.etClientAdditionalId.text.toString().toLongOrNull(),
+            binding.etClientAdditionalId.text.toString(),
             binding.etClientInitMessage.text.toString(),
             viewModel.avatarLiveData.value,
             binding.etCustomAgentName.text.toString(),

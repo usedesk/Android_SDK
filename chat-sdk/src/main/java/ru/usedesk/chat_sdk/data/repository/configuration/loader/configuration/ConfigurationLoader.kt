@@ -108,7 +108,7 @@ internal class ConfigurationLoader(
                             clientName = clientName,
                             clientNote = null,
                             clientPhoneNumber = clientPhone?.toLongOrNull(),
-                            clientAdditionalId = clientAdditionalId?.toLongOrNull(),
+                            clientAdditionalId = clientAdditionalId,
                             clientInitMessage = clientInitMessage
                         )
                     )

@@ -8,14 +8,20 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 
 internal class LoadingPage : UsedeskFragment() {
 
-    private val viewModel: LoadingViewModel by viewModels()
+    private val viewModel: LoadingViewModel by viewModels(
+        ownerProducer = {
+            requireChatViewModelStoreOwner()
+        }
+    )
 
     private lateinit var binding: Binding
 
@@ -66,10 +72,15 @@ internal class LoadingPage : UsedeskFragment() {
                             binding.textBinding.noInternetTextId
                         )
                     }
-                    else -> {
-                        binding.imageBinding.ivLoadingImage.setImageResourceSafe(0)
-                        binding.titleBinding.tvLoadingTitle.setTextSafe(0)
-                        binding.textBinding.tvLoadingText.setTextSafe(0)
+                }
+            }
+            new.goNext.process { page ->
+                when (page) {
+                    LoadingViewModel.Page.OFFLINE_FORM -> {
+                        findNavController().navigate(R.id.action_loadingPage_to_offlineFormPage)
+                    }
+                    LoadingViewModel.Page.MESSAGES -> {
+                        findNavController().navigate(R.id.action_loadingPage_to_messagesPage)
                     }
                 }
             }
@@ -94,12 +105,6 @@ internal class LoadingPage : UsedeskFragment() {
             text = ""
         } else {
             setText(resourceId)
-        }
-    }
-
-    companion object {
-        fun newInstance(): LoadingPage {
-            return LoadingPage()
         }
     }
 

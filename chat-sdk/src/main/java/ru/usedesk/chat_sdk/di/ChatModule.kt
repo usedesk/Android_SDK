@@ -105,7 +105,6 @@ internal object ChatModule {
         multipartConverter: IMultipartConverter,
         initChatResponseConverter: InitChatResponseConverter,
         messageResponseConverter: MessageResponseConverter,
-        fileLoader: IFileLoader,
         apiFactory: IUsedeskApiFactory,
         gson: Gson
     ): IApiRepository {
@@ -114,7 +113,6 @@ internal object ChatModule {
             multipartConverter,
             initChatResponseConverter,
             messageResponseConverter,
-            fileLoader,
             apiFactory,
             gson
         )

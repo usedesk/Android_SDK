@@ -220,8 +220,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/client_additional_id"
-                        android:inputType="number" />
+                        android:hint="@string/client_additional_id" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout

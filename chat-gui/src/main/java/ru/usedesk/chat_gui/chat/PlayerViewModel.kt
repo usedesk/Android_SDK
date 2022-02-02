@@ -1,19 +1,12 @@
 package ru.usedesk.chat_gui.chat
 
 import com.google.android.exoplayer2.ExoPlayer
-import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 
-class PlayerViewModel : UsedeskViewModel() {
-
-    val modelLiveData = UsedeskLiveData(Model())
+internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()) {
 
     var exoPlayer: ExoPlayer? = null
     var lastPlaying: Boolean = false
-
-    private fun setModel(onUpdate: (Model) -> Model) {
-        modelLiveData.value = onUpdate(modelLiveData.value)
-    }
 
     fun videoApply(videoKey: String, name: String) {
         setModel { model ->

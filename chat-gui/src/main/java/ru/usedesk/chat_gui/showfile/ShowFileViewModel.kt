@@ -1,12 +1,9 @@
 package ru.usedesk.chat_gui.showfile
 
 import ru.usedesk.chat_sdk.entity.UsedeskFile
-import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 
-internal class ShowFileViewModel : UsedeskViewModel() {
-
-    val modelLiveData = UsedeskLiveData(Model())
+internal class ShowFileViewModel : UsedeskViewModel<ShowFileViewModel.Model>(Model()) {
 
     fun init(file: UsedeskFile) {
         doInit {
@@ -26,10 +23,6 @@ internal class ShowFileViewModel : UsedeskViewModel() {
         setModel { model ->
             model.copy(panelShow = !model.panelShow)
         }
-    }
-
-    private fun setModel(onUpdate: (Model) -> Model) {
-        modelLiveData.value = onUpdate(modelLiveData.value)
     }
 
     fun onRetryPreview() {

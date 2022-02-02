@@ -1,6 +1,7 @@
 package ru.usedesk.common_gui
 
 import android.annotation.SuppressLint
+import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -8,7 +9,12 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
-open class UsedeskViewModel : ViewModel() {
+open class UsedeskViewModel<MODEL>(
+    defaultModel: MODEL
+) : ViewModel() {
+    val modelLiveData = UsedeskLiveData(defaultModel)
+    val mainThread = AndroidSchedulers.mainThread()
+
     private val disposables = mutableListOf<Disposable>()
     private var inited = false
 
@@ -19,6 +25,11 @@ open class UsedeskViewModel : ViewModel() {
         }
     }
 
+    @MainThread
+    protected fun setModel(onUpdate: (MODEL) -> MODEL) {
+        modelLiveData.value = onUpdate(modelLiveData.value)
+    }
+
     protected fun addDisposable(disposable: Disposable) {
         disposables.add(disposable)
     }
@@ -27,40 +38,40 @@ open class UsedeskViewModel : ViewModel() {
         completable: Completable,
         onCompleted: () -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ) {
-        addDisposable(
-            completable.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onCompleted() }, { onThrowable(it) })
-        )
+    ): Disposable {
+        return completable.observeOn(mainThread)
+            .subscribe({ onCompleted() }, { onThrowable(it) }).also {
+                addDisposable(it)
+            }
     }
 
     protected fun doIt(
         completableList: List<Completable>,
         onCompleted: () -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ) {
+    ): Disposable {
         val completable = Completable.concat(completableList)
-            .observeOn(AndroidSchedulers.mainThread())
-        doIt(completable, onCompleted, onThrowable)
+            .observeOn(mainThread)
+        return doIt(completable, onCompleted, onThrowable)
     }
 
     protected fun <T> doIt(
         observable: Observable<T>,
         onValue: (T) -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ) {
-        addDisposable(
-            observable.observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ onValue(it) }, { onThrowable(it) })
-        )
+    ): Disposable {
+        return observable.observeOn(mainThread)
+            .subscribe({ onValue(it) }, { onThrowable(it) }).also {
+                addDisposable(it)
+            }
     }
 
     protected fun <T> doIt(
         single: Single<T>,
         onValue: (T) -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ) {
-        doIt(single.toObservable(), onValue, onThrowable)
+    ): Disposable {
+        return doIt(single.toObservable(), onValue, onThrowable)
     }
 
     @SuppressLint("CheckResult")
@@ -69,7 +80,7 @@ open class UsedeskViewModel : ViewModel() {
         onSuccess: () -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
     ) {
-        completable.observeOn(AndroidSchedulers.mainThread())
+        completable.observeOn(mainThread)
             .subscribe(onSuccess, onThrowable)
     }
 
@@ -79,7 +90,7 @@ open class UsedeskViewModel : ViewModel() {
         onResult: (T) -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
     ) {
-        single.observeOn(AndroidSchedulers.mainThread())
+        single.observeOn(mainThread)
             .subscribe(onResult, onThrowable)
     }
 
@@ -89,7 +100,7 @@ open class UsedeskViewModel : ViewModel() {
         onResult: (T) -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
     ) {
-        observable.observeOn(AndroidSchedulers.mainThread())
+        observable.observeOn(mainThread)
             .subscribe(onResult, onThrowable)
     }
 

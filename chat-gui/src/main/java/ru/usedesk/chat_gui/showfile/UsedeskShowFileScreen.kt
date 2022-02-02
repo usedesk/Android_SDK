@@ -50,7 +50,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         binding.ivDownload.setOnClickListener {
             viewModel.modelLiveData.value.file?.let { file ->
                 needWriteExternalPermission(this) {
-                    getParentListener<IUsedeskOnDownloadListener>()?.onDownload(
+                    findParent<IUsedeskOnDownloadListener>()?.onDownload(
                         file.content,
                         file.name
                     )
@@ -65,11 +65,19 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
 
-        argsGetObject(Keys.FILE.name, UsedeskFile::class.java)?.let { file ->
-            viewModel.init(file)
-        }
+        return binding.rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        registerPermissions()
 
         hideKeyboard(binding.rootView)
+
+        argsGetParcelable<UsedeskFile>(FILE_KEY)?.let { file ->
+            viewModel.init(file)
+        }
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.file != new.file ||
@@ -107,8 +115,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 binding.lBottom.visibility = visibleGone(new.panelShow)
             }
         }
-
-        return binding.rootView
     }
 
     private fun setBlur(blurView: BlurView) {
@@ -134,16 +140,19 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     }
 
     companion object {
-        private enum class Keys {
-            FILE
-        }
+        private const val FILE_KEY = "fileKey"
 
         @JvmStatic
         fun newInstance(usedeskFile: UsedeskFile): UsedeskShowFileScreen {
             return UsedeskShowFileScreen().apply {
-                arguments = Bundle().apply {
-                    argsPutObject(this, Keys.FILE.name, usedeskFile)
-                }
+                arguments = createBundle(usedeskFile)
+            }
+        }
+
+        @JvmStatic
+        fun createBundle(usedeskFile: UsedeskFile): Bundle {
+            return Bundle().apply {
+                putParcelable(FILE_KEY, usedeskFile)
             }
         }
     }

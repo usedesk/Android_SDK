@@ -1,14 +1,17 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
+@Parcelize
 class UsedeskKnowledgeBaseConfiguration @JvmOverloads constructor(
     val urlApi: String = "https://api.usedesk.ru/",
     val accountId: String,
     val token: String,
     val clientEmail: String? = null,
     val clientName: String? = null
-) {
+) : Parcelable {
     fun validate(): Validation {
         return Validation(
             validUrlApi = UsedeskValidatorUtil.isValidUrlNecessary(urlApi),

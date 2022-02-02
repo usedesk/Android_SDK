@@ -5,31 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.offlineform.IOnGoToChatListener
-import ru.usedesk.chat_gui.chat.offlineform.IOnOfflineFormSelectorClick
-import ru.usedesk.chat_gui.chat.offlineformselector.IItemSelectChangeListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_sdk.utils.getFromJson
-import ru.usedesk.common_sdk.utils.putAsJson
 
-class UsedeskChatScreen : UsedeskFragment(),
-    IOnOfflineFormSelectorClick,
-    IItemSelectChangeListener,
-    IOnGoToChatListener {
+class UsedeskChatScreen : UsedeskFragment() {
 
-    private val viewModel: ChatViewModel by viewModels()
-    private val playerViewModel: PlayerViewModel by viewModels()
-
-    private lateinit var binding: Binding
-    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
-    private lateinit var chatNavigation: ChatNavigation
+    private val viewModel: ChatViewModel by viewModels(
+        ownerProducer = {
+            findChatViewModelStoreOwner() ?: this
+        }
+    )
+    private val playerViewModel: PlayerViewModel by viewModels(
+        ownerProducer = {
+            findChatViewModelStoreOwner() ?: this
+        })
 
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
@@ -37,6 +35,11 @@ class UsedeskChatScreen : UsedeskFragment(),
             playerViewModel
         )
     }
+
+    private lateinit var binding: Binding
+    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +55,10 @@ class UsedeskChatScreen : UsedeskFragment(),
             Binding(rootView, defaultStyleId)
         }
 
+        navHostFragment =
+            childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
+        navController = navHostFragment.navController
+
         toolbarAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
             setBackButton {
                 requireActivity().onBackPressed()
@@ -60,82 +67,85 @@ class UsedeskChatScreen : UsedeskFragment(),
 
         val agentName = argsGetString(AGENT_NAME_KEY)
         val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
-        val configuration = arguments?.getFromJson(
-            CHAT_CONFIGURATION_KEY,
-            UsedeskChatConfiguration::class.java
-        )
-        if (configuration != null) {
-            UsedeskChatSdk.setConfiguration(configuration)
+        argsGetParcelable<UsedeskChatConfiguration>(CHAT_CONFIGURATION_KEY)?.let {
+            UsedeskChatSdk.setConfiguration(it)
         }
 
-        init(agentName, rejectedFileExtensions, savedInstanceState != null)
+        init(agentName, rejectedFileExtensions)
 
         return binding.rootView
     }
 
     private fun init(
         agentName: String?,
-        rejectedFileExtensions: Array<String>,
-        inited: Boolean
+        rejectedFileExtensions: Array<String>
     ) {
         UsedeskChatSdk.init(requireContext())
 
-        ChatNavigation(childFragmentManager, binding.rootView, R.id.page_container).let {
-            chatNavigation = it
-            viewModel.init(it, agentName, rejectedFileExtensions, inited)
-        }
-
-        viewModel.exceptionLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                onException(it)
-            }
-        }
-
-        viewModel.pageLiveData.observe(viewLifecycleOwner) {
-            it?.let { page ->
-                val title = when (page) {
-                    ChatNavigation.Page.LOADING,
-                    ChatNavigation.Page.MESSAGES -> {
-                        binding.styleValues
-                            .getStyleValues(R.attr.usedesk_common_toolbar)
-                            .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                            .getString(android.R.attr.text)
-                    }
-                    ChatNavigation.Page.OFFLINE_FORM -> {
-                        viewModel.offlineFormSettings?.callbackTitle
-                    }
-                    ChatNavigation.Page.OFFLINE_FORM_SELECTOR -> {
-                        viewModel.offlineFormSettings?.topicsTitle
-                    }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val title = when (destination.id) {
+                R.id.dest_loading_page,
+                R.id.dest_messages_page -> {
+                    binding.styleValues
+                        .getStyleValues(R.attr.usedesk_common_toolbar)
+                        .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                        .getString(android.R.attr.text)
                 }
-                toolbarAdapter.setTitle(title)
+                R.id.dest_offline_form_page -> {
+                    viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+                }
+                R.id.dest_offline_form_selector_page -> {
+                    viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
+                }
+                else -> null
+            }
+            toolbarAdapter.setTitle(title)
+        }
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old != null &&
+                new.clientToken != null &&
+                old.clientToken != new.clientToken
+            ) {
+                findParent<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
+            }
+            if (old?.offlineFormSettings != new.offlineFormSettings) {
+                updateTitle(navController.currentDestination)
             }
         }
 
-        viewModel.clientTokenLiveData.observe(viewLifecycleOwner) {
-            if (it != null) {
-                getParentListener<IUsedeskOnClientTokenListener>()?.onClientToken(it)
+        viewModel.init(agentName, rejectedFileExtensions.toSet())
+    }
+
+    private fun updateTitle(destination: NavDestination?) {
+        val title = when (destination?.id) {
+            R.id.dest_loading_page,
+            R.id.dest_messages_page -> {
+                binding.styleValues
+                    .getStyleValues(R.attr.usedesk_common_toolbar)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                    .getString(android.R.attr.text)
             }
+            R.id.dest_offline_form_page -> {
+                viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+            }
+            R.id.dest_offline_form_selector_page -> {
+                viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
+            }
+            else -> null
         }
+        toolbarAdapter.setTitle(title)
     }
 
-    override fun onItemSelectChange(index: Int) {
-        viewModel.setSubjectIndex(index)
-    }
+    override fun onStart() {
+        super.onStart()
 
-    private fun onException(exception: Exception) {
-        exception.printStackTrace()
+        UsedeskChatSdk.stopService(requireContext())
     }
 
     override fun onPause() {
         super.onPause()
 
         mediaPlayerAdapter.onPause()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        UsedeskChatSdk.stopService(requireContext())
     }
 
     override fun onStop() {
@@ -150,15 +160,7 @@ class UsedeskChatScreen : UsedeskFragment(),
     }
 
     override fun onBackPressed(): Boolean {
-        return mediaPlayerAdapter.onBackPressed() || viewModel.onBackPressed()
-    }
-
-    override fun onOfflineFormSelectorClick(items: List<String>, selectedIndex: Int) {
-        viewModel.goOfflineFormSelector(items.toTypedArray(), selectedIndex)
-    }
-
-    override fun onGoToMessages() {
-        viewModel.goMessages()
+        return mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
     }
 
     companion object {
@@ -174,18 +176,32 @@ class UsedeskChatScreen : UsedeskFragment(),
             usedeskChatConfiguration: UsedeskChatConfiguration? = null
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
-                arguments = Bundle().apply {
-                    if (agentName != null) {
-                        putString(AGENT_NAME_KEY, agentName)
-                    }
-                    val extensions = rejectedFileExtensions?.map {
-                        '.' + it.trim(' ', '.')
-                    }?.toTypedArray() ?: arrayOf()
-                    if (usedeskChatConfiguration != null) {
-                        putAsJson(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
-                    }
-                    putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
+                arguments = createBundle(
+                    agentName,
+                    rejectedFileExtensions,
+                    usedeskChatConfiguration
+                )
+            }
+        }
+
+        @JvmOverloads
+        @JvmStatic
+        fun createBundle(
+            agentName: String? = null,
+            rejectedFileExtensions: Collection<String>? = null,
+            usedeskChatConfiguration: UsedeskChatConfiguration? = null
+        ): Bundle {
+            return Bundle().apply {
+                if (agentName != null) {
+                    putString(AGENT_NAME_KEY, agentName)
                 }
+                val extensions = rejectedFileExtensions?.map {
+                    '.' + it.trim(' ', '.')
+                }?.toTypedArray() ?: arrayOf()
+                if (usedeskChatConfiguration != null) {
+                    putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
+                }
+                putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
             }
         }
     }
@@ -194,5 +210,6 @@ class UsedeskChatScreen : UsedeskFragment(),
         UsedeskBinding(rootView, defaultStyleId) {
         val toolbar =
             UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+
     }
 }

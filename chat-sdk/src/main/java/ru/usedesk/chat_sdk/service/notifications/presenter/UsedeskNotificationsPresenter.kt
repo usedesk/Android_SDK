@@ -16,7 +16,7 @@ class UsedeskNotificationsPresenter {
         UsedeskChatSdk.requireInstance().apply {
             actionListenerRx = object : IUsedeskActionListenerRx() {
                 override fun onNewMessageObservable(
-                        newMessageObservable: Observable<UsedeskMessage>
+                    newMessageObservable: Observable<UsedeskMessage>
                 ): Disposable? {
                     return newMessageObservable.filter {
                         it is UsedeskMessageAgent
@@ -43,6 +43,8 @@ class UsedeskNotificationsPresenter {
 
     fun onClear() {
         UsedeskChatSdk.getInstance()
-                ?.removeActionListener(actionListenerRx)
+            ?.removeActionListener(actionListenerRx)
+
+        UsedeskChatSdk.release(false)
     }
 }

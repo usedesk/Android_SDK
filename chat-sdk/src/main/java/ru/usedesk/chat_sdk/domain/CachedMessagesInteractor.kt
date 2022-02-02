@@ -88,7 +88,7 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    override suspend fun updateMessageDraft(now: Boolean) {
+    private suspend fun updateMessageDraft(now: Boolean) {
         if (now) {
             mutex.withLock {
                 draftJob?.cancel()
@@ -159,13 +159,15 @@ internal class CachedMessagesInteractor(
                 deferredCachedUriMap[uri] = this.getCachedFile(uri).also {
                     ioScope.launch {
                         it.await()
-                        updateMessageDraft(true)
                     }
                 }
             }
         }
         this.messageDraft = messageDraft
-        updateMessageDraft(false)
+        updateMessageDraft(
+            messageDraft.text.isEmpty() &&
+                    messageDraft.files.isEmpty()
+        )
     }
 
     override fun getMessageDraft(): UsedeskMessageDraft = messageDraft

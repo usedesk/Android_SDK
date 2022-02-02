@@ -11,7 +11,6 @@ import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
@@ -34,7 +33,6 @@ internal class ApiRepository(
     private val multipartConverter: IMultipartConverter,
     private val initChatResponseConverter: InitChatResponseConverter,
     private val messageResponseConverter: MessageResponseConverter,
-    private val fileLoader: IFileLoader,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
 ) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
@@ -159,7 +157,7 @@ internal class ApiRepository(
         name: String?,
         note: String?,
         phone: Long?,
-        additionalId: Long?
+        additionalId: String?
     ) {
         socketApi.sendRequest(
             SetClientRequest(

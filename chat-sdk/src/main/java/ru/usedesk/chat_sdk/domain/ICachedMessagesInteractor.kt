@@ -19,8 +19,6 @@ internal interface ICachedMessagesInteractor {
 
     fun removeFileFromCache(uri: Uri)
 
-    suspend fun updateMessageDraft(now: Boolean)
-
     suspend fun setMessageDraft(messageDraft: UsedeskMessageDraft, cacheFiles: Boolean)
 
     fun getMessageDraft(): UsedeskMessageDraft

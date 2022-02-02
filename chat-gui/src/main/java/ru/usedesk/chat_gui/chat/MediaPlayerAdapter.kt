@@ -13,20 +13,17 @@ import com.google.android.exoplayer2.ui.PlayerView
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.common_gui.hideKeyboard
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.visibleGone
-import ru.usedesk.common_gui.visibleInvisible
+import ru.usedesk.common_gui.*
 
 internal class MediaPlayerAdapter(
-    chatScreen: UsedeskChatScreen,
-    val playerViewModel: PlayerViewModel
+    fragment: UsedeskFragment,
+    private val playerViewModel: PlayerViewModel
 ) {
-    private var fullscreenListener = chatScreen.getParentListener<IUsedeskOnFullscreenListener>()
-    private var downloadListener = chatScreen.getParentListener<IUsedeskOnDownloadListener>()
+    private var fullscreenListener = fragment.findParent<IUsedeskOnFullscreenListener>()
+    private var downloadListener = fragment.findParent<IUsedeskOnDownloadListener>()
 
     private val pvVideoExoPlayer = inflateItem(
-        chatScreen.view as ViewGroup,
+        fragment.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Video
     ) { rootView, defaultStyleId ->
@@ -34,7 +31,7 @@ internal class MediaPlayerAdapter(
     }
 
     private val pvAudioExoPlayer = inflateItem(
-        chatScreen.view as ViewGroup,
+        fragment.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Audio
     ) { rootView, defaultStyleId ->
@@ -44,7 +41,7 @@ internal class MediaPlayerAdapter(
     private var restored = true
 
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
-        ?: ExoPlayer.Builder(chatScreen.requireContext())
+        ?: ExoPlayer.Builder(fragment.requireContext())
             .setUseLazyPreparation(true)
             .build().also {
                 playerViewModel.exoPlayer = it
@@ -76,7 +73,7 @@ internal class MediaPlayerAdapter(
             val visible = visibility == View.VISIBLE
             videoBinding.controls.startAnimation(
                 AnimationUtils.loadAnimation(
-                    chatScreen.requireContext(),
+                    fragment.requireContext(),
                     if (visible) {
                         R.anim.fade_in
                     } else {
@@ -112,7 +109,7 @@ internal class MediaPlayerAdapter(
         }
         videoBinding.fullscreenButton.visibility = visibleGone(fullscreenListener != null)
 
-        playerViewModel.modelLiveData.initAndObserveWithOld(chatScreen) { old, new ->
+        playerViewModel.modelLiveData.initAndObserveWithOld(fragment) { old, new ->
             if (!restored && old?.mode != new.mode) {
                 resetPlayer()
             }

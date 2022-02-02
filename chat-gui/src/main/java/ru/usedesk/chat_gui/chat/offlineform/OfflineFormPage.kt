@@ -10,13 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.*
 
 internal class OfflineFormPage : UsedeskFragment() {
 
     private val viewModel: OfflineFormViewModel by viewModels(
         ownerProducer = {
-            requireParentFragment().requireParentFragment()
+            requireChatViewModelStoreOwner()
         }
     )
 

@@ -229,13 +229,7 @@ abstract class UsedeskFragment : Fragment() {
             }
         }
 
-        if (listener == null) {
-            if (activity is T) {
-                listener = activity as T
-            }
-        }
-
-        return listener
+        return listener ?: activity as? T
     }
 
     companion object {

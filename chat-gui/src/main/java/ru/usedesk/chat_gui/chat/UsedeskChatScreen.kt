@@ -10,7 +10,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskBinding
@@ -21,8 +20,11 @@ import ru.usedesk.common_sdk.UsedeskLog
 
 class UsedeskChatScreen : UsedeskFragment() {
 
-    private val viewModel: ChatViewModel by viewModels()
-    private val offlineFormViewModel: OfflineFormViewModel by viewModels()
+    private val viewModel: ChatViewModel by viewModels(
+        ownerProducer = {
+            findChatViewModelStoreOwner() ?: this
+        }
+    )
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var binding: Binding

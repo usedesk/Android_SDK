@@ -10,13 +10,18 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 
 internal class LoadingPage : UsedeskFragment() {
 
-    private val viewModel: LoadingViewModel by viewModels()
+    private val viewModel: LoadingViewModel by viewModels(
+        ownerProducer = {
+            requireChatViewModelStoreOwner()
+        }
+    )
 
     private lateinit var binding: Binding
 

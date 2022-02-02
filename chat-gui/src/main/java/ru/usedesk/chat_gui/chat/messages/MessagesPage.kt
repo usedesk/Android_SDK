@@ -12,11 +12,11 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.*
-import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
+import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE
 import ru.usedesk.chat_sdk.UsedeskChatSdk.MAX_FILE_SIZE_MB
@@ -28,10 +28,10 @@ import java.io.File
 
 internal class MessagesPage : UsedeskFragment() {
 
-    private val viewModel: MessagesViewModel by viewModels()
-
-    private val parentViewModel: ChatViewModel by viewModels(
-        ownerProducer = { requireParentFragment() }//TODO: navFragment может помешать
+    private val viewModel: MessagesViewModel by viewModels(
+        ownerProducer = {
+            requireChatViewModelStoreOwner()
+        }
     )
 
     private lateinit var binding: Binding
@@ -62,8 +62,6 @@ internal class MessagesPage : UsedeskFragment() {
             rejectedFileExtensions,
             savedInstanceState
         )
-
-        parentViewModel.modelLiveData.value.toString()
 
         return binding.rootView
     }

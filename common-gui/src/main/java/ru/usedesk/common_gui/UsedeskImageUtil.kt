@@ -69,7 +69,7 @@ fun showImage(
 }
 
 fun clearImage(ivTarget: ImageView) {
-    Glide.with(ivTarget.context.applicationContext)
+    Glide.with(ivTarget.context)
         .clear(ivTarget)
 }
 

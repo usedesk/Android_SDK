@@ -16,7 +16,6 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_sdk.UsedeskLog
 
 class UsedeskChatScreen : UsedeskFragment() {
 
@@ -25,12 +24,10 @@ class UsedeskChatScreen : UsedeskFragment() {
             findChatViewModelStoreOwner() ?: this
         }
     )
-    private val playerViewModel: PlayerViewModel by viewModels()
-
-    private lateinit var binding: Binding
-    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
-    private lateinit var navHostFragment: NavHostFragment
-    private lateinit var navController: NavController
+    private val playerViewModel: PlayerViewModel by viewModels(
+        ownerProducer = {
+            findChatViewModelStoreOwner() ?: this
+        })
 
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
@@ -38,6 +35,11 @@ class UsedeskChatScreen : UsedeskFragment() {
             playerViewModel
         )
     }
+
+    private lateinit var binding: Binding
+    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,7 +82,7 @@ class UsedeskChatScreen : UsedeskFragment() {
     ) {
         UsedeskChatSdk.init(requireContext())
 
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             val title = when (destination.id) {
                 R.id.dest_loading_page,
                 R.id.dest_messages_page -> {
@@ -136,41 +138,28 @@ class UsedeskChatScreen : UsedeskFragment() {
 
     override fun onStart() {
         super.onStart()
-        UsedeskChatSdk.stopService(requireContext())
 
-        UsedeskLog.onLog("CHAT SCREEN", "ON_START")
+        UsedeskChatSdk.stopService(requireContext())
     }
 
     override fun onPause() {
         super.onPause()
 
         mediaPlayerAdapter.onPause()
-
-        UsedeskLog.onLog("CHAT SCREEN", "ON_PAUSE")
     }
 
     override fun onStop() {
         super.onStop()
         UsedeskChatSdk.startService(requireContext())
-
-        UsedeskLog.onLog("CHAT SCREEN", "ON_STOP")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
 
-        UsedeskLog.onLog("CHAT SCREEN", "ON_DESTROY_VIEW")
         mediaPlayerAdapter.release()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        UsedeskLog.onLog("CHAT SCREEN", "ON_DESTROY")
-    }
-
     override fun onBackPressed(): Boolean {
-        navHostFragment.childFragmentManager.fragments
         return mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
     }
 

@@ -2,17 +2,18 @@ package ru.usedesk.sample.ui.main
 
 import android.app.DownloadManager
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -184,33 +185,14 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun fullscreenMode(enable: Boolean) {
-        if (enable) {
-            val fullscreenFlags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-
-            window.decorView.run {
-                systemUiVisibility = fullscreenFlags
-                setOnSystemUiVisibilityChangeListener {
-                    if (android.R.attr.visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                        systemUiVisibility = fullscreenFlags
-                    }
-                }
+        ViewCompat.getWindowInsetsController(window.decorView)?.run {
+            systemBarsBehavior = if (enable) {
+                hide(WindowInsetsCompat.Type.systemBars())
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            } else {
+                show(WindowInsetsCompat.Type.systemBars())
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
             }
-
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_USER
-        } else {
-            val windowedFlags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-
-            window.decorView.run {
-                systemUiVisibility = windowedFlags
-                setOnSystemUiVisibilityChangeListener(null)
-            }
-
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
         }
     }
 

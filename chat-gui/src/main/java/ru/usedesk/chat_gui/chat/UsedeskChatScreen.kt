@@ -103,7 +103,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             if (old != null &&
                 new.clientToken != null &&
                 old.clientToken != new.clientToken
-            ) {//TODO: проверить нормально ли вызывается
+            ) {
                 findParent<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
             }
             if (old?.offlineFormSettings != new.offlineFormSettings) {

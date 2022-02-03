@@ -5,7 +5,7 @@ import android.util.Log
 object UsedeskLog {
     private const val LOG_KEY = "USEDESK_DBG"
 
-    private var logsEnabled = BuildConfig.DEBUG
+    private var logsEnabled = false
     private var listeners = mutableSetOf<(String) -> Unit>()
 
     fun enable() {

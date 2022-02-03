@@ -207,12 +207,6 @@ internal class MessagesPage : UsedeskFragment() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        messagesAdapter?.onSave(outState)
-    }
-
     private fun onUrlClick(url: String) {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK

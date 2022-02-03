@@ -2,7 +2,6 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.graphics.Rect
 import android.os.Bundle
-import android.os.Parcelable
 import android.text.Html
 import android.view.Gravity
 import android.view.View
@@ -38,16 +37,12 @@ internal class MessagesAdapter(
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     private var items: List<UsedeskMessage> = listOf()
-    private val layoutManager = LinearLayoutManager(recyclerView.context).apply {
-        val parcelable = savedStated?.getParcelable<Parcelable>(Keys.RECYCLER_VIEW.key)
-        if (parcelable != null) {
-            onRestoreInstanceState(parcelable)
-        }
-    }
+    private val layoutManager = LinearLayoutManager(recyclerView.context)
 
     private val saved = savedStated != null
 
     init {
+        stateRestorationPolicy = StateRestorationPolicy.PREVENT
         recyclerView.apply {
             layoutManager = this@MessagesAdapter.layoutManager
             adapter = this@MessagesAdapter
@@ -71,6 +66,7 @@ internal class MessagesAdapter(
                 onMessages(new.messages)
             }
         }
+        updateToBottomButton()
     }
 
     private fun updateToBottomButton() {
@@ -87,15 +83,11 @@ internal class MessagesAdapter(
         return visibleBottom >= contentHeight
     }
 
-    fun onSave(outState: Bundle) {
-        outState.putParcelable(Keys.RECYCLER_VIEW.key, layoutManager.onSaveInstanceState())
-    }
-
     private fun onMessages(messages: List<UsedeskMessage>) {
         val oldItems = items
         items = messages
 
-        val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+        DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize() = oldItems.size
 
             override fun getNewListSize() = items.size
@@ -135,8 +127,15 @@ internal class MessagesAdapter(
                 }
                 return true
             }
-        })
-        diffResult.dispatchUpdatesTo(this)
+        }).dispatchUpdatesTo(this)
+        if (messages.isNotEmpty() || stateRestorationPolicy != StateRestorationPolicy.ALLOW) {
+            recyclerView.post {
+                stateRestorationPolicy = StateRestorationPolicy.ALLOW
+                recyclerView.post {
+                    updateToBottomButton()
+                }
+            }
+        }
         var isScrollToBottom = false
         if (oldItems.isEmpty()) {
             if (!saved) {
@@ -1116,11 +1115,5 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val vEmpty: View = rootView.findViewById(R.id.v_empty)
         val ivSentFailed: ImageView = rootView.findViewById(R.id.iv_sent_failed)
-    }
-
-    private enum class Keys {
-        RECYCLER_VIEW;
-
-        val key = "${Keys::class.java.name}.$name"
     }
 }

@@ -1,9 +1,12 @@
 package ru.usedesk.chat_gui.chat
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -16,6 +19,7 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_sdk.UsedeskLog
 
 class UsedeskChatScreen : UsedeskFragment() {
 
@@ -46,6 +50,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onCreateView")
         binding = inflateItem(
             inflater,
             container,
@@ -137,26 +142,61 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     override fun onStart() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onStart")
         super.onStart()
 
         UsedeskChatSdk.stopService(requireContext())
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        mediaPlayerAdapter.onPause()
-    }
-
     override fun onStop() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onStop")
         super.onStop()
         UsedeskChatSdk.startService(requireContext())
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onPause() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onPause")
+        super.onPause()
+    }
 
-        mediaPlayerAdapter.release()
+    override fun onResume() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onResume")
+        super.onResume()
+    }
+
+    override fun onDestroy() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onDestroy")
+        super.onDestroy()
+    }
+
+    override fun onDetach() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onDetach")
+        super.onDetach()
+    }
+
+    override fun onAttachFragment(childFragment: Fragment) {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onAttachFragment")
+        super.onAttachFragment(childFragment)
+    }
+
+    override fun onAttach(context: Context) {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onAttach context")
+        super.onAttach(context)
+    }
+
+    override fun onAttach(activity: Activity) {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onAttach activity")
+        super.onAttach(activity)
+    }
+
+    override fun onDestroyView() {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onDestroyView")
+        super.onDestroyView()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        UsedeskLog.onLog(Integer.toHexString(System.identityHashCode(this)), "onViewCreated")
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onBackPressed(): Boolean {

@@ -6,6 +6,8 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -42,7 +44,6 @@ internal class MediaPlayerAdapter(
 
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
         ?: ExoPlayer.Builder(fragment.requireContext())
-            .setUseLazyPreparation(true)
             .build().also {
                 playerViewModel.exoPlayer = it
                 restored = false
@@ -81,15 +82,7 @@ internal class MediaPlayerAdapter(
                     }
                 )
             )
-            pvVideoExoPlayer.post {
-                currentMinimizeView?.onControlsHeightChanged?.invoke(
-                    if (visible) {
-                        videoBinding.lBottomBar?.height ?: 0
-                    } else {
-                        0
-                    }
-                )
-            }
+            postControllerBarHeight(visible)
         }
 
         videoBinding.ivDownload.setOnClickListener {
@@ -133,35 +126,52 @@ internal class MediaPlayerAdapter(
                     }
                 }//Фулскрин обрабатываем только если не был обновлён videoKey
                 else if (restored || old?.fullscreen != new.fullscreen) {
-                    restored = false
                     changeFullscreen(new.fullscreen)
-                    if (old?.fullscreen == null && restored && playerViewModel.lastPlaying) {
-                        exoPlayer.play()
+                    if (restored) {
+                        restored = false
+                        playIfLastPlaying()
                     }
                 }
             }
         }
-    }
 
-    fun onPause() {
-        when (playerViewModel.modelLiveData.value.mode) {
-            PlayerViewModel.Mode.VIDEO_EXO_PLAYER,
-            PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
+        fragment.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onPause(owner: LifecycleOwner) {
                 playerViewModel.lastPlaying = exoPlayer.isPlaying || exoPlayer.isLoading
                 exoPlayer.pause()
             }
-        }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                resetPlayer()
+
+                pvVideoExoPlayer.setControllerVisibilityListener(null)
+                exoPlayer.removeListener(playerListener)
+                fullscreenListener = null
+                downloadListener = null
+                lastMinimizeView = null
+                currentMinimizeView = null
+            }
+
+            override fun onResume(owner: LifecycleOwner) {
+                val model = playerViewModel.modelLiveData.value
+                if (model.fullscreen &&
+                    (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
+                ) {
+                    fullscreenListener?.onFullscreenChanged(true)
+                }
+            }
+        })
     }
 
-    fun onResume() {
-        val model = playerViewModel.modelLiveData.value
-        if (model.fullscreen &&
-            (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
-        ) {
-            fullscreenListener?.onFullscreenChanged(true)
-        }
-        if (playerViewModel.lastPlaying) {
-            exoPlayer.play()
+    private fun postControllerBarHeight(visible: Boolean) {
+        pvVideoExoPlayer.post {
+            currentMinimizeView?.onControlsHeightChanged?.invoke(
+                if (visible) {
+                    videoBinding.lBottomBar?.height ?: 0
+                } else {
+                    0
+                }
+            )
         }
     }
 
@@ -300,21 +310,21 @@ internal class MediaPlayerAdapter(
             } else {
                 changeFullscreen(false)
             }
+            postControllerBarHeight(pvVideoExoPlayer.isControllerVisible)
+            playIfLastPlaying()
             true
         } else {
             false
         }
     }
 
-    fun release() {
-        resetPlayer()
-        pvVideoExoPlayer.setControllerVisibilityListener(null)
-        exoPlayer.removeListener(playerListener)
-        exoPlayer.release()
-        fullscreenListener = null
-        downloadListener = null
-        lastMinimizeView = null
-        currentMinimizeView = null
+    private fun playIfLastPlaying() {
+        if (playerViewModel.lastPlaying) {
+            playerViewModel.lastPlaying = false
+
+            exoPlayer.prepare()
+            exoPlayer.play()
+        }
     }
 
     private class VideoExoPlayerBinding(exoPlayerView: PlayerView) {

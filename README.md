@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.10.3)
+# Android Usedesk SDK (v3.10.4)
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)

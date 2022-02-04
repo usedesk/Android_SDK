@@ -1,8 +1,8 @@
 package ru.usedesk.knowledgebase_sdk.domain
 
 import io.reactivex.Completable
-import io.reactivex.Scheduler
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
@@ -12,14 +12,12 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
-import toothpick.InjectConstructor
-import javax.inject.Named
 
-@InjectConstructor
 internal class KnowledgeBaseInteractor(
-        private val knowledgeApiRepository: IKnowledgeBaseApiRepository,
-        private val ioScheduler: Scheduler
+    private val knowledgeApiRepository: IKnowledgeBaseApiRepository
 ) : IUsedeskKnowledgeBase {
+
+    private val ioScheduler = Schedulers.io()
 
     override fun getSectionsRx(): Single<List<UsedeskSection>> {
         return safeSingleIo(ioScheduler) {
@@ -101,12 +99,16 @@ internal class KnowledgeBaseInteractor(
     }
 
     override fun sendRating(articleId: Long, good: Boolean) {
-        knowledgeApiRepository.sendRating(articleId,
-                good)
+        knowledgeApiRepository.sendRating(
+            articleId,
+            good
+        )
     }
 
     override fun sendRating(articleId: Long, message: String) {
-        knowledgeApiRepository.sendRating(articleId,
-                message)
+        knowledgeApiRepository.sendRating(
+            articleId,
+            message
+        )
     }
 }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
@@ -18,12 +17,12 @@ import ru.usedesk.knowledgebase_gui.screens.categories.IOnCategoryClickListener
 import ru.usedesk.knowledgebase_gui.screens.sections.IOnSectionClickListener
 import ru.usedesk.knowledgebase_gui.screens.sections.SectionsPage
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
     IOnSectionClickListener,
     IOnCategoryClickListener,
     IOnArticleClickListener,
-    IUsedeskOnBackPressedListener,
     IUsedeskOnSearchQueryListener,
     IOnTitleChangeListener {
 
@@ -52,11 +51,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
         withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
         withArticleRating = argsGetBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
+        argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)?.let {
+            UsedeskKnowledgeBaseSdk.setConfiguration(it)
+        }
 
-        toolbarDefaultAdapter = UsedeskToolbarAdapter(
-            requireActivity() as AppCompatActivity,
-            binding.toolbar
-        ).apply {
+        toolbarDefaultAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
             setBackButton {
                 requireActivity().onBackPressed()
             }
@@ -69,6 +68,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, {
             (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(it)
         }, {
+            viewModel.onSearchQuery(null)
             onBackPressed()
         })
 
@@ -91,22 +91,16 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
 
         hideKeyboard(binding.rootView)
 
-        viewModel.searchQueryLiveData.observe(viewLifecycleOwner, {
-            it?.let {
-                showSearchQuery(it)
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.searchQuery != new.searchQuery) {
+                (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(new.searchQuery)
             }
-        })
+            if (old?.showSearch != new.showSearch && new.showSearch) {
+                switchPage(ArticlesSearchPage.newInstance(withSupportButton))
+            }
+        }
 
         return binding.rootView
-    }
-
-    private fun showSearchQuery(query: String) {
-        val fragment = getLastFragment()
-        if (fragment is ArticlesSearchPage) {
-            fragment.onSearchQueryUpdate(query)
-        } else {
-            switchPage(ArticlesSearchPage.newInstance(withSupportButton))
-        }
     }
 
     private fun switchPage(
@@ -206,17 +200,36 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         private const val COMMON_TITLE_KEY = "commonTitleKey"
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
+        private const val KNOWLEDGE_BASE_CONFIGURATION = "knowledgeBaseConfiguration"
 
         @JvmStatic
         @JvmOverloads
         fun newInstance(
             withSupportButton: Boolean = true,
-            withArticleRating: Boolean = true
+            withArticleRating: Boolean = true,
+            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
         ): UsedeskKnowledgeBaseScreen {
             return UsedeskKnowledgeBaseScreen().apply {
-                arguments = Bundle().apply {
-                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-                    putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
+                arguments = createBundle(
+                    withSupportButton,
+                    withArticleRating,
+                    knowledgeBaseConfiguration
+                )
+            }
+        }
+
+        @JvmStatic
+        @JvmOverloads
+        fun createBundle(
+            withSupportButton: Boolean = true,
+            withArticleRating: Boolean = true,
+            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
+        ): Bundle {
+            return Bundle().apply {
+                putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+                putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
+                knowledgeBaseConfiguration?.let {
+                    putParcelable(KNOWLEDGE_BASE_CONFIGURATION, it)
                 }
             }
         }

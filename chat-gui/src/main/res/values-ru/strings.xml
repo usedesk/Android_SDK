@@ -7,6 +7,8 @@
     <string name="usedesk_message">@string/usedesk_string_message</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
     <string name="usedesk_loading">@string/usedesk_string_loading</string>
+    <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
+    <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
     <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
     <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
@@ -14,11 +16,14 @@
     <string name="usedesk_chat">@string/usedesk_string_chat</string>
     <string name="usedesk_feedback_thanks">@string/usedesk_string_feedback_thanks</string>
     <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
+    <string name="usedesk_download">@string/usedesk_string_download</string>
     <string name="usedesk_camera">@string/usedesk_string_camera</string>
     <string name="usedesk_storage">@string/usedesk_string_storage</string>
     <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
     <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
     <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
+    <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
+    <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
 
     <string name="usedesk_string_offline_form_send_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
     <string name="usedesk_string_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>
@@ -27,6 +32,8 @@
     <string name="usedesk_string_message">Сообщение</string>
     <string name="usedesk_string_message_input">Написать…</string>
     <string name="usedesk_string_loading">Загрузка…</string>
+    <string name="usedesk_string_no_internet_title">Нет интернета</string>
+    <string name="usedesk_string_no_internet_text">Попробуйте отключить режим полета, включить Wi-FI или мобильный интернет и проверить уровень сигнала сети</string>
     <string name="usedesk_string_today">Сегодня</string>
     <string name="usedesk_string_yesterday">Вчера</string>
     <string name="usedesk_string_download_started">Загрузка началась</string>
@@ -39,4 +46,7 @@
     <string name="usedesk_string_dangerous_file">Файл этого типа может нанести вред</string>
     <string name="usedesk_string_send_again">Отправить повторно</string>
     <string name="usedesk_string_delete_message">Удалить сообщение</string>
+    <string name="usedesk_string_download">Скачать</string>
+    <string name="usedesk_string_file_size_exceeds">Размер файла превышает %dМб:</string>
+    <string name="usedesk_string_files_size_exceeds">Размер файлов превышает %dМб:</string>
 </resources>

@@ -3,17 +3,11 @@ package ru.usedesk.common_gui
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 
 class UsedeskToolbarAdapter(
-        activity: AppCompatActivity,
-        private val binding: Binding
+    private val binding: Binding
 ) {
-
-    init {
-        activity.setSupportActionBar(binding.toolbar)
-    }
 
     fun setTitle(title: String?) {
         binding.tvTitle.text = title

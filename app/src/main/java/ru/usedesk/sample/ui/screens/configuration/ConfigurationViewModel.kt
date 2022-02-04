@@ -62,7 +62,6 @@ class ConfigurationViewModel : ViewModel() {
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
             configuration.clientInitMessage,
-            //configuration.clientAvatar,
             configuration.cacheFiles
         ).validate()
         val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(

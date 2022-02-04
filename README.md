@@ -1,4 +1,7 @@
-# Android Usedesk SDK (v3.9.0)
+# Android Usedesk SDK (v3.10.5)
+
+### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
+
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -9,9 +12,11 @@
   - [Конфигурация](#knowledge_base_configuration)
   - [Использование с GUI](#knowledge_base_gui)
   - [Использование без GUI](#knowledge_base_sdk)
-- [Список изменений](#change_list)
+- [Локализация GUI](#gui_localization)
+- [Предыдущие версии](#previous_versions)
 
 <a name="preparation"></a>
+
 ## Подключение к проекту
 
 Минимальная версия **Android 4.4 (API 19)**
@@ -31,21 +36,22 @@
 allprojects {
     repositories {
         ...
-        maven { url 'https://github.com/usedesk/Android_SDK_Maven/raw/master/' }
+        maven { url "https://jitpack.io" }
     }
 }
 ```
 
-Добавьте в dependencies `build.gradle` вашего модуля строки, для использования только SDK библиотек:
-```
-implementation 'ru.usedesk:chat-sdk:{last_version}'
-implementation 'ru.usedesk:knowledgebase-sdk:{last_version}'
-```
+Добавьте в dependencies `build.gradle` вашего модуля строки:
 
-Или для использования готовых элементов интерфейса:
 ```
-implementation 'ru.usedesk:chat-gui:{last_version}'
-implementation 'ru.usedesk:knowledgebase-gui:{last_version}'
+//sdk чата
+implementation "com.github.Usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
+//графический интерфейс чата
+implementation "com.github.Usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
+//sdk базы знаний
+implementation "com.github.Usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
+//графический интерфейс базы знаний
+implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
 ```
 
 Добавьте в файл Manifest:
@@ -73,25 +79,24 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
-| urlChat \* | String | Адрес сервера Чата в формате `pubsubsec.usedesk.ru` |
+| urlChat \* | String | Адрес сервера Чата |
 | urlOfflineForm \* | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
 | urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
 | companyId \* | String | Идентификатор компании |
-| channelId \* | String | Идентификатор канала (добавлен в **v3.1.6**) |
-| clientSignature | String? | Сигнатура, позволяющая однозначно идентифицировать клиента в системе (удалён в **v3.5.1**)|
-| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе (добавлен в **v3.5.1**). Указав null библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. Для первого входа указывается null, для последующих - полученный с сервера токен |
+| channelId \* | String | Идентификатор канала |
+| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе. Указав null библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. Для первого входа указывается null, для последующих - полученный с сервера токен |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
 | clientNote | String? | Заметка о клиенте |
 | clientPhoneNumber | Long? | Телефонный номер клиента |
-| clientAdditionalId | Long? | Дополнительный идентификатор клиента |
+| clientAdditionalId | String? | Дополнительный идентификатор клиента |
 | clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |
-| additionalFields | Map<Long, String> | Коллекция дополнительных полей, где key - Id поля, value - значение поля. Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст. (добавлен в **v3.8.0**) |
-| additionalNestedFields | List<Map<Long, String>> | Список коллекций вложенных списков, где каждый элемент списка - это коллекия значений одного вложенного списка, где key - Id поля, value - значение поля с текстом, точно совпадающим с текстом значения списка. (добавлен в **v3.8.0**) |
+| additionalFields | Map<Long, String> | Коллекция дополнительных полей, где key - Id поля, value - значение поля. Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст. |
+| additionalNestedFields | List<Map<Long, String>> | Список коллекций вложенных списков, где каждый элемент списка - это коллекия значений одного вложенного списка, где key - Id поля, value - значение поля с текстом, точно совпадающим с текстом значения списка. |
 
 \* - обязательный параметр
 
-Для кастомизации локальных уведомлений нужно создать 2 собственных класса:
+Для включения локальных уведомлений нужно создать 2 собственных класса:
 - Сервис, унаследованный от [UsedeskSimpleNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskSimpleNotificationsService.kt) (обычный сервис) или [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt) (foreground сервис). Где можно переопределить некоторые методы:
 
 | Метод | Тип возвращаемого значения | Описание события |
@@ -109,66 +114,87 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 |---------|------------------------------------|-----------------------|
 | getServiceClass | Class<?> | Класс сервиса |
 
-После чего указать SDK использовать нестандартную фабрику:
+После чего указать SDK использовать фабрику:
 
 ```
 UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory())
 ```
 
 <a name="chat_gui"></a>
+
 ### Использование с GUI
 
-Для использования готового пользовательского интерфейса чата воспользуйтесь [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt), например:
+Для использования готового пользовательского интерфейса чата
+воспользуйтесь [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt)
+, например при помощи метода `newInstance`:
 
 ```
 supportFragmentManager.beginTransaction()
-        .replace(R.id.container, UsedeskChatScreen.newInstance())
-        .commit()
+    .replace(
+    	R.id.container, 
+    	UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration)
+    ).commit()
 ```
 
-Метод `newInstance` может принять:
-- Параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
-- Параметр типа `Collection<String>` со списком расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае).
-- Параметр типа `UsedeskChatConfiguration` с конфигурацией чата. В случае если такой параметр задан, `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration` даже после пересоздания.
+Для использования с Jetpack Navigation можно воспользоваться методом `createBundle`, например:
+
+```
+navController.navigate(
+    R.id.action_configurationScreen_to_usedeskChatScreen,
+    UsedeskChatScreen.createBundle(customAgentName, rejectedFileTypes, chatConfiguration)
+)
+```
+
+Методы `newInstance` и `createBundle` принимают следующие аргументы:
+
+| Аргумент          | Тип                       |                                                              |
+| ----------------- | ------------------------- | ------------------------------------------------------------ |
+| customAgentName   | String?                   | Если задан, то все имена агентов в чате будут заменены на значение параметра. |
+| rejectedFileTypes | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
+| chatConfiguration | UsedeskChatConfiguration? | Если задан, то `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
 
 Для полноценной работы фрагмента необходимо:
-- Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет, например:
+
+- Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true`
+  если событие было обработано, либо `false` если нет, например:
 
 ```
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
     if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-        return
+		return
     }
 }
 ```
 
-- Расширить интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt) родителем, переопределив метод `onFileClick(usedeskFile: UsedeskFile)`, например:
+- Для привязки жизненного цикла ViewModel к родителю необходимо расширить
+  интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
+  .
+- Расширить
+  интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt)
+  родителем, переопределив метод `onFileClick`, например:
 
 ```
-override fun onFileClick(usedeskFile: UsedeskFile ) {
+override fun onFileClick(usedeskFile: UsedeskFile) {
     supportFragmentManager.beginTransaction()
         .replace(R.id.container, UsedeskShowFileScreen.newInstance(usedeskFile))
         .commit()
+    //или
+    navController.navigate(
+    	R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
+    	UsedeskShowFileScreen.createBundle(usedeskFile)
+	)
 }
 ```
 
-- Вызывать метод `clear()` перед выходом из фрагмента, для освобождения ресурсов изображений и остановки загрузок, например:
-
-```
-override fun onBackPressed() {
-    val fragment = getCurrentFragment()
-    if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-        return
-    } else if (fragment is UsedeskChatScreen) {
-        fragment.clear()
-        goPreviousFragment()
-    }
-}
-```
+- Расширить
+  интерфейс [IUsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnDownloadListener.kt)
+  родителем, переопределив метод `onDownload`.
 
 <a name="chat_gui_files"></a>
-Начиная с **v3.0.10** для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
+
+- Для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml`
+  следующие строки:
 
 ```
 <provider
@@ -182,7 +208,11 @@ override fun onBackPressed() {
 </provider>
 ```
 
+- Для возможности отображения видео во весь экран необходимо расширить
+  интерфейс [IUsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFullscreenListener.kt)
+
 <a name="chat_sdk"></a>
+
 ### Использование без GUI
 
 После установки конфигурации нужно проинициализировать чат:
@@ -230,7 +260,7 @@ UsedeskChatSdk.release(false)
 | onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из чата при каждом изменении |
 | onMessageUpdated | UsedeskMessage | Обновление полученного ранее сообщения |
 | onFeedbackReceived | - | Отзыв доставлен |
-| onOfflineFormExpected | UsedeskOfflineFormSettings | Ожидается Форма Обратной Связи |
+| onOfflineFormExpected | UUsedeskOfflineFormSettings| Ожидается Форма Обратной Связи |
 | onException | UsedeskException | Возникшее исключение |
 
 [IUsedeskActionListenerRx](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListenerRx.kt) - класс для прослушивания событий чата:
@@ -280,32 +310,58 @@ UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 \* - обязательный параметр
 
 <a name="knowledge_base_gui"></a>
+
 ### Использование с GUI
 
-Для использования готового пользовательского интерфейса воспользуйтесь [UsedeskKnowledgeBaseFragment](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/main/UsedeskKnowledgeBaseScreen.kt), например:
+Для использования готового пользовательского интерфейса
+воспользуйтесь [UsedeskKnowledgeBaseFragment](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/main/UsedeskKnowledgeBaseScreen.kt)
+, например при помощи метода `newInstance`:
 
 ```
 supportFragmentManager().beginTransaction()
-        .replace(R.id.container, UsedeskKnowledgeBaseFragment.newInstance())
-        .commit()
+    .replace(
+    	R.id.container, 
+    	UsedeskKnowledgeBaseFragment.newInstance(
+    		withSupportButton, 
+    		withArticleRating, 
+    		knowledgeBaseConfiguration
+    	)
+    ).commit()
+```
+
+Для использования с Jetpack Navigation можно воспользоваться методом `createBundle`, например:
+
+```
+navController.navigate(
+    R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+    UsedeskKnowledgeBaseScreen.createBundle(
+    	withSupportButton, 
+    	withArticleRating, 
+    	knowledgeBaseConfiguration
+    )
+)
 ```
 
 Для полноценной работы фрагмента необходимо:
-- Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет, например:
+
+- Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true`
+  если событие было обработано, либо `false` если нет, например:
+
 ```
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
     if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-        return
+		return
     }
 }
 ```
 
 - Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`, например:
+
 ```
 override fun onSupportClick() {
-    supportFragmentManager().beginTransaction()
-        .replace(R.id.container, UsedeskChatScreen().newInstance())
+	supportFragmentManager().beginTransaction()
+		.replace(R.id.container, UsedeskChatScreen().newInstance())
         .commit()
 }
 ```
@@ -334,129 +390,26 @@ UsedeskKnowledgeBaseSdk.release()
 Попытка получить экземпляр без инициализации или после освобожения вызовет исключение.
 
 <a name="gui_localization"></a>
+
 ### Локализация GUI
 
-Начиная с **v3.1.6** SDK поддерживает следующие языки:
+SDK поддерживает следующие языки:
+
 - английский (по умолчанию),
 - русский,
 - испанский,
 - португальский.
 
-Помимо этого можно изменить существующий язык или добавить новый. Для этого необходимо скопировать значения из файла [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml"), который находится в корне проекта, и добавить во все файлы strings.xml вашего проекта. После чего можно подставить свои значения строковых ресурсов.
-**Важно!** В случае изменения ссылок на строковые ресурсы при кастомизации приложения изменение строковых ресурсов таким способом может не привеcти к желаемому результату.
+Помимо этого можно изменить существующий язык или добавить новый. Для этого необходимо скопировать
+значения из
+файла [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml")
+, который находится в корне проекта, и добавить во все файлы strings.xml вашего проекта. После чего
+можно подставить свои значения строковых ресурсов.
+**Важно!** В случае изменения ссылок на строковые ресурсы при кастомизации приложения изменение
+строковых ресурсов таким способом может не привеcти к желаемому результату.
 
-<a name="change_list"></a>
-### Список изменений
-- v2.1.4
-  - Исправлено прикрепление изображений/файлов
-  - Исправлена ошибка инициализации чата без сообщений
-  - Исправлено отсутствие уведомлений
-  - Добавлена валидация значений конфигурации чата
-- v2.1.6
-  - Исправлена ошибка сбрасывания истории чата
-- v2.1.8
-  - Исправлена ошибка при которой первое сообщение пользователя было неопознанным
-- v2.1.11
-  - Исправлено падение сервиса при отсутствии телефона или доп id клиента в конфигурации
-  - Исправлено отображение текста и изображения в сообщении
-  - Исправлено отображение текста кнопок в сообщении, если они должны отображаться
-  - Исправлено падение в семпле при переполнении поля Client Additional ID
-- v2.1.12
-  - Исправлена ошибка, при которой не отображался прикреплённый к сообщению файл, отправленный из интерфейса тикета
-- v2.1.13
-  - Метод отправки файлов заменён на новый с ограничением в 150мб
-- v2.1.17
-  - Исправлена работа OkHttpClient, Glide на версиях API 19-21
-  - Исправлено отображение текста в БЗ на версиях API 19-25
-  - Изменены некоторые иконки чата
-  - Изменена кастомизация фона сообщений
-  - Изменены кнопки в сообщении оператора
-  - Исправлена работа атбирутов кастомизации в теме
-  - Исправлена обработка невалидных кнопок в сообщениях чата
-- v3.0.0
-  - Библиотека теперь полностью на Kotlin
-  - Полностью переделан дизайн и его кастомизация
-  - Переделаны слушатели событий, теперь их может быть несколько
-  - Все внутренние классы библиотеки скрыты
-  - Доработана работа с сервером, устранены возможные ошибки
-  - Добавлены параметры адресов в конфигурацию
-- v3.0.2
-  - Изменена конфигурация чата, добавлен параметр clientSignature, остальные параметры клиента стали необязательными
-- v3.0.5
-  - Исправлена работа окна превью файла:
-    - Исправлен сброс ссылки при ошибке загрузки изображения
-    - Исправлена работа интерфейса после переворота устройства
-  - Добавлен метод очистки загрузок изображений чата
-  - Исправлено задвоение сообщений при разрыве соединения в чате
-  - Прикрепление файлов в чате теперь дополняет ранее прикреплённые файлы, с камеры также можно прикрепить более 1го файла
-- v3.0.7
-  - Добавлена возможность отключения кнопки "Чат" в Базе Знаний
-  - Добавлена возможность отключения оценки в статьях Базы знаний
-  - Теперь вместе с оценкой чата отправляется id сообщения, в котором поставилась оценка
-- v3.0.8
-  - Добавлены статусы отправки сообщений
-  - Исправлен краш при прерывании асинхронных операций (например отправка сообщения с изображением)
-- v3.0.10
-  - Исправлена ошибка прикрепления фото с камеры на версиях API 24 и выше
-  - Исправлен таймаут отправки файлов
-  - Отправляемые файлы сразу отображаются в чате
-  - Максимальный размер отправляемых файлов ограничен в 100мб
-  - **Важно!** В README.md [дополнен раздел](#chat_gui_files) "Чат -> Использование с GUI"
-- v3.1.6
-  - Переработана вкладка Формы Обратной Связи, добавлены аргументы и стили кастомизации для новых элементов и удалены старые
-  - Изменена логика отображения внутренних вкладок в окне Чата без затрагивания кастомизации
-  - Исправлена ошибка скрытия аватарки агента, теперь параметр visibility в стиле обрабатывается корректно
-  - Добавлены Английский, Испанский и Португальский языки, а также шаблон строковых ресурсов
-  - В README.md [добавлен раздел](#gui_localization) "Локализация"
-  - Исправлена инициализации чата в случае отсутствия сообщений
-  - **Важно!** В конфигурацию чата добавлен **обязательный** параметр `channelId`
-- v3.1.8
-  - Исправлена ошибка NullSafeMutableLiveData
-  - Добавлена валидация на companyId и channelId в конфигурации Чата
-- v3.1.9
-  - Добавлен парсинг изображений из текста сообщений в Чате
-  - Исправлено отображение расширений файлов в Чате
-- v3.2.0
-  - Добавлен параметр `rejectedFileExtensions` в метод `UsedeskChatScreen.newInstance()` для фильтрации опасных файлов
-  - Подправлена вёрстка `usedesk_item_chat_message_file`, добавлены параметры в стиль `Usedesk.Chat.Message.File.Size.Text`
-  - **Важно!** Обновлён файл `strings_template.xml`
-- v3.2.1
-  - Исправлена ошибка при вызове метода `connect()` после `disconnect()`
-  - Добавлен [файл конфигурации ProGuard](https://github.com/usedesk/Android_SDK/blob/master/app/proguard-rules.pro "proguard-rules.pro") для примера обфускации библиотеки
-- v3.3.1
-  - **Важно!** Добавлены аргументы кастомизации для заднего фона вкладок
-  - Исправлено сохранение состояний фрагментов при пересоздании активити
-  - Добавлен параметр конфигурации в `UsedeskChatScreen`
-- v3.4.1
-  - **Важно!** Изменена кастомизация:
-    - Некоторые атрибуты удалены, а их функционал перенесён в стили
-    - От стиля `Usedesk.Chat.Screen` отделены некоторые атрибуты и перенесены в отдельные стили:
-      - `Usedesk.Chat.Screen.Loading.Page`
-      - `Usedesk.Chat.Screen.Messages.Page`
-      - `Usedesk.Chat.Screen.Offline.Form.Page`
-      - `Usedesk.Chat.Screen.Offline.Form.Selector.Page`
-    - Добавлена кастомизация для всех недостающих элементов (Layout, Toolbar, View)
-  - Исправлена ошибка сброса оценки в чате
-  - Исправлена ошибка задваивания сообщений агента в чате после сворачивания
-- v3.4.2
-  - Исправлена обработка ответов от сервера по сокету
-- v3.5.1
-  - Обновлён клиент socket.io для работы с версиями 3.x/4.x
-  - В [конфигурации чата](#chat_configuration) параметр `clientSignature` заменён на `clientToken` с
-    новой логикой работы.
-- v3.6.0
-  - Добавлена фильтрация событий отображения ФОС по статусу тикета
-  - Обновлены методы прикрепления файлов
-- v3.7.2
-  - Добавлены статусы сообщений (черновик, не отправлено, отправлено) с возможностью заменить
-    дефолтное хранилище сообщений
-  - Добавлена кнопка скролла вниз чата
-  - Исправлен краш приложения на версии API 19
-- v3.8.1
-  - Добавлена возможность передачи дополнительных полей в конфигурацию чата
-- v3.8.2
-  - Исправлена ошибка миграции конфигурации чата
+<a name="last_versions"></a>
 
-- v3.9.0
-  - Убран сброс скругления изображения в сообщении
-  - Добавлена реакция кнопок оценки в чате на значения `layout_gravity=start/end/left/right` для перестановки
+### Предыдущие версии
+
+- [v3.9.0](https://github.com/usedesk/Android_SDK/tree/3ee34eaeeaa0668e94cf8dadf78afad6901b52c4)

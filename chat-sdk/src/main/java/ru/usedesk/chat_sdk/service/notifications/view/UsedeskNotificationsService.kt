@@ -12,7 +12,6 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
 import ru.usedesk.chat_sdk.entity.UsedeskMessageText
 import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsModel
 import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsPresenter
-import ru.usedesk.common_sdk.utils.getFromJsonExtra
 
 abstract class UsedeskNotificationsService : Service() {
     private lateinit var presenter: UsedeskNotificationsPresenter
@@ -54,9 +53,8 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val chatConfiguration = intent.getFromJsonExtra(
-            USEDESK_CHAT_CONFIGURATION_KEY,
-            UsedeskChatConfiguration::class.java
+        val chatConfiguration = intent.getParcelableExtra<UsedeskChatConfiguration>(
+            USEDESK_CHAT_CONFIGURATION_KEY
         )
         if (chatConfiguration != null) {
             UsedeskChatSdk.setConfiguration(chatConfiguration)

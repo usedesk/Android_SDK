@@ -1,6 +1,5 @@
 package ru.usedesk.sample.ui.screens.configuration
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
@@ -10,44 +9,22 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
+import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
 
-class ConfigurationScreen : Fragment() {
+class ConfigurationScreen : UsedeskFragment() {
 
     private val viewModel: ConfigurationViewModel by viewModels()
     private lateinit var binding: ScreenConfigurationBinding
-
-    private lateinit var getContent: ActivityResultLauncher<String>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        getContent =
-            requireActivity().registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-                if (uri != null) {
-                    onAvatar(uri.toString())
-                }
-            }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,27 +36,42 @@ class ConfigurationScreen : Fragment() {
             container, false
         )
 
-        viewModel.configurationLiveData.observe(viewLifecycleOwner, {
+        viewModel.configurationLiveData.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfiguration(it)
                 viewModel.configurationLiveData.removeObservers(viewLifecycleOwner)
             }
-        })
-        viewModel.configurationValidation.observe(viewLifecycleOwner, {
+        }
+        viewModel.configurationValidation.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfigurationValidation(it)
             }
-        })
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner, {
+        }
+        viewModel.goToSdkEvent.observe(viewLifecycleOwner) {
             it?.let {
                 onGoToSdkEvent(it)
             }
-        })
+        }
         binding.btnGoToSdk.setOnClickListener {
             onGoToSdk()
         }
-        binding.switchForeground.setOnCheckedChangeListener { _, _ ->
-            stopService(requireContext())
+        binding.tvServiceType.setOnClickListener {
+            PopupMenu(requireContext(), binding.tvServiceType).apply {
+                inflate(R.menu.usedesk_service_menu)
+                setOnMenuItemClickListener {
+                    updateServiceValue(
+                        when (it.itemId) {
+                            R.id.service_none -> null
+                            R.id.service_simple -> false
+                            R.id.service_foreground -> true
+                            else -> return@setOnMenuItemClickListener false
+                        }
+                    )
+                    stopService(requireContext())
+                    true
+                }
+                show()
+            }
         }
         try {
             val version = requireContext().packageManager
@@ -87,29 +79,6 @@ class ConfigurationScreen : Fragment() {
             binding.tvVersion.text = "v$version"
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
-        }
-        binding.ivClientAvatar.setOnClickListener {
-            Dexter.withContext(requireContext())
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                        getContent.launch("image/*")
-                    }
-
-                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                        Toast.makeText(requireContext(), "Need permissions", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        p0: PermissionRequest?,
-                        p1: PermissionToken?
-                    ) {
-                    }
-                }).check()
-        }
-        binding.ivClientAvatarReset.setOnClickListener {
-            onAvatar(null)
         }
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
@@ -122,6 +91,16 @@ class ConfigurationScreen : Fragment() {
         initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
         return binding.root
+    }
+
+    private fun updateServiceValue(foregroundService: Boolean?) {
+        binding.tvServiceType.text = getString(R.string.service_type_title) + ": " + getString(
+            when (foregroundService) {
+                true -> R.string.service_type_foreground
+                false -> R.string.service_type_simple
+                null -> R.string.service_type_none
+            }
+        )
     }
 
     override fun onPause() {
@@ -183,11 +162,17 @@ class ConfigurationScreen : Fragment() {
             binding.etClientName.text.toString(),
             binding.etClientNote.text.toString(),
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
-            binding.etClientAdditionalId.text.toString().toLongOrNull(),
+            binding.etClientAdditionalId.text.toString(),
             binding.etClientInitMessage.text.toString(),
             viewModel.avatarLiveData.value,
             binding.etCustomAgentName.text.toString(),
-            binding.switchForeground.isChecked,
+            when {
+                binding.tvServiceType.text.contains(getString(R.string.service_type_foreground)) ->
+                    true
+                binding.tvServiceType.text.contains(getString(R.string.service_type_simple)) ->
+                    false
+                else -> null
+            },
             binding.switchCacheFiles.isChecked,
             additionalFields,
             additionalNestedFields,
@@ -195,26 +180,6 @@ class ConfigurationScreen : Fragment() {
             binding.switchKbWithSupportButton.isChecked,
             binding.switchKbWithArticleRating.isChecked
         )
-    }
-
-    private fun onAvatar(avatar: String?) {
-        viewModel.setAvatar(avatar)
-        when (avatar) {
-            null -> {
-                binding.ivClientAvatar.setImageResource(R.drawable.usedesk_background_avatar_def)
-                binding.tvClientAvatar.text = "Do not change client avatar"
-            }
-            "" -> {
-                binding.ivClientAvatar.setImageResource(R.drawable.usedesk_background_avatar_def)
-                binding.tvClientAvatar.text = "Reset client avatar"
-            }
-            else -> {
-                Glide.with(requireContext().applicationContext)
-                    .load(avatar)
-                    .into(binding.ivClientAvatar)
-                binding.tvClientAvatar.text = "Change client avatar"
-            }
-        }
     }
 
     private fun onNewConfiguration(configuration: Configuration) {
@@ -233,7 +198,7 @@ class ConfigurationScreen : Fragment() {
         binding.etClientAdditionalId.setText(configuration.clientAdditionalId?.toString() ?: "")
         binding.etClientInitMessage.setText(configuration.clientInitMessage)
         binding.etCustomAgentName.setText(configuration.customAgentName)
-        binding.switchForeground.isChecked = configuration.foregroundService
+        updateServiceValue(configuration.foregroundService)
         binding.switchCacheFiles.isChecked = configuration.cacheFiles
         setAdditionalField(
             binding.etAdditionalField1Id,
@@ -275,7 +240,6 @@ class ConfigurationScreen : Fragment() {
         binding.switchKb.isChecked = configuration.withKb
         binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
         binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
-        onAvatar(configuration.clientAvatar)
     }
 
     private fun setAdditionalField(

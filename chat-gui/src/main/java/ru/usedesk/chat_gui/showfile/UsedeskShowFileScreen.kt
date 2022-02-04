@@ -1,21 +1,17 @@
 package ru.usedesk.chat_gui.showfile
 
-import android.app.DownloadManager
-import android.content.Context.DOWNLOAD_SERVICE
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
+import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.*
@@ -48,11 +44,18 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
 
         binding.ivShare.setOnClickListener {
-            onShareFile(viewModel.fileLiveData.value?.data)
+            onShareFile(viewModel.modelLiveData.value.file)
         }
 
         binding.ivDownload.setOnClickListener {
-            onDownloadFile(viewModel.fileLiveData.value?.data)
+            viewModel.modelLiveData.value.file?.let { file ->
+                needWriteExternalPermission(this) {
+                    findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                        file.content,
+                        file.name
+                    )
+                }
+            }
         }
 
         binding.ivError.setOnClickListener {
@@ -62,30 +65,56 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
 
-        argsGetObject(FILE_KEY, UsedeskFile::class.java)?.let { file ->
-            viewModel.init(file)
-        }
+        return binding.rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        registerPermissions()
 
         hideKeyboard(binding.rootView)
 
-        initAndObserve(viewLifecycleOwner, viewModel.fileLiveData) {
-            it?.process { file ->
-                onFileUrl(file)
+        argsGetParcelable<UsedeskFile>(FILE_KEY)?.let { file ->
+            viewModel.init(file)
+        }
+
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.file != new.file ||
+                old?.error != new.error && !new.error
+            ) {
+                if (new.file != null) {
+                    if (new.file.isImage()) {
+                        showInstead(binding.lImage, binding.lFile, true)
+
+                        binding.tvTitle.text = new.file.name
+                        binding.ivImage.setOnClickListener {
+                            viewModel.onImageClick()
+                        }
+                        showImage(binding.ivImage,
+                            0,
+                            new.file.content,
+                            binding.pbLoading,
+                            binding.ivError,
+                            { viewModel.onLoaded(true) },
+                            { viewModel.onLoaded(false) })
+                    } else {
+                        showInstead(binding.lImage, binding.lFile, false)
+
+                        binding.tvFileName.text = new.file.name
+                        binding.tvFileSize.text = new.file.size
+                        viewModel.onLoaded(true)
+                    }
+                }
+            }
+            if (old?.error != new.error) {
+                onError(new.error)
+            }
+            if (old?.panelShow != new.panelShow) {
+                binding.lToolbar.visibility = visibleGone(new.panelShow)
+                binding.lBottom.visibility = visibleGone(new.panelShow)
             }
         }
-
-        initAndObserve(viewLifecycleOwner, viewModel.errorLiveData) {
-            it?.let {
-                onError(it)
-            }
-        }
-
-        initAndObserve(viewLifecycleOwner, viewModel.panelShowLiveData) {
-            binding.lToolbar.visibility = visibleGone(it == true)
-            binding.lBottom.visibility = visibleGone(it == true)
-        }
-
-        return binding.rootView
     }
 
     private fun setBlur(blurView: BlurView) {
@@ -100,32 +129,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         showInstead(binding.ivError, binding.ivImage, error == true)
     }
 
-    private fun onFileUrl(usedeskFile: UsedeskFile?) {
-        if (usedeskFile != null) {
-            if (usedeskFile.isImage()) {
-                showInstead(binding.lImage, binding.lFile, true)
-
-                binding.tvTitle.text = usedeskFile.name
-                binding.ivImage.setOnClickListener {
-                    viewModel.onImageClick()
-                }
-                showImage(binding.ivImage,
-                    0,
-                    usedeskFile.content,
-                    binding.pbLoading,
-                    binding.ivError,
-                    { viewModel.onLoaded(true) },
-                    { viewModel.onLoaded(false) })
-            } else {
-                showInstead(binding.lImage, binding.lFile, false)
-
-                binding.tvFileName.text = usedeskFile.name
-                binding.tvFileSize.text = usedeskFile.size
-                viewModel.onLoaded(true)
-            }
-        }
-    }
-
     private fun onShareFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
             ShareCompat.IntentBuilder
@@ -136,52 +139,20 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
     }
 
-    private fun onDownloadFile(usedeskFile: UsedeskFile?) {
-        if (usedeskFile != null) {
-            UsedeskPermissionUtil.needWriteExternalPermission(binding, this) {
-                try {
-                    val request = DownloadManager.Request(Uri.parse(usedeskFile.content)).apply {
-                        setDestinationInExternalPublicDir(
-                            Environment.DIRECTORY_DOWNLOADS,
-                            usedeskFile.name
-                        )
-                        allowScanningByMediaScanner()
-                        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        setTitle(usedeskFile.name)
-                    }
-
-                    val downloadManager =
-                        (requireActivity().getSystemService(DOWNLOAD_SERVICE) as DownloadManager?)
-                    val id = downloadManager?.enqueue(request)
-                    if (id != null) {
-                        val description = downloadStatusStyleValues.getString(R.attr.usedesk_text_1)
-                        Toast.makeText(
-                            context,
-                            "$description:\n${usedeskFile.name}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } catch (e: Exception) {
-                    val description = downloadStatusStyleValues.getString(R.attr.usedesk_text_2)
-                    Toast.makeText(
-                        context,
-                        "$description:\n${usedeskFile.name}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-    }
-
     companion object {
-        private const val FILE_KEY = "fileUrlKey"
+        private const val FILE_KEY = "fileKey"
 
         @JvmStatic
         fun newInstance(usedeskFile: UsedeskFile): UsedeskShowFileScreen {
             return UsedeskShowFileScreen().apply {
-                arguments = Bundle().apply {
-                    argsPutObject(this, FILE_KEY, usedeskFile)
-                }
+                arguments = createBundle(usedeskFile)
+            }
+        }
+
+        @JvmStatic
+        fun createBundle(usedeskFile: UsedeskFile): Bundle {
+            return Bundle().apply {
+                putParcelable(FILE_KEY, usedeskFile)
             }
         }
     }

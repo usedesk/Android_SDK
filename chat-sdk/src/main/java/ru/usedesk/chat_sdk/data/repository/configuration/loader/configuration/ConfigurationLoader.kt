@@ -7,9 +7,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import toothpick.InjectConstructor
 
-@InjectConstructor
 internal class ConfigurationLoader(
     context: Context,
     val gson: Gson
@@ -110,7 +108,7 @@ internal class ConfigurationLoader(
                             clientName = clientName,
                             clientNote = null,
                             clientPhoneNumber = clientPhone?.toLongOrNull(),
-                            clientAdditionalId = clientAdditionalId?.toLongOrNull(),
+                            clientAdditionalId = clientAdditionalId,
                             clientInitMessage = clientInitMessage
                         )
                     )

@@ -17,7 +17,6 @@ internal class FabToBottomAdapter(
     lifecycleOwner: LifecycleOwner,
     onClickListener: () -> Unit
 ) {
-    private var lastButton: Boolean? = null
     private val animationIn: Animation
     private val animationOut: Animation
 
@@ -61,18 +60,15 @@ internal class FabToBottomAdapter(
         fabToBottom.setOnClickListener {
             onClickListener()
         }
-        viewModel.fabToBottomLiveData.observe(lifecycleOwner) {
-            if (it != null) {
-                if (lastButton == null) {
-                    fabToBottom.visibility = visibleGone(it)
-                } else {
-                    if (it == true && lastButton == false) {
-                        fabToBottom.startAnimation(animationIn)
-                    } else if (it == false && lastButton == true) {
-                        fabToBottom.startAnimation(animationOut)
-                    }
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.fabToBottom != new.fabToBottom) {
+                if (old?.fabToBottom == null) {
+                    fabToBottom.visibility = visibleGone(new.fabToBottom)
+                } else if (new.fabToBottom && !old.fabToBottom) {
+                    fabToBottom.startAnimation(animationIn)
+                } else if (!new.fabToBottom && old.fabToBottom) {
+                    fabToBottom.startAnimation(animationOut)
                 }
-                lastButton = it
             }
         }
     }

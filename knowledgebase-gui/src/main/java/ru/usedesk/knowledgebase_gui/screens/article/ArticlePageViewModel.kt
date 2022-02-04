@@ -1,36 +1,47 @@
 package ru.usedesk.knowledgebase_gui.screens.article
 
-import androidx.lifecycle.MutableLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
-internal class ArticlePageViewModel : UsedeskViewModel() {
+internal class ArticlePageViewModel : UsedeskViewModel<ArticlePageViewModel.Model>(Model()) {
 
-    val articlesLiveData = MutableLiveData<List<UsedeskArticleInfo>?>()
-    val selectedPositionLiveData = MutableLiveData<Int?>(0)
-    val selectedArticleLiveData = MutableLiveData<UsedeskArticleInfo?>()
-
-    fun init(categoryId: Long,
-             articleId: Long) {
+    fun init(
+        categoryId: Long,
+        articleId: Long
+    ) {
         doInit {
             doIt(UsedeskKnowledgeBaseSdk.requireInstance()
-                    .getArticlesRx(categoryId), onValue = { articles ->
-                articlesLiveData.postValue(articles)
-
-                val position = articles.indexOfFirst {
+                .getArticlesRx(categoryId), { articles ->
+                var position = articles.indexOfFirst {
                     it.id == articleId
                 }
-                if (position >= 0) {
-                    selectedArticleLiveData.postValue(articles[position])
-                    selectedPositionLiveData.postValue(position)
+                if (position < 0) {
+                    position = 0
+                }
+                setModel { model ->
+                    model.copy(
+                        articles = articles,
+                        selectedPosition = position,
+                        selectedArticle = articles[position]
+                    )
                 }
             })
         }
     }
 
     fun onSelect(position: Int) {
-        selectedPositionLiveData.value = position
-        selectedArticleLiveData.value = articlesLiveData.value?.getOrNull(position)
+        setModel { model ->
+            model.copy(
+                selectedPosition = position,
+                selectedArticle = model.articles.getOrNull(position)
+            )
+        }
     }
+
+    data class Model(
+        val articles: List<UsedeskArticleInfo> = listOf(),
+        val selectedPosition: Int = 0,
+        val selectedArticle: UsedeskArticleInfo? = null
+    )
 }

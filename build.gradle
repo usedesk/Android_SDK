@@ -1,24 +1,26 @@
 buildscript {
-    ext.kotlin_version = "1.5.31"
+    ext.kotlinVersion = "1.6.10"
+    ext.kotlinCoroutinesVersion = "1.6.0"
+    ext.daggerVersion = "2.40.5"
+    ext.navVersion = "2.4.0"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.2.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:7.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "3.9.0"
+    project.version = "3.10.5"
 
     repositories {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-        maven { url "https://github.com/usedesk/Android_SDK_Maven/raw/master/" }
     }
 }
 

@@ -1,50 +1,59 @@
 package ru.usedesk.knowledgebase_gui.screens.article.item
 
-import androidx.lifecycle.MutableLiveData
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
-internal class ArticleItemViewModel : UsedeskViewModel() {
-
-    val articleContentLiveData = MutableLiveData(ArticleContentState.loading())
+internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Model>(Model()) {
 
     fun init(articleId: Long) {
         doInit {
-            doIt(UsedeskKnowledgeBaseSdk.requireInstance()
-                    .getArticleRx(articleId), onValue = { articleContent ->
-                articleContentLiveData.postValue(ArticleContentState.loaded(articleContent))
-                doIt(UsedeskKnowledgeBaseSdk.requireInstance().addViewsRx(articleContent.id))
-            }, onThrowable = {
-                articleContentLiveData.postValue(ArticleContentState.failed())
-            })
+            doIt(
+                UsedeskKnowledgeBaseSdk.requireInstance()
+                    .getArticleRx(articleId), { articleContent ->
+                    setModel { model ->
+                        model.copy(
+                            state = State.LOADED,
+                            articleContent = articleContent
+                        )
+                    }
+                    justDoIt(
+                        UsedeskKnowledgeBaseSdk.requireInstance()
+                            .addViewsRx(articleContent.id)
+                    )
+                }, {
+                    setModel { model ->
+                        model.copy(
+                            state = State.FAILED,
+                            articleContent = null
+                        )
+                    }
+                })
         }
     }
 
     fun sendArticleRating(articleId: Long, good: Boolean) {
-        justDoIt(UsedeskKnowledgeBaseSdk.requireInstance()
-                .sendRatingRx(articleId, good))
+        justDoIt(
+            UsedeskKnowledgeBaseSdk.requireInstance()
+                .sendRatingRx(articleId, good)
+        )
     }
 
     fun sendArticleRating(articleId: Long, message: String) {
-        justDoIt(UsedeskKnowledgeBaseSdk.requireInstance()
-                .sendRatingRx(articleId, message))
+        justDoIt(
+            UsedeskKnowledgeBaseSdk.requireInstance()
+                .sendRatingRx(articleId, message)
+        )
     }
 
-    class ArticleContentState private constructor(
-            val state: State,
-            val articleContent: UsedeskArticleContent? = null
-    ) {
-        companion object {
-            fun loading() = ArticleContentState(State.LOADING)
-            fun failed() = ArticleContentState(State.FAILED)
-            fun loaded(articleContent: UsedeskArticleContent) = ArticleContentState(State.LOADED, articleContent)
-        }
+    data class Model(
+        val state: State = State.LOADING,
+        val articleContent: UsedeskArticleContent? = null
+    )
 
-        enum class State {
-            LOADING,
-            LOADED,
-            FAILED
-        }
+    enum class State {
+        LOADING,
+        LOADED,
+        FAILED
     }
 }

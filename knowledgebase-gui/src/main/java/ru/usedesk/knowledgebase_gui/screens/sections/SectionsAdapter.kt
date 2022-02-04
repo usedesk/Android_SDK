@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
@@ -19,16 +20,40 @@ internal class SectionsAdapter(
     private val onSectionClick: (Long, String) -> Unit
 ) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>() {
 
-    private var sectionList = listOf<UsedeskSection>()
+    private var sections = listOf<UsedeskSection>()
 
     init {
         recyclerView.adapter = this
-        viewModel.sectionsLiveData.observe(lifecycleOwner) {
-            it?.let {
-                if (sectionList != it) {
-                    sectionList = it
-                    notifyDataSetChanged()
-                }
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.sections != new.sections) {
+                val oldItems = sections
+                val newItems = new.sections
+                sections = newItems
+
+                DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                    override fun getOldListSize() = oldItems.size
+
+                    override fun getNewListSize() = newItems.size
+
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldItem = oldItems[oldItemPosition]
+                        val newItem = newItems[newItemPosition]
+                        return oldItem.id == newItem.id
+                    }
+
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int
+                    ): Boolean {
+                        val oldItem = oldItems[oldItemPosition]
+                        val newItem = newItems[newItemPosition]
+                        return oldItem.title == newItem.title &&
+                                oldItem.thumbnail == newItem.thumbnail
+                    }
+                }).dispatchUpdatesTo(this)
             }
         }
     }
@@ -45,10 +70,10 @@ internal class SectionsAdapter(
     }
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
-        sectionViewHolder.bind(sectionList[i])
+        sectionViewHolder.bind(sections[i])
     }
 
-    override fun getItemCount(): Int = sectionList.size
+    override fun getItemCount(): Int = sections.size
 
     inner class SectionViewHolder(
         private val binding: Binding

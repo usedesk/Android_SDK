@@ -3,16 +3,14 @@ package ru.usedesk.chat_sdk.data.repository.configuration.loader.token
 import android.content.Context
 import android.content.SharedPreferences
 import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
-import toothpick.InjectConstructor
 
-@InjectConstructor
 internal class TokenLoader(
-        context: Context
+    context: Context
 ) : DataLoader<String>(), ITokenLoader {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-            PREF_NAME,
-            Context.MODE_PRIVATE
+        PREF_NAME,
+        Context.MODE_PRIVATE
     )
 
     override fun loadData(): String? {
@@ -21,14 +19,14 @@ internal class TokenLoader(
 
     override fun saveData(data: String) {
         sharedPreferences.edit()
-                .putString(KEY_TOKEN, data)
-                .apply()
+            .putString(KEY_TOKEN, data)
+            .apply()
     }
 
     override fun clearData() {
         sharedPreferences.edit()
-                .remove(KEY_TOKEN)
-                .apply()
+            .remove(KEY_TOKEN)
+            .apply()
     }
 
     companion object {

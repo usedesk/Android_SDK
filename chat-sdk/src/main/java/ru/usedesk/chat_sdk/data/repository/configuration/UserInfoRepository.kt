@@ -4,12 +4,10 @@ import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IC
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
-import toothpick.InjectConstructor
 
-@InjectConstructor
 internal class UserInfoRepository(
-    private val configurationDataLoader: IConfigurationLoader,
-    private val tokenDataLoader: ITokenLoader
+    private val configurationLoader: IConfigurationLoader,
+    private val tokenLoader: ITokenLoader
 ) : IUserInfoRepository {
 
     @Throws(UsedeskDataNotFoundException::class)
@@ -22,17 +20,17 @@ internal class UserInfoRepository(
     override fun getConfigurationNullable(
         configuration: UsedeskChatConfiguration
     ): UsedeskChatConfiguration? {
-        configurationDataLoader.initLegacyData {
-            tokenDataLoader.getDataNullable()
+        configurationLoader.initLegacyData {
+            tokenLoader.getDataNullable()
         }
-        val configurations = configurationDataLoader.getDataNullable()
+        val configurations = configurationLoader.getDataNullable()
         return configurations?.firstOrNull {
             isConfigurationEquals(configuration, it)
         }
     }
 
     override fun setConfiguration(configuration: UsedeskChatConfiguration) {
-        var configurations = (configurationDataLoader.getDataNullable() ?: arrayOf()).map {
+        var configurations = (configurationLoader.getDataNullable() ?: arrayOf()).map {
             if (isConfigurationEquals(configuration, it)) {
                 configuration
             } else {
@@ -45,9 +43,9 @@ internal class UserInfoRepository(
             configurations
         }
         if (configurations.isEmpty()) {
-            configurationDataLoader.clearData()
+            configurationLoader.clearData()
         } else {
-            configurationDataLoader.setData(configurations.toTypedArray())
+            configurationLoader.setData(configurations.toTypedArray())
         }
     }
 

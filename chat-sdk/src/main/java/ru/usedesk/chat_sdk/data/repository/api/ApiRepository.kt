@@ -1,16 +1,16 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import android.net.Uri
-import android.util.Base64.encodeToString
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
@@ -24,17 +24,15 @@ import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
-import toothpick.InjectConstructor
+import java.io.File
 import java.io.IOException
 import java.util.*
 
-@InjectConstructor
 internal class ApiRepository(
     private val socketApi: SocketApi,
     private val multipartConverter: IMultipartConverter,
     private val initChatResponseConverter: InitChatResponseConverter,
     private val messageResponseConverter: MessageResponseConverter,
-    private val fileLoader: IFileLoader,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
 ) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
@@ -136,15 +134,17 @@ internal class ApiRepository(
     override fun send(
         configuration: UsedeskChatConfiguration,
         token: String,
-        messageFile: UsedeskMessageFile
+        fileInfo: UsedeskFileInfo,
+        messageId: Long
     ) {
         checkConnection()
 
-        val loadedFile = fileLoader.load(Uri.parse(messageFile.file.content))
+        val file = File(fileInfo.uri.path)
+        val fileRequestBody = RequestBody.create(MediaType.parse(fileInfo.type), file)
         val parts = listOf(
             multipartConverter.convert("chat_token", token),
-            multipartConverter.convert("file", loadedFile),
-            multipartConverter.convert("message_id", messageFile.id)
+            MultipartBody.Part.createFormData("file", fileInfo.name, fileRequestBody),
+            multipartConverter.convert("message_id", messageId)
         )
         doRequest(configuration.urlToSendFile, FileResponse::class.java) {
             it.postFile(parts)
@@ -157,24 +157,8 @@ internal class ApiRepository(
         name: String?,
         note: String?,
         phone: Long?,
-        avatar: String?,
-        additionalId: Long?
+        additionalId: String?
     ) {
-        val avatarBase64 = when {
-            avatar?.isNotEmpty() == true -> {
-                try {
-                    val avatarLoaded = fileLoader.load(Uri.parse(avatar))
-                    val content = encodeToString(avatarLoaded.bytes, 0)
-                    SetClientRequest.Avatar(avatarLoaded.name, content)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
-            }
-            else -> {
-                null
-            }
-        }
         socketApi.sendRequest(
             SetClientRequest(
                 token,
@@ -182,8 +166,7 @@ internal class ApiRepository(
                 name,
                 note,
                 phone,
-                additionalId,
-                avatarBase64
+                additionalId
             )
         )
     }

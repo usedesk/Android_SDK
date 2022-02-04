@@ -4,36 +4,31 @@ import android.content.ContentResolver
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.reactivex.Scheduler
-import io.reactivex.schedulers.Schedulers
+import dagger.Module
+import dagger.Provides
 import ru.usedesk.common_sdk.api.ApiFactory
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
-import toothpick.config.Module
 
-class UsedeskCommonModule(
-    appContext: Context
-) : Module() {
+@Module
+object UsedeskCommonModule {
 
-    init {
-        bind(Context::class.java)
-            .toInstance(appContext)
+    @Provides
+    fun provideContentResolver(appContext: Context): ContentResolver = appContext.contentResolver
 
-        bind(ContentResolver::class.java)
-            .toInstance(appContext.contentResolver)
+    @Provides
+    fun provideGson(): Gson = GsonBuilder().create()
 
-        bind(Scheduler::class.java)
-            //.toInstance(Schedulers.from(Executors.newFixedThreadPool(64)))
-            .toInstance(Schedulers.io())
+    @Provides
+    fun provideUsedeskOkHttpClientFactory(appContext: Context): UsedeskOkHttpClientFactory {
+        return UsedeskOkHttpClientFactory(appContext)
+    }
 
-        bind(Gson::class.java)
-            .toInstance(GsonBuilder().create())
-
-        bind(UsedeskOkHttpClientFactory::class.java)
-            .toInstance(UsedeskOkHttpClientFactory(appContext))
-
-        bind(IUsedeskApiFactory::class.java)
-            .to(ApiFactory::class.java)
-            .singleton()
+    @Provides
+    fun provideUsedeskApiFactory(
+        gson: Gson,
+        usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
+    ): IUsedeskApiFactory {
+        return ApiFactory(gson, usedeskOkHttpClientFactory)
     }
 }

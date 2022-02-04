@@ -16,7 +16,6 @@ internal class MessagePanelAdapter(
     lifecycleOwner: LifecycleOwner,
     onClickAttach: View.OnClickListener
 ) {
-
     private val attachedFilesAdapter: AttachedFilesAdapter
 
     init {
@@ -24,15 +23,17 @@ internal class MessagePanelAdapter(
         binding.ivSend.setOnClickListener {
             onSendClick()
         }
-        binding.etMessage.addTextChangedListener(UsedeskTextChangeListener {
-            viewModel.onMessageChanged(it)
-        })
         attachedFilesAdapter = AttachedFilesAdapter(
             binding.rvAttachedFiles,
             viewModel,
             lifecycleOwner
         )
-        binding.etMessage.setText(viewModel.messageDraftLiveData.value.text)
+
+        binding.etMessage.setText(viewModel.modelLiveData.value.messageDraft.text)
+
+        binding.etMessage.addTextChangedListener(UsedeskTextChangeListener {
+            viewModel.onMessageChanged(it)
+        })
     }
 
     private fun onSendClick() {

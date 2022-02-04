@@ -1,15 +1,26 @@
 package ru.usedesk.chat_sdk.entity
 
+import android.os.Parcelable
 import android.webkit.MimeTypeMap
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class UsedeskFile(
     val content: String,
     val type: String,
     val size: String,
     val name: String
-) {
+) : Parcelable {
     fun isImage(): Boolean {
         return type.startsWith(UsedeskFileInfo.IMAGE_TYPE)
+    }
+
+    fun isVideo(): Boolean {
+        return type.startsWith(UsedeskFileInfo.VIDEO_TYPE)
+    }
+
+    fun isAudio(): Boolean {
+        return type.startsWith(UsedeskFileInfo.AUDIO_TYPE)
     }
 
     companion object {

@@ -9,7 +9,7 @@ abstract class IUsedeskActionListenerRx {
     private val disposables = mutableListOf<Disposable>()
 
     fun onObservables(
-        connectedStateObservable: Observable<Boolean>,
+        connectionStateObservable: Observable<UsedeskConnectionState>,
         clientTokenObservable: Observable<String>,
         messageObservable: Observable<UsedeskMessage>,
         newMessageObservable: Observable<UsedeskMessage>,
@@ -21,7 +21,7 @@ abstract class IUsedeskActionListenerRx {
         exceptionObservable: Observable<Exception>
     ) {
         listOfNotNull(
-            onConnectedStateObservable(connectedStateObservable),
+            onConnectionStateObservable(connectionStateObservable),
             onClientTokenObservable(clientTokenObservable),
             onMessageObservable(messageObservable),
             onNewMessageObservable(newMessageObservable),
@@ -36,32 +36,45 @@ abstract class IUsedeskActionListenerRx {
         }
     }
 
-    open fun onConnectedStateObservable(connectedStateObservable: Observable<Boolean>): Disposable? =
-        null
+    open fun onConnectionStateObservable(
+        connectionStateObservable: Observable<UsedeskConnectionState>
+    ): Disposable? = null
 
-    open fun onClientTokenObservable(clientTokenObservable: Observable<String>): Disposable? = null
+    open fun onClientTokenObservable(
+        clientTokenObservable: Observable<String>
+    ): Disposable? = null
 
-    open fun onMessageObservable(messageObservable: Observable<UsedeskMessage>): Disposable? = null
+    open fun onMessageObservable(
+        messageObservable: Observable<UsedeskMessage>
+    ): Disposable? = null
 
-    open fun onNewMessageObservable(newMessageObservable: Observable<UsedeskMessage>): Disposable? =
-        null
+    open fun onNewMessageObservable(
+        newMessageObservable: Observable<UsedeskMessage>
+    ): Disposable? = null
 
-    open fun onMessagesObservable(messagesObservable: Observable<List<UsedeskMessage>>): Disposable? =
-        null
+    open fun onMessagesObservable(
+        messagesObservable: Observable<List<UsedeskMessage>>
+    ): Disposable? = null
 
-    open fun onMessageUpdateObservable(messageUpdateObservable: Observable<UsedeskMessage>): Disposable? =
-        null
+    open fun onMessageUpdateObservable(
+        messageUpdateObservable: Observable<UsedeskMessage>
+    ): Disposable? = null
 
-    open fun onMessageRemoveObservable(messageRemoveObservable: Observable<UsedeskMessage>): Disposable? =
-        null
+    open fun onMessageRemoveObservable(
+        messageRemoveObservable: Observable<UsedeskMessage>
+    ): Disposable? = null
 
-    open fun onOfflineFormExpectedObservable(offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>): Disposable? =
-        null
+    open fun onOfflineFormExpectedObservable(
+        offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
+    ): Disposable? = null
 
-    open fun onFeedbackObservable(feedbackObservable: Observable<UsedeskEvent<Any?>>): Disposable? =
-        null
+    open fun onFeedbackObservable(
+        feedbackObservable: Observable<UsedeskEvent<Any?>>
+    ): Disposable? = null
 
-    open fun onExceptionObservable(exceptionObservable: Observable<Exception>): Disposable? = null
+    open fun onExceptionObservable(
+        exceptionObservable: Observable<Exception>
+    ): Disposable? = null
 
     open fun onDispose() {
         disposables.forEach {

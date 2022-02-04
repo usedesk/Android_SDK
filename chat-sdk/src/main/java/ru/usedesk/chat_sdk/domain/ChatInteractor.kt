@@ -2,11 +2,12 @@ package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
 import io.reactivex.Completable
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
@@ -16,19 +17,17 @@ import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
-import toothpick.InjectConstructor
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@InjectConstructor
 internal class ChatInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
-    private val ioScheduler: Scheduler,
-    private val cachedMessages: CachedMessagesInteractor
+    private val cachedMessages: ICachedMessagesInteractor
 ) : IUsedeskChat {
 
+    private val ioScheduler = Schedulers.io()
     private var token: String? = null
     private var initClientMessage: String? = configuration.clientInitMessage
     private var initClientOfflineForm: String? = null
@@ -36,7 +35,8 @@ internal class ChatInteractor(
     private var actionListeners = mutableSetOf<IUsedeskActionListener>()
     private var actionListenersRx = mutableSetOf<IUsedeskActionListenerRx>()
 
-    private val connectedStateSubject = BehaviorSubject.createDefault(false)
+    private val connectionStateSubject =
+        BehaviorSubject.createDefault(UsedeskConnectionState.CONNECTING)
     private val clientTokenSubject = BehaviorSubject.create<String>()
     private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
     private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
@@ -62,7 +62,7 @@ internal class ChatInteractor(
 
     init {
         listenersDisposables.apply {
-            add(connectedStateSubject.subscribe {
+            add(connectionStateSubject.subscribe {
                 actionListeners.forEach { listener ->
                     listener.onConnectedState(it)
                 }
@@ -120,7 +120,7 @@ internal class ChatInteractor(
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
-            connectedStateSubject.onNext(true)
+            connectionStateSubject.onNext(UsedeskConnectionState.CONNECTED)
         }
 
         override fun onDisconnected() {
@@ -134,7 +134,7 @@ internal class ChatInteractor(
                 }
             }
 
-            connectedStateSubject.onNext(false)
+            connectionStateSubject.onNext(UsedeskConnectionState.DISCONNECTED)
         }
 
         override fun onTokenError() {
@@ -198,6 +198,7 @@ internal class ChatInteractor(
     }
 
     override fun connect() {
+        connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
         reconnectDisposable?.dispose()
         reconnectDisposable = null
         token = if (!isStringEmpty(this.configuration.clientToken)) {
@@ -277,7 +278,7 @@ internal class ChatInteractor(
     ) {
         actionListenersRx.add(listener)
         listener.onObservables(
-            connectedStateSubject,
+            connectionStateSubject,
             clientTokenSubject,
             messageSubject,
             newMessageSubject,
@@ -310,7 +311,6 @@ internal class ChatInteractor(
 
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
-            cachedMessages.addNotSentMessage(sendingMessage)
             sendAdditionalFieldsIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
@@ -365,38 +365,77 @@ internal class ChatInteractor(
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
         sendingMessage as UsedeskMessageClient
         try {
-            val uri = Uri.parse(sendingMessage.file.content)
-            val cachedUri = cachedMessages.getCachedUri(uri)
-            val cachedMessage = UsedeskMessageClientFile(
-                sendingMessage.id,
-                sendingMessage.createdAt,
-                UsedeskFile(
-                    cachedUri.toString(),
-                    sendingMessage.file.type,
-                    sendingMessage.file.size,
-                    sendingMessage.file.name
-                ),
-                sendingMessage.status,
-                sendingMessage.localId
-            )
-            cachedMessages.addNotSentMessage(cachedMessage)
             sendAdditionalFieldsIfNeeded()
-            sendCached(cachedMessage)
+            sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
             throw e
         }
     }
 
-    private fun sendCached(cachedMessage: UsedeskMessageFile) {
-        cachedMessage as UsedeskMessageClient
+    private fun sendCached(fileMessage: UsedeskMessageFile) {
         try {
-            cachedMessages.addNotSentMessage(cachedMessage)
-            apiRepository.send(configuration, token!!, cachedMessage)
-            cachedMessages.removeNotSentMessage(cachedMessage)
-            cachedMessages.removeFileFromCache(Uri.parse(cachedMessage.file.content))
+            cachedMessages.addNotSentMessage(fileMessage as UsedeskMessageClient)
+            val cachedUri = runBlocking {
+                val uri = Uri.parse(fileMessage.file.content)
+                val deferredCachedUri = cachedMessages.getCachedFile(uri)
+                deferredCachedUri.await()
+            }
+            val newFile = fileMessage.file.copy(content = cachedUri.toString())
+            val cachedNotSentMessage = when (fileMessage) {
+                is UsedeskMessageClientAudio -> {
+                    UsedeskMessageClientAudio(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+                is UsedeskMessageClientVideo -> {
+                    UsedeskMessageClientVideo(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+                is UsedeskMessageClientImage -> {
+                    UsedeskMessageClientImage(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+                else -> {
+                    UsedeskMessageClientFile(
+                        fileMessage.id,
+                        fileMessage.createdAt,
+                        newFile,
+                        fileMessage.status,
+                        fileMessage.localId
+                    )
+                }
+            }
+            cachedMessages.updateNotSentMessage(cachedNotSentMessage)
+            eventListener.onMessageUpdated(cachedNotSentMessage)
+            apiRepository.send(
+                configuration,
+                token!!,
+                UsedeskFileInfo(
+                    cachedUri,
+                    cachedNotSentMessage.file.type,
+                    cachedNotSentMessage.file.name
+                ),
+                cachedNotSentMessage.localId
+            )
+            cachedMessages.removeNotSentMessage(cachedNotSentMessage)
+            cachedMessages.removeFileFromCache(Uri.parse(cachedNotSentMessage.file.content))
         } catch (e: Exception) {
-            onMessageSendingFailed(cachedMessage)
+            onMessageSendingFailed(fileMessage as UsedeskMessageClient)
             throw e
         }
     }
@@ -438,6 +477,22 @@ internal class ChatInteractor(
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
+            is UsedeskMessageClientVideo -> {
+                UsedeskMessageClientVideo(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
+            is UsedeskMessageClientAudio -> {
+                UsedeskMessageClientAudio(
+                    sendingMessage.id,
+                    sendingMessage.createdAt,
+                    sendingMessage.file,
+                    UsedeskMessageClient.Status.SEND_FAILED
+                )
+            }
             else -> null
         }?.let {
             onMessageUpdate(it)
@@ -469,7 +524,8 @@ internal class ChatInteractor(
                 }.map { field ->
                     field.value
                 }
-                val strings = listOf(clientName, clientEmail, topic) + fields + offlineForm.message
+                val strings =
+                    listOf(clientName, clientEmail, topic) + fields + offlineForm.message
                 initClientOfflineForm = strings.joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
@@ -498,6 +554,26 @@ internal class ChatInteractor(
                 }
                 is UsedeskMessageClientImage -> {
                     val sendingMessage = UsedeskMessageClientImage(
+                        message.id,
+                        message.createdAt,
+                        message.file,
+                        UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
+                }
+                is UsedeskMessageClientVideo -> {
+                    val sendingMessage = UsedeskMessageClientVideo(
+                        message.id,
+                        message.createdAt,
+                        message.file,
+                        UsedeskMessageClient.Status.SENDING
+                    )
+                    onMessageUpdate(sendingMessage)
+                    sendFile(sendingMessage)
+                }
+                is UsedeskMessageClientAudio -> {
+                    val sendingMessage = UsedeskMessageClientAudio(
                         message.id,
                         message.createdAt,
                         message.file,
@@ -537,7 +613,9 @@ internal class ChatInteractor(
 
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
-        cachedMessages.setMessageDraft(messageDraft, true)
+        runBlocking {
+            cachedMessages.setMessageDraft(messageDraft, true)
+        }
     }
 
     override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
@@ -558,7 +636,9 @@ internal class ChatInteractor(
 
     override fun sendMessageDraft() {
         val messageDraft = cachedMessages.getMessageDraft()
-        cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
+        runBlocking {
+            cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
+        }
 
         val sendingMessages = mutableListOf<UsedeskMessage>()
 
@@ -624,10 +704,39 @@ internal class ChatInteractor(
             "",
             fileInfo.name
         )
-        return if (fileInfo.isImage()) {
-            UsedeskMessageClientImage(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
-        } else {
-            UsedeskMessageClientFile(localId, calendar, file, UsedeskMessageClient.Status.SENDING)
+        return when {
+            fileInfo.isImage() -> {
+                UsedeskMessageClientImage(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
+            fileInfo.isVideo() -> {
+                UsedeskMessageClientVideo(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
+            fileInfo.isAudio() -> {
+                UsedeskMessageClientAudio(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
+            else -> {
+                UsedeskMessageClientFile(
+                    localId,
+                    calendar,
+                    file,
+                    UsedeskMessageClient.Status.SENDING
+                )
+            }
         }
     }
 
@@ -698,11 +807,6 @@ internal class ChatInteractor(
                     configuration.clientName,
                     configuration.clientNote,
                     configuration.clientPhoneNumber,
-                    if (avatarSendNeeded) {
-                        null//configuration.clientAvatar
-                    } else {
-                        null
-                    },
                     configuration.clientAdditionalId
                 )
             }

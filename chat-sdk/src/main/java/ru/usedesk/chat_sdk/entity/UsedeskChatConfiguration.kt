@@ -1,7 +1,10 @@
 package ru.usedesk.chat_sdk.entity
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
+@Parcelize
 data class UsedeskChatConfiguration @JvmOverloads constructor(
     val urlChat: String,
     val urlOfflineForm: String = "https://secure.usedesk.ru/",
@@ -13,13 +16,12 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientName: String? = null,
     val clientNote: String? = null,
     val clientPhoneNumber: Long? = null,
-    val clientAdditionalId: Long? = null,
+    val clientAdditionalId: String? = null,
     val clientInitMessage: String? = null,
-    //val clientAvatar: String? = null,
     val cacheMessagesWithFile: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),
     val additionalNestedFields: List<Map<Long, String>> = listOf()
-) {
+) : Parcelable {
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 
     fun validate(): Validation {

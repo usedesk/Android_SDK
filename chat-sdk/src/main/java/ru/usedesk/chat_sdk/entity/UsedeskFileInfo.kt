@@ -18,9 +18,14 @@ data class UsedeskFileInfo(
         return type.startsWith(VIDEO_TYPE)
     }
 
+    fun isAudio(): Boolean {
+        return type.startsWith(AUDIO_TYPE)
+    }
+
     companion object {
         const val IMAGE_TYPE = "image/"
         const val VIDEO_TYPE = "video/"
+        const val AUDIO_TYPE = "audio/"
 
         fun create(context: Context, uri: Uri): UsedeskFileInfo {
             val mimeType = UsedeskFileUtil.getMimeType(context, uri)

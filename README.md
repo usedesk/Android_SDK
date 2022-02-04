@@ -84,7 +84,7 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | clientName | String? | Имя клиента |
 | clientNote | String? | Заметка о клиенте |
 | clientPhoneNumber | Long? | Телефонный номер клиента |
-| clientAdditionalId | Long? | Дополнительный идентификатор клиента |
+| clientAdditionalId | Long?<br/>String? (**v3.10.4**) | Дополнительный идентификатор клиента |
 | clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |
 | additionalFields | Map<Long, String> | Коллекция дополнительных полей, где key - Id поля, value - значение поля. Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст. (добавлен в **v3.8.0**) |
 | additionalNestedFields | List<Map<Long, String>> | Список коллекций вложенных списков, где каждый элемент списка - это коллекия значений одного вложенного списка, где key - Id поля, value - значение поля с текстом, точно совпадающим с текстом значения списка. (добавлен в **v3.8.0**) |
@@ -115,21 +115,36 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory())
 ```
 
+Начиная с **v3.10.4** уведомления выключены по умолчанию.
+
 <a name="chat_gui"></a>
+
 ### Использование с GUI
 
 Для использования готового пользовательского интерфейса чата воспользуйтесь [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt), например:
 
 ```
 supportFragmentManager.beginTransaction()
-        .replace(R.id.container, UsedeskChatScreen.newInstance())
-        .commit()
+    .replace(R.id.container, UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration))
+    .commit()
 ```
 
-Метод `newInstance` может принять:
-- Параметр типа `String` с именем агента. В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра.
-- Параметр типа `Collection<String>` со списком расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае).
-- Параметр типа `UsedeskChatConfiguration` с конфигурацией чата. В случае если такой параметр задан, `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration` даже после пересоздания.
+Начиная с **v3.10.4** для использования с Jetpack Navigation можно воспользоваться методом `createBundle`, например:
+
+```
+navController.navigate(
+        R.id.action_configurationScreen_to_usedeskChatScreen,
+        UsedeskChatScreen.createBundle(customAgentName, rejectedFileTypes, chatConfiguration)
+)
+```
+
+Методы `newInstance` и `createBundle` принмают следующие аргументы:
+
+| Аргумент          | Тип                      |                                                              |
+| ----------------- | ------------------------ | ------------------------------------------------------------ |
+| customAgentName   | String                   | В случае если такой параметр задан, все имена агентов в чате будут заменены на значение параметра. |
+| rejectedFileTypes | Collection<String>       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
+| chatConfiguration | UsedeskChatConfiguration | В случае если такой параметр задан, `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration` даже после пересоздания. |
 
 Для полноценной работы фрагмента необходимо:
 - Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет, например:
@@ -153,7 +168,7 @@ override fun onFileClick(usedeskFile: UsedeskFile ) {
 }
 ```
 
-- Вызывать метод `clear()` перед выходом из фрагмента, для освобождения ресурсов изображений и остановки загрузок, например:
+- До версии **v3.10.4** вызывать метод `clear()` перед выходом из фрагмента, для освобождения ресурсов изображений и остановки загрузок, например:
 
 ```
 fun onBackPressed() {
@@ -171,7 +186,8 @@ fun onBackPressed() {
 ```
 
 <a name="chat_gui_files"></a>
-Начиная с **v3.0.10** для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
+
+- Начиная с **v3.0.10** для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
 
 ```
 <provider
@@ -185,7 +201,10 @@ fun onBackPressed() {
 </provider>
 ```
 
+- Начиная с **v3.10.4** для возможности отображения видео во весь экран необходимо расширить интерфейс [IUsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFullscreenListener.kt)
+
 <a name="chat_sdk"></a>
+
 ### Использование без GUI
 
 После установки конфигурации нужно проинициализировать чат:

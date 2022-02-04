@@ -199,6 +199,5 @@ class UsedeskChatScreen : UsedeskFragment() {
         UsedeskBinding(rootView, defaultStyleId) {
         val toolbar =
             UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
-
     }
 }

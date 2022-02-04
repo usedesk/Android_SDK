@@ -1,4 +1,7 @@
 # Android Usedesk SDK (v3.10.4)
+
+### !Важно! В версии v3.10.4 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
+
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
 - [Чат](#chat)
@@ -9,9 +12,11 @@
   - [Конфигурация](#knowledge_base_configuration)
   - [Использование с GUI](#knowledge_base_gui)
   - [Использование без GUI](#knowledge_base_sdk)
-- [Список изменений](#change_list)
+- [Локализация GUI](#gui_localization)
+- [Предыдущие версии](#previous_versions)
 
 <a name="preparation"></a>
+
 ## Подключение к проекту
 
 Минимальная версия **Android 4.4 (API 19)**
@@ -125,8 +130,10 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 
 ```
 supportFragmentManager.beginTransaction()
-    .replace(R.id.container, UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration))
-    .commit()
+    .replace(
+    	R.id.container, 
+    	UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration)
+    ).commit()
 ```
 
 Для использования с Jetpack Navigation можно воспользоваться методом `createBundle`, например:
@@ -146,9 +153,6 @@ navController.navigate(
 | rejectedFileTypes | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
 | chatConfiguration | UsedeskChatConfiguration? | Если задан, то `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
 
-При использовании фрагмента-родителя необходимо расширить
-интерфейс `IUsedeskChatViewModelStoreOwner`.
-
 Для полноценной работы фрагмента необходимо:
 
 - Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true`
@@ -163,15 +167,29 @@ override fun onBackPressed() {
 }
 ```
 
-- Расширить интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt) родителем, переопределив метод `onFileClick(usedeskFile: UsedeskFile)`, например:
+- Для привязки жизненного цикла ViewModel к родителю необходимо расширить
+  интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
+  .
+- Расширить
+  интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt)
+  родителем, переопределив метод `onFileClick`, например:
 
 ```
-override fun onFileClick(usedeskFile: UsedeskFile ) {
+override fun onFileClick(usedeskFile: UsedeskFile) {
     supportFragmentManager.beginTransaction()
         .replace(R.id.container, UsedeskShowFileScreen.newInstance(usedeskFile))
         .commit()
+    //или
+    navController.navigate(
+    	R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
+    	UsedeskShowFileScreen.createBundle(usedeskFile)
+	)
 }
 ```
+
+- Расширить
+  интерфейс [IUsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnDownloadListener.kt)
+  родителем, переопределив метод `onDownload`.
 
 <a name="chat_gui_files"></a>
 
@@ -303,7 +321,11 @@ UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 supportFragmentManager().beginTransaction()
     .replace(
     	R.id.container, 
-    	UsedeskKnowledgeBaseFragment.newInstance(withSupportButton, withArticleRating, knowledgeBaseConfiguration)
+    	UsedeskKnowledgeBaseFragment.newInstance(
+    		withSupportButton, 
+    		withArticleRating, 
+    		knowledgeBaseConfiguration
+    	)
     ).commit()
 ```
 
@@ -312,7 +334,11 @@ supportFragmentManager().beginTransaction()
 ```
 navController.navigate(
     R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-    UsedeskKnowledgeBaseScreen.createBundle(withSupportButton, withArticleRating, knowledgeBaseConfiguration)
+    UsedeskKnowledgeBaseScreen.createBundle(
+    	withSupportButton, 
+    	withArticleRating, 
+    	knowledgeBaseConfiguration
+    )
 )
 ```
 
@@ -331,10 +357,11 @@ override fun onBackPressed() {
 ```
 
 - Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`, например:
+
 ```
 override fun onSupportClick() {
-    supportFragmentManager().beginTransaction()
-        .replace(R.id.container, UsedeskChatScreen().newInstance())
+	supportFragmentManager().beginTransaction()
+		.replace(R.id.container, UsedeskChatScreen().newInstance())
         .commit()
 }
 ```
@@ -363,13 +390,26 @@ UsedeskKnowledgeBaseSdk.release()
 Попытка получить экземпляр без инициализации или после освобожения вызовет исключение.
 
 <a name="gui_localization"></a>
+
 ### Локализация GUI
 
 SDK поддерживает следующие языки:
+
 - английский (по умолчанию),
 - русский,
 - испанский,
 - португальский.
 
-Помимо этого можно изменить существующий язык или добавить новый. Для этого необходимо скопировать значения из файла [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml"), который находится в корне проекта, и добавить во все файлы strings.xml вашего проекта. После чего можно подставить свои значения строковых ресурсов.
-**Важно!** В случае изменения ссылок на строковые ресурсы при кастомизации приложения изменение строковых ресурсов таким способом может не привеcти к желаемому результату.
+Помимо этого можно изменить существующий язык или добавить новый. Для этого необходимо скопировать
+значения из
+файла [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml")
+, который находится в корне проекта, и добавить во все файлы strings.xml вашего проекта. После чего
+можно подставить свои значения строковых ресурсов.
+**Важно!** В случае изменения ссылок на строковые ресурсы при кастомизации приложения изменение
+строковых ресурсов таким способом может не привеcти к желаемому результату.
+
+<a name="last_versions"></a>
+
+### Предыдущие версии
+
+- [v3.9.0](https://github.com/usedesk/Android_SDK/tree/3ee34eaeeaa0668e94cf8dadf78afad6901b52c4)

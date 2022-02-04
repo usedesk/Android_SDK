@@ -28,7 +28,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_checked" />
+            tools:srcCompat="@drawable/usedesk_ic_checked" />
 
         <View
             android:id="@+id/v_divider"

@@ -1,21 +1,21 @@
 buildscript {
-    ext.kotlin_version = "1.6.10"
-    ext.kotlin_coroutines_version = "1.6.0"
-    ext.dagger_version = "2.40.5"
-    ext.nav_version = "2.4.0"
+    ext.kotlinVersion = "1.6.10"
+    ext.kotlinCoroutinesVersion = "1.6.0"
+    ext.daggerVersion = "2.40.5"
+    ext.navVersion = "2.4.0"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "3.10.4"
+    project.version = "3.10.5"
 
     repositories {
         google()

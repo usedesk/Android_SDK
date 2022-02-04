@@ -76,9 +76,9 @@ internal class MediaPlayerAdapter(
                 AnimationUtils.loadAnimation(
                     fragment.requireContext(),
                     if (visible) {
-                        R.anim.fade_in
+                        R.anim.usedesk_fade_in
                     } else {
-                        R.anim.fade_out
+                        R.anim.usedesk_fade_out
                     }
                 )
             )

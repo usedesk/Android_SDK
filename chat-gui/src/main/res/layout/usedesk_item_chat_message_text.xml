@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="?attr/usedesk_common_container_3"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     tools:theme="@style/Usedesk.Chat.Message.Text">
 
-    <LinearLayout
-        style="?attr/usedesk_common_container_4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <LinearLayout style="?attr/usedesk_common_container_4">
 
         <FrameLayout
             android:id="@+id/l_feedback"
-            style="?attr/usedesk_common_container_5"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            style="?attr/usedesk_common_container_5">
 
             <ImageView
                 android:id="@+id/iv_dislike"
@@ -38,9 +31,6 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_buttons"
             style="?attr/usedesk_common_container_6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
             tools:listitem="@layout/usedesk_item_chat_button" />
     </LinearLayout>

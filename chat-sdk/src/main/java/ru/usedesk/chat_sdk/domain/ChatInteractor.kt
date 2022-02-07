@@ -198,7 +198,10 @@ internal class ChatInteractor(
     }
 
     override fun connect() {
-        connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        val curState = connectionStateSubject.value
+        if (curState != UsedeskConnectionState.CONNECTING) {
+            connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        }
         reconnectDisposable?.dispose()
         reconnectDisposable = null
         token = if (!isStringEmpty(this.configuration.clientToken)) {

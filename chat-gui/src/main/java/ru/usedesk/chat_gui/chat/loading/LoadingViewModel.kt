@@ -24,7 +24,9 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
                 connectionStateObservable: Observable<UsedeskConnectionState>
             ): Disposable? {
                 return connectionStateObservable.observeOn(mainScheduler).subscribe {
-                    if (it == UsedeskConnectionState.DISCONNECTED) {
+                    if (it == UsedeskConnectionState.DISCONNECTED ||
+                        it == UsedeskConnectionState.RECONNECTING
+                    ) {
                         setModel { model ->
                             model.copy(
                                 state = State.NO_INTERNET

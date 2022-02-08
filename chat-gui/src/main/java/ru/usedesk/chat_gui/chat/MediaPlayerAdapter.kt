@@ -40,7 +40,7 @@ internal class MediaPlayerAdapter(
         rootView as PlayerView
     }
 
-    private var restored = true
+    private var restored = playerViewModel.modelLiveData.value.key.isNotEmpty()
 
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
         ?: ExoPlayer.Builder(fragment.requireContext())
@@ -305,11 +305,8 @@ internal class MediaPlayerAdapter(
                 onControlsHeightChanged
             )
 
-            if (model.fullscreen) {
-                changeFullscreen(true)
-            } else {
-                changeFullscreen(false)
-            }
+            changeFullscreen(model.fullscreen)
+
             postControllerBarHeight(pvVideoExoPlayer.isControllerVisible)
             playIfLastPlaying()
             true

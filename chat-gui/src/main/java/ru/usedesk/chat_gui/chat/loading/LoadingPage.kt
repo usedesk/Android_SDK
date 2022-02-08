@@ -39,8 +39,6 @@ internal class LoadingPage : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }
 
-        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_loading_image)
-
         return binding.rootView
     }
 

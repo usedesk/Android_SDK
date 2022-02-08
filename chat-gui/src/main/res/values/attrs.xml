@@ -41,6 +41,10 @@
     <attr name="usedesk_chat_message_image_error_image" format="reference" />
     <attr name="usedesk_chat_message_image_preview_image" format="reference" />
 
+    <attr name="usedesk_chat_message_video_preview_image" format="reference" />
+    <attr name="usedesk_chat_message_video_stub_image" format="reference" />
+    <attr name="usedesk_chat_message_video_play_image" format="reference" />
+
     <attr name="usedesk_chat_message_text_message_text" format="reference" />
     <attr name="usedesk_chat_message_text_button_text" format="reference" />
 

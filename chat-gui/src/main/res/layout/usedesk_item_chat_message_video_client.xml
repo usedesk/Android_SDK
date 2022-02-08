@@ -12,12 +12,7 @@
         style="?attr/usedesk_chat_message_date_text"
         tools:text="Вчера" />
 
-    <LinearLayout
-        style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:orientation="horizontal">
+    <LinearLayout style="?attr/usedesk_common_container_1">
 
         <ImageView
             android:id="@+id/iv_sent_failed"

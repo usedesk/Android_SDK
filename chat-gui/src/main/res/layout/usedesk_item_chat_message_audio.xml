@@ -8,9 +8,7 @@
 
     <FrameLayout
         android:id="@+id/l_audio"
-        style="?attr/usedesk_common_container_4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="?attr/usedesk_common_container_4">
 
         <include
             android:id="@+id/stub"

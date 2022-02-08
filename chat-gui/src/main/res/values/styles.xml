@@ -142,6 +142,9 @@
 
     <style name="Usedesk.Chat.Message.File.Container5" parent="">
         <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File">
@@ -163,6 +166,15 @@
     <style name="Usedesk.Chat.Message.File.Agent.Container1" parent="">
         <item name="android:layout_marginEnd">32dp</item>
         <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Agent.Container2" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Agent.Container3" parent="">
@@ -173,11 +185,15 @@
     <style name="Usedesk.Chat.Message.File.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.File.Agent.Container1</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.File.Agent.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.File.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Client.Container1" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginBottom">4dp</item>
     </style>
@@ -208,7 +224,45 @@
 
     <style name="Usedesk.Chat.Message.Video">
         <item name="usedesk_common_container_3">@null</item>
+        <item name="usedesk_common_container_4">@style/Usedesk.Chat.Message.Video.Container4</item>
+        <item name="usedesk_common_container_5">@style/Usedesk.Chat.Message.Video.Container5</item>
+        <item name="usedesk_chat_message_video_preview_image">@style/Usedesk.Chat.Message.Video.Preview.Image</item>
+        <item name="usedesk_chat_message_video_stub_image">@style/Usedesk.Chat.Message.Video.Stub.Image</item>
+        <item name="usedesk_chat_message_video_play_image">@style/Usedesk.Chat.Message.Video.Play.Image</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Light.Text</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">168dp</item>
+        <item name="android:background">@color/usedesk_black_1</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Container5" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/usedesk_gray_2</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Preview.Image" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Stub.Image" parent="">
+        <item name="android:layout_width">176dp</item>
+        <item name="android:layout_height">128dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">8dp</item>
+        <item name="srcCompat">@drawable/usedesk_ic_video_stub</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Play.Image" parent="">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">20dp</item>
+        <item name="srcCompat">@drawable/usedesk_ic_play_light</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio">
@@ -225,8 +279,6 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Audio.Container5">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
     </style>
 
@@ -259,6 +311,15 @@
     <style name="Usedesk.Chat.Message.Image.Agent.Container1" parent="">
         <item name="android:layout_marginEnd">32dp</item>
         <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Image.Agent.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Agent.Container3" parent="">
@@ -267,19 +328,37 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Video.Agent.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginEnd">32dp</item>
         <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Video.Agent.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Video.Agent.Container3" parent="">
         <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
-        <item name="android:padding">2dp</item>
+        <item name="cardCornerRadius">6dp</item>
+        <item name="cardElevation">0dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio.Agent.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginEnd">32dp</item>
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Agent.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio.Agent.Container3" parent="">
@@ -290,25 +369,29 @@
     <style name="Usedesk.Chat.Message.Image.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Image.Agent.Container1</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Image.Agent.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Image.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Video.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Video.Agent.Container1</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Video.Agent.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Video.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Audio.Agent.Container1</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Audio.Agent.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Audio.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client.Container1" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginBottom">4dp</item>
     </style>
@@ -319,19 +402,25 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Video.Client.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Video.Client.Container3" parent="">
         <item name="android:background">@drawable/usedesk_background_bubble_client</item>
-        <item name="android:padding">2dp</item>
+        <item name="android:layout_height">168dp</item>
+        <item name="cardCornerRadius">6dp</item>
+        <item name="cardElevation">0dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio.Client.Container1" parent="">
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginBottom">4dp</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end</item>
         <item name="android:orientation">horizontal</item>
@@ -364,6 +453,9 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_marginEnd">48dp</item>
         <item name="android:layout_marginTop">6dp</item>
@@ -371,9 +463,17 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Container5" parent="">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">136dp</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Container6" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
     </style>
 
     <style name="Usedesk.Common.Container.Wrap" parent="">
@@ -400,7 +500,7 @@
         <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Message.Text.Container4</item>
         <item name="usedesk_common_container_5">@style/Usedesk.Chat.Message.Text.Container5</item>
-        <item name="usedesk_common_container_6">@null</item>
+        <item name="usedesk_common_container_6">@style/Usedesk.Chat.Message.Text.Container6</item>
         <item name="usedesk_chat_message_text_message_text">@style/Usedesk.Chat.Message.Text.Message.Text</item>
         <item name="usedesk_chat_message_feedback_good_image">@style/Usedesk.Chat.Message.Feedback.Good.Image</item>
         <item name="usedesk_chat_message_feedback_bad_image">@style/Usedesk.Chat.Message.Feedback.Bad.Image</item>
@@ -410,6 +510,7 @@
         <item name="cardBackgroundColor">@color/usedesk_black_2</item>
         <item name="cardCornerRadius">8dp</item>
         <item name="cardElevation">0dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
     </style>
@@ -421,8 +522,17 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginEnd">32dp</item>
         <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Agent.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent.Container3" parent="">
@@ -432,11 +542,15 @@
     <style name="Usedesk.Chat.Message.Text.Agent">
         <item name="usedesk_common_container_root">@null</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Agent.Container1</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Text.Agent.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Text.Agent.Container3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Client.Container1" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginBottom">4dp</item>
     </style>

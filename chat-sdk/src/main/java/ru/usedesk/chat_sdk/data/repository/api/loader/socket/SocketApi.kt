@@ -42,7 +42,7 @@ internal class SocketApi(
                 arg.printStackTrace()
             }
         }
-        eventListener.onException(UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED))
+        eventListener.onDisconnected()
     }
 
     private val connectEmitterListener = Emitter.Listener {

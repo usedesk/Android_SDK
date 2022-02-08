@@ -12,7 +12,6 @@
     <string name="usedesk_message">@string/usedesk_string_message</string>
     <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
-    <string name="usedesk_loading">@string/usedesk_string_loading</string>
     <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
     <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>

@@ -54,20 +54,19 @@ internal class MessagesPage : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }
 
-        val agentName: String? = argsGetString(AGENT_NAME_KEY)
-        val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
-
-        init(
-            agentName,
-            rejectedFileExtensions,
-            savedInstanceState
-        )
-
         return binding.rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        findParent<UsedeskChatScreen>()?.getBundleArgs { agentName, rejectedFileExtensions, _ ->
+            init(
+                agentName,
+                rejectedFileExtensions ?: arrayOf(),
+                savedInstanceState
+            )
+        }
 
         attachmentDialog = UsedeskAttachmentDialog.create(
             this,
@@ -211,25 +210,6 @@ internal class MessagesPage : UsedeskFragment() {
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
-    }
-
-    companion object {
-        private const val AGENT_NAME_KEY = "agentNameKey"
-        private const val REJECTED_FILE_EXTENSIONS_KEY = "rejectedFileExtensionsKey"
-
-        fun newInstance(
-            agentName: String?,
-            rejectedFileExtensions: Array<String>
-        ): MessagesPage {
-            return MessagesPage().apply {
-                arguments = Bundle().apply {
-                    if (agentName != null) {
-                        putString(AGENT_NAME_KEY, agentName)
-                    }
-                    putStringArray(REJECTED_FILE_EXTENSIONS_KEY, rejectedFileExtensions)
-                }
-            }
-        }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) :

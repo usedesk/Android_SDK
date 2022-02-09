@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.10.5)
+# Android Usedesk SDK (v3.10.8)
 
 ### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
 
@@ -131,8 +131,8 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 ```
 supportFragmentManager.beginTransaction()
     .replace(
-    	R.id.container, 
-    	UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration)
+        R.id.container, 
+        UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration)
     ).commit()
 ```
 
@@ -162,7 +162,7 @@ navController.navigate(
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
     if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-		return
+        return
     }
 }
 ```
@@ -181,9 +181,9 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
         .commit()
     //или
     navController.navigate(
-    	R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
-    	UsedeskShowFileScreen.createBundle(usedeskFile)
-	)
+        R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
+        UsedeskShowFileScreen.createBundle(usedeskFile)
+    )
 }
 ```
 
@@ -254,7 +254,7 @@ UsedeskChatSdk.release(false)
 
 | Метод | Параметры | Описание события |
 |---------|---------------|-----------------------|
-| onConnectedState | Boolean | Состояние подключения к серверу (true - подключено, false - разорвано) |
+| onConnectionState | UsedeskConnectionState | Состояние подключения к серверу |
 | onMessageReceived | UsedeskMessage | Каждое сообщение |
 | onNewMessageReceived | UsedeskMessage | Каждое новое сообщение |
 | onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из чата при каждом изменении |
@@ -267,7 +267,7 @@ UsedeskChatSdk.release(false)
 
 | Метод | Параметры | Описание события |
 |---------|---------------|-----------------------|
-| onConnectedStateObservable | Observable&lt;Boolean&gt; | Состояние подключения к серверу (true - подключено, false - разорвано) |
+| onConnectionStateObservable | Observable&lt;UsedeskConnectionState&gt; | Состояние подключения к серверу |
 | onMessageObservable | Observable&lt;UsedeskMessage&gt; | Каждое сообщение |
 | onNewMessageObservable | Observable&lt;UsedeskMessage&gt; | Каждое новое сообщение |
 | onMessagesObservable | Observable&lt;List&lt;UsedeskMessage&gt;&gt; | Список сообщений из чата на момент подключения |
@@ -277,18 +277,30 @@ UsedeskChatSdk.release(false)
 | onExceptionObservable | Observable&lt;Exception&gt; | Возникшее исключение |
 
 Запуск сервиса уведомлений:
+
 ```
 UsedeskChatSdk.startService(context)
 ```
+
 Остановка сервиса уведомлений:
+
 ```
 UsedeskChatSdk.stopService(context)
 ```
 
+Для логирования ошибок обработки ответов сервера можно воспользоваться классом `UsedeskLog`:
+
+- `enable()` - включение логирования.
+- `disable()` - выключение логирования.
+- `addLogListener(logListener: (String) -> Unit)` - добавление слушателя логов.
+- `removeLogListener(logListener: (String) -> Unit)` - удаление слушателя логов.
+
 <a name="knowledge_base"></a>
+
 ## База знаний
 
 <a name="knowledge_base_configuration"></a>
+
 ### Конфигурация
 
 Для работы с SDK Базы Знаний необходимо задать конфигурацию:
@@ -320,12 +332,12 @@ UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 ```
 supportFragmentManager().beginTransaction()
     .replace(
-    	R.id.container, 
-    	UsedeskKnowledgeBaseFragment.newInstance(
-    		withSupportButton, 
-    		withArticleRating, 
-    		knowledgeBaseConfiguration
-    	)
+        R.id.container, 
+        UsedeskKnowledgeBaseFragment.newInstance(
+            withSupportButton, 
+            withArticleRating, 
+            knowledgeBaseConfiguration
+        )
     ).commit()
 ```
 
@@ -335,9 +347,9 @@ supportFragmentManager().beginTransaction()
 navController.navigate(
     R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
     UsedeskKnowledgeBaseScreen.createBundle(
-    	withSupportButton, 
-    	withArticleRating, 
-    	knowledgeBaseConfiguration
+        withSupportButton, 
+        withArticleRating, 
+        knowledgeBaseConfiguration
     )
 )
 ```
@@ -351,7 +363,7 @@ navController.navigate(
 override fun onBackPressed() {
     val fragment = getCurrentFragment()
     if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-		return
+        return
     }
 }
 ```
@@ -360,8 +372,8 @@ override fun onBackPressed() {
 
 ```
 override fun onSupportClick() {
-	supportFragmentManager().beginTransaction()
-		.replace(R.id.container, UsedeskChatScreen().newInstance())
+    supportFragmentManager().beginTransaction()
+        .replace(R.id.container, UsedeskChatScreen().newInstance())
         .commit()
 }
 ```

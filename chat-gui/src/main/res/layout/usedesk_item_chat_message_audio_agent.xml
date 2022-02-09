@@ -7,21 +7,14 @@
     android:orientation="vertical"
     tools:theme="@style/Usedesk.Chat.Message.Audio.Agent">
 
-    <LinearLayout
-        style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <LinearLayout style="?attr/usedesk_common_container_1">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/iv_avatar"
             style="?attr/usedesk_chat_message_avatar_image"
             tools:src="@drawable/usedesk_background_avatar_def" />
 
-        <LinearLayout
-            style="?attr/usedesk_common_container_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <LinearLayout style="?attr/usedesk_common_container_2">
 
             <TextView
                 android:id="@+id/tv_name"

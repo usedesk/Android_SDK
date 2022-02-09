@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -39,8 +40,6 @@ internal class LoadingPage : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }
 
-        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_loading_image)
-
         return binding.rootView
     }
 
@@ -60,6 +59,7 @@ internal class LoadingPage : UsedeskFragment() {
                         binding.textBinding.tvLoadingText.setTextSafe(
                             binding.textBinding.loadingTextId
                         )
+                        binding.pbLoading.visibility = View.VISIBLE
                     }
                     LoadingViewModel.State.NO_INTERNET -> {
                         binding.imageBinding.ivLoadingImage.setImageResourceSafe(
@@ -71,6 +71,7 @@ internal class LoadingPage : UsedeskFragment() {
                         binding.textBinding.tvLoadingText.setTextSafe(
                             binding.textBinding.noInternetTextId
                         )
+                        binding.pbLoading.visibility = View.GONE
                     }
                 }
             }
@@ -103,8 +104,10 @@ internal class LoadingPage : UsedeskFragment() {
     private fun TextView.setTextSafe(resourceId: Int) {
         if (resourceId == 0) {
             text = ""
+            visibility = View.GONE
         } else {
             setText(resourceId)
+            visibility = View.VISIBLE
         }
     }
 
@@ -122,6 +125,7 @@ internal class LoadingPage : UsedeskFragment() {
             rootView.findViewById(R.id.tv_loading_text),
             styleValues.getStyle(R.attr.usedesk_chat_screen_loading_text)
         )
+        val pbLoading = rootView.findViewById<ProgressBar>(R.id.pb_loading)
     }
 
     internal class ImageBinding(rootView: View, defaultStyleId: Int) :

@@ -6,7 +6,6 @@
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
-    <string name="usedesk_loading">@string/usedesk_string_loading</string>
     <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
     <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
@@ -31,7 +30,6 @@
     <string name="usedesk_string_email">Почта</string>
     <string name="usedesk_string_message">Сообщение</string>
     <string name="usedesk_string_message_input">Написать…</string>
-    <string name="usedesk_string_loading">Загрузка…</string>
     <string name="usedesk_string_no_internet_title">Нет интернета</string>
     <string name="usedesk_string_no_internet_text">Попробуйте отключить режим полета, включить Wi-FI или мобильный интернет и проверить уровень сигнала сети</string>
     <string name="usedesk_string_today">Сегодня</string>

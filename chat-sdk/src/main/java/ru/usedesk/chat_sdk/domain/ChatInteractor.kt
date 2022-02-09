@@ -64,7 +64,13 @@ internal class ChatInteractor(
         listenersDisposables.apply {
             add(connectionStateSubject.subscribe {
                 actionListeners.forEach { listener ->
-                    listener.onConnectedState(it)
+                    listener.onConnectionState(it)
+                }
+            })
+
+            add(clientTokenSubject.subscribe {
+                actionListeners.forEach { listener ->
+                    listener.onClientTokenReceived(it)
                 }
             })
 
@@ -198,7 +204,10 @@ internal class ChatInteractor(
     }
 
     override fun connect() {
-        connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        val curState = connectionStateSubject.value
+        if (curState != UsedeskConnectionState.CONNECTING) {
+            connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        }
         reconnectDisposable?.dispose()
         reconnectDisposable = null
         token = if (!isStringEmpty(this.configuration.clientToken)) {
@@ -263,9 +272,7 @@ internal class ChatInteractor(
         apiRepository.disconnect()
     }
 
-    override fun addActionListener(
-        listener: IUsedeskActionListener
-    ) {
+    override fun addActionListener(listener: IUsedeskActionListener) {
         actionListeners.add(listener)
     }
 
@@ -273,9 +280,7 @@ internal class ChatInteractor(
         actionListeners.remove(listener)
     }
 
-    override fun addActionListener(
-        listener: IUsedeskActionListenerRx
-    ) {
+    override fun addActionListener(listener: IUsedeskActionListenerRx) {
         actionListenersRx.add(listener)
         listener.onObservables(
             connectionStateSubject,

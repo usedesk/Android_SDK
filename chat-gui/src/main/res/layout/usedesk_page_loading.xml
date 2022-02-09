@@ -15,6 +15,11 @@
             android:id="@+id/iv_loading_image"
             style="?attr/usedesk_chat_screen_loading_image" />
 
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            style="?attr/usedesk_common_progressbar"
+            android:theme="?attr/usedesk_common_progressbar" />
+
         <TextView
             android:id="@+id/tv_loading_title"
             style="?attr/usedesk_chat_screen_loading_title" />

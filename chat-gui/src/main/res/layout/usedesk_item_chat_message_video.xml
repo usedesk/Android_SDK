@@ -1,64 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="?attr/usedesk_common_container_3"
     android:layout_width="match_parent"
-    android:layout_height="168dp"
-    app:cardBackgroundColor="@color/usedesk_black_1"
-    app:cardCornerRadius="6dp"
-    app:cardElevation="0dp"
+    android:layout_height="wrap_content"
     tools:theme="@style/Usedesk.Chat.Message.Video">
 
     <FrameLayout
         android:id="@+id/l_video"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/usedesk_black_1" />
+        style="?attr/usedesk_common_container_4" />
 
-    <FrameLayout
-        android:id="@+id/l_preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/usedesk_black_1">
-
-        <ImageView
-            android:id="@+id/iv_preview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/iv_preview"
+        style="?attr/usedesk_chat_message_video_preview_image" />
 
     <FrameLayout
         android:id="@+id/l_stub"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/usedesk_gray_2">
+        style="?attr/usedesk_common_container_5">
 
-        <ImageView
-            android:layout_width="176dp"
-            android:layout_height="128dp"
-            android:layout_gravity="center"
-            android:padding="8dp"
-            app:srcCompat="@drawable/usedesk_ic_video_stub" />
+        <ImageView style="?attr/usedesk_chat_message_video_stub_image" />
     </FrameLayout>
 
     <ImageView
         android:id="@+id/iv_play"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center"
-        android:padding="20dp"
-        app:srcCompat="@drawable/usedesk_ic_play_light" />
+        style="?attr/usedesk_chat_message_video_play_image" />
 
-    <FrameLayout
-        android:id="@+id/l_time_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom">
-
-        <TextView
-            android:id="@+id/tv_time"
-            style="?attr/usedesk_chat_message_time_text"
-            tools:text="12:06" />
-    </FrameLayout>
+    <TextView
+        android:id="@+id/tv_time"
+        style="?attr/usedesk_chat_message_time_text"
+        tools:text="12:06" />
 </androidx.cardview.widget.CardView>

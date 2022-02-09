@@ -7,7 +7,9 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.updatePadding
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -533,7 +535,7 @@ internal class MessagesAdapter(
         private lateinit var usedeskFile: UsedeskFile
         private var lastVisible = false
 
-        private val defaultTimeBottomPadding = binding.lTimeContainer.paddingBottom
+        private val defaultTimeBottomPadding = binding.tvTime.marginBottom
 
         init {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -560,9 +562,9 @@ internal class MessagesAdapter(
             }
 
             val doOnControlsVisibilityChanged: ((Int) -> Unit) = { height ->
-                binding.lTimeContainer.updatePadding(
-                    bottom = defaultTimeBottomPadding + height
-                )
+                binding.tvTime.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    updateMargins(bottom = defaultTimeBottomPadding + height)
+                }
             }
 
             binding.ivPlay.setOnClickListener {
@@ -614,7 +616,7 @@ internal class MessagesAdapter(
             showVideo: Boolean = false
         ) {
             binding.lStub.visibility = visibleInvisible(showStub)
-            binding.lPreview.visibility = visibleInvisible(showPreview)
+            binding.ivPreview.visibility = visibleInvisible(showPreview)
             binding.ivPlay.visibility = visibleInvisible(showPlay)
             binding.lVideo.visibility = visibleInvisible(showVideo)
         }
@@ -1040,11 +1042,9 @@ internal class MessagesAdapter(
     internal class MessageVideoBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val lTimeContainer: ViewGroup = rootView.findViewById(R.id.l_time_container)
 
         val lVideo: ViewGroup = rootView.findViewById(R.id.l_video)
         val lStub: ViewGroup = rootView.findViewById(R.id.l_stub)
-        val lPreview: ViewGroup = rootView.findViewById(R.id.l_preview)
         val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
         val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
     }

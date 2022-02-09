@@ -23,11 +23,7 @@
             tools:text="EXTENSION" />
     </FrameLayout>
 
-    <LinearLayout
-        style="?attr/usedesk_common_container_5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    <LinearLayout style="?attr/usedesk_common_container_5">
 
         <TextView
             android:id="@+id/tv_file_name"

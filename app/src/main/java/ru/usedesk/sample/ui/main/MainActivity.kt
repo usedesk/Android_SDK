@@ -84,14 +84,9 @@ class MainActivity : AppCompatActivity(),
                         )
                     )
                 } else {
-                    val chatConfiguration = configuration.toChatConfiguration()
                     navController.navigate(
                         R.id.action_configurationScreen_to_usedeskChatScreen,
-                        UsedeskChatScreen.createBundle(
-                            configuration.customAgentName,
-                            REJECTED_FILE_TYPES,
-                            chatConfiguration
-                        )
+                        createChatScreenBundle(configuration)
                     )
                 }
             }
@@ -164,15 +159,18 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSupportClick() {
-        val configuration = viewModel.configurationLiveData.value
-        val chatConfiguration = configuration.toChatConfiguration()
         navController.navigate(
             R.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,
-            UsedeskChatScreen.createBundle(
-                configuration.customAgentName,
-                REJECTED_FILE_TYPES,
-                chatConfiguration
-            )
+            createChatScreenBundle(viewModel.configurationLiveData.value)
+        )
+    }
+
+    private fun createChatScreenBundle(configuration: Configuration): Bundle {
+        val chatConfiguration = configuration.toChatConfiguration()
+        return UsedeskChatScreen.createBundle(
+            configuration.customAgentName,
+            REJECTED_FILE_TYPES,
+            chatConfiguration
         )
     }
 

@@ -65,15 +65,28 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
         }
 
-        val agentName = argsGetString(AGENT_NAME_KEY)
-        val rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY, arrayOf())
-        argsGetParcelable<UsedeskChatConfiguration>(CHAT_CONFIGURATION_KEY)?.let {
-            UsedeskChatSdk.setConfiguration(it)
+        getBundleArgs { agentName, rejectedFileExtensions, chatConfiguration ->
+            if (chatConfiguration != null) {
+                UsedeskChatSdk.setConfiguration(chatConfiguration)
+            }
+            init(agentName, rejectedFileExtensions ?: arrayOf())
         }
 
-        init(agentName, rejectedFileExtensions)
-
         return binding.rootView
+    }
+
+    internal fun getBundleArgs(
+        onArgs: (
+            String?,
+            Array<String>?,
+            UsedeskChatConfiguration?
+        ) -> Unit
+    ) {
+        onArgs(
+            argsGetString(AGENT_NAME_KEY),
+            argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
+            argsGetParcelable(CHAT_CONFIGURATION_KEY)
+        )
     }
 
     private fun init(

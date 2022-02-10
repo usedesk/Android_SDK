@@ -4,15 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
@@ -23,6 +19,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private lateinit var articlesSearchAdapter: ArticlesSearchAdapter
+    private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +46,8 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             btnSupport.visibility = visibleGone(withSupportButton)
         }
 
+        loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
+
         articlesSearchAdapter = ArticlesSearchAdapter(
             binding.rvItems,
             viewModel,
@@ -62,15 +61,19 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         }
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.state != new.state) {
-                when (new.state) {
-                    ArticlesSearchViewModel.State.LOADING -> {
-                        updateVisible(showLoading = true)
+            if (old?.loading != new.loading) {
+                loadingAdapter.update(new.loading)
+                when (new.loading) {
+                    true -> {
+                        updateVisible(
+                            showMessage = new.articles.isEmpty(),
+                            showItems = new.articles.isNotEmpty()
+                        )
                     }
-                    ArticlesSearchViewModel.State.EMPTY -> {
-                        updateVisible(showMessage = true)
+                    false -> {
+                        updateVisible()
                     }
-                    ArticlesSearchViewModel.State.LOADED -> {
+                    null -> {
                         updateVisible(showItems = true)
                     }
                 }
@@ -81,11 +84,9 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     }
 
     private fun updateVisible(
-        showLoading: Boolean = false,
         showMessage: Boolean = false,
         showItems: Boolean = false
     ) {
-        binding.pbLoading.visibility = visibleGone(showLoading)
         binding.tvMessage.visibility = visibleGone(showMessage)
         binding.rvItems.visibility = visibleGone(showItems)
     }
@@ -109,8 +110,11 @@ internal class ArticlesSearchPage : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val tvMessage: TextView = rootView.findViewById(R.id.tv_message)
         val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
+        val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
+            rootView.findViewById(R.id.pb_loading),
+            defaultStyleId
+        )
     }
 }

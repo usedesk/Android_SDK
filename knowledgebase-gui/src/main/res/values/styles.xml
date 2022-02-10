@@ -49,12 +49,22 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.List.Page.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.List.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.List.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
-        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.List.Page.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Common.View.Loading.Container</item>
         <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.List.Page.Message.Text</item>
         <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
+        <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>
+        <item name="usedesk_common_view_loading_text">@style/Usedesk.Common.View.Loading.Text</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page.Message.Text" parent="">
@@ -423,8 +433,8 @@
         <item name="usedesk_common_container_9">@null</item>
         <item name="usedesk_common_container_10">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_container_11">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
+        <item name="usedesk_common_container_12">@style/Usedesk.Common.View.Loading.Container</item>
         <item name="usedesk_common_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider</item>
-        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
@@ -434,6 +444,10 @@
         <item name="usedesk_knowledgebase_article_content_page_next_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_next_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text</item>
         <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
+        <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>
+        <item name="usedesk_common_view_loading_text">@style/Usedesk.Common.View.Loading.Text</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.ContainerRoot" parent="">
@@ -562,4 +576,5 @@
         <item name="usedesk_text_2">@string/usedesk_rating_whats_wrong</item>
         <item name="usedesk_text_3">@string/usedesk_rating_thanks</item>
     </style>
+
 </resources>

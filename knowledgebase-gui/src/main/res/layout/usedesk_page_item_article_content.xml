@@ -6,11 +6,6 @@
     android:layout_height="match_parent"
     tools:theme="@style/Usedesk.KnowledgeBase.Article.Content.Page.Item">
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        style="?attr/usedesk_common_progressbar"
-        android:theme="?attr/usedesk_common_progressbar" />
-
     <androidx.core.widget.NestedScrollView
         android:id="@+id/l_content"
         style="?attr/usedesk_common_container_1"
@@ -129,6 +124,13 @@
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/v_loading"
+        style="?attr/usedesk_common_container_12">
+
+        <include layout="@layout/usedesk_view_loading" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_support"

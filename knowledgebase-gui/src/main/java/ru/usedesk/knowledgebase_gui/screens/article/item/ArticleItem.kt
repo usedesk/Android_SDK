@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.marginBottom
 import androidx.core.widget.NestedScrollView
@@ -35,6 +34,7 @@ internal class ArticleItem : UsedeskFragment() {
     private lateinit var messageStyleValues: UsedeskResourceManager.StyleValues
     private lateinit var yesStyleValues: UsedeskResourceManager.StyleValues
     private lateinit var noStyleValues: UsedeskResourceManager.StyleValues
+    private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
 
     private var scrollY = 0
 
@@ -112,18 +112,22 @@ internal class ArticleItem : UsedeskFragment() {
             viewModel.init(articleId)
         }
 
+        loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
+
+        return binding.rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.state != new.state) {
-                when (new.state) {
-                    ArticleItemViewModel.State.LOADING -> {
-                        showInstead(binding.pbLoading, binding.lContent, gone = false)
-                    }
-                    ArticleItemViewModel.State.LOADED -> {
-                        showInstead(binding.lContent, binding.pbLoading, gone = false)
-                        new.articleContent?.let { articleContent ->
-                            onArticleContent(articleContent)
-                        }
-                    }
+            if (old?.loading != new.loading) {
+                loadingAdapter.update(new.loading)
+                binding.wvContent.visibility = visibleInvisible(new.loading == null)
+            }
+            if (old?.articleContent != new.articleContent) {
+                new.articleContent?.let { articleContent ->
+                    onArticleContent(articleContent)
                 }
             }
         }
@@ -136,8 +140,6 @@ internal class ArticleItem : UsedeskFragment() {
                 }
             }
         }
-
-        return binding.rootView
     }
 
     private fun updateFab() {
@@ -169,7 +171,7 @@ internal class ArticleItem : UsedeskFragment() {
                 loadData(articleContent.text, "text/html", null)
             }
             setBackgroundColor(Color.TRANSPARENT)
-            showInstead(this, binding.pbLoading, gone = false)
+            showInstead(this, binding.vLoading.rootView, gone = false)
         }
     }
 
@@ -247,7 +249,6 @@ internal class ArticleItem : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val lContent: NestedScrollView = rootView.findViewById(R.id.l_content)
         val lContentScrollable: View = rootView.findViewById(R.id.l_content_scrollable)
         val lBottomNavigation: View = rootView.findViewById(R.id.l_bottom_navigation)
@@ -264,5 +265,9 @@ internal class ArticleItem : UsedeskFragment() {
         val lNext: View = rootView.findViewById(R.id.l_next)
         val tvNext: TextView = rootView.findViewById(R.id.tv_next)
         val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
+        val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
+            rootView.findViewById(R.id.v_loading),
+            defaultStyleId
+        )
     }
 }

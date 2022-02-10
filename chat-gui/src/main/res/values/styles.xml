@@ -683,20 +683,13 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.Loading.Page.Container1" parent="">
-        <item name="android:layout_gravity">center</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:layout_margin">20dp</item>
-    </style>
-
     <style name="Usedesk.Chat.Screen.Loading.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Screen.Loading.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Screen.Loading.Page.Container1</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Common.View.Loading.Container</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
-        <item name="usedesk_chat_screen_loading_image">@style/Usedesk.Chat.Screen.Loading.Image</item>
-        <item name="usedesk_chat_screen_loading_title">@style/Usedesk.Chat.Screen.Loading.Title</item>
-        <item name="usedesk_chat_screen_loading_text">@style/Usedesk.Chat.Screen.Loading.Text</item>
+        <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
+        <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>
+        <item name="usedesk_common_view_loading_text">@style/Usedesk.Common.View.Loading.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Page.ContainerRoot" parent="">

@@ -231,4 +231,49 @@
         <item name="android:layout_gravity">center</item>
         <item name="colorAccent">@color/usedesk_red</item>
     </style>
+
+    <style name="Usedesk.Common.View.Loading.Page.ContainerRoot" parent="">
+        <item name="android:background">@color/usedesk_white_1</item>
+    </style>
+
+    <style name="Usedesk.Common.View.Loading.Container" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">20dp</item>
+    </style>
+
+    <style name="Usedesk.Common.View.Loading.Image" parent="">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="android:layout_margin">12dp</item>
+        <item name="usedesk_drawable_1">@null</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_no_internet</item>
+    </style>
+
+    <style name="Usedesk.Common.View.Loading.Title" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:gravity">center</item>
+        <item name="usedesk_text_1">@null</item>
+        <item name="usedesk_text_2">@string/usedesk_no_internet_title</item>
+    </style>
+
+    <style name="Usedesk.Common.View.Loading.Text" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:gravity">center</item>
+        <item name="usedesk_text_1">@null</item>
+        <item name="usedesk_text_2">@string/usedesk_no_internet_text</item>
+    </style>
 </resources>

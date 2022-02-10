@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,6 +17,7 @@ internal class SectionsPage : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private lateinit var sectionsAdapter: SectionsAdapter
+    private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +48,12 @@ internal class SectionsPage : UsedeskFragment() {
             findParent<IOnSectionClickListener>()?.onSectionClick(id, title)
         }
 
+        loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
+
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.loading != new.loading) {
-                showInstead(binding.rvItems, binding.pbLoading, !new.loading)
+                loadingAdapter.update(new.loading)
+                binding.rvItems.visibility = visibleInvisible(new.loading == null)
             }
         }
 
@@ -72,7 +75,10 @@ internal class SectionsPage : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
+        val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
+            rootView.findViewById(R.id.v_loading),
+            defaultStyleId
+        )
     }
 }

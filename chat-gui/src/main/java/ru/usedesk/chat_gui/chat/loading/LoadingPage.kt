@@ -1,18 +1,15 @@
 package ru.usedesk.chat_gui.chat.loading
 
-import android.graphics.drawable.Animatable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 
@@ -23,6 +20,8 @@ internal class LoadingPage : UsedeskFragment() {
             requireChatViewModelStoreOwner()
         }
     )
+
+    private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
 
     private lateinit var binding: Binding
 
@@ -40,6 +39,8 @@ internal class LoadingPage : UsedeskFragment() {
             Binding(rootView, defaultStyleId)
         }
 
+        loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoadingBinding)
+
         return binding.rootView
     }
 
@@ -48,32 +49,7 @@ internal class LoadingPage : UsedeskFragment() {
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.state != new.state) {
-                when (new.state) {
-                    LoadingViewModel.State.LOADING -> {
-                        binding.imageBinding.ivLoadingImage.setImageResourceSafe(
-                            binding.imageBinding.loadingImageId
-                        )
-                        binding.titleBinding.tvLoadingTitle.setTextSafe(
-                            binding.titleBinding.loadingTitleId
-                        )
-                        binding.textBinding.tvLoadingText.setTextSafe(
-                            binding.textBinding.loadingTextId
-                        )
-                        binding.pbLoading.visibility = View.VISIBLE
-                    }
-                    LoadingViewModel.State.NO_INTERNET -> {
-                        binding.imageBinding.ivLoadingImage.setImageResourceSafe(
-                            binding.imageBinding.noInternetImageId
-                        )
-                        binding.titleBinding.tvLoadingTitle.setTextSafe(
-                            binding.titleBinding.noInternetTitleId
-                        )
-                        binding.textBinding.tvLoadingText.setTextSafe(
-                            binding.textBinding.noInternetTextId
-                        )
-                        binding.pbLoading.visibility = View.GONE
-                    }
-                }
+                loadingAdapter.update(new.state == LoadingViewModel.State.LOADING)
             }
             new.goNext.process { page ->
                 when (page) {
@@ -88,64 +64,12 @@ internal class LoadingPage : UsedeskFragment() {
         }
     }
 
-    private fun ImageView.setImageResourceSafe(
-        resourceId: Int
-    ) {
-        if (resourceId == 0) {
-            visibility = View.GONE
-            setImageDrawable(null)
-        } else {
-            visibility = View.VISIBLE
-            setImageResource(resourceId)
-            (drawable as? Animatable)?.start()
-        }
-    }
-
-    private fun TextView.setTextSafe(resourceId: Int) {
-        if (resourceId == 0) {
-            text = ""
-            visibility = View.GONE
-        } else {
-            setText(resourceId)
-            visibility = View.VISIBLE
-        }
-    }
-
-    internal class Binding(rootView: View, defaultStyleId: Int) :
+    class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val imageBinding = ImageBinding(
-            rootView.findViewById(R.id.iv_loading_image),
-            styleValues.getStyle(R.attr.usedesk_chat_screen_loading_image)
+
+        val vLoadingBinding = UsedeskCommonViewLoadingAdapter.Binding(
+            rootView.findViewById(R.id.v_loading),
+            defaultStyleId
         )
-        val titleBinding = TitleBinding(
-            rootView.findViewById(R.id.tv_loading_title),
-            styleValues.getStyle(R.attr.usedesk_chat_screen_loading_title)
-        )
-        val textBinding = TextBinding(
-            rootView.findViewById(R.id.tv_loading_text),
-            styleValues.getStyle(R.attr.usedesk_chat_screen_loading_text)
-        )
-        val pbLoading = rootView.findViewById<ProgressBar>(R.id.pb_loading)
-    }
-
-    internal class ImageBinding(rootView: View, defaultStyleId: Int) :
-        UsedeskBinding(rootView, defaultStyleId) {
-        val ivLoadingImage = rootView as ImageView
-        val loadingImageId = styleValues.getIdOrZero(R.attr.usedesk_drawable_1)
-        val noInternetImageId = styleValues.getIdOrZero(R.attr.usedesk_drawable_2)
-    }
-
-    internal class TitleBinding(rootView: View, defaultStyleId: Int) :
-        UsedeskBinding(rootView, defaultStyleId) {
-        val tvLoadingTitle = rootView as TextView
-        val loadingTitleId = styleValues.getIdOrZero(R.attr.usedesk_text_1)
-        val noInternetTitleId = styleValues.getIdOrZero(R.attr.usedesk_text_2)
-    }
-
-    internal class TextBinding(rootView: View, defaultStyleId: Int) :
-        UsedeskBinding(rootView, defaultStyleId) {
-        val tvLoadingText = rootView as TextView
-        val loadingTextId = styleValues.getIdOrZero(R.attr.usedesk_text_1)
-        val noInternetTextId = styleValues.getIdOrZero(R.attr.usedesk_text_2)
     }
 }

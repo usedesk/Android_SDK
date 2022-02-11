@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
@@ -61,20 +62,17 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         }
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.loading != new.loading) {
-                loadingAdapter.update(new.loading)
-                when (new.loading) {
-                    true -> {
+            if (old?.state != new.state) {
+                loadingAdapter.update(new.state)
+                when (new.state) {
+                    State.LOADED -> {
                         updateVisible(
                             showMessage = new.articles.isEmpty(),
                             showItems = new.articles.isNotEmpty()
                         )
                     }
-                    false -> {
+                    else -> {
                         updateVisible()
-                    }
-                    null -> {
-                        updateVisible(showItems = true)
                     }
                 }
             }
@@ -113,7 +111,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         val tvMessage: TextView = rootView.findViewById(R.id.tv_message)
         val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
         val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
-            rootView.findViewById(R.id.pb_loading),
+            rootView.findViewById(R.id.v_loading),
             defaultStyleId
         )
     }

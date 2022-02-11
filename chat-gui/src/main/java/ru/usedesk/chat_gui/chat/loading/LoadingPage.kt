@@ -49,7 +49,7 @@ internal class LoadingPage : UsedeskFragment() {
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.state != new.state) {
-                loadingAdapter.update(new.state == LoadingViewModel.State.LOADING)
+                loadingAdapter.update(new.state)
             }
             new.goNext.process { page ->
                 when (page) {

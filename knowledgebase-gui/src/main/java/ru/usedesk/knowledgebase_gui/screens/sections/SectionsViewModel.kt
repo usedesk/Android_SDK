@@ -1,6 +1,7 @@
 package ru.usedesk.knowledgebase_gui.screens.sections
 
 import io.reactivex.Completable
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
@@ -13,10 +14,14 @@ internal class SectionsViewModel : UsedeskViewModel<SectionsViewModel.Model>(Mod
     }
 
     private fun reload() {
-        setModel { model ->//TODO: из-за этого при перезагрузке мерцает ошибка
+        setModel { model ->
             model.copy(
                 sections = listOf(),
-                loading = true
+                state = if (model.state == State.LOADING) {
+                    State.LOADING
+                } else {
+                    State.RELOADING
+                }
             )
         }
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()
@@ -24,14 +29,14 @@ internal class SectionsViewModel : UsedeskViewModel<SectionsViewModel.Model>(Mod
             setModel { model ->
                 model.copy(
                     sections = it,
-                    loading = null
+                    state = State.LOADED
                 )
             }
         }, {
             setModel { model ->
                 model.copy(
                     sections = listOf(),
-                    loading = false
+                    state = State.FAILED
                 )
             }
             doIt(Completable.timer(3, TimeUnit.SECONDS), {
@@ -42,6 +47,6 @@ internal class SectionsViewModel : UsedeskViewModel<SectionsViewModel.Model>(Mod
 
     data class Model(
         val sections: List<UsedeskSection> = listOf(),
-        val loading: Boolean? = true
+        val state: State = State.LOADING
     )
 }

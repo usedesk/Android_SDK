@@ -2,6 +2,7 @@ package ru.usedesk.knowledgebase_gui.screens.articles_search
 
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
@@ -17,23 +18,33 @@ internal class ArticlesSearchViewModel : UsedeskViewModel<ArticlesSearchViewMode
     }
 
     fun onSearchQuery(searchQuery: String) {
-        if (lastQuery != searchQuery || modelLiveData.value.loading != null) {
+        if (lastQuery != searchQuery || modelLiveData.value.state == State.FAILED) {
             lastQuery = searchQuery
             loadingDisposable?.dispose()
+            setModel { model ->
+                model.copy(
+                    articles = listOf(),
+                    state = if (model.state in listOf(State.LOADING, State.LOADED)) {
+                        State.LOADING
+                    } else {
+                        State.RELOADING
+                    }
+                )
+            }
             loadingDisposable = doIt(
                 UsedeskKnowledgeBaseSdk.requireInstance()
                     .getArticlesRx(searchQuery), {
                     setModel { model ->
                         model.copy(
                             articles = it,
-                            loading = null
+                            state = State.LOADED
                         )
                     }
                 }, {
                     setModel { model ->
                         model.copy(
                             articles = listOf(),
-                            loading = false
+                            state = State.FAILED
                         )
                     }
                     doIt(Completable.timer(3, TimeUnit.SECONDS), {
@@ -45,6 +56,6 @@ internal class ArticlesSearchViewModel : UsedeskViewModel<ArticlesSearchViewMode
 
     data class Model(
         val articles: List<UsedeskArticleContent> = listOf(),
-        val loading: Boolean? = true
+        val state: State = State.LOADING
     )
 }

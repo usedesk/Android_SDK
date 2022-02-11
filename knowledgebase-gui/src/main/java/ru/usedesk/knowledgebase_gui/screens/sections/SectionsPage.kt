@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 
@@ -51,9 +52,9 @@ internal class SectionsPage : UsedeskFragment() {
         loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.loading != new.loading) {
-                loadingAdapter.update(new.loading)
-                binding.rvItems.visibility = visibleInvisible(new.loading == null)
+            if (old?.state != new.state) {
+                loadingAdapter.update(new.state)
+                binding.rvItems.visibility = visibleInvisible(new.state == State.LOADED)
             }
         }
 

@@ -15,6 +15,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePageViewModel
@@ -121,9 +122,10 @@ internal class ArticleItem : UsedeskFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.loading != new.loading) {
-                loadingAdapter.update(new.loading)
-                binding.wvContent.visibility = visibleInvisible(new.loading == null)
+            if (old?.state != new.state) {
+                loadingAdapter.update(new.state)
+                binding.wvContent.visibility = visibleInvisible(new.state == State.LOADED)
+                binding.lRating.visibility = visibleInvisible(new.state == State.LOADED)
             }
             if (old?.articleContent != new.articleContent) {
                 new.articleContent?.let { articleContent ->

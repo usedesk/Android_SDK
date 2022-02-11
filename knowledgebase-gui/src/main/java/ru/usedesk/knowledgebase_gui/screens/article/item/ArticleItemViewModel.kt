@@ -1,6 +1,7 @@
 package ru.usedesk.knowledgebase_gui.screens.article.item
 
 import io.reactivex.Completable
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
@@ -17,7 +18,11 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
     private fun reload(articleId: Long) {
         setModel { model ->
             model.copy(
-                loading = true,
+                state = if (model.state == State.LOADING) {
+                    State.LOADING
+                } else {
+                    State.RELOADING
+                },
                 articleContent = null
             )
         }
@@ -26,7 +31,7 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
                 .getArticleRx(articleId), { articleContent ->
                 setModel { model ->
                     model.copy(
-                        loading = true,
+                        state = State.LOADED,
                         articleContent = articleContent
                     )
                 }
@@ -37,7 +42,7 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
             }, {
                 setModel { model ->
                     model.copy(
-                        loading = false,
+                        state = State.FAILED,
                         articleContent = null
                     )
                 }
@@ -62,7 +67,7 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
     }
 
     data class Model(
-        val loading: Boolean? = true,
+        val state: State = State.LOADING,
         val articleContent: UsedeskArticleContent? = null
     )
 }

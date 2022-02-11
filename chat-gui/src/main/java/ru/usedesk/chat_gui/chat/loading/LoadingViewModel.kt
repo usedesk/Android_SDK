@@ -9,6 +9,8 @@ import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
@@ -29,7 +31,7 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
                     ) {
                         setModel { model ->
                             model.copy(
-                                state = State.NO_INTERNET
+                                state = State.FAILED
                             )
                         }
                     }
@@ -76,11 +78,6 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
         val state: State = State.LOADING,
         val goNext: UsedeskSingleLifeEvent<Page?> = UsedeskSingleLifeEvent(null)
     )
-
-    enum class State {
-        LOADING,
-        NO_INTERNET
-    }
 
     enum class Page {
         OFFLINE_FORM,

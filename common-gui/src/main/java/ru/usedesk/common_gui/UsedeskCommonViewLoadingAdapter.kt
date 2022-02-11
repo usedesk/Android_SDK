@@ -10,9 +10,9 @@ class UsedeskCommonViewLoadingAdapter(
     private val binding: Binding
 ) {
 
-    fun update(loading: Boolean?) {
-        when (loading) {
-            true -> {
+    fun update(state: State) {
+        when (state) {
+            State.LOADING -> {
                 binding.rootView.visibility = View.VISIBLE
 
                 binding.imageBinding.ivLoadingImage.setImageResourceSafe(
@@ -26,7 +26,8 @@ class UsedeskCommonViewLoadingAdapter(
                 )
                 binding.pbLoading.visibility = View.VISIBLE
             }
-            false -> {
+            State.RELOADING,
+            State.FAILED -> {
                 binding.rootView.visibility = View.VISIBLE
 
                 binding.imageBinding.ivLoadingImage.setImageResourceSafe(
@@ -40,7 +41,7 @@ class UsedeskCommonViewLoadingAdapter(
                 )
                 binding.pbLoading.visibility = View.GONE
             }
-            null -> {
+            State.LOADED -> {
                 binding.rootView.visibility = View.GONE
             }
         }
@@ -105,5 +106,12 @@ class UsedeskCommonViewLoadingAdapter(
         val tvLoadingText = rootView as TextView
         val loadingTextId = styleValues.getIdOrZero(R.attr.usedesk_text_1)
         val noInternetTextId = styleValues.getIdOrZero(R.attr.usedesk_text_2)
+    }
+
+    enum class State {
+        LOADING,
+        RELOADING,
+        LOADED,
+        FAILED
     }
 }

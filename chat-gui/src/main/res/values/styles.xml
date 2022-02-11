@@ -25,7 +25,10 @@
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -56,6 +59,8 @@
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:layout_margin">16dp</item>
         <item name="cardCornerRadius">8dp</item>
@@ -63,6 +68,8 @@
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/usedesk_black_2</item>
     </style>
 
@@ -136,6 +143,9 @@
     </style>
 
     <style name="Usedesk.Chat.Message.File.Container4" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginEnd">8dp</item>
         <item name="android:layout_marginBottom">2dp</item>
     </style>
@@ -571,18 +581,31 @@
     </style>
 
     <style name="Usedesk.Chat.Show.File.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:padding">32dp</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:visibility">gone</item>
         <item name="android:background">@color/usedesk_black_1</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Container3" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/usedesk_blur</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom</item>
         <item name="android:background">@color/usedesk_blur</item>
     </style>
 
@@ -654,7 +677,21 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.Chat.Screen.Messages.Page.Container1" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Messages.Page.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clipChildren">true</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="Usedesk.Chat.Screen.Messages.Page.Container3" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
         <item name="android:paddingTop">2dp</item>
@@ -662,14 +699,18 @@
     </style>
 
     <style name="Usedesk.Chat.Screen.Messages.Page.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Messages.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Screen.Messages.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Screen.Messages.Page.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Screen.Messages.Page.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Screen.Messages.Page.Container3</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Screen.Messages.Page.Container4</item>
         <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
@@ -696,9 +737,24 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.Chat.Screen.Offline.Form.Page.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Page.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:overScrollMode">never</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
     <style name="Usedesk.Chat.Screen.Offline.Form.Page.Container3" parent="">
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="cardElevation">0dp</item>
         <item name="cardCornerRadius">8dp</item>
         <item name="android:layout_marginStart">16dp</item>
@@ -707,12 +763,17 @@
         <item name="android:layout_marginBottom">16dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Screen.Offline.Form.Page.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="Usedesk.Chat.Screen.Offline.Form.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Screen.Offline.Form.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
-        <item name="usedesk_common_container_2">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Screen.Offline.Form.Page.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Screen.Offline.Form.Page.Container2</item>
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Screen.Offline.Form.Page.Container3</item>
-        <item name="usedesk_common_container_4">@null</item>
+        <item name="usedesk_common_container_4">@style/Usedesk.Chat.Screen.Offline.Form.Page.Container4</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_chat_screen_offline_form_action_enabled_background">@color/usedesk_black_2</item>
         <item name="usedesk_chat_screen_offline_form_action_disabled_background">@color/usedesk_gray_2</item>
@@ -730,9 +791,14 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.Chat.Screen.Offline.Form.Selector.Page.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="Usedesk.Chat.Screen.Offline.Form.Selector.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Screen.Offline.Form.Selector.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Screen.Offline.Form.Selector.Page.Container1</item>
         <item name="usedesk_chat_screen_offline_form_selector_checkbox">@style/Usedesk.Common.Field.CheckBox</item>
     </style>
 

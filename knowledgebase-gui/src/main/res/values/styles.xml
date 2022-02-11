@@ -13,10 +13,13 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">56dp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container2" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/usedesk_background_search_input</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginTop">6dp</item>
@@ -25,6 +28,8 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1</item>
         <item name="usedesk_common_container_2">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container2</item>
@@ -166,12 +171,16 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Container2" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
@@ -246,6 +255,9 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -287,6 +299,9 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
@@ -361,6 +376,8 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:paddingStart">20dp</item>
@@ -428,7 +445,33 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container3" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginTop">12dp</item>
         <item name="android:layout_marginBottom">56dp</item>
         <item name="android:paddingStart">12dp</item>
@@ -455,6 +498,18 @@
         <item name="cardCornerRadius">2dp</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container9" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -463,6 +518,7 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:padding">12dp</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider" parent="Usedesk.Common.Divider.MarginStart">
@@ -471,15 +527,15 @@
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
-        <item name="usedesk_common_container_2">@null</item>
-        <item name="usedesk_common_container_3">@null</item>
-        <item name="usedesk_common_container_4">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container2</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container3</item>
+        <item name="usedesk_common_container_4">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container4</item>
         <item name="usedesk_common_container_5">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5</item>
         <item name="usedesk_common_container_6">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container6</item>
         <item name="usedesk_common_container_7">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container7</item>
-        <item name="usedesk_common_container_8">@null</item>
-        <item name="usedesk_common_container_9">@null</item>
+        <item name="usedesk_common_container_8">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8</item>
+        <item name="usedesk_common_container_9">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container9</item>
         <item name="usedesk_common_container_10">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_container_11">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_container_12">@style/Usedesk.Common.View.Loading.Container</item>
@@ -503,9 +559,14 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Article.Content.Page.Container1</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image" parent="">

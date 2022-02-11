@@ -8,22 +8,13 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/l_content"
-        style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        style="?attr/usedesk_common_container_1">
 
-        <LinearLayout
-            style="?attr/usedesk_common_container_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <LinearLayout style="?attr/usedesk_common_container_2">
 
             <LinearLayout
                 android:id="@+id/l_content_scrollable"
-                style="?attr/usedesk_common_container_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                style="?attr/usedesk_common_container_3">
 
                 <WebView
                     android:id="@+id/wv_content"
@@ -34,10 +25,7 @@
 
                 <LinearLayout
                     android:id="@+id/l_rating"
-                    style="?attr/usedesk_common_container_4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    style="?attr/usedesk_common_container_4">
 
                     <TextView
                         android:id="@+id/tv_rating_title"
@@ -50,10 +38,7 @@
 
                     <LinearLayout
                         android:id="@+id/l_buttons"
-                        style="?attr/usedesk_common_container_5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        style="?attr/usedesk_common_container_5">
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/l_rating_yes"
@@ -82,18 +67,11 @@
 
             <LinearLayout
                 android:id="@+id/l_bottom_navigation"
-                style="?attr/usedesk_common_container_8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                style="?attr/usedesk_common_container_8">
 
                 <View style="?attr/usedesk_common_divider" />
 
-                <LinearLayout
-                    style="?attr/usedesk_common_container_9"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="?attr/usedesk_common_container_9">
 
                     <LinearLayout
                         android:id="@+id/l_previous"
@@ -110,8 +88,7 @@
 
                     <LinearLayout
                         android:id="@+id/l_next"
-                        style="?attr/usedesk_common_container_11"
-                        android:orientation="horizontal">
+                        style="?attr/usedesk_common_container_11">
 
                         <TextView
                             android:id="@+id/tv_next"

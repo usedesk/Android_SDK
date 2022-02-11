@@ -11,17 +11,13 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/usedesk_view_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        layout="@layout/usedesk_view_toolbar" />
 
     <include
         android:id="@+id/toolbar_search"
-        layout="@layout/usedesk_view_toolbar_search"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        layout="@layout/usedesk_view_toolbar_search" />
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

@@ -10,6 +10,7 @@
     </style>
 
     <style name="Usedesk.Common.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">56dp</item>
     </style>
 
@@ -86,6 +87,8 @@
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -132,6 +135,10 @@
     </style>
 
     <style name="Usedesk.Common.List.Field.Container2" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginTop">10dp</item>

@@ -9,17 +9,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/l_clickable"
-        style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="68dp">
+        style="?attr/usedesk_common_container_1">
 
         <LinearLayout
             android:id="@+id/l_text"
             style="?attr/usedesk_common_container_2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="bottom"
-            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
             app:layout_constraintStart_toStartOf="parent"

@@ -65,16 +65,20 @@
         <item name="android:visibility">invisible</item>
     </style>
 
+    <style name="Usedesk.Common.Toolbar.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="Usedesk.Common.Toolbar.Title.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">20sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:gravity">center</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.Toolbar.Title.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.ContainerRoot" parent="">
@@ -95,14 +99,18 @@
         <item name="usedesk_common_field_checkbox_image">@style/Usedesk.Common.Field.CheckBox.Image</item>
     </style>
 
+    <style name="Usedesk.Common.Field.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="Usedesk.Common.Field.CheckBox.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">4dp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.Field.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.Image" parent="">
@@ -142,22 +150,31 @@
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
     </style>
 
+    <style name="Usedesk.Common.Field.List.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_2</item>
+        <item name="android:textSize">18sp</item>
+    </style><!--textColor не используется-->
+
     <style name="Usedesk.Common.Field.List.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">18sp</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Title.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.List.Value.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_red</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Common.Field.List.Value.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Value.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Common.Field.List.Arrow.Image" parent="">
@@ -203,11 +220,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:inputType">textMultiLine|textCapSentences</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:singleLine">false</item>
         <item name="android:background">@null</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.Field.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Common.Field.Text.EditText.SingleLine">
@@ -253,27 +268,35 @@
         <item name="usedesk_drawable_2">@drawable/usedesk_no_internet</item>
     </style>
 
+    <style name="Usedesk.Common.View.Loading.Title.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">21sp</item>
+    </style>
+
     <style name="Usedesk.Common.View.Loading.Title" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">21sp</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:gravity">center</item>
         <item name="usedesk_text_1">@null</item>
         <item name="usedesk_text_2">@string/usedesk_no_internet_title</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Title.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Common.View.Loading.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Common.View.Loading.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:gravity">center</item>
         <item name="usedesk_text_1">@null</item>
         <item name="usedesk_text_2">@string/usedesk_no_internet_text</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Text.TextAppearance</item>
     </style>
 </resources>

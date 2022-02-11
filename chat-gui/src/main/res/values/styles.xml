@@ -776,18 +776,29 @@
         <item name="android:text">@string/usedesk_chat</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Date.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Date.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">20dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">15sp</item>
         <item name="usedesk_text_1">@string/usedesk_today</item>
         <item name="usedesk_text_2">@string/usedesk_yesterday</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Date.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Extension.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_gray_1</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Extension.Text" parent="">
@@ -797,13 +808,16 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:textColor">@color/usedesk_gray_1</item>
-        <item name="android:textSize">9sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.File.Extension.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Time.Dark.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Time.Dark.Text" parent="">
@@ -812,51 +826,62 @@
         <item name="android:layout_gravity">end|bottom</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:includeFontPadding">false</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Dark.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Time.Light.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">#CFD4D0</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Time.Light.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
-        <item name="android:textColor">#CFD4D0</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:includeFontPadding">false</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:background">@drawable/usedesk_background_time_dark</item>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending_light</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully_light</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Light.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Name.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Name.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/usedesk_black_1</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:textSize">18sp</item>
         <item name="android:paddingEnd">16dp</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.File.Name.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.File.Size.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Size.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:textSize">14sp</item>
         <item name="android:paddingEnd">16dp</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="usedesk_text_1">@string/usedesk_dangerous_file</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_3</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.File.Size.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Attached.File.Close.Image" parent="">
@@ -878,45 +903,55 @@
         <item name="android:layout_margin">4dp</item>
     </style>
 
+    <style name="Usedesk.Chat.Attached.File.Name.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="Usedesk.Chat.Attached.File.Name.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom</item>
         <item name="android:layout_margin">8dp</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
-        <item name="android:textSize">12sp</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Attached.File.Name.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Name.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">13sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Name.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Name.Text.TextAppearance</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Avatar.Text" parent="">
-        <item name="android:textColor">@color/usedesk_white_1</item>
-        <item name="android:fontFamily">@font/sf_ui_display_medium</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:singleLine">true</item>
+    <style name="Usedesk.Chat.Message.Text.Message.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_1</item>
         <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Message.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/usedesk_black_1</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:textIsSelectable">true</item>
         <item name="android:autoLink">all</item>
         <item name="usedesk_text_1">@string/usedesk_feedback_thanks</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Text.Message.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Button.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_white_1</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button.Text" parent="">
@@ -930,9 +965,13 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Text.Button.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:textColor">@color/usedesk_white_1</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text" parent="">
@@ -940,13 +979,11 @@
         <item name="android:layout_height">40dp</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">8dp</item>
-        <item name="android:textColor">@color/usedesk_white_1</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:textSize">18sp</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:text">@string/usedesk_close</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Image" parent="">
@@ -958,16 +995,20 @@
         <item name="srcCompat">@drawable/usedesk_ic_done_round</item>
     </style>
 
+    <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:text">@string/usedesk_offline_form_send_successed</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Image" parent="">
@@ -978,15 +1019,19 @@
         <item name="srcCompat">@drawable/usedesk_ic_gallery</item>
     </style>
 
+    <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:duplicateParentState">true</item>
-        <item name="android:textColor">@color/usedesk_black_1</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:text">@string/usedesk_gallery</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Camera.Image" parent="">
@@ -997,15 +1042,19 @@
         <item name="srcCompat">@drawable/usedesk_ic_camera</item>
     </style>
 
+    <style name="Usedesk.Chat.Attachment.Dialog.Camera.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="Usedesk.Chat.Attachment.Dialog.Camera.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:duplicateParentState">true</item>
-        <item name="android:textColor">@color/usedesk_black_1</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:text">@string/usedesk_camera</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Attachment.Dialog.Camera.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Storage.Image" parent="">
@@ -1016,15 +1065,25 @@
         <item name="srcCompat">@drawable/usedesk_ic_storage</item>
     </style>
 
+    <style name="Usedesk.Chat.Attachment.Dialog.Storage.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="Usedesk.Chat.Attachment.Dialog.Storage.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:duplicateParentState">true</item>
-        <item name="android:textColor">@color/usedesk_black_1</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:text">@string/usedesk_storage</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Attachment.Dialog.Storage.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File.Toolbar.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_white_1</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Toolbar.Text" parent="">
@@ -1032,10 +1091,14 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical|center_horizontal</item>
         <item name="android:padding">16dp</item>
-        <item name="android:textColor">@color/usedesk_white_1</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:singleLine">true</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Show.File.Toolbar.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File.Name.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Name.Text" parent="">
@@ -1043,9 +1106,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Show.File.Name.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Show.File.Size.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Size.Text" parent="">
@@ -1053,26 +1120,28 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">2dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Show.File.Size.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Message.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Message.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/usedesk_background_input_message</item>
-        <item name="android:inputType">textCapSentences|textNoSuggestions|textMultiLine</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:maxLines">5</item>
-        <item name="android:includeFontPadding">false</item>
         <item name="android:hint">@string/usedesk_message_input</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:inputType">textCapSentences|textNoSuggestions|textMultiLine</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Message.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.FloatingActionButton" parent="">
@@ -1102,24 +1171,16 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">4dp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">21sp</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:gravity">center</item>
         <item name="usedesk_text_1">@null</item>
         <item name="usedesk_text_2">@string/usedesk_no_internet_title</item>
+        <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Title.TextAppearance</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.Loading.Text" parent="">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
+    <style name="Usedesk.Chat.Screen.Offline.Form.Description.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:gravity">center</item>
-        <item name="usedesk_text_1">@null</item>
-        <item name="usedesk_text_2">@string/usedesk_no_internet_text</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Description.Text" parent="">
@@ -1129,9 +1190,13 @@
         <item name="android:layout_marginBottom">12dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Screen.Offline.Form.Send.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_white_1</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Send.Text" parent="">
@@ -1139,12 +1204,10 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>
         <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:textColor">@color/usedesk_white_1</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:singleLine">false</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:text">@string/usedesk_send</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text.TextAppearance</item>
     </style>
 </resources>

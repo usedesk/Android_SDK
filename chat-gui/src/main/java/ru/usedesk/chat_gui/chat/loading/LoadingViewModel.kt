@@ -9,7 +9,6 @@ import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
-import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -26,14 +25,15 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
                 connectionStateObservable: Observable<UsedeskConnectionState>
             ): Disposable? {
                 return connectionStateObservable.observeOn(mainScheduler).subscribe {
-                    if (it == UsedeskConnectionState.DISCONNECTED ||
-                        it == UsedeskConnectionState.RECONNECTING
-                    ) {
-                        setModel { model ->
-                            model.copy(
-                                state = State.FAILED
-                            )
-                        }
+                    setModel { model ->
+                        model.copy(
+                            state = when (it) {
+                                UsedeskConnectionState.DISCONNECTED,
+                                UsedeskConnectionState.RECONNECTING -> State.FAILED
+                                UsedeskConnectionState.CONNECTING -> State.LOADING
+                                UsedeskConnectionState.CONNECTED -> State.LOADING
+                            }
+                        )
                     }
                 }
             }

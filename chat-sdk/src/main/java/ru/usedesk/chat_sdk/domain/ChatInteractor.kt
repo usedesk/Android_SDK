@@ -205,22 +205,24 @@ internal class ChatInteractor(
 
     override fun connect() {
         val curState = connectionStateSubject.value
-        if (curState != UsedeskConnectionState.CONNECTING) {
-            connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        if (curState != UsedeskConnectionState.CONNECTED) {
+            if (curState != UsedeskConnectionState.CONNECTING) {
+                connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+            }
+            reconnectDisposable?.dispose()
+            reconnectDisposable = null
+            token = if (!isStringEmpty(this.configuration.clientToken)) {
+                this.configuration.clientToken
+            } else {
+                userInfoRepository.getConfigurationNullable(configuration)?.clientToken
+            }
+            apiRepository.connect(
+                this.configuration.urlChat,
+                token,
+                this.configuration,
+                eventListener
+            )
         }
-        reconnectDisposable?.dispose()
-        reconnectDisposable = null
-        token = if (!isStringEmpty(this.configuration.clientToken)) {
-            this.configuration.clientToken
-        } else {
-            userInfoRepository.getConfigurationNullable(configuration)?.clientToken
-        }
-        apiRepository.connect(
-            this.configuration.urlChat,
-            token,
-            this.configuration,
-            eventListener
-        )
     }
 
     private fun isStringEmpty(text: String?): Boolean {

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/usedesk_kb_nav_graph"
+    app:startDestination="@id/sectionsPage">
+
+    <fragment
+        android:id="@+id/sectionsPage"
+        android:name="ru.usedesk.knowledgebase_gui.screens.sections.SectionsPage"
+        android:label="SectionsPage">
+        <action
+            android:id="@+id/action_sectionsPage_to_categoriesPage"
+            app:destination="@id/categoriesPage" />
+        <action
+            android:id="@+id/action_sectionsPage_to_articlesSearchPage"
+            app:destination="@id/articlesSearchPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoriesPage"
+        android:name="ru.usedesk.knowledgebase_gui.screens.categories.CategoriesPage"
+        android:label="CategoriesPage">
+        <action
+            android:id="@+id/action_categoriesPage_to_articlesSearchPage"
+            app:destination="@id/articlesSearchPage" />
+        <action
+            android:id="@+id/action_categoriesPage_to_articlesPage"
+            app:destination="@id/articlesPage" />
+    </fragment>
+    <fragment
+        android:id="@+id/articlesSearchPage"
+        android:name="ru.usedesk.knowledgebase_gui.screens.articles_search.ArticlesSearchPage"
+        android:label="ArticlesSearchPage">
+        <action
+            android:id="@+id/action_articlesSearchPage_to_articlePage"
+            app:destination="@id/articlePage" />
+    </fragment>
+    <fragment
+        android:id="@+id/articlesPage"
+        android:name="ru.usedesk.knowledgebase_gui.screens.articles.ArticlesPage"
+        android:label="ArticlesPage">
+        <action
+            android:id="@+id/action_articlesPage_to_articlesSearchPage"
+            app:destination="@id/articlesSearchPage" />
+        <action
+            android:id="@+id/action_articlesPage_to_articlePage"
+            app:destination="@id/articlePage" />
+    </fragment>
+    <fragment
+        android:id="@+id/articlePage"
+        android:name="ru.usedesk.knowledgebase_gui.screens.article.ArticlePage"
+        android:label="ArticlePage">
+        <action
+            android:id="@+id/action_articlePage_to_articlesSearchPage"
+            app:destination="@id/articlesSearchPage" />
+    </fragment>
+</navigation>

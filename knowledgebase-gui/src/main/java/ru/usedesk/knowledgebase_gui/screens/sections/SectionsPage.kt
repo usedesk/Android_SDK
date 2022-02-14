@@ -5,12 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screens.categories.CategoriesPage
 
 internal class SectionsPage : UsedeskFragment() {
 
@@ -32,13 +32,6 @@ internal class SectionsPage : UsedeskFragment() {
             R.style.Usedesk_KnowledgeBase_Sections_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
-        }.apply {
-            btnSupport.setOnClickListener {
-                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-
-            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
         sectionsAdapter = SectionsAdapter(
@@ -46,7 +39,10 @@ internal class SectionsPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) { id, title ->
-            findParent<IOnSectionClickListener>()?.onSectionClick(id, title)
+            findNavController().navigate(
+                R.id.action_sectionsPage_to_categoriesPage,
+                CategoriesPage.createBundle(title, id)
+            )
         }
 
         loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
@@ -61,22 +57,9 @@ internal class SectionsPage : UsedeskFragment() {
         return binding.rootView
     }
 
-    companion object {
-        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
-
-        fun newInstance(withSupportButton: Boolean = true): SectionsPage {
-            return SectionsPage().apply {
-                arguments = Bundle().apply {
-                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-                }
-            }
-        }
-    }
-
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
         val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
             rootView.findViewById(R.id.v_loading),
             defaultStyleId

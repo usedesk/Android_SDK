@@ -11,7 +11,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.article.item.IOnArticlePagesListener
-import ru.usedesk.knowledgebase_gui.screens.main.IOnTitleChangeListener
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 
 internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
 
@@ -44,20 +44,21 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
     }
 
     fun init(categoryId: Long, articleId: Long) {
+        val withArticleRating = findParent<UsedeskKnowledgeBaseScreen>()
+            ?.withArticleRating ?: true
         articlePagesAdapter = ArticlePagesAdapter(
             binding.vpPages,
             childFragmentManager,
             viewModel,
             viewLifecycleOwner,
-            argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true),
-            argsGetBoolean(WITH_ARTICLE_RATING_KEY, true)
+            withArticleRating
         )
 
         viewModel.init(categoryId, articleId)
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.selectedArticle != new.selectedArticle && new.selectedArticle != null) {
-                findParent<IOnTitleChangeListener>()?.onTitle(new.selectedArticle.title)
+                findParent<UsedeskKnowledgeBaseScreen>()?.onTitle(new.selectedArticle.title)
             }
         }
     }
@@ -73,22 +74,16 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
     companion object {
         private const val CATEGORY_ID_KEY = "categoryIdKey"
         private const val ARTICLE_ID_KEY = "articleIdKey"
-        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
-        private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
 
-        fun newInstance(
-            withSupportButton: Boolean,
-            withArticleRating: Boolean,
+        fun createBundle(
+            title: String,
             categoryId: Long,
             articleId: Long
-        ): ArticlePage {
-            return ArticlePage().apply {
-                arguments = Bundle().apply {
-                    putLong(CATEGORY_ID_KEY, categoryId)
-                    putLong(ARTICLE_ID_KEY, articleId)
-                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-                    putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
-                }
+        ): Bundle {
+            return Bundle().apply {
+                putString(UsedeskKnowledgeBaseScreen.COMMON_TITLE_KEY, title)
+                putLong(CATEGORY_ID_KEY, categoryId)
+                putLong(ARTICLE_ID_KEY, articleId)
             }
         }
     }

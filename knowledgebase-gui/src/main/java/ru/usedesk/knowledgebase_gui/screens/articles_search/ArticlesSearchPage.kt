@@ -6,16 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
-import ru.usedesk.knowledgebase_gui.screens.main.IOnArticleClickListener
+import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
+import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 
 internal class ArticlesSearchPage : UsedeskFragment() {
 
+    private val parentViewModel: KnowledgeBaseViewModel by viewModels(
+        ownerProducer = {
+            findParent<UsedeskKnowledgeBaseScreen>() ?: this
+        }
+    )
     private val viewModel: ArticlesSearchViewModel by viewModels()
     private lateinit var binding: Binding
 
@@ -38,13 +44,6 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             tvMessage.text = styleValues
                 .getStyleValues(R.attr.usedesk_knowledgebase_list_page_message_text)
                 .getString(R.attr.usedesk_text_1)
-
-            btnSupport.setOnClickListener {
-                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-
-            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
         loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
@@ -54,11 +53,20 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) { articleContent ->
-            findParent<IOnArticleClickListener>()?.onArticleClick(
-                articleContent.categoryId,
-                articleContent.id,
-                articleContent.title
+            findNavController().navigate(
+                R.id.action_articlesSearchPage_to_articlePage,
+                ArticlePage.createBundle(
+                    articleContent.title,
+                    articleContent.categoryId,
+                    articleContent.id
+                )
             )
+        }
+
+        parentViewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.searchQuery != new.searchQuery) {
+                viewModel.onSearchQuery(new.searchQuery)
+            }
         }
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
@@ -89,27 +97,10 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         binding.rvItems.visibility = visibleGone(showItems)
     }
 
-    fun onSearchQueryUpdate(searchQuery: String) {
-        viewModel.onSearchQuery(searchQuery)
-    }
-
-    companion object {
-        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
-
-        fun newInstance(withSupportButton: Boolean = true): ArticlesSearchPage {
-            return ArticlesSearchPage().apply {
-                arguments = Bundle().apply {
-                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-                }
-            }
-        }
-    }
-
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val tvMessage: TextView = rootView.findViewById(R.id.tv_message)
-        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
         val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
             rootView.findViewById(R.id.v_loading),
             defaultStyleId

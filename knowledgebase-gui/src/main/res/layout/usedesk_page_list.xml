@@ -23,8 +23,4 @@
 
         <include layout="@layout/usedesk_view_loading" />
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_support"
-        style="?attr/usedesk_knowledgebase_screen_support_button" />
 </FrameLayout>

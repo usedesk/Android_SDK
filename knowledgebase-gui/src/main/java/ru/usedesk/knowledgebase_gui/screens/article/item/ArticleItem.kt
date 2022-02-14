@@ -10,18 +10,16 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.view.marginBottom
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePageViewModel
+import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import kotlin.math.max
-import kotlin.math.min
 
 internal class ArticleItem : UsedeskFragment() {
 
@@ -40,6 +38,8 @@ internal class ArticleItem : UsedeskFragment() {
     private var scrollY = 0
 
     private var currentArticleId: Long? = null
+
+    private var canUpdateFab = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,17 +95,12 @@ internal class ArticleItem : UsedeskFragment() {
             })
 
             lContent.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-                lContentScrollable.minimumHeight =
-                    rootView.height - lBottomNavigation.measuredHeight
+                val minHeight = rootView.height - lBottomNavigation.measuredHeight
+                if (lContentScrollable.minimumHeight != minHeight) {
+                    lContentScrollable.minimumHeight = minHeight
+                }
                 updateFab()
             }
-
-            btnSupport.setOnClickListener {
-                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-
-            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
         argsGetLong(ARTICLE_ID_KEY)?.also { articleId ->
@@ -144,21 +139,36 @@ internal class ArticleItem : UsedeskFragment() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        canUpdateFab = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        canUpdateFab = true
+        updateFab()
+    }
+
     private fun updateFab() {
-        binding.run {
-            val dif = max(
-                lContentScrollable.height,
-                lContentScrollable.minimumHeight
-            ) - (scrollY + lContent.height)
-            btnSupport.y = (rootView.height - btnSupport.height - btnSupport.marginBottom + min(
-                0,
-                dif
-            )).toFloat()
+        if (canUpdateFab) {
+            binding.run {
+                val fabMargin = max(
+                    0,
+                    (scrollY + lContent.height) - max(
+                        lContentScrollable.height,
+                        lContentScrollable.minimumHeight
+                    )
+                )
+                UsedeskLog.onLog("DIF", fabMargin.toString())
+                findParent<UsedeskKnowledgeBaseScreen>()?.onSupportButtonBottomMargin(fabMargin)
+            }
         }
     }
 
     private fun onArticleContent(articleContent: UsedeskArticleContent) {
-        updateFab()
         binding.wvContent.run {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -227,11 +237,9 @@ internal class ArticleItem : UsedeskFragment() {
         private const val ARTICLE_ID_KEY = "articleIdKey"
         private const val PREVIOUS_TITLE_KEY = "previousTitleKey"
         private const val NEXT_TITLE_KEY = "nextTitleKey"
-        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
 
         fun newInstance(
-            withSupportButton: Boolean,
             withArticleRating: Boolean,
             articleId: Long,
             previousTitle: String?,
@@ -242,7 +250,6 @@ internal class ArticleItem : UsedeskFragment() {
                     putLong(ARTICLE_ID_KEY, articleId)
                     putString(PREVIOUS_TITLE_KEY, previousTitle)
                     putString(NEXT_TITLE_KEY, nextTitle)
-                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
                     putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
                 }
             }
@@ -266,7 +273,6 @@ internal class ArticleItem : UsedeskFragment() {
         val tvPrevious: TextView = rootView.findViewById(R.id.tv_previous)
         val lNext: View = rootView.findViewById(R.id.l_next)
         val tvNext: TextView = rootView.findViewById(R.id.tv_next)
-        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
         val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
             rootView.findViewById(R.id.v_loading),
             defaultStyleId

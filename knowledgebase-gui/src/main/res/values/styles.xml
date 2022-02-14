@@ -48,6 +48,7 @@
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.ContainerRoot</item>
         <item name="usedesk_common_toolbar">@style/Usedesk.KnowledgeBase.Screen.Toolbar</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search</item>
+        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page.ContainerRoot" parent="">
@@ -65,7 +66,6 @@
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.List.Page.Container1</item>
         <item name="usedesk_common_container_2">@style/Usedesk.Common.View.Loading.Container</item>
         <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.List.Page.Message.Text</item>
-        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
         <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>
@@ -548,7 +548,6 @@
         <item name="usedesk_knowledgebase_article_content_page_previous_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_next_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_next_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text</item>
-        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
         <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>

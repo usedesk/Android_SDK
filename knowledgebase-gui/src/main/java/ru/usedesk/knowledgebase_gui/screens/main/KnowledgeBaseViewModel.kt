@@ -5,11 +5,10 @@ import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk.release
 
 internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.Model>(Model()) {
 
-    fun onSearchQuery(query: String?) {
+    fun onSearchQuery(query: String) {
         setModel { model ->
             model.copy(
-                searchQuery = query ?: "",
-                showSearch = query != null
+                searchQuery = query
             )
         }
     }
@@ -21,7 +20,6 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
     }
 
     data class Model(
-        val searchQuery: String = "",
-        val showSearch: Boolean = false
+        val searchQuery: String = ""
     )
 }

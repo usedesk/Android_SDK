@@ -14,7 +14,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePageViewModel
 import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
@@ -162,7 +161,6 @@ internal class ArticleItem : UsedeskFragment() {
                         lContentScrollable.minimumHeight
                     )
                 )
-                UsedeskLog.onLog("DIF", fabMargin.toString())
                 findParent<UsedeskKnowledgeBaseScreen>()?.onSupportButtonBottomMargin(fabMargin)
             }
         }

@@ -14,7 +14,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
@@ -67,9 +66,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
         withArticleRating = argsGetBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
         val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-        argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)?.let {
-            UsedeskKnowledgeBaseSdk.setConfiguration(it)
-        }
 
         binding.fabSupport.run {
             visibility = visibleGone(withSupportButton)
@@ -95,8 +91,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }, {
             onBackPressed()
         })
-
-        UsedeskKnowledgeBaseSdk.init(requireContext())
 
         hideKeyboard(binding.rootView)
 
@@ -124,13 +118,22 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         return binding.rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.init {
+            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)?.let {
+                UsedeskKnowledgeBaseSdk.setConfiguration(it)
+            }
+            UsedeskKnowledgeBaseSdk.init(requireContext())
+        }
+    }
+
     internal fun onTitle(title: String) {
         toolbarDefaultAdapter.setTitle(title)
     }
 
     internal fun onSupportButtonBottomMargin(bottomMargin: Int) {
-        UsedeskLog.enable()
-        UsedeskLog.onLog("FAB", bottomMargin.toString())
         val newBottomMargin = fabDefaultBottomMargin + bottomMargin
         if (fabAnimation?.newBottomMargin != newBottomMargin) {
             binding.fabSupport.clearAnimation()
@@ -141,12 +144,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             binding.fabSupport.startAnimation(fabAnimation)
         }
     }
-
-    /*override fun onSearchQuery(query: String) {
-        if (query.isNotEmpty()) {
-            viewModel.onSearchQuery(query)
-        }
-    }*/
 
     override fun onBackPressed(): Boolean {
         return navController.popBackStack()

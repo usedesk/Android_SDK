@@ -70,14 +70,10 @@ internal class UsedeskAttachmentDialog private constructor(
                             }
                         }
                         MessagesViewModel.Action.FROM_GALLERY_PERMISSION -> {
-                            screen.needReadExternalPermission(screen) {
-                                viewModel.fromGalleryAvailable()
-                            }
+                            viewModel.fromGalleryAvailable()
                         }
                         MessagesViewModel.Action.FROM_STORAGE_PERMISSION -> {
-                            screen.needReadExternalPermission(screen) {
-                                viewModel.fromStorageAvailable()
-                            }
+                            viewModel.fromStorageAvailable()
                         }
                         MessagesViewModel.Action.FROM_CAMERA -> {
                             val fileName = viewModel.modelLiveData.value.cameraUri

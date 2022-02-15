@@ -12,7 +12,7 @@ android {
         applicationId "ru.usedesk.sample"
         minSdkVersion 19
         targetSdkVersion 32
-        versionCode = 124
+        versionCode = 125
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

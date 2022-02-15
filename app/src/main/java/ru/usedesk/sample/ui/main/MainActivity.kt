@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun fullscreenMode(enable: Boolean) {
-        ViewCompat.getWindowInsetsController(window.decorView)?.run {
+        ViewCompat.getWindowInsetsController(binding.root)?.run {
             systemBarsBehavior = if (enable) {
                 hide(WindowInsetsCompat.Type.systemBars())
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE

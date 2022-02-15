@@ -1,16 +1,22 @@
 package ru.usedesk.sample.ui.main
 
+import android.Manifest
 import android.app.DownloadManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -26,6 +32,8 @@ import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.UsedeskSnackbar
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
@@ -49,6 +57,9 @@ class MainActivity : AppCompatActivity(),
     private lateinit var binding: ActivityMainBinding
     private lateinit var navHostFragment: NavHostFragment
     private lateinit var navController: NavController
+
+    private var permissionResult: ActivityResultLauncher<String>? = null
+    private var onGranted: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,20 +102,71 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         }
+        permissionResult = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                onGranted?.invoke()
+            } else {
+                val snackbarStyleId = UsedeskResourceManager.getResourceId(
+                    ru.usedesk.common_gui.R.style.Usedesk_Common_No_Permission_Snackbar
+                )
+                UsedeskResourceManager.StyleValues(
+                    this,
+                    snackbarStyleId
+                ).apply {
+                    UsedeskSnackbar.create(
+                        binding.root,
+                        getColor(ru.usedesk.common_gui.R.attr.usedesk_background_color_1),
+                        getString(ru.usedesk.common_gui.R.attr.usedesk_text_1),
+                        getColor(ru.usedesk.common_gui.R.attr.usedesk_text_color_1),
+                        getString(ru.usedesk.common_gui.R.attr.usedesk_text_2),
+                        getColor(ru.usedesk.common_gui.R.attr.usedesk_text_color_2)
+                    ).show()
+                }
+            }
+            onGranted = null
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        permissionResult?.unregister()
+        onGranted = null
+    }
+
+    private fun needDownloadPermission(
+        onGranted: () -> Unit
+    ) {
+        if (Build.VERSION.SDK_INT >= 29 ||
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            onGranted()
+        } else {
+            this.onGranted = onGranted
+            permissionResult?.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                ?: throw RuntimeException("Need call method register() before.")
+        }
     }
 
     override fun onDownload(url: String, name: String) {
         try {
-            val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            val request = DownloadManager.Request(Uri.parse(url))
-                .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-                .setTitle(name)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(false)
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, name)
-            val downloadID = downloadManager.enqueue(request)
-            fileToast(R.string.download_started, name)
+            needDownloadPermission {
+                val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val request = DownloadManager.Request(Uri.parse(url))
+                    .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                    .setTitle(name)
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+                    .setAllowedOverMetered(true)
+                    .setAllowedOverRoaming(false)
+                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, name)
+                val downloadID = downloadManager.enqueue(request)
+                fileToast(R.string.download_started, name)
+            }
         } catch (e: Exception) {
             fileToast(R.string.download_failed, name)
         }
@@ -123,15 +185,9 @@ class MainActivity : AppCompatActivity(),
 
     private fun initUsedeskService(configuration: Configuration) {
         when (configuration.foregroundService) {
-            true -> {
-                CustomForegroundNotificationsService.Factory()
-            }
-            false -> {
-                CustomSimpleNotificationsService.Factory()
-            }
-            else -> {
-                null
-            }
+            true -> CustomForegroundNotificationsService.Factory()
+            false -> CustomSimpleNotificationsService.Factory()
+            else -> null
         }.let { factory ->
             setNotificationsServiceFactory(factory)
         }
@@ -183,7 +239,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun fullscreenMode(enable: Boolean) {
-        ViewCompat.getWindowInsetsController(window.decorView)?.run {
+        ViewCompat.getWindowInsetsController(binding.root)?.run {
             systemBarsBehavior = if (enable) {
                 hide(WindowInsetsCompat.Type.systemBars())
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE

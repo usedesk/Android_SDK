@@ -74,28 +74,6 @@ abstract class UsedeskFragment : Fragment() {
         fromCamera = null
     }
 
-    fun needWriteExternalPermission(
-        fragment: Fragment,
-        onGranted: () -> Unit
-    ) {
-        needPermission(
-            fragment,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            onGranted
-        )
-    }
-
-    fun needReadExternalPermission(
-        fragment: Fragment,
-        onGranted: () -> Unit
-    ) {
-        needPermission(
-            fragment,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            onGranted
-        )
-    }
-
     fun needCameraPermission(
         fragment: Fragment,
         onGranted: () -> Unit

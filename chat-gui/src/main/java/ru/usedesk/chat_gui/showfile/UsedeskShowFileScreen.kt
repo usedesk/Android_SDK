@@ -49,12 +49,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivDownload.setOnClickListener {
             viewModel.modelLiveData.value.file?.let { file ->
-                needWriteExternalPermission(this) {
-                    findParent<IUsedeskOnDownloadListener>()?.onDownload(
-                        file.content,
-                        file.name
-                    )
-                }
+                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                    file.content,
+                    file.name
+                )
             }
         }
 
@@ -70,8 +68,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        registerPermissions()
 
         hideKeyboard(binding.rootView)
 

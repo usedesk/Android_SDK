@@ -4,36 +4,39 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
-import ru.usedesk.knowledgebase_gui.screens.article.ArticlePage
-import ru.usedesk.knowledgebase_gui.screens.articles.ArticlesPage
-import ru.usedesk.knowledgebase_gui.screens.articles_search.ArticlesSearchPage
-import ru.usedesk.knowledgebase_gui.screens.categories.CategoriesPage
-import ru.usedesk.knowledgebase_gui.screens.categories.IOnCategoryClickListener
-import ru.usedesk.knowledgebase_gui.screens.sections.IOnSectionClickListener
-import ru.usedesk.knowledgebase_gui.screens.sections.SectionsPage
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
-class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
-    IOnSectionClickListener,
-    IOnCategoryClickListener,
-    IOnArticleClickListener,
-    IUsedeskOnSearchQueryListener,
-    IOnTitleChangeListener {
+class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
     private lateinit var binding: Binding
     private lateinit var toolbarDefaultAdapter: UsedeskToolbarAdapter
     private lateinit var toolbarSearchAdapter: ToolbarSearchAdapter
+    private lateinit var navController: NavController
 
-    private var withSupportButton = true
-    private var withArticleRating = true
+    private var fabDefaultBottomMargin = 0
+
+    internal var withArticleRating = true
+        private set
+
+    private var fabAnimation: FabAnimation? = null
+
+    private lateinit var sectionsTitle: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,10 +52,26 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             Binding(rootView, defaultStyleId)
         }
 
-        withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+        sectionsTitle = binding.styleValues
+            .getStyleValues(R.attr.usedesk_common_toolbar)
+            .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+            .getString(R.attr.usedesk_text_1)
+
+        fabDefaultBottomMargin = binding.styleValues.getStyleValues(
+            R.attr.usedesk_knowledgebase_screen_support_button
+        ).getPixels(android.R.attr.layout_marginBottom).toInt()
+
+        navController = (childFragmentManager.findFragmentById(R.id.page_container)
+                as NavHostFragment).navController
+
         withArticleRating = argsGetBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
-        argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)?.let {
-            UsedeskKnowledgeBaseSdk.setConfiguration(it)
+        val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
+
+        binding.fabSupport.run {
+            visibility = visibleGone(withSupportButton)
+            setOnClickListener {
+                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
+            }
         }
 
         toolbarDefaultAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
@@ -61,143 +80,77 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
             }
 
             setActionButton {
-                switchPage(ArticlesSearchPage.newInstance(withSupportButton))
+                navController.navigate(R.id.articlesSearchPage)
             }
         }
 
-        toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, {
-            (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(it)
+        toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, { query ->
+            if (query.isNotEmpty()) {
+                viewModel.onSearchQuery(query)
+            }
         }, {
-            viewModel.onSearchQuery(null)
             onBackPressed()
         })
 
-        UsedeskKnowledgeBaseSdk.init(requireContext())
-
-        if (childFragmentManager.backStackEntryCount == 0) {
-            val sectionsTitle = binding.styleValues
-                .getStyleValues(R.attr.usedesk_common_toolbar)
-                .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                .getString(R.attr.usedesk_text_1)
-            val fragment = SectionsPage.newInstance(withSupportButton)
-            switchPage(fragment, sectionsTitle)
-        } else {
-            getLastFragment()?.let {
-                updateToolbar(it)
-                val title = it.arguments?.getString(COMMON_TITLE_KEY)
-                toolbarDefaultAdapter.setTitle(title)
-            }
-        }
-
         hideKeyboard(binding.rootView)
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.searchQuery != new.searchQuery) {
-                (getLastFragment() as? ArticlesSearchPage)?.onSearchQueryUpdate(new.searchQuery)
+        navController.addOnDestinationChangedListener { _, destination, args ->
+            when (destination.id) {
+                R.id.sectionsPage,
+                R.id.categoriesPage,
+                R.id.articlesPage,
+                R.id.articlePage -> {
+                    toolbarDefaultAdapter.show()
+                    toolbarSearchAdapter.hide()
+                    toolbarDefaultAdapter.setTitle(
+                        args?.getString(COMMON_TITLE_KEY)
+                            ?: sectionsTitle
+                    )
+                }
+                R.id.articlesSearchPage -> {
+                    toolbarDefaultAdapter.hide()
+                    toolbarSearchAdapter.show()
+                }
             }
-            if (old?.showSearch != new.showSearch && new.showSearch) {
-                switchPage(ArticlesSearchPage.newInstance(withSupportButton))
-            }
+            onSupportButtonBottomMargin(0)
         }
 
         return binding.rootView
     }
 
-    private fun switchPage(
-        fragment: Fragment,
-        title: String = ""
-    ) {
-        updateToolbar(fragment)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.init {
+            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)?.let {
+                UsedeskKnowledgeBaseSdk.setConfiguration(it)
+            }
+            UsedeskKnowledgeBaseSdk.init(requireContext())
+        }
+    }
+
+    internal fun onTitle(title: String) {
         toolbarDefaultAdapter.setTitle(title)
-        fragment.arguments = (fragment.arguments ?: Bundle()).apply {
-            putString(COMMON_TITLE_KEY, title)
-        }
-        childFragmentManager.beginTransaction()
-            .addToBackStack(fragment.javaClass.name + ":" + fragment.hashCode())
-            .replace(R.id.container, fragment)
-            .commit()
     }
 
-    override fun onArticleClick(
-        categoryId: Long,
-        articleId: Long,
-        articleTitle: String
-    ) {
-        val fragment = ArticlePage.newInstance(
-            withSupportButton,
-            withArticleRating,
-            categoryId,
-            articleId
-        )
-        switchPage(fragment, articleTitle)
-    }
-
-    override fun onCategoryClick(
-        categoryId: Long,
-        articleTitle: String
-    ) {
-        val fragment = ArticlesPage.newInstance(withSupportButton, categoryId)
-        switchPage(fragment, articleTitle)
-    }
-
-    override fun onSectionClick(
-        sectionId: Long,
-        sectionTitle: String
-    ) {
-        val fragment = CategoriesPage.newInstance(withSupportButton, sectionId)
-        switchPage(fragment, sectionTitle)
-    }
-
-    override fun onSearchQuery(query: String) {
-        if (query.isNotEmpty()) {
-            viewModel.onSearchQuery(query)
-        }
-    }
-
-    override fun onTitle(title: String) {
-        binding.toolbar.tvTitle.text = title
-        getLastFragment()?.apply {
-            (arguments ?: Bundle()).putString(COMMON_TITLE_KEY, title)
+    internal fun onSupportButtonBottomMargin(bottomMargin: Int) {
+        val newBottomMargin = fabDefaultBottomMargin + bottomMargin
+        if (fabAnimation?.newBottomMargin != newBottomMargin) {
+            binding.fabSupport.clearAnimation()
+            fabAnimation = FabAnimation(
+                binding.fabSupport,
+                newBottomMargin
+            )
+            binding.fabSupport.startAnimation(fabAnimation)
         }
     }
 
     override fun onBackPressed(): Boolean {
-        if (childFragmentManager.backStackEntryCount > 1) {
-            childFragmentManager.popBackStackImmediate()
-            val lastFragment = getLastFragment()
-            val title = if (lastFragment != null) {
-                updateToolbar(lastFragment)
-
-                lastFragment.arguments
-                    ?.getString(COMMON_TITLE_KEY)
-                    ?: ""
-            } else {
-                ""
-            }
-            toolbarDefaultAdapter.setTitle(title)
-            return true
-        }
-        return false
-    }
-
-    private fun updateToolbar(fragment: Fragment) {
-        if (fragment is ArticlesSearchPage) {
-            toolbarSearchAdapter.show()
-            toolbarDefaultAdapter.hide()
-            showKeyboard(binding.toolbarSearch.etQuery)
-        } else {
-            toolbarSearchAdapter.hide()
-            toolbarDefaultAdapter.show()
-            hideKeyboard(binding.rootView)
-        }
-    }
-
-    private fun getLastFragment(): Fragment? {
-        return childFragmentManager.fragments.lastOrNull()
+        return navController.popBackStack()
     }
 
     companion object {
-        private const val COMMON_TITLE_KEY = "commonTitleKey"
+        internal const val COMMON_TITLE_KEY = "commonTitleKey"
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
         private const val KNOWLEDGE_BASE_CONFIGURATION = "knowledgeBaseConfiguration"
@@ -235,11 +188,31 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment(),
         }
     }
 
+    class FabAnimation(
+        val view: View,
+        val newBottomMargin: Int
+    ) : Animation() {
+        private val oldBottomMargin = view.marginBottom
+
+        init {
+            duration = 300
+        }
+
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            val dif = newBottomMargin - oldBottomMargin
+            val currentMargin = oldBottomMargin + (dif * interpolatedTime).toInt()
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                updateMargins(bottom = currentMargin)
+            }
+        }
+    }
+
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val toolbar =
             UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
         val toolbarSearch =
             ToolbarSearchAdapter.Binding(rootView.findViewById(R.id.toolbar_search), defaultStyleId)
+        val fabSupport = rootView.findViewById<FloatingActionButton>(R.id.fab_support)
     }
 }

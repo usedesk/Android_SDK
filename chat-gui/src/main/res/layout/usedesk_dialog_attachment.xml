@@ -10,10 +10,7 @@
 
     <LinearLayout
         android:id="@+id/l_gallery"
-        style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        style="?attr/usedesk_common_container_1">
 
         <ImageView
             style="?attr/usedesk_chat_attachment_dialog_gallery_image"
@@ -26,10 +23,7 @@
 
     <LinearLayout
         android:id="@+id/l_camera"
-        style="?attr/usedesk_common_container_2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        style="?attr/usedesk_common_container_2">
 
         <ImageView
             style="?attr/usedesk_chat_attachment_dialog_camera_image"
@@ -42,10 +36,7 @@
 
     <LinearLayout
         android:id="@+id/l_storage"
-        style="?attr/usedesk_common_container_3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        style="?attr/usedesk_common_container_3">
 
         <ImageView
             style="?attr/usedesk_chat_attachment_dialog_storage_image"

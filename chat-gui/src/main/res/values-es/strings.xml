@@ -6,8 +6,6 @@
     <string name="usedesk_email">@string/usedesk_string_email</string>
     <string name="usedesk_message">@string/usedesk_string_message</string>
     <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
-    <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
-    <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
     <string name="usedesk_today">@string/usedesk_string_today</string>
     <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
     <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
@@ -30,8 +28,6 @@
     <string name="usedesk_string_email">Correo</string>
     <string name="usedesk_string_message">Mensaje</string>
     <string name="usedesk_string_message_input">Escribir…</string>
-    <string name="usedesk_string_no_internet_title">Sin conexión al internet</string>
-    <string name="usedesk_string_no_internet_text">Intente apagar el modo avión, encienda Wi-FI o Internet móvil y verifique la intensidad de la señal de la red</string>
     <string name="usedesk_string_today">Hoy</string>
     <string name="usedesk_string_yesterday">Ayer</string>
     <string name="usedesk_string_download_started">Descarga iniciada</string>

@@ -12,11 +12,6 @@
     <LinearLayout
         android:id="@+id/l_file"
         style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
         tools:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatImageView style="?attr/usedesk_chat_show_file_file_image" />
@@ -36,9 +31,6 @@
     <FrameLayout
         android:id="@+id/l_image"
         style="?attr/usedesk_common_container_2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
         tools:visibility="visible">
 
         <com.github.chrisbanes.photoview.PhotoView
@@ -60,9 +52,7 @@
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/l_toolbar"
-        style="?attr/usedesk_common_container_3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="?attr/usedesk_common_container_3">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -89,10 +79,7 @@
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/l_bottom"
-        style="?attr/usedesk_common_container_4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
+        style="?attr/usedesk_common_container_4">
 
         <ImageView
             android:id="@+id/iv_share"

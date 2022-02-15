@@ -30,8 +30,6 @@
     <string name="usedesk_string_email">Email</string>
     <string name="usedesk_string_message">Message</string>
     <string name="usedesk_string_message_input">Text…</string>
-    <string name="usedesk_string_no_internet_title">No Internet</string>
-    <string name="usedesk_string_no_internet_text">Try turning off airplane mode, turning on Wi-Fi or mobile internet and checking the network signal strength</string>
     <string name="usedesk_string_today">Today</string>
     <string name="usedesk_string_yesterday">Yesterday</string>
     <string name="usedesk_string_download_started">Download started</string>

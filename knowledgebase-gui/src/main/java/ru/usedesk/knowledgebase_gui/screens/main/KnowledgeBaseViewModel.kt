@@ -1,15 +1,20 @@
 package ru.usedesk.knowledgebase_gui.screens.main
 
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk.release
+import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 
 internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.Model>(Model()) {
 
-    fun onSearchQuery(query: String?) {
+    fun init(onInit: () -> Unit) {
+        doInit {
+            onInit()
+        }
+    }
+
+    fun onSearchQuery(query: String) {
         setModel { model ->
             model.copy(
-                searchQuery = query ?: "",
-                showSearch = query != null
+                searchQuery = query
             )
         }
     }
@@ -17,11 +22,10 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
     override fun onCleared() {
         super.onCleared()
 
-        release()
+        UsedeskKnowledgeBaseSdk.release()
     }
 
     data class Model(
-        val searchQuery: String = "",
-        val showSearch: Boolean = false
+        val searchQuery: String = ""
     )
 }

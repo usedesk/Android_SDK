@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
@@ -13,20 +12,15 @@
         android:id="@+id/tv_message"
         style="?attr/usedesk_knowledgebase_list_page_message_text" />
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        style="?attr/usedesk_common_progressbar"
-        android:theme="?attr/usedesk_common_progressbar" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_items"
         style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/usedesk_item_section" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_support"
-        style="?attr/usedesk_knowledgebase_screen_support_button" />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/v_loading"
+        style="?attr/usedesk_common_container_2">
+
+        <include layout="@layout/usedesk_view_loading" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </FrameLayout>

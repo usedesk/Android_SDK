@@ -2,7 +2,7 @@ buildscript {
     ext.kotlinVersion = "1.6.10"
     ext.kotlinCoroutinesVersion = "1.6.0"
     ext.daggerVersion = "2.40.5"
-    ext.navVersion = "2.4.0"
+    ext.navVersion = "2.4.1"
     repositories {
         google()
         mavenCentral()
@@ -15,7 +15,7 @@ buildscript {
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "3.10.8"
+    project.version = "3.10.9"
 
     repositories {
         google()

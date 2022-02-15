@@ -13,10 +13,13 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">56dp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container2" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/usedesk_background_search_input</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginTop">6dp</item>
@@ -25,6 +28,8 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container1</item>
         <item name="usedesk_common_container_2">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Container2</item>
@@ -43,28 +48,42 @@
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Screen.ContainerRoot</item>
         <item name="usedesk_common_toolbar">@style/Usedesk.KnowledgeBase.Screen.Toolbar</item>
         <item name="usedesk_knowledgebase_screen_toolbar_search">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search</item>
+        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page.ContainerRoot" parent="">
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.List.Page.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="layoutManager">androidx.recyclerview.widget.LinearLayoutManager</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.List.Page" parent="">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.List.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
-        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.List.Page.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Common.View.Loading.Container</item>
         <item name="usedesk_knowledgebase_list_page_message_text">@style/Usedesk.KnowledgeBase.List.Page.Message.Text</item>
-        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
+        <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>
+        <item name="usedesk_common_view_loading_text">@style/Usedesk.Common.View.Loading.Text</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.List.Page.Message.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.List.Page.Message.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">16dp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
-        <item name="android:textSize">16sp</item>
         <item name="android:visibility">gone</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.List.Page.Message.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Action.Image" parent="Usedesk.Common.Toolbar.Action.Image">
@@ -98,31 +117,40 @@
         <item name="usedesk_text_1">@string/usedesk_knowledgebase</item>
     </style>
 
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center_vertical|center_horizontal</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">16sp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:background">@null</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Query.EditText.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textColor">@color/usedesk_red</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Screen.Toolbar.Search.Cancel.Text.TextAppearance</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
         <item name="android:padding">8dp</item>
-        <item name="android:textColor">@color/usedesk_red</item>
-        <item name="android:textSize">17sp</item>
         <item name="android:text">@string/usedesk_cancel</item>
     </style>
 
@@ -143,12 +171,16 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Container2" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
@@ -169,6 +201,12 @@
         <item name="usedesk_knowledgebase_sections_page_section_forward_image">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Forward.Image</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_black_1</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Title.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -177,21 +215,23 @@
         <item name="android:layout_marginLeft">14dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Title.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Initials.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
-        <item name="android:textColor">@color/usedesk_black_1</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Initials.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
         <item name="android:maxLength">1</item>
         <item name="android:singleLine">true</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
-        <item name="android:textSize">22sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Sections.Page.Section.Initials.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Sections.Page.Section.Thumbnail.Image" parent="">
@@ -215,6 +255,9 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -227,16 +270,20 @@
         <item name="usedesk_knowledgebase_articles_page_article_title">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">17sp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Articles.Page.Article.Title.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page" parent="Usedesk.KnowledgeBase.List.Page">
@@ -252,6 +299,9 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
@@ -264,15 +314,25 @@
         <item name="usedesk_knowledgebase_article_search_page_article_path">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_medium</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginTop">20dp</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Title.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:fontFamily">@font/sf_ui_display_medium</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text" parent="">
@@ -281,10 +341,14 @@
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginTop">4dp</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:maxLines">2</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Description.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text" parent="">
@@ -294,9 +358,7 @@
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:visibility">gone</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Articles.Search.Page.Article.Path.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Articles.Search.Page.Article.Divider" parent="">
@@ -314,6 +376,8 @@
     </style>
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:paddingStart">20dp</item>
@@ -332,31 +396,43 @@
         <item name="usedesk_knowledgebase_categories_category_forward_image">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Forward.Image</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Count.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Count.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">8dp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Count.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Description.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:textColor">@color/usedesk_gray_cold_2</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Description.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">6dp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Description.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Title.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textColor">@color/usedesk_gray_cold_2</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Title.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Categories.Page.Category.Title.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Categories.Page.Category.Forward.Image" parent="">
@@ -369,7 +445,33 @@
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container3" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container4" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginTop">12dp</item>
         <item name="android:layout_marginBottom">56dp</item>
         <item name="android:paddingStart">12dp</item>
@@ -396,6 +498,18 @@
         <item name="cardCornerRadius">2dp</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container9" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -404,6 +518,7 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:padding">12dp</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider" parent="Usedesk.Common.Divider.MarginStart">
@@ -412,19 +527,19 @@
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
-        <item name="usedesk_common_container_2">@null</item>
-        <item name="usedesk_common_container_3">@null</item>
-        <item name="usedesk_common_container_4">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container2</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container3</item>
+        <item name="usedesk_common_container_4">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container4</item>
         <item name="usedesk_common_container_5">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container5</item>
         <item name="usedesk_common_container_6">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container6</item>
         <item name="usedesk_common_container_7">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container7</item>
-        <item name="usedesk_common_container_8">@null</item>
-        <item name="usedesk_common_container_9">@null</item>
+        <item name="usedesk_common_container_8">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container8</item>
+        <item name="usedesk_common_container_9">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container9</item>
         <item name="usedesk_common_container_10">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
         <item name="usedesk_common_container_11">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Container10</item>
+        <item name="usedesk_common_container_12">@style/Usedesk.Common.View.Loading.Container</item>
         <item name="usedesk_common_divider">@style/Usedesk.KnowledgeBase.Article.Content.Page.Item.Divider</item>
-        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_title_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_rating_yes_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text</item>
@@ -433,16 +548,24 @@
         <item name="usedesk_knowledgebase_article_content_page_previous_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text</item>
         <item name="usedesk_knowledgebase_article_content_page_next_image">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Image</item>
         <item name="usedesk_knowledgebase_article_content_page_next_text">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text</item>
-        <item name="usedesk_knowledgebase_screen_support_button">@style/Usedesk.KnowledgeBase.Screen.Support.Button</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
+        <item name="usedesk_common_view_loading_image">@style/Usedesk.Common.View.Loading.Image</item>
+        <item name="usedesk_common_view_loading_title">@style/Usedesk.Common.View.Loading.Title</item>
+        <item name="usedesk_common_view_loading_text">@style/Usedesk.Common.View.Loading.Text</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.ContainerRoot" parent="">
         <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page" parent="Usedesk.Common">
         <item name="usedesk_common_container_root">@style/Usedesk.KnowledgeBase.Article.Content.Page.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@null</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.KnowledgeBase.Article.Content.Page.Container1</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Image" parent="">
@@ -451,13 +574,17 @@
         <item name="srcCompat">@drawable/usedesk_ic_previous</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_blue</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:textColor">@color/usedesk_blue</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Previous.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Image" parent="">
@@ -466,15 +593,19 @@
         <item name="srcCompat">@drawable/usedesk_ic_next</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textColor">@color/usedesk_blue</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Next.Text" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:gravity">end</item>
-        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:textColor">@color/usedesk_blue</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Next.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Divider" parent="">
@@ -484,16 +615,20 @@
         <item name="android:background">@color/usedesk_gray_2</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/sf_ui_display_semibold</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Title.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Close.Image" parent="">
@@ -507,6 +642,12 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">#EB5757</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button" parent="">
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:layout_width">match_parent</item>
@@ -516,12 +657,10 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:gravity">center</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">#EB5757</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
@@ -535,18 +674,29 @@
         <item name="usedesk_text_1">@string/usedesk_no</item>
     </style>
 
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">16dp</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:singleLine">false</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="theme">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme" parent="">
         <item name="colorAccent">@color/usedesk_green</item>
+    </style>
+
+    <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">17sp</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text" parent="">
@@ -555,11 +705,10 @@
         <item name="android:layout_marginTop">24dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
-        <item name="android:fontFamily">@font/roboto_medium</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textSize">17sp</item>
         <item name="usedesk_text_1">@string/usedesk_rating_question</item>
         <item name="usedesk_text_2">@string/usedesk_rating_whats_wrong</item>
         <item name="usedesk_text_3">@string/usedesk_rating_thanks</item>
+        <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text.TextAppearance</item>
     </style>
+
 </resources>

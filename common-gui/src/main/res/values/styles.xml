@@ -129,6 +129,8 @@
     </style>
 
     <style name="Usedesk.Common.List.Field.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">68dp</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -172,7 +174,7 @@
 
     <style name="Usedesk.Common.Field.List.Value.Text.TextAppearance" parent="">
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
-        <item name="android:textColor">@color/usedesk_red</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">18sp</item>
     </style>
 

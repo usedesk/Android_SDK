@@ -89,11 +89,7 @@ internal class MessagesRepository(
     }
 
     override fun addFileToCache(uri: Uri): Uri {
-        return if (uri.toString().startsWith("file://" + appContext.cacheDir.absolutePath)) {
-            uri
-        } else {
-            fileLoader.toCache(uri)
-        }
+        return fileLoader.toCache(uri)
     }
 
     override fun removeFileFromCache(uri: Uri) {

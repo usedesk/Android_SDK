@@ -24,7 +24,6 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
-import java.io.File
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -68,33 +67,45 @@ internal class MessagesPage : UsedeskFragment() {
             )
         }
 
-        attachmentDialog = UsedeskAttachmentDialog.create(
-            this,
-            viewModel
-        )
+        attachmentDialog = UsedeskAttachmentDialog.create(this).apply {
+            setOnDismissListener {
+                viewModel.showAttachmentPanel(false)
+            }
+        }
 
-        registerPermissions()
-        registerFiles({ uriList ->
-            val files = uriList.map { uri ->
+        registerFiles { uris ->
+            val files = uris.map {
                 UsedeskFileInfo.create(
                     requireContext(),
-                    uri
+                    it
                 )
             }.toSet()
             attachFiles(files)
-        }, { done ->
-            val fileName = viewModel.modelLiveData.value.cameraUri
-            if (done && fileName != null) {
-                val uri = Uri.fromFile(File(requireContext().externalCacheDir, fileName))
-                val file = UsedeskFileInfo.create(
-                    requireContext(),
-                    uri
-                )
-                attachFiles(setOf(file))
-            } else {
-                viewModel.resetAction()
+        }
+        registerCamera {
+            viewModel.useCameraUri { cameraUri ->
+                if (it) {
+                    val file = UsedeskFileInfo.create(
+                        requireContext(),
+                        cameraUri
+                    )
+                    attachFiles(setOf(file))
+                }
             }
-        })
+        }
+        registerCameraPermission {
+            val cameraUri = generateCameraUri()
+            viewModel.setCameraUri(cameraUri)
+            startCamera(cameraUri)
+        }
+
+        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
+                if (new.attachmentPanelVisible) {
+                    attachmentDialog?.show()
+                }
+            }
+        }
     }
 
     private fun attachFiles(files: Set<UsedeskFileInfo>) {
@@ -151,8 +162,6 @@ internal class MessagesPage : UsedeskFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        unregister()
 
         messagesAdapter = null
 

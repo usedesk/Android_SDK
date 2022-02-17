@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages
 
+import android.net.Uri
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -7,7 +8,6 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
 
@@ -54,8 +54,6 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
             val newFiles = (model.messageDraft.files + uriList).toSet().toList()
             model.copy(
                 messageDraft = model.messageDraft.copy(files = newFiles),
-                cameraUri = null,
-                actionEvent = null,
                 attachmentPanelVisible = false
             )
         }
@@ -107,73 +105,6 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         }
     }
 
-    fun fromCamera() {
-        setModel { model ->
-            model.copy(
-                actionEvent = UsedeskSingleLifeEvent(Action.FROM_CAMERA_PERMISSION),
-                attachmentPanelVisible = false,
-                cameraUri = null
-            )
-        }
-    }
-
-    fun fromCameraAvailable() {
-        setModel { model ->
-            model.copy(
-                actionEvent = UsedeskSingleLifeEvent(Action.FROM_CAMERA),
-                cameraUri = "camera_${System.currentTimeMillis()}.jpg"
-            )
-        }
-    }
-
-    fun fromGallery() {
-        setModel { model ->
-            model.copy(
-                actionEvent = UsedeskSingleLifeEvent(Action.FROM_GALLERY_PERMISSION),
-                attachmentPanelVisible = false
-            )
-        }
-    }
-
-    fun fromGalleryAvailable() {
-        setModel { model ->
-            model.copy(
-                actionEvent = UsedeskSingleLifeEvent(Action.FROM_GALLERY),
-                attachmentPanelVisible = false,
-                cameraUri = null
-            )
-        }
-    }
-
-    fun fromStorage() {
-        setModel { model ->
-            model.copy(
-                actionEvent = UsedeskSingleLifeEvent(Action.FROM_STORAGE_PERMISSION),
-                attachmentPanelVisible = false
-            )
-        }
-    }
-
-    fun fromStorageAvailable() {
-        setModel { model ->
-            model.copy(
-                actionEvent = UsedeskSingleLifeEvent(Action.FROM_STORAGE),
-                attachmentPanelVisible = false,
-                cameraUri = null
-            )
-        }
-    }
-
-    fun resetAction() {
-        setModel { model ->
-            model.copy(
-                actionEvent = null,
-                attachmentPanelVisible = false,
-                cameraUri = null
-            )
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
 
@@ -182,14 +113,25 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         UsedeskChatSdk.release(false)
     }
 
+    private var cameraUri: Uri? = null
+
+    fun setCameraUri(cameraUri: Uri) {
+        this.cameraUri = cameraUri
+    }
+
+    fun useCameraUri(onCameraUri: (Uri) -> Unit) {
+        cameraUri?.let {
+            cameraUri = null
+            onCameraUri(it)
+        }
+    }
+
     data class Model(
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val messages: List<UsedeskMessage> = listOf(),
         val messagesScroll: Long = 0L,
-        val attachmentPanelVisible: Boolean = false,
-        val actionEvent: UsedeskSingleLifeEvent<Action>? = null,
-        val cameraUri: String? = null
+        val attachmentPanelVisible: Boolean = false
     )
 
     enum class Action {

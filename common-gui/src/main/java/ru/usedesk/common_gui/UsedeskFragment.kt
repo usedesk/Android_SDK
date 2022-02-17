@@ -1,125 +1,118 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
 
-    private var permissionResult: ActivityResultLauncher<String>? = null
-    private var onGranted: (() -> Unit)? = null
-    private var getContent: ActivityResultLauncher<String>? = null
-    private var fromCamera: ActivityResultLauncher<Uri>? = null
+    private var permissionCameraResult: ActivityResultLauncher<String>? = null
+    private var filesResult: ActivityResultLauncher<String>? = null
+    private var cameraResult: ActivityResultLauncher<Uri>? = null
 
     open fun onBackPressed(): Boolean = false
 
-    fun registerPermissions() {
-        permissionResult = registerForActivityResult(
+    fun registerCameraPermission(
+        onGranted: () -> Unit
+    ) {
+        permissionCameraResult = permissionCameraResult ?: registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-                onGranted?.invoke()
+                onGranted()
             } else {
-                val snackbarStyleId = UsedeskResourceManager.getResourceId(
-                    R.style.Usedesk_Common_No_Permission_Snackbar
-                )
-                UsedeskResourceManager.StyleValues(
-                    requireContext(),
-                    snackbarStyleId
-                ).apply {
-                    UsedeskSnackbar.create(
-                        requireView(),
-                        getColor(R.attr.usedesk_background_color_1),
-                        getString(R.attr.usedesk_text_1),
-                        getColor(R.attr.usedesk_text_color_1),
-                        getString(R.attr.usedesk_text_2),
-                        getColor(R.attr.usedesk_text_color_2)
-                    ).show()
-                }
+                showNoPermissions()
             }
-            onGranted = null
         }
     }
 
-    fun registerFiles(
-        onFiles: (List<Uri>) -> Unit,
-        onCamera: (Boolean) -> Unit
-    ) {
-        getContent =
-            registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uriList ->
-                onFiles(uriList)
-            }
-
-        fromCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {
-            onCamera(it)
+    fun registerCamera(onCameraResult: (Boolean) -> Unit) {
+        cameraResult = cameraResult ?: registerForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) {
+            onCameraResult(it)
         }
     }
 
-    fun unregister() {
-        permissionResult?.unregister()
-        permissionResult = null
-
-        getContent?.unregister()
-        getContent = null
-
-        fromCamera?.unregister()
-        fromCamera = null
+    fun registerFiles(onContentResult: (List<Uri>) -> Unit) {
+        filesResult = filesResult ?: registerForActivityResult(
+            ActivityResultContracts.GetMultipleContents()
+        ) { uris ->
+            onContentResult(uris)
+        }
     }
 
-    fun needCameraPermission(
-        fragment: Fragment,
-        onGranted: () -> Unit
-    ) {
-        needPermission(
-            fragment,
-            Manifest.permission.CAMERA,
-            onGranted
+    fun needCameraPermission() {
+        permissionCameraResult?.launch(Manifest.permission.CAMERA)
+    }
+
+    fun startFiles() {
+        filesResult?.launch(MIME_TYPE_ALL_DOCS)
+    }
+
+    fun startImages() {
+        filesResult?.launch(MIME_TYPE_ALL_IMAGES)
+    }
+
+    fun startCamera(cameraUri: Uri) {
+        val compatibleCameraUri = getCompatibleCameraUri(cameraUri)
+        cameraResult?.launch(compatibleCameraUri)
+    }
+
+    private fun showNoPermissions() {
+        val snackbarStyleId = UsedeskResourceManager.getResourceId(
+            R.style.Usedesk_Common_No_Permission_Snackbar
         )
-    }
-
-    fun needPermission(
-        fragment: Fragment,
-        permission: String,
-        onGranted: () -> Unit
-    ) {
-        when (ContextCompat.checkSelfPermission(fragment.requireContext(), permission)) {
-            PackageManager.PERMISSION_GRANTED -> onGranted()
-            PackageManager.PERMISSION_DENIED -> {
-                this.onGranted = onGranted
-                permissionResult?.launch(permission)
-                    ?: throw RuntimeException("Need call method register() before.")
-            }
+        UsedeskResourceManager.StyleValues(
+            requireContext(),
+            snackbarStyleId
+        ).apply {
+            UsedeskSnackbar.create(
+                requireView(),
+                getColor(R.attr.usedesk_background_color_1),
+                getString(R.attr.usedesk_text_1),
+                getColor(R.attr.usedesk_text_color_1),
+                getString(R.attr.usedesk_text_2),
+                getColor(R.attr.usedesk_text_color_2)
+            ).show()
         }
     }
 
-    fun fromGallery() {
-        getContent?.launch(MIME_TYPE_ALL_IMAGES)
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        permissionCameraResult?.unregister()
+        permissionCameraResult = null
+
+        cameraResult?.unregister()
+        cameraResult = null
+
+        filesResult?.unregister()
+        filesResult = null
     }
 
-    fun fromStorage() {
-        getContent?.launch(MIME_TYPE_ALL_DOCS)
+    protected fun generateCameraUri(): Uri {
+        val fileName = "camera_${System.currentTimeMillis()}.jpg"
+        return Uri.fromFile(File(requireContext().externalCacheDir, fileName))
     }
 
-    fun fromCamera(uri: Uri) {
-        val photoUri = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            uri
+    private fun getCompatibleCameraUri(cameraUri: Uri): Uri {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            cameraUri
         } else {
             val applicationContext = requireContext().applicationContext
             FileProvider.getUriForFile(
                 applicationContext,
                 "${applicationContext.packageName}.provider",
-                File(uri.path ?: "")
+                File(cameraUri.path)
             )
         }
-        fromCamera?.launch(photoUri)
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {

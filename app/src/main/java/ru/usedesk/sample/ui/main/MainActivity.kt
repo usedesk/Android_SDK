@@ -3,9 +3,7 @@ package ru.usedesk.sample.ui.main
 import android.Manifest
 import android.app.DownloadManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
@@ -16,8 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -62,8 +58,7 @@ class MainActivity : AppCompatActivity(),
     private lateinit var navHostFragment: NavHostFragment
     private lateinit var navController: NavController
 
-    private var permissionResult: ActivityResultLauncher<String>? = null
-    private var onGranted: (() -> Unit)? = null
+    private var permissionDownloadResult: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,11 +101,11 @@ class MainActivity : AppCompatActivity(),
                 }
             }
         }
-        permissionResult = registerForActivityResult(
+        permissionDownloadResult = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-                onGranted?.invoke()
+                downloadFile()
             } else {
                 val snackbarStyleId = UsedeskResourceManager.getResourceId(
                     ru.usedesk.common_gui.R.style.Usedesk_Common_No_Permission_Snackbar
@@ -129,49 +124,31 @@ class MainActivity : AppCompatActivity(),
                     ).show()
                 }
             }
-            onGranted = null
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        permissionResult?.unregister()
-        onGranted = null
+        permissionDownloadResult?.unregister()
+        permissionDownloadResult = null
     }
 
-    private fun needDownloadPermission(
-        onGranted: () -> Unit
-    ) {
-        if (Build.VERSION.SDK_INT >= 29 ||
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            onGranted()
-        } else {
-            this.onGranted = onGranted
-            permissionResult?.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                ?: throw RuntimeException("Need call method register() before.")
-        }
-    }
-
-    override fun onDownload(url: String, name: String) {
-        try {
-            needDownloadPermission {//TODO: тут попытка скачать локальный файл рушится
+    private fun downloadFile() {
+        viewModel.useDownloadFile { downloadFile ->
+            try {
                 val downloadManager =
                     getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                val uri = Uri.parse(url)
-                if (url.startsWith("file://")) {
+                val uri = Uri.parse(downloadFile.url)
+                if (downloadFile.url.startsWith("file://")) {
                     contentResolver.openInputStream(uri).use { inputStream ->
                         if (inputStream == null) {
-                            throw UsedeskDataNotFoundException("Can't read file: $url")
+                            throw UsedeskDataNotFoundException("Can't read file: ${downloadFile.url}")
                         }
                         val outputPath = Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_DOWNLOADS
                         )
-                        val outputFile = File(outputPath, name)
+                        val outputFile = File(outputPath, downloadFile.name)
                         FileOutputStream(outputFile).use { outputStream ->
                             inputStream.copyTo(outputStream)
                         }
@@ -180,34 +157,26 @@ class MainActivity : AppCompatActivity(),
                     downloadManager.enqueue(
                         DownloadManager.Request(uri)
                             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-                            .setTitle(name)
+                            .setTitle(downloadFile.name)
                             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                             .setAllowedOverMetered(true)
                             .setAllowedOverRoaming(false)
                             .setDestinationInExternalPublicDir(
                                 Environment.DIRECTORY_DOWNLOADS,
-                                name
+                                downloadFile.name
                             )
                     )
                 }
-                fileToast(R.string.download_started, name)
+                fileToast(R.string.download_started, downloadFile.name)
+            } catch (e: Exception) {
+                fileToast(R.string.download_failed, downloadFile.name)
             }
-        } catch (e: Exception) {
-            fileToast(R.string.download_failed, name)
         }
     }
 
-    private fun toProviderUri(cameraUri: Uri): Uri {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            cameraUri
-        } else {
-            val applicationContext = applicationContext
-            FileProvider.getUriForFile(
-                applicationContext,
-                "${applicationContext.packageName}.provider",
-                File(cameraUri.path)
-            )
-        }
+    override fun onDownload(url: String, name: String) {
+        viewModel.setDownloadFile(MainViewModel.DownloadFile(url, name))
+        permissionDownloadResult?.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
     private fun fileToast(descriptionId: Int, name: String) {

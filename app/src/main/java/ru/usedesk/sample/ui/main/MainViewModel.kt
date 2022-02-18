@@ -18,6 +18,8 @@ class MainViewModel : ViewModel() {
     val errorLiveData = MutableLiveData<UsedeskEvent<String>?>()
     val goSdkEventLiveData = MutableLiveData<UsedeskEvent<Any>?>()
 
+    private var downloadFile: DownloadFile? = null
+
     init {
         disposables.add(configurationRepository.getConfigurationObservable().subscribe {
             configurationLiveData.postValue(it)
@@ -50,6 +52,17 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun setDownloadFile(downloadFile: DownloadFile) {
+        this.downloadFile = downloadFile
+    }
+
+    fun useDownloadFile(onDownloadFile: (DownloadFile) -> Unit) {
+        downloadFile?.let {
+            downloadFile = null
+            onDownloadFile(it)
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         disposables.forEach {
@@ -64,4 +77,9 @@ class MainViewModel : ViewModel() {
             configurationRepository.setConfiguration(newConfiguration).subscribe()
         }
     }
+
+    data class DownloadFile(
+        val url: String,
+        val name: String
+    )
 }

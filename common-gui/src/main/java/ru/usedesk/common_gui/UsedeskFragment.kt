@@ -2,7 +2,6 @@ package ru.usedesk.common_gui
 
 import android.Manifest
 import android.net.Uri
-import android.os.Build
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,16 +11,16 @@ import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
 
-    private var permissionCameraResult: ActivityResultLauncher<String>? = null
-    private var filesResult: ActivityResultLauncher<String>? = null
-    private var cameraResult: ActivityResultLauncher<Uri>? = null
+    private var permissionCameraLauncher: ActivityResultLauncher<String>? = null
+    private var filesLauncher: ActivityResultLauncher<String>? = null
+    private var cameraLauncher: ActivityResultLauncher<Uri>? = null
 
     open fun onBackPressed(): Boolean = false
 
     fun registerCameraPermission(
         onGranted: () -> Unit
     ) {
-        permissionCameraResult = permissionCameraResult ?: registerForActivityResult(
+        permissionCameraLauncher = permissionCameraLauncher ?: registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
@@ -33,7 +32,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
-        cameraResult = cameraResult ?: registerForActivityResult(
+        cameraLauncher = cameraLauncher ?: registerForActivityResult(
             ActivityResultContracts.TakePicture()
         ) {
             onCameraResult(it)
@@ -41,7 +40,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun registerFiles(onContentResult: (List<Uri>) -> Unit) {
-        filesResult = filesResult ?: registerForActivityResult(
+        filesLauncher = filesLauncher ?: registerForActivityResult(
             ActivityResultContracts.GetMultipleContents()
         ) { uris ->
             onContentResult(uris)
@@ -49,20 +48,20 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun needCameraPermission() {
-        permissionCameraResult?.launch(Manifest.permission.CAMERA)
+        permissionCameraLauncher?.launch(Manifest.permission.CAMERA)
     }
 
     fun startFiles() {
-        filesResult?.launch(MIME_TYPE_ALL_DOCS)
+        filesLauncher?.launch(MIME_TYPE_ALL_DOCS)
     }
 
     fun startImages() {
-        filesResult?.launch(MIME_TYPE_ALL_IMAGES)
+        filesLauncher?.launch(MIME_TYPE_ALL_IMAGES)
     }
 
-    fun startCamera(cameraUri: Uri) {
-        val compatibleCameraUri = getCompatibleCameraUri(cameraUri)
-        cameraResult?.launch(compatibleCameraUri)
+    fun startCamera(cameraFile: File) {
+        val cameraUri = toProviderCameraUri(cameraFile)
+        cameraLauncher?.launch(cameraUri)
     }
 
     private fun showNoPermissions() {
@@ -87,32 +86,28 @@ abstract class UsedeskFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        permissionCameraResult?.unregister()
-        permissionCameraResult = null
+        permissionCameraLauncher?.unregister()
+        permissionCameraLauncher = null
 
-        cameraResult?.unregister()
-        cameraResult = null
+        cameraLauncher?.unregister()
+        cameraLauncher = null
 
-        filesResult?.unregister()
-        filesResult = null
+        filesLauncher?.unregister()
+        filesLauncher = null
     }
 
-    protected fun generateCameraUri(): Uri {
+    protected fun generateCameraFile(): File {
         val fileName = "camera_${System.currentTimeMillis()}.jpg"
-        return Uri.fromFile(File(requireContext().externalCacheDir, fileName))
+        return File(requireContext().cacheDir, fileName)
     }
 
-    private fun getCompatibleCameraUri(cameraUri: Uri): Uri {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            cameraUri
-        } else {
-            val applicationContext = requireContext().applicationContext
-            FileProvider.getUriForFile(
-                applicationContext,
-                "${applicationContext.packageName}.provider",
-                File(cameraUri.path)
-            )
-        }
+    protected fun toProviderCameraUri(cameraFile: File): Uri {
+        val applicationContext = requireContext().applicationContext
+        return FileProvider.getUriForFile(
+            applicationContext,
+            "${applicationContext.packageName}.provider",
+            cameraFile
+        )
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {

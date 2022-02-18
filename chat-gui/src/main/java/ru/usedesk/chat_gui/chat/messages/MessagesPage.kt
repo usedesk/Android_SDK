@@ -83,20 +83,20 @@ internal class MessagesPage : UsedeskFragment() {
             attachFiles(files)
         }
         registerCamera {
-            viewModel.useCameraUri { cameraUri ->
+            viewModel.useCameraFile { cameraFile ->
                 if (it) {
                     val file = UsedeskFileInfo.create(
                         requireContext(),
-                        cameraUri
+                        Uri.fromFile(cameraFile)
                     )
                     attachFiles(setOf(file))
                 }
             }
         }
         registerCameraPermission {
-            val cameraUri = generateCameraUri()
-            viewModel.setCameraUri(cameraUri)
-            startCamera(cameraUri)
+            val cameraFile = generateCameraFile()
+            viewModel.setCameraFile(cameraFile)
+            startCamera(cameraFile)
         }
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->

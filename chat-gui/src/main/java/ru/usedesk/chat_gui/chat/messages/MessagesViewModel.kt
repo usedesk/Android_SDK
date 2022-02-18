@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-import android.net.Uri
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -8,6 +7,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskViewModel
+import java.io.File
 
 internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
 
@@ -113,16 +113,16 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         UsedeskChatSdk.release(false)
     }
 
-    private var cameraUri: Uri? = null
+    private var cameraFile: File? = null
 
-    fun setCameraUri(cameraUri: Uri) {
-        this.cameraUri = cameraUri
+    fun setCameraFile(cameraFile: File) {
+        this.cameraFile = cameraFile
     }
 
-    fun useCameraUri(onCameraUri: (Uri) -> Unit) {
-        cameraUri?.let {
-            cameraUri = null
-            onCameraUri(it)
+    fun useCameraFile(onCameraFile: (File) -> Unit) {
+        cameraFile?.let {
+            cameraFile = null
+            onCameraFile(it)
         }
     }
 

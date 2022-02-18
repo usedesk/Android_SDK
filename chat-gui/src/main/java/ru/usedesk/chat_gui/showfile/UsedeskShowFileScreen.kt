@@ -1,5 +1,8 @@
 package ru.usedesk.chat_gui.showfile
 
+import android.content.ClipData
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -15,6 +17,7 @@ import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.*
+import java.io.File
 
 class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
@@ -127,11 +130,21 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     private fun onShareFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            ShareCompat.IntentBuilder
-                .from(requireActivity())
-                .setType(usedeskFile.type)
-                .setText(usedeskFile.content)
-                .startChooser()
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = usedeskFile.type
+                if (usedeskFile.content.startsWith("file://")) {
+                    val file = File(Uri.parse(usedeskFile.content).path)
+                    val providerUri = toProviderCameraUri(file)
+                    clipData = ClipData.newRawUri("", providerUri)
+                    putExtra(Intent.EXTRA_STREAM, providerUri)
+                    setDataAndType(providerUri, usedeskFile.type)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } else {
+                    putExtra(Intent.EXTRA_TEXT, usedeskFile.content)
+                }
+            }
+            val chooserShareIntent = Intent.createChooser(shareIntent, null)
+            startActivity(chooserShareIntent)
         }
     }
 

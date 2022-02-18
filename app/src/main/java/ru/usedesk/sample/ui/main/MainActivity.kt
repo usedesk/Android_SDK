@@ -17,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -35,6 +36,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
 import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 import ru.usedesk.sample.R
@@ -43,6 +45,8 @@ import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.service.CustomForegroundNotificationsService
 import ru.usedesk.sample.service.CustomSimpleNotificationsService
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdkListener
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity(),
     IOnGoToSdkListener,
@@ -155,20 +159,54 @@ class MainActivity : AppCompatActivity(),
 
     override fun onDownload(url: String, name: String) {
         try {
-            needDownloadPermission {
-                val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                val request = DownloadManager.Request(Uri.parse(url))
-                    .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-                    .setTitle(name)
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                    .setAllowedOverMetered(true)
-                    .setAllowedOverRoaming(false)
-                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, name)
-                val downloadID = downloadManager.enqueue(request)
+            needDownloadPermission {//TODO: тут попытка скачать локальный файл рушится
+                val downloadManager =
+                    getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val uri = Uri.parse(url)
+                if (url.startsWith("file://")) {
+                    contentResolver.openInputStream(uri).use { inputStream ->
+                        if (inputStream == null) {
+                            throw UsedeskDataNotFoundException("Can't read file: $url")
+                        }
+                        val outputPath = Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS
+                        )
+                        val outputFile = File(outputPath, name)
+                        FileOutputStream(outputFile).use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                } else {
+                    downloadManager.enqueue(
+                        DownloadManager.Request(uri)
+                            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                            .setTitle(name)
+                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+                            .setAllowedOverMetered(true)
+                            .setAllowedOverRoaming(false)
+                            .setDestinationInExternalPublicDir(
+                                Environment.DIRECTORY_DOWNLOADS,
+                                name
+                            )
+                    )
+                }
                 fileToast(R.string.download_started, name)
             }
         } catch (e: Exception) {
             fileToast(R.string.download_failed, name)
+        }
+    }
+
+    private fun toProviderUri(cameraUri: Uri): Uri {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            cameraUri
+        } else {
+            val applicationContext = applicationContext
+            FileProvider.getUriForFile(
+                applicationContext,
+                "${applicationContext.packageName}.provider",
+                File(cameraUri.path)
+            )
         }
     }
 

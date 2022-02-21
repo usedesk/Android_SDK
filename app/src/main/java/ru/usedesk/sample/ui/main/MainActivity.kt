@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity(),
                 val downloadManager =
                     getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 val uri = Uri.parse(downloadFile.url)
-                if (downloadFile.url.startsWith("file://")) {
+                if (uri.scheme == "file" || uri.scheme == "content") {
                     contentResolver.openInputStream(uri).use { inputStream ->
                         if (inputStream == null) {
                             throw UsedeskDataNotFoundException("Can't read file: ${downloadFile.url}")
@@ -148,7 +148,22 @@ class MainActivity : AppCompatActivity(),
                         val outputPath = Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_DOWNLOADS
                         )
-                        val outputFile = File(outputPath, downloadFile.name)
+                        var outputFile = File(outputPath, downloadFile.name)
+                        val fileName = outputFile.nameWithoutExtension
+                        val fileExtension = outputFile.extension
+                        var count = 0
+                        while (outputFile.exists()) {
+                            count++
+                            var name = "$fileName $count"
+                            if (name.length - fileExtension.length > 254) {
+                                name = "${fileName.hashCode()} $count"
+                            }
+                            if (fileExtension.isNotEmpty()) {
+                                name = "$name.${outputFile.extension}"
+                            }
+
+                            outputFile = File(outputPath, name)
+                        }
                         FileOutputStream(outputFile).use { outputStream ->
                             inputStream.copyTo(outputStream)
                         }

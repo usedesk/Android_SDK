@@ -60,7 +60,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun startCamera(cameraFile: File) {
-        val cameraUri = toProviderCameraUri(cameraFile)
+        val cameraUri = toProviderUri(Uri.fromFile(cameraFile))
         cameraLauncher?.launch(cameraUri)
     }
 
@@ -101,13 +101,17 @@ abstract class UsedeskFragment : Fragment() {
         return File(requireContext().cacheDir, fileName)
     }
 
-    protected fun toProviderCameraUri(cameraFile: File): Uri {
-        val applicationContext = requireContext().applicationContext
-        return FileProvider.getUriForFile(
-            applicationContext,
-            "${applicationContext.packageName}.provider",
-            cameraFile
-        )
+    protected fun toProviderUri(uri: Uri): Uri {
+        return if (uri.scheme == "file") {
+            val applicationContext = requireContext().applicationContext
+            FileProvider.getUriForFile(
+                applicationContext,
+                "${applicationContext.packageName}.provider",
+                File(uri.path)
+            )
+        } else {
+            uri
+        }
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {

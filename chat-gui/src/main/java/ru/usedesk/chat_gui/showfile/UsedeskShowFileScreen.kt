@@ -17,7 +17,6 @@ import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.*
-import java.io.File
 
 class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
@@ -132,9 +131,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         if (usedeskFile != null) {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = usedeskFile.type
-                if (usedeskFile.content.startsWith("file://")) {
-                    val file = File(Uri.parse(usedeskFile.content).path)
-                    val providerUri = toProviderCameraUri(file)
+                val uri = Uri.parse(usedeskFile.content)
+                if (uri.scheme == "file" || uri.scheme == "content") {
+                    val providerUri = toProviderUri(uri)
                     clipData = ClipData.newRawUri("", providerUri)
                     putExtra(Intent.EXTRA_STREAM, providerUri)
                     setDataAndType(providerUri, usedeskFile.type)

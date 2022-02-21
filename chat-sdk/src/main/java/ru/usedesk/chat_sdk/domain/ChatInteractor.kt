@@ -385,7 +385,7 @@ internal class ChatInteractor(
             cachedMessages.addNotSentMessage(fileMessage as UsedeskMessageClient)
             val cachedUri = runBlocking {
                 val uri = Uri.parse(fileMessage.file.content)
-                val deferredCachedUri = cachedMessages.getCachedFile(uri)
+                val deferredCachedUri = cachedMessages.getCachedFileAsync(uri)
                 deferredCachedUri.await()
             }
             val newFile = fileMessage.file.copy(content = cachedUri.toString())

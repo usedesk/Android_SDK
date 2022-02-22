@@ -15,7 +15,7 @@ internal interface ICachedMessagesInteractor {
 
     fun removeNotSentMessage(notSentMessage: UsedeskMessageClient)
 
-    suspend fun getCachedFile(uri: Uri): Deferred<Uri>
+    suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
 
     fun removeFileFromCache(uri: Uri)
 

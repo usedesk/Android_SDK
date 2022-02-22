@@ -71,11 +71,10 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    override suspend fun getCachedFile(uri: Uri): Deferred<Uri> {
+    override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> {
         return mutex.withLock {
             deferredCachedUriMap[uri] ?: ioScope.async {
-                val cachedFile = messagesRepository.addFileToCache(uri)
-                cachedFile
+                messagesRepository.addFileToCache(uri)
             }.also {
                 deferredCachedUriMap[uri] = it
             }
@@ -150,17 +149,13 @@ internal class CachedMessagesInteractor(
                     } else {
                         deferredCachedUri?.cancel()
                     }
-                    this.deferredCachedUriMap.remove(it)
+                    deferredCachedUriMap.remove(it)
                 }
             }
             newFiles.filter {
                 it !in oldFiles
             }.map { uri ->
-                deferredCachedUriMap[uri] = this.getCachedFile(uri).also {
-                    ioScope.launch {
-                        it.await()
-                    }
-                }
+                deferredCachedUriMap[uri] = getCachedFileAsync(uri)
             }
         }
         this.messageDraft = messageDraft

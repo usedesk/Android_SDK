@@ -7,11 +7,7 @@
     android:orientation="horizontal"
     tools:theme="@style/Usedesk.Chat.Message.File">
 
-    <FrameLayout
-        style="?attr/usedesk_common_container_4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
+    <FrameLayout style="?attr/usedesk_common_container_4">
 
         <ImageView
             android:id="@+id/iv_file_type"

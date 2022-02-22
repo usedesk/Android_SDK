@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screens.categories.CategoriesPage
 
 internal class SectionsPage : UsedeskFragment() {
 
@@ -18,6 +18,7 @@ internal class SectionsPage : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private lateinit var sectionsAdapter: SectionsAdapter
+    private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +32,6 @@ internal class SectionsPage : UsedeskFragment() {
             R.style.Usedesk_KnowledgeBase_Sections_Page
         ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
-        }.apply {
-            btnSupport.setOnClickListener {
-                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
-            }
-
-            val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-            btnSupport.visibility = visibleGone(withSupportButton)
         }
 
         sectionsAdapter = SectionsAdapter(
@@ -45,34 +39,30 @@ internal class SectionsPage : UsedeskFragment() {
             viewModel,
             viewLifecycleOwner
         ) { id, title ->
-            findParent<IOnSectionClickListener>()?.onSectionClick(id, title)
+            findNavController().navigate(
+                R.id.action_sectionsPage_to_categoriesPage,
+                CategoriesPage.createBundle(title, id)
+            )
         }
 
+        loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
+
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.loading != new.loading) {
-                showInstead(binding.rvItems, binding.pbLoading, !new.loading)
+            if (old?.state != new.state) {
+                loadingAdapter.update(new.state)
+                binding.rvItems.visibility = visibleInvisible(new.state == State.LOADED)
             }
         }
 
         return binding.rootView
     }
 
-    companion object {
-        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
-
-        fun newInstance(withSupportButton: Boolean = true): SectionsPage {
-            return SectionsPage().apply {
-                arguments = Bundle().apply {
-                    putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-                }
-            }
-        }
-    }
-
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
-        val btnSupport: FloatingActionButton = rootView.findViewById(R.id.fab_support)
+        val vLoading = UsedeskCommonViewLoadingAdapter.Binding(
+            rootView.findViewById(R.id.v_loading),
+            defaultStyleId
+        )
     }
 }

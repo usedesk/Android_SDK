@@ -1,147 +1,117 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
 
-    private var permissionResult: ActivityResultLauncher<String>? = null
-    private var onGranted: (() -> Unit)? = null
-    private var getContent: ActivityResultLauncher<String>? = null
-    private var fromCamera: ActivityResultLauncher<Uri>? = null
+    private var permissionCameraLauncher: ActivityResultLauncher<String>? = null
+    private var filesLauncher: ActivityResultLauncher<String>? = null
+    private var cameraLauncher: ActivityResultLauncher<Uri>? = null
 
     open fun onBackPressed(): Boolean = false
 
-    fun registerPermissions() {
-        permissionResult = registerForActivityResult(
+    fun registerCameraPermission(
+        onGranted: () -> Unit
+    ) {
+        permissionCameraLauncher = permissionCameraLauncher ?: registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             if (isGranted) {
-                onGranted?.invoke()
+                onGranted()
             } else {
-                val snackbarStyleId = UsedeskResourceManager.getResourceId(
-                    R.style.Usedesk_Common_No_Permission_Snackbar
-                )
-                UsedeskResourceManager.StyleValues(
-                    requireContext(),
-                    snackbarStyleId
-                ).apply {
-                    UsedeskSnackbar.create(
-                        requireView(),
-                        getColor(R.attr.usedesk_background_color_1),
-                        getString(R.attr.usedesk_text_1),
-                        getColor(R.attr.usedesk_text_color_1),
-                        getString(R.attr.usedesk_text_2),
-                        getColor(R.attr.usedesk_text_color_2)
-                    ).show()
-                }
-            }
-            onGranted = null
-        }
-    }
-
-    fun registerFiles(
-        onFiles: (List<Uri>) -> Unit,
-        onCamera: (Boolean) -> Unit
-    ) {
-        getContent =
-            registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uriList ->
-                onFiles(uriList)
-            }
-
-        fromCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) {
-            onCamera(it)
-        }
-    }
-
-    fun unregister() {
-        permissionResult?.unregister()
-        permissionResult = null
-
-        getContent?.unregister()
-        getContent = null
-
-        fromCamera?.unregister()
-        fromCamera = null
-    }
-
-    fun needWriteExternalPermission(
-        fragment: Fragment,
-        onGranted: () -> Unit
-    ) {
-        needPermission(
-            fragment,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            onGranted
-        )
-    }
-
-    fun needReadExternalPermission(
-        fragment: Fragment,
-        onGranted: () -> Unit
-    ) {
-        needPermission(
-            fragment,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            onGranted
-        )
-    }
-
-    fun needCameraPermission(
-        fragment: Fragment,
-        onGranted: () -> Unit
-    ) {
-        needPermission(
-            fragment,
-            Manifest.permission.CAMERA,
-            onGranted
-        )
-    }
-
-    fun needPermission(
-        fragment: Fragment,
-        permission: String,
-        onGranted: () -> Unit
-    ) {
-        when (ContextCompat.checkSelfPermission(fragment.requireContext(), permission)) {
-            PackageManager.PERMISSION_GRANTED -> onGranted()
-            PackageManager.PERMISSION_DENIED -> {
-                this.onGranted = onGranted
-                permissionResult?.launch(permission)
-                    ?: throw RuntimeException("Need call method register() before.")
+                showNoPermissions()
             }
         }
     }
 
-    fun fromGallery() {
-        getContent?.launch(MIME_TYPE_ALL_IMAGES)
+    fun registerCamera(onCameraResult: (Boolean) -> Unit) {
+        cameraLauncher = cameraLauncher ?: registerForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) {
+            onCameraResult(it)
+        }
     }
 
-    fun fromStorage() {
-        getContent?.launch(MIME_TYPE_ALL_DOCS)
+    fun registerFiles(onContentResult: (List<Uri>) -> Unit) {
+        filesLauncher = filesLauncher ?: registerForActivityResult(
+            ActivityResultContracts.GetMultipleContents()
+        ) { uris ->
+            onContentResult(uris)
+        }
     }
 
-    fun fromCamera(uri: Uri) {
-        val photoUri = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            uri
-        } else {
+    fun needCameraPermission() {
+        permissionCameraLauncher?.launch(Manifest.permission.CAMERA)
+    }
+
+    fun startFiles() {
+        filesLauncher?.launch(MIME_TYPE_ALL_DOCS)
+    }
+
+    fun startImages() {
+        filesLauncher?.launch(MIME_TYPE_ALL_IMAGES)
+    }
+
+    fun startCamera(cameraFile: File) {
+        val cameraUri = toProviderUri(Uri.fromFile(cameraFile))
+        cameraLauncher?.launch(cameraUri)
+    }
+
+    private fun showNoPermissions() {
+        val snackbarStyleId = UsedeskResourceManager.getResourceId(
+            R.style.Usedesk_Common_No_Permission_Snackbar
+        )
+        UsedeskResourceManager.StyleValues(
+            requireContext(),
+            snackbarStyleId
+        ).apply {
+            UsedeskSnackbar.create(
+                requireView(),
+                getColor(R.attr.usedesk_background_color_1),
+                getString(R.attr.usedesk_text_1),
+                getColor(R.attr.usedesk_text_color_1),
+                getString(R.attr.usedesk_text_2),
+                getColor(R.attr.usedesk_text_color_2)
+            ).show()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        permissionCameraLauncher?.unregister()
+        permissionCameraLauncher = null
+
+        cameraLauncher?.unregister()
+        cameraLauncher = null
+
+        filesLauncher?.unregister()
+        filesLauncher = null
+    }
+
+    protected fun generateCameraFile(): File {
+        val fileName = "camera_${System.currentTimeMillis()}.jpg"
+        return File(requireContext().cacheDir, fileName)
+    }
+
+    protected fun toProviderUri(uri: Uri): Uri {
+        return if (uri.scheme == "file") {
             val applicationContext = requireContext().applicationContext
             FileProvider.getUriForFile(
                 applicationContext,
                 "${applicationContext.packageName}.provider",
-                File(uri.path ?: "")
+                File(uri.path)
             )
+        } else {
+            uri
         }
-        fromCamera?.launch(photoUri)
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {

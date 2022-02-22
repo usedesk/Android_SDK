@@ -10,8 +10,6 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/l_clickable"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         style="?attr/usedesk_common_container_1">
 
         <TextView

@@ -15,20 +15,24 @@ internal class FileLoader(
     private val cacheDir = appContext.cacheDir
 
     override fun toCache(inputUri: Uri): Uri {
-        var outputUri: Uri? = null
-        contentResolver.openInputStream(inputUri).use { inputStream ->
-            if (inputStream == null) {
-                throw UsedeskDataNotFoundException("Can't read file: $inputUri")
-            }
+        return if (inputUri.toString().startsWith("file://" + cacheDir.absolutePath)) {
+            inputUri
+        } else {
+            var outputUri: Uri? = null
+            contentResolver.openInputStream(inputUri).use { inputStream ->
+                if (inputStream == null) {
+                    throw UsedeskDataNotFoundException("Can't read file: $inputUri")
+                }
 
-            val fileName = UsedeskFileUtil.getFileName(contentResolver, inputUri)
-            val outputFile = File(cacheDir, fileName)
-            FileOutputStream(outputFile).use { outputStream ->
-                inputStream.copyTo(outputStream)
-            }
+                val fileName = UsedeskFileUtil.getFileName(contentResolver, inputUri)
+                val outputFile = File(cacheDir, fileName)
+                FileOutputStream(outputFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
 
-            outputUri = Uri.fromFile(outputFile)
+                outputUri = Uri.fromFile(outputFile)
+            }
+            outputUri ?: throw RuntimeException("Something wrong with caching file")
         }
-        return outputUri ?: throw RuntimeException("Something wrong with caching file")
     }
 }

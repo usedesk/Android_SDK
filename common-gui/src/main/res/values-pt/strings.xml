@@ -3,8 +3,12 @@
     <string name="usedesk_settings">@string/usedesk_string_settings</string>
     <string name="usedesk_need_permission">@string/usedesk_string_need_permission</string>
     <string name="usedesk_send">@string/usedesk_string_send</string>
+    <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
+    <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
 
     <string name="usedesk_string_settings">Configurações</string>
     <string name="usedesk_string_need_permission">Permissão necessária</string>
     <string name="usedesk_string_send">Enviar</string>
+    <string name="usedesk_string_no_internet_title">Sem internet</string>
+    <string name="usedesk_string_no_internet_text">Tente desligar o modo avião, ligue o Wi-Fi ou a internet móvel e verifique a força do sinal da rede</string>
 </resources>

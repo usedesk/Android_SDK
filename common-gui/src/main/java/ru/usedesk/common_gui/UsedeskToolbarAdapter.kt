@@ -33,6 +33,7 @@ class UsedeskToolbarAdapter(
 
     fun show() {
         binding.rootView.visibility = View.VISIBLE
+        hideKeyboard(binding.rootView)
     }
 
     fun hide() {

@@ -205,22 +205,24 @@ internal class ChatInteractor(
 
     override fun connect() {
         val curState = connectionStateSubject.value
-        if (curState != UsedeskConnectionState.CONNECTING) {
-            connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        if (curState != UsedeskConnectionState.CONNECTED) {
+            if (curState != UsedeskConnectionState.CONNECTING) {
+                connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+            }
+            reconnectDisposable?.dispose()
+            reconnectDisposable = null
+            token = if (!isStringEmpty(this.configuration.clientToken)) {
+                this.configuration.clientToken
+            } else {
+                userInfoRepository.getConfigurationNullable(configuration)?.clientToken
+            }
+            apiRepository.connect(
+                this.configuration.urlChat,
+                token,
+                this.configuration,
+                eventListener
+            )
         }
-        reconnectDisposable?.dispose()
-        reconnectDisposable = null
-        token = if (!isStringEmpty(this.configuration.clientToken)) {
-            this.configuration.clientToken
-        } else {
-            userInfoRepository.getConfigurationNullable(configuration)?.clientToken
-        }
-        apiRepository.connect(
-            this.configuration.urlChat,
-            token,
-            this.configuration,
-            eventListener
-        )
     }
 
     private fun isStringEmpty(text: String?): Boolean {
@@ -383,7 +385,7 @@ internal class ChatInteractor(
             cachedMessages.addNotSentMessage(fileMessage as UsedeskMessageClient)
             val cachedUri = runBlocking {
                 val uri = Uri.parse(fileMessage.file.content)
-                val deferredCachedUri = cachedMessages.getCachedFile(uri)
+                val deferredCachedUri = cachedMessages.getCachedFileAsync(uri)
                 deferredCachedUri.await()
             }
             val newFile = fileMessage.file.copy(content = cachedUri.toString())

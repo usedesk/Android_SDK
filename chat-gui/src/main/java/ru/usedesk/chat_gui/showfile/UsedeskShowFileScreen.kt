@@ -1,5 +1,8 @@
 package ru.usedesk.chat_gui.showfile
 
+import android.content.ClipData
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -49,12 +51,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivDownload.setOnClickListener {
             viewModel.modelLiveData.value.file?.let { file ->
-                needWriteExternalPermission(this) {
-                    findParent<IUsedeskOnDownloadListener>()?.onDownload(
-                        file.content,
-                        file.name
-                    )
-                }
+                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                    file.content,
+                    file.name
+                )
             }
         }
 
@@ -70,8 +70,6 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        registerPermissions()
 
         hideKeyboard(binding.rootView)
 
@@ -131,11 +129,21 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     private fun onShareFile(usedeskFile: UsedeskFile?) {
         if (usedeskFile != null) {
-            ShareCompat.IntentBuilder
-                .from(requireActivity())
-                .setType(usedeskFile.type)
-                .setText(usedeskFile.content)
-                .startChooser()
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = usedeskFile.type
+                val uri = Uri.parse(usedeskFile.content)
+                if (uri.scheme == "file" || uri.scheme == "content") {
+                    val providerUri = toProviderUri(uri)
+                    clipData = ClipData.newRawUri("", providerUri)
+                    putExtra(Intent.EXTRA_STREAM, providerUri)
+                    setDataAndType(providerUri, usedeskFile.type)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } else {
+                    putExtra(Intent.EXTRA_TEXT, usedeskFile.content)
+                }
+            }
+            val chooserShareIntent = Intent.createChooser(shareIntent, null)
+            startActivity(chooserShareIntent)
         }
     }
 

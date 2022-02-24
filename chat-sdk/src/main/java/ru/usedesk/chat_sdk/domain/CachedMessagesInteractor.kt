@@ -21,7 +21,6 @@ internal class CachedMessagesInteractor(
     private var draftJob: Job? = null
     private var saveJob: Job? = null
 
-    private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
 
     private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri>>()
@@ -73,7 +72,7 @@ internal class CachedMessagesInteractor(
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> {
         return mutex.withLock {
-            deferredCachedUriMap[uri] ?: ioScope.async {
+            deferredCachedUriMap[uri] ?: CoroutineScope(Dispatchers.IO).async {
                 messagesRepository.addFileToCache(uri)
             }.also {
                 deferredCachedUriMap[uri] = it
@@ -93,7 +92,7 @@ internal class CachedMessagesInteractor(
                 draftJob?.cancel()
                 draftJob = null
                 saveJob?.cancel()
-                saveJob = ioScope.launch {
+                saveJob = CoroutineScope(Dispatchers.IO).launch {
                     val configuration =
                         userInfoRepository.getConfiguration(this@CachedMessagesInteractor.configuration)
                     yield()
@@ -120,7 +119,7 @@ internal class CachedMessagesInteractor(
         } else {
             mutex.withLock {
                 if (draftJob == null) {
-                    draftJob = ioScope.launch {
+                    draftJob = CoroutineScope(Dispatchers.IO).launch {
                         delay(2000)
                         yield()
                         updateMessageDraft(true)

@@ -21,6 +21,8 @@ data class Configuration(
     val clientInitMessage: String = "",
     val clientAvatar: String? = null,
     val customAgentName: String = "",
+    val messagesDateFormat: String = "",
+    val messageTimeFormat: String = "",
     val foregroundService: Boolean? = null,
     val cacheFiles: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),

@@ -248,7 +248,9 @@ class MainActivity : AppCompatActivity(),
         return UsedeskChatScreen.createBundle(
             configuration.customAgentName,
             REJECTED_FILE_TYPES,
-            chatConfiguration
+            chatConfiguration,
+            messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
+            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null }
         )
     }
 

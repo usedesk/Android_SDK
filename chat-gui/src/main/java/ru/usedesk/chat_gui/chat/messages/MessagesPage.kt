@@ -59,11 +59,17 @@ internal class MessagesPage : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        findParent<UsedeskChatScreen>()?.getBundleArgs { agentName, rejectedFileExtensions, _ ->
+        findParent<UsedeskChatScreen>()?.getBundleArgs { agentName,
+            rejectedFileExtensions,
+            _,
+            messagesDateFormat,
+            messageTimeFormat ->
             init(
                 agentName,
                 rejectedFileExtensions ?: arrayOf(),
-                savedInstanceState
+                savedInstanceState,
+                messagesDateFormat,
+                messageTimeFormat
             )
         }
 
@@ -171,7 +177,9 @@ internal class MessagesPage : UsedeskFragment() {
     private fun init(
         agentName: String?,
         rejectedFileExtensions: Array<String>,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
+        messagesDateFormat: String,
+        messageTimeFormat: String,
     ) {
         UsedeskChatSdk.init(requireContext())
 
@@ -202,6 +210,8 @@ internal class MessagesPage : UsedeskFragment() {
             }, {
                 findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
             },
+            messagesDateFormat,
+            messageTimeFormat,
             savedInstanceState
         )
 

@@ -20,7 +20,6 @@ import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,6 +34,8 @@ internal class MessagesAdapter(
     private val onFileClick: (UsedeskFile) -> Unit,
     private val onUrlClick: (String) -> Unit,
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
+    messagesDateFormat: String,
+    messageTimeFormat: String,
     savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
@@ -42,6 +43,9 @@ internal class MessagesAdapter(
     private val layoutManager = LinearLayoutManager(recyclerView.context)
 
     private val saved = savedStated != null
+
+    private val dateFormat = SimpleDateFormat(messagesDateFormat, Locale.getDefault())
+    private val timeFormat = SimpleDateFormat(messageTimeFormat, Locale.getDefault())
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
@@ -151,11 +155,6 @@ internal class MessagesAdapter(
         } else {
             updateToBottomButton()
         }
-    }
-
-    private fun getFormattedTime(calendar: Calendar): String {
-        val dateFormat: DateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return dateFormat.format(calendar.time)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
@@ -295,7 +294,7 @@ internal class MessagesAdapter(
 
         override fun bind(position: Int) {
             val message = items[position]
-            val formatted = getFormattedTime(message.createdAt)
+            val formatted = timeFormat.format(message.createdAt.time)
             tvTime.text = formatted
 
             val previousMessage = items.getOrNull(position - 1)
@@ -311,8 +310,6 @@ internal class MessagesAdapter(
                             dateStyleValues.getString(R.attr.usedesk_text_2)
                         }
                         else -> {
-                            val dateFormat: DateFormat =
-                                SimpleDateFormat("dd MMMM", Locale.getDefault())
                             dateFormat.format(message.createdAt.time)
                         }
                     }

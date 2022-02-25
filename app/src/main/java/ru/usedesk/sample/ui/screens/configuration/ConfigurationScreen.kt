@@ -166,6 +166,8 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientInitMessage.text.toString(),
             viewModel.avatarLiveData.value,
             binding.etCustomAgentName.text.toString(),
+            binding.etCustomDateFormat.text.toString(),
+            binding.etCustomTimeFormat.text.toString(),
             when {
                 binding.tvServiceType.text.contains(getString(R.string.service_type_foreground)) ->
                     true
@@ -195,9 +197,11 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etClientEmail.setText(configuration.clientEmail)
         binding.etClientName.setText(configuration.clientName)
         binding.etClientPhoneNumber.setText(configuration.clientPhoneNumber?.toString() ?: "")
-        binding.etClientAdditionalId.setText(configuration.clientAdditionalId?.toString() ?: "")
+        binding.etClientAdditionalId.setText(configuration.clientAdditionalId ?: "")
         binding.etClientInitMessage.setText(configuration.clientInitMessage)
         binding.etCustomAgentName.setText(configuration.customAgentName)
+        binding.etCustomDateFormat.setText(configuration.messagesDateFormat)
+        binding.etCustomTimeFormat.setText(configuration.messageTimeFormat)
         updateServiceValue(configuration.foregroundService)
         binding.switchCacheFiles.isChecked = configuration.cacheFiles
         setAdditionalField(

@@ -21,7 +21,6 @@ internal class CachedMessagesInteractor(
     private var draftJob: Job? = null
     private var saveJob: Job? = null
 
-    private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mutex = Mutex()
 
     private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri>>()
@@ -29,7 +28,14 @@ internal class CachedMessagesInteractor(
     init {
         val token = getUserKey()
         messageDraft = if (token != null) {
-            messagesRepository.getDraft(token)
+            val draft = messagesRepository.getDraft(token)
+            draft.copy(
+                files = if (configuration.cacheMessagesWithFile) {
+                    draft.files
+                } else {
+                    listOf()
+                }
+            )
         } else {
             null
         } ?: UsedeskMessageDraft()
@@ -73,7 +79,7 @@ internal class CachedMessagesInteractor(
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> {
         return mutex.withLock {
-            deferredCachedUriMap[uri] ?: ioScope.async {
+            deferredCachedUriMap[uri] ?: CoroutineScope(Dispatchers.IO).async {
                 messagesRepository.addFileToCache(uri)
             }.also {
                 deferredCachedUriMap[uri] = it
@@ -81,9 +87,17 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    override fun removeFileFromCache(uri: Uri) {
+    override suspend fun removeFileFromCache(uri: Uri) {
         if (configuration.cacheMessagesWithFile) {
-            messagesRepository.removeFileFromCache(uri)
+            val removedDeferred = mutex.withLock {
+                deferredCachedUriMap.remove(uri)?.apply {
+                    cancel()
+                }
+            }
+            if (removedDeferred?.isCompleted == true) {
+                val cachedUri = removedDeferred.await()
+                messagesRepository.removeFileFromCache(cachedUri)
+            }
         }
     }
 
@@ -93,7 +107,7 @@ internal class CachedMessagesInteractor(
                 draftJob?.cancel()
                 draftJob = null
                 saveJob?.cancel()
-                saveJob = ioScope.launch {
+                saveJob = CoroutineScope(Dispatchers.IO).launch {
                     val configuration =
                         userInfoRepository.getConfiguration(this@CachedMessagesInteractor.configuration)
                     yield()
@@ -120,7 +134,7 @@ internal class CachedMessagesInteractor(
         } else {
             mutex.withLock {
                 if (draftJob == null) {
-                    draftJob = ioScope.launch {
+                    draftJob = CoroutineScope(Dispatchers.IO).launch {
                         delay(2000)
                         yield()
                         updateMessageDraft(true)
@@ -141,16 +155,7 @@ internal class CachedMessagesInteractor(
             oldFiles.filter {
                 it !in newFiles
             }.forEach {
-                mutex.withLock {
-                    val deferredCachedUri = deferredCachedUriMap[it]
-                    if (deferredCachedUri?.isCompleted == true) {
-                        val cachedUri = deferredCachedUri.await()
-                        removeFileFromCache(cachedUri)
-                    } else {
-                        deferredCachedUri?.cancel()
-                    }
-                    deferredCachedUriMap.remove(it)
-                }
+                removeFileFromCache(it)
             }
             newFiles.filter {
                 it !in oldFiles

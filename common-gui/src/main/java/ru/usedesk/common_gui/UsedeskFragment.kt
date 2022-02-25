@@ -52,7 +52,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun startFiles() {
-        filesLauncher?.launch(MIME_TYPE_ALL_DOCS)
+        filesLauncher?.launch(MIME_TYPE_ALL_FILES)
     }
 
     fun startImages() {
@@ -203,7 +203,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     companion object {
-        private const val MIME_TYPE_ALL_IMAGES = "*/*"
-        private const val MIME_TYPE_ALL_DOCS = "*/*"
+        private const val MIME_TYPE_ALL_IMAGES = "image/*"
+        private const val MIME_TYPE_ALL_FILES = "*/*"
     }
 }

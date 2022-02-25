@@ -25,7 +25,13 @@ internal class FileLoader(
                 }
 
                 val fileName = UsedeskFileUtil.getFileName(contentResolver, inputUri)
-                val outputFile = File(cacheDir, fileName)
+                val name = "${System.currentTimeMillis()}${fileName.hashCode()}"
+                val newFileName = fileName.replaceBeforeLast(
+                    '.',
+                    name,
+                    missingDelimiterValue = name
+                )
+                val outputFile = File(cacheDir, newFileName)
                 FileOutputStream(outputFile).use { outputStream ->
                     inputStream.copyTo(outputStream)
                 }

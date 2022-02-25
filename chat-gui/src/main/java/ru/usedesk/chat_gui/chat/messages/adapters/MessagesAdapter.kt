@@ -284,13 +284,12 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageViewHolder(
         itemView: View,
-        private val bindingDate: DateBinding,
         private val tvTime: TextView,
         private val styleValues: UsedeskResourceManager.StyleValues
     ) : BaseViewHolder(itemView) {
 
-        private val dateStyleValues = bindingDate.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_date_text)
+        /*private val dateStyleValues = bindingDate.styleValues
+            .getStyleValues(R.attr.usedesk_chat_message_date_text)*///TODO: kawabanga
 
         override fun bind(position: Int) {
             val message = items[position]
@@ -298,7 +297,7 @@ internal class MessagesAdapter(
             tvTime.text = formatted
 
             val previousMessage = items.getOrNull(position - 1)
-            bindingDate.tvDate.visibility =
+            /*bindingDate.tvDate.visibility =
                 if (isSameDay(previousMessage?.createdAt, message.createdAt)) {
                     View.GONE
                 } else {
@@ -314,12 +313,7 @@ internal class MessagesAdapter(
                         }
                     }
                     View.VISIBLE
-                }
-        }
-
-        private fun isSameDay(calendarA: Calendar?, calendarB: Calendar): Boolean {
-            return calendarA?.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
-                    calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR)
+                }*/
         }
 
         fun bindAgent(
@@ -437,9 +431,8 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageTextViewHolder(
         itemView: View,
-        private val binding: MessageTextBinding,
-        bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+        private val binding: MessageTextBinding
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -455,9 +448,8 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageFileViewHolder(
         itemView: View,
-        private val binding: MessageFileBinding,
-        bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+        private val binding: MessageFileBinding
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         private val textSizeStyleValues =
             binding.styleValues.getStyleValues(R.attr.usedesk_chat_message_file_size_text)
@@ -487,9 +479,8 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageImageViewHolder(
         itemView: View,
-        private val binding: MessageImageBinding,
-        bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+        private val binding: MessageImageBinding
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         private val loadingImageId = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_image_preview_image)
@@ -525,9 +516,8 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageVideoViewHolder(
         itemView: View,
-        private val binding: MessageVideoBinding,
-        bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+        private val binding: MessageVideoBinding
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         private lateinit var usedeskFile: UsedeskFile
         private var lastVisible = false
@@ -626,9 +616,8 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageAudioViewHolder(
         itemView: View,
-        private val binding: MessageAudioBinding,
-        bindingDate: DateBinding
-    ) : MessageViewHolder(itemView, bindingDate, binding.tvTime, binding.styleValues) {
+        private val binding: MessageAudioBinding
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         private var usedeskFile: UsedeskFile = UsedeskFile("", "", "", "")
         private var lastVisible = false
@@ -704,7 +693,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
-    ) : MessageTextViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageTextViewHolder(binding.rootView, binding.content) {
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
@@ -713,7 +702,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageFileClientViewHolder(
         private val binding: MessageFileClientBinding
-    ) : MessageFileViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageFileViewHolder(binding.rootView, binding.content) {
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
@@ -722,7 +711,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageImageClientViewHolder(
         private val binding: MessageImageClientBinding
-    ) : MessageImageViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageImageViewHolder(binding.rootView, binding.content) {
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
@@ -731,7 +720,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageVideoClientViewHolder(
         private val binding: MessageVideoClientBinding
-    ) : MessageVideoViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageVideoViewHolder(binding.rootView, binding.content) {
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
@@ -740,7 +729,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageAudioClientViewHolder(
         private val binding: MessageAudioClientBinding
-    ) : MessageAudioViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageAudioViewHolder(binding.rootView, binding.content) {
         override fun bind(position: Int) {
             super.bind(position)
             bindClient(position, binding.client)
@@ -749,7 +738,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageTextAgentViewHolder(
         private val binding: MessageTextAgentBinding
-    ) : MessageTextViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageTextViewHolder(binding.rootView, binding.content) {
 
         private val goodStyleValues = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
@@ -924,7 +913,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageFileAgentViewHolder(
         private val binding: MessageFileAgentBinding
-    ) : MessageFileViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageFileViewHolder(binding.rootView, binding.content) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -934,7 +923,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageImageAgentViewHolder(
         private val binding: MessageImageAgentBinding
-    ) : MessageImageViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageImageViewHolder(binding.rootView, binding.content) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -944,7 +933,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageVideoAgentViewHolder(
         private val binding: MessageVideoAgentBinding
-    ) : MessageVideoViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageVideoViewHolder(binding.rootView, binding.content) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -954,7 +943,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageAudioAgentViewHolder(
         private val binding: MessageAudioAgentBinding
-    ) : MessageAudioViewHolder(binding.rootView, binding.content, binding.date) {
+    ) : MessageAudioViewHolder(binding.rootView, binding.content) {
 
         override fun bind(position: Int) {
             super.bind(position)
@@ -974,6 +963,11 @@ internal class MessagesAdapter(
             yesterday.add(Calendar.DAY_OF_YEAR, -1)
             return (yesterday[Calendar.YEAR] == calendar[Calendar.YEAR]
                     && yesterday[Calendar.DAY_OF_YEAR] == calendar[Calendar.DAY_OF_YEAR])
+        }
+
+        private fun isSameDay(calendarA: Calendar?, calendarB: Calendar): Boolean {
+            return calendarA?.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
+                    calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR)
         }
     }
 
@@ -996,14 +990,12 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageTextAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageFileBinding(rootView: View, defaultStyleId: Int) :
@@ -1018,14 +1010,12 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageFileBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageFileAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageFileBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageImageBinding(rootView: View, defaultStyleId: Int) :
@@ -1063,42 +1053,36 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageVideoClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageVideoBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageAudioClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageAudioBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageImageAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageVideoAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageVideoBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class MessageAudioAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageAudioBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
-        val date = DateBinding(rootView, defaultStyleId)
     }
 
     internal class AgentBinding(rootView: View, defaultStyleId: Int) :

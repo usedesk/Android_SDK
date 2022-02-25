@@ -104,7 +104,6 @@
         <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text</item>
         <item name="usedesk_chat_message_name_text">@style/Usedesk.Chat.Message.Name.Text</item>
-        <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Feedback.Good.Image" parent="">

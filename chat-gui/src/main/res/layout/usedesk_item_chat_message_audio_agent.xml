@@ -27,11 +27,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_date"
-        style="?attr/usedesk_chat_message_date_text"
-        tools:text="Вчера" />
-
     <View
         android:id="@+id/v_empty"
         android:layout_width="match_parent"

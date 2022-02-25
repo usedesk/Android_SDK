@@ -28,7 +28,14 @@ internal class CachedMessagesInteractor(
     init {
         val token = getUserKey()
         messageDraft = if (token != null) {
-            messagesRepository.getDraft(token)
+            val draft = messagesRepository.getDraft(token)
+            draft.copy(
+                files = if (configuration.cacheMessagesWithFile) {
+                    draft.files
+                } else {
+                    listOf()
+                }
+            )
         } else {
             null
         } ?: UsedeskMessageDraft()
@@ -80,9 +87,17 @@ internal class CachedMessagesInteractor(
         }
     }
 
-    override fun removeFileFromCache(uri: Uri) {
+    override suspend fun removeFileFromCache(uri: Uri) {
         if (configuration.cacheMessagesWithFile) {
-            messagesRepository.removeFileFromCache(uri)
+            val removedDeferred = mutex.withLock {
+                deferredCachedUriMap.remove(uri)?.apply {
+                    cancel()
+                }
+            }
+            if (removedDeferred?.isCompleted == true) {
+                val cachedUri = removedDeferred.await()
+                messagesRepository.removeFileFromCache(cachedUri)
+            }
         }
     }
 
@@ -140,16 +155,7 @@ internal class CachedMessagesInteractor(
             oldFiles.filter {
                 it !in newFiles
             }.forEach {
-                mutex.withLock {
-                    val deferredCachedUri = deferredCachedUriMap[it]
-                    if (deferredCachedUri?.isCompleted == true) {
-                        val cachedUri = deferredCachedUri.await()
-                        removeFileFromCache(cachedUri)
-                    } else {
-                        deferredCachedUri?.cancel()
-                    }
-                    deferredCachedUriMap.remove(it)
-                }
+                removeFileFromCache(it)
             }
             newFiles.filter {
                 it !in oldFiles

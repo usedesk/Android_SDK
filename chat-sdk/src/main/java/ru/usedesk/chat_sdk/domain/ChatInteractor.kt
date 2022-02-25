@@ -7,7 +7,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
@@ -49,6 +51,9 @@ internal class ChatInteractor(
 
     private var reconnectDisposable: Disposable? = null
     private val listenersDisposables = mutableListOf<Disposable>()
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val jobs = mutableListOf<Job>()
+    private val jobsMutex = Mutex()
 
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -230,22 +235,26 @@ internal class ChatInteractor(
     }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
-        lastMessages = lastMessages.map {
-            if ((it is UsedeskMessageClient &&
-                        message is UsedeskMessageClient &&
-                        it.localId == message.localId)
-                || (it is UsedeskMessageAgent &&
-                        message is UsedeskMessageAgent &&
-                        it.id == message.id
-                        )
-            ) {
-                message
-            } else {
-                it
+        runBlocking {
+            jobsMutex.withLock {
+                lastMessages = lastMessages.map {
+                    if ((it is UsedeskMessageClient &&
+                                message is UsedeskMessageClient &&
+                                it.localId == message.localId)
+                        || (it is UsedeskMessageAgent &&
+                                message is UsedeskMessageAgent &&
+                                it.id == message.id
+                                )
+                    ) {
+                        message
+                    } else {
+                        it
+                    }
+                }
+                messagesSubject.onNext(lastMessages)
+                messageUpdateSubject.onNext(message)
             }
         }
-        messagesSubject.onNext(lastMessages)
-        messageUpdateSubject.onNext(message)
     }
 
     private fun onMessageRemove(message: UsedeskMessage) {
@@ -440,7 +449,9 @@ internal class ChatInteractor(
                 cachedNotSentMessage.localId
             )
             cachedMessages.removeNotSentMessage(cachedNotSentMessage)
-            cachedMessages.removeFileFromCache(Uri.parse(cachedNotSentMessage.file.content))
+            runBlocking {
+                cachedMessages.removeFileFromCache(Uri.parse(fileMessage.file.content))
+            }
         } catch (e: Exception) {
             onMessageSendingFailed(fileMessage as UsedeskMessageClient)
             throw e
@@ -662,26 +673,26 @@ internal class ChatInteractor(
         eventListener.onMessagesReceived(sendingMessages)
         sendAdditionalFieldsIfNeeded()
 
-        sendingMessages.mapNotNull {
-            when (it) {
-                is UsedeskMessageClientText -> {
-                    safeCompletableIo(ioScheduler) {
-                        sendCached(it)
+        runBlocking {
+            jobsMutex.withLock {
+                jobs.addAll(sendingMessages.mapNotNull {
+                    when (it) {
+                        is UsedeskMessageClientText -> {
+                            ioScope.launchSafe({
+                                sendCached(it)
+                            })
+                        }
+                        is UsedeskMessageFile -> {
+                            ioScope.launchSafe({
+                                sendCached(it)
+                            })
+                        }
+                        else -> {
+                            null
+                        }
                     }
-                }
-                is UsedeskMessageFile -> {
-                    safeCompletableIo(ioScheduler) {
-                        sendCached(it)
-                    }
-                }
-                else -> {
-                    null
-                }
+                })
             }
-        }.forEach {
-            listenersDisposables.add(it.subscribe({}, { throwable ->
-                throwable.printStackTrace()
-            }))
         }
     }
 
@@ -796,6 +807,13 @@ internal class ChatInteractor(
         listenersDisposables.forEach {
             it.dispose()
         }
+        runBlocking {
+            jobsMutex.withLock {
+                jobs.forEach {
+                    it.cancel()
+                }
+            }
+        }
         disconnect()
     }
 
@@ -858,10 +876,9 @@ internal class ChatInteractor(
             eventListener.onSetEmailSuccess()
         }
         if (needToResendMessages) {
+            val initedNotSentIds = initedNotSentMessages.map { it.id }
             notSentMessages.filter {
-                initedNotSentMessages.all { initedNotSentMessage ->
-                    it.id != initedNotSentMessage.id
-                }
+                it.id !in initedNotSentIds
             }.forEach {
                 listenersDisposables.add(
                     sendAgainRx(it.id).subscribe({}, { throwable ->
@@ -871,6 +888,19 @@ internal class ChatInteractor(
             }
         } else {
             initedNotSentMessages = notSentMessages
+        }
+    }
+
+    private fun CoroutineScope.launchSafe(
+        onRun: () -> Unit,
+        onThrowable: (Throwable) -> Unit = { it.printStackTrace() }
+    ): Job {
+        return launch {
+            try {
+                onRun()
+            } catch (e: Throwable) {
+                onThrowable(e)
+            }
         }
     }
 }

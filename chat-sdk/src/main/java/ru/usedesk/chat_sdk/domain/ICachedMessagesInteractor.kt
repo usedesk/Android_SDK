@@ -17,7 +17,7 @@ internal interface ICachedMessagesInteractor {
 
     suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
 
-    fun removeFileFromCache(uri: Uri)
+    suspend fun removeFileFromCache(uri: Uri)
 
     suspend fun setMessageDraft(messageDraft: UsedeskMessageDraft, cacheFiles: Boolean)
 

@@ -841,10 +841,9 @@
         <item name="android:text">@string/usedesk_chat</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Date.Text.TextAppearance" parent="">
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">15sp</item>
+    <style name="Usedesk.Chat.Date" parent="">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Date.Text" parent="">
@@ -857,6 +856,12 @@
         <item name="usedesk_text_1">@string/usedesk_today</item>
         <item name="usedesk_text_2">@string/usedesk_yesterday</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Date.Text.TextAppearance</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Date.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_gray_3</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Extension.Text.TextAppearance" parent="">

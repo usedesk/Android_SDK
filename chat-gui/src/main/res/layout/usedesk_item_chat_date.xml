@@ -2,13 +2,12 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:theme="@style/Usedesk.Chat.Message.Text.Agent">
+    android:layout_height="wrap_content"
+    tools:theme="@style/Usedesk.Chat.Date">
 
     <TextView
         android:id="@+id/tv_date"
         style="?attr/usedesk_chat_message_date_text"
         tools:text="Вчера" />
-
 
 </FrameLayout>

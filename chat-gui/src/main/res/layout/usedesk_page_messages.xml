@@ -8,6 +8,7 @@
     tools:theme="@style/Usedesk.Chat.Screen.Messages.Page">
 
     <FrameLayout
+        android:id="@+id/l_messages_container"
         style="?attr/usedesk_common_container_1"
         app:layout_constraintBottom_toTopOf="@+id/l_message_panel"
         app:layout_constraintEnd_toEndOf="parent"

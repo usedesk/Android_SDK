@@ -17,9 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
+import ru.usedesk.chat_gui.chat.messages.DateBinding
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessage.Type
 import ru.usedesk.common_gui.*
@@ -29,6 +29,7 @@ import java.util.*
 
 internal class MessagesAdapter(
     private val recyclerView: RecyclerView,
+    private val dateBinding: DateBinding,
     private val viewModel: MessagesViewModel,
     lifecycleOwner: LifecycleOwner,
     private val customAgentName: String?,
@@ -50,6 +51,11 @@ internal class MessagesAdapter(
     private val dateFormat = SimpleDateFormat(messagesDateFormat, Locale.getDefault())
     private val timeFormat = SimpleDateFormat(messageTimeFormat, Locale.getDefault())
 
+    private val dateStyleValues = dateBinding.styleValues
+        .getStyleValues(R.attr.usedesk_chat_message_date_text)
+    private val todayText = dateStyleValues.getString(R.attr.usedesk_text_1)
+    private val yesterdayText = dateStyleValues.getString(R.attr.usedesk_text_2)
+
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
         recyclerView.apply {
@@ -67,6 +73,7 @@ internal class MessagesAdapter(
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy != 0) {
                     updateToBottomButton()
+                    updateFloatingDate()
                 }
             }
         })
@@ -76,6 +83,83 @@ internal class MessagesAdapter(
             }
         }
         updateToBottomButton()
+        updateFloatingDate()
+    }
+
+    fun updateFloatingDate() {
+        if (items.isNotEmpty()) {
+            dateBinding.tvDate.post {
+                val firstIndex = layoutManager.findFirstVisibleItemPosition()
+                val lastIndex = layoutManager.findLastVisibleItemPosition()
+
+                val itemsSequence = items.asSequence()
+                val visibleItems = itemsSequence.drop(firstIndex)
+                    .take(lastIndex - firstIndex)
+                val visibleDateItems = visibleItems.filterIsInstance<ChatDate>()
+                val topDateItem = visibleDateItems.firstOrNull()
+                val topDateIndex = if (topDateItem != null) {
+                    items.indexOf(topDateItem)
+                } else {
+                    -1
+                }
+
+                visibleDateItems.map {
+                    items.indexOf(it)
+                }.mapNotNull {
+                    recyclerView.findViewHolderForAdapterPosition(it)
+                }.filterIsInstance<DateViewHolder>()
+                    .forEach {
+                        it.binding.rootView.visibility = View.VISIBLE
+                    }
+
+                val floatingDateRect = Rect()
+                (dateBinding.rootView.parent as View).getGlobalVisibleRect(floatingDateRect)
+                floatingDateRect.bottom = floatingDateRect.top + dateBinding.rootView.measuredHeight
+
+                dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    updateMargins(
+                        top = 0
+                    )
+                }
+                recyclerView.apply {
+                    val topDateViewHolder =
+                        findViewHolderForAdapterPosition(topDateIndex) as? DateViewHolder
+
+                    if (topDateViewHolder != null) {
+                        val topDateRect = Rect().also {
+                            topDateViewHolder.binding.rootView.getGlobalVisibleRect(it)
+                        }
+                        if (topDateRect.bottom > floatingDateRect.bottom &&
+                            topDateRect.top < floatingDateRect.bottom
+                        ) {
+                            val dif = floatingDateRect.bottom - topDateRect.top
+                            dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                updateMargins(
+                                    top = -dif
+                                )
+                            }
+                        } else if (topDateRect.bottom <= floatingDateRect.bottom) {
+                            topDateViewHolder.binding.rootView.visibility = View.INVISIBLE
+                            dateBinding.tvDate.text = topDateViewHolder.binding.tvDate.text
+                            dateBinding.rootView.visibility = View.VISIBLE
+                            return@post
+                        }
+                    }
+
+                    val notVisibleDateItem = itemsSequence
+                        .take(firstIndex)
+                        .filterIsInstance<ChatDate>()
+                        .lastOrNull()
+
+                    if (notVisibleDateItem != null) {
+                        dateBinding.tvDate.text = getDateText(notVisibleDateItem)
+                        dateBinding.rootView.visibility = View.VISIBLE
+                    } else {
+                        dateBinding.rootView.visibility = View.INVISIBLE
+                    }
+                }
+            }
+        }
     }
 
     private fun updateToBottomButton() {
@@ -149,6 +233,7 @@ internal class MessagesAdapter(
                 stateRestorationPolicy = StateRestorationPolicy.ALLOW
                 recyclerView.post {
                     updateToBottomButton()
+                    updateFloatingDate()
                 }
             }
         }
@@ -751,21 +836,19 @@ internal class MessagesAdapter(
     }
 
     internal inner class DateViewHolder(
-        private val binding: DateBinding
+        val binding: DateBinding
     ) : BaseViewHolder(binding.rootView) {
 
-        private val dateStyleValues = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_date_text)
-        private val todayText = dateStyleValues.getString(R.attr.usedesk_text_1)
-        private val yesterdayText = dateStyleValues.getString(R.attr.usedesk_text_2)
-
         override fun bind(chatItem: ChatItem) {
-            val chatDate = chatItem as ChatDate
-            binding.tvDate.text = when {
-                isToday(chatDate.calendar) -> todayText
-                isYesterday(chatDate.calendar) -> yesterdayText
-                else -> dateFormat.format(chatDate.calendar.time)
-            }
+            binding.tvDate.text = getDateText(chatItem as ChatDate)
+        }
+    }
+
+    private fun getDateText(chatDate: ChatDate): String {
+        return when {
+            isToday(chatDate.calendar) -> todayText
+            isYesterday(chatDate.calendar) -> yesterdayText
+            else -> dateFormat.format(chatDate.calendar.time)
         }
     }
 
@@ -998,15 +1081,10 @@ internal class MessagesAdapter(
                     && yesterday[Calendar.DAY_OF_YEAR] == calendar[Calendar.DAY_OF_YEAR])
         }
 
-        private fun isSameDay(calendarA: Calendar?, calendarB: Calendar): Boolean {
+        /*private fun isSameDay(calendarA: Calendar?, calendarB: Calendar): Boolean {
             return calendarA?.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
                     calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR)
-        }
-    }
-
-    internal class DateBinding(rootView: View, defaultStyleId: Int) :
-        UsedeskBinding(rootView, defaultStyleId) {
-        val tvDate: TextView = rootView.findViewById(R.id.tv_date)
+        }*/
     }
 
     internal class MessageTextBinding(rootView: View, defaultStyleId: Int) :

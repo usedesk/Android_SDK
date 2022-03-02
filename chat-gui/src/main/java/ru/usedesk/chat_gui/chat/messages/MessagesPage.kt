@@ -196,6 +196,7 @@ internal class MessagesPage : UsedeskFragment() {
 
         messagesAdapter = MessagesAdapter(
             binding.rvMessages,
+            binding.dateBinding,
             viewModel,
             viewLifecycleOwner,
             agentName,
@@ -237,5 +238,29 @@ internal class MessagesPage : UsedeskFragment() {
         val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
+        val lMessagesContainer: ViewGroup = rootView.findViewById(R.id.l_messages_container)
+        val dateBinding = getDateBinding(lMessagesContainer)
+
+        private fun getDateBinding(rootView: ViewGroup): DateBinding {
+            val dateView = rootView.findViewWithTag<View>(DATE_ITEM_VIEW_TAG)
+            return if (dateView != null) {
+                DateBinding(dateView, R.style.Usedesk_Chat_Date)
+            } else {
+                inflateItem(
+                    rootView,
+                    R.layout.usedesk_item_chat_date,
+                    R.style.Usedesk_Chat_Date
+                ) { view, style ->
+                    view.tag = DATE_ITEM_VIEW_TAG
+                    rootView.addView(view)
+                    view.visibility = View.INVISIBLE
+                    DateBinding(view, style)
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val DATE_ITEM_VIEW_TAG = "dateItemTag"
     }
 }

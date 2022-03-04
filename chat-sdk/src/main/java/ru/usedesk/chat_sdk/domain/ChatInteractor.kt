@@ -667,7 +667,9 @@ internal class ChatInteractor(
     }
 
     override fun getMessageDraft(): UsedeskMessageDraft {
-        return cachedMessages.getMessageDraft()
+        return runBlocking {
+            cachedMessages.getMessageDraft()
+        }
     }
 
     override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
@@ -677,31 +679,31 @@ internal class ChatInteractor(
     }
 
     override fun sendMessageDraft() {
-        val messageDraft = cachedMessages.getMessageDraft()
         runBlocking {
-            cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
-        }
+            val messageDraft = cachedMessages.setMessageDraft(
+                UsedeskMessageDraft(),
+                false
+            )
 
-        val sendingMessages = mutableListOf<UsedeskMessage>()
+            val sendingMessages = mutableListOf<UsedeskMessage>()
 
-        val message = messageDraft.text.trim()
-        if (message.isNotEmpty()) {
-            val sendingMessage = createSendingMessage(message)
-            sendingMessages.add(sendingMessage)
-        }
+            val message = messageDraft.text.trim()
+            if (message.isNotEmpty()) {
+                val sendingMessage = createSendingMessage(message)
+                sendingMessages.add(sendingMessage)
+            }
 
-        sendingMessages.addAll(messageDraft.files.map {
-            createSendingMessage(it)
-        })
+            sendingMessages.addAll(messageDraft.files.map {
+                createSendingMessage(it)
+            })
 
-        eventListener.onMessagesReceived(sendingMessages)
-        sendAdditionalFieldsIfNeeded()
+            eventListener.onMessagesReceived(sendingMessages)
+            sendAdditionalFieldsIfNeeded()
 
-        UsedeskLog.onLog("sendMessageDraft", "1")
-        runBlocking {
+            UsedeskLog.onLog("sendMessageDraft", "1")
             jobsMutex.withLock {
                 UsedeskLog.onLog("sendMessageDraft", "2")
-                jobs.addAll(sendingMessages.mapNotNull {msg->
+                jobs.addAll(sendingMessages.mapNotNull { msg ->
                     UsedeskLog.onLog("sendMessageDraft", "3 - ${msg.id}")
                     when (msg) {
                         is UsedeskMessageClientText -> {
@@ -709,7 +711,7 @@ internal class ChatInteractor(
                             ioScope.launchSafe({
                                 sendCached(msg)
                                 UsedeskLog.onLog("sendMessageDraft", "5 - text - ${msg.id} - ОК")
-                            }){
+                            }) {
                                 UsedeskLog.onLog("sendMessageDraft", "6 - text - ${msg.id} - НЕ ОК")
                             }
                         }
@@ -718,7 +720,7 @@ internal class ChatInteractor(
                             ioScope.launchSafe({
                                 sendCached(msg)
                                 UsedeskLog.onLog("sendMessageDraft", "5 - file - ${msg.id} - ОК")
-                            }){
+                            }) {
                                 UsedeskLog.onLog("sendMessageDraft", "6 - file - ${msg.id} - НЕ ОК")
                             }
                         }

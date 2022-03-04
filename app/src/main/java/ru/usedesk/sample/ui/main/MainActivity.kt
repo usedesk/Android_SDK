@@ -31,6 +31,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
@@ -245,6 +246,10 @@ class MainActivity : AppCompatActivity(),
 
     private fun createChatScreenBundle(configuration: Configuration): Bundle {
         val chatConfiguration = configuration.toChatConfiguration()
+        UsedeskLog.onLog(
+            "MainActivity.createChatScreenBundle",
+            "app config: $configuration"
+        )
         return UsedeskChatScreen.createBundle(
             configuration.customAgentName,
             REJECTED_FILE_TYPES,

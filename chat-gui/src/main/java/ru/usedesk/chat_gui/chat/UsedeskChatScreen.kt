@@ -16,6 +16,7 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_sdk.UsedeskLog
 
 class UsedeskChatScreen : UsedeskFragment() {
 
@@ -67,6 +68,7 @@ class UsedeskChatScreen : UsedeskFragment() {
 
         getBundleArgs { agentName, rejectedFileExtensions, chatConfiguration ->
             if (chatConfiguration != null) {
+                UsedeskLog.onLog("UsedeskChatScreen.setConfiguration", chatConfiguration.toString())
                 UsedeskChatSdk.setConfiguration(chatConfiguration)
             }
             init(agentName, rejectedFileExtensions ?: arrayOf())
@@ -194,6 +196,10 @@ class UsedeskChatScreen : UsedeskFragment() {
             usedeskChatConfiguration: UsedeskChatConfiguration? = null
         ): Bundle {
             return Bundle().apply {
+                UsedeskLog.onLog(
+                    "UsedeskChatScreen.createBundle",
+                    "config: $usedeskChatConfiguration"
+                )
                 if (agentName != null) {
                     putString(AGENT_NAME_KEY, agentName)
                 }

@@ -9,15 +9,12 @@ import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
-import ru.usedesk.common_sdk.UsedeskLog
 
 internal class CachedMessagesInteractor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
     private val userInfoRepository: IUserInfoRepository
 ) : ICachedMessagesInteractor {
-
-    private var messageDraft: UsedeskMessageDraft
 
     private var draftJob: Job? = null
     private var saveJob: Job? = null
@@ -27,55 +24,50 @@ internal class CachedMessagesInteractor(
     private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri>>()
 
     init {
-        val token = getUserKey()
-        messageDraft = if (token != null) {
-            val draft = messagesRepository.getDraft(token)
-            draft.copy(
-                files = if (configuration.cacheMessagesWithFile) {
-                    draft.files
-                } else {
-                    listOf()
-                }
-            )
-        } else {
-            null
-        } ?: UsedeskMessageDraft()
+        val userKey = findUserKey()
 
-        deferredCachedUriMap.putAll(messageDraft.files.map {
-            it.uri to CompletableDeferred(it.uri)
-        })
+        if (userKey != null) {
+            runBlocking {
+                mutex.withLock {
+                    val messageDraft = messagesRepository.getDraft(userKey)
+                    messagesRepository.setDraft(
+                        userKey,
+                        messageDraft.copy(
+                            files = if (configuration.cacheMessagesWithFile) {
+                                messageDraft.files
+                            } else {
+                                listOf()
+                            }
+                        )
+                    )
+                    deferredCachedUriMap.putAll(messageDraft.files.map {
+                        it.uri to CompletableDeferred(it.uri)
+                    })
+                }
+            }
+        }
     }
 
 
     override fun getNotSentMessages(): List<UsedeskMessageClient> {
-        val token = getUserKey()
-        return if (token != null) {
-            messagesRepository.getNotSentMessages(token)
-        } else {
-            listOf()
-        }
+        val userKey = requireUserKey()
+        return messagesRepository.getNotSentMessages(userKey)
     }
 
     override fun addNotSentMessage(notSentMessage: UsedeskMessageClient) {
-        val token = getUserKey()
-        if (token != null) {
-            messagesRepository.addNotSentMessage(token, notSentMessage)
-        }
+        val userKey = requireUserKey()
+        messagesRepository.addNotSentMessage(userKey, notSentMessage)
     }
 
     override fun updateNotSentMessage(notSentMessage: UsedeskMessageClient) {
-        val token = getUserKey()
-        if (token != null) {
-            messagesRepository.removeNotSentMessage(token, notSentMessage)
-            messagesRepository.addNotSentMessage(token, notSentMessage)
-        }
+        val requireUserKey = requireUserKey()
+        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage)
+        messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
     override fun removeNotSentMessage(notSentMessage: UsedeskMessageClient) {
-        val token = getUserKey()
-        if (token != null) {
-            messagesRepository.removeNotSentMessage(token, notSentMessage)
-        }
+        val userKey = requireUserKey()
+        messagesRepository.removeNotSentMessage(userKey, notSentMessage)
     }
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> {
@@ -111,44 +103,34 @@ internal class CachedMessagesInteractor(
     }
 
     private suspend fun updateMessageDraft(now: Boolean) {
-        UsedeskLog.onLog("updateMessageDraft", "start - now=$now")
         if (now) {
             draftJob?.cancel()
             draftJob = null
             saveJob?.cancel()
             saveJob = CoroutineScope(Dispatchers.IO).launch {
-                UsedeskLog.onLog("updateMessageDraft", "job start - now=$now")
-                val configuration =
-                    userInfoRepository.getConfiguration(this@CachedMessagesInteractor.configuration)
                 yield()
-                val token = configuration.clientToken
-                if (token != null) {
-                    yield()
-                    mutex.withLock {
-                        UsedeskLog.onLog("updateMessageDraft", "job mutex - now=$now")
-                        val messageDraft = this@CachedMessagesInteractor.messageDraft.copy(
-                            files = this@CachedMessagesInteractor.messageDraft.files.mapNotNull {
-                                val deferredCachedUri = deferredCachedUriMap[it.uri]
-                                try {
-                                    val cachedUri = deferredCachedUri?.getCompleted()!!
-                                    it.copy(uri = cachedUri)
-                                } catch (e: Exception) {
-                                    null
-                                }
+                val userKey = requireUserKey()
+                yield()
+                mutex.withLock {
+                    val messageDraft = messagesRepository.getDraft(userKey)
+                    messagesRepository.setDraft(userKey, messageDraft.copy(
+                        files = messageDraft.files.mapNotNull {
+                            val deferredCachedUri = deferredCachedUriMap[it.uri]
+                            try {
+                                val cachedUri = deferredCachedUri?.getCompleted()!!
+                                it.copy(uri = cachedUri)
+                            } catch (e: Exception) {
+                                null
                             }
-                        )
-                        messagesRepository.setDraft(token, messageDraft)
-                    }
+                        }
+                    ))
                 }
-                UsedeskLog.onLog("updateMessageDraft", "job end")
             }
         } else {
             if (draftJob == null) {
                 draftJob = CoroutineScope(Dispatchers.IO).launch {
-                    UsedeskLog.onLog("updateMessageDraft", "delay start")
                     delay(2000)
                     yield()
-                    UsedeskLog.onLog("updateMessageDraft", "delay end")
                     mutex.withLock {
                         updateMessageDraft(true)
                     }
@@ -162,9 +144,9 @@ internal class CachedMessagesInteractor(
         cacheFiles: Boolean
     ): UsedeskMessageDraft {
         return mutex.withLock {
-            UsedeskLog.onLog("setMessageDraft", "start")
-            val oldMessageDraft = this.messageDraft
-            this.messageDraft = messageDraft
+            val userKey = requireUserKey()
+            val oldMessageDraft = messagesRepository.getDraft(userKey)
+            messagesRepository.setDraft(userKey, messageDraft)
             if (cacheFiles) {
                 val oldFiles = oldMessageDraft.files.map {
                     it.uri
@@ -187,28 +169,23 @@ internal class CachedMessagesInteractor(
                 messageDraft.text.isEmpty() &&
                         messageDraft.files.isEmpty()
             )
-            UsedeskLog.onLog("setMessageDraft", "end")
             oldMessageDraft
         }
     }
 
     override suspend fun getMessageDraft(): UsedeskMessageDraft {
         return mutex.withLock {
-            UsedeskLog.onLog("getMessageDraft", "--")
-            messageDraft
+            val userKey = requireUserKey()
+            messagesRepository.getDraft(userKey)
         }
     }
 
     override fun getNextLocalId(): Long {
-        val token = getUserKey()
-        return if (token != null) {
-            messagesRepository.getNextLocalId(token)
-        } else {
-            -1L
-        }
+        val userKey = requireUserKey()
+        return messagesRepository.getNextLocalId(userKey)
     }
 
-    private fun getUserKey(): String? {
+    private fun findUserKey(): String? {
         val config = userInfoRepository.getConfigurationNullable(this.configuration)
             ?: configuration
         val token = config.clientToken
@@ -217,5 +194,9 @@ internal class CachedMessagesInteractor(
         } else {
             null
         }
+    }
+
+    private fun requireUserKey(): String {
+        return findUserKey() ?: throw RuntimeException("Can't find configuration")
     }
 }

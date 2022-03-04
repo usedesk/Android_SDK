@@ -14,7 +14,6 @@ import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
@@ -380,16 +379,11 @@ internal class ChatInteractor(
     }
 
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
-        UsedeskLog.onLog("sendFile", "1")
         sendingMessage as UsedeskMessageClient
         try {
-            UsedeskLog.onLog("sendFile", "2")
             sendAdditionalFieldsIfNeeded()
-            UsedeskLog.onLog("sendFile", "3")
             sendCached(sendingMessage)
-            UsedeskLog.onLog("sendFile", "4 - ОК")
         } catch (e: Exception) {
-            UsedeskLog.onLog("sendFile", "0 - НЕ ОК")
             onMessageSendingFailed(sendingMessage)
             throw e
         }
@@ -397,19 +391,13 @@ internal class ChatInteractor(
 
     private fun sendCached(fileMessage: UsedeskMessageFile) {
         try {
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "1")
             cachedMessages.addNotSentMessage(fileMessage as UsedeskMessageClient)
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "2")
             val cachedUri = runBlocking {
                 val uri = Uri.parse(fileMessage.file.content)
-                UsedeskLog.onLog("sendCached_${fileMessage.id}", "3")
                 val deferredCachedUri = cachedMessages.getCachedFileAsync(uri)
-                UsedeskLog.onLog("sendCached_${fileMessage.id}", "4")
                 deferredCachedUri.await()
             }
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "5")
             val newFile = fileMessage.file.copy(content = cachedUri.toString())
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "6")
             val cachedNotSentMessage = when (fileMessage) {
                 is UsedeskMessageClientAudio -> {
                     UsedeskMessageClientAudio(
@@ -448,11 +436,8 @@ internal class ChatInteractor(
                     )
                 }
             }
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "7")
             cachedMessages.updateNotSentMessage(cachedNotSentMessage)
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "8")
             eventListener.onMessageUpdated(cachedNotSentMessage)
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "9")
             apiRepository.send(
                 configuration,
                 token!!,
@@ -463,31 +448,22 @@ internal class ChatInteractor(
                 ),
                 cachedNotSentMessage.localId
             )
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "10")
             cachedMessages.removeNotSentMessage(cachedNotSentMessage)
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "11")
             runBlocking {
                 cachedMessages.removeFileFromCache(Uri.parse(fileMessage.file.content))
             }
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "12 - OK")
         } catch (e: Exception) {
-            UsedeskLog.onLog("sendCached_${fileMessage.id}", "00 - НЕ ОК")
             onMessageSendingFailed(fileMessage as UsedeskMessageClient)
             throw e
         }
     }
 
     private fun sendCached(cachedMessage: UsedeskMessageClientText) {
-        UsedeskLog.onLog("sendCached text", "1")
         try {
             cachedMessages.addNotSentMessage(cachedMessage)
-            UsedeskLog.onLog("sendCached text", "2")
             apiRepository.send(cachedMessage)
-            UsedeskLog.onLog("sendCached text", "3")
             cachedMessages.removeNotSentMessage(cachedMessage)
-            UsedeskLog.onLog("sendCached text", "4 - ОК")
         } catch (e: Exception) {
-            UsedeskLog.onLog("sendCached text", "0 - НЕ ОК")
             onMessageSendingFailed(cachedMessage)
             throw e
         }
@@ -700,39 +676,26 @@ internal class ChatInteractor(
             eventListener.onMessagesReceived(sendingMessages)
             sendAdditionalFieldsIfNeeded()
 
-            UsedeskLog.onLog("sendMessageDraft", "1")
             jobsMutex.withLock {
-                UsedeskLog.onLog("sendMessageDraft", "2")
                 jobs.addAll(sendingMessages.mapNotNull { msg ->
-                    UsedeskLog.onLog("sendMessageDraft", "3 - ${msg.id}")
                     when (msg) {
                         is UsedeskMessageClientText -> {
-                            UsedeskLog.onLog("sendMessageDraft", "4 - text")
                             ioScope.launchSafe({
                                 sendCached(msg)
-                                UsedeskLog.onLog("sendMessageDraft", "5 - text - ${msg.id} - ОК")
-                            }) {
-                                UsedeskLog.onLog("sendMessageDraft", "6 - text - ${msg.id} - НЕ ОК")
-                            }
+                            })
                         }
                         is UsedeskMessageFile -> {
-                            UsedeskLog.onLog("sendMessageDraft", "4 - file")
                             ioScope.launchSafe({
                                 sendCached(msg)
-                                UsedeskLog.onLog("sendMessageDraft", "5 - file - ${msg.id} - ОК")
-                            }) {
-                                UsedeskLog.onLog("sendMessageDraft", "6 - file - ${msg.id} - НЕ ОК")
-                            }
+                            })
                         }
                         else -> {
-                            UsedeskLog.onLog("sendMessageDraft", "6 - null - ${msg.id} - НЕ ОК")
                             null
                         }
                     }
                 })
             }
         }
-        UsedeskLog.onLog("sendMessageDraft", "7 - OK")
     }
 
     override fun sendMessageDraftRx(): Completable {

@@ -9,6 +9,7 @@ import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.common_sdk.UsedeskLog
 
 internal class CachedMessagesInteractor(
     private val configuration: UsedeskChatConfiguration,
@@ -79,11 +80,11 @@ internal class CachedMessagesInteractor(
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> {
         return mutex.withLock {
-            getCachedFile(uri)
+            getCachedFileInnerAsync(uri)
         }
     }
 
-    private fun getCachedFile(uri: Uri): Deferred<Uri> {
+    private fun getCachedFileInnerAsync(uri: Uri): Deferred<Uri> {
         return deferredCachedUriMap[uri] ?: CoroutineScope(Dispatchers.IO).async {
             messagesRepository.addFileToCache(uri)
         }.also {
@@ -110,11 +111,13 @@ internal class CachedMessagesInteractor(
     }
 
     private suspend fun updateMessageDraft(now: Boolean) {
+        UsedeskLog.onLog("updateMessageDraft", "start - now=$now")
         if (now) {
             draftJob?.cancel()
             draftJob = null
             saveJob?.cancel()
             saveJob = CoroutineScope(Dispatchers.IO).launch {
+                UsedeskLog.onLog("updateMessageDraft", "job start - now=$now")
                 val configuration =
                     userInfoRepository.getConfiguration(this@CachedMessagesInteractor.configuration)
                 yield()
@@ -122,6 +125,7 @@ internal class CachedMessagesInteractor(
                 if (token != null) {
                     yield()
                     mutex.withLock {
+                        UsedeskLog.onLog("updateMessageDraft", "job mutex - now=$now")
                         val messageDraft = this@CachedMessagesInteractor.messageDraft.copy(
                             files = this@CachedMessagesInteractor.messageDraft.files.mapNotNull {
                                 val deferredCachedUri = deferredCachedUriMap[it.uri]
@@ -136,12 +140,15 @@ internal class CachedMessagesInteractor(
                         messagesRepository.setDraft(token, messageDraft)
                     }
                 }
+                UsedeskLog.onLog("updateMessageDraft", "job end")
             }
         } else {
             if (draftJob == null) {
                 draftJob = CoroutineScope(Dispatchers.IO).launch {
+                    UsedeskLog.onLog("updateMessageDraft", "delay start")
                     delay(2000)
                     yield()
+                    UsedeskLog.onLog("updateMessageDraft", "delay end")
                     mutex.withLock {
                         updateMessageDraft(true)
                     }
@@ -150,12 +157,12 @@ internal class CachedMessagesInteractor(
         }
     }
 
-
     override suspend fun setMessageDraft(
         messageDraft: UsedeskMessageDraft,
         cacheFiles: Boolean
     ): UsedeskMessageDraft {
         return mutex.withLock {
+            UsedeskLog.onLog("setMessageDraft", "start")
             val oldMessageDraft = this.messageDraft
             this.messageDraft = messageDraft
             if (cacheFiles) {
@@ -173,19 +180,21 @@ internal class CachedMessagesInteractor(
                 newFiles.filter {
                     it !in oldFiles
                 }.map { uri ->
-                    deferredCachedUriMap[uri] = getCachedFile(uri)
+                    deferredCachedUriMap[uri] = getCachedFileInnerAsync(uri)
                 }
             }
             updateMessageDraft(
                 messageDraft.text.isEmpty() &&
                         messageDraft.files.isEmpty()
             )
+            UsedeskLog.onLog("setMessageDraft", "end")
             oldMessageDraft
         }
     }
 
     override suspend fun getMessageDraft(): UsedeskMessageDraft {
         return mutex.withLock {
+            UsedeskLog.onLog("getMessageDraft", "--")
             messageDraft
         }
     }

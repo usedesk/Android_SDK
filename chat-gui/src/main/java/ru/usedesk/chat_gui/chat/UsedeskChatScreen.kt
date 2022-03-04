@@ -129,6 +129,10 @@ class UsedeskChatScreen : UsedeskFragment() {
         }
 
         viewModel.init(agentName, rejectedFileExtensions.toSet())
+
+        viewModel.goLoadingEvent.process {
+            navController.navigate(R.id.dest_loading_page)
+        }
     }
 
     private fun updateTitle(destination: NavDestination?) {

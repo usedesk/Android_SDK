@@ -643,7 +643,9 @@ internal class ChatInteractor(
     }
 
     override fun getMessageDraft(): UsedeskMessageDraft {
-        return cachedMessages.getMessageDraft()
+        return runBlocking {
+            cachedMessages.getMessageDraft()
+        }
     }
 
     override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
@@ -653,38 +655,38 @@ internal class ChatInteractor(
     }
 
     override fun sendMessageDraft() {
-        val messageDraft = cachedMessages.getMessageDraft()
         runBlocking {
-            cachedMessages.setMessageDraft(UsedeskMessageDraft(), false)
-        }
+            val messageDraft = cachedMessages.setMessageDraft(
+                UsedeskMessageDraft(),
+                false
+            )
 
-        val sendingMessages = mutableListOf<UsedeskMessage>()
+            val sendingMessages = mutableListOf<UsedeskMessage>()
 
-        val message = messageDraft.text.trim()
-        if (message.isNotEmpty()) {
-            val sendingMessage = createSendingMessage(message)
-            sendingMessages.add(sendingMessage)
-        }
+            val message = messageDraft.text.trim()
+            if (message.isNotEmpty()) {
+                val sendingMessage = createSendingMessage(message)
+                sendingMessages.add(sendingMessage)
+            }
 
-        sendingMessages.addAll(messageDraft.files.map {
-            createSendingMessage(it)
-        })
+            sendingMessages.addAll(messageDraft.files.map {
+                createSendingMessage(it)
+            })
 
-        eventListener.onMessagesReceived(sendingMessages)
-        sendAdditionalFieldsIfNeeded()
+            eventListener.onMessagesReceived(sendingMessages)
+            sendAdditionalFieldsIfNeeded()
 
-        runBlocking {
             jobsMutex.withLock {
-                jobs.addAll(sendingMessages.mapNotNull {
-                    when (it) {
+                jobs.addAll(sendingMessages.mapNotNull { msg ->
+                    when (msg) {
                         is UsedeskMessageClientText -> {
                             ioScope.launchSafe({
-                                sendCached(it)
+                                sendCached(msg)
                             })
                         }
                         is UsedeskMessageFile -> {
                             ioScope.launchSafe({
-                                sendCached(it)
+                                sendCached(msg)
                             })
                         }
                         else -> {
@@ -851,7 +853,7 @@ internal class ChatInteractor(
         ) {
             initClientMessage = null
         }
-        avatarSendNeeded = false//oldConfiguration?.clientAvatar != configuration.clientAvatar
+        avatarSendNeeded = false //oldConfiguration?.clientAvatar != configuration.clientAvatar
 
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 

@@ -8,14 +8,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "com.android.tools.build:gradle:7.1.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
     }
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "3.10.15"
+    project.version = "3.10.16"
 
     repositories {
         google()

@@ -6,6 +6,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
     private val usedeskChat = UsedeskChatSdk.requireInstance()
@@ -19,6 +20,8 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
     var messageTimeFormat: String = ""
         private set
 
+
+    val goLoadingEvent = UsedeskSingleLifeEvent<Any?>(null)
 
     private val actionListenerRx = object : IUsedeskActionListenerRx() {
         override fun onOfflineFormExpectedObservable(

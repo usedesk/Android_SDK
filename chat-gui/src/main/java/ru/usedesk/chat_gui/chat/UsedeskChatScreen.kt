@@ -147,6 +147,10 @@ class UsedeskChatScreen : UsedeskFragment() {
             messagesDateFormat,
             messageTimeFormat
         )
+
+        viewModel.goLoadingEvent.process {
+            navController.navigate(R.id.dest_loading_page)
+        }
     }
 
     private fun updateTitle(destination: NavDestination?) {

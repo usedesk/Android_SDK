@@ -50,10 +50,12 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun onMessageChanged(message: String) {
-        setModel { model ->
-            model.copy(messageDraft = model.messageDraft.copy(text = message))
+        if (message != modelLiveData.value.messageDraft.text) {
+            setModel { model ->
+                model.copy(messageDraft = model.messageDraft.copy(text = message))
+            }
+            doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
         }
-        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
     fun sendFeedback(message: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
@@ -61,14 +63,16 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun attachFiles(uriList: Set<UsedeskFileInfo>) {
-        setModel { model ->
-            val newFiles = (model.messageDraft.files + uriList).toSet().toList()
-            model.copy(
-                messageDraft = model.messageDraft.copy(files = newFiles),
-                attachmentPanelVisible = false
-            )
+        if (uriList != modelLiveData.value.messageDraft.files) {
+            setModel { model ->
+                val newFiles = (model.messageDraft.files + uriList).toSet().toList()
+                model.copy(
+                    messageDraft = model.messageDraft.copy(files = newFiles),
+                    attachmentPanelVisible = false
+                )
+            }
+            doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
         }
-        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
     fun detachFile(file: UsedeskFileInfo) {

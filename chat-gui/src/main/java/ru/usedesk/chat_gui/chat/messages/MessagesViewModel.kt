@@ -8,6 +8,7 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskViewModel
 import java.io.File
+import java.util.*
 
 internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
 
@@ -30,12 +31,22 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                 return messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
                     messages = it
                     setModel { model ->
-                        model.copy(messages = messages)
+                        model.copy(chatItems = convertMessages(messages))
                     }
                 }
             }
         }
         usedeskChat.addActionListener(actionListenerRx)
+    }
+
+    private fun convertMessages(messages: List<UsedeskMessage>): List<ChatItem> {
+        return messages.groupBy {
+            it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR]
+        }.flatMap {
+            sequenceOf(ChatDate(it.value.first().createdAt)) + it.value.map { message ->
+                ChatMessage(message)
+            }
+        }
     }
 
     fun onMessageChanged(message: String) {
@@ -133,17 +144,18 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     data class Model(
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
-        val messages: List<UsedeskMessage> = listOf(),
+        val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
         val attachmentPanelVisible: Boolean = false
     )
 
-    enum class Action {
-        FROM_CAMERA_PERMISSION,
-        FROM_GALLERY_PERMISSION,
-        FROM_STORAGE_PERMISSION,
-        FROM_CAMERA,
-        FROM_GALLERY,
-        FROM_STORAGE
-    }
+    internal sealed class ChatItem
+
+    class ChatMessage(
+        val message: UsedeskMessage
+    ) : ChatItem()
+
+    class ChatDate(
+        val calendar: Calendar
+    ) : ChatItem()
 }

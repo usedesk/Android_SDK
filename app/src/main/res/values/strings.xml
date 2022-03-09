@@ -18,6 +18,8 @@
     <string name="client_additional_id">Client Additional Id</string>
     <string name="client_init_message">Client Init Message</string>
     <string name="custom_agent_name">Custom Agent Name</string>
+    <string name="custom_date_format">Custom Date Format</string>
+    <string name="custom_time_format">Custom Time Format</string>
     <string name="service_type_title">Service type</string>
     <string name="service_type_none">No service</string>
     <string name="service_type_simple">Simple service</string>

@@ -6,7 +6,6 @@ import ru.usedesk.chat_sdk.di.InstanceBoxUsedesk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
-import ru.usedesk.common_sdk.UsedeskLog
 
 object UsedeskChatSdk {
 
@@ -20,10 +19,6 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
-        UsedeskLog.onLog(
-            "UsedeskChatSdk.setConfiguration",
-            "Current config: ${this.chatConfiguration}"
-        )
         val validation = chatConfiguration.validate()
         if (!validation.isAllValid()) {
             throw RuntimeException("Invalid chat configuration: $validation")

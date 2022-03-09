@@ -15,6 +15,11 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
         private set
     var rejectedFileExtensions: Set<String> = setOf()
         private set
+    var messagesDateFormat: String = ""
+        private set
+    var messageTimeFormat: String = ""
+        private set
+
 
     val goLoadingEvent = UsedeskSingleLifeEvent<Any?>(null)
 
@@ -58,11 +63,15 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
 
     fun init(
         agentName: String?,
-        rejectedFileExtensions: Set<String>
+        rejectedFileExtensions: Set<String>,
+        messagesDateFormat: String,
+        messageTimeFormat: String
     ) {
         doInit {
             this.agentName = agentName
             this.rejectedFileExtensions = rejectedFileExtensions
+            this.messagesDateFormat = messagesDateFormat
+            this.messageTimeFormat = messageTimeFormat
 
             usedeskChat.addActionListener(actionListenerRx)
         }

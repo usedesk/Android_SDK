@@ -104,7 +104,6 @@
         <item name="usedesk_chat_message_avatar_image">@style/Usedesk.Chat.Message.Avatar.Image</item>
         <item name="usedesk_chat_message_time_text">@style/Usedesk.Chat.Message.Time.Dark.Text</item>
         <item name="usedesk_chat_message_name_text">@style/Usedesk.Chat.Message.Name.Text</item>
-        <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Feedback.Good.Image" parent="">
@@ -842,22 +841,33 @@
         <item name="android:text">@string/usedesk_chat</item>
     </style>
 
-    <style name="Usedesk.Chat.Message.Date.Text.TextAppearance" parent="">
-        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
-        <item name="android:textColor">@color/usedesk_gray_3</item>
-        <item name="android:textSize">15sp</item>
+    <style name="Usedesk.Chat.Date" parent="">
+        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Date.Text" parent="">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginBottom">20dp</item>
-        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:background">@drawable/usedesk_background_message_date</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:includeFontPadding">false</item>
         <item name="usedesk_text_1">@string/usedesk_today</item>
         <item name="usedesk_text_2">@string/usedesk_yesterday</item>
-        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Date.Text.TextAppearance</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Date.Text.TextAppearance
+        </item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Date.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+        <item name="android:textColor">@color/usedesk_black_3</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Extension.Text.TextAppearance" parent="">

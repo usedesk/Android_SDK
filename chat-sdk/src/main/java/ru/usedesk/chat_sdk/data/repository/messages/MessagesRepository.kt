@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
 import java.io.File
@@ -20,6 +23,7 @@ internal class MessagesRepository(
 
     private val notSentMessages = hashMapOf<Long, NotSentMessage>()
     private var messageDraft = UsedeskMessageDraft()
+    private var mutex = Mutex()
     private var lastLocalId: Long = 0L
 
     private fun getSharedPreferences(userKey: String): SharedPreferences {
@@ -64,28 +68,36 @@ internal class MessagesRepository(
     override fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft) {
         initIfNeeded(userKey)
 
-        val oldMessageDraft = this.messageDraft
-        this.messageDraft = messageDraft
+        runBlocking {
+            mutex.withLock {
+                val oldMessageDraft = this@MessagesRepository.messageDraft
+                this@MessagesRepository.messageDraft = messageDraft
 
-        getSharedPreferences(userKey).edit().apply {
-            if (oldMessageDraft.text != messageDraft.text) {
-                putString(DRAFT_TEXT_KEY, messageDraft.text)
+                getSharedPreferences(userKey).edit().apply {
+                    if (oldMessageDraft.text != messageDraft.text) {
+                        putString(DRAFT_TEXT_KEY, messageDraft.text)
+                    }
+                    if (configuration.cacheMessagesWithFile && oldMessageDraft.files != messageDraft.files) {
+                        putStringSet(
+                            DRAFT_FILES_KEY, messageDraft.files.map {
+                                it.uri.toString()
+                            }.toSet()
+                        )
+                    }
+                }.apply()
             }
-            if (configuration.cacheMessagesWithFile && oldMessageDraft.files != messageDraft.files) {
-                putStringSet(
-                    DRAFT_FILES_KEY, messageDraft.files.map {
-                        it.uri.toString()
-                    }.toSet()
-                )
-            }
-        }.apply()
+        }
     }
 
     @Synchronized
     override fun getDraft(userKey: String): UsedeskMessageDraft {
         initIfNeeded(userKey)
 
-        return messageDraft
+        return runBlocking {
+            mutex.withLock {
+                messageDraft
+            }
+        }
     }
 
     override fun addFileToCache(uri: Uri): Uri {

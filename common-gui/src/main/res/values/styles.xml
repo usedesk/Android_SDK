@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Usedesk.Common.ContainerRoot" parent="">
+    <style name="Usedesk.Common.Toolbar.ContainerRoot" parent="">
         <item name="android:background">@color/usedesk_white_2</item>
         <item name="android:saveEnabled">false</item>
         <item name="contentInsetStart">0dp</item>
@@ -9,14 +9,14 @@
         <item name="title">@null</item>
     </style>
 
-    <style name="Usedesk.Common.Container1" parent="">
+    <style name="Usedesk.Common.Toolbar.Container1" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">56dp</item>
     </style>
 
     <style name="Usedesk.Common.Toolbar" parent="">
-        <item name="usedesk_common_container_root">@style/Usedesk.Common.ContainerRoot</item>
-        <item name="usedesk_common_container_1">@style/Usedesk.Common.Container1</item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Common.Toolbar.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Common.Toolbar.Container1</item>
         <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
         <item name="usedesk_common_toolbar_back_image">@style/Usedesk.Common.Toolbar.Back.Image</item>
         <item name="usedesk_common_toolbar_action_image">@style/Usedesk.Common.Toolbar.Action.Image</item>

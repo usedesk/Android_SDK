@@ -17,11 +17,17 @@ internal interface ICachedMessagesInteractor {
 
     suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
 
-    fun removeFileFromCache(uri: Uri)
+    suspend fun removeFileFromCache(uri: Uri)
 
-    suspend fun setMessageDraft(messageDraft: UsedeskMessageDraft, cacheFiles: Boolean)
+    /**
+     * Returns old UsedeskMessageDraft value
+     */
+    suspend fun setMessageDraft(
+        messageDraft: UsedeskMessageDraft,
+        cacheFiles: Boolean
+    ): UsedeskMessageDraft
 
-    fun getMessageDraft(): UsedeskMessageDraft
+    suspend fun getMessageDraft(): UsedeskMessageDraft
 
     fun getNextLocalId(): Long
 }

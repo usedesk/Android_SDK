@@ -32,8 +32,10 @@ class ConfigurationScreen : UsedeskFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(
-            inflater, R.layout.screen_configuration,
-            container, false
+            inflater,
+            R.layout.screen_configuration,
+            container,
+            false
         )
 
         viewModel.configurationLiveData.observe(viewLifecycleOwner) {

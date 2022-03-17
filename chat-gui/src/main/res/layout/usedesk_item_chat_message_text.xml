@@ -6,7 +6,9 @@
     android:layout_height="wrap_content"
     tools:theme="@style/Usedesk.Chat.Message.Text">
 
-    <LinearLayout style="?attr/usedesk_common_container_4">
+    <LinearLayout
+        android:id="@+id/l_content"
+        style="?attr/usedesk_common_container_4">
 
         <FrameLayout
             android:id="@+id/l_feedback"

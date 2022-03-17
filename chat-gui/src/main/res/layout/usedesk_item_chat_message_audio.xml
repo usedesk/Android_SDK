@@ -16,6 +16,10 @@
     </FrameLayout>
 
     <TextView
+        android:id="@+id/tv_download"
+        style="?attr/usedesk_chat_message_audio_download_text" />
+
+    <TextView
         android:id="@+id/tv_time"
         style="?attr/usedesk_chat_message_time_text"
         tools:text="12:06" />

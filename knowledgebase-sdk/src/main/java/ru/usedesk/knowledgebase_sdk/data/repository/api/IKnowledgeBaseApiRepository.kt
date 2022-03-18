@@ -19,9 +19,13 @@ internal interface IKnowledgeBaseApiRepository {
 
     fun addViews(articleId: Long)
 
-    fun sendRating(articleId: Long,
-                   good: Boolean)
+    fun sendRating(
+        articleId: Long,
+        good: Boolean
+    )
 
-    fun sendRating(articleId: Long,
-                   message: String)
+    fun sendRating(
+        articleId: Long,
+        message: String
+    )
 }

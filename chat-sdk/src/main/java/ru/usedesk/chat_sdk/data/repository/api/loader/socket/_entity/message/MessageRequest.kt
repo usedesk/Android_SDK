@@ -22,7 +22,7 @@ internal class MessageRequest(
     }
 
     private class Payload(
-            @SerializedName("message_id")
-            private val messageId: Long
+        @SerializedName("message_id")
+        private val messageId: Long
     )
 }

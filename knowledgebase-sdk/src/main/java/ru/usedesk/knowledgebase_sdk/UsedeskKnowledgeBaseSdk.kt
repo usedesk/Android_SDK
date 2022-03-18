@@ -17,7 +17,7 @@ object UsedeskKnowledgeBaseSdk {
     @JvmStatic
     fun requireConfiguration(): UsedeskKnowledgeBaseConfiguration {
         return configuration
-                ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
+            ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
     }
 
     @JvmStatic
@@ -35,7 +35,7 @@ object UsedeskKnowledgeBaseSdk {
     @JvmStatic
     fun requireInstance(): IUsedeskKnowledgeBase {
         return getInstance()
-                ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
+            ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
     }
 
     @JvmStatic

@@ -1,7 +1,7 @@
 package ru.usedesk.common_sdk.entity
 
 class UsedeskSingleLifeEvent<DATA>(
-        data: DATA
+    data: DATA
 ) : UsedeskEvent<DATA>(data) {
     private var processed = false
 

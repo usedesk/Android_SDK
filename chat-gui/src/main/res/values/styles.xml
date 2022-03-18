@@ -274,11 +274,32 @@
         <item name="srcCompat">@drawable/usedesk_ic_play_light</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Audio.Download.Text.TextAppearance" parent="">
+        <item name="android:fontFamily">@font/sf_ui_display_medium</item>
+        <item name="android:textColor">@color/usedesk_blue</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Audio.Download.Text" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:text">@string/usedesk_download</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Audio.Download.Text.TextAppearance</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Audio">
         <item name="usedesk_common_container_3">@null</item>
         <item name="usedesk_common_container_4">@style/Usedesk.Chat.Message.Audio.Container4</item>
         <item name="usedesk_common_container_6">@style/Usedesk.Chat.Message.Audio.Container5</item>
         <item name="usedesk_chat_message_audio_controls_layout">@layout/usedesk_view_player_audio_controls</item>
+        <item name="usedesk_chat_message_audio_download_text">@style/Usedesk.Chat.Message.Audio.Download.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio.Container4">
@@ -464,11 +485,12 @@
     <style name="Usedesk.Chat.Message.Text.Container4" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">40dp</item>
         <item name="android:orientation">vertical</item>
         <item name="android:layout_marginStart">10dp</item>
-        <item name="android:layout_marginEnd">48dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginTop">6dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Container5" parent="">
@@ -900,6 +922,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
+        <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>

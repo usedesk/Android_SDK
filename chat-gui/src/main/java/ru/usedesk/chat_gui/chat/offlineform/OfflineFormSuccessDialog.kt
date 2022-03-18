@@ -10,15 +10,17 @@ import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormSuccessDialog private constructor(
-        container: ViewGroup,
-        dialogStyle: Int
+    container: ViewGroup,
+    dialogStyle: Int
 ) : UsedeskBottomSheetDialog(container.context, dialogStyle) {
 
     init {
-        inflateItem(layoutInflater,
-                container,
-                R.layout.usedesk_dialog_offline_form_success,
-                dialogStyle) { rootView, defaultStyleId ->
+        inflateItem(
+            layoutInflater,
+            container,
+            R.layout.usedesk_dialog_offline_form_success,
+            dialogStyle
+        ) { rootView, defaultStyleId ->
             Binding(rootView, defaultStyleId)
         }.apply {
             setContentView(rootView)
@@ -32,7 +34,7 @@ internal class OfflineFormSuccessDialog private constructor(
     companion object {
         fun newInstance(container: View): OfflineFormSuccessDialog {
             val dialogStyle = UsedeskResourceManager.getResourceId(
-                    R.style.Usedesk_Chat_Offline_Form_Success_Dialog
+                R.style.Usedesk_Chat_Offline_Form_Success_Dialog
             )
             return OfflineFormSuccessDialog(container as ViewGroup, dialogStyle)
         }

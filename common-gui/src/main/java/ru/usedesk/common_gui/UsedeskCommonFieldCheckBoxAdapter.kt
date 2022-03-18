@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 class UsedeskCommonFieldCheckBoxAdapter(
-        private val binding: Binding
+    private val binding: Binding
 ) {
     private val uncheckedImageId: Int
     private val checkedImageId: Int
@@ -26,11 +26,13 @@ class UsedeskCommonFieldCheckBoxAdapter(
     }
 
     fun setChecked(checked: Boolean) {
-        binding.ivCheck.setImageResource(if (checked) {
-            checkedImageId
-        } else {
-            uncheckedImageId
-        })
+        binding.ivCheck.setImageResource(
+            if (checked) {
+                checkedImageId
+            } else {
+                uncheckedImageId
+            }
+        )
     }
 
     fun setTitle(title: String) {

@@ -6,7 +6,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
 class UsedeskCommonFieldTextAdapter(
-        val binding: Binding
+    val binding: Binding
 ) {
 
     private val title = binding.styleValues.getString(R.attr.usedesk_text_1)
@@ -25,7 +25,8 @@ class UsedeskCommonFieldTextAdapter(
             ""
         }
 
-        val htmlTitle = String.format("<font color=#%s>%s</font>", colorTitle.toString(16), title) + tail
+        val htmlTitle =
+            String.format("<font color=#%s>%s</font>", colorTitle.toString(16), title) + tail
         binding.tilTitle.hint = Html.fromHtml(htmlTitle)
     }
 

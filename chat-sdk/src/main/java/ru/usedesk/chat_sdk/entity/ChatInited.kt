@@ -1,7 +1,4 @@
-package ru.usedesk.chat_sdk.data.repository.api.entity
-
-import ru.usedesk.chat_sdk.entity.UsedeskMessage
-import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
+package ru.usedesk.chat_sdk.entity
 
 internal data class ChatInited(
     val token: String,

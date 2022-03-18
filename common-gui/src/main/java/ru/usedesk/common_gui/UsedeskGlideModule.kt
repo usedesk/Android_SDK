@@ -13,9 +13,11 @@ import java.io.InputStream
 @GlideModule
 class UsedeskGlideModule : LibraryGlideModule() {
 
-    override fun registerComponents(context: Context,
-                                    glide: Glide,
-                                    registry: Registry) {
+    override fun registerComponents(
+        context: Context,
+        glide: Glide,
+        registry: Registry
+    ) {
         val client = UsedeskOkHttpClientFactory(context).createInstance()
         val factory = OkHttpUrlLoader.Factory(client)
         glide.registry.replace(GlideUrl::class.java, InputStream::class.java, factory)

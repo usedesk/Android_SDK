@@ -6,7 +6,7 @@ internal class FeedbackResponse : BaseResponse() {
     var answer: Answer? = null
 
     class Answer(
-            var status: Boolean? = null
+        var status: Boolean? = null
     )
 
     companion object {

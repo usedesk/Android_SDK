@@ -22,6 +22,7 @@ class UsedeskHttpException : UsedeskException {
     override fun toString() = super.toString() + "\n" + error.toString()
 
     enum class Error {
-        IO_ERROR, UNKNOWN_ERROR
+        IO_ERROR,
+        UNKNOWN_ERROR
     }
 }

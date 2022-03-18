@@ -4,7 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 
 class UsedeskTextChangeListener(
-        private val onTextChanged: (String) -> Unit
+    private val onTextChanged: (String) -> Unit
 ) : TextWatcher {
 
     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}

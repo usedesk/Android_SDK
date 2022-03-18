@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.marginBottom
+import androidx.core.view.marginEnd
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import androidx.lifecycle.LifecycleOwner
@@ -39,7 +40,8 @@ internal class MessagesAdapter(
     private val onUrlClick: (String) -> Unit,
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
     messagesDateFormat: String,
-    messageTimeFormat: String,
+    private val messageTimeFormat: String,
+    private val adaptiveTextMessageTimePadding: Boolean,
     savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
@@ -718,7 +720,7 @@ internal class MessagesAdapter(
         private val binding: MessageAudioBinding
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
-        private var usedeskFile: UsedeskFile = UsedeskFile("", "", "", "")
+        private var usedeskFile = UsedeskFile("", "", "", "")
         private var lastVisible = false
 
         init {
@@ -793,6 +795,16 @@ internal class MessagesAdapter(
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content) {
+        init {
+            if (adaptiveTextMessageTimePadding) {
+                applyAdaptivePadding(
+                    binding.content.tvTime,
+                    binding.content.lContent,
+                    true
+                )
+            }
+        }
+
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
@@ -826,9 +838,40 @@ internal class MessagesAdapter(
         }
     }
 
+    private fun applyAdaptivePadding(
+        tvTime: TextView,
+        content: View,
+        withHeight: Boolean = false
+    ) {
+        content.apply {
+            val bounds = Rect()
+            tvTime.paint.getTextBounds(
+                messageTimeFormat,
+                0,
+                messageTimeFormat.length,
+                bounds
+            )
+            (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
+                right = marginEnd + bounds.width() + if (withHeight) {
+                    bounds.height()
+                } else {
+                    0
+                }
+            )
+        }
+    }
+
     internal inner class MessageAudioClientViewHolder(
         private val binding: MessageAudioClientBinding
     ) : MessageAudioViewHolder(binding.rootView, binding.content) {
+        init {
+            applyAdaptivePadding(
+                binding.content.tvTime,
+                binding.content.tvDownload,
+                true
+            )
+        }
+
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
@@ -865,6 +908,15 @@ internal class MessagesAdapter(
         private val thanksText = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
+
+        init {
+            if (adaptiveTextMessageTimePadding) {
+                applyAdaptivePadding(
+                    binding.content.tvTime,
+                    binding.content.lContent
+                )
+            }
+        }
 
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
             if (it.url.isNotEmpty()) {
@@ -1061,6 +1113,13 @@ internal class MessagesAdapter(
         private val binding: MessageAudioAgentBinding
     ) : MessageAudioViewHolder(binding.rootView, binding.content) {
 
+        init {
+            applyAdaptivePadding(
+                binding.content.tvTime,
+                binding.content.tvDownload
+            )
+        }
+
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindAgent(chatItem, binding.agent)
@@ -1093,6 +1152,7 @@ internal class MessagesAdapter(
         val rvButtons: RecyclerView = rootView.findViewById(R.id.rv_buttons)
         val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
+        val lContent: ViewGroup = rootView.findViewById(R.id.l_content)
         val ivLike: ImageView = rootView.findViewById(R.id.iv_like)
         val ivDislike: ImageView = rootView.findViewById(R.id.iv_dislike)
     }

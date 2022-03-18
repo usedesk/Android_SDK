@@ -65,20 +65,11 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
         }
 
-        getBundleArgs { agentName,
-            rejectedFileExtensions,
-            chatConfiguration,
-            messagesDateFormat,
-            messageTimeFormat ->
+        getBundleArgs { _, _, chatConfiguration, _, _, _ ->
             if (chatConfiguration != null) {
                 UsedeskChatSdk.setConfiguration(chatConfiguration)
             }
-            init(
-                agentName,
-                rejectedFileExtensions ?: arrayOf(),
-                messagesDateFormat,
-                messageTimeFormat
-            )
+            init()
         }
 
         return binding.rootView
@@ -90,7 +81,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             Array<String>?,
             UsedeskChatConfiguration?,
             String,
-            String
+            String,
+            Boolean
         ) -> Unit
     ) {
         onArgs(
@@ -98,16 +90,12 @@ class UsedeskChatScreen : UsedeskFragment() {
             argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
             argsGetParcelable(CHAT_CONFIGURATION_KEY),
             argsGetString(MESSAGES_DATE_FORMAT_KEY, MESSAGES_DATE_FORMAT_DEFAULT),
-            argsGetString(MESSAGE_TIME_FORMAT_KEY, MESSAGE_TIME_FORMAT_DEFAULT)
+            argsGetString(MESSAGE_TIME_FORMAT_KEY, MESSAGE_TIME_FORMAT_DEFAULT),
+            argsGetBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, false)
         )
     }
 
-    private fun init(
-        agentName: String?,
-        rejectedFileExtensions: Array<String>,
-        messagesDateFormat: String,
-        messageTimeFormat: String
-    ) {
+    private fun init() {
         UsedeskChatSdk.init(requireContext())
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -141,12 +129,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
         }
 
-        viewModel.init(
-            agentName,
-            rejectedFileExtensions.toSet(),
-            messagesDateFormat,
-            messageTimeFormat
-        )
+        viewModel.init()
 
         viewModel.goLoadingEvent.process {
             navController.navigate(R.id.dest_loading_page)
@@ -195,6 +178,8 @@ class UsedeskChatScreen : UsedeskFragment() {
         private const val CHAT_CONFIGURATION_KEY = "chatConfigurationKey"
         private const val MESSAGES_DATE_FORMAT_KEY = "messagesDateFormatKey"
         private const val MESSAGE_TIME_FORMAT_KEY = "messageTimeFormatKey"
+        private const val ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY =
+            "adaptiveTextMessageTimePaddingKey"
 
         private const val MESSAGES_DATE_FORMAT_DEFAULT = "dd MMMM"
         private const val MESSAGE_TIME_FORMAT_DEFAULT = "HH:mm"
@@ -206,7 +191,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             rejectedFileExtensions: Collection<String>? = null,
             usedeskChatConfiguration: UsedeskChatConfiguration? = null,
             messagesDateFormat: String? = null,
-            messageTimeFormat: String? = null
+            messageTimeFormat: String? = null,
+            adaptiveTextMessageTimePadding: Boolean = false
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
                 arguments = createBundle(
@@ -214,7 +200,8 @@ class UsedeskChatScreen : UsedeskFragment() {
                     rejectedFileExtensions,
                     usedeskChatConfiguration,
                     messagesDateFormat,
-                    messageTimeFormat
+                    messageTimeFormat,
+                    adaptiveTextMessageTimePadding
                 )
             }
         }
@@ -226,7 +213,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             rejectedFileExtensions: Collection<String>? = null,
             usedeskChatConfiguration: UsedeskChatConfiguration? = null,
             messagesDateFormat: String? = null,
-            messageTimeFormat: String? = null
+            messageTimeFormat: String? = null,
+            adaptiveTextMessageTimePadding: Boolean = false
         ): Bundle {
             return Bundle().apply {
                 if (agentName != null) {
@@ -241,6 +229,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
                 putString(MESSAGES_DATE_FORMAT_KEY, messagesDateFormat)
                 putString(MESSAGE_TIME_FORMAT_KEY, messageTimeFormat)
+                putBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, adaptiveTextMessageTimePadding)
             }
         }
     }

@@ -485,10 +485,9 @@
     <style name="Usedesk.Chat.Message.Text.Container4" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">40dp</item>
         <item name="android:orientation">vertical</item>
         <item name="android:layout_marginStart">10dp</item>
-        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
         <item name="android:layout_marginTop">6dp</item>
         <item name="android:layout_marginBottom">16dp</item>
     </style>
@@ -567,6 +566,7 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent.Container3" parent="">
+        <item name="android:minWidth">40dp</item>
         <item name="android:background">@drawable/usedesk_background_bubble_agent</item>
     </style>
 
@@ -587,6 +587,7 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Client.Container3" parent="">
+        <item name="android:minWidth">40dp</item>
         <item name="android:background">@drawable/usedesk_background_bubble_client</item>
     </style>
 

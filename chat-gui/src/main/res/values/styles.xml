@@ -493,8 +493,8 @@
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Container5" parent="">
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">136dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>

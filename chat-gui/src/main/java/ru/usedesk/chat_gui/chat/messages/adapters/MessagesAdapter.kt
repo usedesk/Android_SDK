@@ -7,10 +7,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.marginBottom
-import androidx.core.view.marginEnd
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updateMargins
+import androidx.core.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +37,7 @@ internal class MessagesAdapter(
     private val onUrlClick: (String) -> Unit,
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
     messagesDateFormat: String,
-    private val messageTimeFormat: String,
+    messageTimeFormat: String,
     private val adaptiveTextMessageTimePadding: Boolean,
     savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
@@ -57,6 +54,13 @@ internal class MessagesAdapter(
         .getStyleValues(R.attr.usedesk_chat_message_date_text)
     private val todayText = dateStyleValues.getString(R.attr.usedesk_text_1)
     private val yesterdayText = dateStyleValues.getString(R.attr.usedesk_text_2)
+
+    private val timeFormatText = timeFormat.format(Calendar.getInstance().apply {
+        set(Calendar.YEAR, 9999)
+        set(Calendar.HOUR, 23)
+        set(Calendar.MINUTE, 59)
+        set(Calendar.SECOND, 59)
+    }.time)
 
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
@@ -841,22 +845,26 @@ internal class MessagesAdapter(
     private fun applyAdaptivePadding(
         tvTime: TextView,
         content: View,
-        withHeight: Boolean = false
+        withIcon: Boolean = false
     ) {
         content.apply {
             val bounds = Rect()
             tvTime.paint.getTextBounds(
-                messageTimeFormat,
+                timeFormatText,
                 0,
-                messageTimeFormat.length,
+                timeFormatText.length,
                 bounds
             )
             (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
-                right = marginEnd + bounds.width() + if (withHeight) {
-                    bounds.height()
-                } else {
-                    0
-                }
+                right = tvTime.marginStart +
+                        tvTime.marginEnd +
+                        marginEnd +
+                        bounds.width() +
+                        if (withIcon) {
+                            bounds.height()
+                        } else {
+                            0
+                        }
             )
         }
     }

@@ -132,7 +132,7 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 supportFragmentManager.beginTransaction()
     .replace(
         R.id.container, 
-        UsedeskChatScreen.newInstance(customAgentName, rejectedFileTypes, chatConfiguration)
+        UsedeskChatScreen.newInstance(...)
     ).commit()
 ```
 
@@ -141,17 +141,20 @@ supportFragmentManager.beginTransaction()
 ```
 navController.navigate(
     R.id.action_configurationScreen_to_usedeskChatScreen,
-    UsedeskChatScreen.createBundle(customAgentName, rejectedFileTypes, chatConfiguration)
+    UsedeskChatScreen.createBundle(...)
 )
 ```
 
 Методы `newInstance` и `createBundle` принимают следующие аргументы:
 
-| Аргумент          | Тип                       |                                                              |
-| ----------------- | ------------------------- | ------------------------------------------------------------ |
-| customAgentName   | String?                   | Если задан, то все имена агентов в чате будут заменены на значение параметра. |
-| rejectedFileTypes | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
-| chatConfiguration | UsedeskChatConfiguration? | Если задан, то `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
+| Аргумент                        | Тип                       |                                                              |
+| ------------------------------- | ------------------------- | ------------------------------------------------------------ |
+| customAgentName                 | String?                   | Если задан, то все имена агентов в чате будут заменены на значение параметра. |
+| rejectedFileTypes               | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
+| chatConfiguration               | UsedeskChatConfiguration? | Если задан, то `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
+| messagesDateFormat              | String?                   | Если задан, то меняет формат одображения даты группы сообщений |
+| messageTimeFormat               | String?                   | Если задан, то меняет формат одображения времени сообщений |
+| adaptiveTextMessageTimePadding  | Boolean                   | При значении `true` сдвигает текст сообщений относительно времени |
 
 Для полноценной работы фрагмента необходимо:
 

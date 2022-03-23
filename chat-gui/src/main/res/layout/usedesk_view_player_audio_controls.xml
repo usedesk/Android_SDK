@@ -81,22 +81,4 @@
         app:layout_constraintStart_toEndOf="@+id/l_play"
         app:layout_goneMarginStart="2dp"
         tools:text="115:05" />
-
-    <TextView
-        android:id="@+id/tv_download"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="54dp"
-        android:layout_marginBottom="2dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/sf_ui_display_medium"
-        android:includeFontPadding="false"
-        android:text="@string/usedesk_download"
-        android:textColor="@color/usedesk_blue"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/exo_position" />
 </androidx.constraintlayout.widget.ConstraintLayout>

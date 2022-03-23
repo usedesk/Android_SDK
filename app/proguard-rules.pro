@@ -59,17 +59,19 @@
 -keepclassmembers,allowobfuscation class * {
   @com.google.gson.annotations.SerializedName <fields>;
 }
-
 ## Gson End
 
-## Common Start
--keepclassmembers enum ru.usedesk.** { *; }
-## Common End
+## common-sdk Start
+-keepclassmembers class ru.usedesk.common_sdk.api.entity.** { *; }
+## common-sdk End
 
 ## chat-sdk Start
+-keepclassmembers enum ru.usedesk.chat_sdk.entity.UsedeskFeedback { *; }
+-keepclassmembers class ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration { *; }
+-keepclassmembers class ru.usedesk.chat_sdk.entity.UsedeskFile { *; }
 -keepclassmembers class ru.usedesk.chat_sdk.data.repository.api.entity.** { *; }
--keepclassmembers class ru.usedesk.chat_sdk.entity.** { *; }
 -keepclassmembers class ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.** { *; }
+-keepclassmembers class ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository$NotSentMessage { *; }
 ## chat-sdk End
 
 ## knowledgebase-sdk Start

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.util.*
 
 internal class ApiFactory(
     private val gson: Gson,

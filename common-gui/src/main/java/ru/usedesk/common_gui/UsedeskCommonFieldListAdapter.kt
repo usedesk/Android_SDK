@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 
 class UsedeskCommonFieldListAdapter(
-        private val binding: Binding
+    private val binding: Binding
 ) {
     private val colorTitle = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
     private val colorRequired = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
@@ -29,7 +29,8 @@ class UsedeskCommonFieldListAdapter(
             ""
         }
 
-        val htmlTitle = String.format("<font color=#%s>%s</font>", colorTitle.toString(16), title) + tail
+        val htmlTitle =
+            String.format("<font color=#%s>%s</font>", colorTitle.toString(16), title) + tail
         binding.tvTitle.text = Html.fromHtml(htmlTitle)
     }
 

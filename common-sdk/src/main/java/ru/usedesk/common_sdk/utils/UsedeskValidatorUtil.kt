@@ -5,18 +5,22 @@ import java.util.regex.Pattern
 
 object UsedeskValidatorUtil {
     //Либо пустой, либо валидный
-    private fun isValid(text: String?,
-                        pattern: Pattern?,
-                        customRule: (String) -> Boolean = { true }): Boolean {
+    private fun isValid(
+        text: String?,
+        pattern: Pattern?,
+        customRule: (String) -> Boolean = { true }
+    ): Boolean {
         return text?.isEmpty() != false
                 || (pattern?.matcher(text)?.matches() != false
                 && customRule(text))
     }
 
     //Не пустой и валидный
-    private fun isValidNecessary(text: String?,
-                                 pattern: Pattern?,
-                                 customRule: (String) -> Boolean = { true }): Boolean {
+    private fun isValidNecessary(
+        text: String?,
+        pattern: Pattern?,
+        customRule: (String) -> Boolean = { true }
+    ): Boolean {
         return text?.isNotEmpty() == true
                 && pattern?.matcher(text)?.matches() != false
                 && customRule(text)

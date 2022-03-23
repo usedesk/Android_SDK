@@ -28,7 +28,7 @@ internal class MediaPlayerAdapter(
         fragment.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Video
-    ) { rootView, defaultStyleId ->
+    ) { rootView, _ ->
         rootView as PlayerView
     }
 
@@ -36,7 +36,7 @@ internal class MediaPlayerAdapter(
         fragment.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Audio
-    ) { rootView, defaultStyleId ->
+    ) { rootView, _ ->
         rootView as PlayerView
     }
 
@@ -91,12 +91,6 @@ internal class MediaPlayerAdapter(
         }
         videoBinding.ivDownload.visibility = visibleGone(downloadListener != null)
 
-        audioBinding.tvDownload.setOnClickListener {
-            val model = playerViewModel.modelLiveData.value
-            downloadListener?.onDownload(model.key, model.name)
-        }
-        audioBinding.tvDownload.visibility = visibleGone(downloadListener != null)
-
         videoBinding.fullscreenButton.setOnClickListener {
             playerViewModel.fullscreen()
         }
@@ -124,7 +118,7 @@ internal class MediaPlayerAdapter(
                             changeFullscreen(false)
                         }
                     }
-                }//Фулскрин обрабатываем только если не был обновлён videoKey
+                } //Фулскрин обрабатываем только если не был обновлён videoKey
                 else if (restored || old?.fullscreen != new.fullscreen) {
                     changeFullscreen(new.fullscreen)
                     if (restored) {
@@ -334,7 +328,6 @@ internal class MediaPlayerAdapter(
 
     private class AudioExoPlayerBinding(exoPlayerView: PlayerView) {
         val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
-        val tvDownload = exoPlayerView.findViewById<View>(R.id.tv_download)
     }
 
     private class MinimizeView(

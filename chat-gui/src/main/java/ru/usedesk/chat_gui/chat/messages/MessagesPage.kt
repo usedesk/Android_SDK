@@ -63,13 +63,15 @@ internal class MessagesPage : UsedeskFragment() {
             rejectedFileExtensions,
             _,
             messagesDateFormat,
-            messageTimeFormat ->
+            messageTimeFormat,
+            adaptiveTextMessageTimePadding ->
             init(
                 agentName,
                 rejectedFileExtensions ?: arrayOf(),
                 savedInstanceState,
                 messagesDateFormat,
-                messageTimeFormat
+                messageTimeFormat,
+                adaptiveTextMessageTimePadding
             )
         }
 
@@ -180,6 +182,7 @@ internal class MessagesPage : UsedeskFragment() {
         savedInstanceState: Bundle?,
         messagesDateFormat: String,
         messageTimeFormat: String,
+        adaptiveTextMessageTimePadding: Boolean
     ) {
         UsedeskChatSdk.init(requireContext())
 
@@ -201,11 +204,9 @@ internal class MessagesPage : UsedeskFragment() {
             viewLifecycleOwner,
             agentName,
             rejectedFileExtensions,
-            mediaPlayerAdapter,
-            {
+            mediaPlayerAdapter, {
                 findParent<IUsedeskOnFileClickListener>()?.onFileClick(it)
-            },
-            {
+            }, {
                 findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
                     ?: onUrlClick(it)
             }, {
@@ -213,6 +214,7 @@ internal class MessagesPage : UsedeskFragment() {
             },
             messagesDateFormat,
             messageTimeFormat,
+            adaptiveTextMessageTimePadding,
             savedInstanceState
         )
 

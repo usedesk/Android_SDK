@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-import ru.usedesk.chat_sdk.data.repository.api.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.*
 
 internal interface IApiRepository {

@@ -2,6 +2,7 @@ package ru.usedesk.common_gui
 
 import android.Manifest
 import android.net.Uri
+import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,7 +12,7 @@ import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
 
-    private var permissionCameraLauncher: ActivityResultLauncher<String>? = null
+    private var permissionCameraLauncher: PermissionLauncher? = null
     private var filesLauncher: ActivityResultLauncher<String>? = null
     private var cameraLauncher: ActivityResultLauncher<Uri>? = null
 
@@ -20,15 +21,11 @@ abstract class UsedeskFragment : Fragment() {
     fun registerCameraPermission(
         onGranted: () -> Unit
     ) {
-        permissionCameraLauncher = permissionCameraLauncher ?: registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            if (isGranted) {
-                onGranted()
-            } else {
-                showNoPermissions()
-            }
-        }
+        permissionCameraLauncher = PermissionLauncher(
+            this,
+            Manifest.permission.CAMERA,
+            onGranted
+        )
     }
 
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
@@ -48,7 +45,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun needCameraPermission() {
-        permissionCameraLauncher?.launch(Manifest.permission.CAMERA)
+        permissionCameraLauncher?.launch()
     }
 
     fun startFiles() {
@@ -64,23 +61,16 @@ abstract class UsedeskFragment : Fragment() {
         cameraLauncher?.launch(cameraUri)
     }
 
-    private fun showNoPermissions() {
-        val snackbarStyleId = UsedeskResourceManager.getResourceId(
-            R.style.Usedesk_Common_No_Permission_Snackbar
-        )
-        UsedeskResourceManager.StyleValues(
-            requireContext(),
-            snackbarStyleId
-        ).apply {
-            UsedeskSnackbar.create(
-                requireView(),
-                getColor(R.attr.usedesk_background_color_1),
-                getString(R.attr.usedesk_text_1),
-                getColor(R.attr.usedesk_text_color_1),
-                getString(R.attr.usedesk_text_2),
-                getColor(R.attr.usedesk_text_color_2)
-            ).show()
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        permissionCameraLauncher?.save(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        permissionCameraLauncher?.load(savedInstanceState)
     }
 
     override fun onDestroyView() {

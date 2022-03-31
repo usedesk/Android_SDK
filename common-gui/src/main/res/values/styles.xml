@@ -308,4 +308,10 @@
         <item name="usedesk_text_2">@string/usedesk_no_internet_text</item>
         <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Text.TextAppearance</item>
     </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Camera" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="usedesk_text_1" />
+        <item name="usedesk_text_2" />
+        <item name="usedesk_text_3" />
+    </style>
 </resources>

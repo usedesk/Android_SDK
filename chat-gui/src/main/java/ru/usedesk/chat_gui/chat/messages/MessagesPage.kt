@@ -173,6 +173,10 @@ internal class MessagesPage : UsedeskFragment() {
 
         messagesAdapter = null
 
+        attachmentDialog?.run {
+            setOnDismissListener(null)
+            dismiss()
+        }
         attachmentDialog = null
     }
 

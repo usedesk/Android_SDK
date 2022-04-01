@@ -27,6 +27,12 @@ object UsedeskResourceManager {
         private val defaultStyleId: Int
     ) {
 
+        fun findString(attrId: Int): String? {
+            return getValue(attrId) { attrs, index ->
+                attrs.getString(index)
+            }
+        }
+
         fun getString(attrId: Int): String {
             return getValue(attrId) { attrs, index ->
                 attrs.getStringOrThrow(index)

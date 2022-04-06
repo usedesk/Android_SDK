@@ -11,6 +11,7 @@
     <!--Chat Start-->
     <style name="Custom.Chat.Screen.Message.Text" parent="Usedesk.Chat.Screen.Message.Text">
         <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textColorHint">@color/usedesk_gray_3</item>
     </style>
 
     <style name="Custom.Chat.Screen.Messages.Page" parent="Usedesk.Chat.Screen.Messages.Page">

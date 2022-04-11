@@ -86,8 +86,8 @@ internal class AttachedFilesAdapter(
 
             showImage(
                 binding.ivPreview,
-                previewImageId,
                 usedeskFileInfo.uri.toString(),
+                previewImageId,
                 ignoreCache = true
             )
 

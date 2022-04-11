@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
@@ -65,6 +66,7 @@ internal class MessagesAdapter(
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
         recyclerView.apply {
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             layoutManager = this@MessagesAdapter.layoutManager
             adapter = this@MessagesAdapter
             setHasFixedSize(false)
@@ -74,15 +76,15 @@ internal class MessagesAdapter(
                     scrollBy(0, difBottom)
                 }
             }
-        }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy != 0) {
-                    updateToBottomButton()
-                    updateFloatingDate()
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (dy != 0) {
+                        updateToBottomButton()
+                        updateFloatingDate()
+                    }
                 }
-            }
-        })
+            })
+        }
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
             if (old?.chatItems != new.chatItems) {
                 onMessages(new.chatItems)
@@ -187,11 +189,24 @@ internal class MessagesAdapter(
         return visibleBottom >= contentHeight
     }
 
+
+    private fun ChatMessage.isIdEquals(otherMessage: ChatMessage): Boolean {
+        return (message.id == otherMessage.message.id) ||
+                (message is UsedeskMessageClient &&
+                        otherMessage.message is UsedeskMessageClient &&
+                        message.localId == otherMessage.message.localId)
+    }
+
     private fun onMessages(messages: List<ChatItem>) {
         val oldItems = items
         items = messages
 
         DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getChangePayload(
+                oldItemPosition: Int,
+                newItemPosition: Int
+            ) = oldItems[oldItemPosition]
+
             override fun getOldListSize() = oldItems.size
 
             override fun getNewListSize() = items.size
@@ -199,44 +214,44 @@ internal class MessagesAdapter(
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
-                return (old is ChatDate && new is ChatDate && old.calendar.timeInMillis == new.calendar.timeInMillis) ||
-                        (old is ChatMessage && new is ChatMessage && (old.message.id == new.message.id ||
-                                (old is UsedeskMessageClient &&
-                                        new is UsedeskMessageClient &&
-                                        old.localId == new.localId)))
+                if (old is ClientMessage && new is ClientMessage) {
+                    println()
+                }
+                val result = when (new) {
+                    is ChatDate -> old is ChatDate &&
+                            old.calendar.timeInMillis == new.calendar.timeInMillis
+                    is ChatMessage -> old is ChatMessage && old.isIdEquals(new)
+                }
+                if (!result && new is ClientMessage && old is ClientMessage) {
+                    val a = old.isIdEquals(new)
+                    println()
+                }
+                return result
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
-                if (old is ChatDate && new is ChatDate) {
-                    return old.calendar.timeInMillis == new.calendar.timeInMillis
-                } else if (old is ChatMessage && new is ChatMessage) {
-                    if ((oldItemPosition == oldListSize - 1) != (newItemPosition == newListSize - 1)) {
-                        return false
+                val result = when (new) {
+                    is ChatDate -> true
+                    is ChatMessage -> when {
+                        old !is ChatMessage -> false
+                        (oldItemPosition == oldListSize - 1) !=
+                                (newItemPosition == newListSize - 1) -> false
+                        (new.message as? UsedeskMessageText)?.text !=
+                                (old.message as? UsedeskMessageText)?.text -> false
+                        (new.message as? UsedeskMessageFile)?.file?.content !=
+                                (old.message as? UsedeskMessageFile)?.file?.content -> false
+                        (new.message as? UsedeskMessageClient)?.status !=
+                                (old.message as? UsedeskMessageClient)?.status -> false
+                        (new as? AgentMessage)?.showAvatar !=
+                                (old as? AgentMessage)?.showAvatar -> false
+                        (new as? AgentMessage)?.showName !=
+                                (old as? AgentMessage)?.showName -> false
+                        else -> true
                     }
-                    if (new is UsedeskMessageText &&
-                        old is UsedeskMessageText &&
-                        new.text != old.text
-                    ) {
-                        return false
-                    }
-                    if (new is UsedeskMessageFile &&
-                        old is UsedeskMessageFile &&
-                        new.file.content != old.file.content
-                    ) {
-                        return false
-                    }
-                    if (new is UsedeskMessageClient &&
-                        old is UsedeskMessageClient &&
-                        new.status != old.status
-                    ) {
-                        return false
-                    }
-                    return true
-                } else {
-                    return false
                 }
+                return result
             }
         }).dispatchUpdatesTo(this)
         if (messages.isNotEmpty() || stateRestorationPolicy != StateRestorationPolicy.ALLOW) {
@@ -429,10 +444,10 @@ internal class MessagesAdapter(
             chatItem: ChatItem,
             agentBinding: AgentBinding
         ) {
-            val messageAgent = (chatItem as ChatMessage).message as UsedeskMessageAgent
+            val messageAgent = (chatItem as AgentMessage).message as UsedeskMessageAgent
 
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
-            agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
+            agentBinding.tvName.visibility = visibleGone(chatItem.showName)
 
             val avatarImageId: Int
             val visibleState: Int
@@ -459,15 +474,12 @@ internal class MessagesAdapter(
                 }
             }
 
-            agentBinding.ivAvatar.visibility = if (!isSameAgent(messageAgent, position + 1)) {
+            agentBinding.ivAvatar.visibility = if (chatItem.showAvatar) {
                 visibleState
             } else {
                 invisibleState
             }
-
-            val lastOfGroup = position == items.size - 1 ||
-                    items.getOrNull(position + 1) is UsedeskMessageClient
-            agentBinding.vEmpty.visibility = visibleGone(lastOfGroup)
+            agentBinding.vEmpty.visibility = View.INVISIBLE
         }
 
         fun bindClient(
@@ -530,13 +542,6 @@ internal class MessagesAdapter(
             }
             vEmpty.visibility = visibleGone(last)
         }
-
-        private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
-            val anotherMessage = items.getOrNull(anotherPosition)
-            return anotherMessage is UsedeskMessageAgent
-                    && anotherMessage.avatar == messageAgent.avatar
-                    && anotherMessage.name == messageAgent.name
-        }
     }
 
     internal abstract inner class MessageTextViewHolder(
@@ -592,6 +597,8 @@ internal class MessagesAdapter(
         private val binding: MessageImageBinding
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
+        private var oldItem: ChatMessage? = null
+
         private val loadingImageId = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_image_preview_image)
             .getId(R.attr.usedesk_drawable_1)
@@ -602,25 +609,48 @@ internal class MessagesAdapter(
         }
 
         private fun bindImage(chatItem: ChatItem) {
-            clearImage(binding.ivPreview)
-            val messageFile = (chatItem as ChatMessage).message as UsedeskMessageFile
+            chatItem as ChatMessage
+            val messageFile = chatItem.message as UsedeskMessageFile
 
-            binding.ivPreview.setOnClickListener(null)
-            binding.ivError.setOnClickListener(null)
+            if (oldItem?.isIdEquals(chatItem) != true) {
+                clearImage(binding.ivPreview)
 
-            showImage(binding.ivPreview,
-                loadingImageId,
-                messageFile.file.content,
-                binding.pbLoading,
-                binding.ivError, {
-                    binding.ivPreview.setOnClickListener {
-                        onFileClick(messageFile.file)
-                    }
-                }, {
-                    binding.ivError.setOnClickListener {
-                        bindImage(chatItem)
-                    }
-                })
+                binding.ivPreview.setOnClickListener(null)
+                binding.ivError.setOnClickListener(null)
+
+                showImage(binding.ivPreview,
+                    messageFile.file.content,
+                    loadingImageId,
+                    binding.pbLoading,
+                    binding.ivError, {
+                        binding.ivPreview.setOnClickListener {
+                            onFileClick(messageFile.file)
+                        }
+                    }, {
+                        binding.ivError.setOnClickListener {
+                            bindImage(chatItem)
+                        }
+                    })
+            } else {
+                showImage(
+                    binding.ivPreview,
+                    messageFile.file.content,
+                    vError = binding.ivError,
+                    onSuccess = {
+                        binding.ivPreview.setOnClickListener {
+                            onFileClick(messageFile.file)
+                        }
+                    },
+                    onError = {
+                        binding.ivError.setOnClickListener {
+                            bindImage(chatItem)
+                        }
+                    },
+                    oldPlaceholder = true
+                )
+            }
+
+            oldItem = chatItem
         }
     }
 
@@ -947,7 +977,7 @@ internal class MessagesAdapter(
             super.bind(chatItem)
             bindAgent(chatItem, binding.agent)
 
-            val messageAgentText = (chatItem as ChatMessage).message as UsedeskMessageAgentText
+            val messageAgentText = (chatItem as AgentMessage).message as UsedeskMessageAgentText
             buttonsAdapter.update(messageAgentText.buttons)
 
             binding.content.rootView.layoutParams.apply {

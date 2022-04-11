@@ -40,13 +40,38 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     private fun convertMessages(messages: List<UsedeskMessage>): List<ChatItem> {
-        return messages.groupBy {
+        val newMessages = messages.groupBy {
             it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR]
         }.flatMap {
             sequenceOf(ChatDate(it.value.first().createdAt)) + it.value.map { message ->
-                ChatMessage(message)
+                if (message is UsedeskMessageClient) {
+                    ClientMessage(message)
+                } else {
+                    AgentMessage(message, showName = true, showAvatar = true)
+                }
+            }
+        }.toMutableList()
+
+        newMessages.forEachIndexed { index, item ->
+            if (item is AgentMessage) {
+                item.message as UsedeskMessageAgent
+                val previous = (newMessages.getOrNull(index - 1) as? AgentMessage)?.message
+                        as? UsedeskMessageAgent
+                val next = (newMessages.getOrNull(index + 1) as? AgentMessage)?.message
+                        as? UsedeskMessageAgent
+                newMessages[index] = AgentMessage(
+                    item.message,
+                    showName = previous?.isAgentsTheSame(item.message) != true,
+                    showAvatar = next?.isAgentsTheSame(item.message) != true
+                )
             }
         }
+
+        return newMessages
+    }
+
+    private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean {
+        return avatar == other.avatar && name == other.name
     }
 
     fun onMessageChanged(message: String) {
@@ -151,7 +176,17 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     internal sealed class ChatItem
 
-    class ChatMessage(
+    class ClientMessage(
+        message: UsedeskMessage
+    ) : ChatMessage(message)
+
+    class AgentMessage(
+        message: UsedeskMessage,
+        val showName: Boolean,
+        val showAvatar: Boolean
+    ) : ChatMessage(message)
+
+    open class ChatMessage(
         val message: UsedeskMessage
     ) : ChatItem()
 

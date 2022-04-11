@@ -59,19 +59,21 @@ internal class MessagesPage : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        findParent<UsedeskChatScreen>()?.getBundleArgs { agentName,
+        findParent<UsedeskChatScreen>()?.getBundleArgs { _,
+            agentName,
             rejectedFileExtensions,
-            _,
             messagesDateFormat,
             messageTimeFormat,
-            adaptiveTextMessageTimePadding ->
+            adaptiveTextMessageTimePadding,
+            groupAgentMessages ->
             init(
                 agentName,
                 rejectedFileExtensions ?: arrayOf(),
                 savedInstanceState,
                 messagesDateFormat,
                 messageTimeFormat,
-                adaptiveTextMessageTimePadding
+                adaptiveTextMessageTimePadding,
+                groupAgentMessages
             )
         }
 
@@ -186,8 +188,10 @@ internal class MessagesPage : UsedeskFragment() {
         savedInstanceState: Bundle?,
         messagesDateFormat: String,
         messageTimeFormat: String,
-        adaptiveTextMessageTimePadding: Boolean
+        adaptiveTextMessageTimePadding: Boolean,
+        groupAgentMessages: Boolean
     ) {
+        viewModel.groupAgentMessages = groupAgentMessages
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(

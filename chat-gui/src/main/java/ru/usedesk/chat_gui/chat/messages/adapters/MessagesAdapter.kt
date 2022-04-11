@@ -236,8 +236,7 @@ internal class MessagesAdapter(
                     is ChatDate -> true
                     is ChatMessage -> when {
                         old !is ChatMessage -> false
-                        (oldItemPosition == oldListSize - 1) !=
-                                (newItemPosition == newListSize - 1) -> false
+                        (new.isLastOfGroup == old.isLastOfGroup) -> false
                         (new.message as? UsedeskMessageText)?.text !=
                                 (old.message as? UsedeskMessageText)?.text -> false
                         (new.message as? UsedeskMessageFile)?.file?.content !=
@@ -486,9 +485,6 @@ internal class MessagesAdapter(
             chatItem: ChatItem,
             clientBinding: ClientBinding
         ) {
-            val position = items.indexOf(chatItem)
-            val lastOfGroup = position == items.size - 1 ||
-                    items.getOrNull(position + 1) is UsedeskMessageAgent
             val clientMessage = (chatItem as ChatMessage).message as UsedeskMessageClient
             val timeStyleValues = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
             val statusDrawableId =
@@ -527,7 +523,7 @@ internal class MessagesAdapter(
                         }
                     }
                 }
-                vEmpty.visibility = visibleGone(lastOfGroup)
+                vEmpty.visibility = visibleGone(chatItem.isLastOfGroup)
             }
         }
 

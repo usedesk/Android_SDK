@@ -250,7 +250,8 @@ class MainActivity : AppCompatActivity(),
             REJECTED_FILE_TYPES,
             chatConfiguration,
             messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
-            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null }
+            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null },
+            groupAgentMessages = configuration.groupAgentMessages
         )
     }
 

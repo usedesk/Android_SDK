@@ -178,6 +178,7 @@ class ConfigurationScreen : UsedeskFragment() {
                 else -> null
             },
             binding.switchCacheFiles.isChecked,
+            binding.switchGroupAgentMessages.isChecked,
             additionalFields,
             additionalNestedFields,
             binding.switchKb.isChecked,
@@ -206,6 +207,7 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etCustomTimeFormat.setText(configuration.messageTimeFormat)
         updateServiceValue(configuration.foregroundService)
         binding.switchCacheFiles.isChecked = configuration.cacheFiles
+        binding.switchGroupAgentMessages.isChecked = configuration.groupAgentMessages
         setAdditionalField(
             binding.etAdditionalField1Id,
             binding.etAdditionalField1Value,

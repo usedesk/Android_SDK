@@ -215,22 +215,17 @@ internal class ChatInteractor(
             }
             reconnectDisposable?.dispose()
             reconnectDisposable = null
-            token = if (!isStringEmpty(this.configuration.clientToken)) {
-                this.configuration.clientToken
-            } else {
-                userInfoRepository.getConfigurationNullable(configuration)?.clientToken
-            }
+            token = (configuration.clientToken
+                ?: userInfoRepository.getConfigurationNullable(configuration)?.clientToken)
+                ?.ifEmpty { null }
+
             apiRepository.connect(
-                this.configuration.urlChat,
+                configuration.urlChat,
                 token,
-                this.configuration,
+                configuration,
                 eventListener
             )
         }
-    }
-
-    private fun isStringEmpty(text: String?): Boolean {
-        return text?.isEmpty() != false
     }
 
     private fun onMessageUpdate(message: UsedeskMessage) {

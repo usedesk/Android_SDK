@@ -6,7 +6,7 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 @Parcelize
 data class UsedeskChatConfiguration @JvmOverloads constructor(
-    val urlChat: String,
+    val urlChat: String = "https://pubsubsec.usedesk.ru",
     val urlOfflineForm: String = "https://secure.usedesk.ru/",
     val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
     val companyId: String,

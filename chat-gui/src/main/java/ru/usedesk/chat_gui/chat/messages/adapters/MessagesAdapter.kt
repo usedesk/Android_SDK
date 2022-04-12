@@ -412,6 +412,26 @@ internal class MessagesAdapter(
         return rectParent.contains(rectItem)
     }
 
+    private fun getAdaptiveMargin(
+        tvTime: TextView,
+        content: View
+    ): Int {
+        content.apply {
+            val bounds = Rect()
+            tvTime.paint.getTextBounds(
+                timeFormatText,
+                0,
+                timeFormatText.length,
+                bounds
+            )
+            return tvTime.marginLeft +
+                    tvTime.marginRight +
+                    content.paddingRight +
+                    bounds.width() +
+                    bounds.height()
+        }
+    }
+
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
@@ -536,6 +556,23 @@ internal class MessagesAdapter(
         itemView: View,
         private val binding: MessageTextBinding
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+
+        init {
+            if (adaptiveTextMessageTimePadding) {
+                val adaptiveMargin = getAdaptiveMargin(
+                    binding.tvTime,
+                    binding.lContent
+                )
+                binding.lContent.run {
+                    setPadding(
+                        paddingLeft,
+                        paddingTop,
+                        adaptiveMargin,
+                        paddingBottom
+                    )
+                }
+            }
+        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -763,6 +800,19 @@ internal class MessagesAdapter(
             binding.stubProgress.visibility = View.VISIBLE
             binding.stubScrubber.visibility = View.VISIBLE
             binding.ivExoPause.visibility = View.INVISIBLE
+
+            val adaptiveMargin = getAdaptiveMargin(
+                binding.tvTime,
+                binding.tvDownload
+            )
+            binding.tvDownload.run {
+                setPadding(
+                    paddingLeft,
+                    paddingTop,
+                    adaptiveMargin,
+                    paddingBottom
+                )
+            }
         }
 
         override fun bind(chatItem: ChatItem) {
@@ -822,15 +872,6 @@ internal class MessagesAdapter(
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content) {
-        init {
-            if (adaptiveTextMessageTimePadding) {
-                applyAdaptivePadding(
-                    binding.content.tvTime,
-                    binding.content.lContent,
-                    true
-                )
-            }
-        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -865,43 +906,9 @@ internal class MessagesAdapter(
         }
     }
 
-    private fun applyAdaptivePadding(
-        tvTime: TextView,
-        content: View,
-        withIcon: Boolean = false
-    ) {
-        content.apply {
-            val bounds = Rect()
-            tvTime.paint.getTextBounds(
-                timeFormatText,
-                0,
-                timeFormatText.length,
-                bounds
-            )
-            (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
-                right = tvTime.marginStart +
-                        tvTime.marginEnd +
-                        marginEnd +
-                        bounds.width() +
-                        if (withIcon) {
-                            bounds.height()
-                        } else {
-                            0
-                        }
-            )
-        }
-    }
-
     internal inner class MessageAudioClientViewHolder(
         private val binding: MessageAudioClientBinding
     ) : MessageAudioViewHolder(binding.rootView, binding.content) {
-        init {
-            applyAdaptivePadding(
-                binding.content.tvTime,
-                binding.content.tvDownload,
-                true
-            )
-        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -939,15 +946,6 @@ internal class MessagesAdapter(
         private val thanksText = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
-
-        init {
-            if (adaptiveTextMessageTimePadding) {
-                applyAdaptivePadding(
-                    binding.content.tvTime,
-                    binding.content.lContent
-                )
-            }
-        }
 
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
             if (it.url.isNotEmpty()) {
@@ -1143,13 +1141,6 @@ internal class MessagesAdapter(
     internal inner class MessageAudioAgentViewHolder(
         private val binding: MessageAudioAgentBinding
     ) : MessageAudioViewHolder(binding.rootView, binding.content) {
-
-        init {
-            applyAdaptivePadding(
-                binding.content.tvTime,
-                binding.content.tvDownload
-            )
-        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)

@@ -214,19 +214,11 @@ internal class MessagesAdapter(
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
-                if (old is ClientMessage && new is ClientMessage) {
-                    println()
-                }
-                val result = when (new) {
+                return when (new) {
                     is ChatDate -> old is ChatDate &&
                             old.calendar.timeInMillis == new.calendar.timeInMillis
                     is ChatMessage -> old is ChatMessage && old.isIdEquals(new)
                 }
-                if (!result && new is ClientMessage && old is ClientMessage) {
-                    val a = old.isIdEquals(new)
-                    println()
-                }
-                return result
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

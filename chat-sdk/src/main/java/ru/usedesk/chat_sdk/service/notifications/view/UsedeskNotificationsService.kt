@@ -19,11 +19,15 @@ abstract class UsedeskNotificationsService : Service() {
     lateinit var notificationManager: NotificationManager
         private set
 
-    protected open val channelId = "newUsedeskMessages"
-    protected open val channelTitle = "Messages from operator"
-    protected open val fileMessage = "Sent the file"
-
     protected open val showCloseButton = false
+
+    protected open val channelId = "newUsedeskMessages"
+    protected open val channelTitle: String by lazy {
+        getString(R.string.usedesk_string_notification_channel_title)
+    }
+    protected open val fileMessage: String by lazy {
+        getString(R.string.usedesk_string_notification_file_message)
+    }
 
     override fun onCreate() {
         super.onCreate()

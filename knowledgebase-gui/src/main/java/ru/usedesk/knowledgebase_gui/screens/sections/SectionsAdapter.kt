@@ -90,8 +90,8 @@ internal class SectionsAdapter(
             binding.tvInitials.text = section.title
             section.thumbnail?.also {
                 showImage(binding.ivIcon,
-                    noThumbnailId,
                     it,
+                    noThumbnailId,
                     onSuccess = {
                         binding.tvInitials.text = ""
                     }

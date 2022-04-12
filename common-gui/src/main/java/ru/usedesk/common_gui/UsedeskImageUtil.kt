@@ -33,18 +33,20 @@ fun setImage(
 
 fun showImage(
     ivTarget: ImageView,
-    loadingId: Int,
     url: String,
+    loadingId: Int = 0,
     vLoading: View? = null,
     vError: View? = null,
     onSuccess: () -> Unit = {},
     onError: () -> Unit = {},
-    ignoreCache: Boolean = false
+    ignoreCache: Boolean = false,
+    oldPlaceholder: Boolean = false
 ) {
     showImageStatus(vLoading, true, vError, false)
 
     var glide = Glide.with(ivTarget.context)
         .load(url)
+        .listener(AppRequestListener(vLoading, vError, onSuccess, onError))
 
     glide = if (ignoreCache) {
         glide.skipMemoryCache(true)
@@ -59,13 +61,11 @@ fun showImage(
         glide.centerCrop()
     }
 
-    glide.listener(AppRequestListener(vLoading, vError, onSuccess, onError))
-        .apply {
-            if (loadingId != 0) {
-                placeholder(loadingId)
-            }
-        }
-        .into(ivTarget)
+    when {
+        loadingId != 0 -> glide.placeholder(loadingId)
+        oldPlaceholder -> glide.placeholder(ivTarget.drawable)
+        else -> glide
+    }.into(ivTarget)
 }
 
 fun clearImage(ivTarget: ImageView) {

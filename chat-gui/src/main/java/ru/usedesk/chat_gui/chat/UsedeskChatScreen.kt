@@ -65,7 +65,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
         }
 
-        getBundleArgs { _, _, chatConfiguration, _, _, _ ->
+        getBundleArgs { chatConfiguration, _, _, _, _, _, _ ->
             if (chatConfiguration != null) {
                 UsedeskChatSdk.setConfiguration(chatConfiguration)
             }
@@ -77,21 +77,23 @@ class UsedeskChatScreen : UsedeskFragment() {
 
     internal fun getBundleArgs(
         onArgs: (
+            UsedeskChatConfiguration?,
             String?,
             Array<String>?,
-            UsedeskChatConfiguration?,
             String,
             String,
+            Boolean,
             Boolean
         ) -> Unit
     ) {
         onArgs(
+            argsGetParcelable(CHAT_CONFIGURATION_KEY),
             argsGetString(AGENT_NAME_KEY),
             argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
-            argsGetParcelable(CHAT_CONFIGURATION_KEY),
             argsGetString(MESSAGES_DATE_FORMAT_KEY, MESSAGES_DATE_FORMAT_DEFAULT),
             argsGetString(MESSAGE_TIME_FORMAT_KEY, MESSAGE_TIME_FORMAT_DEFAULT),
-            argsGetBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, false)
+            argsGetBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, false),
+            argsGetBoolean(GROUP_AGENT_MESSAGES, true)
         )
     }
 
@@ -180,6 +182,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         private const val MESSAGE_TIME_FORMAT_KEY = "messageTimeFormatKey"
         private const val ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY =
             "adaptiveTextMessageTimePaddingKey"
+        private const val GROUP_AGENT_MESSAGES = "groupAgentMessages"
 
         private const val MESSAGES_DATE_FORMAT_DEFAULT = "dd MMMM"
         private const val MESSAGE_TIME_FORMAT_DEFAULT = "HH:mm"
@@ -192,7 +195,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             usedeskChatConfiguration: UsedeskChatConfiguration? = null,
             messagesDateFormat: String? = null,
             messageTimeFormat: String? = null,
-            adaptiveTextMessageTimePadding: Boolean = false
+            adaptiveTextMessageTimePadding: Boolean = false,
+            groupAgentMessages: Boolean = true
         ): UsedeskChatScreen {
             return UsedeskChatScreen().apply {
                 arguments = createBundle(
@@ -214,7 +218,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             usedeskChatConfiguration: UsedeskChatConfiguration? = null,
             messagesDateFormat: String? = null,
             messageTimeFormat: String? = null,
-            adaptiveTextMessageTimePadding: Boolean = false
+            adaptiveTextMessageTimePadding: Boolean = false,
+            groupAgentMessages: Boolean = true
         ): Bundle {
             return Bundle().apply {
                 if (agentName != null) {
@@ -230,6 +235,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 putString(MESSAGES_DATE_FORMAT_KEY, messagesDateFormat)
                 putString(MESSAGE_TIME_FORMAT_KEY, messageTimeFormat)
                 putBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, adaptiveTextMessageTimePadding)
+                putBoolean(GROUP_AGENT_MESSAGES, groupAgentMessages)
             }
         }
     }

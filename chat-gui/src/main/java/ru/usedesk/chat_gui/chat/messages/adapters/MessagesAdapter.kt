@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.makeramen.roundedimageview.RoundedImageView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
@@ -65,6 +66,7 @@ internal class MessagesAdapter(
     init {
         stateRestorationPolicy = StateRestorationPolicy.PREVENT
         recyclerView.apply {
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
             layoutManager = this@MessagesAdapter.layoutManager
             adapter = this@MessagesAdapter
             setHasFixedSize(false)
@@ -74,15 +76,15 @@ internal class MessagesAdapter(
                     scrollBy(0, difBottom)
                 }
             }
-        }
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy != 0) {
-                    updateToBottomButton()
-                    updateFloatingDate()
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (dy != 0) {
+                        updateToBottomButton()
+                        updateFloatingDate()
+                    }
                 }
-            }
-        })
+            })
+        }
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
             if (old?.chatItems != new.chatItems) {
                 onMessages(new.chatItems)
@@ -96,73 +98,78 @@ internal class MessagesAdapter(
         if (items.isNotEmpty()) {
             dateBinding.tvDate.post {
                 val firstIndex = layoutManager.findFirstVisibleItemPosition()
-                val lastIndex = layoutManager.findLastVisibleItemPosition()
+                if (firstIndex >= 0) {
+                    val lastIndex = layoutManager.findLastVisibleItemPosition()
 
-                val itemsSequence = items.asSequence()
-                val visibleItems = itemsSequence.drop(firstIndex)
-                    .take(lastIndex - firstIndex)
-                val visibleDateItems = visibleItems.filterIsInstance<ChatDate>()
-                val topDateItem = visibleDateItems.firstOrNull()
-                val topDateIndex = if (topDateItem != null) {
-                    items.indexOf(topDateItem)
-                } else {
-                    -1
-                }
-
-                visibleDateItems.map {
-                    items.indexOf(it)
-                }.mapNotNull {
-                    recyclerView.findViewHolderForAdapterPosition(it)
-                }.filterIsInstance<DateViewHolder>()
-                    .forEach {
-                        it.binding.rootView.visibility = View.VISIBLE
-                    }
-
-                val floatingDateRect = Rect()
-                (dateBinding.rootView.parent as View).getGlobalVisibleRect(floatingDateRect)
-                floatingDateRect.bottom = floatingDateRect.top + dateBinding.rootView.measuredHeight
-
-                dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                    updateMargins(
-                        top = 0
-                    )
-                }
-                recyclerView.apply {
-                    val topDateViewHolder =
-                        findViewHolderForAdapterPosition(topDateIndex) as? DateViewHolder
-
-                    if (topDateViewHolder != null) {
-                        val topDateRect = Rect().also {
-                            topDateViewHolder.binding.rootView.getGlobalVisibleRect(it)
-                        }
-                        if (topDateRect.bottom > floatingDateRect.bottom &&
-                            topDateRect.top < floatingDateRect.bottom
-                        ) {
-                            val dif = floatingDateRect.bottom - topDateRect.top
-                            dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                updateMargins(
-                                    top = -dif
-                                )
-                            }
-                        } else if (topDateRect.bottom <= floatingDateRect.bottom) {
-                            topDateViewHolder.binding.rootView.visibility = View.INVISIBLE
-                            dateBinding.tvDate.text = topDateViewHolder.binding.tvDate.text
-                            dateBinding.rootView.visibility = View.VISIBLE
-                            return@post
-                        }
-                    }
-
-                    val notVisibleDateItem = itemsSequence
-                        .take(firstIndex)
-                        .filterIsInstance<ChatDate>()
-                        .lastOrNull()
-
-                    if (notVisibleDateItem != null) {
-                        dateBinding.tvDate.text = getDateText(notVisibleDateItem)
-                        dateBinding.rootView.visibility = View.VISIBLE
+                    val itemsSequence = items.asSequence()
+                    val visibleItems = itemsSequence.drop(firstIndex)
+                        .take(lastIndex - firstIndex)
+                    val visibleDateItems = visibleItems.filterIsInstance<ChatDate>()
+                    val topDateItem = visibleDateItems.firstOrNull()
+                    val topDateIndex = if (topDateItem != null) {
+                        items.indexOf(topDateItem)
                     } else {
-                        dateBinding.rootView.visibility = View.INVISIBLE
+                        -1
                     }
+
+                    visibleDateItems.map {
+                        items.indexOf(it)
+                    }.mapNotNull {
+                        recyclerView.findViewHolderForAdapterPosition(it)
+                    }.filterIsInstance<DateViewHolder>()
+                        .forEach {
+                            it.binding.rootView.visibility = View.VISIBLE
+                        }
+
+                    val floatingDateRect = Rect()
+                    (dateBinding.rootView.parent as View).getGlobalVisibleRect(floatingDateRect)
+                    floatingDateRect.bottom =
+                        floatingDateRect.top + dateBinding.rootView.measuredHeight
+
+                    dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        updateMargins(
+                            top = 0
+                        )
+                    }
+                    recyclerView.apply {
+                        val topDateViewHolder =
+                            findViewHolderForAdapterPosition(topDateIndex) as? DateViewHolder
+
+                        if (topDateViewHolder != null) {
+                            val topDateRect = Rect().also {
+                                topDateViewHolder.binding.rootView.getGlobalVisibleRect(it)
+                            }
+                            if (topDateRect.bottom > floatingDateRect.bottom &&
+                                topDateRect.top < floatingDateRect.bottom
+                            ) {
+                                val dif = floatingDateRect.bottom - topDateRect.top
+                                dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                    updateMargins(
+                                        top = -dif
+                                    )
+                                }
+                            } else if (topDateRect.bottom <= floatingDateRect.bottom) {
+                                topDateViewHolder.binding.rootView.visibility = View.INVISIBLE
+                                dateBinding.tvDate.text = topDateViewHolder.binding.tvDate.text
+                                dateBinding.rootView.visibility = View.VISIBLE
+                                return@post
+                            }
+                        }
+
+                        val notVisibleDateItem = itemsSequence
+                            .take(firstIndex)
+                            .filterIsInstance<ChatDate>()
+                            .lastOrNull()
+
+                        if (notVisibleDateItem != null) {
+                            dateBinding.tvDate.text = getDateText(notVisibleDateItem)
+                            dateBinding.rootView.visibility = View.VISIBLE
+                        } else {
+                            dateBinding.rootView.visibility = View.INVISIBLE
+                        }
+                    }
+                } else {
+                    dateBinding.rootView.visibility = View.INVISIBLE
                 }
             }
         }
@@ -182,11 +189,24 @@ internal class MessagesAdapter(
         return visibleBottom >= contentHeight
     }
 
+
+    private fun ChatMessage.isIdEquals(otherMessage: ChatMessage): Boolean {
+        return (message.id == otherMessage.message.id) ||
+                (message is UsedeskMessageClient &&
+                        otherMessage.message is UsedeskMessageClient &&
+                        message.localId == otherMessage.message.localId)
+    }
+
     private fun onMessages(messages: List<ChatItem>) {
         val oldItems = items
         items = messages
 
         DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun getChangePayload(
+                oldItemPosition: Int,
+                newItemPosition: Int
+            ) = oldItems[oldItemPosition]
+
             override fun getOldListSize() = oldItems.size
 
             override fun getNewListSize() = items.size
@@ -194,44 +214,35 @@ internal class MessagesAdapter(
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
-                return (old is ChatDate && new is ChatDate && old.calendar.timeInMillis == new.calendar.timeInMillis) ||
-                        (old is ChatMessage && new is ChatMessage && (old.message.id == new.message.id ||
-                                (old is UsedeskMessageClient &&
-                                        new is UsedeskMessageClient &&
-                                        old.localId == new.localId)))
+                return when (new) {
+                    is ChatDate -> old is ChatDate &&
+                            old.calendar.timeInMillis == new.calendar.timeInMillis
+                    is ChatMessage -> old is ChatMessage && old.isIdEquals(new)
+                }
             }
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
-                if (old is ChatDate && new is ChatDate) {
-                    return old.calendar.timeInMillis == new.calendar.timeInMillis
-                } else if (old is ChatMessage && new is ChatMessage) {
-                    if ((oldItemPosition == oldListSize - 1) != (newItemPosition == newListSize - 1)) {
-                        return false
+                val result = when (new) {
+                    is ChatDate -> true
+                    is ChatMessage -> when {
+                        old !is ChatMessage -> false
+                        (new.isLastOfGroup == old.isLastOfGroup) -> false
+                        (new.message as? UsedeskMessageText)?.text !=
+                                (old.message as? UsedeskMessageText)?.text -> false
+                        (new.message as? UsedeskMessageFile)?.file?.content !=
+                                (old.message as? UsedeskMessageFile)?.file?.content -> false
+                        (new.message as? UsedeskMessageClient)?.status !=
+                                (old.message as? UsedeskMessageClient)?.status -> false
+                        (new as? AgentMessage)?.showAvatar !=
+                                (old as? AgentMessage)?.showAvatar -> false
+                        (new as? AgentMessage)?.showName !=
+                                (old as? AgentMessage)?.showName -> false
+                        else -> true
                     }
-                    if (new is UsedeskMessageText &&
-                        old is UsedeskMessageText &&
-                        new.text != old.text
-                    ) {
-                        return false
-                    }
-                    if (new is UsedeskMessageFile &&
-                        old is UsedeskMessageFile &&
-                        new.file.content != old.file.content
-                    ) {
-                        return false
-                    }
-                    if (new is UsedeskMessageClient &&
-                        old is UsedeskMessageClient &&
-                        new.status != old.status
-                    ) {
-                        return false
-                    }
-                    return true
-                } else {
-                    return false
                 }
+                return result
             }
         }).dispatchUpdatesTo(this)
         if (messages.isNotEmpty() || stateRestorationPolicy != StateRestorationPolicy.ALLOW) {
@@ -401,6 +412,26 @@ internal class MessagesAdapter(
         return rectParent.contains(rectItem)
     }
 
+    private fun getAdaptiveMargin(
+        tvTime: TextView,
+        content: View
+    ): Int {
+        content.apply {
+            val bounds = Rect()
+            tvTime.paint.getTextBounds(
+                timeFormatText,
+                0,
+                timeFormatText.length,
+                bounds
+            )
+            return tvTime.marginLeft +
+                    tvTime.marginRight +
+                    content.paddingRight +
+                    bounds.width() +
+                    bounds.height()
+        }
+    }
+
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
@@ -424,10 +455,10 @@ internal class MessagesAdapter(
             chatItem: ChatItem,
             agentBinding: AgentBinding
         ) {
-            val messageAgent = (chatItem as ChatMessage).message as UsedeskMessageAgent
+            val messageAgent = (chatItem as AgentMessage).message as UsedeskMessageAgent
 
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
-            agentBinding.tvName.visibility = visibleGone(!isSameAgent(messageAgent, position - 1))
+            agentBinding.tvName.visibility = visibleGone(chatItem.showName)
 
             val avatarImageId: Int
             val visibleState: Int
@@ -454,24 +485,18 @@ internal class MessagesAdapter(
                 }
             }
 
-            agentBinding.ivAvatar.visibility = if (!isSameAgent(messageAgent, position + 1)) {
+            agentBinding.ivAvatar.visibility = if (chatItem.showAvatar) {
                 visibleState
             } else {
                 invisibleState
             }
-
-            val lastOfGroup = position == items.size - 1 ||
-                    items.getOrNull(position + 1) is UsedeskMessageClient
-            agentBinding.vEmpty.visibility = visibleGone(lastOfGroup)
+            agentBinding.vEmpty.visibility = View.INVISIBLE
         }
 
         fun bindClient(
             chatItem: ChatItem,
             clientBinding: ClientBinding
         ) {
-            val position = items.indexOf(chatItem)
-            val lastOfGroup = position == items.size - 1 ||
-                    items.getOrNull(position + 1) is UsedeskMessageAgent
             val clientMessage = (chatItem as ChatMessage).message as UsedeskMessageClient
             val timeStyleValues = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
             val statusDrawableId =
@@ -510,7 +535,7 @@ internal class MessagesAdapter(
                         }
                     }
                 }
-                vEmpty.visibility = visibleGone(lastOfGroup)
+                vEmpty.visibility = visibleGone(chatItem.isLastOfGroup)
             }
         }
 
@@ -525,19 +550,29 @@ internal class MessagesAdapter(
             }
             vEmpty.visibility = visibleGone(last)
         }
-
-        private fun isSameAgent(messageAgent: UsedeskMessageAgent, anotherPosition: Int): Boolean {
-            val anotherMessage = items.getOrNull(anotherPosition)
-            return anotherMessage is UsedeskMessageAgent
-                    && anotherMessage.avatar == messageAgent.avatar
-                    && anotherMessage.name == messageAgent.name
-        }
     }
 
     internal abstract inner class MessageTextViewHolder(
         itemView: View,
         private val binding: MessageTextBinding
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+
+        init {
+            if (adaptiveTextMessageTimePadding) {
+                val adaptiveMargin = getAdaptiveMargin(
+                    binding.tvTime,
+                    binding.lContent
+                )
+                binding.lContent.run {
+                    setPadding(
+                        paddingLeft,
+                        paddingTop,
+                        adaptiveMargin,
+                        paddingBottom
+                    )
+                }
+            }
+        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -587,6 +622,8 @@ internal class MessagesAdapter(
         private val binding: MessageImageBinding
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
+        private var oldItem: ChatMessage? = null
+
         private val loadingImageId = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_image_preview_image)
             .getId(R.attr.usedesk_drawable_1)
@@ -597,25 +634,48 @@ internal class MessagesAdapter(
         }
 
         private fun bindImage(chatItem: ChatItem) {
-            clearImage(binding.ivPreview)
-            val messageFile = (chatItem as ChatMessage).message as UsedeskMessageFile
+            chatItem as ChatMessage
+            val messageFile = chatItem.message as UsedeskMessageFile
 
-            binding.ivPreview.setOnClickListener(null)
-            binding.ivError.setOnClickListener(null)
+            if (oldItem?.isIdEquals(chatItem) != true) {
+                clearImage(binding.ivPreview)
 
-            showImage(binding.ivPreview,
-                loadingImageId,
-                messageFile.file.content,
-                binding.pbLoading,
-                binding.ivError, {
-                    binding.ivPreview.setOnClickListener {
-                        onFileClick(messageFile.file)
-                    }
-                }, {
-                    binding.ivError.setOnClickListener {
-                        bindImage(chatItem)
-                    }
-                })
+                binding.ivPreview.setOnClickListener(null)
+                binding.ivError.setOnClickListener(null)
+
+                showImage(binding.ivPreview,
+                    messageFile.file.content,
+                    loadingImageId,
+                    binding.pbLoading,
+                    binding.ivError, {
+                        binding.ivPreview.setOnClickListener {
+                            onFileClick(messageFile.file)
+                        }
+                    }, {
+                        binding.ivError.setOnClickListener {
+                            bindImage(chatItem)
+                        }
+                    })
+            } else {
+                showImage(
+                    binding.ivPreview,
+                    messageFile.file.content,
+                    vError = binding.ivError,
+                    onSuccess = {
+                        binding.ivPreview.setOnClickListener {
+                            onFileClick(messageFile.file)
+                        }
+                    },
+                    onError = {
+                        binding.ivError.setOnClickListener {
+                            bindImage(chatItem)
+                        }
+                    },
+                    oldPlaceholder = true
+                )
+            }
+
+            oldItem = chatItem
         }
     }
 
@@ -740,6 +800,19 @@ internal class MessagesAdapter(
             binding.stubProgress.visibility = View.VISIBLE
             binding.stubScrubber.visibility = View.VISIBLE
             binding.ivExoPause.visibility = View.INVISIBLE
+
+            val adaptiveMargin = getAdaptiveMargin(
+                binding.tvTime,
+                binding.tvDownload
+            )
+            binding.tvDownload.run {
+                setPadding(
+                    paddingLeft,
+                    paddingTop,
+                    adaptiveMargin,
+                    paddingBottom
+                )
+            }
         }
 
         override fun bind(chatItem: ChatItem) {
@@ -799,15 +872,6 @@ internal class MessagesAdapter(
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content) {
-        init {
-            if (adaptiveTextMessageTimePadding) {
-                applyAdaptivePadding(
-                    binding.content.tvTime,
-                    binding.content.lContent,
-                    true
-                )
-            }
-        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -842,43 +906,9 @@ internal class MessagesAdapter(
         }
     }
 
-    private fun applyAdaptivePadding(
-        tvTime: TextView,
-        content: View,
-        withIcon: Boolean = false
-    ) {
-        content.apply {
-            val bounds = Rect()
-            tvTime.paint.getTextBounds(
-                timeFormatText,
-                0,
-                timeFormatText.length,
-                bounds
-            )
-            (layoutParams as ViewGroup.MarginLayoutParams).updateMargins(
-                right = tvTime.marginStart +
-                        tvTime.marginEnd +
-                        marginEnd +
-                        bounds.width() +
-                        if (withIcon) {
-                            bounds.height()
-                        } else {
-                            0
-                        }
-            )
-        }
-    }
-
     internal inner class MessageAudioClientViewHolder(
         private val binding: MessageAudioClientBinding
     ) : MessageAudioViewHolder(binding.rootView, binding.content) {
-        init {
-            applyAdaptivePadding(
-                binding.content.tvTime,
-                binding.content.tvDownload,
-                true
-            )
-        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -917,15 +947,6 @@ internal class MessagesAdapter(
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
 
-        init {
-            if (adaptiveTextMessageTimePadding) {
-                applyAdaptivePadding(
-                    binding.content.tvTime,
-                    binding.content.lContent
-                )
-            }
-        }
-
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
             if (it.url.isNotEmpty()) {
                 onUrlClick(it.url)
@@ -942,7 +963,7 @@ internal class MessagesAdapter(
             super.bind(chatItem)
             bindAgent(chatItem, binding.agent)
 
-            val messageAgentText = (chatItem as ChatMessage).message as UsedeskMessageAgentText
+            val messageAgentText = (chatItem as AgentMessage).message as UsedeskMessageAgentText
             buttonsAdapter.update(messageAgentText.buttons)
 
             binding.content.rootView.layoutParams.apply {
@@ -1120,13 +1141,6 @@ internal class MessagesAdapter(
     internal inner class MessageAudioAgentViewHolder(
         private val binding: MessageAudioAgentBinding
     ) : MessageAudioViewHolder(binding.rootView, binding.content) {
-
-        init {
-            applyAdaptivePadding(
-                binding.content.tvTime,
-                binding.content.tvDownload
-            )
-        }
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)

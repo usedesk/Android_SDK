@@ -73,8 +73,7 @@ class ConfigurationViewModel : ViewModel() {
         ).validate()
         return ConfigurationValidation(
             chatValidation,
-            knowledgeBaseValidation,
-            configuration.withKb
+            knowledgeBaseValidation
         )
     }
 

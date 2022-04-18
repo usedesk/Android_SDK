@@ -171,6 +171,7 @@ internal class ChatInteractor(
 
         @Synchronized
         override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
+            sendAdditionalFieldsIfNeeded()
             this@ChatInteractor.onMessagesNew(newMessages, false)
         }
 
@@ -215,22 +216,17 @@ internal class ChatInteractor(
             }
             reconnectDisposable?.dispose()
             reconnectDisposable = null
-            token = if (!isStringEmpty(this.configuration.clientToken)) {
-                this.configuration.clientToken
-            } else {
-                userInfoRepository.getConfigurationNullable(configuration)?.clientToken
-            }
+            token = (configuration.clientToken
+                ?: userInfoRepository.getConfigurationNullable(configuration)?.clientToken)
+                ?.ifEmpty { null }
+
             apiRepository.connect(
-                this.configuration.urlChat,
+                configuration.urlChat,
                 token,
-                this.configuration,
+                configuration,
                 eventListener
             )
         }
-    }
-
-    private fun isStringEmpty(text: String?): Boolean {
-        return text?.isEmpty() != false
     }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
@@ -326,7 +322,6 @@ internal class ChatInteractor(
 
     private fun sendText(sendingMessage: UsedeskMessageClientText) {
         try {
-            sendAdditionalFieldsIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
@@ -340,17 +335,19 @@ internal class ChatInteractor(
             if (configuration.additionalFields.isNotEmpty() ||
                 configuration.additionalNestedFields.isNotEmpty()
             ) {
-                try {
-                    apiRepository.send(
-                        token,
-                        configuration,
-                        configuration.additionalFields,
-                        configuration.additionalNestedFields
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    additionalFieldsNeeded = true
-                    throw e
+                ioScope.launch {
+                    try {
+                        apiRepository.send(
+                            token,
+                            configuration,
+                            configuration.additionalFields,
+                            configuration.additionalNestedFields
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        additionalFieldsNeeded = true
+                        exceptionSubject.onNext(e)
+                    }
                 }
             }
         }
@@ -380,7 +377,6 @@ internal class ChatInteractor(
     private fun sendFile(sendingMessage: UsedeskMessageFile) {
         sendingMessage as UsedeskMessageClient
         try {
-            sendAdditionalFieldsIfNeeded()
             sendCached(sendingMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(sendingMessage)
@@ -673,7 +669,6 @@ internal class ChatInteractor(
             })
 
             eventListener.onMessagesReceived(sendingMessages)
-            sendAdditionalFieldsIfNeeded()
 
             jobsMutex.withLock {
                 jobs.addAll(sendingMessages.mapNotNull { msg ->

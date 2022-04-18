@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.11.6)
+# Android Usedesk SDK (v3.11.8)
 
 ### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
 
@@ -79,12 +79,12 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
-| urlChat \* | String | Адрес сервера Чата |
+| urlChat \* | String | Адрес сервера Чата. Стандартное значение `https://pubsubsec.usedesk.ru` |
 | urlOfflineForm \* | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
 | urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
 | companyId \* | String | Идентификатор компании |
 | channelId \* | String | Идентификатор канала |
-| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе. Указав null библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. Для первого входа указывается null, для последующих - полученный с сервера токен |
+| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе. Указав `null` библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. Указав `""` сохранённый токен использоваться не будет |
 | clientEmail | String? | Почта клиента |
 | clientName | String? | Имя клиента |
 | clientNote | String? | Заметка о клиенте |
@@ -150,11 +150,12 @@ navController.navigate(
 | Аргумент                        | Тип                       |                                                              |
 | ------------------------------- | ------------------------- | ------------------------------------------------------------ |
 | customAgentName                 | String?                   | Если задан, то все имена агентов в чате будут заменены на значение параметра. |
-| rejectedFileTypes               | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
+| rejectedFileExtensions          | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
 | chatConfiguration               | UsedeskChatConfiguration? | Если задан, то `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
 | messagesDateFormat              | String?                   | Если задан, то меняет формат одображения даты группы сообщений |
 | messageTimeFormat               | String?                   | Если задан, то меняет формат одображения времени сообщений |
 | adaptiveTextMessageTimePadding  | Boolean                   | При значении `true` сдвигает текст сообщений относительно времени |
+| groupAgentMessages              | Boolean                   | При значении `true` группирует сообщения от одного агента |
 
 Для полноценной работы фрагмента необходимо:
 
@@ -173,6 +174,7 @@ override fun onBackPressed() {
 - Для привязки жизненного цикла ViewModel к родителю необходимо расширить
   интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
   .
+
 - Расширить
   интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt)
   родителем, переопределив метод `onFileClick`, например:

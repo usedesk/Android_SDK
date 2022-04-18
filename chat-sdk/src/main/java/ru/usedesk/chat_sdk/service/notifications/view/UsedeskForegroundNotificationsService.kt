@@ -12,6 +12,11 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
     override val showCloseButton = true
 
     protected abstract val serviceClass: Class<*>
+    protected abstract val foregroundId: Int
+
+    protected open val notificationTitle: String by lazy {
+        getString(R.string.usedesk_string_chat_with_support)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -22,8 +27,6 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
         stopForeground(true)
         startForeground(foregroundId, notification)
     }
-
-    protected abstract val foregroundId: Int
 
     override fun getClosePendingIntent(): PendingIntent? {
         return PendingIntent.getService(
@@ -37,10 +40,9 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
     }
 
     protected open fun createStartNotification(): Notification {
-        val title = "Чат с оператором"
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_email)
-            .setContentTitle(title)
+            .setContentTitle(notificationTitle)
             .setContentIntent(getContentPendingIntent())
             .setDeleteIntent(getDeletePendingIntent())
             .addAction(

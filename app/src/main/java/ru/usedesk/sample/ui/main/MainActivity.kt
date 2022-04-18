@@ -246,11 +246,12 @@ class MainActivity : AppCompatActivity(),
     private fun createChatScreenBundle(configuration: Configuration): Bundle {
         val chatConfiguration = configuration.toChatConfiguration()
         return UsedeskChatScreen.createBundle(
-            configuration.customAgentName,
+            configuration.customAgentName.ifEmpty { null },
             REJECTED_FILE_TYPES,
             chatConfiguration,
             messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
-            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null }
+            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null },
+            groupAgentMessages = configuration.groupAgentMessages
         )
     }
 

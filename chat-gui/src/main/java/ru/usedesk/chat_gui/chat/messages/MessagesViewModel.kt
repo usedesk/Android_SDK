@@ -18,6 +18,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     private var messages: List<UsedeskMessage> = listOf()
 
     val configuration = UsedeskChatSdk.requireConfiguration()
+    var groupAgentMessages: Boolean = true
 
     init {
         setModel { model ->
@@ -40,13 +41,42 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     private fun convertMessages(messages: List<UsedeskMessage>): List<ChatItem> {
-        return messages.groupBy {
+        val newMessages = messages.groupBy {
             it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR]
         }.flatMap {
-            sequenceOf(ChatDate(it.value.first().createdAt)) + it.value.map { message ->
-                ChatMessage(message)
+            sequenceOf(ChatDate(it.value.first().createdAt)) + it.value.mapIndexed { i, message ->
+                val lastOfGroup = it.value.size - 1 == i
+                if (message is UsedeskMessageClient) {
+                    ClientMessage(message, lastOfGroup)
+                } else {
+                    AgentMessage(message, lastOfGroup, showName = true, showAvatar = true)
+                }
+            }
+        }.toMutableList()
+
+        if (groupAgentMessages) {
+            newMessages.forEachIndexed { index, item ->
+                if (item is AgentMessage) {
+                    item.message as UsedeskMessageAgent
+                    val previous = (newMessages.getOrNull(index - 1) as? AgentMessage)?.message
+                            as? UsedeskMessageAgent
+                    val next = (newMessages.getOrNull(index + 1) as? AgentMessage)?.message
+                            as? UsedeskMessageAgent
+                    newMessages[index] = AgentMessage(
+                        item.message,
+                        item.isLastOfGroup,
+                        showName = previous?.isAgentsTheSame(item.message) != true,
+                        showAvatar = next?.isAgentsTheSame(item.message) != true
+                    )
+                }
             }
         }
+
+        return newMessages
+    }
+
+    private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean {
+        return avatar == other.avatar && name == other.name
     }
 
     fun onMessageChanged(message: String) {
@@ -151,8 +181,21 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     internal sealed class ChatItem
 
-    class ChatMessage(
-        val message: UsedeskMessage
+    class ClientMessage(
+        message: UsedeskMessage,
+        isLastOfGroup: Boolean
+    ) : ChatMessage(message, isLastOfGroup)
+
+    class AgentMessage(
+        message: UsedeskMessage,
+        isLastOfGroup: Boolean,
+        val showName: Boolean,
+        val showAvatar: Boolean
+    ) : ChatMessage(message, isLastOfGroup)
+
+    open class ChatMessage(
+        val message: UsedeskMessage,
+        val isLastOfGroup: Boolean
     ) : ChatItem()
 
     class ChatDate(

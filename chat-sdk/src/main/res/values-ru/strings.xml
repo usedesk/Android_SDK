@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="usedesk_close">@string/usedesk_string_close</string>
+    <string name="usedesk_notification_channel_title">@string/usedesk_string_notification_channel_title</string>
+    <string name="usedesk_notification_file_message">@string/usedesk_string_notification_file_message</string>
+    <string name="usedesk_chat_with_support">@string/usedesk_string_chat_with_support</string>
+
     <string name="usedesk_string_close">Закрыть</string>
+    <string name="usedesk_string_notification_channel_title">Сообщения от поддержки</string>
+    <string name="usedesk_string_notification_file_message">Файл</string>
+    <string name="usedesk_string_chat_with_support">Чат с поддержкой</string>
 </resources>

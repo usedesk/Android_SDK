@@ -329,6 +329,15 @@
                     android:text="@string/foreground_cache_files_hint"
                     android:textSize="18sp" />
 
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_group_agent_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:padding="14dp"
+                    android:text="@string/group_agent_messages_hint"
+                    android:textSize="18sp" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

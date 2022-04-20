@@ -25,6 +25,7 @@
     <string name="service_type_simple">Simple service</string>
     <string name="service_type_foreground">Foreground service</string>
     <string name="foreground_cache_files_hint">Cache Message Files</string>
+    <string name="adaptive_time_padding">Adaptive Time Padding</string>
     <string name="group_agent_messages_hint">Group Agent Messages</string>
     <string name="kb_base_hint">With KnowledgeBase</string>
     <string name="kb_support_button">With KnowledgeBase Support Button</string>

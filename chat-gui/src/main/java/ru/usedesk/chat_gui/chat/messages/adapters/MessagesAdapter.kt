@@ -414,7 +414,8 @@ internal class MessagesAdapter(
 
     private fun getAdaptiveMargin(
         tvTime: TextView,
-        content: View
+        content: View,
+        withIcon: Boolean
     ): Int {
         content.apply {
             val bounds = Rect()
@@ -428,7 +429,11 @@ internal class MessagesAdapter(
                     tvTime.marginRight +
                     content.paddingRight +
                     bounds.width() +
-                    bounds.height()
+                    if (withIcon) {
+                        bounds.height()
+                    } else {
+                        0
+                    }
         }
     }
 
@@ -554,14 +559,16 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageTextViewHolder(
         itemView: View,
-        private val binding: MessageTextBinding
+        private val binding: MessageTextBinding,
+        isClient: Boolean
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         init {
             if (adaptiveTextMessageTimePadding) {
                 val adaptiveMargin = getAdaptiveMargin(
                     binding.tvTime,
-                    binding.lContent
+                    binding.lContent,
+                    isClient
                 )
                 binding.lContent.run {
                     setPadding(
@@ -781,7 +788,8 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageAudioViewHolder(
         itemView: View,
-        private val binding: MessageAudioBinding
+        private val binding: MessageAudioBinding,
+        isClient: Boolean
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
 
         private var usedeskFile = UsedeskFile("", "", "", "")
@@ -803,7 +811,8 @@ internal class MessagesAdapter(
 
             val adaptiveMargin = getAdaptiveMargin(
                 binding.tvTime,
-                binding.tvDownload
+                binding.tvDownload,
+                isClient
             )
             binding.tvDownload.run {
                 setPadding(
@@ -871,7 +880,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
-    ) : MessageTextViewHolder(binding.rootView, binding.content) {
+    ) : MessageTextViewHolder(binding.rootView, binding.content, true) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -908,7 +917,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageAudioClientViewHolder(
         private val binding: MessageAudioClientBinding
-    ) : MessageAudioViewHolder(binding.rootView, binding.content) {
+    ) : MessageAudioViewHolder(binding.rootView, binding.content, true) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -935,7 +944,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageTextAgentViewHolder(
         private val binding: MessageTextAgentBinding
-    ) : MessageTextViewHolder(binding.rootView, binding.content) {
+    ) : MessageTextViewHolder(binding.rootView, binding.content, false) {
 
         private val goodStyleValues = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
@@ -1140,7 +1149,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageAudioAgentViewHolder(
         private val binding: MessageAudioAgentBinding
-    ) : MessageAudioViewHolder(binding.rootView, binding.content) {
+    ) : MessageAudioViewHolder(binding.rootView, binding.content, false) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)

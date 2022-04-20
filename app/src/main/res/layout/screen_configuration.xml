@@ -330,6 +330,15 @@
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/adaptive_time_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:padding="14dp"
+                    android:text="@string/adaptive_time_padding"
+                    android:textSize="18sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_group_agent_messages"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

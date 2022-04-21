@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
 import android.view.Gravity
@@ -24,6 +25,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessage.Type
 import ru.usedesk.common_gui.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.max
 
 
 internal class MessagesAdapter(
@@ -412,26 +414,6 @@ internal class MessagesAdapter(
         return rectParent.contains(rectItem)
     }
 
-    private fun getAdaptiveMargin(
-        tvTime: TextView,
-        content: View
-    ): Int {
-        content.apply {
-            val bounds = Rect()
-            tvTime.paint.getTextBounds(
-                timeFormatText,
-                0,
-                timeFormatText.length,
-                bounds
-            )
-            return tvTime.marginLeft +
-                    tvTime.marginRight +
-                    content.paddingRight +
-                    bounds.width() +
-                    bounds.height()
-        }
-    }
-
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
@@ -442,8 +424,55 @@ internal class MessagesAdapter(
     internal abstract inner class MessageViewHolder(
         itemView: View,
         private val tvTime: TextView,
-        private val styleValues: UsedeskResourceManager.StyleValues
+        private val styleValues: UsedeskResourceManager.StyleValues,
+        private val isClient: Boolean
     ) : BaseViewHolder(itemView) {
+
+        private val sendingDrawable: Drawable? = getDrawableIcon(R.attr.usedesk_drawable_1)
+        private val successfullyDrawable: Drawable? = getDrawableIcon(R.attr.usedesk_drawable_2)
+
+        private fun getDrawableIcon(attrId: Int): Drawable? {
+            val id = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
+                .getIdOrZero(attrId)
+            return if (id != 0) {
+                tvTime.resources.getDrawable(id)
+            } else {
+                null
+            }
+        }
+
+        protected fun getAdaptiveMargin(
+            tvTime: TextView,
+            content: View
+        ): Int {
+            content.apply {
+                val bounds = Rect()
+                tvTime.paint.getTextBounds(
+                    timeFormatText,
+                    0,
+                    timeFormatText.length,
+                    bounds
+                )
+                val iconWidth = if (isClient) {
+                    val maxWidth = max(
+                        sendingDrawable?.intrinsicWidth ?: 0,
+                        successfullyDrawable?.intrinsicWidth ?: 0
+                    )
+                    if (maxWidth > 0) {
+                        maxWidth + tvTime.compoundDrawablePadding
+                    } else {
+                        0
+                    }
+                } else {
+                    0
+                }
+                return tvTime.marginLeft +
+                        tvTime.marginRight +
+                        content.paddingRight +
+                        bounds.width() +
+                        iconWidth
+            }
+        }
 
         override fun bind(chatItem: ChatItem) {
             chatItem as ChatMessage
@@ -498,19 +527,16 @@ internal class MessagesAdapter(
             clientBinding: ClientBinding
         ) {
             val clientMessage = (chatItem as ChatMessage).message as UsedeskMessageClient
-            val timeStyleValues = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
-            val statusDrawableId =
-                if (clientMessage.status == UsedeskMessageClient.Status.SUCCESSFULLY_SENT) {
-                    timeStyleValues.getId(R.attr.usedesk_drawable_2)
-                } else {
-                    timeStyleValues.getId(R.attr.usedesk_drawable_1)
-                }
+            val statusDrawable = when (clientMessage.status) {
+                UsedeskMessageClient.Status.SUCCESSFULLY_SENT -> successfullyDrawable
+                else -> sendingDrawable
+            }
 
-            tvTime.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                0,
-                0,
-                statusDrawableId,
-                0
+            tvTime.setCompoundDrawablesWithIntrinsicBounds(
+                null,
+                null,
+                statusDrawable,
+                null
             )
 
             clientBinding.apply {
@@ -554,8 +580,9 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageTextViewHolder(
         itemView: View,
-        private val binding: MessageTextBinding
-    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+        private val binding: MessageTextBinding,
+        isClient: Boolean
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         init {
             if (adaptiveTextMessageTimePadding) {
@@ -588,8 +615,9 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageFileViewHolder(
         itemView: View,
-        private val binding: MessageFileBinding
-    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+        private val binding: MessageFileBinding,
+        isClient: Boolean
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         private val textSizeStyleValues =
             binding.styleValues.getStyleValues(R.attr.usedesk_chat_message_file_size_text)
@@ -619,8 +647,9 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageImageViewHolder(
         itemView: View,
-        private val binding: MessageImageBinding
-    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+        private val binding: MessageImageBinding,
+        isClient: Boolean
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         private var oldItem: ChatMessage? = null
 
@@ -681,8 +710,9 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageVideoViewHolder(
         itemView: View,
-        private val binding: MessageVideoBinding
-    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+        private val binding: MessageVideoBinding,
+        isClient: Boolean
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         private lateinit var usedeskFile: UsedeskFile
         private var lastVisible = false
@@ -781,8 +811,9 @@ internal class MessagesAdapter(
 
     internal abstract inner class MessageAudioViewHolder(
         itemView: View,
-        private val binding: MessageAudioBinding
-    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues) {
+        private val binding: MessageAudioBinding,
+        isClient: Boolean
+    ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         private var usedeskFile = UsedeskFile("", "", "", "")
         private var lastVisible = false
@@ -871,7 +902,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageTextClientViewHolder(
         private val binding: MessageTextClientBinding
-    ) : MessageTextViewHolder(binding.rootView, binding.content) {
+    ) : MessageTextViewHolder(binding.rootView, binding.content, true) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -881,7 +912,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageFileClientViewHolder(
         private val binding: MessageFileClientBinding
-    ) : MessageFileViewHolder(binding.rootView, binding.content) {
+    ) : MessageFileViewHolder(binding.rootView, binding.content, true) {
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
@@ -890,7 +921,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageImageClientViewHolder(
         private val binding: MessageImageClientBinding
-    ) : MessageImageViewHolder(binding.rootView, binding.content) {
+    ) : MessageImageViewHolder(binding.rootView, binding.content, true) {
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
@@ -899,7 +930,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageVideoClientViewHolder(
         private val binding: MessageVideoClientBinding
-    ) : MessageVideoViewHolder(binding.rootView, binding.content) {
+    ) : MessageVideoViewHolder(binding.rootView, binding.content, true) {
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
@@ -908,7 +939,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageAudioClientViewHolder(
         private val binding: MessageAudioClientBinding
-    ) : MessageAudioViewHolder(binding.rootView, binding.content) {
+    ) : MessageAudioViewHolder(binding.rootView, binding.content, true) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -935,7 +966,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageTextAgentViewHolder(
         private val binding: MessageTextAgentBinding
-    ) : MessageTextViewHolder(binding.rootView, binding.content) {
+    ) : MessageTextViewHolder(binding.rootView, binding.content, false) {
 
         private val goodStyleValues = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
@@ -1110,7 +1141,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageFileAgentViewHolder(
         private val binding: MessageFileAgentBinding
-    ) : MessageFileViewHolder(binding.rootView, binding.content) {
+    ) : MessageFileViewHolder(binding.rootView, binding.content, false) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -1120,7 +1151,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageImageAgentViewHolder(
         private val binding: MessageImageAgentBinding
-    ) : MessageImageViewHolder(binding.rootView, binding.content) {
+    ) : MessageImageViewHolder(binding.rootView, binding.content, false) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -1130,7 +1161,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageVideoAgentViewHolder(
         private val binding: MessageVideoAgentBinding
-    ) : MessageVideoViewHolder(binding.rootView, binding.content) {
+    ) : MessageVideoViewHolder(binding.rootView, binding.content, false) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -1140,7 +1171,7 @@ internal class MessagesAdapter(
 
     internal inner class MessageAudioAgentViewHolder(
         private val binding: MessageAudioAgentBinding
-    ) : MessageAudioViewHolder(binding.rootView, binding.content) {
+    ) : MessageAudioViewHolder(binding.rootView, binding.content, false) {
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)

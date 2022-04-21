@@ -245,13 +245,30 @@ class MainActivity : AppCompatActivity(),
 
     private fun createChatScreenBundle(configuration: Configuration): Bundle {
         val chatConfiguration = configuration.toChatConfiguration()
+        if (configuration.adaptiveTimePadding) {
+            mapOf(
+                R.style.Usedesk_Chat_Message_Text_Agent to R.style.Custom_Chat_Message_Text_Agent,
+                R.style.Usedesk_Chat_Message_Text_Client to R.style.Custom_Chat_Message_Text_Client
+            )
+        } else {
+            mapOf(
+                R.style.Usedesk_Chat_Message_Text_Agent to R.style.Usedesk_Chat_Message_Text_Agent,
+                R.style.Usedesk_Chat_Message_Text_Client to R.style.Usedesk_Chat_Message_Text_Client
+            )
+        }.forEach {
+            UsedeskResourceManager.replaceResourceId(
+                it.key,
+                it.value
+            )
+        }
         return UsedeskChatScreen.createBundle(
             configuration.customAgentName.ifEmpty { null },
             REJECTED_FILE_TYPES,
             chatConfiguration,
             messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
             messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null },
-            groupAgentMessages = configuration.groupAgentMessages
+            groupAgentMessages = configuration.groupAgentMessages,
+            adaptiveTextMessageTimePadding = configuration.adaptiveTimePadding
         )
     }
 

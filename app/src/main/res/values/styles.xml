@@ -7,6 +7,21 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--Adaptive Padding Start-->
+    <style name="Custom.Chat.Message.Text.Container4" parent="Usedesk.Chat.Message.Text.Container4">
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+
+    <style name="Custom.Chat.Message.Text.Client" parent="Usedesk.Chat.Message.Text.Client">
+        <item name="usedesk_common_container_4">@style/Custom.Chat.Message.Text.Container4</item>
+    </style>
+
+    <style name="Custom.Chat.Message.Text.Agent" parent="Usedesk.Chat.Message.Text.Agent">
+        <item name="usedesk_common_container_4">@style/Custom.Chat.Message.Text.Container4</item>
+    </style>
+    <!--Adaptive Padding End-->
+
     <!--Theme.MaterialComponents Start-->
     <!--Chat Start-->
     <style name="Custom.Chat.Screen.Message.Text" parent="Usedesk.Chat.Screen.Message.Text">

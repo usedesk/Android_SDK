@@ -458,7 +458,6 @@
 
     <style name="Usedesk.Chat.Message.Audio.Client.Container3" parent="">
         <item name="android:background">@drawable/usedesk_background_bubble_client</item>
-        <item name="android:padding">2dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Image.Client">
@@ -926,11 +925,13 @@
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
-        <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>
-        <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully</item>
+        <item name="android:drawablePadding">2dp</item>
+        <item name="android:gravity">bottom</item>
         <item name="android:singleLine">true</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Dark.Text.TextAppearance</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Time.Light.Text.TextAppearance" parent="">

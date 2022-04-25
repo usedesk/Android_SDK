@@ -309,7 +309,23 @@
         <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Text.TextAppearance</item>
     </style>
 
-    <style name="Usedesk.Common.Alert.Dialog.Camera" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="Usedesk.Common.Alert.Dialog.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/usedesk_red</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Body" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/usedesk_black_3</item>
+    </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Title" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/usedesk_black_3</item>
+    </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Camera" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/Usedesk.Common.Alert.Dialog.Button</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Usedesk.Common.Alert.Dialog.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Usedesk.Common.Alert.Dialog.Body</item>
         <item name="usedesk_text_1" />
         <item name="usedesk_text_2" />
         <item name="usedesk_text_3" />

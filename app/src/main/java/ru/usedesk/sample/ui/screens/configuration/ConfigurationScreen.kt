@@ -38,8 +38,6 @@ class ConfigurationScreen : UsedeskFragment() {
             false
         )
 
-        onNewConfiguration(viewModel.configurationLiveData.value)
-
         viewModel.configurationValidation.observe(viewLifecycleOwner)
         {
             it?.let {
@@ -97,6 +95,12 @@ class ConfigurationScreen : UsedeskFragment() {
         initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        onNewConfiguration(viewModel.configurationLiveData.value)
     }
 
     private fun updateServiceValue(foregroundService: Boolean?) {

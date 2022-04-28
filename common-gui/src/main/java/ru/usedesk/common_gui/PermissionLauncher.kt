@@ -43,8 +43,6 @@ internal class PermissionLauncher(
                 showNoPermissions()
             }
         }
-
-        showDescriptionDialog()
     }
 
     private fun showNoPermissions() {

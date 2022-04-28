@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="BaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="@style/BaseTheme">
         <item name="android:statusBarColor">@color/usedesk_white_2</item>
     </style>
 
+    <style name="AppTheme.MaterialComponents" parent="@style/BaseTheme.MaterialComponents">
+        <item name="android:statusBarColor">@color/usedesk_white_2</item>
+    </style>
 </resources>

@@ -1311,4 +1311,20 @@
         <item name="android:text">@string/usedesk_send</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text.TextAppearance</item>
     </style>
+
+    <!--Theme.MaterialComponents Start-->
+    <style name="Chat.Screen.Message.Text.MaterialComponents" parent="Usedesk.Chat.Screen.Message.Text">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textColorHint">@color/usedesk_gray_3</item>
+    </style>
+
+    <style name="Chat.Screen.Messages.Page.MaterialComponents" parent="Usedesk.Chat.Screen.Messages.Page">
+        <item name="usedesk_chat_screen_message_edit_text">@style/Chat.Screen.Message.Text.MaterialComponents</item>
+    </style>
+
+    <style name="Chat.Screen.Offline.Form.Page.MaterialComponents" parent="Usedesk.Chat.Screen.Offline.Form.Page">
+        <item name="usedesk_chat_screen_offline_form_text_field">@style/Common.Text.Field.MaterialComponents</item>
+        <item name="usedesk_chat_screen_offline_form_list_field">@style/Common.List.Field.MaterialComponents</item>
+    </style>
+    <!--Theme.MaterialComponents End-->
 </resources>

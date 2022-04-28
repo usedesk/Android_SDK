@@ -2,8 +2,12 @@ package ru.usedesk.sample.ui.screens.configuration
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.common_gui.UsedeskLiveData
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
@@ -13,18 +17,22 @@ import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
 
 class ConfigurationViewModel : ViewModel() {
     private val configurationRepository = ServiceLocator.configurationRepository
-    private val disposables = mutableListOf<Disposable>()
 
-    val configurationLiveData = MutableLiveData<Configuration?>()
+    val configurationLiveData = UsedeskLiveData(
+        configurationRepository.getConfigurationFlow().value
+    )
     val configurationValidation = MutableLiveData<ConfigurationValidation?>()
     val goToSdkEvent = MutableLiveData<UsedeskEvent<Any?>?>()
     val avatarLiveData = MutableLiveData<String?>()
 
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
     init {
-        disposables.add(configurationRepository.getConfigurationObservable().subscribe {
-            configurationLiveData.postValue(it)
-        })
-        configurationRepository.getConfiguration().subscribe()
+        mainScope.launch {
+            configurationRepository.getConfigurationFlow().collect {
+                configurationLiveData.value = it
+            }
+        }
     }
 
     fun onGoSdkClick(configuration: Configuration) {
@@ -35,7 +43,6 @@ class ConfigurationViewModel : ViewModel() {
         ) {
             this.configurationLiveData.postValue(configuration)
             configurationRepository.setConfiguration(configuration)
-                .subscribe()
             goToSdkEvent.postValue(UsedeskSingleLifeEvent(null))
         }
     }
@@ -79,8 +86,16 @@ class ConfigurationViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        disposables.forEach {
-            it.dispose()
+
+        mainScope.cancel()
+    }
+
+    fun isMaterialComponentsSwitched(configuration: Configuration): Boolean {
+        return if (configuration.materialComponents != configurationLiveData.value.materialComponents) {
+            configurationRepository.setConfiguration(configuration)
+            true
+        } else {
+            false
         }
     }
 }

@@ -838,7 +838,9 @@ internal class ChatInteractor(
 
     private fun onChatInited(chatInited: ChatInited) {
         this.token = chatInited.token
-        clientTokenSubject.onNext(chatInited.token)
+        if (configuration.clientToken != chatInited.token) {
+            clientTokenSubject.onNext(chatInited.token)
+        }
 
         val oldConfiguration = userInfoRepository.getConfigurationNullable(configuration)
 

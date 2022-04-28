@@ -309,9 +309,65 @@
         <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Text.TextAppearance</item>
     </style>
 
-    <style name="Usedesk.Common.Alert.Dialog.Camera" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="Usedesk.Common.Alert.Dialog.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/usedesk_red</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Body" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/usedesk_black_3</item>
+    </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Title" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/usedesk_black_3</item>
+    </style>
+
+    <style name="Usedesk.Common.Alert.Dialog.Camera" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/Usedesk.Common.Alert.Dialog.Button</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Usedesk.Common.Alert.Dialog.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Usedesk.Common.Alert.Dialog.Body</item>
         <item name="usedesk_text_1" />
         <item name="usedesk_text_2" />
         <item name="usedesk_text_3" />
     </style>
+
+    <!--Theme.MaterialComponents Start-->
+    <style name="Common.Field.Text.InputLayout.MaterialComponents" parent="Usedesk.Common.Field.Text.InputLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:textColorHint">@color/usedesk_gray_3</item>
+        <item name="hintTextColor">@color/usedesk_red</item>
+        <item name="boxBackgroundColor">@color/usedesk_white_1</item>
+        <item name="colorControlActivated">@color/usedesk_black_2</item>
+        <item name="boxStrokeColor">@color/usedesk_box_stroke_color_material</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+    </style>
+
+    <style name="Common.Divider.MaterialComponents" parent="Usedesk.Common.Divider">
+        <item name="android:layout_height">0dp</item>
+    </style>
+
+    <style name="Common.Field.Text.EditText.MaterialComponents" parent="Usedesk.Common.Field.Text.EditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:paddingTop">30dp</item>
+    </style>
+
+    <style name="Common.Text.Field.MaterialComponents" parent="Usedesk.Common.Text.Field">
+        <item name="usedesk_common_field_text_input_layout">@style/Common.Field.Text.InputLayout.MaterialComponents</item>
+        <item name="theme">@style/Common.Field.Text.InputLayout.MaterialComponents</item>
+        <item name="usedesk_common_field_text_edit_text">@style/Common.Field.Text.EditText.MaterialComponents</item>
+        <item name="usedesk_common_divider">@style/Common.Divider.MaterialComponents</item>
+    </style>
+
+    <style name="Common.List.Field.MaterialComponents" parent="Usedesk.Common.List.Field">
+        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
+    </style>
+    <!--Theme.MaterialComponents End-->
 </resources>

@@ -713,4 +713,22 @@
         <item name="android:textAppearance">@style/Usedesk.KnowledgeBase.Article.Content.Page.Rating.Title.Text.TextAppearance</item>
     </style>
 
+    <!--Theme.MaterialComponents Start-->
+    <style name="KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme.MaterialComponents" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme">
+        <item name="boxBackgroundColor">@color/usedesk_white_1</item>
+        <item name="colorControlActivated">@color/usedesk_green</item>
+        <item name="colorControlNormal">@color/usedesk_green</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+    </style>
+
+    <style name="KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.MaterialComponents." parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text">
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="theme">@style/KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme.MaterialComponents</item>
+    </style>
+
+    <style name="KnowledgeBase.Article.Content.Page.Item.MaterialComponents" parent="Usedesk.KnowledgeBase.Article.Content.Page.Item">
+        <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.MaterialComponents.</item>
+    </style>
+    <!--Theme.MaterialComponents End-->
 </resources>

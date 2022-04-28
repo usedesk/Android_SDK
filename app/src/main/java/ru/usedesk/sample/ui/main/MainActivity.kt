@@ -61,6 +61,28 @@ class MainActivity : AppCompatActivity(),
     private var permissionDownloadResult: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val materialComponents = viewModel.configurationLiveData.value.materialComponents
+        if (materialComponents) {
+            mapOf(
+                R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents,
+                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item to R.style.KnowledgeBase_Article_Content_Page_Item_MaterialComponents
+            )
+        } else {
+            listOf(
+                R.style.Usedesk_Chat_Screen_Messages_Page,
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page,
+                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item
+            ).associateWith { it }
+        }.forEach {
+            UsedeskResourceManager.replaceResourceId(it.key, it.value)
+        }
+        val themeId = if (materialComponents) {
+            R.style.AppTheme_MaterialComponents
+        } else {
+            R.style.AppTheme
+        }
+        setTheme(themeId)
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         StrictMode.setVmPolicy(VmPolicy.Builder().build())

@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.*
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screens.article.ArticlePageViewModel
 import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
@@ -169,11 +170,16 @@ internal class ArticleItem : UsedeskFragment() {
     private fun onArticleContent(articleContent: UsedeskArticleContent) {
         binding.wvContent.run {
             webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
+                override fun onPageFinished(webView: WebView?, url: String?) {
+                    super.onPageFinished(webView, url)
 
                     showQuestion(articleContent.id)
                 }
+
+                override fun shouldOverrideUrlLoading(
+                    view: WebView,
+                    url: String
+                ) = findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(url) == true
             }
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
                 loadData(articleContent.text, "text/html; charset=utf-8", "UTF-8")

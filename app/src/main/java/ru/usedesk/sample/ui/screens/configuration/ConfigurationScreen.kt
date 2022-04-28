@@ -38,24 +38,20 @@ class ConfigurationScreen : UsedeskFragment() {
             false
         )
 
-        viewModel.configurationLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                onNewConfiguration(it)
-                viewModel.configurationLiveData.removeObservers(viewLifecycleOwner)
-            }
-        }
-        viewModel.configurationValidation.observe(viewLifecycleOwner) {
+        viewModel.configurationValidation.observe(viewLifecycleOwner)
+        {
             it?.let {
                 onNewConfigurationValidation(it)
             }
         }
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner) {
+        viewModel.goToSdkEvent.observe(viewLifecycleOwner)
+        {
             it?.let {
                 onGoToSdkEvent(it)
             }
         }
         binding.btnGoToSdk.setOnClickListener {
-            onGoToSdk()
+            viewModel.onGoSdkClick(getConfiguration())
         }
         binding.tvServiceType.setOnClickListener {
             PopupMenu(requireContext(), binding.tvServiceType).apply {
@@ -73,6 +69,12 @@ class ConfigurationScreen : UsedeskFragment() {
                     true
                 }
                 show()
+            }
+        }
+        binding.switchMaterialComponents.setOnCheckedChangeListener { _, _ ->
+            if (viewModel.isMaterialComponentsSwitched(getConfiguration())) {
+                requireActivity().finish()
+                startActivity(requireActivity().intent)
             }
         }
         try {
@@ -95,6 +97,12 @@ class ConfigurationScreen : UsedeskFragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        onNewConfiguration(viewModel.configurationLiveData.value)
+    }
+
     private fun updateServiceValue(foregroundService: Boolean?) {
         binding.tvServiceType.text = getString(R.string.service_type_title) + ": " + getString(
             when (foregroundService) {
@@ -114,10 +122,6 @@ class ConfigurationScreen : UsedeskFragment() {
         event.process {
             (activity as IOnGoToSdkListener?)?.goToSdk()
         }
-    }
-
-    private fun onGoToSdk() {
-        viewModel.onGoSdkClick(getConfiguration())
     }
 
     private fun getConfiguration(): Configuration {
@@ -151,6 +155,7 @@ class ConfigurationScreen : UsedeskFragment() {
             listOf(nestedFields)
         }
         return Configuration(
+            binding.switchMaterialComponents.isChecked,
             binding.etUrlChat.text.toString(),
             binding.etUrlOfflineForm.text.toString(),
             binding.etUrlToSendFile.text.toString(),
@@ -189,6 +194,7 @@ class ConfigurationScreen : UsedeskFragment() {
     }
 
     private fun onNewConfiguration(configuration: Configuration) {
+        binding.switchMaterialComponents.isChecked = configuration.materialComponents
         binding.etUrlChat.setText(configuration.urlChat)
         binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
         binding.etUrlToSendFile.setText(configuration.urlToSendFile)

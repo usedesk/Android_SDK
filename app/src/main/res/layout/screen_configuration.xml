@@ -57,6 +57,15 @@
                     android:text="@string/common"
                     android:textSize="20sp" />
 
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_material_components"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:padding="14dp"
+                    android:text="@string/material_components_theme_hint"
+                    android:textSize="18sp" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_email"
                     android:layout_width="match_parent"

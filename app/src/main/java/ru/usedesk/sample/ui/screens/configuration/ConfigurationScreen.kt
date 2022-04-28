@@ -38,24 +38,22 @@ class ConfigurationScreen : UsedeskFragment() {
             false
         )
 
-        viewModel.configurationLiveData.observe(viewLifecycleOwner) {
-            it?.let {
-                onNewConfiguration(it)
-                viewModel.configurationLiveData.removeObservers(viewLifecycleOwner)
-            }
-        }
-        viewModel.configurationValidation.observe(viewLifecycleOwner) {
+        onNewConfiguration(viewModel.configurationLiveData.value)
+
+        viewModel.configurationValidation.observe(viewLifecycleOwner)
+        {
             it?.let {
                 onNewConfigurationValidation(it)
             }
         }
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner) {
+        viewModel.goToSdkEvent.observe(viewLifecycleOwner)
+        {
             it?.let {
                 onGoToSdkEvent(it)
             }
         }
         binding.btnGoToSdk.setOnClickListener {
-            onGoToSdk()
+            viewModel.onGoSdkClick(getConfiguration())
         }
         binding.tvServiceType.setOnClickListener {
             PopupMenu(requireContext(), binding.tvServiceType).apply {
@@ -73,6 +71,12 @@ class ConfigurationScreen : UsedeskFragment() {
                     true
                 }
                 show()
+            }
+        }
+        binding.switchMaterialComponents.setOnCheckedChangeListener { _, _ ->
+            if (viewModel.isMaterialComponentsSwitched(getConfiguration())) {
+                requireActivity().finish()
+                startActivity(requireActivity().intent)
             }
         }
         try {
@@ -116,10 +120,6 @@ class ConfigurationScreen : UsedeskFragment() {
         }
     }
 
-    private fun onGoToSdk() {
-        viewModel.onGoSdkClick(getConfiguration())
-    }
-
     private fun getConfiguration(): Configuration {
         val additionalFields = mapOf(
             binding.etAdditionalField1Id.text.toString().trim() to
@@ -151,6 +151,7 @@ class ConfigurationScreen : UsedeskFragment() {
             listOf(nestedFields)
         }
         return Configuration(
+            binding.switchMaterialComponents.isChecked,
             binding.etUrlChat.text.toString(),
             binding.etUrlOfflineForm.text.toString(),
             binding.etUrlToSendFile.text.toString(),
@@ -189,6 +190,7 @@ class ConfigurationScreen : UsedeskFragment() {
     }
 
     private fun onNewConfiguration(configuration: Configuration) {
+        binding.switchMaterialComponents.isChecked = configuration.materialComponents
         binding.etUrlChat.setText(configuration.urlChat)
         binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
         binding.etUrlToSendFile.setText(configuration.urlToSendFile)

@@ -4,6 +4,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 data class Configuration(
+    val materialComponents: Boolean = false,
     val urlChat: String = "https://pubsubsec.usedesk.ru",
     val urlOfflineForm: String = "https://secure.usedesk.ru/",
     val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",

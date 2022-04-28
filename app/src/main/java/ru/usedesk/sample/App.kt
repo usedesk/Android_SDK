@@ -13,9 +13,9 @@ class App : MultiDexApplication() {
         val isThemeMaterialComponentsUsed = false
         if (isThemeMaterialComponentsUsed) {
             mapOf(
-                R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Custom_Chat_Screen_Messages_Page,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Custom_Chat_Screen_Offline_Form_Page,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item to R.style.Custom_KnowledgeBase_Article_Content_Page_Item
+                R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents,
+                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item to R.style.KnowledgeBase_Article_Content_Page_Item_MaterialComponents
             ).forEach {
                 UsedeskResourceManager.replaceResourceId(it.key, it.value)
             }

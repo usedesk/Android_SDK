@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="BaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar"></style>
+    <style name="AppTheme" parent="@style/BaseTheme" />
+
+    <style name="AppTheme.MaterialComponents" parent="@style/BaseTheme.MaterialComponents" />
 </resources>

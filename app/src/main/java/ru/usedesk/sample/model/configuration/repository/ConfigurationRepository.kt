@@ -4,53 +4,46 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import io.reactivex.*
-import io.reactivex.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.runBlocking
 import ru.usedesk.sample.model.configuration.entity.Configuration
 
 class ConfigurationRepository(
-    private val sharedPreferences: SharedPreferences,
-    private val workScheduler: Scheduler
+    private val sharedPreferences: SharedPreferences
 ) {
-    private var configuration: Configuration? = null
-    private val configurationSubject = BehaviorSubject.create<Configuration>()
+    private val configurationFlow: MutableStateFlow<Configuration>
 
-    fun getConfiguration(): Single<Configuration> {
-        return Single.create { emitter: SingleEmitter<Configuration> ->
-            val configuration = configuration ?: try {
-                val gson = Gson()
-                val jsonRaw = sharedPreferences.getString(KEY_DATA, "")
-                val json = gson.fromJson(jsonRaw, JsonObject::class.java)
-                if (!json.has("additionalFields")) {
-                    json.add("additionalFields", JsonObject())
-                }
-                if (!json.has("additionalNestedFields")) {
-                    json.add("additionalNestedFields", JsonArray())
-                }
-                gson.fromJson(json, Configuration::class.java)
-            } catch (e: Exception) {
-                null
-            } ?: Configuration()
+    init {
+        val configuration = try {
+            val gson = Gson()
+            val jsonRaw = sharedPreferences.getString(KEY_DATA, "")
+            val json = gson.fromJson(jsonRaw, JsonObject::class.java)
+            if (!json.has("additionalFields")) {
+                json.add("additionalFields", JsonObject())
+            }
+            if (!json.has("additionalNestedFields")) {
+                json.add("additionalNestedFields", JsonArray())
+            }
+            gson.fromJson(json, Configuration::class.java)
+        } catch (e: Exception) {
+            null
+        } ?: Configuration()
 
-            configurationSubject.onNext(configuration)
-            this.configuration = configuration
-            emitter.onSuccess(configuration)
-        }.subscribeOn(workScheduler)
+        configurationFlow = MutableStateFlow(configuration)
     }
 
-    fun getConfigurationObservable(): Observable<Configuration> = configurationSubject
+    fun getConfigurationFlow(): StateFlow<Configuration> = configurationFlow
 
-    fun setConfiguration(configuration: Configuration): Completable {
-        this.configuration = configuration
-        configurationSubject.onNext(configuration)
+    fun setConfiguration(configuration: Configuration) {
+        val json = Gson().toJson(configuration)
+        sharedPreferences.edit()
+            .putString(KEY_DATA, json)
+            .apply()
 
-        return Completable.create { emitter: CompletableEmitter ->
-            val json = Gson().toJson(configuration)
-            sharedPreferences.edit()
-                .putString(KEY_DATA, json)
-                .apply()
-            emitter.onComplete()
-        }.subscribeOn(workScheduler)
+        runBlocking {
+            configurationFlow.emit(configuration)
+        }
     }
 
     companion object {

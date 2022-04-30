@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.11.9)
+# Android Usedesk SDK (v3.11.10)
 
 ### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
 
@@ -173,7 +173,6 @@ override fun onBackPressed() {
 
 - Для привязки жизненного цикла ViewModel к родителю необходимо расширить
   интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
-  .
 
 - Расширить
   интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt)
@@ -373,7 +372,9 @@ override fun onBackPressed() {
 }
 ```
 
-- Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`, например:
+- Реализовать
+  интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt)
+  родителем, переопределив метод `onSupportClick()`, например:
 
 ```
 override fun onSupportClick() {
@@ -383,7 +384,13 @@ override fun onSupportClick() {
 }
 ```
 
+- Для обработки кликов по ссылкам в статьях, необходимо реализовать
+  интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt)
+  родителем и возвращать `true` методом `onWebUrl` если ссылка обработана, в ином случае ссылка
+  откроется внутри статьи.
+
 <a name="knowledge_base_sdk"></a>
+
 ### Использование без GUI
 
 После установки конфигурации необходимо инициализировать Базу Знаний:

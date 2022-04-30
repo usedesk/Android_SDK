@@ -1,6 +1,13 @@
 <resources>
 
-    <style name="AppTheme" parent="@style/BaseTheme">
+    <style name="BaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="BaseTheme.MaterialComponents" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
         <item name="windowActionModeOverlay">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -21,81 +28,4 @@
         <item name="usedesk_common_container_4">@style/Custom.Chat.Message.Text.Container4</item>
     </style>
     <!--Adaptive Padding End-->
-
-    <!--Theme.MaterialComponents Start-->
-    <!--Chat Start-->
-    <style name="Custom.Chat.Screen.Message.Text" parent="Usedesk.Chat.Screen.Message.Text">
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:textColorHint">@color/usedesk_gray_3</item>
-    </style>
-
-    <style name="Custom.Chat.Screen.Messages.Page" parent="Usedesk.Chat.Screen.Messages.Page">
-        <item name="usedesk_chat_screen_message_edit_text">@style/Custom.Chat.Screen.Message.Text</item>
-    </style>
-    <!--Chat End-->
-
-    <!--OfflineForm Start-->
-    <style name="Custom.Common.Field.Text.InputLayout" parent="Usedesk.Common.Field.Text.InputLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">0dp</item>
-        <item name="android:layout_marginRight">0dp</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginBottom">0dp</item>
-        <item name="android:textColorHint">@color/usedesk_gray_3</item>
-        <item name="hintTextColor">@color/usedesk_red</item>
-        <item name="boxBackgroundColor">@color/usedesk_white_1</item>
-        <item name="colorControlActivated">@color/usedesk_black_2</item>
-        <item name="boxStrokeColor">@color/custom_box_stroke_color</item>
-        <item name="boxStrokeWidth">1dp</item>
-        <item name="boxStrokeWidthFocused">1dp</item>
-    </style>
-
-    <style name="Custom.Common.Divider" parent="Usedesk.Common.Divider">
-        <item name="android:layout_height">0dp</item>
-    </style>
-
-    <style name="Custom.Common.Field.Text.EditText" parent="Usedesk.Common.Field.Text.EditText">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="android:paddingTop">30dp</item>
-    </style>
-
-    <style name="Custom.Common.Text.Field" parent="Usedesk.Common.Text.Field">
-        <item name="usedesk_common_field_text_input_layout">@style/Custom.Common.Field.Text.InputLayout</item>
-        <item name="theme">@style/Custom.Common.Field.Text.InputLayout</item>
-        <item name="usedesk_common_field_text_edit_text">@style/Custom.Common.Field.Text.EditText</item>
-        <item name="usedesk_common_divider">@style/Custom.Common.Divider</item>
-    </style>
-
-    <style name="Custom.Common.List.Field" parent="Usedesk.Common.List.Field">
-        <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
-    </style>
-
-    <style name="Custom.Chat.Screen.Offline.Form.Page" parent="Usedesk.Chat.Screen.Offline.Form.Page">
-        <item name="usedesk_chat_screen_offline_form_text_field">@style/Custom.Common.Text.Field</item>
-        <item name="usedesk_chat_screen_offline_form_list_field">@style/Custom.Common.List.Field</item>
-    </style>
-    <!--OfflineForm Start-->
-
-    <!--KnowledgeBase Start-->
-    <style name="Custom.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme">
-        <item name="boxBackgroundColor">@color/usedesk_white_1</item>
-        <item name="colorControlActivated">@color/usedesk_green</item>
-        <item name="colorControlNormal">@color/usedesk_green</item>
-        <item name="boxStrokeWidth">1dp</item>
-        <item name="boxStrokeWidthFocused">2dp</item>
-    </style>
-
-    <style name="Custom.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text">
-        <item name="android:textColor">@color/usedesk_black_2</item>
-        <item name="theme">@style/Custom.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.Theme</item>
-    </style>
-
-    <style name="Custom.KnowledgeBase.Article.Content.Page.Item" parent="Usedesk.KnowledgeBase.Article.Content.Page.Item">
-        <item name="usedesk_knowledgebase_article_content_page_rating_message_edit_text">@style/Custom.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text</item>
-    </style>
-    <!--KnowledgeBase End-->
-    <!--Theme.MaterialComponents End-->
 </resources>

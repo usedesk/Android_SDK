@@ -53,6 +53,7 @@ internal class ChatInteractor(
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val jobs = mutableListOf<Job>()
     private val jobsMutex = Mutex()
+    private var firstMessageMutex: Mutex? = null
 
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -220,6 +221,11 @@ internal class ChatInteractor(
                 ?: userInfoRepository.getConfigurationNullable(configuration)?.clientToken)
                 ?.ifEmpty { null }
 
+            runBlocking {
+                jobsMutex.withLock {
+                    firstMessageMutex = Mutex()
+                }
+            }
             apiRepository.connect(
                 configuration.urlChat,
                 token,
@@ -337,6 +343,7 @@ internal class ChatInteractor(
             ) {
                 ioScope.launch {
                     try {
+                        firstMessageMutex?.withLock {}
                         apiRepository.send(
                             token,
                             configuration,
@@ -433,16 +440,31 @@ internal class ChatInteractor(
             }
             cachedMessages.updateNotSentMessage(cachedNotSentMessage)
             eventListener.onMessageUpdated(cachedNotSentMessage)
-            apiRepository.send(
-                configuration,
-                token!!,
-                UsedeskFileInfo(
-                    cachedUri,
-                    cachedNotSentMessage.file.type,
-                    cachedNotSentMessage.file.name
-                ),
-                cachedNotSentMessage.localId
-            )
+            runBlocking {
+                firstMessageMutex.withLock {
+                    if (firstMessageJob == null) {
+                        firstMessageJob
+                    } else {
+                        firstMessageJob
+                    }
+                }?.join()
+            }
+            runBlocking {
+                val job = CoroutineScope(Dispatchers.IO).launch {
+                    apiRepository.send(
+                        configuration,
+                        token!!,
+                        UsedeskFileInfo(
+                            cachedUri,
+                            cachedNotSentMessage.file.type,
+                            cachedNotSentMessage.file.name
+                        ),
+                        cachedNotSentMessage.localId
+                    )
+                }
+
+                job.join()
+            }
             cachedMessages.removeNotSentMessage(cachedNotSentMessage)
             runBlocking {
                 cachedMessages.removeFileFromCache(Uri.parse(fileMessage.file.content))

@@ -472,7 +472,6 @@ internal class ChatInteractor(
             }?.apply {
                 if (!isLocked) {
                     lock(this@ChatInteractor)
-                    delay(10000)
                 } else {
                     waitFirstMessage()
                 }

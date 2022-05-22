@@ -6,6 +6,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
@@ -39,7 +40,7 @@ internal class ApiRepository(
 
     private fun isConnected() = socketApi.isConnected()
 
-    private lateinit var eventListener: IApiRepository.EventListener
+    private lateinit var eventListener: EventListener
 
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() {
@@ -98,7 +99,7 @@ internal class ApiRepository(
         url: String,
         token: String?,
         configuration: UsedeskChatConfiguration,
-        eventListener: IApiRepository.EventListener
+        eventListener: EventListener
     ) {
         this.eventListener = eventListener
         socketApi.connect(url, token, configuration.getCompanyAndChannel(), socketEventListener)

@@ -37,7 +37,6 @@ data class Configuration(
 
     fun toChatConfiguration(): UsedeskChatConfiguration {
         val defaultChatConfiguration = UsedeskChatConfiguration(
-            urlChat = urlChat,
             companyId = companyId,
             channelId = channelId
         )

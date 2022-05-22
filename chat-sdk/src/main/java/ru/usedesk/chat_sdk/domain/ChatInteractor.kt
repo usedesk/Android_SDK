@@ -333,25 +333,29 @@ internal class ChatInteractor(
         }
     }
 
-    private fun sendAdditionalFieldsIfNeeded() {
-        if (additionalFieldsNeeded) {
-            additionalFieldsNeeded = false
-            if (configuration.additionalFields.isNotEmpty() ||
-                configuration.additionalNestedFields.isNotEmpty()
-            ) {
-                ioScope.launch {
-                    try {
-                        waitFirstMessage()
-                        apiRepository.send(
-                            token,
-                            configuration,
-                            configuration.additionalFields,
-                            configuration.additionalNestedFields
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        additionalFieldsNeeded = true
-                        exceptionSubject.onNext(e)
+    private fun sendAdditionalFieldsIfNeededAsync() {
+        runBlocking {
+            jobsMutex.withLock {
+                if (additionalFieldsNeeded) {
+                    additionalFieldsNeeded = false
+                    if (configuration.additionalFields.isNotEmpty() ||
+                        configuration.additionalNestedFields.isNotEmpty()
+                    ) {
+                        ioScope.launch {
+                            try {
+                                waitFirstMessage()
+                                apiRepository.send(
+                                    token,
+                                    configuration,
+                                    configuration.additionalFields,
+                                    configuration.additionalNestedFields
+                                )
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                additionalFieldsNeeded = true
+                                exceptionSubject.onNext(e)
+                            }
+                        }
                     }
                 }
             }
@@ -446,6 +450,7 @@ internal class ChatInteractor(
             runBlocking {
                 cachedMessages.removeFileFromCache(Uri.parse(fileMessage.file.content))
             }
+            sendAdditionalFieldsIfNeededAsync()
         } catch (e: Exception) {
             onMessageSendingFailed(fileMessage as UsedeskMessageClient)
             throw e
@@ -467,6 +472,7 @@ internal class ChatInteractor(
             }?.apply {
                 if (!isLocked) {
                     lock(this@ChatInteractor)
+                    delay(10000)
                 } else {
                     waitFirstMessage()
                 }
@@ -500,13 +506,14 @@ internal class ChatInteractor(
             cachedMessages.addNotSentMessage(cachedMessage)
             lockFirstMessage()
             apiRepository.send(cachedMessage)
-            unlockFirstMessage()
             cachedMessages.removeNotSentMessage(cachedMessage)
+            sendAdditionalFieldsIfNeededAsync()
         } catch (e: Exception) {
             onMessageSendingFailed(cachedMessage)
             throw e
+        } finally {
+            unlockFirstMessage()
         }
-        sendAdditionalFieldsIfNeeded()
     }
 
     private fun onMessageSendingFailed(sendingMessage: UsedeskMessageClient) {

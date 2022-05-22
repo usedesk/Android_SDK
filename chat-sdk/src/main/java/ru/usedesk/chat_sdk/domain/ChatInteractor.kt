@@ -53,7 +53,8 @@ internal class ChatInteractor(
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val jobs = mutableListOf<Job>()
     private val jobsMutex = Mutex()
-    private var firstMessageMutex: Mutex? = null
+    private val firstMessageMutex = Mutex()
+    private var firstMessageLock: Mutex? = null
 
     private var lastMessages = listOf<UsedeskMessage>()
 
@@ -172,7 +173,6 @@ internal class ChatInteractor(
 
         @Synchronized
         override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
-            sendAdditionalFieldsIfNeeded()
             this@ChatInteractor.onMessagesNew(newMessages, false)
         }
 
@@ -221,11 +221,9 @@ internal class ChatInteractor(
                 ?: userInfoRepository.getConfigurationNullable(configuration)?.clientToken)
                 ?.ifEmpty { null }
 
-            runBlocking {
-                jobsMutex.withLock {
-                    firstMessageMutex = Mutex()
-                }
-            }
+            unlockFirstMessage()
+            resetFirstMessageLock()
+
             apiRepository.connect(
                 configuration.urlChat,
                 token,
@@ -343,7 +341,7 @@ internal class ChatInteractor(
             ) {
                 ioScope.launch {
                     try {
-                        firstMessageMutex?.withLock {}
+                        waitFirstMessage()
                         apiRepository.send(
                             token,
                             configuration,
@@ -401,70 +399,49 @@ internal class ChatInteractor(
             }
             val newFile = fileMessage.file.copy(content = cachedUri.toString())
             val cachedNotSentMessage = when (fileMessage) {
-                is UsedeskMessageClientAudio -> {
-                    UsedeskMessageClientAudio(
-                        fileMessage.id,
-                        fileMessage.createdAt,
-                        newFile,
-                        fileMessage.status,
-                        fileMessage.localId
-                    )
-                }
-                is UsedeskMessageClientVideo -> {
-                    UsedeskMessageClientVideo(
-                        fileMessage.id,
-                        fileMessage.createdAt,
-                        newFile,
-                        fileMessage.status,
-                        fileMessage.localId
-                    )
-                }
-                is UsedeskMessageClientImage -> {
-                    UsedeskMessageClientImage(
-                        fileMessage.id,
-                        fileMessage.createdAt,
-                        newFile,
-                        fileMessage.status,
-                        fileMessage.localId
-                    )
-                }
-                else -> {
-                    UsedeskMessageClientFile(
-                        fileMessage.id,
-                        fileMessage.createdAt,
-                        newFile,
-                        fileMessage.status,
-                        fileMessage.localId
-                    )
-                }
+                is UsedeskMessageClientAudio -> UsedeskMessageClientAudio(
+                    fileMessage.id,
+                    fileMessage.createdAt,
+                    newFile,
+                    fileMessage.status,
+                    fileMessage.localId
+                )
+                is UsedeskMessageClientVideo -> UsedeskMessageClientVideo(
+                    fileMessage.id,
+                    fileMessage.createdAt,
+                    newFile,
+                    fileMessage.status,
+                    fileMessage.localId
+                )
+                is UsedeskMessageClientImage -> UsedeskMessageClientImage(
+                    fileMessage.id,
+                    fileMessage.createdAt,
+                    newFile,
+                    fileMessage.status,
+                    fileMessage.localId
+                )
+                else -> UsedeskMessageClientFile(
+                    fileMessage.id,
+                    fileMessage.createdAt,
+                    newFile,
+                    fileMessage.status,
+                    fileMessage.localId
+                )
             }
             cachedMessages.updateNotSentMessage(cachedNotSentMessage)
             eventListener.onMessageUpdated(cachedNotSentMessage)
-            runBlocking {
-                firstMessageMutex.withLock {
-                    if (firstMessageJob == null) {
-                        firstMessageJob
-                    } else {
-                        firstMessageJob
-                    }
-                }?.join()
-            }
-            runBlocking {
-                val job = CoroutineScope(Dispatchers.IO).launch {
-                    apiRepository.send(
-                        configuration,
-                        token!!,
-                        UsedeskFileInfo(
-                            cachedUri,
-                            cachedNotSentMessage.file.type,
-                            cachedNotSentMessage.file.name
-                        ),
-                        cachedNotSentMessage.localId
-                    )
-                }
-
-                job.join()
-            }
+            waitFirstMessage()
+            apiRepository.send(
+                configuration,
+                token!!,
+                UsedeskFileInfo(
+                    cachedUri,
+                    cachedNotSentMessage.file.type,
+                    cachedNotSentMessage.file.name
+                ),
+                cachedNotSentMessage.localId
+            )
+            unlockFirstMessage()
             cachedMessages.removeNotSentMessage(cachedNotSentMessage)
             runBlocking {
                 cachedMessages.removeFileFromCache(Uri.parse(fileMessage.file.content))
@@ -475,15 +452,61 @@ internal class ChatInteractor(
         }
     }
 
+    private fun resetFirstMessageLock() {
+        runBlocking {
+            firstMessageMutex.withLock {
+                firstMessageLock = Mutex()
+            }
+        }
+    }
+
+    private fun lockFirstMessage() {
+        runBlocking {
+            firstMessageMutex.withLock {
+                firstMessageLock
+            }?.apply {
+                if (!isLocked) {
+                    lock(this@ChatInteractor)
+                } else {
+                    waitFirstMessage()
+                }
+            }
+        }
+    }
+
+    private fun unlockFirstMessage() {
+        runBlocking {
+            firstMessageMutex.withLock {
+                firstMessageLock?.apply {
+                    if (isLocked) {
+                        delay(1000)
+                        unlock(this@ChatInteractor)
+                    }
+                    firstMessageLock = null
+                    println()
+                }
+            }
+        }
+    }
+
+    private fun waitFirstMessage() {
+        runBlocking {
+            firstMessageLock?.withLock {}
+        }
+    }
+
     private fun sendCached(cachedMessage: UsedeskMessageClientText) {
         try {
             cachedMessages.addNotSentMessage(cachedMessage)
+            lockFirstMessage()
             apiRepository.send(cachedMessage)
+            unlockFirstMessage()
             cachedMessages.removeNotSentMessage(cachedMessage)
         } catch (e: Exception) {
             onMessageSendingFailed(cachedMessage)
             throw e
         }
+        sendAdditionalFieldsIfNeeded()
     }
 
     private fun onMessageSendingFailed(sendingMessage: UsedeskMessageClient) {
@@ -695,19 +718,13 @@ internal class ChatInteractor(
             jobsMutex.withLock {
                 jobs.addAll(sendingMessages.mapNotNull { msg ->
                     when (msg) {
-                        is UsedeskMessageClientText -> {
-                            ioScope.launchSafe({
-                                sendCached(msg)
-                            })
-                        }
-                        is UsedeskMessageFile -> {
-                            ioScope.launchSafe({
-                                sendCached(msg)
-                            })
-                        }
-                        else -> {
-                            null
-                        }
+                        is UsedeskMessageClientText -> ioScope.launchSafe({
+                            sendCached(msg)
+                        })
+                        is UsedeskMessageFile -> ioScope.launchSafe({
+                            sendCached(msg)
+                        })
+                        else -> null
                     }
                 })
             }
@@ -864,6 +881,10 @@ internal class ChatInteractor(
             clientTokenSubject.onNext(chatInited.token)
         }
 
+        if (chatInited.status in ACTIVE_STATUSES) {
+            unlockFirstMessage()
+        }
+
         val oldConfiguration = userInfoRepository.getConfigurationNullable(configuration)
 
         if (initClientOfflineForm != null ||
@@ -922,5 +943,9 @@ internal class ChatInteractor(
                 onThrowable(e)
             }
         }
+    }
+
+    companion object {
+        private val ACTIVE_STATUSES = listOf(1, 5, 6, 8)
     }
 }

@@ -6,8 +6,6 @@ import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import io.socket.engineio.client.transports.WebSocket
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.withLock
 import org.json.JSONException
 import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
@@ -16,7 +14,6 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.error.Error
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientResponse
 import ru.usedesk.common_sdk.UsedeskLog
@@ -113,11 +110,6 @@ internal class SocketApi(
     ) {
         if (socket == null) {
             try {
-                runBlocking {
-                    mutex.withLock {
-                        firstMessageJob = null
-                    }
-                }
                 usedeskOkHttpClientFactory.createInstance().also {
                     IO.setDefaultOkHttpWebSocketFactory(it)
                     IO.setDefaultOkHttpCallFactory(it)
@@ -151,12 +143,6 @@ internal class SocketApi(
     }
 
     fun disconnect() {
-        runBlocking {
-            mutex.withLock {
-                firstMessageJob?.cancel()
-                firstMessageJob = null
-            }
-        }
         for (event in emitterListeners.keys) {
             socket?.off(event, emitterListeners[event])
         }
@@ -168,14 +154,7 @@ internal class SocketApi(
     @Throws(UsedeskSocketException::class)
     fun sendRequest(baseRequest: BaseRequest) {
         try {
-            runBlocking {
-                mutex.withLock {
-                    if (baseRequest is MessageRequest) {
-                        firstMessageJob?.cancel()
-                        firstMessageJob = null
-                    }
-                }
-            }
+            UsedeskLog.onLog("", "SOCKET REQUEST: ${baseRequest.javaClass.simpleName}")
             val rawRequest = gson.toJson(baseRequest)
             Log.d("REQUEST_SOCKET", "${baseRequest.javaClass.simpleName}: $rawRequest")
             val jsonRequest = JSONObject(rawRequest)

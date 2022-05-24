@@ -1043,7 +1043,6 @@
     <style name="Usedesk.Chat.Message.Text.Message.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:autoLink">all</item>
         <item name="usedesk_text_1">@string/usedesk_feedback_thanks</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Text.Message.Text.TextAppearance</item>

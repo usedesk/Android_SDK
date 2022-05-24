@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
+import android.util.Log
 import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -153,7 +154,9 @@ internal class SocketApi(
     @Throws(UsedeskSocketException::class)
     fun sendRequest(baseRequest: BaseRequest) {
         try {
+            UsedeskLog.onLog("", "SOCKET REQUEST: ${baseRequest.javaClass.simpleName}")
             val rawRequest = gson.toJson(baseRequest)
+            Log.d("REQUEST_SOCKET", "${baseRequest.javaClass.simpleName}: $rawRequest")
             val jsonRequest = JSONObject(rawRequest)
             socket?.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {

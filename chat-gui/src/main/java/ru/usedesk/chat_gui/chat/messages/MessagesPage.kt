@@ -237,9 +237,13 @@ internal class MessagesPage : UsedeskFragment() {
     }
 
     private fun onUrlClick(url: String) {
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        })
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     internal class Binding(rootView: View, defaultStyleId: Int) :

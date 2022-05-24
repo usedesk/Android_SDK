@@ -691,11 +691,13 @@ internal class MessagesAdapter(
                     messageFile.file.content,
                     vError = binding.ivError,
                     onSuccess = {
+                        binding.pbLoading.visibility = View.INVISIBLE
                         binding.ivPreview.setOnClickListener {
                             onFileClick(messageFile.file)
                         }
                     },
                     onError = {
+                        binding.pbLoading.visibility = View.INVISIBLE
                         binding.ivError.setOnClickListener {
                             bindImage(chatItem)
                         }

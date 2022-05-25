@@ -867,13 +867,10 @@ internal class ChatInteractor(
     private fun sendUserEmail() {
         try {
             token?.let {
-                apiRepository.send(
-                    it,
-                    configuration.clientEmail,
-                    configuration.clientName,
-                    configuration.clientNote,
-                    configuration.clientPhoneNumber,
-                    configuration.clientAdditionalId
+                apiRepository.setClient(
+                    configuration.copy(
+                        clientToken = it
+                    )
                 )
             }
         } catch (e: UsedeskException) {

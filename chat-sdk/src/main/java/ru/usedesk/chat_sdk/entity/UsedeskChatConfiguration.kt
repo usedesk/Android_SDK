@@ -20,7 +20,8 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientInitMessage: String? = null,
     val cacheMessagesWithFile: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),
-    val additionalNestedFields: List<Map<Long, String>> = listOf()
+    val additionalNestedFields: List<Map<Long, String>> = listOf(),
+    val avatar: String? = null
 ) : Parcelable {
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 

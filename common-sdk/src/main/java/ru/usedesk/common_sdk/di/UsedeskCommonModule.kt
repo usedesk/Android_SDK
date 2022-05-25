@@ -20,15 +20,12 @@ object UsedeskCommonModule {
     fun provideGson(): Gson = GsonBuilder().create()
 
     @Provides
-    fun provideUsedeskOkHttpClientFactory(appContext: Context): UsedeskOkHttpClientFactory {
-        return UsedeskOkHttpClientFactory(appContext)
-    }
+    fun provideUsedeskOkHttpClientFactory(appContext: Context): UsedeskOkHttpClientFactory =
+        UsedeskOkHttpClientFactory(appContext)
 
     @Provides
     fun provideUsedeskApiFactory(
         gson: Gson,
         usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
-    ): IUsedeskApiFactory {
-        return ApiFactory(gson, usedeskOkHttpClientFactory)
-    }
+    ): IUsedeskApiFactory = ApiFactory(gson, usedeskOkHttpClientFactory)
 }

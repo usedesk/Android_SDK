@@ -19,20 +19,16 @@ internal object KnowledgeBaseModule {
         knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration,
         apiFactory: IUsedeskApiFactory,
         gson: Gson
-    ): IKnowledgeBaseApiRepository {
-        return KnowledgeBaseApiRepository(
-            knowledgeBaseConfiguration,
-            apiFactory,
-            gson
-        )
-    }
+    ): IKnowledgeBaseApiRepository = KnowledgeBaseApiRepository(
+        knowledgeBaseConfiguration,
+        apiFactory,
+        gson
+    )
 
     @[Provides KnowledgeBaseScope]
     fun provideKnowledgeBaseInteractor(
         knowledgeBaseApiRepository: IKnowledgeBaseApiRepository
-    ): IUsedeskKnowledgeBase {
-        return KnowledgeBaseInteractor(knowledgeBaseApiRepository)
-    }
+    ): IUsedeskKnowledgeBase = KnowledgeBaseInteractor(knowledgeBaseApiRepository)
 }
 
 @Scope

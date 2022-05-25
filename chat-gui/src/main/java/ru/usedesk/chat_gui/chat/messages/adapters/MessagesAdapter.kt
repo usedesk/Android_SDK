@@ -614,7 +614,7 @@ internal class MessagesAdapter(
             val messageText = (chatItem as ChatMessage).message as UsedeskMessageText
 
             binding.tvText.run {
-                text = Html.fromHtml(messageText.text)
+                text = Html.fromHtml(messageText.text + " ") //TODO: temp fix
                 visibility = View.VISIBLE
             }
         }

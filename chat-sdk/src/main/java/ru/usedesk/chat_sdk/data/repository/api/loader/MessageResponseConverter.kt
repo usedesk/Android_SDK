@@ -12,10 +12,9 @@ internal class MessageResponseConverter :
 
     private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
     private val phoneRegex = Patterns.PHONE.toRegex()
+    private val urlRegex = Patterns.WEB_URL.toRegex()
     private val mdUrlRegex = Pattern.compile(
-        "\\[[^\\[\\]\\(\\)]+\\]\\(" +
-                Patterns.WEB_URL.pattern() +
-                "/?\\)"
+        "\\[[^\\[\\]\\(\\)]+\\]\\(${urlRegex.pattern}/?\\)"
     ).toRegex()
 
     override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> {
@@ -296,47 +295,70 @@ internal class MessageResponseConverter :
         return builder.toString()
     }
 
-    private fun String.convertMarkdownUrls(): String {
-        val allMatches = mdUrlRegex.findAll(this)
+    private fun Regex.findAll(
+        text: String,
+        includedRanges: List<IntRange>
+    ) = includedRanges.flatMap { part ->
+        this.findAll(text.substring(part))
             .map {
-                it.range
-            }.toSet()
+                (it.range.first + part.first)..(it.range.last + part.first)
+            }
+    }
+
+    private fun String.getExcludeRanges(
+        includedRanges: List<IntRange>
+    ): List<IntRange> {
+        val ranges = includedRanges.sortedBy { it.first }
+        return (sequenceOf(
+            0 until (ranges.firstOrNull()?.first ?: length),
+            (ranges.lastOrNull()?.last?.inc() ?: 0) until length
+        ) + ranges.indices.mapNotNull { i ->
+            if (i < ranges.size - 1) {
+                ranges[i].last + 1 until ranges[i + 1].first
+            } else {
+                null
+            }
+        }.asSequence()).filter {
+            it.first <= it.last && it.first in this.indices && it.last in this.indices
+        }.toSet()
             .toList()
+    }
 
-        val noUrlsRanges = allMatches.getOtherRanges(0, this.length)
+    private fun String.convertMarkdownUrls(): String {
+        val withMdUrlsRanges = mdUrlRegex.findAll(this, listOf(this.indices))
 
-        val emails = noUrlsRanges.flatMap { part ->
-            emailRegex.findAll(this.substring(part))
-                .map {
-                    (it.range.first + part.first)..(it.range.last + part.first)
-                }
-        }
+        val noMdUrlsRanges = getExcludeRanges(withMdUrlsRanges)
 
-        val noEmailsRanges = (allMatches + emails).getOtherRanges(0, this.length)
+        val emails = emailRegex.findAll(this, noMdUrlsRanges)
 
-        val phones = noEmailsRanges.flatMap { part ->
-            phoneRegex.findAll(this.substring(part))
-                .map {
-                    (it.range.first + part.first)..(it.range.last + part.first)
-                }
-        }
+        val withEmailsRanges = withMdUrlsRanges + emails
+        val noEmailsRanges = getExcludeRanges(withEmailsRanges)
 
-        val noPhones = (allMatches + emails + phones).getOtherRanges(0, this.length)
+        val urls = urlRegex.findAll(this, noEmailsRanges)
+
+        val withUrlsRanges = withEmailsRanges + urls
+        val noUrlsRanges = getExcludeRanges(withUrlsRanges)
+
+        val phones = phoneRegex.findAll(this, noUrlsRanges)
+
+        val withPhonesRanges = withUrlsRanges + phones
+        val noPhones = getExcludeRanges(withPhonesRanges)
 
         val builder = StringBuilder()
 
-        (allMatches + emails + phones + noPhones).toSet()
+        (withPhonesRanges + noPhones).toSet()
             .sortedBy { it.first }
             .forEach {
                 val part = this.substring(it)
                 builder.append(when (it) {
-                    in allMatches -> {
+                    in withMdUrlsRanges -> {
                         val parts = part.trim('[', ')')
                             .split("](")
                         val url = parts[1]
                         val title = parts[0].ifEmpty { url }
                         makeHtmlUrl(url, title)
                     }
+                    in urls -> makeHtmlUrl(part)
                     in emails -> makeHtmlUrl("mailto:$part", part)
                     in phones -> makeHtmlUrl("tel:$part", part)
                     else -> part
@@ -344,26 +366,6 @@ internal class MessageResponseConverter :
             }
 
         return builder.toString()
-    }
-
-    private fun List<IntRange>.getOtherRanges(
-        start: Int,
-        end: Int
-    ): List<IntRange> {
-        val ranges = this.sortedBy { it.first }
-        return (sequenceOf(
-            start until (ranges.firstOrNull()?.first ?: end),
-            (ranges.lastOrNull()?.last ?: start) until end
-        ) + ranges.indices.map { i ->
-            if (i < ranges.size - 1) {
-                ranges[i].last + 1 until ranges[i + 1].first
-            } else {
-                0..0
-            }
-        }.asSequence()).filter {
-            it.first != it.last
-        }.toSet()
-            .toList()
     }
 
     private fun makeHtmlUrl(url: String, title: String = url) = "<a href=\"$url\">$title</a>"

@@ -4,6 +4,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -599,6 +600,10 @@ internal class MessagesAdapter(
                     )
                 }
             }
+            binding.tvText.run {
+                isClickable = true
+                movementMethod = LinkMovementMethod.getInstance()
+            }
         }
 
         override fun bind(chatItem: ChatItem) {
@@ -608,8 +613,10 @@ internal class MessagesAdapter(
 
             val messageText = (chatItem as ChatMessage).message as UsedeskMessageText
 
-            binding.tvText.text = Html.fromHtml(messageText.text.replace("\n", "<br>"))
-            binding.tvText.visibility = View.VISIBLE
+            binding.tvText.run {
+                text = Html.fromHtml(messageText.text)
+                visibility = View.VISIBLE
+            }
         }
     }
 

@@ -15,9 +15,13 @@ internal interface IHttpApi {
     fun sendOfflineForm(@Body json: JsonObject): Call<ResponseBody>
 
     @Multipart
-    @POST("send_file")
+    @POST("uapi/v1/send_file")
     fun postFile(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 
-    @POST("addFieldsToChat")
+    @POST("uapi/v1/addFieldsToChat")
     fun postAdditionalFields(@Body body: AdditionalFieldsRequest): Call<ResponseBody>
+
+    @Multipart
+    @POST("v1/chat/setClient")
+    fun setClient(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 }

@@ -16,15 +16,6 @@ internal interface IApiRepository {
     )
 
     fun send(
-        token: String,
-        email: String?,
-        name: String?,
-        note: String?,
-        phone: Long?,
-        additionalId: String?
-    )
-
-    fun send(
         configuration: UsedeskChatConfiguration,
         companyId: String,
         offlineForm: UsedeskOfflineForm
@@ -43,6 +34,8 @@ internal interface IApiRepository {
         fileInfo: UsedeskFileInfo,
         messageId: Long
     )
+
+    fun setClient(configuration: UsedeskChatConfiguration)
 
     fun send(
         token: String?,

@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -86,7 +87,6 @@ class ConfigurationScreen : UsedeskFragment() {
         }
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
-        initTil(binding.tilUrlToSendFile)
         initTil(binding.tilUrlApi)
         initTil(binding.tilCompanyId)
         initTil(binding.tilChannelId)
@@ -94,6 +94,17 @@ class ConfigurationScreen : UsedeskFragment() {
         initTil(binding.tilToken)
         initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
+        binding.ivAvatar.setOnClickListener {
+            startImages()
+        }
+        registerFiles {
+            it.firstOrNull()?.let { uri ->
+                binding.ivAvatar.tag = uri.toString()
+                GlideApp.with(binding.ivAvatar)
+                    .load(uri)
+                    .into(binding.ivAvatar)
+            }
+        }
         return binding.root
     }
 
@@ -158,7 +169,6 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.switchMaterialComponents.isChecked,
             binding.etUrlChat.text.toString(),
             binding.etUrlOfflineForm.text.toString(),
-            binding.etUrlToSendFile.text.toString(),
             binding.etUrlApi.text.toString(),
             binding.etCompanyId.text.toString(),
             binding.etChannelId.text.toString(),
@@ -171,7 +181,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
             binding.etClientAdditionalId.text.toString(),
             binding.etClientInitMessage.text.toString(),
-            viewModel.avatarLiveData.value,
+            binding.ivAvatar.tag as? String,
             binding.etCustomAgentName.text.toString(),
             binding.etCustomDateFormat.text.toString(),
             binding.etCustomTimeFormat.text.toString(),
@@ -197,7 +207,6 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.switchMaterialComponents.isChecked = configuration.materialComponents
         binding.etUrlChat.setText(configuration.urlChat)
         binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
-        binding.etUrlToSendFile.setText(configuration.urlToSendFile)
         binding.etUrlApi.setText(configuration.urlApi)
         binding.etCompanyId.setText(configuration.companyId)
         binding.etChannelId.setText(configuration.channelId)
@@ -318,11 +327,6 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilUrlOfflineForm,
                 validUrlOfflineForm,
-                R.string.validation_url_error
-            )
-            showError(
-                binding.tilUrlToSendFile,
-                validUrlToSendFile,
                 R.string.validation_url_error
             )
             showError(

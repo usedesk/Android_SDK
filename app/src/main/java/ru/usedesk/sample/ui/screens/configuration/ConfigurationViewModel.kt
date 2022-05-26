@@ -59,7 +59,6 @@ class ConfigurationViewModel : ViewModel() {
         val chatValidation = UsedeskChatConfiguration(
             configuration.urlChat,
             configuration.urlOfflineForm,
-            configuration.urlToSendFile,
             configuration.companyId,
             configuration.channelId,
             configuration.clientToken,
@@ -69,6 +68,7 @@ class ConfigurationViewModel : ViewModel() {
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
             configuration.clientInitMessage,
+            null,
             configuration.cacheFiles
         ).validate()
         val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(

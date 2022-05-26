@@ -89,6 +89,7 @@ internal object ChatModule {
 
     @[Provides ChatScope]
     fun provideApiRepository(
+        appContext: Context,
         socketApi: SocketApi,
         multipartConverter: IMultipartConverter,
         initChatResponseConverter: InitChatResponseConverter,
@@ -100,6 +101,7 @@ internal object ChatModule {
         multipartConverter,
         initChatResponseConverter,
         messageResponseConverter,
+        appContext.contentResolver,
         apiFactory,
         gson
     )

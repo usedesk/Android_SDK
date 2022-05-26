@@ -20,10 +20,23 @@ internal class MultipartConverter(
                 val mimeType = getMimeType(contentResolver, value)
                 val mediaType = MediaType.parse(mimeType)
                 val name = getFileName(contentResolver, value)
-                val file = File(value.path)
+                val file = File(value.toString())
                 val requestBody = RequestBody.create(mediaType, file)
                 MultipartBody.Part.createFormData(pair.key, name, requestBody)
             }
             else -> null
         }
+
+    override fun convert(
+        key: String,
+        byteArray: ByteArray,
+        originalFile: String
+    ): MultipartBody.Part {
+        val uri = Uri.parse(originalFile)
+        val mimeType = getMimeType(contentResolver, uri)
+        val mediaType = MediaType.parse(mimeType)
+        val name = getFileName(contentResolver, uri)
+        val requestBody = RequestBody.create(mediaType, byteArray)
+        return MultipartBody.Part.createFormData(key, name, requestBody)
+    }
 }

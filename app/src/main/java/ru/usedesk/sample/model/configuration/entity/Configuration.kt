@@ -7,7 +7,6 @@ data class Configuration(
     val materialComponents: Boolean = false,
     val urlChat: String = "https://pubsubsec.usedesk.ru",
     val urlOfflineForm: String = "https://secure.usedesk.ru/",
-    val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
     val urlApi: String = "https://api.usedesk.ru/",
     val companyId: String = "",
     val channelId: String = "",
@@ -43,7 +42,6 @@ data class Configuration(
         return UsedeskChatConfiguration(
             urlChat,
             urlOfflineForm.ifEmpty { defaultChatConfiguration.urlOfflineForm },
-            urlToSendFile.ifEmpty { defaultChatConfiguration.urlToSendFile },
             companyId,
             channelId,
             clientToken,
@@ -53,6 +51,7 @@ data class Configuration(
             clientPhoneNumber,
             clientAdditionalId,
             clientInitMessage,
+            clientAvatar,
             cacheFiles,
             additionalFields,
             additionalNestedFields

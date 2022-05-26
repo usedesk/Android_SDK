@@ -1,13 +1,17 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
@@ -25,12 +29,14 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
+import kotlin.math.min
 
 internal class ApiRepository(
     private val socketApi: SocketApi,
     private val multipartConverter: IMultipartConverter,
     private val initChatResponseConverter: InitChatResponseConverter,
     private val messageResponseConverter: MessageResponseConverter,
+    private val contentResolver: ContentResolver,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
 ) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java),
@@ -155,32 +161,67 @@ internal class ApiRepository(
         checkConnection()
 
         try {
-            val avatarStream = try {
-                val outputStream = ByteArrayOutputStream()
-                BitmapFactory.decodeFile(configuration.avatar)
-                    .compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
-            val parts = mapOf(
+            val parts = (mapOf(
                 "email" to configuration.clientEmail?.getCorrectStringValue(),
                 "username" to configuration.clientName?.getCorrectStringValue(),
                 "token" to configuration.clientToken,
                 "note" to configuration.clientNote,
                 "phone" to configuration.clientPhoneNumber,
                 "additional_id" to configuration.clientAdditionalId,
-                "company_id" to configuration.companyId,
-                "avatar" to avatarStream
-            ).mapNotNull(multipartConverter::convert)
+                "company_id" to configuration.companyId
+            ).map(multipartConverter::convert) + getAvatarMultipartBodyPart(configuration)).filterNotNull()
 
-            doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
+            doRequest(configuration.urlOfflineForm, SetClientResponse::class.java) {
                 it.setClient(parts)
             }
+            socketEventListener.onSetEmailSuccess()
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
+
+    private fun getAvatarMultipartBodyPart(configuration: UsedeskChatConfiguration) =
+        if (configuration.clientAvatar != null) {
+            try {
+                val uri = Uri.parse(configuration.clientAvatar)
+                val originalBitmap = contentResolver.openInputStream(uri)
+                    .use {
+                        BitmapFactory.decodeStream(it)
+                    }
+                val side = min(originalBitmap.width, originalBitmap.height)
+                val outputStream = ByteArrayOutputStream()
+
+                val quadBitmap = Bitmap.createBitmap(
+                    originalBitmap,
+                    (originalBitmap.width - side) / 2,
+                    (originalBitmap.height - side) / 2,
+                    side,
+                    side
+                )
+                originalBitmap.recycle()
+                val avatarBitmap = quadBitmap.scale(
+                    AVATAR_SIZE,
+                    AVATAR_SIZE
+                )
+                quadBitmap.recycle()
+                avatarBitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    100,
+                    outputStream
+                )
+                val byteArray = outputStream.toByteArray()
+                avatarBitmap.recycle()
+
+                multipartConverter.convert(
+                    "avatar",
+                    byteArray,
+                    configuration.clientAvatar
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else null
 
     override fun send(
         configuration: UsedeskChatConfiguration,
@@ -248,5 +289,7 @@ internal class ApiRepository(
 
     companion object {
         private val STATUSES_FOR_FORM = listOf(null, 2, 3, 4, 7, 9, 10)
+
+        private const val AVATAR_SIZE = 100
     }
 }

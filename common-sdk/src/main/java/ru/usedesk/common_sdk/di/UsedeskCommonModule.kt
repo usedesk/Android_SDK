@@ -2,6 +2,7 @@ package ru.usedesk.common_sdk.di
 
 import android.content.ContentResolver
 import android.content.Context
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -17,7 +18,9 @@ object UsedeskCommonModule {
     fun provideContentResolver(appContext: Context): ContentResolver = appContext.contentResolver
 
     @Provides
-    fun provideGson(): Gson = GsonBuilder().create()
+    fun provideGson(): Gson = GsonBuilder()
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        .create()
 
     @Provides
     fun provideUsedeskOkHttpClientFactory(appContext: Context): UsedeskOkHttpClientFactory =
@@ -27,5 +30,8 @@ object UsedeskCommonModule {
     fun provideUsedeskApiFactory(
         gson: Gson,
         usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
-    ): IUsedeskApiFactory = ApiFactory(gson, usedeskOkHttpClientFactory)
+    ): IUsedeskApiFactory = ApiFactory(
+        gson,
+        usedeskOkHttpClientFactory
+    )
 }

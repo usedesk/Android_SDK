@@ -106,7 +106,13 @@ internal class ApiRepository(
         eventListener: EventListener
     ) {
         this.eventListener = eventListener
-        socketApi.connect(url, token, configuration.getCompanyAndChannel(), socketEventListener)
+        socketApi.connect(
+            url,
+            token,
+            configuration.getCompanyAndChannel(),
+            configuration.messagesPageSize,
+            socketEventListener
+        )
     }
 
     override fun init(
@@ -117,7 +123,8 @@ internal class ApiRepository(
             InitChatRequest(
                 token,
                 configuration.getCompanyAndChannel(),
-                configuration.urlChat
+                configuration.urlChat,
+                configuration.messagesPageSize
             )
         )
     }
@@ -150,7 +157,7 @@ internal class ApiRepository(
             "message_id" to messageId
         ).mapNotNull(multipartConverter::convert)
 
-        doRequest(configuration.urlOfflineForm, FileResponse::class.java) {
+        doRequest(configuration.urlChatApi, FileResponse::class.java) {
             it.postFile(parts)
         }
     }
@@ -171,7 +178,7 @@ internal class ApiRepository(
                 "company_id" to configuration.companyId
             ).map(multipartConverter::convert) + getAvatarMultipartBodyPart(configuration)).filterNotNull()
 
-            doRequest(configuration.urlOfflineForm, SetClientResponse::class.java) {
+            doRequest(configuration.urlChatApi, SetClientResponse::class.java) {
                 it.setClient(parts)
             }
             socketEventListener.onSetEmailSuccess()
@@ -223,13 +230,34 @@ internal class ApiRepository(
             }
         } else null
 
+    override fun loadPreviousMessages(
+        configuration: UsedeskChatConfiguration,
+        token: String,
+        messageId: Long
+    ): Boolean {
+        val messagesResponse = doRequest(
+            configuration.urlChatApi,
+            Array<MessageResponse.Message>::class.java
+        ) {
+            it.loadPreviousMessages(
+                token,
+                messageId
+            )
+        }
+        val messages = messagesResponse.flatMap {
+            messageResponseConverter.convert(it)
+        }
+        eventListener.onMessagesReceived(messages)
+        return messagesResponse.isNotEmpty()
+    }
+
     override fun send(
         configuration: UsedeskChatConfiguration,
         companyId: String,
         offlineForm: UsedeskOfflineForm
     ) {
         try {
-            doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
+            doRequest(configuration.urlChatApi, Array<Any>::class.java) {
                 val params = mapOf(
                     "email" to offlineForm.clientEmail.getCorrectStringValue(),
                     "name" to offlineForm.clientName.getCorrectStringValue(),
@@ -259,7 +287,7 @@ internal class ApiRepository(
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
     ) {
-        val response = doRequest(configuration.urlOfflineForm, String::class.java) {
+        val response = doRequest(configuration.urlChatApi, String::class.java) {
             if (token != null) {
                 val totalFields =
                     (additionalFields.toList() + additionalNestedFields.flatMap { fields ->

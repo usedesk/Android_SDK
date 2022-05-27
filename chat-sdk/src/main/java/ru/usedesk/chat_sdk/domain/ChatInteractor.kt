@@ -268,7 +268,9 @@ internal class ChatInteractor(
         messages: List<UsedeskMessage>,
         isInited: Boolean
     ) {
-        lastMessages = lastMessages + messages
+        lastMessages = (lastMessages + messages).sortedBy {
+            it.createdAt.timeInMillis
+        }
         messages.forEach { message ->
             messageSubject.onNext(message)
             if (!isInited) {
@@ -841,6 +843,51 @@ internal class ChatInteractor(
     override fun disconnectRx(): Completable {
         return safeCompletableIo(ioScheduler) {
             disconnect()
+        }
+    }
+
+    private val oldMutex = Mutex()
+    private var allLoaded = false
+    private var oldMessagesLoadJob: Job? = null
+
+    override fun loadPreviousMessagesPage() {
+        runBlocking {
+            oldMutex.withLock {
+                val messages = messagesSubject.value
+                val oldestMessageId = messages?.firstOrNull()?.id
+                val token = token
+                if (!allLoaded &&
+                    oldMessagesLoadJob == null &&
+                    oldestMessageId != null &&
+                    token != null
+                ) {
+                    oldMessagesLoadJob = CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val hasUnloadedMessages = apiRepository.loadPreviousMessages(
+                                configuration,
+                                token,
+                                oldestMessageId
+                            )
+                            oldMutex.withLock {
+                                allLoaded = !hasUnloadedMessages
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        } finally {
+                            oldMutex.withLock {
+                                oldMessagesLoadJob = null
+                            }
+                        }
+                    }
+                }
+                oldMessagesLoadJob
+            }?.join()
+        }
+    }
+
+    override fun loadPreviousMessagesPageRx(): Completable {
+        return safeCompletableIo(ioScheduler) {
+            loadPreviousMessagesPage()
         }
     }
 

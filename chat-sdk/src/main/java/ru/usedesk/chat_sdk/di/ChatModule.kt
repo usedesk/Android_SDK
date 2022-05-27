@@ -42,9 +42,8 @@ internal object ChatModule {
 
     @[Provides ChatScope]
     fun provideConfigurationLoader(
-        appContext: Context,
-        gson: Gson
-    ): IConfigurationLoader = ConfigurationLoader(appContext, gson)
+        appContext: Context
+    ): IConfigurationLoader = ConfigurationLoader(appContext)
 
     @[Provides ChatScope]
     fun provideTokenLoader(appContext: Context): ITokenLoader = TokenLoader(appContext)

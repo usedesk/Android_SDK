@@ -58,9 +58,10 @@ class ConfigurationViewModel : ViewModel() {
     private fun validate(configuration: Configuration): ConfigurationValidation {
         val chatValidation = UsedeskChatConfiguration(
             configuration.urlChat,
-            configuration.urlOfflineForm,
+            configuration.urlChatApi,
             configuration.companyId,
             configuration.channelId,
+            configuration.messagesPageSize,
             configuration.clientToken,
             configuration.clientEmail,
             configuration.clientName,

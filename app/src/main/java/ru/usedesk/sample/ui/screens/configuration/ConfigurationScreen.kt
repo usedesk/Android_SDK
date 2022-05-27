@@ -94,6 +94,7 @@ class ConfigurationScreen : UsedeskFragment() {
         initTil(binding.tilToken)
         initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
+        initTil(binding.tilMessagesPageSize)
         binding.ivAvatar.setOnClickListener {
             startImages()
         }
@@ -173,6 +174,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etCompanyId.text.toString(),
             binding.etChannelId.text.toString(),
             binding.etAccountId.text.toString(),
+            binding.etMessagesPageSize.text.toString().toIntOrNull() ?: 1,
             binding.etToken.text.toString(),
             binding.etClientToken.text.toString(),
             binding.etClientEmail.text.toString(),
@@ -206,10 +208,11 @@ class ConfigurationScreen : UsedeskFragment() {
     private fun onNewConfiguration(configuration: Configuration) {
         binding.switchMaterialComponents.isChecked = configuration.materialComponents
         binding.etUrlChat.setText(configuration.urlChat)
-        binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
+        binding.etUrlOfflineForm.setText(configuration.urlChatApi)
         binding.etUrlApi.setText(configuration.urlApi)
         binding.etCompanyId.setText(configuration.companyId)
         binding.etChannelId.setText(configuration.channelId)
+        binding.etMessagesPageSize.setText(configuration.messagesPageSize.toString())
         binding.etAccountId.setText(configuration.accountId)
         binding.etToken.setText(configuration.token)
         binding.etClientToken.setText(configuration.clientToken)

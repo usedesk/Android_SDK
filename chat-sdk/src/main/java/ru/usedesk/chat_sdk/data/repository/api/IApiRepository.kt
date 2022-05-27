@@ -44,6 +44,12 @@ internal interface IApiRepository {
         additionalNestedFields: List<Map<Long, String>>
     )
 
+    fun loadPreviousMessages(
+        configuration: UsedeskChatConfiguration,
+        token: String,
+        messageId: Long
+    ): Boolean
+
     fun disconnect()
 
     interface EventListener {

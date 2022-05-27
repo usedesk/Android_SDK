@@ -7,9 +7,10 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 @Parcelize
 data class UsedeskChatConfiguration @JvmOverloads constructor(
     val urlChat: String = "https://pubsubsec.usedesk.ru",
-    val urlOfflineForm: String = "https://secure.usedesk.ru/",
+    val urlChatApi: String = "https://secure.usedesk.ru/",
     val companyId: String,
     val channelId: String,
+    val messagesPageSize: Int = 20,
     val clientToken: String? = null,
     val clientEmail: String? = null,
     val clientName: String? = null,
@@ -27,7 +28,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     fun validate(): Validation {
         return Validation(
             validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
-            validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
+            validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlChatApi),
             validCompanyId = isNotEmptyNumber(companyId),
             validChannelId = isNotEmptyNumber(channelId),
             validClientToken = isValidClientToken(clientToken),

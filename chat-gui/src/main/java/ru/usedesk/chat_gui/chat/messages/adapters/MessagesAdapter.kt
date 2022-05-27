@@ -84,6 +84,7 @@ internal class MessagesAdapter(
                     if (dy != 0) {
                         updateToBottomButton()
                         updateFloatingDate()
+                        updateFirstVisibleIndex()
                     }
                 }
             })
@@ -95,6 +96,20 @@ internal class MessagesAdapter(
         }
         updateToBottomButton()
         updateFloatingDate()
+        updateFirstVisibleIndex()
+    }
+
+    private fun updateFirstVisibleIndex() {
+        val firstIndex = this@MessagesAdapter.layoutManager
+            .findFirstVisibleItemPosition()
+        if (firstIndex >= 0) {
+            val firstMessageIndex = (items.indices).indexOfFirst {
+                it >= firstIndex && items[it] is ChatMessage
+            }
+            if (firstMessageIndex >= 0) {
+                viewModel.onMessageShowed(firstMessageIndex)
+            }
+        }
     }
 
     fun updateFloatingDate() {
@@ -231,7 +246,7 @@ internal class MessagesAdapter(
                     is ChatDate -> true
                     is ChatMessage -> when {
                         old !is ChatMessage -> false
-                        (new.isLastOfGroup == old.isLastOfGroup) -> false
+                        (new.isLastOfGroup != old.isLastOfGroup) -> false
                         (new.message as? UsedeskMessageText)?.text !=
                                 (old.message as? UsedeskMessageText)?.text -> false
                         (new.message as? UsedeskMessageFile)?.file?.content !=
@@ -254,6 +269,7 @@ internal class MessagesAdapter(
                 recyclerView.post {
                     updateToBottomButton()
                     updateFloatingDate()
+                    updateFirstVisibleIndex()
                 }
             }
         }

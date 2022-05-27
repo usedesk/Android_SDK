@@ -171,12 +171,36 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         }
     }
 
+    private var previousLoadingDisposable: Disposable? = null
+
+    fun onMessageShowed(firstMessageIndex: Int) {
+        if (firstMessageIndex <= 5 &&
+            previousLoadingDisposable == null
+        ) {
+            setModel { model ->
+                model.copy(loading = true)
+            }
+            previousLoadingDisposable = doIt(usedeskChat.loadPreviousMessagesPageRx(), {
+                previousLoadingDisposable = null
+                setModel { model ->
+                    model.copy(loading = false)
+                }
+            }, {
+                previousLoadingDisposable = null
+                setModel { model ->
+                    model.copy(loading = false)
+                }
+            })
+        }
+    }
+
     data class Model(
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
-        val attachmentPanelVisible: Boolean = false
+        val attachmentPanelVisible: Boolean = false,
+        val loading: Boolean = false
     )
 
     internal sealed class ChatItem

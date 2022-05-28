@@ -47,7 +47,9 @@ internal class MessagesAdapter(
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
     private var items: List<ChatItem> = listOf()
-    private val layoutManager = LinearLayoutManager(recyclerView.context)
+    private val layoutManager = LinearLayoutManager(recyclerView.context).apply {
+        reverseLayout = true
+    }
 
     private val saved = savedStated != null
 
@@ -100,14 +102,13 @@ internal class MessagesAdapter(
     }
 
     private fun updateFirstVisibleIndex() {
-        val firstIndex = this@MessagesAdapter.layoutManager
-            .findFirstVisibleItemPosition()
-        if (firstIndex >= 0) {
-            val firstMessageIndex = (items.indices).indexOfFirst {
-                it >= firstIndex && items[it] is ChatMessage
+        val lastItemIndex = layoutManager.findLastVisibleItemPosition()
+        if (lastItemIndex >= 0) {
+            val lastMessageIndex = items.indices.indexOfLast { i ->
+                i <= lastItemIndex && items[i] is ChatMessage
             }
-            if (firstMessageIndex >= 0) {
-                viewModel.onMessageShowed(firstMessageIndex)
+            if (lastMessageIndex + ITEMS_UNTIL_LAST >= items.size) {
+                viewModel.onLastMessageShowed()
             }
         }
     }
@@ -235,6 +236,7 @@ internal class MessagesAdapter(
                 return when (new) {
                     is ChatDate -> old is ChatDate &&
                             old.calendar.timeInMillis == new.calendar.timeInMillis
+                    is ChatLoading -> old is ChatLoading
                     is ChatMessage -> old is ChatMessage && old.isIdEquals(new)
                 }
             }
@@ -244,6 +246,7 @@ internal class MessagesAdapter(
                 val new = items[newItemPosition]
                 val result = when (new) {
                     is ChatDate -> true
+                    is ChatLoading -> old is ChatLoading
                     is ChatMessage -> when {
                         old !is ChatMessage -> false
                         (new.isLastOfGroup != old.isLastOfGroup) -> false
@@ -282,7 +285,7 @@ internal class MessagesAdapter(
             isScrollToBottom = isAtBottom()
         }
         if (isScrollToBottom) {
-            recyclerView.scrollToPosition(items.size - 1)
+            recyclerView.scrollToPosition(0)
         } else {
             updateToBottomButton()
         }
@@ -297,6 +300,15 @@ internal class MessagesAdapter(
                     R.style.Usedesk_Chat_Date
                 ) { rootView, defaultStyleId ->
                     DateBinding(rootView, defaultStyleId)
+                })
+            }
+            R.layout.usedesk_item_chat_loading -> {
+                LoadingViewHolder(inflateItem(
+                    parent,
+                    R.layout.usedesk_item_chat_loading,
+                    R.style.Usedesk_Chat_Loading
+                ) { rootView, defaultStyleId ->
+                    UsedeskBinding(rootView, defaultStyleId)
                 })
             }
             R.layout.usedesk_item_chat_message_text_agent -> {
@@ -404,6 +416,7 @@ internal class MessagesAdapter(
     override fun getItemViewType(position: Int): Int {
         return when (val item = items[position]) {
             is ChatDate -> R.layout.usedesk_item_chat_date
+            is ChatLoading -> R.layout.usedesk_item_chat_loading
             is ChatMessage -> when (item.message.type) {
                 Type.TYPE_AGENT_TEXT -> R.layout.usedesk_item_chat_message_text_agent
                 Type.TYPE_AGENT_IMAGE -> R.layout.usedesk_item_chat_message_image_agent
@@ -981,6 +994,13 @@ internal class MessagesAdapter(
         }
     }
 
+    internal inner class LoadingViewHolder(
+        val binding: UsedeskBinding
+    ) : BaseViewHolder(binding.rootView) {
+
+        override fun bind(chatItem: ChatItem) {}
+    }
+
     private fun getDateText(chatDate: ChatDate): String {
         return when {
             isToday(chatDate.calendar) -> todayText
@@ -1205,6 +1225,8 @@ internal class MessagesAdapter(
     }
 
     companion object {
+        private const val ITEMS_UNTIL_LAST = 5
+
         private fun isToday(calendar: Calendar): Boolean {
             val today = Calendar.getInstance()
             return (today[Calendar.YEAR] == calendar[Calendar.YEAR]

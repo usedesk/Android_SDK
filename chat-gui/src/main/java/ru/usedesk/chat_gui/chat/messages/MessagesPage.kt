@@ -7,7 +7,6 @@ import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +24,6 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.visibleInvisible
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -116,9 +114,6 @@ internal class MessagesPage : UsedeskFragment() {
                 if (new.attachmentPanelVisible) {
                     attachmentDialog?.show()
                 }
-            }
-            if (old?.loading != new.loading) {
-                binding.pbLoading.visibility = visibleInvisible(new.loading)
             }
         }
     }
@@ -258,7 +253,6 @@ internal class MessagesPage : UsedeskFragment() {
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
         val lMessagesContainer: ViewGroup = rootView.findViewById(R.id.l_messages_container)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val dateBinding = getDateBinding(lMessagesContainer)
 
         private fun getDateBinding(rootView: ViewGroup): DateBinding {

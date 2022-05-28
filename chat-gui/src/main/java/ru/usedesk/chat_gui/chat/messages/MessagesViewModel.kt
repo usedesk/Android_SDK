@@ -15,7 +15,8 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     private val actionListenerRx: IUsedeskActionListenerRx
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
 
-    private var messages: List<UsedeskMessage> = listOf()
+    private var messages = listOf<UsedeskMessage>()
+    private var previousLoadingDisposable: Disposable? = null
 
     val configuration = UsedeskChatSdk.requireConfiguration()
     var groupAgentMessages: Boolean = true
@@ -32,7 +33,9 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                 return messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
                     messages = it
                     setModel { model ->
-                        model.copy(chatItems = convertMessages(messages))
+                        model.copy(
+                            chatItems = getChatItems(previousLoadingDisposable != null)
+                        )
                     }
                 }
             }
@@ -41,17 +44,17 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     private fun convertMessages(messages: List<UsedeskMessage>): List<ChatItem> {
-        val newMessages = messages.groupBy {
+        val newMessages = messages.reversed().groupBy {
             it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR]
         }.flatMap {
-            sequenceOf(ChatDate(it.value.first().createdAt)) + it.value.mapIndexed { i, message ->
-                val lastOfGroup = it.value.size - 1 == i
+            it.value.mapIndexed { i, message ->
+                val lastOfGroup = i == 0
                 if (message is UsedeskMessageClient) {
                     ClientMessage(message, lastOfGroup)
                 } else {
                     AgentMessage(message, lastOfGroup, showName = true, showAvatar = true)
                 }
-            }
+            }.asSequence() + ChatDate(it.value.first().createdAt)
         }.toMutableList()
 
         if (groupAgentMessages) {
@@ -171,26 +174,30 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         }
     }
 
-    private var previousLoadingDisposable: Disposable? = null
-
-    fun onMessageShowed(firstMessageIndex: Int) {
-        if (firstMessageIndex <= 5 &&
-            previousLoadingDisposable == null
-        ) {
+    fun onLastMessageShowed() {
+        if (previousLoadingDisposable == null) {
             setModel { model ->
-                model.copy(loading = true)
+                model.copy(chatItems = getChatItems(true))
             }
             previousLoadingDisposable = doIt(usedeskChat.loadPreviousMessagesPageRx(), {
                 previousLoadingDisposable = null
                 setModel { model ->
-                    model.copy(loading = false)
+                    model.copy(chatItems = getChatItems(false))
                 }
             }, {
                 previousLoadingDisposable = null
                 setModel { model ->
-                    model.copy(loading = false)
+                    model.copy(chatItems = getChatItems(false))
                 }
             })
+        }
+    }
+
+    private fun getChatItems(withLoading: Boolean = false): List<ChatItem> {
+        return convertMessages(messages) + if (withLoading) {
+            listOf()
+        } else {
+            listOf(ChatLoading)
         }
     }
 
@@ -199,11 +206,15 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
-        val attachmentPanelVisible: Boolean = false,
-        val loading: Boolean = false
+        val attachmentPanelVisible: Boolean = false
     )
 
-    internal sealed class ChatItem
+    internal sealed interface ChatItem
+
+    sealed class ChatMessage(
+        val message: UsedeskMessage,
+        val isLastOfGroup: Boolean
+    ) : ChatItem
 
     class ClientMessage(
         message: UsedeskMessage,
@@ -217,12 +228,9 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         val showAvatar: Boolean
     ) : ChatMessage(message, isLastOfGroup)
 
-    open class ChatMessage(
-        val message: UsedeskMessage,
-        val isLastOfGroup: Boolean
-    ) : ChatItem()
-
     class ChatDate(
         val calendar: Calendar
-    ) : ChatItem()
+    ) : ChatItem
+
+    object ChatLoading : ChatItem
 }

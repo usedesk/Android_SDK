@@ -18,17 +18,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_messages"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
             tools:itemCount="1"
             tools:listitem="@layout/usedesk_item_chat_message_text_agent" />
-
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="16dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_to_bottom"

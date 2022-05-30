@@ -1,8 +1,10 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -17,6 +19,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     private var messages = listOf<UsedeskMessage>()
     private var previousLoadingDisposable: Disposable? = null
+    private var hasPreviousMessages = true
 
     val configuration = UsedeskChatSdk.requireConfiguration()
     var groupAgentMessages: Boolean = true
@@ -34,7 +37,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                     messages = it
                     setModel { model ->
                         model.copy(
-                            chatItems = getChatItems(previousLoadingDisposable != null)
+                            chatItems = getChatItems()
                         )
                     }
                 }
@@ -175,29 +178,41 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun onLastMessageShowed() {
-        if (previousLoadingDisposable == null) {
+        if (previousLoadingDisposable == null && hasPreviousMessages) {
             setModel { model ->
-                model.copy(chatItems = getChatItems(true))
+                model.copy(chatItems = getChatItems())
             }
-            previousLoadingDisposable = doIt(usedeskChat.loadPreviousMessagesPageRx(), {
-                previousLoadingDisposable = null
-                setModel { model ->
-                    model.copy(chatItems = getChatItems(false))
+            previousLoadingDisposable = doIt(Single.create<Boolean> {
+                try {
+                    it.onSuccess(usedeskChat.loadPreviousMessagesPage())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    it.onSuccess(true)
                 }
-            }, {
+            }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()), {
                 previousLoadingDisposable = null
                 setModel { model ->
-                    model.copy(chatItems = getChatItems(false))
+                    model.copy(chatItems = getChatItems())
                 }
             })
         }
     }
 
-    private fun getChatItems(withLoading: Boolean = false): List<ChatItem> {
-        return convertMessages(messages) + if (withLoading) {
-            listOf()
+    private fun getChatItems(): List<ChatItem> {
+        val messages = convertMessages(messages)
+        return if (hasPreviousMessages) {
+            messages.toMutableList().apply {
+                add(
+                    if (lastOrNull() as? ChatDate != null) {
+                        messages.size - 1
+                    } else {
+                        messages.size
+                    }, ChatLoading
+                )
+            }
         } else {
-            listOf(ChatLoading)
+            messages
         }
     }
 

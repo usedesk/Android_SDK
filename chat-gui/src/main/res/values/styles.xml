@@ -868,8 +868,12 @@
         <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
 
+    <style name="Usedesk.Chat.Loading.Root" parent="">
+        <item name="android:padding">8dp</item>
+    </style>
+
     <style name="Usedesk.Chat.Loading" parent="">
-        <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Loading.Root</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
     </style>
 

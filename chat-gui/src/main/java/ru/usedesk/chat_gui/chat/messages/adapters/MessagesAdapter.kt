@@ -114,84 +114,74 @@ internal class MessagesAdapter(
     }
 
     fun updateFloatingDate() {
-        if (items.isNotEmpty()) {
-            dateBinding.tvDate.post {
-                val firstIndex = layoutManager.findFirstVisibleItemPosition()
-                if (firstIndex >= 0) {
-                    val lastIndex = layoutManager.findLastVisibleItemPosition()
+        dateBinding.tvDate.post {
+            val firstIndex = layoutManager.findFirstVisibleItemPosition()
 
-                    val itemsSequence = items.asSequence()
-                    val visibleItems = itemsSequence.drop(firstIndex)
-                        .take(lastIndex - firstIndex)
-                    val visibleDateItems = visibleItems.filterIsInstance<ChatDate>()
-                    val topDateItem = visibleDateItems.firstOrNull()
-                    val topDateIndex = if (topDateItem != null) {
-                        items.indexOf(topDateItem)
-                    } else {
-                        -1
-                    }
+            dateBinding.rootView.y = 0f
+            dateBinding.rootView.visibility = View.INVISIBLE
 
-                    visibleDateItems.map {
-                        items.indexOf(it)
-                    }.mapNotNull {
-                        recyclerView.findViewHolderForAdapterPosition(it)
-                    }.filterIsInstance<DateViewHolder>()
-                        .forEach {
-                            it.binding.rootView.visibility = View.VISIBLE
-                        }
+            items.indices.asSequence().mapNotNull { i ->
+                recyclerView.findViewHolderForAdapterPosition(i)
+            }.filterIsInstance<DateViewHolder>().forEach {
+                it.binding.rootView.visibility = View.VISIBLE
+            }
 
-                    val floatingDateRect = Rect()
-                    (dateBinding.rootView.parent as View).getGlobalVisibleRect(floatingDateRect)
-                    floatingDateRect.bottom =
-                        floatingDateRect.top + dateBinding.rootView.measuredHeight
+            /**
+             * notVisible - тот, что не виден полностью (или весь в зоне floating)
+             * top - тот что виден полностью, или вышел из зоны floating снизу
+             *
+             * Если есть notVisible, то дата равна ему, а если нет, то дата равна top
+             * Если дата равна notVisible, то если top в зоне floating, то дата сдвигается вверх
+             */
 
-                    dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        updateMargins(
-                            top = 0
-                        )
-                    }
-                    recyclerView.apply {
-                        val topDateViewHolder =
-                            findViewHolderForAdapterPosition(topDateIndex) as? DateViewHolder
+            if (firstIndex >= 0) {
+                val topIndex = layoutManager.findLastVisibleItemPosition()
+                val topDateIndex = (firstIndex..topIndex).lastOrNull { i ->
+                    items.getOrNull(i) is ChatDate
+                } ?: -1
+                val topDateHolder = recyclerView.findViewHolderForAdapterPosition(
+                    topDateIndex
+                ) as? DateViewHolder
 
-                        if (topDateViewHolder != null) {
-                            val topDateRect = Rect().also {
-                                topDateViewHolder.binding.rootView.getGlobalVisibleRect(it)
-                            }
-                            if (topDateRect.bottom > floatingDateRect.bottom &&
-                                topDateRect.top < floatingDateRect.bottom
-                            ) {
-                                val dif = floatingDateRect.bottom - topDateRect.top
-                                dateBinding.rootView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                    updateMargins(
-                                        top = -dif
-                                    )
-                                }
-                            } else if (topDateRect.bottom <= floatingDateRect.bottom) {
-                                topDateViewHolder.binding.rootView.visibility = View.INVISIBLE
-                                dateBinding.tvDate.text = topDateViewHolder.binding.tvDate.text
-                                dateBinding.rootView.visibility = View.VISIBLE
-                                return@post
-                            }
-                        }
-
-                        val notVisibleDateItem = itemsSequence
-                            .take(firstIndex)
-                            .filterIsInstance<ChatDate>()
-                            .lastOrNull()
-
-                        if (notVisibleDateItem != null) {
-                            dateBinding.tvDate.text = getDateText(notVisibleDateItem)
-                            dateBinding.rootView.visibility = View.VISIBLE
-                        } else {
-                            dateBinding.rootView.visibility = View.INVISIBLE
-                        }
-                    }
+                val floatingDateParentRect = dateBinding.rootView.makeGlobalVisibleRect()
+                val topDateRect = topDateHolder?.binding?.rootView?.makeGlobalVisibleRect()
+                val notVisibleDateIndex = if (topDateRect != null &&
+                    topDateRect.bottom <= floatingDateParentRect.bottom
+                ) {
+                    topDateIndex
                 } else {
-                    dateBinding.rootView.visibility = View.INVISIBLE
+                    (topIndex + 1 until itemCount).firstOrNull { i ->
+                        items.getOrNull(i) is ChatDate
+                    } ?: -1
+                }
+                val notVisibleDate = items.getOrNull(notVisibleDateIndex) as? ChatDate
+                val topDate = items.getOrNull(topDateIndex) as? ChatDate
+                val targetDate = notVisibleDate ?: topDate
+                if (targetDate != null) {
+                    val text = getDateText(targetDate)
+                    dateBinding.tvDate.text = text
+                    dateBinding.rootView.visibility = View.VISIBLE
+                    dateBinding.rootView.y = if (topDateRect != null &&
+                        topDateRect.top < floatingDateParentRect.bottom &&
+                        topDateRect.bottom > floatingDateParentRect.bottom
+                    ) {
+                        topDateRect.top - floatingDateParentRect.bottom
+                    } else {
+                        0
+                    }.toFloat()
+
+                    (recyclerView.findViewHolderForAdapterPosition(
+                        if (targetDate == notVisibleDate) notVisibleDateIndex
+                        else topDateIndex
+                    ) as? DateViewHolder)?.binding?.rootView?.visibility = View.INVISIBLE
                 }
             }
+            dateBinding.rootView.requestLayout()
         }
+    }
+
+    private fun View.makeGlobalVisibleRect() = Rect().also {
+        this.getGlobalVisibleRect(it)
     }
 
     private fun updateToBottomButton() {
@@ -991,6 +981,7 @@ internal class MessagesAdapter(
 
         override fun bind(chatItem: ChatItem) {
             binding.tvDate.text = getDateText(chatItem as ChatDate)
+            binding.rootView.visibility = View.VISIBLE
         }
     }
 

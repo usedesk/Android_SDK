@@ -847,48 +847,56 @@ internal class ChatInteractor(
     }
 
     private val oldMutex = Mutex()
-    private var allLoaded = false
-    private var oldMessagesLoadJob: Job? = null
+    private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
-    override fun loadPreviousMessagesPage() {
-        runBlocking {
+    override fun loadPreviousMessagesPage(): Boolean {
+        return runBlocking {
             oldMutex.withLock {
-                val messages = messagesSubject.value
-                val oldestMessageId = messages?.firstOrNull()?.id
-                val token = token
-                if (!allLoaded &&
-                    oldMessagesLoadJob == null &&
-                    oldestMessageId != null &&
-                    token != null
-                ) {
-                    oldMessagesLoadJob = CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val hasUnloadedMessages = apiRepository.loadPreviousMessages(
-                                configuration,
-                                token,
-                                oldestMessageId
-                            )
-                            oldMutex.withLock {
-                                allLoaded = !hasUnloadedMessages
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        } finally {
-                            oldMutex.withLock {
-                                oldMessagesLoadJob = null
-                            }
-                        }
-                    }
-                }
-                oldMessagesLoadJob
-            }?.join()
+                oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
+            }?.await() ?: true
         }
     }
 
-    override fun loadPreviousMessagesPageRx(): Completable {
-        return safeCompletableIo(ioScheduler) {
-            loadPreviousMessagesPage()
+    private suspend fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
+        val messages = messagesSubject.value
+        val oldestMessageId = messages?.firstOrNull()?.id
+        val token = token
+        return if (oldestMessageId != null &&
+            token != null
+        ) {
+            CoroutineScope(Dispatchers.IO).async {
+                loadPreviousMessagesJob(token, oldestMessageId)
+            }.also {
+                oldMessagesLoadDeferred = it
+            }
+        } else {
+            null
         }
+    }
+
+    private suspend fun loadPreviousMessagesJob(
+        token: String,
+        oldestMessageId: Long
+    ) = try {
+        val hasUnloadedMessages = apiRepository.loadPreviousMessages(
+            configuration,
+            token,
+            oldestMessageId
+        )
+        oldMutex.withLock {
+            oldMessagesLoadDeferred = if (hasUnloadedMessages) {
+                null
+            } else {
+                CompletableDeferred(false)
+            }
+            hasUnloadedMessages
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        oldMutex.withLock {
+            oldMessagesLoadDeferred = null
+        }
+        true
     }
 
     override fun release() {

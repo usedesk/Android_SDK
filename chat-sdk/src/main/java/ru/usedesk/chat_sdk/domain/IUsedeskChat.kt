@@ -59,9 +59,11 @@ interface IUsedeskChat {
 
     fun sendMessageDraftRx(): Completable
 
-    fun loadPreviousMessagesPage()
-
-    fun loadPreviousMessagesPageRx(): Completable
+    /**
+     * @return
+     * true - can load next messages page
+     */
+    fun loadPreviousMessagesPage(): Boolean
 
     fun release()
 

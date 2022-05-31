@@ -23,9 +23,22 @@
             tools:itemCount="1"
             tools:listitem="@layout/usedesk_item_chat_message_text_agent" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_to_bottom"
-            style="?attr/usedesk_chat_screen_floating_action_button" />
+
+        <FrameLayout
+            android:id="@+id/fab_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_to_bottom"
+                style="?attr/usedesk_chat_screen_floating_action_button" />
+
+            <TextView
+                android:id="@+id/tv_to_bottom"
+                style="?attr/usedesk_chat_screen_floating_action_button_additional" />
+        </FrameLayout>
+
     </FrameLayout>
 
     <LinearLayout

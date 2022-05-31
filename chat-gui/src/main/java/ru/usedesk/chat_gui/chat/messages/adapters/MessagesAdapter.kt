@@ -102,14 +102,10 @@ internal class MessagesAdapter(
     }
 
     private fun updateFirstVisibleIndex() {
-        val lastItemIndex = layoutManager.findLastVisibleItemPosition()
-        if (lastItemIndex >= 0) {
-            val lastMessageIndex = items.indices.indexOfLast { i ->
-                i <= lastItemIndex && items[i] is ChatMessage
-            }
-            if (lastMessageIndex + ITEMS_UNTIL_LAST >= items.size) {
-                viewModel.onLastMessageShowed()
-            }
+        val topItemIndex = layoutManager.findLastVisibleItemPosition()
+        if (topItemIndex >= 0) {
+            val bottomItemIndex = layoutManager.findFirstVisibleItemPosition()
+            viewModel.onMessagesShowed(bottomItemIndex..topItemIndex)
         }
     }
 
@@ -401,6 +397,14 @@ internal class MessagesAdapter(
         holder.bind(items[position])
     }
 
+    override fun onBindViewHolder(
+        holder: BaseViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        super.onBindViewHolder(holder, position, payloads)
+    }
+
     override fun getItemCount() = items.size
 
     override fun getItemViewType(position: Int): Int {
@@ -423,7 +427,7 @@ internal class MessagesAdapter(
     }
 
     fun scrollToBottom() {
-        recyclerView.smoothScrollToPosition(items.size - 1)
+        recyclerView.smoothScrollToPosition(0)
     }
 
     fun isVisibleChild(child: View): Boolean {
@@ -534,12 +538,11 @@ internal class MessagesAdapter(
                 }
             }
 
-            agentBinding.ivAvatar.visibility = if (chatItem.showAvatar) {
-                visibleState
-            } else {
-                invisibleState
+            agentBinding.ivAvatar.visibility = when {
+                chatItem.showAvatar -> visibleState
+                else -> invisibleState
             }
-            agentBinding.vEmpty.visibility = View.INVISIBLE
+            agentBinding.vEmpty.visibility = visibleGone(chatItem.isLastOfGroup)
         }
 
         fun bindClient(
@@ -1216,7 +1219,6 @@ internal class MessagesAdapter(
     }
 
     companion object {
-        private const val ITEMS_UNTIL_LAST = 5
 
         private fun isToday(calendar: Calendar): Boolean {
             val today = Calendar.getInstance()

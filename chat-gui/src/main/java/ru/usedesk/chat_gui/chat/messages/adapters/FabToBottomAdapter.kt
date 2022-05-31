@@ -1,17 +1,21 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.common_gui.UsedeskResourceManager
-import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.visibleInvisible
 
 internal class FabToBottomAdapter(
+    fabContainer: ViewGroup,
     fabToBottom: FloatingActionButton,
+    tvToBottom: TextView,
     parentStyleValues: UsedeskResourceManager.StyleValues,
     viewModel: MessagesViewModel,
     lifecycleOwner: LifecycleOwner,
@@ -21,15 +25,16 @@ internal class FabToBottomAdapter(
     private val animationOut: Animation
 
     init {
-        val fabStyleValues =
-            parentStyleValues.getStyleValues(R.attr.usedesk_chat_screen_floating_action_button)
+        val fabStyleValues = parentStyleValues.getStyleValues(
+            R.attr.usedesk_chat_screen_floating_action_button
+        )
         animationIn = AnimationUtils.loadAnimation(
             fabToBottom.context,
             fabStyleValues.getId(R.attr.usedesk_animation_in)
         ).apply {
             setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
-                    fabToBottom.visibility = View.VISIBLE
+                    fabContainer.visibility = View.VISIBLE
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
@@ -45,29 +50,38 @@ internal class FabToBottomAdapter(
         ).apply {
             setAnimationListener(object : Animation.AnimationListener {
                 override fun onAnimationStart(animation: Animation?) {
-                    fabToBottom.visibility = View.VISIBLE
+                    fabContainer.visibility = View.VISIBLE
                 }
 
                 override fun onAnimationEnd(animation: Animation?) {
-                    fabToBottom.visibility = View.GONE
+                    fabContainer.visibility = View.INVISIBLE
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {
                 }
             })
         }
-        fabToBottom.visibility = View.GONE
+        fabContainer.visibility = View.INVISIBLE
         fabToBottom.setOnClickListener {
             onClickListener()
         }
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
             if (old?.fabToBottom != new.fabToBottom) {
                 if (old?.fabToBottom == null) {
-                    fabToBottom.visibility = visibleGone(new.fabToBottom)
+                    fabContainer.visibility = visibleInvisible(new.fabToBottom)
                 } else if (new.fabToBottom && !old.fabToBottom) {
-                    fabToBottom.startAnimation(animationIn)
+                    fabContainer.startAnimation(animationIn)
                 } else if (!new.fabToBottom && old.fabToBottom) {
-                    fabToBottom.startAnimation(animationOut)
+                    fabContainer.startAnimation(animationOut)
+                }
+            }
+            if (old?.newMessagesCount != new.newMessagesCount) {
+                tvToBottom.run {
+                    text = when {
+                        new.newMessagesCount > 99 -> "99+"
+                        else -> new.newMessagesCount.toString()
+                    }
+                    visibility = visibleInvisible(new.newMessagesCount > 0)
                 }
             }
         }

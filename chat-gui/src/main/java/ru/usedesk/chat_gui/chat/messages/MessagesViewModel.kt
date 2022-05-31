@@ -18,6 +18,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
 
     private var messages = listOf<UsedeskMessage>()
+    private var chatItems = listOf<ChatItem>()
     private var previousLoadingDisposable: Disposable? = null
     private var hasPreviousMessages = true
 
@@ -34,10 +35,18 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                 messagesObservable: Observable<List<UsedeskMessage>>
             ): Disposable? {
                 return messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    val lastBottomMessage = messages.lastOrNull()
+                    val bottomMessageIndex = it.indexOfLast { message ->
+                        message.id == lastBottomMessage?.id
+                    }
                     messages = it
                     setModel { model ->
                         model.copy(
-                            chatItems = getChatItems()
+                            chatItems = getChatItems(),
+                            newMessagesCount = model.newMessagesCount + when {
+                                bottomMessageIndex < it.size - 1 -> it.size - 1 - bottomMessageIndex
+                                else -> 0
+                            }
                         )
                     }
                 }
@@ -64,9 +73,9 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
             newMessages.forEachIndexed { index, item ->
                 if (item is AgentMessage) {
                     item.message as UsedeskMessageAgent
-                    val previous = (newMessages.getOrNull(index - 1) as? AgentMessage)?.message
+                    val next = (newMessages.getOrNull(index - 1) as? AgentMessage)?.message
                             as? UsedeskMessageAgent
-                    val next = (newMessages.getOrNull(index + 1) as? AgentMessage)?.message
+                    val previous = (newMessages.getOrNull(index + 1) as? AgentMessage)?.message
                             as? UsedeskMessageAgent
                     newMessages[index] = AgentMessage(
                         item.message,
@@ -177,7 +186,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         }
     }
 
-    fun onLastMessageShowed() {
+    private fun onLastMessageShowed() {
         if (previousLoadingDisposable == null && hasPreviousMessages) {
             setModel { model ->
                 model.copy(chatItems = getChatItems())
@@ -192,10 +201,25 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
             }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()), {
                 previousLoadingDisposable = null
+                hasPreviousMessages = it
                 setModel { model ->
                     model.copy(chatItems = getChatItems())
                 }
             })
+        }
+    }
+
+    fun onMessagesShowed(messagesRange: IntRange) {
+        val lastMessageIndex = chatItems.indices.indexOfLast { i ->
+            i <= messagesRange.last && chatItems[i] is ChatMessage
+        }
+        if (lastMessageIndex + ITEMS_UNTIL_LAST >= chatItems.size) {
+            onLastMessageShowed()
+        }
+        if (messagesRange.first < modelLiveData.value.newMessagesCount) {
+            setModel { model ->
+                model.copy(newMessagesCount = messagesRange.first)
+            }
         }
     }
 
@@ -213,6 +237,8 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
             }
         } else {
             messages
+        }.also {
+            chatItems = it
         }
     }
 
@@ -221,7 +247,8 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
-        val attachmentPanelVisible: Boolean = false
+        val attachmentPanelVisible: Boolean = false,
+        val newMessagesCount: Int = 0
     )
 
     internal sealed interface ChatItem
@@ -248,4 +275,8 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     ) : ChatItem
 
     object ChatLoading : ChatItem
+
+    companion object {
+        private const val ITEMS_UNTIL_LAST = 5
+    }
 }

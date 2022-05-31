@@ -269,7 +269,7 @@ internal class ChatInteractor(
         isInited: Boolean
     ) {
         lastMessages = (lastMessages + messages).sortedBy {
-            it.createdAt.timeInMillis
+            it.id
         }
         messages.forEach { message ->
             messageSubject.onNext(message)

@@ -35,12 +35,7 @@ abstract class UsedeskApiRepository<API>(
                 if (attempt != 0) {
                     Thread.sleep(200)
                 }
-                onGetCall().apply {
-                    Log.d(
-                        "REQUEST_API",
-                        "${request().url()}: ${Gson().toJson(request())}"
-                    )
-                }.execute()
+                onGetCall().execute()
             }.filter {
                 val filter = it.isSuccessful && it.code() == 200 && it.body() != null
                 if (!filter) {

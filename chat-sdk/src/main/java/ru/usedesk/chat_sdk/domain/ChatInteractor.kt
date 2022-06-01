@@ -172,8 +172,13 @@ internal class ChatInteractor(
         }
 
         @Synchronized
-        override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(newMessages, false)
+        override fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(old = oldMessages, isInited = false)
+        }
+
+        @Synchronized
+        override fun onMessagesNewReceived(newMessages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(new = newMessages, isInited = false)
         }
 
         @Synchronized
@@ -265,13 +270,12 @@ internal class ChatInteractor(
     }
 
     private fun onMessagesNew(
-        messages: List<UsedeskMessage>,
+        old: List<UsedeskMessage> = listOf(),
+        new: List<UsedeskMessage> = listOf(),
         isInited: Boolean
     ) {
-        lastMessages = (lastMessages + messages).sortedBy {
-            it.id
-        }
-        messages.forEach { message ->
+        lastMessages = old + lastMessages + new
+        (old.asSequence() + new.asSequence()).forEach { message ->
             messageSubject.onNext(message)
             if (!isInited) {
                 newMessageSubject.onNext(message)
@@ -321,7 +325,7 @@ internal class ChatInteractor(
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message)
-            eventListener.onMessagesReceived(listOf(sendingMessage))
+            eventListener.onMessagesNewReceived(listOf(sendingMessage))
             sendText(sendingMessage)
         }
     }
@@ -368,7 +372,7 @@ internal class ChatInteractor(
         var exc: Exception? = null
         val sendingFiles = usedeskFileInfoList.map { usedeskFileInfo ->
             createSendingMessage(usedeskFileInfo).also {
-                eventListener.onMessagesReceived(listOf(it))
+                eventListener.onMessagesNewReceived(listOf(it))
             }
         }
 
@@ -721,7 +725,7 @@ internal class ChatInteractor(
                 createSendingMessage(it)
             })
 
-            eventListener.onMessagesReceived(sendingMessages)
+            eventListener.onMessagesNewReceived(sendingMessages)
 
             jobsMutex.withLock {
                 jobs.addAll(sendingMessages.mapNotNull { msg ->
@@ -967,7 +971,10 @@ internal class ChatInteractor(
             it.id !in ids
         }
         val needToResendMessages = lastMessages.isNotEmpty()
-        onMessagesNew(filteredMessages + filteredNotSentMessages, true)
+        onMessagesNew(
+            new = filteredMessages + filteredNotSentMessages,
+            isInited = true
+        )
 
         if (chatInited.waitingEmail) {
             sendUserEmail()

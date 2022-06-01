@@ -740,7 +740,7 @@
         <item name="usedesk_chat_screen_send_image">@style/Usedesk.Chat.Screen.Send.Image</item>
         <item name="usedesk_chat_screen_message_edit_text">@style/Usedesk.Chat.Screen.Message.Text</item>
         <item name="usedesk_chat_screen_floating_action_button">@style/Usedesk.Chat.Screen.FloatingActionButton</item>
-        <item name="usedesk_chat_screen_floating_action_button_additional">@style/Usedesk.Chat.Screen.FloatingActionButton.Additional</item>
+        <item name="usedesk_chat_screen_floating_action_button_text">@style/Usedesk.Chat.Screen.FloatingActionButton.Text</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Loading.Page.ContainerRoot" parent="">
@@ -1277,13 +1277,13 @@
         <item name="android:fontFamily">@font/roboto_regular</item>
     </style>
 
-    <style name="Usedesk.Chat.Screen.FloatingActionButton.Additional" parent="">
+    <style name="Usedesk.Chat.Screen.FloatingActionButton.Text" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_horizontal|top</item>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
-        <item name="android:elevation">8dp</item>
+        <item name="android:elevation">7dp</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Screen.FloatingActionButton.Additional.TextAppearance</item>
         <item name="android:background">@drawable/usedesk_background_blue_round</item>

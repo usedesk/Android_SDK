@@ -254,7 +254,7 @@ internal class MessagesPage : UsedeskFragment() {
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
         val fabContainer: ViewGroup = rootView.findViewById(R.id.fab_container)
         val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
-        val tvToBottom: TextView = rootView.findViewById(R.id.tv_to_bottom)
+        val tvToBottom: TextView = rootView.findViewById(R.id.tv_to_bottom_counter)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
         val lMessagesContainer: ViewGroup = rootView.findViewById(R.id.l_messages_container)

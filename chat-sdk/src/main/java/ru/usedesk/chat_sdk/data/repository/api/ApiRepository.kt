@@ -89,7 +89,7 @@ internal class ApiRepository(
                 if (it is UsedeskMessageClient && it.id != it.localId) {
                     eventListener.onMessageUpdated(it)
                 } else {
-                    eventListener.onMessagesReceived(listOf(it))
+                    eventListener.onMessagesNewReceived(listOf(it))
                 }
             }
         }
@@ -247,7 +247,7 @@ internal class ApiRepository(
         val messages = messagesResponse.flatMap {
             messageResponseConverter.convert(it)
         }
-        eventListener.onMessagesReceived(messages)
+        eventListener.onMessagesOldReceived(messages)
         return messagesResponse.isNotEmpty()
     }
 

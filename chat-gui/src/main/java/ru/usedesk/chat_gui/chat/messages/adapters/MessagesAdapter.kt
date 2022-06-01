@@ -224,6 +224,7 @@ internal class MessagesAdapter(
                             old.calendar.timeInMillis == new.calendar.timeInMillis
                     is ChatLoading -> old is ChatLoading
                     is ChatMessage -> old is ChatMessage && old.isIdEquals(new)
+                    is MessageAgentName -> old is MessageAgentName && old.name == new.name
                 }
             }
 
@@ -231,8 +232,9 @@ internal class MessagesAdapter(
                 val old = oldItems[oldItemPosition]
                 val new = items[newItemPosition]
                 val result = when (new) {
-                    is ChatDate -> true
-                    is ChatLoading -> old is ChatLoading
+                    is ChatDate,
+                    is ChatLoading,
+                    is MessageAgentName -> true
                     is ChatMessage -> when {
                         old !is ChatMessage -> false
                         (new.isLastOfGroup != old.isLastOfGroup) -> false
@@ -279,117 +281,111 @@ internal class MessagesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when (viewType) {
-            R.layout.usedesk_item_chat_date -> {
+            R.layout.usedesk_item_chat_date ->
                 DateViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_date,
+                    viewType,
                     R.style.Usedesk_Chat_Date
                 ) { rootView, defaultStyleId ->
                     DateBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_loading -> {
+            R.layout.usedesk_item_chat_loading ->
                 LoadingViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_loading,
+                    viewType,
                     R.style.Usedesk_Chat_Loading
                 ) { rootView, defaultStyleId ->
                     UsedeskBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_text_agent -> {
+            R.layout.usedesk_item_chat_message_text_agent ->
                 MessageTextAgentViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_text_agent,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Text_Agent
                 ) { rootView, defaultStyleId ->
                     MessageTextAgentBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_file_agent -> {
+            R.layout.usedesk_item_chat_message_file_agent ->
                 MessageFileAgentViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_file_agent,
+                    viewType,
                     R.style.Usedesk_Chat_Message_File_Agent
                 ) { rootView, defaultStyleId ->
                     MessageFileAgentBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_image_agent -> {
+            R.layout.usedesk_item_chat_message_image_agent ->
                 MessageImageAgentViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_image_agent,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Image_Agent
                 ) { rootView, defaultStyleId ->
                     MessageImageAgentBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_video_agent -> {
+            R.layout.usedesk_item_chat_message_video_agent ->
                 MessageVideoAgentViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_video_agent,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Video_Agent
                 ) { rootView, defaultStyleId ->
                     MessageVideoAgentBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_audio_agent -> {
+            R.layout.usedesk_item_chat_message_audio_agent ->
                 MessageAudioAgentViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_audio_agent,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Audio_Agent
                 ) { rootView, defaultStyleId ->
                     MessageAudioAgentBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_text_client -> {
+            R.layout.usedesk_item_chat_message_text_client ->
                 MessageTextClientViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_text_client,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Text_Client
                 ) { rootView, defaultStyleId ->
                     MessageTextClientBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_file_client -> {
+            R.layout.usedesk_item_chat_message_file_client ->
                 MessageFileClientViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_file_client,
+                    viewType,
                     R.style.Usedesk_Chat_Message_File_Client
                 ) { rootView, defaultStyleId ->
                     MessageFileClientBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_image_client -> {
+            R.layout.usedesk_item_chat_message_image_client ->
                 MessageImageClientViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_image_client,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Image_Client
                 ) { rootView, defaultStyleId ->
                     MessageImageClientBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_video_client -> {
+            R.layout.usedesk_item_chat_message_video_client ->
                 MessageVideoClientViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_video_client,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Video_Client
                 ) { rootView, defaultStyleId ->
                     MessageVideoClientBinding(rootView, defaultStyleId)
                 })
-            }
-            R.layout.usedesk_item_chat_message_audio_client -> {
+            R.layout.usedesk_item_chat_message_audio_client ->
                 MessageAudioClientViewHolder(inflateItem(
                     parent,
-                    R.layout.usedesk_item_chat_message_audio_client,
+                    viewType,
                     R.style.Usedesk_Chat_Message_Audio_Client
                 ) { rootView, defaultStyleId ->
                     MessageAudioClientBinding(rootView, defaultStyleId)
                 })
-            }
-            else -> {
-                throw RuntimeException("Unknown view type:$viewType")
-            }
+            R.layout.usedesk_item_chat_message_agent_name ->
+                MessageAgentNameViewHolder(inflateItem(
+                    parent,
+                    viewType,
+                    R.style.Usedesk_Chat_Message_Text_Agent
+                ) { rootView, defaultStyleId ->
+                    MessageAgentNameBinding(rootView, defaultStyleId)
+                })
+            else -> throw RuntimeException("Unknown view type:$viewType")
         }
     }
 
@@ -411,6 +407,7 @@ internal class MessagesAdapter(
         return when (val item = items[position]) {
             is ChatDate -> R.layout.usedesk_item_chat_date
             is ChatLoading -> R.layout.usedesk_item_chat_loading
+            is MessageAgentName -> R.layout.usedesk_item_chat_message_agent_name
             is ChatMessage -> when (item.message.type) {
                 Type.TYPE_AGENT_TEXT -> R.layout.usedesk_item_chat_message_text_agent
                 Type.TYPE_AGENT_IMAGE -> R.layout.usedesk_item_chat_message_image_agent
@@ -1178,6 +1175,16 @@ internal class MessagesAdapter(
         }
     }
 
+    internal inner class MessageAgentNameViewHolder(
+        private val binding: MessageAgentNameBinding
+    ) : BaseViewHolder(binding.rootView) {
+
+        override fun bind(chatItem: ChatItem) {
+            chatItem as MessageAgentName
+            binding.tvName.text = chatItem.name
+        }
+    }
+
     internal inner class MessageFileAgentViewHolder(
         private val binding: MessageFileAgentBinding
     ) : MessageFileViewHolder(binding.rootView, binding.content, false) {
@@ -1260,6 +1267,11 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
+    }
+
+    internal class MessageAgentNameBinding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
+        val tvName: TextView = rootView.findViewById(R.id.tv_name)
     }
 
     internal class MessageFileBinding(rootView: View, defaultStyleId: Int) :

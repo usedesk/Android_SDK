@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk.api
 
-import android.util.Log
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -35,18 +34,13 @@ abstract class UsedeskApiRepository<API>(
                 if (attempt != 0) {
                     Thread.sleep(200)
                 }
-                onGetCall().apply {
-                    Log.d(
-                        "REQUEST_API",
-                        "${request().url()}: ${Gson().toJson(request())}"
-                    )
-                }.execute()
+                onGetCall().execute()
             }.filter {
                 val filter = it.isSuccessful && it.code() == 200 && it.body() != null
                 if (!filter) {
-                    Log.d(
-                        "Response",
-                        "failed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
+                    UsedeskLog.onLog(
+                        "API",
+                        "ResponseFailed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
                     )
                 }
                 filter
@@ -65,7 +59,10 @@ abstract class UsedeskApiRepository<API>(
             gson.fromJson(rawResponseBody, tClass)
         } catch (e: Exception) {
             if (rawResponseBody.isNotEmpty()) {
-                UsedeskLog.onLog("Failed to parse the response", rawResponseBody)
+                UsedeskLog.onLog(
+                    "API",
+                    "Failed to parse the response: $rawResponseBody"
+                )
             }
             e.printStackTrace()
             throw UsedeskHttpException()

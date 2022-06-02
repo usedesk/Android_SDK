@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.text.Html
 import androidx.core.app.NotificationCompat
 import ru.usedesk.chat_sdk.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -56,8 +57,8 @@ abstract class UsedeskNotificationsService : Service() {
         throw UnsupportedOperationException("Not yet implemented")
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val chatConfiguration = intent.getParcelableExtra<UsedeskChatConfiguration>(
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val chatConfiguration = intent?.getParcelableExtra<UsedeskChatConfiguration>(
             USEDESK_CHAT_CONFIGURATION_KEY
         )
         if (chatConfiguration != null) {
@@ -71,7 +72,7 @@ abstract class UsedeskNotificationsService : Service() {
             stopSelf(startId)
         }
 
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun renderModel(model: UsedeskNotificationsModel?) {
@@ -92,7 +93,7 @@ abstract class UsedeskNotificationsService : Service() {
         return if (model.message is UsedeskMessageAgent) {
             var title = model.message.name
             val text = if (model.message is UsedeskMessageText) {
-                model.message.text
+                Html.fromHtml(model.message.text)
             } else {
                 fileMessage
             }

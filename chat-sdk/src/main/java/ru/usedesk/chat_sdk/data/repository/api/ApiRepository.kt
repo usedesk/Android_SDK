@@ -1,10 +1,12 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import android.content.ContentResolver
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
@@ -19,24 +21,26 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientRequest
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
-import java.io.File
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
+import kotlin.math.min
 
 internal class ApiRepository(
     private val socketApi: SocketApi,
     private val multipartConverter: IMultipartConverter,
     private val initChatResponseConverter: InitChatResponseConverter,
     private val messageResponseConverter: MessageResponseConverter,
+    private val contentResolver: ContentResolver,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
-) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java), IApiRepository {
+) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java),
+    IApiRepository {
 
     private fun isConnected() = socketApi.isConnected()
 
@@ -85,7 +89,7 @@ internal class ApiRepository(
                 if (it is UsedeskMessageClient && it.id != it.localId) {
                     eventListener.onMessageUpdated(it)
                 } else {
-                    eventListener.onMessagesReceived(listOf(it))
+                    eventListener.onMessagesNewReceived(listOf(it))
                 }
             }
         }
@@ -102,7 +106,13 @@ internal class ApiRepository(
         eventListener: EventListener
     ) {
         this.eventListener = eventListener
-        socketApi.connect(url, token, configuration.getCompanyAndChannel(), socketEventListener)
+        socketApi.connect(
+            url,
+            token,
+            configuration.getCompanyAndChannel(),
+            configuration.messagesPageSize,
+            socketEventListener
+        )
     }
 
     override fun init(
@@ -112,8 +122,9 @@ internal class ApiRepository(
         socketApi.sendRequest(
             InitChatRequest(
                 token,
-                configuration.companyId,
-                configuration.urlChat
+                configuration.getCompanyAndChannel(),
+                configuration.urlChat,
+                configuration.messagesPageSize
             )
         )
     }
@@ -140,36 +151,104 @@ internal class ApiRepository(
     ) {
         checkConnection()
 
-        val file = File(fileInfo.uri.path)
-        val fileRequestBody = RequestBody.create(MediaType.parse(fileInfo.type), file)
-        val parts = listOf(
-            multipartConverter.convert("chat_token", token),
-            MultipartBody.Part.createFormData("file", fileInfo.name, fileRequestBody),
-            multipartConverter.convert("message_id", messageId)
-        )
-        doRequest(configuration.urlToSendFile, FileResponse::class.java) {
+        val parts = mapOf(
+            "chat_token" to token,
+            "file" to fileInfo.uri,
+            "message_id" to messageId
+        ).mapNotNull(multipartConverter::convert)
+
+        doRequest(configuration.urlChatApi, FileResponse::class.java) {
             it.postFile(parts)
         }
     }
 
-    override fun send(
-        token: String,
-        email: String?,
-        name: String?,
-        note: String?,
-        phone: Long?,
-        additionalId: String?
+    override fun setClient(
+        configuration: UsedeskChatConfiguration
     ) {
-        socketApi.sendRequest(
-            SetClientRequest(
+        checkConnection()
+
+        try {
+            val parts = (mapOf(
+                "email" to configuration.clientEmail?.getCorrectStringValue(),
+                "username" to configuration.clientName?.getCorrectStringValue(),
+                "token" to configuration.clientToken,
+                "note" to configuration.clientNote,
+                "phone" to configuration.clientPhoneNumber,
+                "additional_id" to configuration.clientAdditionalId,
+                "company_id" to configuration.companyId
+            ).map(multipartConverter::convert) + getAvatarMultipartBodyPart(configuration)).filterNotNull()
+
+            doRequest(configuration.urlChatApi, SetClientResponse::class.java) {
+                it.setClient(parts)
+            }
+            socketEventListener.onSetEmailSuccess()
+        } catch (e: IOException) {
+            throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
+        }
+    }
+
+    private fun getAvatarMultipartBodyPart(configuration: UsedeskChatConfiguration) =
+        if (configuration.clientAvatar != null) {
+            try {
+                val uri = Uri.parse(configuration.clientAvatar)
+                val originalBitmap = contentResolver.openInputStream(uri)
+                    .use {
+                        BitmapFactory.decodeStream(it)
+                    }
+                val side = min(originalBitmap.width, originalBitmap.height)
+                val outputStream = ByteArrayOutputStream()
+
+                val quadBitmap = Bitmap.createBitmap(
+                    originalBitmap,
+                    (originalBitmap.width - side) / 2,
+                    (originalBitmap.height - side) / 2,
+                    side,
+                    side
+                )
+                originalBitmap.recycle()
+                val avatarBitmap = quadBitmap.scale(
+                    AVATAR_SIZE,
+                    AVATAR_SIZE
+                )
+                quadBitmap.recycle()
+                avatarBitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    100,
+                    outputStream
+                )
+                val byteArray = outputStream.toByteArray()
+                avatarBitmap.recycle()
+
+                multipartConverter.convert(
+                    "avatar",
+                    byteArray,
+                    configuration.clientAvatar
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else null
+
+    override fun loadPreviousMessages(
+        configuration: UsedeskChatConfiguration,
+        token: String,
+        messageId: Long
+    ): Boolean {
+        val messagesResponse = doRequest(
+            configuration.urlChatApi,
+            Array<MessageResponse.Message>::class.java
+        ) {
+            it.loadPreviousMessages(
                 token,
-                email,
-                name,
-                note,
-                phone,
-                additionalId
+                messageId
             )
-        )
+        }
+        val messages = messagesResponse.flatMap {
+            messageResponseConverter.convert(it)
+        }
+        eventListener.onMessagesOldReceived(messages)
+        return messagesResponse.isNotEmpty()
     }
 
     override fun send(
@@ -178,18 +257,18 @@ internal class ApiRepository(
         offlineForm: UsedeskOfflineForm
     ) {
         try {
-            doRequest(configuration.urlOfflineForm, Array<Any>::class.java) {
+            doRequest(configuration.urlChatApi, Array<Any>::class.java) {
                 val params = mapOf(
-                    "email" to getCorrectStringValue(offlineForm.clientEmail),
-                    "name" to getCorrectStringValue(offlineForm.clientName),
-                    "company_id" to getCorrectStringValue(companyId),
-                    "message" to getCorrectStringValue(offlineForm.message),
-                    "topic" to getCorrectStringValue(offlineForm.topic)
+                    "email" to offlineForm.clientEmail.getCorrectStringValue(),
+                    "name" to offlineForm.clientName.getCorrectStringValue(),
+                    "company_id" to companyId.getCorrectStringValue(),
+                    "message" to offlineForm.message.getCorrectStringValue(),
+                    "topic" to offlineForm.topic.getCorrectStringValue()
                 )
                 val customFields = offlineForm.fields.filter { field ->
                     field.value.isNotEmpty()
                 }.map { field ->
-                    field.key to getCorrectStringValue(field.value)
+                    field.key to field.value.getCorrectStringValue()
                 }
                 val json = JsonObject()
                 (params + customFields).forEach { param ->
@@ -208,7 +287,7 @@ internal class ApiRepository(
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
     ) {
-        val response = doRequest(configuration.urlToSendFile, SetClientResponse::class.java) {
+        val response = doRequest(configuration.urlChatApi, String::class.java) {
             if (token != null) {
                 val totalFields =
                     (additionalFields.toList() + additionalNestedFields.flatMap { fields ->
@@ -224,7 +303,7 @@ internal class ApiRepository(
         }
     }
 
-    private fun getCorrectStringValue(value: String) = value.replace("\"", "\\\"")
+    private fun String.getCorrectStringValue() = this.replace("\"", "\\\"")
 
     override fun disconnect() {
         socketApi.disconnect()
@@ -238,5 +317,7 @@ internal class ApiRepository(
 
     companion object {
         private val STATUSES_FOR_FORM = listOf(null, 2, 3, 4, 7, 9, 10)
+
+        private const val AVATAR_SIZE = 100
     }
 }

@@ -58,10 +58,10 @@ class ConfigurationViewModel : ViewModel() {
     private fun validate(configuration: Configuration): ConfigurationValidation {
         val chatValidation = UsedeskChatConfiguration(
             configuration.urlChat,
-            configuration.urlOfflineForm,
-            configuration.urlToSendFile,
+            configuration.urlChatApi,
             configuration.companyId,
             configuration.channelId,
+            configuration.messagesPageSize,
             configuration.clientToken,
             configuration.clientEmail,
             configuration.clientName,
@@ -69,6 +69,7 @@ class ConfigurationViewModel : ViewModel() {
             configuration.clientPhoneNumber,
             configuration.clientAdditionalId,
             configuration.clientInitMessage,
+            null,
             configuration.cacheFiles
         ).validate()
         val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(

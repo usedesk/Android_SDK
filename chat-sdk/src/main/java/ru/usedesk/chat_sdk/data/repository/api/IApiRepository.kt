@@ -16,15 +16,6 @@ internal interface IApiRepository {
     )
 
     fun send(
-        token: String,
-        email: String?,
-        name: String?,
-        note: String?,
-        phone: Long?,
-        additionalId: String?
-    )
-
-    fun send(
         configuration: UsedeskChatConfiguration,
         companyId: String,
         offlineForm: UsedeskOfflineForm
@@ -44,12 +35,20 @@ internal interface IApiRepository {
         messageId: Long
     )
 
+    fun setClient(configuration: UsedeskChatConfiguration)
+
     fun send(
         token: String?,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
     )
+
+    fun loadPreviousMessages(
+        configuration: UsedeskChatConfiguration,
+        token: String,
+        messageId: Long
+    ): Boolean
 
     fun disconnect()
 
@@ -60,7 +59,8 @@ internal interface IApiRepository {
         fun onFeedback()
         fun onException(exception: Exception)
         fun onChatInited(chatInited: ChatInited)
-        fun onMessagesReceived(newMessages: List<UsedeskMessage>)
+        fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>)
+        fun onMessagesNewReceived(newMessages: List<UsedeskMessage>)
         fun onMessageUpdated(message: UsedeskMessage)
         fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings, chatInited: ChatInited)
         fun onSetEmailSuccess()

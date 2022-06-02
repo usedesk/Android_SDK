@@ -105,6 +105,7 @@ internal class SocketApi(
         url: String,
         token: String?,
         companyId: String,
+        messagesPageSize: Int,
         eventListener: EventListener
     ) {
         if (socket == null) {
@@ -120,7 +121,12 @@ internal class SocketApi(
 
                 socket = IO.socket(url, options).also {
                     this@SocketApi.eventListener = eventListener
-                    this@SocketApi.initChatRequest = InitChatRequest(token, companyId, url)
+                    this@SocketApi.initChatRequest = InitChatRequest(
+                        token,
+                        companyId,
+                        url,
+                        messagesPageSize
+                    )
 
                     emitterListeners[EVENT_SERVER_ACTION] = baseEventEmitterListener
                     emitterListeners[Socket.EVENT_CONNECT_ERROR] = connectErrorEmitterListener

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message
 
-import com.google.gson.annotations.SerializedName
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
 
 internal class MessageRequest(
@@ -22,7 +21,6 @@ internal class MessageRequest(
     }
 
     private class Payload(
-        @SerializedName("message_id")
         private val messageId: Long
     )
 }

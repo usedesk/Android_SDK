@@ -10,9 +10,9 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 
 internal class ConfigurationLoader(
     context: Context,
-    val gson: Gson
 ) : DataLoader<Array<UsedeskChatConfiguration>>(), IConfigurationLoader {
 
+    private val gson = Gson()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
         PREF_NAME,
         Context.MODE_MULTI_PROCESS
@@ -72,12 +72,12 @@ internal class ConfigurationLoader(
         when (oldVersion) {
             1 -> {
                 val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
-                val urlOfflineForm = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
+                val urlChatApi = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
                 val companyId = sharedPreferences.getString(KEY_ID, null)
                 val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
                 val clientInitMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
                 if (urlChat != null
-                    && urlOfflineForm != null
+                    && urlChatApi != null
                     && companyId != null
                 ) {
                     var clientName: String? = null
@@ -100,7 +100,7 @@ internal class ConfigurationLoader(
                     return arrayOf(
                         UsedeskChatConfiguration(
                             urlChat = urlChat,
-                            urlOfflineForm = urlOfflineForm,
+                            urlChatApi = urlChatApi,
                             companyId = companyId,
                             channelId = "",
                             clientToken = legacyClientToken,

@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.11.18)
+# Android Usedesk SDK (v3.12.0)
 
 ### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
 
@@ -80,8 +80,7 @@ UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 | Переменная | Тип | Описание |
 |----------------|------|-------------|
 | urlChat \* | String | Адрес сервера Чата. Стандартное значение `https://pubsubsec.usedesk.ru` |
-| urlOfflineForm \* | String | Адрес для отправки формы обратной связи. Стандартное значение `https://secure.usedesk.ru/` |
-| urlToSendFile \* | String | Адрес для отправки файлов. Стандартное значение `https://secure.usedesk.ru/uapi/v1/` |
+| urlChatApi \* | String | Адрес для API запросов Чата. Стандартное значение `https://secure.usedesk.ru/` |
 | companyId \* | String | Идентификатор компании |
 | channelId \* | String | Идентификатор канала |
 | clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе. Указав `null` библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName ` в конфигурации. Указав `""` сохранённый токен использоваться не будет |

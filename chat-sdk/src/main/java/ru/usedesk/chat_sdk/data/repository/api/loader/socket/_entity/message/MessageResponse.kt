@@ -21,6 +21,8 @@ internal class MessageResponse : BaseResponse() {
         var id: Long? = null
         var type: String? = null
         var text: String? = null
+
+        @SerializedName("createdAt")
         var createdAt: String? = null
         var name: String? = null
         var chat: Any? = null
@@ -35,10 +37,10 @@ internal class MessageResponse : BaseResponse() {
 
         class Payload {
             var buttons: Array<Button?>? = null
+
+            @SerializedName("userRating")
             var userRating: String? = null
             var avatar: String? = null
-
-            @SerializedName("message_id")
             var messageId: Long? = null
 
             class Button {

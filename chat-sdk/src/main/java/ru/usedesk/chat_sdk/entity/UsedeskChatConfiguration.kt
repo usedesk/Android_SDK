@@ -7,10 +7,10 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 @Parcelize
 data class UsedeskChatConfiguration @JvmOverloads constructor(
     val urlChat: String = "https://pubsubsec.usedesk.ru",
-    val urlOfflineForm: String = "https://secure.usedesk.ru/",
-    val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
+    val urlChatApi: String = "https://secure.usedesk.ru/",
     val companyId: String,
     val channelId: String,
+    val messagesPageSize: Int = 20,
     val clientToken: String? = null,
     val clientEmail: String? = null,
     val clientName: String? = null,
@@ -18,6 +18,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientPhoneNumber: Long? = null,
     val clientAdditionalId: String? = null,
     val clientInitMessage: String? = null,
+    val clientAvatar: String? = null,
     val cacheMessagesWithFile: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),
     val additionalNestedFields: List<Map<Long, String>> = listOf()
@@ -27,8 +28,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     fun validate(): Validation {
         return Validation(
             validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
-            validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlOfflineForm),
-            validUrlToSendFile = UsedeskValidatorUtil.isValidUrlNecessary(urlToSendFile),
+            validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlChatApi),
             validCompanyId = isNotEmptyNumber(companyId),
             validChannelId = isNotEmptyNumber(channelId),
             validClientToken = isValidClientToken(clientToken),
@@ -46,19 +46,17 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     }
 
     class Validation(
-        val validUrlChat: Boolean = false,
-        val validUrlOfflineForm: Boolean = false,
-        val validUrlToSendFile: Boolean = false,
-        val validCompanyId: Boolean = false,
-        val validChannelId: Boolean = false,
-        val validClientToken: Boolean = false,
-        val validClientEmail: Boolean = false,
-        val validClientPhoneNumber: Boolean = false
+        val validUrlChat: Boolean,
+        val validUrlOfflineForm: Boolean,
+        val validCompanyId: Boolean,
+        val validChannelId: Boolean,
+        val validClientToken: Boolean,
+        val validClientEmail: Boolean,
+        val validClientPhoneNumber: Boolean
     ) {
         fun isAllValid(): Boolean {
             return validUrlChat
                     && validUrlOfflineForm
-                    && validUrlToSendFile
                     && validCompanyId
                     && validChannelId
                     && validClientEmail
@@ -68,7 +66,6 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         override fun toString(): String {
             return "Validation(validUrlChat=$validUrlChat, " +
                     "validUrlOfflineForm=$validUrlOfflineForm, " +
-                    "validUrlToSendFile=$validUrlToSendFile, " +
                     "validCompanyId=$validCompanyId, " +
                     "validChannelId=$validChannelId, " +
                     "validClientToken=$validClientToken, " +

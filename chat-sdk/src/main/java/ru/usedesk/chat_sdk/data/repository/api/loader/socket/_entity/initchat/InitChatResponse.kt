@@ -13,32 +13,19 @@ internal class InitChatResponse : BaseResponse() {
     }
 
     class Setup {
+        @SerializedName("noOperators")
         var noOperators: Boolean? = null
         var messages: List<MessageResponse.Message?>? = null
         var ticket: Ticket? = null
-
-        @SerializedName("callback_settings")
         var callbackSettings: CallbackSettings? = null
 
         class CallbackSettings {
-            @SerializedName("work_type")
             var workType: String? = null
-
-            @SerializedName("callback_title")
             var callbackTitle: String? = null
-
-            @SerializedName("callback_greeting")
             var callbackGreeting: String? = null
-
-            @SerializedName("custom_fields")
             var customFields: Array<CustomField?>? = null
-
             var topics: Array<Topic?>? = null
-
-            @SerializedName("topics_title")
             var topicsTitle: String? = null
-
-            @SerializedName("topics_required")
             var topicsRequired: Int? = null
 
             class CustomField {
@@ -56,8 +43,6 @@ internal class InitChatResponse : BaseResponse() {
 
         class Ticket {
             var id: Long? = null
-
-            @SerializedName("status_id")
             var statusId: Int? = null
         }
     }

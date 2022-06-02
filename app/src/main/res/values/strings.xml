@@ -4,7 +4,6 @@
     <string name="title">Configuration</string>
     <string name="url_chat_hint">Chat url</string>
     <string name="url_offline_form_hint">Offline form url</string>
-    <string name="url_to_send_file_hint">Send file url</string>
     <string name="url_api">Api url</string>
     <string name="company_id_hint">Company ID</string>
     <string name="channel_id_hint">Channel ID</string>
@@ -20,6 +19,8 @@
     <string name="custom_agent_name">Custom Agent Name</string>
     <string name="custom_date_format">Custom Date Format</string>
     <string name="custom_time_format">Custom Time Format</string>
+    <string name="messages_page_size">Messages Page Size</string>
+    <string name="client_avatar">Client Avatar:</string>
     <string name="service_type_title">Service type</string>
     <string name="service_type_none">No service</string>
     <string name="service_type_simple">Simple service</string>

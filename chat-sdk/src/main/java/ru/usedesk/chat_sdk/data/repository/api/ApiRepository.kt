@@ -10,6 +10,7 @@ import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
+import ru.usedesk.chat_sdk.data.repository.api.entity.CreateChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
@@ -97,6 +98,32 @@ internal class ApiRepository(
         override fun onSetEmailSuccess() {
             eventListener.onSetEmailSuccess()
         }
+    }
+
+    override fun initChat(
+        configuration: UsedeskChatConfiguration,
+        apiToken: String
+    ): String {
+        val parts = mapOf(
+            "api_token" to apiToken,
+            "company_id" to configuration.companyId,
+            "channel_id" to configuration.channelId,
+            "name" to configuration.clientName,
+            "email" to configuration.clientEmail,
+            "phone" to configuration.clientPhoneNumber,
+            "additional_id" to configuration.clientAdditionalId,
+            "note" to configuration.clientNote,
+            "avatar" to getAvatarMultipartBodyPart(configuration),
+            "platform" to "sdk"
+        ).mapNotNull(multipartConverter::convert)
+        val response = doRequest(
+            configuration.urlChatApi,
+            CreateChatResponse::class.java
+        ) { api ->
+            api.createChat(parts)
+        }
+
+        return response.token
     }
 
     override fun connect(

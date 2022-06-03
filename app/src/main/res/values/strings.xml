@@ -33,6 +33,7 @@
     <string name="kb_support_button">With KnowledgeBase Support Button</string>
     <string name="kb_article_rating">With KnowledgeBase Article Rating</string>
     <string name="button_go_to_sdk">Go to sdk</string>
+    <string name="create_chat">Create Chat</string>
     <string name="validation_empty_error">Field required</string>
     <string name="validation_email_error">Invalid email</string>
     <string name="validation_url_error">Invalid url</string>

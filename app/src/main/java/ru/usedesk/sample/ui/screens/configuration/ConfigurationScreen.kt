@@ -10,12 +10,14 @@ import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.textfield.TextInputLayout
+import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.common_gui.showInstead
 import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
@@ -39,20 +41,43 @@ class ConfigurationScreen : UsedeskFragment() {
             false
         )
 
-        viewModel.configurationValidation.observe(viewLifecycleOwner)
-        {
+        viewModel.configurationValidation.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfigurationValidation(it)
             }
         }
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner)
-        {
-            it?.let {
-                onGoToSdkEvent(it)
+        viewModel.clientTokenLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.loading != new.loading) {
+                showInstead(binding.pbCreateChat, binding.btnCreateChat, new.loading)
+            }
+            new.completed?.process {
+                binding.etClientToken.setText(it)
+                Toast.makeText(
+                    requireContext(),
+                    "Success:$it",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            new.error?.process {
+                Toast.makeText(
+                    requireContext(),
+                    "Failed:$it",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         binding.btnGoToSdk.setOnClickListener {
-            viewModel.onGoSdkClick(getConfiguration())
+            if (viewModel.onGoSdkClick(getConfiguration())) {
+                (activity as IOnGoToSdkListener?)?.goToSdk()
+            }
+        }
+        binding.btnCreateChat.setOnClickListener {
+            val configuration = getConfiguration()
+            if (viewModel.onCreateChat(configuration)) {
+                UsedeskChatSdk.setConfiguration(configuration.toChatConfiguration())
+                UsedeskChatSdk.init(requireContext())
+                viewModel.createChat(configuration.token)
+            }
         }
         binding.tvServiceType.setOnClickListener {
             PopupMenu(requireContext(), binding.tvServiceType).apply {
@@ -128,12 +153,6 @@ class ConfigurationScreen : UsedeskFragment() {
     override fun onPause() {
         super.onPause()
         viewModel.setTempConfiguration(getConfiguration())
-    }
-
-    private fun onGoToSdkEvent(event: UsedeskEvent<Any?>) {
-        event.process {
-            (activity as IOnGoToSdkListener?)?.goToSdk()
-        }
     }
 
     private fun getConfiguration(): Configuration {

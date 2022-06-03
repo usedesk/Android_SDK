@@ -59,6 +59,8 @@ interface IUsedeskChat {
 
     fun sendMessageDraftRx(): Completable
 
+    fun createChat(apiToken: String): String
+
     /**
      * @return
      * true - can load next messages page

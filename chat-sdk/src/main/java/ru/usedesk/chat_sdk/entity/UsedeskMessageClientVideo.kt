@@ -8,6 +8,4 @@ class UsedeskMessageClientVideo @JvmOverloads constructor(
     file: UsedeskFile,
     override val status: UsedeskMessageClient.Status,
     override val localId: Long = id
-) : UsedeskMessageFile(id, createdAt, file), UsedeskMessageClient {
-    override val type: Type = Type.TYPE_CLIENT_VIDEO
-}
+) : UsedeskMessageFile(id, createdAt, file), UsedeskMessageClient

@@ -22,7 +22,6 @@ import ru.usedesk.chat_gui.chat.messages.DateBinding
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessage.Type
 import ru.usedesk.common_gui.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -238,8 +237,8 @@ internal class MessagesAdapter(
                     is ChatMessage -> when {
                         old !is ChatMessage -> false
                         (new.isLastOfGroup != old.isLastOfGroup) -> false
-                        (new.message as? UsedeskMessageText)?.text !=
-                                (old.message as? UsedeskMessageText)?.text -> false
+                        (new.message as? UsedeskMessageText)?.convertedText !=
+                                (old.message as? UsedeskMessageText)?.convertedText -> false
                         (new.message as? UsedeskMessageFile)?.file?.content !=
                                 (old.message as? UsedeskMessageFile)?.file?.content -> false
                         (new.message as? UsedeskMessageClient)?.status !=
@@ -408,17 +407,17 @@ internal class MessagesAdapter(
             is ChatDate -> R.layout.usedesk_item_chat_date
             is ChatLoading -> R.layout.usedesk_item_chat_loading
             is MessageAgentName -> R.layout.usedesk_item_chat_message_agent_name
-            is ChatMessage -> when (item.message.type) {
-                Type.TYPE_AGENT_TEXT -> R.layout.usedesk_item_chat_message_text_agent
-                Type.TYPE_AGENT_IMAGE -> R.layout.usedesk_item_chat_message_image_agent
-                Type.TYPE_AGENT_VIDEO -> R.layout.usedesk_item_chat_message_video_agent
-                Type.TYPE_AGENT_AUDIO -> R.layout.usedesk_item_chat_message_audio_agent
-                Type.TYPE_AGENT_FILE -> R.layout.usedesk_item_chat_message_file_agent
-                Type.TYPE_CLIENT_TEXT -> R.layout.usedesk_item_chat_message_text_client
-                Type.TYPE_CLIENT_IMAGE -> R.layout.usedesk_item_chat_message_image_client
-                Type.TYPE_CLIENT_VIDEO -> R.layout.usedesk_item_chat_message_video_client
-                Type.TYPE_CLIENT_AUDIO -> R.layout.usedesk_item_chat_message_audio_client
-                Type.TYPE_CLIENT_FILE -> R.layout.usedesk_item_chat_message_file_client
+            is ChatMessage -> when (item.message) {
+                is UsedeskMessageAgentText -> R.layout.usedesk_item_chat_message_text_agent
+                is UsedeskMessageAgentImage -> R.layout.usedesk_item_chat_message_image_agent
+                is UsedeskMessageAgentVideo -> R.layout.usedesk_item_chat_message_video_agent
+                is UsedeskMessageAgentAudio -> R.layout.usedesk_item_chat_message_audio_agent
+                is UsedeskMessageAgentFile -> R.layout.usedesk_item_chat_message_file_agent
+                is UsedeskMessageClientText -> R.layout.usedesk_item_chat_message_text_client
+                is UsedeskMessageClientImage -> R.layout.usedesk_item_chat_message_image_client
+                is UsedeskMessageClientVideo -> R.layout.usedesk_item_chat_message_video_client
+                is UsedeskMessageClientAudio -> R.layout.usedesk_item_chat_message_audio_client
+                is UsedeskMessageClientFile -> R.layout.usedesk_item_chat_message_file_client
             }
         }
     }
@@ -633,7 +632,7 @@ internal class MessagesAdapter(
             val messageText = (chatItem as ChatMessage).message as UsedeskMessageText
 
             binding.tvText.run {
-                text = Html.fromHtml(messageText.text + " ") //TODO: temp fix
+                text = Html.fromHtml(messageText.convertedText + " ") //TODO: temp fix
                 visibility = View.VISIBLE
             }
         }

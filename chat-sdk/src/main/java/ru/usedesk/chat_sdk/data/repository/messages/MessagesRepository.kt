@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
 import java.io.File
@@ -16,7 +17,8 @@ internal class MessagesRepository(
     private val appContext: Context,
     private val gson: Gson,
     private val fileLoader: IFileLoader,
-    private val configuration: UsedeskChatConfiguration
+    private val configuration: UsedeskChatConfiguration,
+    private val messageResponseConverter: MessageResponseConverter
 ) : IUsedeskMessagesRepository {
 
     private var inited = false
@@ -191,6 +193,7 @@ internal class MessagesRepository(
                     notSentMessage.localId,
                     Calendar.getInstance(),
                     notSentMessage.text,
+                    messageResponseConverter.convertText(notSentMessage.text),
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }

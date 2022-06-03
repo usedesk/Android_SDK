@@ -129,6 +129,8 @@ internal class ApiRepository(
         )
     }
 
+    override fun convertText(text: String) = messageResponseConverter.convertText(text)
+
     override fun send(
         messageId: Long,
         feedback: UsedeskFeedback

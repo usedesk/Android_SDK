@@ -2,13 +2,16 @@ package ru.usedesk.sample.ui.screens.configuration
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskLiveData
-import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import ru.usedesk.sample.ServiceLocator
@@ -22,8 +25,9 @@ class ConfigurationViewModel : ViewModel() {
         configurationRepository.getConfigurationFlow().value
     )
     val configurationValidation = MutableLiveData<ConfigurationValidation?>()
-    val goToSdkEvent = MutableLiveData<UsedeskEvent<Any?>?>()
     val avatarLiveData = MutableLiveData<String?>()
+
+    val clientTokenLiveData = UsedeskLiveData(ClientToken())
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
@@ -35,15 +39,31 @@ class ConfigurationViewModel : ViewModel() {
         }
     }
 
-    fun onGoSdkClick(configuration: Configuration) {
+    fun onGoSdkClick(configuration: Configuration): Boolean {
         val configurationValidation = validate(configuration)
         this.configurationValidation.postValue(configurationValidation)
-        if (configurationValidation.chatConfigurationValidation.isAllValid()
+        return if (configurationValidation.chatConfigurationValidation.isAllValid()
             && configurationValidation.knowledgeBaseConfiguration.isAllValid()
         ) {
             this.configurationLiveData.postValue(configuration)
             configurationRepository.setConfiguration(configuration)
-            goToSdkEvent.postValue(UsedeskSingleLifeEvent(null))
+            true
+        } else {
+            false
+        }
+    }
+
+    fun onCreateChat(configuration: Configuration): Boolean {
+        val configurationValidation = validate(configuration)
+        this.configurationValidation.postValue(configurationValidation)
+        return if (configurationValidation.chatConfigurationValidation.isAllValid()
+            && configurationValidation.knowledgeBaseConfiguration.isAllValid()
+        ) {
+            this.configurationLiveData.postValue(configuration)
+            configurationRepository.setConfiguration(configuration)
+            true
+        } else {
+            false
         }
     }
 
@@ -99,4 +119,35 @@ class ConfigurationViewModel : ViewModel() {
             false
         }
     }
+
+    fun createChat(apiToken: String) {
+        clientTokenLiveData.value = clientTokenLiveData.value.copy(
+            loading = true
+        )
+        val ignored = Single.create<String> {
+            it.onSuccess(
+                UsedeskChatSdk.requireInstance().createChat(apiToken)
+            )
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe { clientToken, throwable ->
+                clientTokenLiveData.value = clientTokenLiveData.value.copy(
+                    loading = false,
+                    completed = when {
+                        clientToken != null -> UsedeskSingleLifeEvent(clientToken)
+                        else -> null
+                    },
+                    error = when {
+                        clientToken != null -> null
+                        else -> UsedeskSingleLifeEvent(throwable?.message)
+                    }
+                )
+                UsedeskChatSdk.release(false)
+            }
+    }
+
+    data class ClientToken(
+        val loading: Boolean = false,
+        val completed: UsedeskSingleLifeEvent<String?>? = null,
+        val error: UsedeskSingleLifeEvent<String?>? = null
+    )
 }

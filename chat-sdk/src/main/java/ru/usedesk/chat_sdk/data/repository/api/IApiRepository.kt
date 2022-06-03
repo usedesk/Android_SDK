@@ -54,6 +54,11 @@ internal interface IApiRepository {
 
     fun convertText(text: String): String
 
+    fun initChat(
+        configuration: UsedeskChatConfiguration,
+        apiToken: String
+    ): String
+
     interface EventListener {
         fun onConnected()
         fun onDisconnected()

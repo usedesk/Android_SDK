@@ -214,6 +214,19 @@ internal class ChatInteractor(
         }
     }
 
+    override fun createChat(apiToken: String): String {
+        return apiRepository.initChat(
+            configuration,
+            apiToken
+        ).also { clientToken ->
+            userInfoRepository.setConfiguration(
+                configuration.copy(
+                    clientToken = clientToken
+                )
+            )
+        }
+    }
+
     override fun connect() {
         val curState = connectionStateSubject.value
         if (curState != UsedeskConnectionState.CONNECTED) {

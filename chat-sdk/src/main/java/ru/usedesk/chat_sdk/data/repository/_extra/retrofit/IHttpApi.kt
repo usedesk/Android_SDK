@@ -27,4 +27,8 @@ internal interface IHttpApi {
     @Multipart
     @POST("v1/chat/setClient")
     fun setClient(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
+
+    @Multipart
+    @POST("uapi/v2/createChat")
+    fun createChat(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 }

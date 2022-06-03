@@ -52,6 +52,8 @@ internal interface IApiRepository {
 
     fun disconnect()
 
+    fun convertText(text: String): String
+
     interface EventListener {
         fun onConnected()
         fun onDisconnected()

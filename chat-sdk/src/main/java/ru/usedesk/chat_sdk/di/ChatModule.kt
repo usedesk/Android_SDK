@@ -61,12 +61,14 @@ internal object ChatModule {
         appContext: Context,
         gson: Gson,
         fileLoader: IFileLoader,
-        chatConfiguration: UsedeskChatConfiguration
+        chatConfiguration: UsedeskChatConfiguration,
+        messageResponseConverter: MessageResponseConverter
     ): IUsedeskMessagesRepository = customMessagesRepository.customInstance ?: MessagesRepository(
         appContext,
         gson,
         fileLoader,
-        chatConfiguration
+        chatConfiguration,
+        messageResponseConverter
     )
 
     @[Provides ChatScope]

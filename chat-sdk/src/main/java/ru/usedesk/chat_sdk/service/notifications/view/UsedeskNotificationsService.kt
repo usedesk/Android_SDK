@@ -93,7 +93,7 @@ abstract class UsedeskNotificationsService : Service() {
         return if (model.message is UsedeskMessageAgent) {
             var title = model.message.name
             val text = if (model.message is UsedeskMessageText) {
-                Html.fromHtml(model.message.text)
+                Html.fromHtml(model.message.convertedText)
             } else {
                 fileMessage
             }

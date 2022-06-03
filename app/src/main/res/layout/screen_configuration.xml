@@ -337,6 +337,7 @@
                         android:layout_height="50dp"
                         android:layout_margin="12dp"
                         android:clickable="true"
+                        app:srcCompat="@android:drawable/ic_menu_add"
                         android:focusable="true" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

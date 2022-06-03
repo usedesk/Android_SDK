@@ -528,6 +528,7 @@ internal class ChatInteractor(
                     sendingMessage.id,
                     sendingMessage.createdAt,
                     sendingMessage.text,
+                    sendingMessage.convertedText,
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
@@ -577,6 +578,7 @@ internal class ChatInteractor(
                 agentMessage.id,
                 agentMessage.createdAt,
                 agentMessage.text,
+                agentMessage.convertedText,
                 agentMessage.buttons,
                 false,
                 feedback,
@@ -617,6 +619,7 @@ internal class ChatInteractor(
                         message.id,
                         message.createdAt,
                         message.text,
+                        message.convertedText,
                         UsedeskMessageClient.Status.SENDING
                     )
                     onMessageUpdate(sendingMessage)
@@ -756,6 +759,7 @@ internal class ChatInteractor(
             localId,
             calendar,
             text,
+            apiRepository.convertText(text),
             UsedeskMessageClient.Status.SENDING
         )
     }

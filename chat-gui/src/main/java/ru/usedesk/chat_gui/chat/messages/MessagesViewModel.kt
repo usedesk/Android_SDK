@@ -33,22 +33,20 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         actionListenerRx = object : IUsedeskActionListenerRx() {
             override fun onMessagesObservable(
                 messagesObservable: Observable<List<UsedeskMessage>>
-            ): Disposable? {
-                return messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
-                    val lastBottomMessage = messages.lastOrNull()
-                    val bottomMessageIndex = it.indexOfLast { message ->
-                        message.id == lastBottomMessage?.id
-                    }
-                    messages = it
-                    setModel { model ->
-                        model.copy(
-                            chatItems = getChatItems(),
-                            newMessagesCount = model.newMessagesCount + when {
-                                bottomMessageIndex < it.size - 1 -> it.size - 1 - bottomMessageIndex
-                                else -> 0
-                            }
-                        )
-                    }
+            ) = messagesObservable.observeOn(AndroidSchedulers.mainThread()).subscribe {
+                val lastBottomMessage = messages.lastOrNull()
+                val bottomMessageIndex = it.indexOfLast { message ->
+                    message.id == lastBottomMessage?.id
+                }
+                messages = it
+                setModel { model ->
+                    model.copy(
+                        chatItems = getChatItems(),
+                        newMessagesCount = model.newMessagesCount + when {
+                            bottomMessageIndex < it.size - 1 -> it.size - 1 - bottomMessageIndex
+                            else -> 0
+                        }
+                    )
                 }
             }
         }
@@ -139,7 +137,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun onSendButton(message: String) {
-        doIt(usedeskChat.sendRx(message))
+        usedeskChat.send(message)
     }
 
     fun onSend() {

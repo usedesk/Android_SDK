@@ -25,11 +25,7 @@ interface IUsedeskChat {
 
     fun send(textMessage: String)
 
-    fun sendRx(textMessage: String): Completable
-
     fun send(usedeskFileInfoList: List<UsedeskFileInfo>)
-
-    fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable
 
     fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback)
 

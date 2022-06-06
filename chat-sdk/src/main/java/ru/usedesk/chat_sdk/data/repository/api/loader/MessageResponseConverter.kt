@@ -25,7 +25,7 @@ internal class MessageResponseConverter :
                 it.convertMarkdownUrls()
                     .convertMarkdownText()
             }
-            .joinToString("\n")
+            .joinToString("<br>")
     } catch (e: Exception) {
         e.printStackTrace()
         text

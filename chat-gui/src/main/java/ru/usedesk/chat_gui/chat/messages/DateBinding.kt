@@ -11,5 +11,5 @@ internal class DateBinding(rootView: View, defaultStyleId: Int) :
 
     val defaultTopMargin = styleValues.getStyleValues(
         R.attr.usedesk_chat_message_date_text
-    ).getPixels(android.R.attr.layout_marginTop).toInt()
+    ).getFloat(android.R.attr.layout_marginTop).toInt()
 }

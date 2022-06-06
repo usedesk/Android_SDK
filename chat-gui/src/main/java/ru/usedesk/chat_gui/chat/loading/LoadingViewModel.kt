@@ -2,7 +2,6 @@ package ru.usedesk.chat_gui.chat.loading
 
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
@@ -23,42 +22,36 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
         actionListener = object : IUsedeskActionListenerRx() {
             override fun onConnectionStateObservable(
                 connectionStateObservable: Observable<UsedeskConnectionState>
-            ): Disposable? {
-                return connectionStateObservable.observeOn(mainScheduler).subscribe {
-                    setModel { model ->
-                        model.copy(
-                            state = when (it) {
-                                UsedeskConnectionState.DISCONNECTED,
-                                UsedeskConnectionState.RECONNECTING -> State.FAILED
-                                UsedeskConnectionState.CONNECTING -> State.LOADING
-                                UsedeskConnectionState.CONNECTED -> State.LOADING
-                            }
-                        )
-                    }
+            ) = connectionStateObservable.observeOn(mainScheduler).subscribe {
+                setModel { model ->
+                    model.copy(
+                        state = when (it) {
+                            UsedeskConnectionState.DISCONNECTED,
+                            UsedeskConnectionState.RECONNECTING -> State.FAILED
+                            UsedeskConnectionState.CONNECTING -> State.LOADING
+                            UsedeskConnectionState.CONNECTED -> State.LOADING
+                        }
+                    )
                 }
             }
 
             override fun onOfflineFormExpectedObservable(
                 offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
-            ): Disposable? {
-                return offlineFormExpectedObservable.observeOn(mainScheduler).subscribe {
-                    setModel { model ->
-                        model.copy(
-                            goNext = UsedeskSingleLifeEvent(Page.OFFLINE_FORM)
-                        )
-                    }
+            ) = offlineFormExpectedObservable.observeOn(mainScheduler).subscribe {
+                setModel { model ->
+                    model.copy(
+                        goNext = UsedeskSingleLifeEvent(Page.OFFLINE_FORM)
+                    )
                 }
             }
 
             override fun onMessagesObservable(
                 messagesObservable: Observable<List<UsedeskMessage>>
-            ): Disposable? {
-                return messagesObservable.observeOn(mainScheduler).subscribe {
-                    setModel { model ->
-                        model.copy(
-                            goNext = UsedeskSingleLifeEvent(Page.MESSAGES)
-                        )
-                    }
+            ) = messagesObservable.observeOn(mainScheduler).subscribe {
+                setModel { model ->
+                    model.copy(
+                        goNext = UsedeskSingleLifeEvent(Page.MESSAGES)
+                    )
                 }
             }
         }

@@ -2,12 +2,12 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.multipart
 
 import android.content.ContentResolver
 import android.net.Uri
+import androidx.core.net.toFile
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getMimeType
-import java.io.File
 
 internal class MultipartConverter(
     private val contentResolver: ContentResolver
@@ -20,8 +20,7 @@ internal class MultipartConverter(
                 val mimeType = getMimeType(contentResolver, value)
                 val mediaType = MediaType.parse(mimeType)
                 val name = getFileName(contentResolver, value)
-                val file = File(value.toString())
-                val requestBody = RequestBody.create(mediaType, file)
+                val requestBody = RequestBody.create(mediaType, value.toFile())
                 MultipartBody.Part.createFormData(pair.key, name, requestBody)
             }
             else -> null

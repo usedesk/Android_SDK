@@ -51,7 +51,7 @@ internal class ChatInteractor(
     private var reconnectDisposable: Disposable? = null
     private val listenersDisposables = mutableListOf<Disposable>()
     private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val jobs = mutableListOf<Job>()
+    private val jobsScope = CoroutineScope(Dispatchers.IO)
     private val jobsMutex = Mutex()
     private val firstMessageMutex = Mutex()
     private var firstMessageLock: Mutex? = null
@@ -339,7 +339,14 @@ internal class ChatInteractor(
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message)
             eventListener.onMessagesNewReceived(listOf(sendingMessage))
-            sendText(sendingMessage)
+
+            runBlocking {
+                jobsMutex.withLock {
+                    jobsScope.launchSafe({
+                        sendCached(sendingMessage)
+                    })
+                }
+            }
         }
     }
 
@@ -382,23 +389,20 @@ internal class ChatInteractor(
     }
 
     override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        var exc: Exception? = null
-        val sendingFiles = usedeskFileInfoList.map { usedeskFileInfo ->
-            createSendingMessage(usedeskFileInfo).also {
-                eventListener.onMessagesNewReceived(listOf(it))
-            }
+        val sendingMessages = usedeskFileInfoList.map {
+            createSendingMessage(it)
         }
 
-        sendingFiles.forEach { sendingMessage ->
-            try {
-                sendFile(sendingMessage)
-            } catch (e: Exception) {
-                exc = e
-            }
-        }
+        eventListener.onMessagesNewReceived(sendingMessages)
 
-        exc?.let {
-            throw it
+        runBlocking {
+            jobsMutex.withLock {
+                sendingMessages.forEach { msg ->
+                    jobsScope.launchSafe({
+                        sendCached(msg)
+                    })
+                }
+            }
         }
     }
 
@@ -729,33 +733,9 @@ internal class ChatInteractor(
                 false
             )
 
-            val sendingMessages = mutableListOf<UsedeskMessage>()
-
-            val message = messageDraft.text.trim()
-            if (message.isNotEmpty()) {
-                val sendingMessage = createSendingMessage(message)
-                sendingMessages.add(sendingMessage)
-            }
-
-            sendingMessages.addAll(messageDraft.files.map {
-                createSendingMessage(it)
-            })
-
-            eventListener.onMessagesNewReceived(sendingMessages)
-
-            jobsMutex.withLock {
-                jobs.addAll(sendingMessages.mapNotNull { msg ->
-                    when (msg) {
-                        is UsedeskMessageClientText -> ioScope.launchSafe({
-                            sendCached(msg)
-                        })
-                        is UsedeskMessageFile -> ioScope.launchSafe({
-                            sendCached(msg)
-                        })
-                        else -> null
-                    }
-                })
-            }
+            send(messageDraft.text)
+            send(messageDraft.files)
+            //TODO: sync
         }
     }
 
@@ -825,18 +805,6 @@ internal class ChatInteractor(
     override fun connectRx(): Completable {
         return safeCompletableIo(ioScheduler) {
             connect()
-        }
-    }
-
-    override fun sendRx(textMessage: String): Completable {
-        return safeCompletableIo(ioScheduler) {
-            send(textMessage)
-        }
-    }
-
-    override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
-        return safeCompletableIo(ioScheduler) {
-            send(usedeskFileInfoList)
         }
     }
 
@@ -926,9 +894,7 @@ internal class ChatInteractor(
         }
         runBlocking {
             jobsMutex.withLock {
-                jobs.forEach {
-                    it.cancel()
-                }
+                jobsScope.cancel()
             }
         }
         disconnect()

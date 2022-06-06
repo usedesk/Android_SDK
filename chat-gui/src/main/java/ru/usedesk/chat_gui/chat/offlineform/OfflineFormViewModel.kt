@@ -1,7 +1,6 @@
 package ru.usedesk.chat_gui.chat.offlineform
 
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormItem
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
@@ -27,52 +26,50 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
             object : IUsedeskActionListenerRx() {
                 override fun onOfflineFormExpectedObservable(
                     offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
-                ): Disposable? {
-                    return offlineFormExpectedObservable.subscribe {
-                        val subjectField = OfflineFormList(
-                            "topic",
-                            it.topicsTitle,
-                            it.topicsRequired,
-                            it.topics,
-                            -1
-                        )
-                        val additionalFields = it.fields.map { customField ->
-                            OfflineFormText(
-                                customField.key,
-                                customField.placeholder,
-                                customField.required,
-                                ""
-                            )
-                        }
-                        val configuration = UsedeskChatSdk.requireConfiguration()
-                        val nameField = OfflineFormText(
-                            "name",
-                            nameTitle,
-                            true,
-                            configuration.clientName ?: ""
-                        )
-                        val emailField = OfflineFormText(
-                            "email",
-                            emailTitle,
-                            true,
-                            configuration.clientEmail ?: ""
-                        )
-                        val messageField = OfflineFormText(
-                            "message",
-                            messageTitle,
-                            true,
+                ) = offlineFormExpectedObservable.observeOn(mainThread).subscribe {
+                    val subjectField = OfflineFormList(
+                        "topic",
+                        it.topicsTitle,
+                        it.topicsRequired,
+                        it.topics,
+                        -1
+                    )
+                    val additionalFields = it.fields.map { customField ->
+                        OfflineFormText(
+                            customField.key,
+                            customField.placeholder,
+                            customField.required,
                             ""
                         )
-                        val fields = listOf(nameField, emailField, subjectField) +
-                                additionalFields +
-                                messageField
+                    }
+                    val configuration = UsedeskChatSdk.requireConfiguration()
+                    val nameField = OfflineFormText(
+                        "name",
+                        nameTitle,
+                        true,
+                        configuration.clientName ?: ""
+                    )
+                    val emailField = OfflineFormText(
+                        "email",
+                        emailTitle,
+                        true,
+                        configuration.clientEmail ?: ""
+                    )
+                    val messageField = OfflineFormText(
+                        "message",
+                        messageTitle,
+                        true,
+                        ""
+                    )
+                    val fields = listOf(nameField, emailField, subjectField) +
+                            additionalFields +
+                            messageField
 
-                        setModel { model ->
-                            model.copy(
-                                offlineFormSettings = it,
-                                fields = fields
-                            )
-                        }
+                    setModel { model ->
+                        model.copy(
+                            offlineFormSettings = it,
+                            fields = fields
+                        )
                     }
                 }
             }.let {

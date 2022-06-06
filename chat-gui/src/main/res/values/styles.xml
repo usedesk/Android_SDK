@@ -1056,6 +1056,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="usedesk_text_1">@string/usedesk_feedback_thanks</item>
         <item name="android:textIsSelectable">true</item>
+        <item name="android:textColorLink">@color/usedesk_blue</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Text.Message.Text.TextAppearance</item>
     </style>
 
@@ -1238,6 +1239,7 @@
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
         <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textSize">17sp</item>
+        <item name="android:textColorLink">@color/usedesk_blue</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Message.Text" parent="">

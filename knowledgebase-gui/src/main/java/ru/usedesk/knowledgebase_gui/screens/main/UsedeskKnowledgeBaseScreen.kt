@@ -59,7 +59,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
         fabDefaultBottomMargin = binding.styleValues.getStyleValues(
             R.attr.usedesk_knowledgebase_screen_support_button
-        ).getPixels(android.R.attr.layout_marginBottom).toInt()
+        ).getFloat(android.R.attr.layout_marginBottom).toInt()
 
         navController = (childFragmentManager.findFragmentById(R.id.page_container)
                 as NavHostFragment).navController

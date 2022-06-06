@@ -29,11 +29,22 @@ internal class MessagePanelAdapter(
             lifecycleOwner
         )
 
-        binding.etMessage.setText(viewModel.modelLiveData.value.messageDraft.text)
-
-        binding.etMessage.addTextChangedListener(UsedeskTextChangeListener {
-            viewModel.onMessageChanged(it)
-        })
+        binding.etMessage.run {
+            setText(viewModel.modelLiveData.value.messageDraft.text)
+            addTextChangedListener(UsedeskTextChangeListener {
+                viewModel.onMessageChanged(it)
+            })
+        }
+        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+            if (old?.messageDraft?.isNotEmpty != new.messageDraft.isNotEmpty) {
+                binding.ivSend.isEnabled = new.messageDraft.isNotEmpty
+                binding.ivSend.alpha = binding.sendAlpha * if (new.messageDraft.isNotEmpty) {
+                    1f
+                } else {
+                    0.5f
+                }
+            }
+        }
     }
 
     private fun onSendClick() {
@@ -47,5 +58,7 @@ internal class MessagePanelAdapter(
         val ivSend: ImageView = rootView.findViewById(R.id.iv_send)
         val etMessage: EditText = rootView.findViewById(R.id.et_message)
         val rvAttachedFiles: RecyclerView = rootView.findViewById(R.id.rv_attached_files)
+        val sendAlpha = styleValues.getStyleValues(R.attr.usedesk_chat_screen_send_image)
+            .findString(android.R.attr.alpha)?.toFloatOrNull() ?: 1.0f
     }
 }

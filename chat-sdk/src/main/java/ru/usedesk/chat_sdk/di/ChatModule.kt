@@ -38,27 +38,22 @@ internal object ChatModule {
     fun provideSocketApi(
         gson: Gson,
         usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
-    ): SocketApi {
-        return SocketApi(gson, usedeskOkHttpClientFactory)
-    }
+    ): SocketApi = SocketApi(gson, usedeskOkHttpClientFactory)
 
     @[Provides ChatScope]
-    fun provideConfigurationLoader(appContext: Context, gson: Gson): IConfigurationLoader {
-        return ConfigurationLoader(appContext, gson)
-    }
+    fun provideConfigurationLoader(
+        appContext: Context
+    ): IConfigurationLoader = ConfigurationLoader(appContext)
 
     @[Provides ChatScope]
-    fun provideTokenLoader(appContext: Context): ITokenLoader {
-        return TokenLoader(appContext)
-    }
+    fun provideTokenLoader(appContext: Context): ITokenLoader = TokenLoader(appContext)
 
     @[Provides ChatScope]
-    fun provideFileLoader(appContext: Context): IFileLoader {
-        return FileLoader(appContext)
-    }
+    fun provideFileLoader(appContext: Context): IFileLoader = FileLoader(appContext)
 
     @[Provides ChatScope]
-    fun provideMultipartConverter(): IMultipartConverter = MultipartConverter()
+    fun provideMultipartConverter(context: Context): IMultipartConverter =
+        MultipartConverter(context.contentResolver)
 
     @[Provides ChatScope]
     fun provideMessagesRepository(
@@ -66,70 +61,62 @@ internal object ChatModule {
         appContext: Context,
         gson: Gson,
         fileLoader: IFileLoader,
-        chatConfiguration: UsedeskChatConfiguration
-    ): IUsedeskMessagesRepository {
-        return customMessagesRepository.customInstance ?: MessagesRepository(
-            appContext,
-            gson,
-            fileLoader,
-            chatConfiguration
-        )
-    }
+        chatConfiguration: UsedeskChatConfiguration,
+        messageResponseConverter: MessageResponseConverter
+    ): IUsedeskMessagesRepository = customMessagesRepository.customInstance ?: MessagesRepository(
+        appContext,
+        gson,
+        fileLoader,
+        chatConfiguration,
+        messageResponseConverter
+    )
 
     @[Provides ChatScope]
     fun provideUserInfoRepository(
         configurationLoader: IConfigurationLoader,
         tokenLoader: ITokenLoader
-    ): IUserInfoRepository {
-        return UserInfoRepository(
-            configurationLoader,
-            tokenLoader
-        )
-    }
+    ): IUserInfoRepository = UserInfoRepository(
+        configurationLoader,
+        tokenLoader
+    )
 
     @[Provides ChatScope]
-    fun provideMessageResponseConverter(): MessageResponseConverter {
-        return MessageResponseConverter()
-    }
+    fun provideMessageResponseConverter(): MessageResponseConverter = MessageResponseConverter()
 
     @[Provides ChatScope]
     fun provideInitChatResponseConverter(
         messageResponseConverter: MessageResponseConverter
-    ): InitChatResponseConverter {
-        return InitChatResponseConverter(messageResponseConverter)
-    }
+    ): InitChatResponseConverter = InitChatResponseConverter(messageResponseConverter)
 
     @[Provides ChatScope]
     fun provideApiRepository(
+        appContext: Context,
         socketApi: SocketApi,
         multipartConverter: IMultipartConverter,
         initChatResponseConverter: InitChatResponseConverter,
         messageResponseConverter: MessageResponseConverter,
         apiFactory: IUsedeskApiFactory,
         gson: Gson
-    ): IApiRepository {
-        return ApiRepository(
-            socketApi,
-            multipartConverter,
-            initChatResponseConverter,
-            messageResponseConverter,
-            apiFactory,
-            gson
-        )
-    }
+    ): IApiRepository = ApiRepository(
+        socketApi,
+        multipartConverter,
+        initChatResponseConverter,
+        messageResponseConverter,
+        appContext.contentResolver,
+        apiFactory,
+        gson
+    )
 
     @[Provides ChatScope]
     fun provideCachedMessagesInteractor(
         configuration: UsedeskChatConfiguration,
         messagesRepository: IUsedeskMessagesRepository,
         userInfoRepository: IUserInfoRepository
-    ): ICachedMessagesInteractor {
-        return CachedMessagesInteractor(
-            configuration,
-            messagesRepository,
-            userInfoRepository
-        )
-    }
+    ): ICachedMessagesInteractor = CachedMessagesInteractor(
+        configuration,
+        messagesRepository,
+        userInfoRepository
+    )
 
     @[Provides ChatScope]
     fun provideChatInteractor(
@@ -137,14 +124,12 @@ internal object ChatModule {
         userInfoRepository: IUserInfoRepository,
         apiRepository: IApiRepository,
         cachedMessagesInteractor: ICachedMessagesInteractor
-    ): IUsedeskChat {
-        return ChatInteractor(
-            configuration,
-            userInfoRepository,
-            apiRepository,
-            cachedMessagesInteractor
-        )
-    }
+    ): IUsedeskChat = ChatInteractor(
+        configuration,
+        userInfoRepository,
+        apiRepository,
+        cachedMessagesInteractor
+    )
 }
 
 @Scope

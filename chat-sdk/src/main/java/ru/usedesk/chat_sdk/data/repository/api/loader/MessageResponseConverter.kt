@@ -17,6 +17,20 @@ internal class MessageResponseConverter :
         "\\[[^\\[\\]\\(\\)]+\\]\\(${urlRegex.pattern}/?\\)"
     ).toRegex()
 
+
+    fun convertText(text: String) = try {
+        text.split('\n')
+            .asSequence()
+            .map {
+                it.convertMarkdownUrls()
+                    .convertMarkdownText()
+            }
+            .joinToString("<br>")
+    } catch (e: Exception) {
+        e.printStackTrace()
+        text
+    }
+
     override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> {
         return convertOrNull {
             val fromClient = when (from!!.type) {
@@ -223,17 +237,7 @@ internal class MessageResponseConverter :
                         val buttonRaw = "{{button:${it.text};${it.url};${it.type};$show}}"
                         convertedText = convertedText.replaceFirst(buttonRaw, replaceBy)
                     }
-                    try {
-                        convertedText = convertedText.split('\n')
-                            .asSequence()
-                            .map {
-                                it.convertMarkdownUrls()
-                                    .convertMarkdownText()
-                            }
-                            .joinToString("\n")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    convertedText = convertText(convertedText)
 
                     if (convertedText.isEmpty() && buttons.isEmpty()) {
                         null
@@ -241,6 +245,7 @@ internal class MessageResponseConverter :
                         UsedeskMessageClientText(
                             id,
                             messageDate,
+                            from.text!!,
                             convertedText,
                             UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
                             localId
@@ -249,6 +254,7 @@ internal class MessageResponseConverter :
                         UsedeskMessageAgentText(
                             id,
                             messageDate,
+                            from.text!!,
                             convertedText,
                             buttons,
                             feedbackNeeded,

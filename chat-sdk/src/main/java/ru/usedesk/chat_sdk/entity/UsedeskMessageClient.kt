@@ -1,7 +1,6 @@
 package ru.usedesk.chat_sdk.entity
 
-interface UsedeskMessageClient {
-
+interface UsedeskMessageClient : UsedeskMessageOwner {
     val status: Status
     val localId: Long
 

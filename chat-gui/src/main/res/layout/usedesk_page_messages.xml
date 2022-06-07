@@ -18,14 +18,26 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_messages"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
             tools:itemCount="1"
             tools:listitem="@layout/usedesk_item_chat_message_text_agent" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_to_bottom"
-            style="?attr/usedesk_chat_screen_floating_action_button" />
+        <FrameLayout
+            android:id="@+id/fab_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_to_bottom"
+                style="?attr/usedesk_chat_screen_floating_action_button" />
+
+            <TextView
+                android:id="@+id/tv_to_bottom_counter"
+                style="?attr/usedesk_chat_screen_floating_action_button_text" />
+        </FrameLayout>
+
     </FrameLayout>
 
     <LinearLayout

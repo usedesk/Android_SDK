@@ -4,10 +4,7 @@ import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.*
 import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
 
 internal interface IHttpApi {
@@ -15,9 +12,23 @@ internal interface IHttpApi {
     fun sendOfflineForm(@Body json: JsonObject): Call<ResponseBody>
 
     @Multipart
-    @POST("send_file")
+    @POST("uapi/v1/send_file")
     fun postFile(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 
-    @POST("addFieldsToChat")
+    @POST("uapi/v1/addFieldsToChat")
     fun postAdditionalFields(@Body body: AdditionalFieldsRequest): Call<ResponseBody>
+
+    @GET("uapi/chat/getChatMessage")
+    fun loadPreviousMessages(
+        @Query("chat_token") chatToken: String,
+        @Query("comment_id") commentId: Long
+    ): Call<ResponseBody>
+
+    @Multipart
+    @POST("v1/chat/setClient")
+    fun setClient(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
+
+    @Multipart
+    @POST("uapi/v2/createChat")
+    fun createChat(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 }

@@ -74,9 +74,15 @@ object UsedeskResourceManager {
             }
         }
 
-        fun getPixels(attrId: Int): Float {
+        fun getFloat(attrId: Int): Float {
             return getValue(attrId) { attrs, index ->
                 attrs.getDimensionOrThrow(index)
+            }
+        }
+
+        fun getFloat(attrId: Int, default: Float): Float {
+            return getValue(attrId) { attrs, index ->
+                attrs.getDimension(index, default)
             }
         }
 

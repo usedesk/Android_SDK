@@ -10,12 +10,15 @@ import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.textfield.TextInputLayout
+import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.common_gui.showInstead
+import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -38,20 +41,43 @@ class ConfigurationScreen : UsedeskFragment() {
             false
         )
 
-        viewModel.configurationValidation.observe(viewLifecycleOwner)
-        {
+        viewModel.configurationValidation.observe(viewLifecycleOwner) {
             it?.let {
                 onNewConfigurationValidation(it)
             }
         }
-        viewModel.goToSdkEvent.observe(viewLifecycleOwner)
-        {
-            it?.let {
-                onGoToSdkEvent(it)
+        viewModel.clientTokenLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+            if (old?.loading != new.loading) {
+                showInstead(binding.pbCreateChat, binding.btnCreateChat, new.loading)
+            }
+            new.completed?.process {
+                binding.etClientToken.setText(it)
+                Toast.makeText(
+                    requireContext(),
+                    "Success:$it",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            new.error?.process {
+                Toast.makeText(
+                    requireContext(),
+                    "Failed:$it",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         binding.btnGoToSdk.setOnClickListener {
-            viewModel.onGoSdkClick(getConfiguration())
+            if (viewModel.onGoSdkClick(getConfiguration())) {
+                (activity as IOnGoToSdkListener?)?.goToSdk()
+            }
+        }
+        binding.btnCreateChat.setOnClickListener {
+            val configuration = getConfiguration()
+            if (viewModel.onCreateChat(configuration)) {
+                UsedeskChatSdk.setConfiguration(configuration.toChatConfiguration())
+                UsedeskChatSdk.init(requireContext())
+                viewModel.createChat(configuration.token)
+            }
         }
         binding.tvServiceType.setOnClickListener {
             PopupMenu(requireContext(), binding.tvServiceType).apply {
@@ -86,7 +112,6 @@ class ConfigurationScreen : UsedeskFragment() {
         }
         initTil(binding.tilUrlChat)
         initTil(binding.tilUrlOfflineForm)
-        initTil(binding.tilUrlToSendFile)
         initTil(binding.tilUrlApi)
         initTil(binding.tilCompanyId)
         initTil(binding.tilChannelId)
@@ -94,6 +119,18 @@ class ConfigurationScreen : UsedeskFragment() {
         initTil(binding.tilToken)
         initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
+        initTil(binding.tilMessagesPageSize)
+        binding.ivAvatar.setOnClickListener {
+            startImages()
+        }
+        registerFiles {
+            it.firstOrNull()?.let { uri ->
+                binding.ivAvatar.tag = uri.toString()
+                GlideApp.with(binding.ivAvatar)
+                    .load(uri)
+                    .into(binding.ivAvatar)
+            }
+        }
         return binding.root
     }
 
@@ -116,12 +153,6 @@ class ConfigurationScreen : UsedeskFragment() {
     override fun onPause() {
         super.onPause()
         viewModel.setTempConfiguration(getConfiguration())
-    }
-
-    private fun onGoToSdkEvent(event: UsedeskEvent<Any?>) {
-        event.process {
-            (activity as IOnGoToSdkListener?)?.goToSdk()
-        }
     }
 
     private fun getConfiguration(): Configuration {
@@ -158,11 +189,11 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.switchMaterialComponents.isChecked,
             binding.etUrlChat.text.toString(),
             binding.etUrlOfflineForm.text.toString(),
-            binding.etUrlToSendFile.text.toString(),
             binding.etUrlApi.text.toString(),
             binding.etCompanyId.text.toString(),
             binding.etChannelId.text.toString(),
             binding.etAccountId.text.toString(),
+            binding.etMessagesPageSize.text.toString().toIntOrNull() ?: 1,
             binding.etToken.text.toString(),
             binding.etClientToken.text.toString(),
             binding.etClientEmail.text.toString(),
@@ -171,7 +202,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
             binding.etClientAdditionalId.text.toString(),
             binding.etClientInitMessage.text.toString(),
-            viewModel.avatarLiveData.value,
+            binding.ivAvatar.tag as? String,
             binding.etCustomAgentName.text.toString(),
             binding.etCustomDateFormat.text.toString(),
             binding.etCustomTimeFormat.text.toString(),
@@ -196,11 +227,11 @@ class ConfigurationScreen : UsedeskFragment() {
     private fun onNewConfiguration(configuration: Configuration) {
         binding.switchMaterialComponents.isChecked = configuration.materialComponents
         binding.etUrlChat.setText(configuration.urlChat)
-        binding.etUrlOfflineForm.setText(configuration.urlOfflineForm)
-        binding.etUrlToSendFile.setText(configuration.urlToSendFile)
+        binding.etUrlOfflineForm.setText(configuration.urlChatApi)
         binding.etUrlApi.setText(configuration.urlApi)
         binding.etCompanyId.setText(configuration.companyId)
         binding.etChannelId.setText(configuration.channelId)
+        binding.etMessagesPageSize.setText(configuration.messagesPageSize.toString())
         binding.etAccountId.setText(configuration.accountId)
         binding.etToken.setText(configuration.token)
         binding.etClientToken.setText(configuration.clientToken)
@@ -318,11 +349,6 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilUrlOfflineForm,
                 validUrlOfflineForm,
-                R.string.validation_url_error
-            )
-            showError(
-                binding.tilUrlToSendFile,
-                validUrlToSendFile,
                 R.string.validation_url_error
             )
             showError(

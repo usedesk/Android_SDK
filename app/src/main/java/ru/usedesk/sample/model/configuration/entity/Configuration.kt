@@ -6,12 +6,12 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 data class Configuration(
     val materialComponents: Boolean = false,
     val urlChat: String = "https://pubsubsec.usedesk.ru",
-    val urlOfflineForm: String = "https://secure.usedesk.ru/",
-    val urlToSendFile: String = "https://secure.usedesk.ru/uapi/v1/",
+    val urlChatApi: String = "https://secure.usedesk.ru/",
     val urlApi: String = "https://api.usedesk.ru/",
     val companyId: String = "",
     val channelId: String = "",
     val accountId: String = "",
+    val messagesPageSize: Int = 20,
     val token: String = "",
     val clientToken: String = "",
     val clientEmail: String = "",
@@ -42,10 +42,10 @@ data class Configuration(
         )
         return UsedeskChatConfiguration(
             urlChat,
-            urlOfflineForm.ifEmpty { defaultChatConfiguration.urlOfflineForm },
-            urlToSendFile.ifEmpty { defaultChatConfiguration.urlToSendFile },
+            urlChatApi.ifEmpty { defaultChatConfiguration.urlChatApi },
             companyId,
             channelId,
+            messagesPageSize,
             clientToken,
             clientEmail,
             clientName,
@@ -53,6 +53,7 @@ data class Configuration(
             clientPhoneNumber,
             clientAdditionalId,
             clientInitMessage,
+            clientAvatar,
             cacheFiles,
             additionalFields,
             additionalNestedFields

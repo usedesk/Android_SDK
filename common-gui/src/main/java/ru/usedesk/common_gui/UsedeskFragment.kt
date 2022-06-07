@@ -7,6 +7,7 @@ import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import java.io.File
 
@@ -97,7 +98,7 @@ abstract class UsedeskFragment : Fragment() {
             FileProvider.getUriForFile(
                 applicationContext,
                 "${applicationContext.packageName}.provider",
-                File(uri.path)
+                uri.toFile()
             )
         } else {
             uri

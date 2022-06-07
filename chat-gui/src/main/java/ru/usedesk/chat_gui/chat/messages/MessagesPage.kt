@@ -7,6 +7,7 @@ import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -227,7 +228,9 @@ internal class MessagesPage : UsedeskFragment() {
         )
 
         FabToBottomAdapter(
+            binding.fabContainer,
             binding.fabToBottom,
+            binding.tvToBottom,
             binding.styleValues,
             viewModel,
             viewLifecycleOwner
@@ -249,7 +252,9 @@ internal class MessagesPage : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
+        val fabContainer: ViewGroup = rootView.findViewById(R.id.fab_container)
         val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
+        val tvToBottom: TextView = rootView.findViewById(R.id.tv_to_bottom_counter)
         val messagePanel =
             MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
         val lMessagesContainer: ViewGroup = rootView.findViewById(R.id.l_messages_container)

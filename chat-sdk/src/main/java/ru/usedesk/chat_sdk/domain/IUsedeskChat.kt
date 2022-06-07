@@ -25,11 +25,7 @@ interface IUsedeskChat {
 
     fun send(textMessage: String)
 
-    fun sendRx(textMessage: String): Completable
-
     fun send(usedeskFileInfoList: List<UsedeskFileInfo>)
-
-    fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable
 
     fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback)
 
@@ -58,6 +54,14 @@ interface IUsedeskChat {
     fun sendMessageDraft()
 
     fun sendMessageDraftRx(): Completable
+
+    fun createChat(apiToken: String): String
+
+    /**
+     * @return
+     * true - can load next messages page
+     */
+    fun loadPreviousMessagesPage(): Boolean
 
     fun release()
 

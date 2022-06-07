@@ -51,7 +51,7 @@ internal class ChatInteractor(
     private var reconnectDisposable: Disposable? = null
     private val listenersDisposables = mutableListOf<Disposable>()
     private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val jobs = mutableListOf<Job>()
+    private val jobsScope = CoroutineScope(Dispatchers.IO)
     private val jobsMutex = Mutex()
     private val firstMessageMutex = Mutex()
     private var firstMessageLock: Mutex? = null
@@ -172,8 +172,13 @@ internal class ChatInteractor(
         }
 
         @Synchronized
-        override fun onMessagesReceived(newMessages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(newMessages, false)
+        override fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(old = oldMessages, isInited = false)
+        }
+
+        @Synchronized
+        override fun onMessagesNewReceived(newMessages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(new = newMessages, isInited = false)
         }
 
         @Synchronized
@@ -206,6 +211,19 @@ internal class ChatInteractor(
             } catch (e: Exception) {
                 //nothing
             }
+        }
+    }
+
+    override fun createChat(apiToken: String): String {
+        return apiRepository.initChat(
+            configuration,
+            apiToken
+        ).also { clientToken ->
+            userInfoRepository.setConfiguration(
+                configuration.copy(
+                    clientToken = clientToken
+                )
+            )
         }
     }
 
@@ -265,11 +283,12 @@ internal class ChatInteractor(
     }
 
     private fun onMessagesNew(
-        messages: List<UsedeskMessage>,
+        old: List<UsedeskMessage> = listOf(),
+        new: List<UsedeskMessage> = listOf(),
         isInited: Boolean
     ) {
-        lastMessages = lastMessages + messages
-        messages.forEach { message ->
+        lastMessages = old + lastMessages + new
+        (old.asSequence() + new.asSequence()).forEach { message ->
             messageSubject.onNext(message)
             if (!isInited) {
                 newMessageSubject.onNext(message)
@@ -319,8 +338,15 @@ internal class ChatInteractor(
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message)
-            eventListener.onMessagesReceived(listOf(sendingMessage))
-            sendText(sendingMessage)
+            eventListener.onMessagesNewReceived(listOf(sendingMessage))
+
+            runBlocking {
+                jobsMutex.withLock {
+                    jobsScope.launchSafe({
+                        sendCached(sendingMessage)
+                    })
+                }
+            }
         }
     }
 
@@ -363,23 +389,20 @@ internal class ChatInteractor(
     }
 
     override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        var exc: Exception? = null
-        val sendingFiles = usedeskFileInfoList.map { usedeskFileInfo ->
-            createSendingMessage(usedeskFileInfo).also {
-                eventListener.onMessagesReceived(listOf(it))
-            }
+        val sendingMessages = usedeskFileInfoList.map {
+            createSendingMessage(it)
         }
 
-        sendingFiles.forEach { sendingMessage ->
-            try {
-                sendFile(sendingMessage)
-            } catch (e: Exception) {
-                exc = e
-            }
-        }
+        eventListener.onMessagesNewReceived(sendingMessages)
 
-        exc?.let {
-            throw it
+        runBlocking {
+            jobsMutex.withLock {
+                sendingMessages.forEach { msg ->
+                    jobsScope.launchSafe({
+                        sendCached(msg)
+                    })
+                }
+            }
         }
     }
 
@@ -522,6 +545,7 @@ internal class ChatInteractor(
                     sendingMessage.id,
                     sendingMessage.createdAt,
                     sendingMessage.text,
+                    sendingMessage.convertedText,
                     UsedeskMessageClient.Status.SEND_FAILED
                 )
             }
@@ -571,6 +595,7 @@ internal class ChatInteractor(
                 agentMessage.id,
                 agentMessage.createdAt,
                 agentMessage.text,
+                agentMessage.convertedText,
                 agentMessage.buttons,
                 false,
                 feedback,
@@ -611,6 +636,7 @@ internal class ChatInteractor(
                         message.id,
                         message.createdAt,
                         message.text,
+                        message.convertedText,
                         UsedeskMessageClient.Status.SENDING
                     )
                     onMessageUpdate(sendingMessage)
@@ -707,33 +733,9 @@ internal class ChatInteractor(
                 false
             )
 
-            val sendingMessages = mutableListOf<UsedeskMessage>()
-
-            val message = messageDraft.text.trim()
-            if (message.isNotEmpty()) {
-                val sendingMessage = createSendingMessage(message)
-                sendingMessages.add(sendingMessage)
-            }
-
-            sendingMessages.addAll(messageDraft.files.map {
-                createSendingMessage(it)
-            })
-
-            eventListener.onMessagesReceived(sendingMessages)
-
-            jobsMutex.withLock {
-                jobs.addAll(sendingMessages.mapNotNull { msg ->
-                    when (msg) {
-                        is UsedeskMessageClientText -> ioScope.launchSafe({
-                            sendCached(msg)
-                        })
-                        is UsedeskMessageFile -> ioScope.launchSafe({
-                            sendCached(msg)
-                        })
-                        else -> null
-                    }
-                })
-            }
+            send(messageDraft.text)
+            send(messageDraft.files)
+            //TODO: sync
         }
     }
 
@@ -750,6 +752,7 @@ internal class ChatInteractor(
             localId,
             calendar,
             text,
+            apiRepository.convertText(text),
             UsedeskMessageClient.Status.SENDING
         )
     }
@@ -805,18 +808,6 @@ internal class ChatInteractor(
         }
     }
 
-    override fun sendRx(textMessage: String): Completable {
-        return safeCompletableIo(ioScheduler) {
-            send(textMessage)
-        }
-    }
-
-    override fun sendRx(usedeskFileInfoList: List<UsedeskFileInfo>): Completable {
-        return safeCompletableIo(ioScheduler) {
-            send(usedeskFileInfoList)
-        }
-    }
-
     override fun sendRx(
         agentMessage: UsedeskMessageAgentText,
         feedback: UsedeskFeedback
@@ -844,15 +835,66 @@ internal class ChatInteractor(
         }
     }
 
+    private val oldMutex = Mutex()
+    private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
+
+    override fun loadPreviousMessagesPage(): Boolean {
+        return runBlocking {
+            oldMutex.withLock {
+                oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
+            }?.await() ?: true
+        }
+    }
+
+    private suspend fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
+        val messages = messagesSubject.value
+        val oldestMessageId = messages?.firstOrNull()?.id
+        val token = token
+        return if (oldestMessageId != null &&
+            token != null
+        ) {
+            CoroutineScope(Dispatchers.IO).async {
+                loadPreviousMessagesJob(token, oldestMessageId)
+            }.also {
+                oldMessagesLoadDeferred = it
+            }
+        } else {
+            null
+        }
+    }
+
+    private suspend fun loadPreviousMessagesJob(
+        token: String,
+        oldestMessageId: Long
+    ) = try {
+        val hasUnloadedMessages = apiRepository.loadPreviousMessages(
+            configuration,
+            token,
+            oldestMessageId
+        )
+        oldMutex.withLock {
+            oldMessagesLoadDeferred = if (hasUnloadedMessages) {
+                null
+            } else {
+                CompletableDeferred(false)
+            }
+            hasUnloadedMessages
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        oldMutex.withLock {
+            oldMessagesLoadDeferred = null
+        }
+        true
+    }
+
     override fun release() {
         listenersDisposables.forEach {
             it.dispose()
         }
         runBlocking {
             jobsMutex.withLock {
-                jobs.forEach {
-                    it.cancel()
-                }
+                jobsScope.cancel()
             }
         }
         disconnect()
@@ -867,13 +909,10 @@ internal class ChatInteractor(
     private fun sendUserEmail() {
         try {
             token?.let {
-                apiRepository.send(
-                    it,
-                    configuration.clientEmail,
-                    configuration.clientName,
-                    configuration.clientNote,
-                    configuration.clientPhoneNumber,
-                    configuration.clientAdditionalId
+                apiRepository.setClient(
+                    configuration.copy(
+                        clientToken = it
+                    )
                 )
             }
         } catch (e: UsedeskException) {
@@ -915,7 +954,10 @@ internal class ChatInteractor(
             it.id !in ids
         }
         val needToResendMessages = lastMessages.isNotEmpty()
-        onMessagesNew(filteredMessages + filteredNotSentMessages, true)
+        onMessagesNew(
+            new = filteredMessages + filteredNotSentMessages,
+            isInited = true
+        )
 
         if (chatInited.waitingEmail) {
             sendUserEmail()

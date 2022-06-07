@@ -135,20 +135,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_url_to_send_file"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_url_to_send_file"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/url_to_send_file_hint"
-                        android:inputType="textUri" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_company_id"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -317,6 +303,43 @@
                         android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/custom_time_format" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_messages_page_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_messages_page_size"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/messages_page_size"
+                        android:inputType="numberDecimal"
+                        android:maxLength="3" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:text="@string/client_avatar" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_avatar"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_margin="12dp"
+                        android:clickable="true"
+                        app:srcCompat="@android:drawable/ic_menu_add"
+                        android:focusable="true" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <TextView
                     android:id="@+id/tv_service_type"
@@ -672,6 +695,20 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:text="@string/button_go_to_sdk" />
+
+                <Button
+                    android:id="@+id/btn_create_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/create_chat" />
+
+                <ProgressBar
+                    android:id="@+id/pb_create_chat"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center" />
 
                 <TextView
                     android:id="@+id/tv_version"

@@ -1,25 +1,41 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.multipart
 
+import android.content.ContentResolver
+import android.net.Uri
+import androidx.core.net.toFile
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import ru.usedesk.chat_sdk.data.repository.api.loader.file.entity.LoadedFile
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getMimeType
 
-internal class MultipartConverter : IMultipartConverter {
-    override fun convert(key: String, value: String): MultipartBody.Part {
-        return MultipartBody.Part.createFormData(key, value)
-    }
-
-    override fun convert(key: String, value: Long): MultipartBody.Part {
-        return MultipartBody.Part.createFormData(key, value.toString())
-    }
+internal class MultipartConverter(
+    private val contentResolver: ContentResolver
+) : IMultipartConverter {
+    override fun convert(pair: Map.Entry<String, Any?>): MultipartBody.Part? =
+        when (val value = pair.value) {
+            is String -> MultipartBody.Part.createFormData(pair.key, value)
+            is Long -> MultipartBody.Part.createFormData(pair.key, value.toString())
+            is Uri -> {
+                val mimeType = getMimeType(contentResolver, value)
+                val mediaType = MediaType.parse(mimeType)
+                val name = getFileName(contentResolver, value)
+                val requestBody = RequestBody.create(mediaType, value.toFile())
+                MultipartBody.Part.createFormData(pair.key, name, requestBody)
+            }
+            else -> null
+        }
 
     override fun convert(
         key: String,
-        loadedFile: LoadedFile
+        byteArray: ByteArray,
+        originalFile: String
     ): MultipartBody.Part {
-        val mediaType = MediaType.get(loadedFile.type)
-        val requestBody = RequestBody.create(mediaType, loadedFile.bytes)
-        return MultipartBody.Part.createFormData(key, loadedFile.name, requestBody)
+        val uri = Uri.parse(originalFile)
+        val mimeType = getMimeType(contentResolver, uri)
+        val mediaType = MediaType.parse(mimeType)
+        val name = getFileName(contentResolver, uri)
+        val requestBody = RequestBody.create(mediaType, byteArray)
+        return MultipartBody.Part.createFormData(key, name, requestBody)
     }
 }

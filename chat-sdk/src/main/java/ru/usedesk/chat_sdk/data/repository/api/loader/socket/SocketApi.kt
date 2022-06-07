@@ -56,41 +56,33 @@ internal class SocketApi(
 
     private fun onResponse(rawResponse: String) {
         try {
-            val response = process(rawResponse)
-            when (response.type) {
-                ErrorResponse.TYPE -> {
-                    val errorResponse = response as ErrorResponse
+            when (val response = process(rawResponse)) {
+                is ErrorResponse -> {
                     val usedeskSocketException: UsedeskSocketException =
-                        when (errorResponse.code) {
+                        when (response.code) {
                             HttpURLConnection.HTTP_FORBIDDEN -> {
                                 eventListener.onTokenError()
                                 UsedeskSocketException(
                                     UsedeskSocketException.Error.FORBIDDEN_ERROR,
-                                    errorResponse.message
+                                    response.message
                                 )
                             }
                             HttpURLConnection.HTTP_BAD_REQUEST -> UsedeskSocketException(
                                 UsedeskSocketException.Error.BAD_REQUEST_ERROR,
-                                errorResponse.message
+                                response.message
                             )
                             HttpURLConnection.HTTP_INTERNAL_ERROR -> UsedeskSocketException(
                                 UsedeskSocketException.Error.INTERNAL_SERVER_ERROR,
-                                errorResponse.message
+                                response.message
                             )
-                            else -> UsedeskSocketException(errorResponse.message)
+                            else -> UsedeskSocketException(response.message)
                         }
                     eventListener.onException(usedeskSocketException)
                 }
-                InitChatResponse.TYPE -> {
-                    eventListener.onInited(response as InitChatResponse)
-                }
-                SetClientResponse.TYPE -> {
-                    eventListener.onSetEmailSuccess()
-                }
-                MessageResponse.TYPE -> {
-                    eventListener.onNew(response as MessageResponse)
-                }
-                FeedbackResponse.TYPE -> eventListener.onFeedback()
+                is InitChatResponse -> eventListener.onInited(response)
+                is SetClientResponse -> eventListener.onSetEmailSuccess()
+                is MessageResponse -> eventListener.onNew(response)
+                is FeedbackResponse -> eventListener.onFeedback()
             }
         } catch (e: Exception) {
             eventListener.onException(e)

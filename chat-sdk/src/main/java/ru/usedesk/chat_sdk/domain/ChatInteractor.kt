@@ -370,6 +370,7 @@ internal class ChatInteractor(
                         ioScope.launch {
                             try {
                                 waitFirstMessage()
+                                delay(3000)
                                 apiRepository.send(
                                     token,
                                     configuration,

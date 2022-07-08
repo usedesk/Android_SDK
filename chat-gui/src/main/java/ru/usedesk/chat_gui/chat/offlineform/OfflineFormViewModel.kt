@@ -129,12 +129,8 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         val emailIsValid = UsedeskValidatorUtil.isValidEmailNecessary(email.text)
         return emailIsValid && items.all {
             !it.required || when (it) {
-                is OfflineFormText -> {
-                    it.text.isNotEmpty()
-                }
-                is OfflineFormList -> {
-                    it.selected >= 0
-                }
+                is OfflineFormText -> it.text.isNotEmpty()
+                is OfflineFormList -> it.selected >= 0
                 else -> true
             }
         }

@@ -4,7 +4,6 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
-import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.makeramen.roundedimageview.RoundedImageView
+import ru.usedesk.chat_gui.NoMoveLinkMovementMethod
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
@@ -620,7 +620,7 @@ internal class MessagesAdapter(
             }
             binding.tvText.run {
                 isClickable = true
-                movementMethod = LinkMovementMethod.getInstance()
+                movementMethod = NoMoveLinkMovementMethod
             }
         }
 

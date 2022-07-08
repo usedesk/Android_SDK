@@ -135,9 +135,7 @@ internal class ApiRepository(
         this.eventListener = eventListener
         socketApi.connect(
             url,
-            token,
-            configuration.getCompanyAndChannel(),
-            configuration.messagesPageSize,
+            configuration.getInitChatRequest(token),
             socketEventListener
         )
     }
@@ -146,15 +144,18 @@ internal class ApiRepository(
         configuration: UsedeskChatConfiguration,
         token: String?
     ) {
-        socketApi.sendRequest(
-            InitChatRequest(
-                token,
-                configuration.getCompanyAndChannel(),
-                configuration.urlChat,
-                configuration.messagesPageSize
-            )
-        )
+        socketApi.sendRequest(configuration.getInitChatRequest(token))
     }
+
+    private fun UsedeskChatConfiguration.getInitChatRequest(token: String?) = InitChatRequest(
+        token,
+        getCompanyAndChannel(),
+        urlChat,
+        when {
+            messagesPageSize > 0 -> messagesPageSize
+            else -> null
+        }
+    )
 
     override fun convertText(text: String) = messageResponseConverter.convertText(text)
 

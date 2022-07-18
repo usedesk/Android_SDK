@@ -6,13 +6,13 @@ internal class InitChatRequest(
     val token: String?,
     val companyId: String,
     val url: String,
-    messageLimit: Int
+    messageLimit: Int?
 ) : BaseRequest(TYPE) {
 
     private val payload = Payload(messageLimit)
 
     class Payload(
-        val messageLimit: Int
+        val messageLimit: Int?
     ) {
         val sdk = VALUE_CURRENT_SDK
         val type = VALUE_TYPE_SDK

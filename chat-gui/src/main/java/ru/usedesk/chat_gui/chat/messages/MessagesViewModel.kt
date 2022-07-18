@@ -64,7 +64,12 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                 } else {
                     AgentMessage(message, lastOfGroup, showName = true, showAvatar = true)
                 }
-            }.asSequence() + ChatDate(it.value.first().createdAt)
+            }.asSequence() + ChatDate((it.value.first().createdAt.clone() as Calendar).apply {
+                set(Calendar.MILLISECOND, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.HOUR, 0)
+            })
         }.toList()
 
         return if (groupAgentMessages) {

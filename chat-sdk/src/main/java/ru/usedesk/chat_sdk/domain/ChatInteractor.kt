@@ -64,7 +64,6 @@ internal class ChatInteractor(
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
     private var additionalFieldsNeeded: Boolean = true
-    private var avatarSendNeeded: Boolean = false
 
     init {
         listenersDisposables.apply {
@@ -370,6 +369,7 @@ internal class ChatInteractor(
                         ioScope.launch {
                             try {
                                 waitFirstMessage()
+                                delay(3000)
                                 apiRepository.send(
                                     token,
                                     configuration,
@@ -540,47 +540,37 @@ internal class ChatInteractor(
 
     private fun onMessageSendingFailed(sendingMessage: UsedeskMessageClient) {
         when (sendingMessage) {
-            is UsedeskMessageClientText -> {
-                UsedeskMessageClientText(
-                    sendingMessage.id,
-                    sendingMessage.createdAt,
-                    sendingMessage.text,
-                    sendingMessage.convertedText,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            is UsedeskMessageClientFile -> {
-                UsedeskMessageClientFile(
-                    sendingMessage.id,
-                    sendingMessage.createdAt,
-                    sendingMessage.file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            is UsedeskMessageClientImage -> {
-                UsedeskMessageClientImage(
-                    sendingMessage.id,
-                    sendingMessage.createdAt,
-                    sendingMessage.file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            is UsedeskMessageClientVideo -> {
-                UsedeskMessageClientVideo(
-                    sendingMessage.id,
-                    sendingMessage.createdAt,
-                    sendingMessage.file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            is UsedeskMessageClientAudio -> {
-                UsedeskMessageClientAudio(
-                    sendingMessage.id,
-                    sendingMessage.createdAt,
-                    sendingMessage.file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
+            is UsedeskMessageClientText -> UsedeskMessageClientText(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                sendingMessage.text,
+                sendingMessage.convertedText,
+                UsedeskMessageClient.Status.SEND_FAILED
+            )
+            is UsedeskMessageClientFile -> UsedeskMessageClientFile(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                sendingMessage.file,
+                UsedeskMessageClient.Status.SEND_FAILED
+            )
+            is UsedeskMessageClientImage -> UsedeskMessageClientImage(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                sendingMessage.file,
+                UsedeskMessageClient.Status.SEND_FAILED
+            )
+            is UsedeskMessageClientVideo -> UsedeskMessageClientVideo(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                sendingMessage.file,
+                UsedeskMessageClient.Status.SEND_FAILED
+            )
+            is UsedeskMessageClientAudio -> UsedeskMessageClientAudio(
+                sendingMessage.id,
+                sendingMessage.createdAt,
+                sendingMessage.file,
+                UsedeskMessageClient.Status.SEND_FAILED
+            )
             else -> null
         }?.let {
             onMessageUpdate(it)
@@ -937,7 +927,6 @@ internal class ChatInteractor(
         ) {
             initClientMessage = null
         }
-        avatarSendNeeded = false //oldConfiguration?.clientAvatar != configuration.clientAvatar
 
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 

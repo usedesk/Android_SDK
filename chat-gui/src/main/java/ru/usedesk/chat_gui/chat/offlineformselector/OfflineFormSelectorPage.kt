@@ -22,38 +22,41 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
     )
 
     private lateinit var binding: Binding
-    private lateinit var adapter: OfflineFormSelectorAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_page_offline_form_selector,
-            R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+    ): View = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_page_offline_form_selector,
+        R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page
+    ) { rootView, defaultStyleId ->
+        Binding(rootView, defaultStyleId)
+    }.apply {
+        binding = this
 
-        init()
-
-        return binding.rootView
-    }
-
-    private fun init() {
-        adapter = OfflineFormSelectorAdapter(
-            binding.rvItems,
+        val key = argsGetString(KEY_KEY, "")
+        OfflineFormSelectorAdapter(
+            key,
+            rvItems,
             binding,
             viewModel,
             viewLifecycleOwner
         )
-    }
+    }.rootView
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
+    }
+
+    companion object {
+        private const val KEY_KEY = "a"
+
+        fun createBundle(key: String) = Bundle().apply {
+            putString(KEY_KEY, key)
+        }
     }
 }

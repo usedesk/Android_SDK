@@ -7,10 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
+import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.common_gui.UsedeskCommonFieldCheckBoxAdapter
 import ru.usedesk.common_gui.inflateItem
 
 internal class OfflineFormSelectorAdapter(
+    private val key: String,
     recyclerView: RecyclerView,
     binding: OfflineFormSelectorPage.Binding,
     private val viewModel: OfflineFormViewModel,
@@ -29,14 +31,14 @@ internal class OfflineFormSelectorAdapter(
             adapter = this@OfflineFormSelectorAdapter
         }
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
-            if (old?.selectedSubject != new.selectedSubject ||
-                old.offlineFormSettings?.topics != new.offlineFormSettings?.topics
-            ) {
+            val oldField = old?.customFields?.firstOrNull { it.key == key }
+            val newField = new.customFields.first { it.key == key } as OfflineFormList
+            if (oldField != newField) {
                 val oldItems = items
-                val newItems = new.offlineFormSettings?.topics ?: listOf()
+                val newItems = newField.items
 
                 val oldSelected = selected
-                val newSelected = new.selectedSubject
+                val newSelected = newField.items[newField.selected]
 
                 items = newItems
                 selected = newSelected
@@ -61,25 +63,24 @@ internal class OfflineFormSelectorAdapter(
                     ): Boolean {
                         val oldItem = oldItems[oldItemPosition]
                         val newItem = newItems[newItemPosition]
-                        return oldSelected == newSelected || (oldItem != oldSelected &&
-                                newItem != newSelected)
+                        return oldSelected == newSelected
+                                || (oldItem != oldSelected && newItem != newSelected)
                     }
                 }).dispatchUpdatesTo(this)
             }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(inflateItem(
-            parent, R.layout.usedesk_item_field_checkbox,
-            itemStyle
-        ) { rootView, defaultStyleId ->
-            UsedeskCommonFieldCheckBoxAdapter.Binding(rootView, defaultStyleId)
-        })
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(inflateItem(
+        parent,
+        R.layout.usedesk_item_field_checkbox,
+        itemStyle
+    ) { rootView, defaultStyleId ->
+        UsedeskCommonFieldCheckBoxAdapter.Binding(rootView, defaultStyleId)
+    })
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+        holder.bind(items[position])
     }
 
     override fun getItemCount() = items.size
@@ -90,11 +91,12 @@ internal class OfflineFormSelectorAdapter(
 
         private val adapter = UsedeskCommonFieldCheckBoxAdapter(binding)
 
-        fun bind(index: Int) {
-            val item = items[index]
-            adapter.setTitle(item)
-            adapter.setChecked(item == selected)
-            adapter.setOnClickListener { viewModel.setSubject(item) }
+        fun bind(item: String) {
+            adapter.run {
+                setTitle(item)
+                setChecked(item == selected)
+                setOnClickListener { viewModel.onListFieldChanged(key, items.indexOf(item)) }
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.offlineformselector.OfflineFormSelectorPage
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.*
 
@@ -42,17 +43,7 @@ internal class OfflineFormPage : UsedeskFragment() {
 
         binding.tvSend.setOnClickListener {
             hideKeyboard(it)
-            viewModel.onSendOfflineForm { goToChat ->
-                if (goToChat) {
-                    findNavController().navigate(R.id.action_offlineFormPage_to_messagesPage)
-                } else {
-                    OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
-                        setOnDismissListener {
-                            requireActivity().onBackPressed()
-                        }
-                    }.show()
-                }
-            }
+            viewModel.onSendOfflineForm()
         }
 
         updateActionButton(false)
@@ -69,15 +60,17 @@ internal class OfflineFormPage : UsedeskFragment() {
             binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_message),
         )
 
-        fieldsAdapter =
-            OfflineFormFieldsAdapter(
-                binding.rvFields,
-                binding,
-                viewModel,
-                viewLifecycleOwner
-            ) {
-                findNavController().navigate(R.id.action_offlineFormPage_to_offlineFormSelectorPage)
-            }
+        fieldsAdapter = OfflineFormFieldsAdapter(
+            binding.rvFields,
+            binding,
+            viewModel,
+            viewLifecycleOwner
+        ) { key ->
+            findNavController().navigate(
+                R.id.action_offlineFormPage_to_offlineFormSelectorPage,
+                OfflineFormSelectorPage.createBundle(key)
+            )
+        }
 
         viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
             if (old?.offlineFormState != new.offlineFormState) {
@@ -86,8 +79,21 @@ internal class OfflineFormPage : UsedeskFragment() {
             if (old?.sendEnabled != new.sendEnabled) {
                 updateActionButton(new.sendEnabled)
             }
-            if (old?.offlineFormSettings != new.offlineFormSettings) {
-                binding.tvOfflineText.text = new.offlineFormSettings?.callbackGreeting
+            if (old?.greetings != new.greetings) {
+                binding.tvOfflineText.text = new.greetings
+            }
+            if (old?.goExit != new.goExit) {
+                new.goExit?.process { goToChat ->
+                    if (goToChat) {
+                        findNavController().navigate(R.id.action_offlineFormPage_to_messagesPage)
+                    } else {
+                        OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
+                            setOnDismissListener {
+                                requireActivity().onBackPressed()
+                            }
+                        }.show()
+                    }
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.offlineform
 
+import android.text.InputType
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
@@ -19,8 +20,8 @@ internal class OfflineFormFieldsAdapter(
     binding: OfflineFormPage.Binding,
     private val viewModel: OfflineFormViewModel,
     lifecycleOwner: LifecycleOwner,
-    private val onSubjectClick: () -> Unit
-) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder>() {
+    private val onListFieldClick: (String) -> Unit
+) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder<*>>() {
 
     private val textFieldStyle =
         binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_text_field)
@@ -36,9 +37,9 @@ internal class OfflineFormFieldsAdapter(
             itemAnimator = null
         }
         viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
-            if (old?.fields != new.fields) {
+            if (old?.allFields != new.allFields) {
                 val oldItems = items
-                val newItems = new.fields
+                val newItems = new.allFields
                 items = newItems
 
                 DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -70,16 +71,16 @@ internal class OfflineFormFieldsAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return when (viewType) {
-            TYPE_TEXT -> TextViewHolder(inflateItem(
+            R.layout.usedesk_item_field_text -> TextViewHolder(inflateItem(
                 parent,
                 R.layout.usedesk_item_field_text,
                 textFieldStyle
             ) { rootView, defaultStyleId ->
                 UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
             })
-            TYPE_LIST -> ListViewHolder(inflateItem(
+            R.layout.usedesk_item_field_list -> ListViewHolder(inflateItem(
                 parent,
                 R.layout.usedesk_item_field_list,
                 listFieldStyle
@@ -90,59 +91,61 @@ internal class OfflineFormFieldsAdapter(
         }
     }
 
-    override fun onBindViewHolder(holderText: BaseViewHolder, position: Int) {
-        holderText.bind(position)
+    override fun onBindViewHolder(holderText: BaseViewHolder<*>, position: Int) {
+        val item = items[position]
+        when (holderText) {
+            is ListViewHolder -> holderText.bind(item as OfflineFormList)
+            is TextViewHolder -> holderText.bind(item as OfflineFormText)
+        }
+
     }
 
     override fun getItemCount() = items.size
 
-    override fun getItemViewType(position: Int): Int {
-        return if (position == 2) {
-            TYPE_LIST
-        } else {
-            TYPE_TEXT
-        }
+    override fun getItemViewType(position: Int): Int = when (items[position]) {
+        is OfflineFormList -> R.layout.usedesk_item_field_list
+        is OfflineFormText -> R.layout.usedesk_item_field_text
     }
 
     inner class TextViewHolder(
         binding: UsedeskCommonFieldTextAdapter.Binding
-    ) : BaseViewHolder(binding.rootView) {
+    ) : BaseViewHolder<OfflineFormText>(binding.rootView) {
         private val adapter = UsedeskCommonFieldTextAdapter(binding)
 
-        override fun bind(index: Int) {
-            (items[index] as OfflineFormText).let { item ->
-                adapter.setTitle(item.title, item.required)
-                adapter.setText(item.text)
-                adapter.setTextChangeListener {
-                    viewModel.onTextFieldChanged(index, it)
+        override fun bind(item: OfflineFormText) {
+            adapter.run {
+                setTitle(item.title, item.required)
+                setText(item.text)
+                setTextChangeListener { viewModel.onTextFieldChanged(item.key, it) }
+
+                binding.etText.run {
+                    isSingleLine = item.key != OfflineFormViewModel.MESSAGE_KEY
+                    inputType = when (item.key) {
+                        OfflineFormViewModel.NAME_KEY -> InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                        OfflineFormViewModel.EMAIL_KEY -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                        OfflineFormViewModel.MESSAGE_KEY -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                        else -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                    }
                 }
             }
         }
     }
 
     inner class ListViewHolder(
-        binding: UsedeskCommonFieldListAdapter.Binding
-    ) : BaseViewHolder(binding.rootView) {
+        val binding: UsedeskCommonFieldListAdapter.Binding
+    ) : BaseViewHolder<OfflineFormList>(binding.rootView) {
         private val adapter = UsedeskCommonFieldListAdapter(binding)
 
-        override fun bind(index: Int) {
-            (items[index] as OfflineFormList).let {
-                adapter.setTitle(it.title, it.required)
-                adapter.setText(it.items.getOrNull(it.selected))
-                adapter.setOnClickListener {
-                    onSubjectClick()
-                }
+        override fun bind(item: OfflineFormList) {
+            adapter.run {
+                setTitle(item.title, item.required)
+                setText(item.items.getOrNull(item.selected))
+                setOnClickListener { onListFieldClick(item.key) }
             }
         }
     }
 
-    abstract inner class BaseViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
-
-        abstract fun bind(index: Int)
-    }
-
-    companion object {
-        const val TYPE_TEXT = 1
-        const val TYPE_LIST = 2
+    sealed class BaseViewHolder<ITEM>(rootView: View) : RecyclerView.ViewHolder(rootView) {
+        abstract fun bind(item: ITEM)
     }
 }

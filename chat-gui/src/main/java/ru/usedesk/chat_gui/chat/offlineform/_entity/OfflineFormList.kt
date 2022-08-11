@@ -1,9 +1,9 @@
 package ru.usedesk.chat_gui.chat.offlineform._entity
 
-internal class OfflineFormList(
-    key: String,
-    title: String,
-    required: Boolean,
+internal data class OfflineFormList(
+    override val key: String,
+    override val title: String,
+    override val required: Boolean,
     val items: List<String>,
     val selected: Int
-) : OfflineFormItem(key, title, required)
+) : OfflineFormItem

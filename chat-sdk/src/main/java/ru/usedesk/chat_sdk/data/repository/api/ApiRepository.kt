@@ -9,10 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
-import ru.usedesk.chat_sdk.data.repository.api.entity.AdditionalFieldsRequest
-import ru.usedesk.chat_sdk.data.repository.api.entity.CreateChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
-import ru.usedesk.chat_sdk.data.repository.api.entity.SetClientResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.*
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
@@ -287,7 +284,7 @@ internal class ApiRepository(
         offlineForm: UsedeskOfflineForm
     ) {
         try {
-            doRequest(configuration.urlChatApi, Array<Any>::class.java) {
+            doRequest(configuration.urlChatApi, OfflineFormResponse::class.java) {
                 val params = mapOf(
                     "email" to offlineForm.clientEmail.getCorrectStringValue(),
                     "name" to offlineForm.clientName.getCorrectStringValue(),

@@ -3,6 +3,7 @@ package ru.usedesk.chat_sdk.domain
 import android.net.Uri
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -28,6 +29,7 @@ internal class ChatInteractor(
     private val cachedMessages: ICachedMessagesInteractor
 ) : IUsedeskChat {
 
+    private val mainThread = AndroidSchedulers.mainThread()
     private val ioScheduler = Schedulers.io()
     private var token: String? = null
     private var initClientMessage: String? = configuration.clientInitMessage
@@ -311,16 +313,16 @@ internal class ChatInteractor(
     override fun addActionListener(listener: IUsedeskActionListenerRx) {
         actionListenersRx.add(listener)
         listener.onObservables(
-            connectionStateSubject,
-            clientTokenSubject,
-            messageSubject,
-            newMessageSubject,
-            messagesSubject,
-            messageUpdateSubject,
-            messageRemovedSubject,
-            offlineFormExpectedSubject,
-            feedbackSubject,
-            exceptionSubject
+            connectionStateSubject.observeOn(mainThread),
+            clientTokenSubject.observeOn(mainThread),
+            messageSubject.observeOn(mainThread),
+            newMessageSubject.observeOn(mainThread),
+            messagesSubject.observeOn(mainThread),
+            messageUpdateSubject.observeOn(mainThread),
+            messageRemovedSubject.observeOn(mainThread),
+            offlineFormExpectedSubject.observeOn(mainThread),
+            feedbackSubject.observeOn(mainThread),
+            exceptionSubject.observeOn(mainThread)
         )
     }
 

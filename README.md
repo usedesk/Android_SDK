@@ -56,11 +56,13 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 Добавьте в файл Manifest:
 ```
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 <uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+<!--Для прикрепления фото с камеры в чате-->
 <uses-permission android:name="android.permission.CAMERA" />
+
+<!--Только при использовании foreground сервиса уведомлений-->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
 <a name="chat"></a>

@@ -7,28 +7,20 @@ internal class ShowFileViewModel : UsedeskViewModel<ShowFileViewModel.Model>(Mod
 
     fun init(file: UsedeskFile) {
         doInit {
-            setModel { model ->
-                model.copy(file = file)
-            }
+            setModel { copy(file = file) }
         }
     }
 
     fun onLoaded(success: Boolean) {
-        setModel { model ->
-            model.copy(error = !success)
-        }
+        setModel { copy(error = !success) }
     }
 
     fun onImageClick() {
-        setModel { model ->
-            model.copy(panelShow = !model.panelShow)
-        }
+        setModel { copy(panelShow = !panelShow) }
     }
 
     fun onRetryPreview() {
-        setModel { model ->
-            model.copy(error = false)
-        }
+        setModel { copy(error = false) }
     }
 
     data class Model(

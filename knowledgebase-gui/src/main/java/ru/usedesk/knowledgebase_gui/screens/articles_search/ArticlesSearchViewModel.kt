@@ -21,28 +21,27 @@ internal class ArticlesSearchViewModel : UsedeskViewModel<ArticlesSearchViewMode
         if (lastQuery != searchQuery || modelLiveData.value.state == State.FAILED) {
             lastQuery = searchQuery
             loadingDisposable?.dispose()
-            setModel { model ->
-                model.copy(
+            setModel {
+                copy(
                     articles = listOf(),
-                    state = if (model.state in listOf(State.LOADING, State.LOADED)) {
-                        State.LOADING
-                    } else {
-                        State.RELOADING
+                    state = when (state) {
+                        in listOf(State.LOADING, State.LOADED) -> State.LOADING
+                        else -> State.RELOADING
                     }
                 )
             }
             loadingDisposable = doIt(
                 UsedeskKnowledgeBaseSdk.requireInstance()
                     .getArticlesRx(searchQuery), {
-                    setModel { model ->
-                        model.copy(
+                    setModel {
+                        copy(
                             articles = it,
                             state = State.LOADED
                         )
                     }
                 }, {
-                    setModel { model ->
-                        model.copy(
+                    setModel {
+                        copy(
                             articles = listOf(),
                             state = State.FAILED
                         )

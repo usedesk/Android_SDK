@@ -30,7 +30,7 @@ internal class AttachedFilesAdapter(
                 val oldFiles = files
                 files = new.messageDraft.files
 
-                val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                     override fun getOldListSize() = oldFiles.size
 
                     override fun getNewListSize() = files.size
@@ -52,8 +52,8 @@ internal class AttachedFilesAdapter(
                         val newFile = files[newItemPosition]
                         return oldFile.uri == newFile.uri
                     }
-                })
-                diffResult.dispatchUpdatesTo(this)
+                }).dispatchUpdatesTo(this)
+
                 recyclerView.visibility = visibleGone(files.isNotEmpty())
             }
         }

@@ -16,21 +16,13 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
         override fun onOfflineFormExpectedObservable(
             offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
         ) = offlineFormExpectedObservable.observeOn(mainThread).subscribe {
-            setModel { model ->
-                model.copy(
-                    offlineFormSettings = it
-                )
-            }
+            setModel { copy(offlineFormSettings = it) }
         }
 
         override fun onClientTokenObservable(
             clientTokenObservable: Observable<String>
         ) = clientTokenObservable.observeOn(mainThread).subscribe {
-            setModel { model ->
-                model.copy(
-                    clientToken = it
-                )
-            }
+            setModel { copy(clientToken = it) }
         }
 
         override fun onExceptionObservable(

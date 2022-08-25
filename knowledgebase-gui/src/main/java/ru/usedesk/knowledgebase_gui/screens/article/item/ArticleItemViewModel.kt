@@ -16,12 +16,11 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
     }
 
     private fun reload(articleId: Long) {
-        setModel { model ->
-            model.copy(
-                state = if (model.state == State.LOADING) {
-                    State.LOADING
-                } else {
-                    State.RELOADING
+        setModel {
+            copy(
+                state = when (state) {
+                    State.LOADING -> State.LOADING
+                    else -> State.RELOADING
                 },
                 articleContent = null
             )
@@ -29,8 +28,8 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
         doIt(
             UsedeskKnowledgeBaseSdk.requireInstance()
                 .getArticleRx(articleId), { articleContent ->
-                setModel { model ->
-                    model.copy(
+                setModel {
+                    copy(
                         state = State.LOADED,
                         articleContent = articleContent
                     )
@@ -40,8 +39,8 @@ internal class ArticleItemViewModel : UsedeskViewModel<ArticleItemViewModel.Mode
                         .addViewsRx(articleContent.id)
                 )
             }, {
-                setModel { model ->
-                    model.copy(
+                setModel {
+                    copy(
                         state = State.FAILED,
                         articleContent = null
                     )

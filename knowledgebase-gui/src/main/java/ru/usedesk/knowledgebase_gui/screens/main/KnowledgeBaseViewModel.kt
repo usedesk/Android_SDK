@@ -12,11 +12,7 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
     }
 
     fun onSearchQuery(query: String) {
-        setModel { model ->
-            model.copy(
-                searchQuery = query
-            )
-        }
+        setModel { copy(searchQuery = query) }
     }
 
     override fun onCleared() {

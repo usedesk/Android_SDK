@@ -19,8 +19,8 @@ internal class ArticlePageViewModel : UsedeskViewModel<ArticlePageViewModel.Mode
                 if (position < 0) {
                     position = 0
                 }
-                setModel { model ->
-                    model.copy(
+                setModel {
+                    copy(
                         articles = articles,
                         selectedPosition = position,
                         selectedArticle = articles[position]
@@ -31,10 +31,10 @@ internal class ArticlePageViewModel : UsedeskViewModel<ArticlePageViewModel.Mode
     }
 
     fun onSelect(position: Int) {
-        setModel { model ->
-            model.copy(
+        setModel {
+            copy(
                 selectedPosition = position,
-                selectedArticle = model.articles.getOrNull(position)
+                selectedArticle = articles.getOrNull(position)
             )
         }
     }

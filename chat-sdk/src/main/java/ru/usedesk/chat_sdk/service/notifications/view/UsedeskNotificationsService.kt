@@ -24,10 +24,10 @@ abstract class UsedeskNotificationsService : Service() {
 
     protected open val channelId = "newUsedeskMessages"
     protected open val channelTitle: String by lazy {
-        getString(R.string.usedesk_string_notification_channel_title)
+        getString(R.string.usedesk_notification_channel_title)
     }
     protected open val fileMessage: String by lazy {
-        getString(R.string.usedesk_string_notification_file_message)
+        getString(R.string.usedesk_notification_file_message)
     }
 
     override fun onCreate() {

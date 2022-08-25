@@ -29,7 +29,7 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                     offlineFormSettings.topicsTitle,
                     offlineFormSettings.topicsRequired,
                     offlineFormSettings.topics,
-                    0
+                    -1
                 )
                 val additionalFields = offlineFormSettings.fields.map { customField ->
                     OfflineFormText(
@@ -153,12 +153,18 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         }
     }
 
-    fun onListFieldChanged(key: String, selected: Int) {
+    fun onListFieldChanged(key: String, item: String?) {
         setModel {
             copy(
                 customFields = customFields.map {
                     when (it) {
-                        is OfflineFormList -> it.update(key, selected)
+                        is OfflineFormList -> {
+                            val index = when (item) {
+                                in it.items -> it.items.indexOf(item)
+                                else -> -1
+                            }
+                            it.update(key, index)
+                        }
                         is OfflineFormText -> it
                     }
                 }

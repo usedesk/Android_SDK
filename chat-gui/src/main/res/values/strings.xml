@@ -21,6 +21,7 @@
     <string name="usedesk_download">@string/usedesk_string_download</string>
     <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
     <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
+    <string name="usedesk_not_selected">@string/usedesk_string_not_selected</string>
 
     <string name="usedesk_string_offline_form_send_successed">Your message has been sent.\nWe will reply to you within one business day.</string>
     <string name="usedesk_string_offline_form_send_failed">Failed to send your request. Please, try again.</string>
@@ -43,4 +44,5 @@
     <string name="usedesk_string_download">Download</string>
     <string name="usedesk_string_file_size_exceeds">File size exceeds %dMb:</string>
     <string name="usedesk_string_files_size_exceeds">Files size exceeds %dMb:</string>
+    <string name="usedesk_string_not_selected">Not selected</string>
 </resources>

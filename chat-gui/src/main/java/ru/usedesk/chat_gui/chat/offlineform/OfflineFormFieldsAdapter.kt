@@ -111,20 +111,24 @@ internal class OfflineFormFieldsAdapter(
         binding: UsedeskCommonFieldTextAdapter.Binding
     ) : BaseViewHolder<OfflineFormText>(binding.rootView) {
         private val adapter = UsedeskCommonFieldTextAdapter(binding)
+        private var previousItem: OfflineFormText? = null
 
         override fun bind(item: OfflineFormText) {
-            adapter.run {
-                setTitle(item.title, item.required)
-                setText(item.text)
-                setTextChangeListener { viewModel.onTextFieldChanged(item.key, it) }
+            if (previousItem?.key != item.key) {
+                previousItem = item
+                adapter.run {
+                    setTitle(item.title, item.required)
+                    setText(item.text)
+                    setTextChangeListener { viewModel.onTextFieldChanged(item.key, it) }
 
-                binding.etText.run {
-                    isSingleLine = item.key != OfflineFormViewModel.MESSAGE_KEY
-                    inputType = when (item.key) {
-                        OfflineFormViewModel.NAME_KEY -> InputType.TYPE_TEXT_FLAG_CAP_WORDS
-                        OfflineFormViewModel.EMAIL_KEY -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                        OfflineFormViewModel.MESSAGE_KEY -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-                        else -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                    binding.etText.run {
+                        isSingleLine = item.key != OfflineFormViewModel.MESSAGE_KEY
+                        inputType = when (item.key) {
+                            OfflineFormViewModel.NAME_KEY -> InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                            OfflineFormViewModel.EMAIL_KEY -> InputType.TYPE_CLASS_TEXT or
+                                    InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                            else -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                        }
                     }
                 }
             }
@@ -139,7 +143,11 @@ internal class OfflineFormFieldsAdapter(
         override fun bind(item: OfflineFormList) {
             adapter.run {
                 setTitle(item.title, item.required)
-                setText(item.items.getOrNull(item.selected))
+                setText(
+                    item.items.getOrNull(item.selected)
+                        ?: binding.rootView.resources.getString(R.string.usedesk_not_selected)
+                )
+
                 setOnClickListener { onListFieldClick(item.key) }
             }
         }

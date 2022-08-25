@@ -9,8 +9,8 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
     var lastPlaying: Boolean = false
 
     fun videoApply(videoKey: String, name: String) {
-        setModel { model ->
-            model.copy(
+        setModel {
+            copy(
                 mode = Mode.VIDEO_EXO_PLAYER,
                 key = videoKey,
                 name = name,
@@ -20,8 +20,8 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
     }
 
     fun audioApply(audioKey: String, name: String) {
-        setModel { model ->
-            model.copy(
+        setModel {
+            copy(
                 mode = Mode.AUDIO_EXO_PLAYER,
                 key = audioKey,
                 name = name,
@@ -31,12 +31,11 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
     }
 
     fun fullscreen() {
-        setModel { model ->
-            model.copy(
-                fullscreen = if (model.key.isNotEmpty()) {
-                    !model.fullscreen
-                } else {
-                    false
+        setModel {
+            copy(
+                fullscreen = when {
+                    key.isNotEmpty() -> !fullscreen
+                    else -> false
                 }
             )
         }
@@ -45,11 +44,7 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
     fun onBackPressed(): Boolean {
         val modelValue = modelLiveData.value
         return if (modelValue.fullscreen || modelValue.fullscreen) {
-            setModel { model ->
-                model.copy(
-                    fullscreen = false
-                )
-            }
+            setModel { copy(fullscreen = false) }
             true
         } else {
             false
@@ -57,8 +52,8 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
     }
 
     fun reset() {
-        setModel { model ->
-            model.copy(
+        setModel {
+            copy(
                 mode = Mode.NONE,
                 key = "",
                 name = "",

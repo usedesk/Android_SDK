@@ -33,6 +33,7 @@
     <string name="usedesk_download">@string/usedesk_string_download</string>
     <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
     <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
+    <string name="usedesk_not_selected">@string/usedesk_string_not_selected</string>
     <!--KnowledgeBase-->
     <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
     <string name="usedesk_cancel">@string/usedesk_string_cancel</string>

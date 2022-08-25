@@ -9,8 +9,8 @@ internal class CategoriesViewModel : UsedeskViewModel<CategoriesViewModel.Model>
     fun init(sectionId: Long) {
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()
             .getCategoriesRx(sectionId), {
-            setModel { model ->
-                model.copy(
+            setModel {
+                copy(
                     categories = it,
                     loading = false
                 )

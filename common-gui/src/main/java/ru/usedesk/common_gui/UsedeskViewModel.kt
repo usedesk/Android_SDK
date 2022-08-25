@@ -8,12 +8,17 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 open class UsedeskViewModel<MODEL>(
     defaultModel: MODEL
 ) : ViewModel() {
     val modelLiveData = UsedeskLiveData(defaultModel)
     val mainThread = AndroidSchedulers.mainThread()
+
+    private val mutex = Mutex()
 
     private val disposables = mutableListOf<Disposable>()
     private var inited = false
@@ -26,8 +31,12 @@ open class UsedeskViewModel<MODEL>(
     }
 
     @MainThread
-    protected fun setModel(onUpdate: (MODEL) -> MODEL) {
-        modelLiveData.value = onUpdate(modelLiveData.value)
+    protected fun setModel(onUpdate: MODEL.() -> MODEL) = runBlocking {
+        mutex.withLock {
+            onUpdate(modelLiveData.value).also {
+                modelLiveData.value = it
+            }
+        }
     }
 
     protected fun addDisposable(disposable: Disposable) {
@@ -38,12 +47,10 @@ open class UsedeskViewModel<MODEL>(
         completable: Completable,
         onCompleted: () -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ): Disposable {
-        return completable.observeOn(mainThread)
-            .subscribe({ onCompleted() }, { onThrowable(it) }).also {
-                addDisposable(it)
-            }
-    }
+    ) = completable.observeOn(mainThread)
+        .subscribe({ onCompleted() }, { onThrowable(it) }).also {
+            addDisposable(it)
+        }
 
     protected fun doIt(
         completableList: List<Completable>,
@@ -59,20 +66,16 @@ open class UsedeskViewModel<MODEL>(
         observable: Observable<T>,
         onValue: (T) -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ): Disposable {
-        return observable.observeOn(mainThread)
-            .subscribe({ onValue(it) }, { onThrowable(it) }).also {
-                addDisposable(it)
-            }
-    }
+    ) = observable.observeOn(mainThread)
+        .subscribe({ onValue(it) }, { onThrowable(it) }).also {
+            addDisposable(it)
+        }
 
     protected fun <T> doIt(
         single: Single<T>,
         onValue: (T) -> Unit = {},
         onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ): Disposable {
-        return doIt(single.toObservable(), onValue, onThrowable)
-    }
+    ) = doIt(single.toObservable(), onValue, onThrowable)
 
     @SuppressLint("CheckResult")
     protected fun justDoIt(

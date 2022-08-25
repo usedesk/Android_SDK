@@ -26,9 +26,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     var groupAgentMessages: Boolean = true
 
     init {
-        setModel { model ->
-            model.copy(messageDraft = usedeskChat.getMessageDraft())
-        }
+        setModel { copy(messageDraft = usedeskChat.getMessageDraft()) }
 
         actionListenerRx = object : IUsedeskActionListenerRx() {
             override fun onMessagesObservable(
@@ -39,10 +37,10 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                     message.id == lastBottomMessage?.id
                 }
                 messages = it
-                setModel { model ->
-                    model.copy(
+                setModel {
+                    copy(
                         chatItems = getChatItems(),
-                        newMessagesCount = model.newMessagesCount + when {
+                        newMessagesCount = newMessagesCount + when {
                             bottomMessageIndex < it.size - 1 -> it.size - 1 - bottomMessageIndex
                             else -> 0
                         }
@@ -106,9 +104,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     fun onMessageChanged(message: String) {
         if (message != modelLiveData.value.messageDraft.text) {
-            setModel { model ->
-                model.copy(messageDraft = model.messageDraft.copy(text = message))
-            }
+            setModel { copy(messageDraft = messageDraft.copy(text = message)) }
             doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
         }
     }
@@ -119,10 +115,10 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     fun attachFiles(uriList: Set<UsedeskFileInfo>) {
         if (uriList != modelLiveData.value.messageDraft.files) {
-            setModel { model ->
-                val newFiles = (model.messageDraft.files + uriList).toSet().toList()
-                model.copy(
-                    messageDraft = model.messageDraft.copy(files = newFiles),
+            setModel {
+                val newFiles = (messageDraft.files + uriList).toSet().toList()
+                copy(
+                    messageDraft = messageDraft.copy(files = newFiles),
                     attachmentPanelVisible = false
                 )
             }
@@ -131,13 +127,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun detachFile(file: UsedeskFileInfo) {
-        setModel { model ->
-            model.copy(
-                messageDraft = model.messageDraft.copy(
-                    files = model.messageDraft.files - file
-                )
-            )
-        }
+        setModel { copy(messageDraft = messageDraft.copy(files = messageDraft.files - file)) }
         doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
     }
 
@@ -148,9 +138,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     fun onSend() {
         doIt(usedeskChat.sendMessageDraftRx())
 
-        setModel { model ->
-            model.copy(messageDraft = UsedeskMessageDraft())
-        }
+        setModel { copy(messageDraft = UsedeskMessageDraft()) }
     }
 
     fun sendAgain(id: Long) {
@@ -162,17 +150,11 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun showToBottomButton(show: Boolean) {
-        setModel { model ->
-            model.copy(fabToBottom = show)
-        }
+        setModel { copy(fabToBottom = show) }
     }
 
     fun showAttachmentPanel(show: Boolean) {
-        setModel { model ->
-            model.copy(
-                attachmentPanelVisible = show
-            )
-        }
+        setModel { copy(attachmentPanelVisible = show) }
     }
 
     override fun onCleared() {
@@ -198,9 +180,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     private fun onLastMessageShowed() {
         if (previousLoadingDisposable == null && hasPreviousMessages) {
-            setModel { model ->
-                model.copy(chatItems = getChatItems())
-            }
+            setModel { copy(chatItems = getChatItems()) }
             previousLoadingDisposable = doIt(Single.create<Boolean> {
                 try {
                     it.onSuccess(usedeskChat.loadPreviousMessagesPage())
@@ -212,9 +192,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                 .observeOn(AndroidSchedulers.mainThread()), {
                 previousLoadingDisposable = null
                 hasPreviousMessages = it
-                setModel { model ->
-                    model.copy(chatItems = getChatItems())
-                }
+                setModel { copy(chatItems = getChatItems()) }
             })
         }
     }
@@ -227,9 +205,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
             onLastMessageShowed()
         }
         if (messagesRange.first < modelLiveData.value.newMessagesCount) {
-            setModel { model ->
-                model.copy(newMessagesCount = messagesRange.first)
-            }
+            setModel { copy(newMessagesCount = messagesRange.first) }
         }
     }
 

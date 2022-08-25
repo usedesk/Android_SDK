@@ -14,27 +14,26 @@ internal class SectionsViewModel : UsedeskViewModel<SectionsViewModel.Model>(Mod
     }
 
     private fun reload() {
-        setModel { model ->
-            model.copy(
+        setModel {
+            copy(
                 sections = listOf(),
-                state = if (model.state == State.LOADING) {
-                    State.LOADING
-                } else {
-                    State.RELOADING
+                state = when (state) {
+                    State.LOADING -> State.LOADING
+                    else -> State.RELOADING
                 }
             )
         }
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()
             .getSectionsRx(), {
-            setModel { model ->
-                model.copy(
+            setModel {
+                copy(
                     sections = it,
                     state = State.LOADED
                 )
             }
         }, {
-            setModel { model ->
-                model.copy(
+            setModel {
+                copy(
                     sections = listOf(),
                     state = State.FAILED
                 )

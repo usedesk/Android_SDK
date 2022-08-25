@@ -253,6 +253,7 @@ internal class MessagesAdapter(
                 return result
             }
         }).dispatchUpdatesTo(this)
+
         if (messages.isNotEmpty() || stateRestorationPolicy != StateRestorationPolicy.ALLOW) {
             recyclerView.post {
                 stateRestorationPolicy = StateRestorationPolicy.ALLOW

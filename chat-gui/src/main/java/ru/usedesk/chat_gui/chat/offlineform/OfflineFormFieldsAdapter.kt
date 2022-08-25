@@ -66,7 +66,7 @@ internal class OfflineFormFieldsAdapter(
                                 (oldItem as? OfflineFormList)?.selected ==
                                 (newItem as? OfflineFormList)?.selected
                     }
-                })
+                }).dispatchUpdatesTo(this)
             }
         }
     }

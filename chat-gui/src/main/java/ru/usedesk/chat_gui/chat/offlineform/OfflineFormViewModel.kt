@@ -23,24 +23,23 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         override fun onOfflineFormExpectedObservable(
             offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
         ): Disposable? = offlineFormExpectedObservable.subscribe { offlineFormSettings ->
-            val subjectField = OfflineFormList(
-                TOPIC_KEY,
-                offlineFormSettings.topicsTitle,
-                offlineFormSettings.topicsRequired,
-                offlineFormSettings.topics,
-                0
-            )
-            val additionalFields = offlineFormSettings.fields.map { customField ->
-                OfflineFormText(
-                    customField.key,
-                    customField.placeholder,
-                    customField.required,
-                    ""
-                )
-            }
-            val customFields = listOf(subjectField) + additionalFields
-
             setModel {
+                val subjectField = OfflineFormList(
+                    TOPIC_KEY,
+                    offlineFormSettings.topicsTitle,
+                    offlineFormSettings.topicsRequired,
+                    offlineFormSettings.topics,
+                    0
+                )
+                val additionalFields = offlineFormSettings.fields.map { customField ->
+                    OfflineFormText(
+                        customField.key,
+                        customField.placeholder,
+                        customField.required,
+                        ""
+                    )
+                }
+                val customFields = listOf(subjectField) + additionalFields
                 copy(
                     greetings = offlineFormSettings.callbackGreeting,
                     workType = offlineFormSettings.workType,

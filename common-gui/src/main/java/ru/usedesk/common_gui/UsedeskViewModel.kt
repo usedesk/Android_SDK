@@ -8,12 +8,17 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 open class UsedeskViewModel<MODEL>(
     defaultModel: MODEL
 ) : ViewModel() {
     val modelLiveData = UsedeskLiveData(defaultModel)
     val mainThread = AndroidSchedulers.mainThread()
+
+    private val mutex = Mutex()
 
     private val disposables = mutableListOf<Disposable>()
     private var inited = false
@@ -26,8 +31,12 @@ open class UsedeskViewModel<MODEL>(
     }
 
     @MainThread
-    protected fun setModel(onUpdate: MODEL.() -> MODEL) = onUpdate(modelLiveData.value).also {
-        modelLiveData.value = it
+    protected fun setModel(onUpdate: MODEL.() -> MODEL) = runBlocking {
+        mutex.withLock {
+            onUpdate(modelLiveData.value).also {
+                modelLiveData.value = it
+            }
+        }
     }
 
     protected fun addDisposable(disposable: Disposable) {

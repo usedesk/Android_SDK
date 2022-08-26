@@ -16,9 +16,7 @@ import ru.usedesk.common_gui.inflateItem
 internal class OfflineFormSelectorPage : UsedeskFragment() {
 
     private val viewModel: OfflineFormViewModel by viewModels(
-        ownerProducer = {
-            requireChatViewModelStoreOwner()
-        }
+        ownerProducer = { requireChatViewModelStoreOwner() }
     )
 
     private lateinit var binding: Binding

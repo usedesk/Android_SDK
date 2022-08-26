@@ -22,8 +22,8 @@ internal class OfflineFormSelectorAdapter(
     private val itemStyle =
         binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_selector_checkbox)
 
-    private var items = listOf<String>()
-    private var selected = ""
+    private var items = listOf<String?>()
+    private var selected: String? = null
 
     init {
         recyclerView.run {
@@ -35,10 +35,10 @@ internal class OfflineFormSelectorAdapter(
             val newField = new.customFields.first { it.key == key } as OfflineFormList
             if (oldField != newField) {
                 val oldItems = items
-                val newItems = newField.items
+                val newItems = listOf(null) + newField.items
 
                 val oldSelected = selected
-                val newSelected = newField.items[newField.selected]
+                val newSelected = newField.items.getOrNull(newField.selected)
 
                 items = newItems
                 selected = newSelected
@@ -86,16 +86,18 @@ internal class OfflineFormSelectorAdapter(
     override fun getItemCount() = items.size
 
     inner class ViewHolder(
-        binding: UsedeskCommonFieldCheckBoxAdapter.Binding
+        private val binding: UsedeskCommonFieldCheckBoxAdapter.Binding
     ) : RecyclerView.ViewHolder(binding.rootView) {
 
         private val adapter = UsedeskCommonFieldCheckBoxAdapter(binding)
 
-        fun bind(item: String) {
+        fun bind(item: String?) {
             adapter.run {
-                setTitle(item)
+                setTitle(
+                    item ?: binding.rootView.resources.getString(R.string.usedesk_not_selected)
+                )
                 setChecked(item == selected)
-                setOnClickListener { viewModel.onListFieldChanged(key, items.indexOf(item)) }
+                setOnClickListener { viewModel.onListFieldChanged(key, item) }
             }
         }
     }

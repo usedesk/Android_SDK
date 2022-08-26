@@ -9,8 +9,8 @@ internal class ArticlesViewModel : UsedeskViewModel<ArticlesViewModel.Model>(Mod
     fun init(categoryId: Long) {
         doIt(UsedeskKnowledgeBaseSdk.requireInstance()
             .getArticlesRx(categoryId), onValue = {
-            setModel { model ->
-                model.copy(
+            setModel {
+                copy(
                     articleInfoList = it,
                     loading = false
                 )

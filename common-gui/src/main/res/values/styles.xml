@@ -130,7 +130,7 @@
 
     <style name="Usedesk.Common.List.Field.Container1" parent="">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">68dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -139,7 +139,6 @@
     <style name="Usedesk.Common.List.Field.Container2" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:gravity">bottom</item>
         <item name="android:orientation">vertical</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">4dp</item>
@@ -169,6 +168,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Title.Text.TextAppearance</item>
     </style>
 
@@ -181,6 +181,8 @@
     <style name="Usedesk.Common.Field.List.Value.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Value.Text.TextAppearance</item>
@@ -221,7 +223,7 @@
     </style>
 
     <style name="Usedesk.Common.Field.Text.InputLayout.FontSize" parent="TextAppearance.Design.Hint">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="Usedesk.Common.Field.Text.EditText" parent="">
@@ -344,7 +346,7 @@
         <item name="boxBackgroundColor">@color/usedesk_white_1</item>
         <item name="colorControlActivated">@color/usedesk_black_2</item>
         <item name="boxStrokeColor">@color/usedesk_box_stroke_color_material</item>
-        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidth">0.5dp</item>
         <item name="boxStrokeWidthFocused">1dp</item>
     </style>
 
@@ -366,8 +368,19 @@
         <item name="usedesk_common_divider">@style/Common.Divider.MaterialComponents</item>
     </style>
 
+
+    <style name="Usedesk.Common.Field.List.Title.Text.MaterialComponents" parent="Usedesk.Common.Field.List.Title.Text">
+        <item name="android:layout_marginTop">6dp</item>
+    </style>
+
+    <style name="Usedesk.Common.Field.List.Value.Text.MaterialComponents" parent="Usedesk.Common.Field.List.Value.Text">
+        <item name="android:layout_marginTop">2dp</item>
+    </style>
+
     <style name="Common.List.Field.MaterialComponents" parent="Usedesk.Common.List.Field">
         <item name="usedesk_common_divider">@style/Usedesk.Common.Divider</item>
+        <item name="usedesk_common_field_list_title_text">@style/Usedesk.Common.Field.List.Title.Text.MaterialComponents</item>
+        <item name="usedesk_common_field_list_value_text">@style/Usedesk.Common.Field.List.Value.Text.MaterialComponents</item>
     </style>
     <!--Theme.MaterialComponents End-->
 </resources>

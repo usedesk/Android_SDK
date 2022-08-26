@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.12.7)
+# Android Usedesk SDK (v3.12.10)
 
 ### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
 
@@ -56,11 +56,13 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 Добавьте в файл Manifest:
 ```
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 <uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+<!--Для прикрепления фото с камеры в чате-->
 <uses-permission android:name="android.permission.CAMERA" />
+
+<!--Только при использовании foreground сервиса уведомлений-->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
 <a name="chat"></a>

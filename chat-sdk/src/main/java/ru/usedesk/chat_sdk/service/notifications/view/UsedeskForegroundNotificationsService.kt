@@ -15,7 +15,7 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
     protected abstract val foregroundId: Int
 
     protected open val notificationTitle: String by lazy {
-        getString(R.string.usedesk_string_chat_with_support)
+        getString(R.string.usedesk_chat_with_support)
     }
 
     override fun onCreate() {

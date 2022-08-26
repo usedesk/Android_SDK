@@ -23,25 +23,24 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         override fun onOfflineFormExpectedObservable(
             offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
         ): Disposable? = offlineFormExpectedObservable.subscribe { offlineFormSettings ->
-            val subjectField = OfflineFormList(
-                TOPIC_KEY,
-                offlineFormSettings.topicsTitle,
-                offlineFormSettings.topicsRequired,
-                offlineFormSettings.topics,
-                0
-            )
-            val additionalFields = offlineFormSettings.fields.map { customField ->
-                OfflineFormText(
-                    customField.key,
-                    customField.placeholder,
-                    customField.required,
-                    ""
+            setModel {
+                val subjectField = OfflineFormList(
+                    TOPIC_KEY,
+                    offlineFormSettings.topicsTitle,
+                    offlineFormSettings.topicsRequired,
+                    offlineFormSettings.topics,
+                    -1
                 )
-            }
-            val customFields = listOf(subjectField) + additionalFields
-
-            setModel { model ->
-                model.copy(
+                val additionalFields = offlineFormSettings.fields.map { customField ->
+                    OfflineFormText(
+                        customField.key,
+                        customField.placeholder,
+                        customField.required,
+                        ""
+                    )
+                }
+                val customFields = listOf(subjectField) + additionalFields
+                copy(
                     greetings = offlineFormSettings.callbackGreeting,
                     workType = offlineFormSettings.workType,
                     customFields = customFields
@@ -51,10 +50,10 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     }
 
     init {
-        setModel { model ->
-            model.copy(
-                nameField = model.nameField.copy(text = configuration.clientName ?: ""),
-                emailField = model.emailField.copy(text = configuration.clientEmail ?: "")
+        setModel {
+            copy(
+                nameField = nameField.copy(text = configuration.clientName ?: ""),
+                emailField = emailField.copy(text = configuration.clientEmail ?: "")
             ).updateAllFields()
         }
         usedeskChat.addActionListener(actionListener)
@@ -65,11 +64,11 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         emailTitle: String,
         messageTitle: String
     ) {
-        setModel { model ->
-            model.copy(
-                nameField = model.nameField.copy(title = nameTitle),
-                emailField = model.emailField.copy(title = emailTitle),
-                messageField = model.messageField.copy(title = messageTitle)
+        setModel {
+            copy(
+                nameField = nameField.copy(title = nameTitle),
+                emailField = emailField.copy(title = emailTitle),
+                messageField = messageField.copy(title = messageTitle)
             ).updateAllFields()
         }
     }
@@ -83,13 +82,13 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     }
 
     fun onSendOfflineForm() {
-        setModel { model ->
-            val name = (model.allFields[0] as OfflineFormText).text
-            val email = (model.allFields[1] as OfflineFormText).text
-            val subjectField = model.allFields[2] as OfflineFormList
+        setModel {
+            val name = (allFields[0] as OfflineFormText).text
+            val email = (allFields[1] as OfflineFormText).text
+            val subjectField = allFields[2] as OfflineFormList
             val subject = subjectField.items.getOrNull(subjectField.selected) ?: ""
-            val message = (model.allFields.last() as OfflineFormText).text
-            val additionalFields = model.allFields.drop(3).dropLast(1).map { field ->
+            val message = (allFields.last() as OfflineFormText).text
+            val additionalFields = allFields.drop(3).dropLast(1).map { field ->
                 UsedeskOfflineForm.Field(
                     field.key,
                     field.title,
@@ -103,20 +102,18 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                 additionalFields,
                 message
             )
-            model.copy(offlineFormState = OfflineFormState.SENDING).apply {
+            copy(offlineFormState = OfflineFormState.SENDING).apply {
                 doIt(UsedeskChatSdk.requireInstance().sendRx(offlineForm), {
-                    setModel { model ->
-                        model.copy(
+                    setModel {
+                        copy(
                             offlineFormState = OfflineFormState.SENT_SUCCESSFULLY,
                             goExit = UsedeskSingleLifeEvent(
-                                model.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+                                workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
                             )
                         )
                     }
                 }) {
-                    setModel { model ->
-                        model.copy(offlineFormState = OfflineFormState.FAILED_TO_SEND)
-                    }
+                    setModel { copy(offlineFormState = OfflineFormState.FAILED_TO_SEND) }
                 }
             }
         }
@@ -141,12 +138,12 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     }
 
     fun onTextFieldChanged(key: String, text: String) {
-        setModel { model ->
-            model.copy(
-                nameField = model.nameField.update(key, text),
-                emailField = model.emailField.update(key, text),
-                messageField = model.messageField.update(key, text),
-                customFields = model.customFields.map {
+        setModel {
+            copy(
+                nameField = nameField.update(key, text),
+                emailField = emailField.update(key, text),
+                messageField = messageField.update(key, text),
+                customFields = customFields.map {
                     when (it) {
                         is OfflineFormList -> it
                         is OfflineFormText -> it.update(key, text)
@@ -156,12 +153,18 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         }
     }
 
-    fun onListFieldChanged(key: String, selected: Int) {
-        setModel { model ->
-            model.copy(
-                customFields = model.customFields.map {
+    fun onListFieldChanged(key: String, item: String?) {
+        setModel {
+            copy(
+                customFields = customFields.map {
                     when (it) {
-                        is OfflineFormList -> it.update(key, selected)
+                        is OfflineFormList -> {
+                            val index = when (item) {
+                                in it.items -> it.items.indexOf(item)
+                                else -> -1
+                            }
+                            it.update(key, index)
+                        }
                         is OfflineFormText -> it
                     }
                 }

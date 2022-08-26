@@ -23,8 +23,8 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
             override fun onConnectionStateObservable(
                 connectionStateObservable: Observable<UsedeskConnectionState>
             ) = connectionStateObservable.observeOn(mainScheduler).subscribe {
-                setModel { model ->
-                    model.copy(
+                setModel {
+                    copy(
                         state = when (it) {
                             UsedeskConnectionState.DISCONNECTED,
                             UsedeskConnectionState.RECONNECTING -> State.FAILED
@@ -38,21 +38,13 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
             override fun onOfflineFormExpectedObservable(
                 offlineFormExpectedObservable: Observable<UsedeskOfflineFormSettings>
             ) = offlineFormExpectedObservable.observeOn(mainScheduler).subscribe {
-                setModel { model ->
-                    model.copy(
-                        goNext = UsedeskSingleLifeEvent(Page.OFFLINE_FORM)
-                    )
-                }
+                setModel { copy(goNext = UsedeskSingleLifeEvent(Page.OFFLINE_FORM)) }
             }
 
             override fun onMessagesObservable(
                 messagesObservable: Observable<List<UsedeskMessage>>
             ) = messagesObservable.observeOn(mainScheduler).subscribe {
-                setModel { model ->
-                    model.copy(
-                        goNext = UsedeskSingleLifeEvent(Page.MESSAGES)
-                    )
-                }
+                setModel { copy(goNext = UsedeskSingleLifeEvent(Page.MESSAGES)) }
             }
         }
         usedeskChat.addActionListener(actionListener)

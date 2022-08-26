@@ -168,7 +168,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginTop">5dp</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Title.Text.TextAppearance</item>
     </style>
@@ -182,7 +182,7 @@
     <style name="Usedesk.Common.Field.List.Value.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginTop">3dp</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
@@ -347,7 +347,7 @@
         <item name="boxBackgroundColor">@color/usedesk_white_1</item>
         <item name="colorControlActivated">@color/usedesk_black_2</item>
         <item name="boxStrokeColor">@color/usedesk_box_stroke_color_material</item>
-        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidth">0.5dp</item>
         <item name="boxStrokeWidthFocused">1dp</item>
     </style>
 

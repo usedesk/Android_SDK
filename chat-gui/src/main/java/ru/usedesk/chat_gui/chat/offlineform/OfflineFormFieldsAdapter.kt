@@ -117,19 +117,22 @@ internal class OfflineFormFieldsAdapter(
             if (previousItem?.key != item.key) {
                 previousItem = item
                 adapter.run {
-                    setTitle(item.title, item.required)
-                    setText(item.text)
-                    setTextChangeListener { viewModel.onTextFieldChanged(item.key, it) }
-
                     binding.etText.run {
                         isSingleLine = item.key != OfflineFormViewModel.MESSAGE_KEY
-                        inputType = when (item.key) {
-                            OfflineFormViewModel.NAME_KEY -> InputType.TYPE_TEXT_FLAG_CAP_WORDS
-                            OfflineFormViewModel.EMAIL_KEY -> InputType.TYPE_CLASS_TEXT or
-                                    InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                        inputType = InputType.TYPE_CLASS_TEXT or when (item.key) {
+                            OfflineFormViewModel.NAME_KEY ->
+                                InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                            OfflineFormViewModel.EMAIL_KEY ->
+                                InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                            OfflineFormViewModel.MESSAGE_KEY ->
+                                InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
+                                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
                             else -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
                         }
                     }
+                    setTitle(item.title, item.required)
+                    setText(item.text)
+                    setTextChangeListener { viewModel.onTextFieldChanged(item.key, it) }
                 }
             }
         }

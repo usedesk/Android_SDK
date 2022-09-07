@@ -116,9 +116,7 @@ internal class ApiRepository(
         val response = doRequest(
             configuration.urlChatApi,
             CreateChatResponse::class.java
-        ) { api ->
-            api.createChat(parts)
-        }
+        ) { createChat(parts) }
 
         return response.token
     }
@@ -184,9 +182,10 @@ internal class ApiRepository(
             "message_id" to messageId
         ).mapNotNull(multipartConverter::convert)
 
-        doRequest(configuration.urlChatApi, FileResponse::class.java) {
-            it.postFile(parts)
-        }
+        doRequest(
+            configuration.urlChatApi,
+            FileResponse::class.java
+        ) { postFile(parts) }
     }
 
     override fun setClient(
@@ -205,9 +204,11 @@ internal class ApiRepository(
                 "company_id" to configuration.companyId
             ).map(multipartConverter::convert) + getAvatarMultipartBodyPart(configuration)).filterNotNull()
 
-            doRequest(configuration.urlChatApi, SetClientResponse::class.java) {
-                it.setClient(parts)
-            }
+            doRequest(
+                configuration.urlChatApi,
+                SetClientResponse::class.java
+            ) { setClient(parts) }
+
             socketEventListener.onSetEmailSuccess()
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
@@ -266,7 +267,7 @@ internal class ApiRepository(
             configuration.urlChatApi,
             Array<MessageResponse.Message>::class.java
         ) {
-            it.loadPreviousMessages(
+            loadPreviousMessages(
                 token,
                 messageId
             )
@@ -284,49 +285,53 @@ internal class ApiRepository(
         offlineForm: UsedeskOfflineForm
     ) {
         try {
-            doRequest(configuration.urlChatApi, OfflineFormResponse::class.java) {
-                val params = mapOf(
-                    "email" to offlineForm.clientEmail.getCorrectStringValue(),
-                    "name" to offlineForm.clientName.getCorrectStringValue(),
-                    "company_id" to companyId.getCorrectStringValue(),
-                    "message" to offlineForm.message.getCorrectStringValue(),
-                    "topic" to offlineForm.topic.getCorrectStringValue()
-                )
-                val customFields = offlineForm.fields.filter { field ->
-                    field.value.isNotEmpty()
-                }.map { field ->
-                    field.key to field.value.getCorrectStringValue()
-                }
-                val json = JsonObject()
-                (params + customFields).forEach { param ->
-                    json.addProperty(param.key, param.value)
-                }
-                it.sendOfflineForm(json)
+            val params = mapOf(
+                "email" to offlineForm.clientEmail.getCorrectStringValue(),
+                "name" to offlineForm.clientName.getCorrectStringValue(),
+                "company_id" to companyId.getCorrectStringValue(),
+                "message" to offlineForm.message.getCorrectStringValue(),
+                "topic" to offlineForm.topic.getCorrectStringValue()
+            )
+            val customFields = offlineForm.fields.filter { field ->
+                field.value.isNotEmpty()
+            }.map { field ->
+                field.key to field.value.getCorrectStringValue()
             }
+            val json = JsonObject()
+            (params + customFields).forEach { param ->
+                json.addProperty(param.key, param.value)
+            }
+            doRequest(
+                configuration.urlChatApi,
+                OfflineFormResponse::class.java
+            ) { sendOfflineForm(json) }
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
 
     override fun send(
-        token: String?,
+        token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
-    ) {
-        val response = doRequest(configuration.urlChatApi, String::class.java) {
-            if (token != null) {
-                val totalFields =
-                    (additionalFields.toList() + additionalNestedFields.flatMap { fields ->
-                        fields.toList()
-                    }).map { field ->
-                        AdditionalFieldsRequest.AdditionalField(field.first, field.second)
-                    }
-                val request = AdditionalFieldsRequest(token, totalFields)
-                it.postAdditionalFields(request)
-            } else {
-                throw UsedeskHttpException("Token is null")
-            }
+    ): SendResult {
+        val totalFields =
+            (additionalFields.toList() + additionalNestedFields.flatMap(Map<Long, String>::toList))
+                .map { field ->
+                    SendAdditionalFieldsRequest.AdditionalField(
+                        field.first,
+                        field.second
+                    )
+                }
+        val request = SendAdditionalFieldsRequest(token, totalFields)
+        val response = doRequest(
+            configuration.urlChatApi,
+            SendAdditionalFieldsResponse::class.java
+        ) { postAdditionalFields(request) }
+        return when (response.status) {
+            200 -> SendResult.Done
+            else -> SendResult.Error
         }
     }
 

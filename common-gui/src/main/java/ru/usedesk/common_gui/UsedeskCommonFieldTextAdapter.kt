@@ -19,10 +19,9 @@ class UsedeskCommonFieldTextAdapter(
     }
 
     fun setTitle(title: String, required: Boolean = false) {
-        val tail = if (required) {
-            String.format("<font color=#%s> *</font>", colorRequired.toString(16))
-        } else {
-            ""
+        val tail = when {
+            required -> String.format("<font color=#%s> *</font>", colorRequired.toString(16))
+            else -> ""
         }
 
         val htmlTitle =
@@ -37,17 +36,16 @@ class UsedeskCommonFieldTextAdapter(
     fun getText(): String = binding.etText.text?.toString() ?: ""
 
     fun setTextChangeListener(onChanged: (String) -> Unit) {
-        binding.etText.addTextChangedListener(UsedeskTextChangeListener {
-            onChanged(it)
-        })
+        binding.etText.addTextChangedListener(UsedeskTextChangeListener(onChanged))
     }
 
     fun showError(show: Boolean) {
-        binding.tilTitle.error = if (show) {
-            showKeyboard(binding.etText)
-            error
-        } else {
-            null
+        binding.tilTitle.error = when {
+            show -> {
+                showKeyboard(binding.etText)
+                error
+            }
+            else -> null
         }
     }
 

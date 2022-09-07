@@ -71,25 +71,26 @@ internal class OfflineFormFieldsAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
-        return when (viewType) {
-            R.layout.usedesk_item_field_text -> TextViewHolder(inflateItem(
-                parent,
-                R.layout.usedesk_item_field_text,
-                textFieldStyle
-            ) { rootView, defaultStyleId ->
-                UsedeskCommonFieldTextAdapter.Binding(rootView, defaultStyleId)
-            })
-            R.layout.usedesk_item_field_list -> ListViewHolder(inflateItem(
-                parent,
-                R.layout.usedesk_item_field_list,
-                listFieldStyle
-            ) { rootView, defaultStyleId ->
-                UsedeskCommonFieldListAdapter.Binding(rootView, defaultStyleId)
-            })
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> =
+        when (viewType) {
+            R.layout.usedesk_item_field_text -> TextViewHolder(
+                inflateItem(
+                    parent,
+                    R.layout.usedesk_item_field_text,
+                    textFieldStyle,
+                    UsedeskCommonFieldTextAdapter::Binding
+                )
+            )
+            R.layout.usedesk_item_field_list -> ListViewHolder(
+                inflateItem(
+                    parent,
+                    R.layout.usedesk_item_field_list,
+                    listFieldStyle,
+                    UsedeskCommonFieldListAdapter::Binding
+                )
+            )
             else -> throw RuntimeException("Unknown list type")
         }
-    }
 
     override fun onBindViewHolder(holderText: BaseViewHolder<*>, position: Int) {
         val item = items[position]
@@ -97,7 +98,6 @@ internal class OfflineFormFieldsAdapter(
             is ListViewHolder -> holderText.bind(item as OfflineFormList)
             is TextViewHolder -> holderText.bind(item as OfflineFormText)
         }
-
     }
 
     override fun getItemCount() = items.size

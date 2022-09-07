@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendResult
 import ru.usedesk.chat_sdk.data.repository.api.entity.*
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter

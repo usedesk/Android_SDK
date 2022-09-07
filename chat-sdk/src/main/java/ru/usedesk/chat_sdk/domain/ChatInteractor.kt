@@ -373,7 +373,7 @@ internal class ChatInteractor(
                                 waitFirstMessage()
                                 delay(3000)
                                 apiRepository.send(
-                                    token,
+                                    token!!,
                                     configuration,
                                     configuration.additionalFields,
                                     configuration.additionalNestedFields

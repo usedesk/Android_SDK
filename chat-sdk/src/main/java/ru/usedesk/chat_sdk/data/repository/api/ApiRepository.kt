@@ -336,7 +336,7 @@ internal class ApiRepository(
         }
     }
 
-    private fun String.getCorrectStringValue() = this.replace("\"", "\\\"")
+    private fun String.getCorrectStringValue() = replace("\"", "\\\"")
 
     override fun disconnect() {
         socketApi.disconnect()

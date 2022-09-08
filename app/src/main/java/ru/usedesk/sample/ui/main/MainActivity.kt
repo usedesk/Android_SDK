@@ -96,9 +96,7 @@ class MainActivity : AppCompatActivity(),
             initUsedeskService(it)
         }
         viewModel.errorLiveData.observe(this) {
-            it?.let {
-                onError(it)
-            }
+            it?.let(this@MainActivity::onError)
         }
         viewModel.goSdkEventLiveData.observe(this) { event ->
             event?.process {

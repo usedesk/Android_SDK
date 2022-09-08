@@ -103,18 +103,12 @@ class UsedeskChatScreen : UsedeskFragment() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val title = when (destination.id) {
                 R.id.dest_loading_page,
-                R.id.dest_messages_page -> {
-                    binding.styleValues
-                        .getStyleValues(R.attr.usedesk_common_toolbar)
-                        .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                        .getString(android.R.attr.text)
-                }
-                R.id.dest_offline_form_page -> {
-                    viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
-                }
-                R.id.dest_offline_form_selector_page -> {
-                    viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
-                }
+                R.id.dest_messages_page -> binding.styleValues
+                    .getStyleValues(R.attr.usedesk_common_toolbar)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                    .getString(android.R.attr.text)
+                R.id.dest_offline_form_page -> viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+                R.id.dest_offline_form_selector_page -> viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
                 else -> null
             }
             toolbarAdapter.setTitle(title)
@@ -141,18 +135,12 @@ class UsedeskChatScreen : UsedeskFragment() {
     private fun updateTitle(destination: NavDestination?) {
         val title = when (destination?.id) {
             R.id.dest_loading_page,
-            R.id.dest_messages_page -> {
-                binding.styleValues
-                    .getStyleValues(R.attr.usedesk_common_toolbar)
-                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                    .getString(android.R.attr.text)
-            }
-            R.id.dest_offline_form_page -> {
-                viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
-            }
-            R.id.dest_offline_form_selector_page -> {
-                viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
-            }
+            R.id.dest_messages_page -> binding.styleValues
+                .getStyleValues(R.attr.usedesk_common_toolbar)
+                .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                .getString(android.R.attr.text)
+            R.id.dest_offline_form_page -> viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+            R.id.dest_offline_form_selector_page -> viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
             else -> null
         }
         toolbarAdapter.setTitle(title)

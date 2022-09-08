@@ -174,12 +174,18 @@ internal class ChatInteractor(
 
         @Synchronized
         override fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(old = oldMessages, isInited = false)
+            this@ChatInteractor.onMessagesNew(
+                old = oldMessages,
+                isInited = false
+            )
         }
 
         @Synchronized
         override fun onMessagesNewReceived(newMessages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(new = newMessages, isInited = false)
+            this@ChatInteractor.onMessagesNew(
+                new = newMessages,
+                isInited = false
+            )
         }
 
         @Synchronized
@@ -373,7 +379,7 @@ internal class ChatInteractor(
                                 waitFirstMessage()
                                 delay(3000)
                                 apiRepository.send(
-                                    token,
+                                    token!!,
                                     configuration,
                                     configuration.additionalFields,
                                     configuration.additionalNestedFields

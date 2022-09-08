@@ -16,11 +16,9 @@ abstract class UsedeskApiRepository<API>(
     protected fun <RESPONSE> doRequest(
         urlApi: String,
         responseClass: Class<RESPONSE>,
-        getCall: (API) -> Call<ResponseBody>
-    ): RESPONSE {
-        return execute(gson, responseClass) {
-            getCall(apiFactory.getInstance(urlApi, apiClass))
-        }
+        getCall: API.() -> Call<ResponseBody>
+    ): RESPONSE = execute(gson, responseClass) {
+        getCall(apiFactory.getInstance(urlApi, apiClass))
     }
 
     private fun <RESPONSE> execute(
@@ -46,7 +44,9 @@ abstract class UsedeskApiRepository<API>(
                 filter
             }.firstOrNull() ?: throw UsedeskHttpException("Failed to get a response")
 
+            //rawResponseBody = "{\"ticket_id\":102937549,\"status\":200}"
             rawResponseBody = response.body()?.string() ?: ""
+            UsedeskLog.onLog("RESP", rawResponseBody)
             try {
                 val errorResponse = gson.fromJson(rawResponseBody, ApiError::class.java)
                 val code = errorResponse.code
@@ -72,12 +72,10 @@ abstract class UsedeskApiRepository<API>(
     companion object {
         private const val MAX_ATTEMPTS = 3
 
-        fun <T> valueOrNull(lambda: () -> T): T? {
-            return try {
-                return lambda()
-            } catch (e: Exception) {
-                null
-            }
+        fun <T> valueOrNull(lambda: () -> T): T? = try {
+            lambda()
+        } catch (e: Exception) {
+            null
         }
     }
 }

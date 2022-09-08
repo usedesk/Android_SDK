@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.12.10)
+# Android Usedesk SDK (v3.12.11)
 
 ### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
 
@@ -197,6 +197,10 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 - Расширить
   интерфейс [IUsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnDownloadListener.kt)
   родителем, переопределив метод `onDownload`.
+
+- Для отслеживания момента инициализации чата расширить
+  интерфейс [IUsedeskOnChatInitedListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnChatInitedListener.kt)
+  родителем.
 
 <a name="chat_gui_files"></a>
 

@@ -30,7 +30,7 @@ buildscript {
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "3.12.10"
+    project.version = "3.12.11"
 
     repositories {
         google()

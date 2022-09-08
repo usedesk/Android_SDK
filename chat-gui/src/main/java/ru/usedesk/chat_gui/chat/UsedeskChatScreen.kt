@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import ru.usedesk.chat_gui.IUsedeskOnChatInitedListener
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -98,23 +99,18 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     private fun init() {
-        UsedeskChatSdk.init(requireContext())
+        val usedeskChat = UsedeskChatSdk.init(requireContext())
+        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val title = when (destination.id) {
                 R.id.dest_loading_page,
-                R.id.dest_messages_page -> {
-                    binding.styleValues
-                        .getStyleValues(R.attr.usedesk_common_toolbar)
-                        .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                        .getString(android.R.attr.text)
-                }
-                R.id.dest_offline_form_page -> {
-                    viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
-                }
-                R.id.dest_offline_form_selector_page -> {
-                    viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
-                }
+                R.id.dest_messages_page -> binding.styleValues
+                    .getStyleValues(R.attr.usedesk_common_toolbar)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                    .getString(android.R.attr.text)
+                R.id.dest_offline_form_page -> viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+                R.id.dest_offline_form_selector_page -> viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
                 else -> null
             }
             toolbarAdapter.setTitle(title)
@@ -141,18 +137,12 @@ class UsedeskChatScreen : UsedeskFragment() {
     private fun updateTitle(destination: NavDestination?) {
         val title = when (destination?.id) {
             R.id.dest_loading_page,
-            R.id.dest_messages_page -> {
-                binding.styleValues
-                    .getStyleValues(R.attr.usedesk_common_toolbar)
-                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                    .getString(android.R.attr.text)
-            }
-            R.id.dest_offline_form_page -> {
-                viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
-            }
-            R.id.dest_offline_form_selector_page -> {
-                viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
-            }
+            R.id.dest_messages_page -> binding.styleValues
+                .getStyleValues(R.attr.usedesk_common_toolbar)
+                .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                .getString(android.R.attr.text)
+            R.id.dest_offline_form_page -> viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
+            R.id.dest_offline_form_selector_page -> viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
             else -> null
         }
         toolbarAdapter.setTitle(title)
@@ -205,7 +195,8 @@ class UsedeskChatScreen : UsedeskFragment() {
                     usedeskChatConfiguration,
                     messagesDateFormat,
                     messageTimeFormat,
-                    adaptiveTextMessageTimePadding
+                    adaptiveTextMessageTimePadding,
+                    groupAgentMessages
                 )
             }
         }

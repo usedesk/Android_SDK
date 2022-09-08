@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import ru.usedesk.chat_gui.IUsedeskOnChatInitedListener
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -98,7 +99,8 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     private fun init() {
-        UsedeskChatSdk.init(requireContext())
+        val usedeskChat = UsedeskChatSdk.init(requireContext())
+        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val title = when (destination.id) {
@@ -193,7 +195,8 @@ class UsedeskChatScreen : UsedeskFragment() {
                     usedeskChatConfiguration,
                     messagesDateFormat,
                     messageTimeFormat,
-                    adaptiveTextMessageTimePadding
+                    adaptiveTextMessageTimePadding,
+                    groupAgentMessages
                 )
             }
         }

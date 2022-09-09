@@ -38,11 +38,11 @@ internal interface IApiRepository {
     fun setClient(configuration: UsedeskChatConfiguration)
 
     fun send(
-        token: String?,
+        token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
-    )
+    ): SendResult
 
     fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
@@ -58,6 +58,11 @@ internal interface IApiRepository {
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): String
+
+    sealed interface SendResult {
+        object Done : SendResult
+        object Error : SendResult
+    }
 
     interface EventListener {
         fun onConnected()

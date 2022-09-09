@@ -70,16 +70,16 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        mainScope.cancel()
-    }
-
     fun onClientToken(clientToken: String) {
         val newConfiguration = configurationRepository.getConfigurationFlow().value
             .copy(clientToken = clientToken)
 
         configurationRepository.setConfiguration(newConfiguration)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        mainScope.cancel()
     }
 
     data class DownloadFile(

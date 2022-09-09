@@ -41,10 +41,12 @@ internal class KnowledgeBaseApiRepository(
     }
 
     override fun getArticle(articleId: Long): UsedeskArticleContent {
-        val articleContentResponse =
-            doRequest(configuration.urlApi, ArticleContentResponse::class.java) {
-                it.getArticleContent(configuration.accountId, articleId, configuration.token)
-            }
+        val articleContentResponse = doRequest(
+            configuration.urlApi,
+            ArticleContentResponse::class.java
+        ) {
+            getArticleContent(configuration.accountId, articleId, configuration.token)
+        }
         return valueOrNull {
             UsedeskArticleContent(
                 articleContentResponse.id!!,
@@ -56,22 +58,24 @@ internal class KnowledgeBaseApiRepository(
     }
 
     override fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent> {
-        val articlesSearchResponse =
-            doRequest(configuration.urlApi, ArticlesSearchResponse::class.java) {
-                it.getArticles(
-                    configuration.accountId,
-                    configuration.token,
-                    searchQueryRequest.query,
-                    searchQueryRequest.count,
-                    searchQueryRequest.sectionIds?.joinToString(","),
-                    searchQueryRequest.categoryIds?.joinToString(","),
-                    searchQueryRequest.articleIds?.joinToString(","),
-                    searchQueryRequest.page,
-                    searchQueryRequest.type?.name?.lowercase(),
-                    searchQueryRequest.sort?.name?.lowercase(),
-                    searchQueryRequest.order?.name?.lowercase()
-                )
-            }
+        val articlesSearchResponse = doRequest(
+            configuration.urlApi,
+            ArticlesSearchResponse::class.java
+        ) {
+            getArticles(
+                configuration.accountId,
+                configuration.token,
+                searchQueryRequest.query,
+                searchQueryRequest.count,
+                searchQueryRequest.sectionIds?.joinToString(","),
+                searchQueryRequest.categoryIds?.joinToString(","),
+                searchQueryRequest.articleIds?.joinToString(","),
+                searchQueryRequest.page,
+                searchQueryRequest.type?.name?.lowercase(),
+                searchQueryRequest.sort?.name?.lowercase(),
+                searchQueryRequest.order?.name?.lowercase()
+            )
+        }
 
         return (articlesSearchResponse.articles ?: arrayOf()).mapNotNull {
             valueOrNull {
@@ -86,8 +90,16 @@ internal class KnowledgeBaseApiRepository(
     }
 
     override fun addViews(articleId: Long) {
-        doRequest(configuration.urlApi, AddViewsResponse::class.java) {
-            it.addViews(configuration.accountId, articleId, configuration.token, 1)
+        doRequest(
+            configuration.urlApi,
+            AddViewsResponse::class.java
+        ) {
+            addViews(
+                configuration.accountId,
+                articleId,
+                configuration.token,
+                1
+            )
         }
     }
 
@@ -95,8 +107,11 @@ internal class KnowledgeBaseApiRepository(
         articleId: Long,
         good: Boolean
     ) {
-        doRequest(configuration.urlApi, ChangeRatingResponse::class.java) {
-            it.changeRating(
+        doRequest(
+            configuration.urlApi,
+            ChangeRatingResponse::class.java
+        ) {
+            changeRating(
                 configuration.accountId,
                 articleId,
                 if (good) 1 else 0,
@@ -109,8 +124,11 @@ internal class KnowledgeBaseApiRepository(
         articleId: Long,
         message: String
     ) {
-        doRequest(configuration.urlApi, CreateTicketResponse::class.java) {
-            it.createTicket(
+        doRequest(
+            configuration.urlApi,
+            CreateTicketResponse::class.java
+        ) {
+            createTicket(
                 CreateTicketRequest(
                     configuration.token,
                     configuration.clientEmail,
@@ -123,8 +141,11 @@ internal class KnowledgeBaseApiRepository(
     }
 
     private fun loadSections(): List<UsedeskSection> {
-        return doRequest(configuration.urlApi, Array<SectionResponse>::class.java) {
-            it.getSections(configuration.accountId, configuration.token)
+        return doRequest(
+            configuration.urlApi,
+            Array<SectionResponse>::class.java
+        ) {
+            getSections(configuration.accountId, configuration.token)
         }.mapNotNull { sectionResponse ->
             valueOrNull {
                 val categories = sectionResponse.categories?.mapNotNull { categoryResponse ->

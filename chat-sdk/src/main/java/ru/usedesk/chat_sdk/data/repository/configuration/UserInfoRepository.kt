@@ -11,25 +11,22 @@ internal class UserInfoRepository(
     override fun getConfiguration(
         configuration: UsedeskChatConfiguration
     ): UsedeskChatConfiguration? {
-        configurationLoader.initLegacyData(tokenLoader::getDataNullable)
-        val configurations = configurationLoader.getDataNullable()
+        configurationLoader.initLegacyData(tokenLoader::getData)
+        val configurations = configurationLoader.getData()
         return configurations?.firstOrNull { it.userKey == configuration.userKey }
     }
 
     override fun setConfiguration(configuration: UsedeskChatConfiguration) {
-        var configurations = (configurationLoader.getDataNullable() ?: arrayOf()).map {
-            when (configuration.userKey) {
-                it.userKey -> configuration
-                else -> it
-            }
+        val configurations = configurationLoader.getData() ?: arrayOf()
+        val newConfigurations = when {
+            configurations.any { it.userKey == configuration.userKey } -> configurations.map {
+                when (configuration.userKey) {
+                    it.userKey -> configuration
+                    else -> it
+                }
+            }.toTypedArray()
+            else -> configurations + configuration
         }
-        configurations = when (configuration) {
-            !in configurations -> configurations + configuration
-            else -> configurations
-        }
-        when {
-            configurations.isEmpty() -> configurationLoader.clearData()
-            else -> configurationLoader.setData(configurations.toTypedArray())
-        }
+        configurationLoader.setData(newConfigurations)
     }
 }

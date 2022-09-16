@@ -8,7 +8,7 @@ internal abstract class DataLoader<T> {
 
     protected abstract fun saveData(data: T)
 
-    fun getDataNullable(): T? = data ?: loadData().also { data = it }
+    fun getData(): T? = data ?: loadData().also { data = it }
 
     fun setData(data: T?) {
         this.data = data

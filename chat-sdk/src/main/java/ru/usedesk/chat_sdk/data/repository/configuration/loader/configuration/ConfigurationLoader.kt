@@ -44,12 +44,7 @@ internal class ConfigurationLoader(
     }
 
     private fun migrate(oldVersion: Int) {
-        val configuration = loadLegacy(oldVersion)
-        if (configuration != null) {
-            saveData(configuration)
-        } else {
-            clearData()
-        }
+        setData(loadLegacy(oldVersion))
     }
 
     override fun saveData(data: Array<UsedeskChatConfiguration>) {
@@ -68,25 +63,25 @@ internal class ConfigurationLoader(
             .apply()
     }
 
-    private fun loadLegacy(oldVersion: Int): Array<UsedeskChatConfiguration>? {
-        when (oldVersion) {
-            1 -> {
-                val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
-                val urlChatApi = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
-                val companyId = sharedPreferences.getString(KEY_ID, null)
-                val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
-                val clientInitMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
-                if (urlChat != null
-                    && urlChatApi != null
-                    && companyId != null
-                ) {
+    private fun loadLegacy(oldVersion: Int): Array<UsedeskChatConfiguration>? = when (oldVersion) {
+        1 -> {
+            val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
+            val urlChatApi = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
+            val companyId = sharedPreferences.getString(KEY_ID, null)
+            val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
+            val clientInitMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
+            when {
+                urlChat != null
+                        && urlChatApi != null
+                        && companyId != null -> {
                     var clientName: String? = null
                     var clientPhone: String? = null
                     var clientAdditionalId: String? = null
                     try {
                         clientName = sharedPreferences.getString(KEY_NAME, null)
                         clientPhone = sharedPreferences.getString(KEY_PHONE, null)
-                        clientAdditionalId = sharedPreferences.getString(KEY_ADDITIONAL_ID, null)
+                        clientAdditionalId =
+                            sharedPreferences.getString(KEY_ADDITIONAL_ID, null)
                     } catch (e: ClassCastException) {
                         try {
                             clientPhone = sharedPreferences.getLong(KEY_PHONE, 0)
@@ -97,7 +92,7 @@ internal class ConfigurationLoader(
                             e.printStackTrace()
                         }
                     }
-                    return arrayOf(
+                    arrayOf(
                         UsedeskChatConfiguration(
                             urlChat = urlChat,
                             urlChatApi = urlChatApi,
@@ -113,35 +108,33 @@ internal class ConfigurationLoader(
                         )
                     )
                 }
-            }
-            2, 3, 4 -> {
-                return try {
-                    val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
-                    val json = gson.fromJson(jsonRaw, JsonObject::class.java)
-                    if (!json.has("channelId")) {
-                        json.addProperty("channelId", "")
-                    }
-                    if (!json.has("clientToken")) {
-                        json.addProperty("clientToken", legacyClientToken)
-                    }
-                    if (!json.has("cacheMessagesWithFile")) {
-                        json.addProperty("cacheMessagesWithFile", true)
-                    }
-                    if (!json.has("additionalFields")) {
-                        json.add("additionalFields", JsonObject())
-                    }
-                    if (!json.has("additionalNestedFields")) {
-                        json.add("additionalNestedFields", JsonArray())
-                    }
-                    val configuration = gson.fromJson(json, UsedeskChatConfiguration::class.java)
-                    arrayOf(configuration)
-                } catch (e: Exception) {
-                    null
-                }
+                else -> null
             }
         }
-
-        return null
+        2, 3, 4 -> try {
+            val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
+            val json = gson.fromJson(jsonRaw, JsonObject::class.java)
+            if (!json.has("channelId")) {
+                json.addProperty("channelId", "")
+            }
+            if (!json.has("clientToken")) {
+                json.addProperty("clientToken", legacyClientToken)
+            }
+            if (!json.has("cacheMessagesWithFile")) {
+                json.addProperty("cacheMessagesWithFile", true)
+            }
+            if (!json.has("additionalFields")) {
+                json.add("additionalFields", JsonObject())
+            }
+            if (!json.has("additionalNestedFields")) {
+                json.add("additionalNestedFields", JsonArray())
+            }
+            val configuration = gson.fromJson(json, UsedeskChatConfiguration::class.java)
+            arrayOf(configuration)
+        } catch (e: Exception) {
+            null
+        }
+        else -> null
     }
 
     companion object {

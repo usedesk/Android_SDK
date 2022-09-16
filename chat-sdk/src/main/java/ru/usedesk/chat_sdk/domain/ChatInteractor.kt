@@ -2,7 +2,6 @@ package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
 import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -14,6 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
@@ -199,7 +199,7 @@ internal class ChatInteractor(
         ) {
             this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.offlineFormToChat =
-                offlineFormSettings.workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+                offlineFormSettings.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
             offlineFormExpectedSubject.onNext(offlineFormSettings)
         }
 
@@ -221,17 +221,11 @@ internal class ChatInteractor(
         }
     }
 
-    override fun createChat(apiToken: String): String {
-        return apiRepository.initChat(
-            configuration,
-            apiToken
-        ).also { clientToken ->
-            userInfoRepository.setConfiguration(
-                configuration.copy(
-                    clientToken = clientToken
-                )
-            )
-        }
+    override fun createChat(apiToken: String) = apiRepository.initChat(
+        configuration,
+        apiToken
+    ).also { clientToken ->
+        userInfoRepository.setConfiguration(configuration.copy(clientToken = clientToken))
     }
 
     override fun connect() {
@@ -262,17 +256,13 @@ internal class ChatInteractor(
         runBlocking {
             jobsMutex.withLock {
                 lastMessages = lastMessages.map {
-                    if ((it is UsedeskMessageClient &&
+                    when {
+                        it is UsedeskMessageClient &&
                                 message is UsedeskMessageClient &&
-                                it.localId == message.localId)
-                        || (it is UsedeskMessageAgent &&
+                                it.localId == message.localId || it is UsedeskMessageAgent &&
                                 message is UsedeskMessageAgent &&
-                                it.id == message.id
-                                )
-                    ) {
-                        message
-                    } else {
-                        it
+                                it.id == message.id -> message
+                        else -> it
                     }
                 }
                 messagesSubject.onNext(lastMessages)
@@ -282,9 +272,7 @@ internal class ChatInteractor(
     }
 
     private fun onMessageRemove(message: UsedeskMessage) {
-        lastMessages = lastMessages.filter {
-            it.id != message.id
-        }
+        lastMessages = lastMessages.filter { it.id != message.id }
         messagesSubject.onNext(lastMessages)
         messageRemovedSubject.onNext(message)
     }
@@ -337,9 +325,7 @@ internal class ChatInteractor(
         listener.onDispose()
     }
 
-    override fun isNoListeners(): Boolean {
-        return actionListeners.isEmpty() && actionListenersRx.isEmpty()
-    }
+    override fun isNoListeners(): Boolean = actionListeners.isEmpty() && actionListenersRx.isEmpty()
 
     override fun send(textMessage: String) {
         val message = textMessage.trim()
@@ -349,9 +335,7 @@ internal class ChatInteractor(
 
             runBlocking {
                 jobsMutex.withLock {
-                    jobsScope.launchSafe({
-                        sendCached(sendingMessage)
-                    })
+                    jobsScope.launchSafe({ sendCached(sendingMessage) })
                 }
             }
         }
@@ -397,18 +381,14 @@ internal class ChatInteractor(
     }
 
     override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
-        val sendingMessages = usedeskFileInfoList.map {
-            createSendingMessage(it)
-        }
+        val sendingMessages = usedeskFileInfoList.map(this@ChatInteractor::createSendingMessage)
 
         eventListener.onMessagesNewReceived(sendingMessages)
 
         runBlocking {
             jobsMutex.withLock {
                 sendingMessages.forEach { msg ->
-                    jobsScope.launchSafe({
-                        sendCached(msg)
-                    })
+                    jobsScope.launchSafe({ sendCached(msg) })
                 }
             }
         }
@@ -501,10 +481,9 @@ internal class ChatInteractor(
             firstMessageMutex.withLock {
                 firstMessageLock
             }?.apply {
-                if (!isLocked) {
-                    lock(this@ChatInteractor)
-                } else {
-                    waitFirstMessage()
+                when {
+                    !isLocked -> lock(this@ChatInteractor)
+                    else -> waitFirstMessage()
                 }
             }
         }
@@ -604,27 +583,26 @@ internal class ChatInteractor(
     }
 
     override fun send(offlineForm: UsedeskOfflineForm) {
-        if (offlineFormToChat) {
-            offlineForm.run {
-                val fields = offlineForm.fields.filter { field ->
-                    field.value.isNotEmpty()
-                }.map { field ->
-                    field.value
-                }
+        when {
+            offlineFormToChat -> offlineForm.run {
+                val fields = offlineForm.fields
+                    .map(UsedeskOfflineForm.Field::value)
+                    .filter(String::isNotEmpty)
                 val strings =
                     listOf(clientName, clientEmail, topic) + fields + offlineForm.message
                 initClientOfflineForm = strings.joinToString(separator = "\n")
                 chatInited?.let { onChatInited(it) }
             }
-        } else {
-            apiRepository.send(configuration, configuration.getCompanyAndChannel(), offlineForm)
+            else -> apiRepository.send(
+                configuration,
+                configuration.getCompanyAndChannel(),
+                offlineForm
+            )
         }
     }
 
     override fun sendAgain(id: Long) {
-        val message = lastMessages.firstOrNull {
-            it.id == id
-        }
+        val message = lastMessages.firstOrNull { it.id == id }
         if (message is UsedeskMessageClient
             && message.status == UsedeskMessageClient.Status.SEND_FAILED
         ) {
@@ -693,11 +671,7 @@ internal class ChatInteractor(
         }
     }
 
-    override fun removeMessageRx(id: Long): Completable {
-        return safeCompletableIo(ioScheduler) {
-            removeMessage(id)
-        }
-    }
+    override fun removeMessageRx(id: Long) = safeCompletableIo(ioScheduler) { removeMessage(id) }
 
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
@@ -706,23 +680,12 @@ internal class ChatInteractor(
         }
     }
 
-    override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft): Completable {
-        return safeCompletableIo(ioScheduler) {
-            setMessageDraft(messageDraft)
-        }
-    }
+    override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft) =
+        safeCompletableIo(ioScheduler) { setMessageDraft(messageDraft) }
 
-    override fun getMessageDraft(): UsedeskMessageDraft {
-        return runBlocking {
-            cachedMessages.getMessageDraft()
-        }
-    }
+    override fun getMessageDraft() = runBlocking { cachedMessages.getMessageDraft() }
 
-    override fun getMessageDraftRx(): Single<UsedeskMessageDraft> {
-        return safeSingleIo(ioScheduler) {
-            getMessageDraft()
-        }
-    }
+    override fun getMessageDraftRx() = safeSingleIo(ioScheduler) { getMessageDraft() }
 
     override fun sendMessageDraft() {
         runBlocking {
@@ -737,11 +700,7 @@ internal class ChatInteractor(
         }
     }
 
-    override fun sendMessageDraftRx(): Completable {
-        return safeCompletableIo(ioScheduler) {
-            sendMessageDraft()
-        }
-    }
+    override fun sendMessageDraftRx() = safeCompletableIo(ioScheduler) { sendMessageDraft() }
 
     private fun createSendingMessage(text: String): UsedeskMessageClientText {
         val localId = cachedMessages.getNextLocalId()
@@ -765,99 +724,68 @@ internal class ChatInteractor(
             fileInfo.name
         )
         return when {
-            fileInfo.isImage() -> {
-                UsedeskMessageClientImage(
-                    localId,
-                    calendar,
-                    file,
-                    UsedeskMessageClient.Status.SENDING
-                )
-            }
-            fileInfo.isVideo() -> {
-                UsedeskMessageClientVideo(
-                    localId,
-                    calendar,
-                    file,
-                    UsedeskMessageClient.Status.SENDING
-                )
-            }
-            fileInfo.isAudio() -> {
-                UsedeskMessageClientAudio(
-                    localId,
-                    calendar,
-                    file,
-                    UsedeskMessageClient.Status.SENDING
-                )
-            }
-            else -> {
-                UsedeskMessageClientFile(
-                    localId,
-                    calendar,
-                    file,
-                    UsedeskMessageClient.Status.SENDING
-                )
-            }
+            fileInfo.isImage() -> UsedeskMessageClientImage(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageClient.Status.SENDING
+            )
+            fileInfo.isVideo() -> UsedeskMessageClientVideo(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageClient.Status.SENDING
+            )
+            fileInfo.isAudio() -> UsedeskMessageClientAudio(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageClient.Status.SENDING
+            )
+            else -> UsedeskMessageClientFile(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageClient.Status.SENDING
+            )
         }
     }
 
-    override fun connectRx(): Completable {
-        return safeCompletableIo(ioScheduler) {
-            connect()
-        }
-    }
+    override fun connectRx() = safeCompletableIo(ioScheduler) { connect() }
 
     override fun sendRx(
         agentMessage: UsedeskMessageAgentText,
         feedback: UsedeskFeedback
-    ): Completable {
-        return safeCompletableIo(ioScheduler) {
-            send(agentMessage, feedback)
-        }
-    }
+    ) = safeCompletableIo(ioScheduler) { send(agentMessage, feedback) }
 
-    override fun sendRx(offlineForm: UsedeskOfflineForm): Completable {
-        return safeCompletableIo(ioScheduler) {
-            send(offlineForm)
-        }
-    }
+    override fun sendRx(offlineForm: UsedeskOfflineForm) =
+        safeCompletableIo(ioScheduler) { send(offlineForm) }
 
-    override fun sendAgainRx(id: Long): Completable {
-        return safeCompletableIo(ioScheduler) {
-            sendAgain(id)
-        }
-    }
+    override fun sendAgainRx(id: Long) = safeCompletableIo(ioScheduler) { sendAgain(id) }
 
-    override fun disconnectRx(): Completable {
-        return safeCompletableIo(ioScheduler) {
-            disconnect()
-        }
-    }
+    override fun disconnectRx() = safeCompletableIo(ioScheduler) { disconnect() }
 
     private val oldMutex = Mutex()
     private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
-    override fun loadPreviousMessagesPage(): Boolean {
-        return runBlocking {
-            oldMutex.withLock {
-                oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
-            }?.await() ?: true
-        }
+    override fun loadPreviousMessagesPage() = runBlocking {
+        oldMutex.withLock {
+            oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
+        }?.await() ?: true
     }
 
     private suspend fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
         val messages = messagesSubject.value
         val oldestMessageId = messages?.firstOrNull()?.id
         val token = token
-        return if (oldestMessageId != null &&
-            token != null
-        ) {
-            CoroutineScope(Dispatchers.IO).async {
+        return when {
+            oldestMessageId != null &&
+                    token != null -> CoroutineScope(Dispatchers.IO).async {
                 loadPreviousMessagesJob(token, oldestMessageId)
             }.also {
                 oldMessagesLoadDeferred = it
             }
-        } else {
-            null
+            else -> null
         }
     }
 
@@ -898,11 +826,7 @@ internal class ChatInteractor(
         disconnect()
     }
 
-    override fun releaseRx(): Completable {
-        return safeCompletableIo(ioScheduler) {
-            release()
-        }
-    }
+    override fun releaseRx() = safeCompletableIo(ioScheduler) { release() }
 
     private fun sendUserEmail() {
         try {
@@ -938,55 +862,46 @@ internal class ChatInteractor(
 
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
-        val ids = lastMessages.map {
-            it.id
-        }
-        val filteredMessages = chatInited.messages.filter {
-            it.id !in ids
-        }
-        val notSentMessages = cachedMessages.getNotSentMessages().map {
-            it as UsedeskMessage
-        }
-        val filteredNotSentMessages = notSentMessages.filter {
-            it.id !in ids
-        }
+        val ids = lastMessages.map(UsedeskMessage::id)
+        val filteredMessages = chatInited.messages.filter { it.id !in ids }
+        val notSentMessages = cachedMessages.getNotSentMessages()
+            .mapNotNull { it as? UsedeskMessage }
+        val filteredNotSentMessages = notSentMessages.filter { it.id !in ids }
         val needToResendMessages = lastMessages.isNotEmpty()
         onMessagesNew(
             new = filteredMessages + filteredNotSentMessages,
             isInited = true
         )
 
-        if (chatInited.waitingEmail) {
-            sendUserEmail()
-        } else {
-            eventListener.onSetEmailSuccess()
+        when {
+            chatInited.waitingEmail -> sendUserEmail()
+            else -> eventListener.onSetEmailSuccess()
         }
-        if (needToResendMessages) {
-            val initedNotSentIds = initedNotSentMessages.map { it.id }
-            notSentMessages.filter {
-                it.id !in initedNotSentIds
-            }.forEach {
-                listenersDisposables.add(
-                    sendAgainRx(it.id).subscribe({}, { throwable ->
-                        throwable.printStackTrace()
-                    })
-                )
+        when {
+            needToResendMessages -> {
+                val initedNotSentIds = initedNotSentMessages.map { it.id }
+                notSentMessages.filter {
+                    it.id !in initedNotSentIds
+                }.forEach {
+                    listenersDisposables.add(
+                        sendAgainRx(it.id).subscribe({}, { throwable ->
+                            throwable.printStackTrace()
+                        })
+                    )
+                }
             }
-        } else {
-            initedNotSentMessages = notSentMessages
+            else -> initedNotSentMessages = notSentMessages
         }
     }
 
     private fun CoroutineScope.launchSafe(
         onRun: () -> Unit,
         onThrowable: (Throwable) -> Unit = { it.printStackTrace() }
-    ): Job {
-        return launch {
-            try {
-                onRun()
-            } catch (e: Throwable) {
-                onThrowable(e)
-            }
+    ) = launch {
+        try {
+            onRun()
+        } catch (e: Throwable) {
+            onThrowable(e)
         }
     }
 

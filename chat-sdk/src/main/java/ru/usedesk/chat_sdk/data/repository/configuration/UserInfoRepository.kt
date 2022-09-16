@@ -13,15 +13,13 @@ internal class UserInfoRepository(
     ): UsedeskChatConfiguration? {
         configurationLoader.initLegacyData(tokenLoader::getDataNullable)
         val configurations = configurationLoader.getDataNullable()
-        return configurations?.firstOrNull {
-            isConfigurationEquals(configuration, it)
-        }
+        return configurations?.firstOrNull { it.userKey == configuration.userKey }
     }
 
     override fun setConfiguration(configuration: UsedeskChatConfiguration) {
         var configurations = (configurationLoader.getDataNullable() ?: arrayOf()).map {
-            when {
-                isConfigurationEquals(configuration, it) -> configuration
+            when (configuration.userKey) {
+                it.userKey -> configuration
                 else -> it
             }
         }
@@ -34,11 +32,4 @@ internal class UserInfoRepository(
             else -> configurationLoader.setData(configurations.toTypedArray())
         }
     }
-
-    private fun isConfigurationEquals(
-        configurationA: UsedeskChatConfiguration,
-        configurationB: UsedeskChatConfiguration
-    ): Boolean = configurationA.clientEmail == configurationB.clientEmail &&
-            configurationA.clientPhoneNumber == configurationB.clientPhoneNumber &&
-            configurationA.clientName == configurationB.clientName
 }

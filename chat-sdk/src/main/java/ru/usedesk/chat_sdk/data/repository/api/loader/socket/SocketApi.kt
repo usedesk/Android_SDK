@@ -141,7 +141,6 @@ internal class SocketApi(
         socket = null
     }
 
-    @Throws(UsedeskSocketException::class)
     fun sendRequest(baseRequest: BaseRequest) {
         try {
             val rawRequest = gson.toJson(baseRequest)

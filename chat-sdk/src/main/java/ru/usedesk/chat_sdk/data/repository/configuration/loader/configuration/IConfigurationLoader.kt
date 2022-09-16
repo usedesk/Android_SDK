@@ -7,8 +7,6 @@ internal interface IConfigurationLoader {
 
     fun loadData(): Array<UsedeskChatConfiguration>?
 
-    fun getData(): Array<UsedeskChatConfiguration>
-
     fun getDataNullable(): Array<UsedeskChatConfiguration>?
 
     fun setData(data: Array<UsedeskChatConfiguration>?)

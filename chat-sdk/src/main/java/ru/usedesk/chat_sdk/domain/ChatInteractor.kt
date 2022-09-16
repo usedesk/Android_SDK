@@ -243,7 +243,7 @@ internal class ChatInteractor(
             reconnectDisposable?.dispose()
             reconnectDisposable = null
             token = (configuration.clientToken
-                ?: userInfoRepository.getConfigurationNullable(configuration)?.clientToken)
+                ?: userInfoRepository.getConfiguration(configuration)?.clientToken)
                 ?.ifEmpty { null }
 
             unlockFirstMessage()
@@ -928,7 +928,7 @@ internal class ChatInteractor(
             unlockFirstMessage()
         }
 
-        val oldConfiguration = userInfoRepository.getConfigurationNullable(configuration)
+        val oldConfiguration = userInfoRepository.getConfiguration(configuration)
 
         if (initClientOfflineForm != null ||
             oldConfiguration?.clientInitMessage == initClientMessage

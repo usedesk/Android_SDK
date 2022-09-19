@@ -6,7 +6,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskViewModel
 import java.io.File
@@ -15,7 +14,7 @@ import java.util.*
 internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
 
     private val actionListenerRx: IUsedeskActionListenerRx
-    private val usedeskChat: IUsedeskChat = UsedeskChatSdk.requireInstance()
+    private val usedeskChat = UsedeskChatSdk.requireInstance()
 
     private var messages = listOf<UsedeskMessage>()
     private var chatItems = listOf<ChatItem>()
@@ -23,7 +22,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     private var hasPreviousMessages = true
 
     val configuration = UsedeskChatSdk.requireConfiguration()
-    var groupAgentMessages: Boolean = true
+    var groupAgentMessages = true
 
     init {
         setModel { copy(messageDraft = usedeskChat.getMessageDraft()) }
@@ -57,10 +56,9 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         }.flatMap {
             it.value.mapIndexed { i, message ->
                 val lastOfGroup = i == 0
-                if (message is UsedeskMessageClient) {
-                    ClientMessage(message, lastOfGroup)
-                } else {
-                    AgentMessage(message, lastOfGroup, showName = true, showAvatar = true)
+                when (message) {
+                    is UsedeskMessageClient -> ClientMessage(message, lastOfGroup)
+                    else -> AgentMessage(message, lastOfGroup, showName = true, showAvatar = true)
                 }
             }.asSequence() + ChatDate((it.value.first().createdAt.clone() as Calendar).apply {
                 set(Calendar.MILLISECOND, 0)
@@ -84,10 +82,9 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                         showName = false,
                         showAvatar = previous?.isAgentsTheSame(item.message) != true
                     )
-                    if (next?.isAgentsTheSame(item.message) != true) {
-                        sequenceOf(newItem, MessageAgentName(item.message.name))
-                    } else {
-                        sequenceOf(newItem)
+                    when (next?.isAgentsTheSame(item.message)) {
+                        true -> sequenceOf(newItem)
+                        else -> sequenceOf(newItem, MessageAgentName(item.message.name))
                     }
                 } else {
                     sequenceOf(item)
@@ -98,14 +95,13 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         }
     }
 
-    private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean {
-        return avatar == other.avatar && name == other.name
-    }
+    private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean =
+        avatar == other.avatar && name == other.name
 
     fun onMessageChanged(message: String) {
-        if (message != modelLiveData.value.messageDraft.text) {
+        if (message != modelFlow.value.messageDraft.text) {
             setModel { copy(messageDraft = messageDraft.copy(text = message)) }
-            doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
+            doIt(usedeskChat.setMessageDraftRx(modelFlow.value.messageDraft))
         }
     }
 
@@ -114,7 +110,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     }
 
     fun attachFiles(uriList: Set<UsedeskFileInfo>) {
-        if (uriList != modelLiveData.value.messageDraft.files) {
+        if (uriList != modelFlow.value.messageDraft.files) {
             setModel {
                 val newFiles = (messageDraft.files + uriList).toSet().toList()
                 copy(
@@ -122,13 +118,13 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
                     attachmentPanelVisible = false
                 )
             }
-            doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
+            doIt(usedeskChat.setMessageDraftRx(modelFlow.value.messageDraft))
         }
     }
 
     fun detachFile(file: UsedeskFileInfo) {
         setModel { copy(messageDraft = messageDraft.copy(files = messageDraft.files - file)) }
-        doIt(usedeskChat.setMessageDraftRx(modelLiveData.value.messageDraft))
+        doIt(usedeskChat.setMessageDraftRx(modelFlow.value.messageDraft))
     }
 
     fun onSendButton(message: String) {
@@ -204,25 +200,24 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         if (lastMessageIndex + ITEMS_UNTIL_LAST >= chatItems.size) {
             onLastMessageShowed()
         }
-        if (messagesRange.first < modelLiveData.value.newMessagesCount) {
+        if (messagesRange.first < modelFlow.value.newMessagesCount) {
             setModel { copy(newMessagesCount = messagesRange.first) }
         }
     }
 
     private fun getChatItems(): List<ChatItem> {
         val messages = convertMessages(messages)
-        return if (hasPreviousMessages) {
-            messages.toMutableList().apply {
+        return when {
+            hasPreviousMessages -> messages.toMutableList().apply {
                 add(
-                    if (lastOrNull() as? ChatDate != null) {
-                        messages.size - 1
-                    } else {
-                        messages.size
-                    }, ChatLoading
+                    when (lastOrNull() as? ChatDate) {
+                        null -> messages.size
+                        else -> messages.size - 1
+                    },
+                    ChatLoading
                 )
             }
-        } else {
-            messages
+            else -> messages
         }.also {
             chatItems = it
         }

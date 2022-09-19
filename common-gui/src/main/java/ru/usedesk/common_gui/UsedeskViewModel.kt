@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -15,7 +16,7 @@ import kotlinx.coroutines.sync.withLock
 open class UsedeskViewModel<MODEL>(
     defaultModel: MODEL
 ) : ViewModel() {
-    val modelLiveData = UsedeskLiveData(defaultModel)
+    val modelFlow = MutableStateFlow(defaultModel)
     val mainThread = AndroidSchedulers.mainThread()
 
     private val mutex = Mutex()
@@ -32,11 +33,15 @@ open class UsedeskViewModel<MODEL>(
 
     @MainThread
     protected fun setModel(onUpdate: MODEL.() -> MODEL) = runBlocking {
+        if (mutex.isLocked) {
+            println()
+        }
         mutex.withLock {
-            onUpdate(modelLiveData.value).also {
-                modelLiveData.value = it
+            onUpdate(modelFlow.value).also {
+                modelFlow.value = it
             }
         }
+        println()
     }
 
     protected fun addDisposable(disposable: Disposable) {

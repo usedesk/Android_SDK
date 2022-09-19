@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.*
@@ -29,9 +30,7 @@ import ru.usedesk.common_gui.inflateItem
 internal class MessagesPage : UsedeskFragment() {
 
     private val viewModel: MessagesViewModel by viewModels(
-        ownerProducer = {
-            requireChatViewModelStoreOwner()
-        }
+        ownerProducer = this@MessagesPage::requireChatViewModelStoreOwner
     )
 
     private lateinit var binding: Binding
@@ -44,18 +43,15 @@ internal class MessagesPage : UsedeskFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_page_messages,
-            R.style.Usedesk_Chat_Screen_Messages_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
-
-        return binding.rootView
-    }
+    ) = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_page_messages,
+        R.style.Usedesk_Chat_Screen_Messages_Page,
+        ::Binding
+    ).also {
+        binding = it
+    }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,9 +75,7 @@ internal class MessagesPage : UsedeskFragment() {
         }
 
         attachmentDialog = UsedeskAttachmentDialog.create(this).apply {
-            setOnDismissListener {
-                viewModel.showAttachmentPanel(false)
-            }
+            setOnDismissListener { viewModel.showAttachmentPanel(false) }
         }
 
         registerFiles { uris ->
@@ -110,7 +104,7 @@ internal class MessagesPage : UsedeskFragment() {
             startCamera(cameraFile)
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
                 if (new.attachmentPanelVisible) {
                     attachmentDialog?.show()
@@ -124,27 +118,23 @@ internal class MessagesPage : UsedeskFragment() {
             try {
                 var size = -1L
                 when (fileInfo.uri.scheme) {
-                    "content" -> {
-                        requireContext().contentResolver.query(
-                            fileInfo.uri,
-                            null,
-                            null,
-                            null,
-                            null
-                        )?.use { cursor ->
-                            if (cursor.moveToFirst()) {
-                                val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
-                                size = cursor.getLong(columnIndex)
-                            }
+                    "content" -> requireContext().contentResolver.query(
+                        fileInfo.uri,
+                        null,
+                        null,
+                        null,
+                        null
+                    )?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
+                            size = cursor.getLong(columnIndex)
                         }
                     }
-                    "file" -> {
-                        requireContext().contentResolver.openAssetFileDescriptor(
-                            fileInfo.uri,
-                            "r"
-                        )?.use {
-                            size = it.length
-                        }
+                    "file" -> requireContext().contentResolver.openAssetFileDescriptor(
+                        fileInfo.uri,
+                        "r"
+                    )?.use {
+                        size = it.length
                     }
                 }
                 return@filter size in 0..MAX_FILE_SIZE
@@ -157,15 +147,13 @@ internal class MessagesPage : UsedeskFragment() {
         val rejectedFiles = files - filteredFiles
         if (rejectedFiles.isNotEmpty()) {
             val message = getString(
-                if (rejectedFiles.size == 1) {
-                    R.string.usedesk_file_size_exceeds
-                } else {
-                    R.string.usedesk_files_size_exceeds
-                }, MAX_FILE_SIZE_MB
+                when (rejectedFiles.size) {
+                    1 -> R.string.usedesk_file_size_exceeds
+                    else -> R.string.usedesk_files_size_exceeds
+                },
+                MAX_FILE_SIZE_MB
             )
-            val toastText = message + "\n" + rejectedFiles.joinToString(separator = "\n") {
-                it.name
-            }
+            val toastText = "$message\n" + rejectedFiles.joinToString(separator = "\n") { it.name }
             Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
         }
         viewModel.attachFiles(filteredFiles)
@@ -198,7 +186,7 @@ internal class MessagesPage : UsedeskFragment() {
         MessagePanelAdapter(
             binding.messagePanel,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         ) {
             findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.showAttachmentPanel(true)
@@ -210,17 +198,13 @@ internal class MessagesPage : UsedeskFragment() {
             binding.rvMessages,
             binding.dateBinding,
             viewModel,
-            viewLifecycleOwner,
+            lifecycleScope,
             agentName,
             rejectedFileExtensions,
-            mediaPlayerAdapter, {
-                findParent<IUsedeskOnFileClickListener>()?.onFileClick(it)
-            }, {
-                findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
-                    ?: onUrlClick(it)
-            }, {
-                findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
-            },
+            mediaPlayerAdapter,
+            { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
+            { findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it) },
+            { findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name) },
             messagesDateFormat,
             messageTimeFormat,
             adaptiveTextMessageTimePadding,
@@ -233,10 +217,8 @@ internal class MessagesPage : UsedeskFragment() {
             binding.tvToBottom,
             binding.styleValues,
             viewModel,
-            viewLifecycleOwner
-        ) {
-            messagesAdapter?.scrollToBottom()
-        }
+            lifecycleScope
+        ) { messagesAdapter?.scrollToBottom() }
     }
 
     private fun onUrlClick(url: String) {
@@ -262,10 +244,9 @@ internal class MessagesPage : UsedeskFragment() {
 
         private fun getDateBinding(rootView: ViewGroup): DateBinding {
             val dateView = rootView.findViewWithTag<View>(DATE_ITEM_VIEW_TAG)
-            return if (dateView != null) {
-                DateBinding(dateView, R.style.Usedesk_Chat_Date)
-            } else {
-                inflateItem(
+            return when {
+                dateView != null -> DateBinding(dateView, R.style.Usedesk_Chat_Date)
+                else -> inflateItem(
                     rootView,
                     R.layout.usedesk_item_chat_date,
                     R.style.Usedesk_Chat_Date

@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.*
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,7 +32,7 @@ internal class MessagesAdapter(
     private val recyclerView: RecyclerView,
     private val dateBinding: DateBinding,
     private val viewModel: MessagesViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val customAgentName: String?,
     private val rejectedFileExtensions: Array<String>,
     private val mediaPlayerAdapter: MediaPlayerAdapter,
@@ -90,7 +90,7 @@ internal class MessagesAdapter(
                 }
             })
         }
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.chatItems != new.chatItems) {
                 onMessages(new.chatItems)
             }
@@ -115,11 +115,10 @@ internal class MessagesAdapter(
             dateBinding.rootView.y = 0f
             dateBinding.rootView.visibility = View.INVISIBLE
 
-            items.indices.asSequence().mapNotNull { i ->
-                recyclerView.findViewHolderForAdapterPosition(i)
-            }.filterIsInstance<DateViewHolder>().forEach {
-                it.binding.rootView.visibility = View.VISIBLE
-            }
+            items.indices.asSequence()
+                .mapNotNull(recyclerView::findViewHolderForAdapterPosition)
+                .filterIsInstance<DateViewHolder>()
+                .forEach { it.binding.rootView.visibility = View.VISIBLE }
 
             /**
              * notVisible - тот, что не виден полностью (или весь в зоне floating)

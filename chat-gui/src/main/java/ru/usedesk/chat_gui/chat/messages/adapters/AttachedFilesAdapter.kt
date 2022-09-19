@@ -4,28 +4,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.showImage
-import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.*
 
 internal class AttachedFilesAdapter(
     private val recyclerView: RecyclerView,
     private val viewModel: MessagesViewModel,
-    lifecycleOwner: LifecycleOwner
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
 ) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>() {
 
     private var files: List<UsedeskFileInfo> = listOf()
 
     init {
         recyclerView.adapter = this
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.messageDraft?.files != new.messageDraft.files) {
                 val oldFiles = files
                 files = new.messageDraft.files

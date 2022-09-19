@@ -84,13 +84,14 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             }
         }
 
-        toolbarSearchAdapter = ToolbarSearchAdapter(binding.toolbarSearch, { query ->
-            if (query.isNotEmpty()) {
-                viewModel.onSearchQuery(query)
-            }
-        }, {
-            onBackPressed()
-        })
+        toolbarSearchAdapter = ToolbarSearchAdapter(
+            binding.toolbarSearch, { query ->
+                if (query.isNotEmpty()) {
+                    viewModel.onSearchQuery(query)
+                }
+            },
+            this@UsedeskKnowledgeBaseScreen::onBackPressed
+        )
 
         hideKeyboard(binding.rootView)
 
@@ -149,45 +150,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         return navController.popBackStack()
     }
 
-    companion object {
-        internal const val COMMON_TITLE_KEY = "commonTitleKey"
-        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
-        private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
-        private const val KNOWLEDGE_BASE_CONFIGURATION = "knowledgeBaseConfiguration"
-
-        @JvmStatic
-        @JvmOverloads
-        fun newInstance(
-            withSupportButton: Boolean = true,
-            withArticleRating: Boolean = true,
-            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
-        ): UsedeskKnowledgeBaseScreen {
-            return UsedeskKnowledgeBaseScreen().apply {
-                arguments = createBundle(
-                    withSupportButton,
-                    withArticleRating,
-                    knowledgeBaseConfiguration
-                )
-            }
-        }
-
-        @JvmStatic
-        @JvmOverloads
-        fun createBundle(
-            withSupportButton: Boolean = true,
-            withArticleRating: Boolean = true,
-            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
-        ): Bundle {
-            return Bundle().apply {
-                putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-                putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
-                knowledgeBaseConfiguration?.let {
-                    putParcelable(KNOWLEDGE_BASE_CONFIGURATION, it)
-                }
-            }
-        }
-    }
-
     class FabAnimation(
         val view: View,
         val newBottomMargin: Int
@@ -214,5 +176,40 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         val toolbarSearch =
             ToolbarSearchAdapter.Binding(rootView.findViewById(R.id.toolbar_search), defaultStyleId)
         val fabSupport = rootView.findViewById<FloatingActionButton>(R.id.fab_support)
+    }
+
+    companion object {
+        internal const val COMMON_TITLE_KEY = "commonTitleKey"
+        private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
+        private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
+        private const val KNOWLEDGE_BASE_CONFIGURATION = "knowledgeBaseConfiguration"
+
+        @JvmStatic
+        @JvmOverloads
+        fun newInstance(
+            withSupportButton: Boolean = true,
+            withArticleRating: Boolean = true,
+            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
+        ): UsedeskKnowledgeBaseScreen = UsedeskKnowledgeBaseScreen().apply {
+            arguments = createBundle(
+                withSupportButton,
+                withArticleRating,
+                knowledgeBaseConfiguration
+            )
+        }
+
+        @JvmStatic
+        @JvmOverloads
+        fun createBundle(
+            withSupportButton: Boolean = true,
+            withArticleRating: Boolean = true,
+            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
+        ): Bundle = Bundle().apply {
+            putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
+            putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
+            knowledgeBaseConfiguration?.let {
+                putParcelable(KNOWLEDGE_BASE_CONFIGURATION, it)
+            }
+        }
     }
 }

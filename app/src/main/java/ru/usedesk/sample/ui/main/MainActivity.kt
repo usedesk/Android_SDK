@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
@@ -31,6 +32,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
@@ -61,7 +63,7 @@ class MainActivity : AppCompatActivity(),
     private var permissionDownloadResult: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val materialComponents = viewModel.configurationLiveData.value.materialComponents
+        val materialComponents = viewModel.modelFlow.value.configuration.materialComponents
         when {
             materialComponents -> mapOf(
                 R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
@@ -92,30 +94,31 @@ class MainActivity : AppCompatActivity(),
         navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
         navController = navHostFragment.navController
 
-        viewModel.configurationLiveData.initAndObserve(this) {
-            initUsedeskService(it)
-        }
-        viewModel.errorLiveData.observe(this) {
-            it?.let(this@MainActivity::onError)
-        }
-        viewModel.goSdkEventLiveData.observe(this) { event ->
-            event?.process {
-                val configuration = viewModel.configurationLiveData.value
-                if (configuration.withKb) {
-                    val kbConfiguration = configuration.toKbConfiguration()
-                    navController.navigate(
-                        R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-                        UsedeskKnowledgeBaseScreen.createBundle(
-                            configuration.withKbSupportButton,
-                            configuration.withKbArticleRating,
-                            kbConfiguration
+        viewModel.modelFlow.onEachWithOld(lifecycleScope) { old, new ->
+            if (old?.configuration != new.configuration) {
+                initUsedeskService(new.configuration)
+            }
+            if (old?.error != new.error) {
+                new.error?.onError()
+            }
+            if (old?.goSdk != new.goSdk) {
+                new.goSdk?.process {
+                    if (new.configuration.withKb) {
+                        val kbConfiguration = new.configuration.toKbConfiguration()
+                        navController.navigate(
+                            R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+                            UsedeskKnowledgeBaseScreen.createBundle(
+                                new.configuration.withKbSupportButton,
+                                new.configuration.withKbArticleRating,
+                                kbConfiguration
+                            )
                         )
-                    )
-                } else {
-                    navController.navigate(
-                        R.id.action_configurationScreen_to_usedeskChatScreen,
-                        createChatScreenBundle(configuration)
-                    )
+                    } else {
+                        navController.navigate(
+                            R.id.action_configurationScreen_to_usedeskChatScreen,
+                            createChatScreenBundle(new.configuration)
+                        )
+                    }
                 }
             }
         }
@@ -217,9 +220,9 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this, "$description:\n${name}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun onError(error: UsedeskEvent<String>) {
-        error.process { text: String? ->
-            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+    private fun UsedeskEvent<String>.onError() {
+        process { text: String? ->
+            Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -257,7 +260,7 @@ class MainActivity : AppCompatActivity(),
     override fun onSupportClick() {
         navController.navigate(
             R.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,
-            createChatScreenBundle(viewModel.configurationLiveData.value)
+            createChatScreenBundle(viewModel.modelFlow.value.configuration)
         )
     }
 

@@ -16,9 +16,7 @@ import ru.usedesk.common_gui.inflateItem
 internal class LoadingPage : UsedeskFragment() {
 
     private val viewModel: LoadingViewModel by viewModels(
-        ownerProducer = {
-            requireChatViewModelStoreOwner()
-        }
+        ownerProducer = this@LoadingPage::requireChatViewModelStoreOwner
     )
 
     private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
@@ -47,7 +45,7 @@ internal class LoadingPage : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
             }

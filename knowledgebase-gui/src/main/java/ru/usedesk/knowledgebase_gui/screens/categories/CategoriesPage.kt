@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
@@ -51,7 +52,7 @@ internal class CategoriesPage : UsedeskFragment() {
         categoriesAdapter = CategoriesAdapter(
             binding.rvItems,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         ) { id, title ->
             findNavController().navigate(
                 R.id.action_categoriesPage_to_articlesPage,
@@ -59,7 +60,7 @@ internal class CategoriesPage : UsedeskFragment() {
             )
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.loading != new.loading) {
                 showInstead(binding.rvItems, binding.pbLoading, !new.loading)
             }

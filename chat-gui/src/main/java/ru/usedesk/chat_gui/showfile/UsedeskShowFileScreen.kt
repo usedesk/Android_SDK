@@ -46,11 +46,11 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
 
         binding.ivShare.setOnClickListener {
-            onShareFile(viewModel.modelLiveData.value.file)
+            onShareFile(viewModel.modelFlow.value.file)
         }
 
         binding.ivDownload.setOnClickListener {
-            viewModel.modelLiveData.value.file?.let { file ->
+            viewModel.modelFlow.value.file?.let { file ->
                 findParent<IUsedeskOnDownloadListener>()?.onDownload(
                     file.content,
                     file.name
@@ -77,7 +77,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             viewModel.init(file)
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.file != new.file ||
                 old?.error != new.error && !new.error
             ) {

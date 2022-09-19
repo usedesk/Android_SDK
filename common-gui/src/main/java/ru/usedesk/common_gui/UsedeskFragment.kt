@@ -9,6 +9,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
@@ -193,8 +198,25 @@ abstract class UsedeskFragment : Fragment() {
         return listener ?: activity as? T
     }
 
+    fun <T> Flow<T>.onEachWithOld(action: suspend (old: T?, new: T) -> Unit) = onEachWithOld(
+        lifecycleScope,
+        action
+    )
+
+
     companion object {
         private const val MIME_TYPE_ALL_IMAGES = "image/*"
         private const val MIME_TYPE_ALL_FILES = "*/*"
     }
+}
+
+fun <T> Flow<T>.onEachWithOld(
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
+    action: suspend (old: T?, new: T) -> Unit
+) {
+    var oldValue: T? = null
+    onEach { new ->
+        action(oldValue, new)
+        oldValue = new
+    }.launchIn(lifecycleCoroutineScope)
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
@@ -17,9 +18,7 @@ import ru.usedesk.common_gui.*
 internal class OfflineFormPage : UsedeskFragment() {
 
     private val viewModel: OfflineFormViewModel by viewModels(
-        ownerProducer = {
-            requireChatViewModelStoreOwner()
-        }
+        ownerProducer = this@OfflineFormPage::requireChatViewModelStoreOwner
     )
 
     private var rootView: View? = null
@@ -64,7 +63,7 @@ internal class OfflineFormPage : UsedeskFragment() {
             binding.rvFields,
             binding,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         ) { key ->
             findNavController().navigate(
                 R.id.action_offlineFormPage_to_offlineFormSelectorPage,
@@ -72,7 +71,7 @@ internal class OfflineFormPage : UsedeskFragment() {
             )
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.offlineFormState != new.offlineFormState) {
                 onState(new.offlineFormState)
             }

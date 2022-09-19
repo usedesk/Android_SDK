@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.ViewPager
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
@@ -50,13 +51,13 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
             binding.vpPages,
             childFragmentManager,
             viewModel,
-            viewLifecycleOwner,
+            lifecycleScope,
             withArticleRating
         )
 
         viewModel.init(categoryId, articleId)
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.selectedArticle != new.selectedArticle && new.selectedArticle != null) {
                 findParent<UsedeskKnowledgeBaseScreen>()?.onTitle(new.selectedArticle.title)
             }

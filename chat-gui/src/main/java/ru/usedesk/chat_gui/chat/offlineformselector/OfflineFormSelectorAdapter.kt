@@ -1,7 +1,7 @@
 package ru.usedesk.chat_gui.chat.offlineformselector
 
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -10,13 +10,14 @@ import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.common_gui.UsedeskCommonFieldCheckBoxAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 
 internal class OfflineFormSelectorAdapter(
     private val key: String,
     recyclerView: RecyclerView,
     binding: OfflineFormSelectorPage.Binding,
     private val viewModel: OfflineFormViewModel,
-    lifecycleOwner: LifecycleOwner
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
 ) : RecyclerView.Adapter<OfflineFormSelectorAdapter.ViewHolder>() {
 
     private val itemStyle =
@@ -30,7 +31,7 @@ internal class OfflineFormSelectorAdapter(
             layoutManager = LinearLayoutManager(recyclerView.context)
             adapter = this@OfflineFormSelectorAdapter
         }
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             val oldField = old?.customFields?.firstOrNull { it.key == key }
             val newField = new.customFields.first { it.key == key } as OfflineFormList
             if (oldField != newField) {

@@ -109,13 +109,13 @@ class UsedeskChatScreen : UsedeskFragment() {
                     .getStyleValues(R.attr.usedesk_common_toolbar)
                     .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                     .getString(android.R.attr.text)
-                R.id.dest_offline_form_page -> viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
-                R.id.dest_offline_form_selector_page -> viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
+                R.id.dest_offline_form_page -> viewModel.modelFlow.value.offlineFormSettings?.callbackTitle
+                R.id.dest_offline_form_selector_page -> viewModel.modelFlow.value.offlineFormSettings?.topicsTitle
                 else -> null
             }
             toolbarAdapter.setTitle(title)
         }
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old != null &&
                 new.clientToken != null &&
                 old.clientToken != new.clientToken
@@ -141,8 +141,8 @@ class UsedeskChatScreen : UsedeskFragment() {
                 .getStyleValues(R.attr.usedesk_common_toolbar)
                 .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
                 .getString(android.R.attr.text)
-            R.id.dest_offline_form_page -> viewModel.modelLiveData.value.offlineFormSettings?.callbackTitle
-            R.id.dest_offline_form_selector_page -> viewModel.modelLiveData.value.offlineFormSettings?.topicsTitle
+            R.id.dest_offline_form_page -> viewModel.modelFlow.value.offlineFormSettings?.callbackTitle
+            R.id.dest_offline_form_selector_page -> viewModel.modelFlow.value.offlineFormSettings?.topicsTitle
             else -> null
         }
         toolbarAdapter.setTitle(title)

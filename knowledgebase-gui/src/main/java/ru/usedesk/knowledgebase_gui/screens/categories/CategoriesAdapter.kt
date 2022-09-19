@@ -4,18 +4,19 @@ import android.text.Html
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesAdapter internal constructor(
     recyclerView: RecyclerView,
     viewModel: CategoriesViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val onCategoryClick: (Long, String) -> Unit
 ) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
 
@@ -23,7 +24,7 @@ internal class CategoriesAdapter internal constructor(
 
     init {
         recyclerView.adapter = this
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.categories != new.categories) {
                 val oldItems = categories
                 val newItems = new.categories

@@ -4,11 +4,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_gui.showImage
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
@@ -16,7 +17,7 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 internal class SectionsAdapter(
     recyclerView: RecyclerView,
     viewModel: SectionsViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val onSectionClick: (Long, String) -> Unit
 ) : RecyclerView.Adapter<SectionsAdapter.SectionViewHolder>() {
 
@@ -24,7 +25,7 @@ internal class SectionsAdapter(
 
     init {
         recyclerView.adapter = this
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.sections != new.sections) {
                 val oldItems = sections
                 val newItems = new.sections

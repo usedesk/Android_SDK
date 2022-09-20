@@ -26,6 +26,14 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
         }
     }
 
+    fun first() {
+        setModel { copy(first = true) }
+    }
+
+    fun second() {
+        setModel { copy(second = true) }
+    }
+
     fun goSdk() {
         setModel {
             val usedeskChatConfiguration = configuration.toChatConfiguration()
@@ -66,7 +74,9 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
     data class Model(
         val configuration: Configuration = Configuration(),
         val error: UsedeskEvent<String>? = null,
-        val goSdk: UsedeskEvent<Any>? = null
+        val goSdk: UsedeskEvent<Any>? = null,
+        val first: Boolean = false,
+        val second: Boolean = false
     )
 
     data class DownloadFile(

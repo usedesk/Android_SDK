@@ -72,13 +72,14 @@ internal class OfflineFormSelectorAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(inflateItem(
-        parent,
-        R.layout.usedesk_item_field_checkbox,
-        itemStyle
-    ) { rootView, defaultStyleId ->
-        UsedeskCommonFieldCheckBoxAdapter.Binding(rootView, defaultStyleId)
-    })
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+        inflateItem(
+            parent,
+            R.layout.usedesk_item_field_checkbox,
+            itemStyle,
+            UsedeskCommonFieldCheckBoxAdapter::Binding
+        )
+    )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(items[position])

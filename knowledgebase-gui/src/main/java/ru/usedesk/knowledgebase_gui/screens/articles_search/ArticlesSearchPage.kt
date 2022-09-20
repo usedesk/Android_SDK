@@ -38,10 +38,9 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_list,
-            R.style.Usedesk_KnowledgeBase_Articles_Search_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
+            R.style.Usedesk_KnowledgeBase_Articles_Search_Page,
+            ::Binding
+        ).apply {
             tvMessage.text = styleValues
                 .getStyleValues(R.attr.usedesk_knowledgebase_list_page_message_text)
                 .getString(R.attr.usedesk_text_1)
@@ -74,15 +73,11 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
                 when (new.state) {
-                    State.LOADED -> {
-                        updateVisible(
-                            showMessage = new.articles.isEmpty(),
-                            showItems = new.articles.isNotEmpty()
-                        )
-                    }
-                    else -> {
-                        updateVisible()
-                    }
+                    State.LOADED -> updateVisible(
+                        showMessage = new.articles.isEmpty(),
+                        showItems = new.articles.isNotEmpty()
+                    )
+                    else -> updateVisible()
                 }
             }
         }

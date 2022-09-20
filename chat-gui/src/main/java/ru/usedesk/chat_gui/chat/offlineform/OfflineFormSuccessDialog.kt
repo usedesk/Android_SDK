@@ -19,15 +19,12 @@ internal class OfflineFormSuccessDialog private constructor(
             layoutInflater,
             container,
             R.layout.usedesk_dialog_offline_form_success,
-            dialogStyle
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
+            dialogStyle,
+            ::Binding
+        ).apply {
             setContentView(rootView)
 
-            tvClose.setOnClickListener {
-                dismiss()
-            }
+            tvClose.setOnClickListener { dismiss() }
         }
     }
 

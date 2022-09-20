@@ -22,6 +22,8 @@ abstract class UsedeskFragment : Fragment() {
     private var filesLauncher: ActivityResultLauncher<String>? = null
     private var cameraLauncher: ActivityResultLauncher<Uri>? = null
 
+    private var cameraFile: File? = null
+
     open fun onBackPressed(): Boolean = false
 
     fun registerCameraPermission(
@@ -71,12 +73,20 @@ abstract class UsedeskFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         permissionCameraLauncher?.save(outState)
+
+        cameraFile?.let {
+            outState.putString(CAMERA_FILE_KEY, it.absolutePath)
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
         permissionCameraLauncher?.load(savedInstanceState)
+
+        savedInstanceState?.getString(CAMERA_FILE_KEY)?.let {
+            cameraFile = File(it)
+        }
     }
 
     override fun onDestroyView() {
@@ -92,9 +102,18 @@ abstract class UsedeskFragment : Fragment() {
         filesLauncher = null
     }
 
-    protected fun generateCameraFile(): File {
-        val fileName = "camera_${System.currentTimeMillis()}.jpg"
-        return File(requireContext().cacheDir, fileName)
+    protected fun generateCameraFile() = File(
+        requireContext().cacheDir,
+        "camera_${System.currentTimeMillis()}.jpg"
+    ).also {
+        cameraFile = it
+    }
+
+    fun useCameraFile(onCameraFile: (File) -> Unit) {
+        cameraFile?.let {
+            cameraFile = null
+            onCameraFile(it)
+        }
     }
 
     protected fun toProviderUri(uri: Uri): Uri {
@@ -205,6 +224,7 @@ abstract class UsedeskFragment : Fragment() {
 
 
     companion object {
+        private const val CAMERA_FILE_KEY = "tempCameraFileKey"
         private const val MIME_TYPE_ALL_IMAGES = "image/*"
         private const val MIME_TYPE_ALL_FILES = "*/*"
     }

@@ -59,16 +59,13 @@ internal class SectionsAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
-        val binding = inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = SectionViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_section,
-            R.style.Usedesk_KnowledgeBase_Sections_Page_Section
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
-        return SectionViewHolder(binding)
-    }
+            R.style.Usedesk_KnowledgeBase_Sections_Page_Section, ::Binding
+        )
+    )
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
         sectionViewHolder.bind(sections[i])
@@ -93,9 +90,7 @@ internal class SectionsAdapter(
                 showImage(binding.ivIcon,
                     it,
                     noThumbnailId,
-                    onSuccess = {
-                        binding.tvInitials.text = ""
-                    }
+                    onSuccess = { binding.tvInitials.text = "" }
                 )
             }
             binding.lClickable.setOnClickListener {

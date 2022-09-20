@@ -47,10 +47,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_screen_knowledge_base,
-            R.style.Usedesk_KnowledgeBase_Screen
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_KnowledgeBase_Screen,
+            ::Binding
+        )
 
         sectionsTitle = binding.styleValues
             .getStyleValues(R.attr.usedesk_common_toolbar)
@@ -75,9 +74,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
 
         toolbarDefaultAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
-            setBackButton {
-                requireActivity().onBackPressed()
-            }
+            setBackButton(requireActivity()::onBackPressed)
 
             setActionButton {
                 navController.navigate(R.id.articlesSearchPage)

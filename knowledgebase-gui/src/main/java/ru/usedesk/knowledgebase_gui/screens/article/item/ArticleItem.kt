@@ -50,10 +50,9 @@ internal class ArticleItem : UsedeskFragment() {
             layoutInflater,
             container,
             R.layout.usedesk_page_item_article_content,
-            R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
+            R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item,
+            ::Binding
+        ).apply {
             messageStyleValues = styleValues
                 .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
 

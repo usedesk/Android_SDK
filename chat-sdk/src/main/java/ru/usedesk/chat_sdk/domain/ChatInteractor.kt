@@ -66,65 +66,66 @@ internal class ChatInteractor(
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
     private var additionalFieldsNeeded: Boolean = true
+    private val listenersMutex = Mutex()
 
     init {
         listenersDisposables.apply {
             add(connectionStateSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onConnectionState(it)
                 }
             })
 
             add(clientTokenSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onClientTokenReceived(it)
                 }
             })
 
             add(messagesSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onMessagesReceived(it)
                 }
             })
 
             add(messageSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onMessageReceived(it)
                 }
             })
 
             add(newMessageSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onNewMessageReceived(it)
                 }
             })
 
             add(messageUpdateSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onMessageUpdated(it)
                 }
             })
 
             add(messageRemovedSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onMessageRemoved()
                 }
             })
 
             add(offlineFormExpectedSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onOfflineFormExpected(it)
                 }
             })
 
             add(feedbackSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onFeedbackReceived()
                 }
             })
 
             add(exceptionSubject.subscribe {
-                actionListeners.forEach { listener ->
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
                     listener.onException(it)
                 }
             })
@@ -297,11 +298,33 @@ internal class ChatInteractor(
     }
 
     override fun addActionListener(listener: IUsedeskActionListener) {
-        actionListeners.add(listener)
+        runBlocking {
+            listenersMutex.withLock {
+                connectionStateSubject.value?.let(listener::onConnectionState)
+
+                clientTokenSubject.value?.let(listener::onClientTokenReceived)
+
+                messagesSubject.value?.let(listener::onMessagesReceived)
+
+                messageSubject.value?.let(listener::onMessageReceived)
+
+                offlineFormExpectedSubject.value?.let(listener::onOfflineFormExpected)
+
+                feedbackSubject.value?.let { listener.onFeedbackReceived() }
+
+                exceptionSubject.value?.let(listener::onException)
+
+                actionListeners.add(listener)
+            }
+        }
     }
 
     override fun removeActionListener(listener: IUsedeskActionListener) {
-        actionListeners.remove(listener)
+        runBlocking {
+            listenersMutex.withLock {
+                actionListeners.remove(listener)
+            }
+        }
     }
 
     override fun addActionListener(listener: IUsedeskActionListenerRx) {
@@ -325,7 +348,9 @@ internal class ChatInteractor(
         listener.onDispose()
     }
 
-    override fun isNoListeners(): Boolean = actionListeners.isEmpty() && actionListenersRx.isEmpty()
+    override fun isNoListeners(): Boolean = runBlocking {
+        listenersMutex.withLock { actionListeners }
+    }.isEmpty() && actionListenersRx.isEmpty()
 
     override fun send(textMessage: String) {
         val message = textMessage.trim()
@@ -768,50 +793,70 @@ internal class ChatInteractor(
     private val oldMutex = Mutex()
     private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
-    override fun loadPreviousMessagesPage() = runBlocking {
-        oldMutex.withLock {
-            oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
-        }?.await() ?: true
-    }
+    override suspend fun loadPreviousMessagesPage() = oldMutex.withLock {
+        oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
+    }?.await() ?: true
+
+    /*override suspend fun loadPreviousMessagesPage(): Boolean {
+        val messages = messagesSubject.value
+        val oldestMessageId = messages?.firstOrNull()?.id
+        val token = token
+        return when {
+            oldestMessageId != null && token != null -> try {
+                val hasUnloadedMessages = apiRepository.loadPreviousMessages(
+                    configuration,
+                    token,
+                    oldestMessageId
+                )
+                oldMutex.withLock {
+                    oldMessagesLoadDeferred = when {
+                        hasUnloadedMessages -> null
+                        else -> CompletableDeferred(false)
+                    }
+                }
+                hasUnloadedMessages
+            } catch (e: Exception) {
+                e.printStackTrace()
+                oldMutex.withLock {
+                    oldMessagesLoadDeferred = null
+                }
+                true
+            }
+            else -> true
+        }
+    }*/
 
     private suspend fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
         val messages = messagesSubject.value
         val oldestMessageId = messages?.firstOrNull()?.id
         val token = token
         return when {
-            oldestMessageId != null &&
-                    token != null -> CoroutineScope(Dispatchers.IO).async {
-                loadPreviousMessagesJob(token, oldestMessageId)
+            oldestMessageId != null && token != null -> CoroutineScope(Dispatchers.IO).async {
+                try {
+                    val hasUnloadedMessages = apiRepository.loadPreviousMessages(
+                        configuration,
+                        token,
+                        oldestMessageId
+                    )
+                    oldMutex.withLock {
+                        oldMessagesLoadDeferred = when {
+                            hasUnloadedMessages -> null
+                            else -> CompletableDeferred(false)
+                        }
+                    }
+                    hasUnloadedMessages
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    oldMutex.withLock {
+                        oldMessagesLoadDeferred = null
+                    }
+                    true
+                }
             }.also {
                 oldMessagesLoadDeferred = it
             }
             else -> null
         }
-    }
-
-    private suspend fun loadPreviousMessagesJob(
-        token: String,
-        oldestMessageId: Long
-    ) = try {
-        val hasUnloadedMessages = apiRepository.loadPreviousMessages(
-            configuration,
-            token,
-            oldestMessageId
-        )
-        oldMutex.withLock {
-            oldMessagesLoadDeferred = if (hasUnloadedMessages) {
-                null
-            } else {
-                CompletableDeferred(false)
-            }
-            hasUnloadedMessages
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        oldMutex.withLock {
-            oldMessagesLoadDeferred = null
-        }
-        true
     }
 
     override fun release() {

@@ -34,14 +34,11 @@ internal class CategoriesPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_list,
-            R.style.Usedesk_KnowledgeBase_Categories_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_KnowledgeBase_Categories_Page,
+            ::Binding
+        )
 
-        argsGetLong(SECTION_ID_KEY)?.also { sectionId ->
-            init(sectionId)
-        }
+        argsGetLong(SECTION_ID_KEY)?.also(this@CategoriesPage::init)
 
         return binding.rootView
     }

@@ -75,7 +75,9 @@ internal class MessagesPage : UsedeskFragment() {
         }
 
         attachmentDialog = UsedeskAttachmentDialog.create(this).apply {
-            setOnDismissListener { viewModel.showAttachmentPanel(false) }
+            setOnDismissListener {
+                viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(false))
+            }
         }
 
         registerFiles { uris ->
@@ -88,7 +90,7 @@ internal class MessagesPage : UsedeskFragment() {
             attachFiles(files)
         }
         registerCamera {
-            viewModel.useCameraFile { cameraFile ->
+            useCameraFile { cameraFile ->
                 if (it) {
                     val file = UsedeskFileInfo.create(
                         requireContext(),
@@ -100,7 +102,6 @@ internal class MessagesPage : UsedeskFragment() {
         }
         registerCameraPermission {
             val cameraFile = generateCameraFile()
-            viewModel.setCameraFile(cameraFile)
             startCamera(cameraFile)
         }
 
@@ -156,7 +157,7 @@ internal class MessagesPage : UsedeskFragment() {
             val toastText = "$message\n" + rejectedFiles.joinToString(separator = "\n") { it.name }
             Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
         }
-        viewModel.attachFiles(filteredFiles)
+        viewModel.onIntent(MessagesViewModel.Intent.AttachFiles(filteredFiles))
     }
 
     override fun onDestroyView() {
@@ -180,7 +181,7 @@ internal class MessagesPage : UsedeskFragment() {
         adaptiveTextMessageTimePadding: Boolean,
         groupAgentMessages: Boolean
     ) {
-        viewModel.groupAgentMessages = groupAgentMessages
+        viewModel.onIntent(MessagesViewModel.Intent.Init(groupAgentMessages))
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
@@ -189,7 +190,7 @@ internal class MessagesPage : UsedeskFragment() {
             lifecycleScope
         ) {
             findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-                ?: viewModel.showAttachmentPanel(true)
+                ?: viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(true))
         }
 
         val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter
@@ -217,8 +218,9 @@ internal class MessagesPage : UsedeskFragment() {
             binding.tvToBottom,
             binding.styleValues,
             viewModel,
-            lifecycleScope
-        ) { messagesAdapter?.scrollToBottom() }
+            lifecycleScope,
+            onClickListener = { messagesAdapter?.scrollToBottom() }
+        )
     }
 
     private fun onUrlClick(url: String) {

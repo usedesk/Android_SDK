@@ -73,14 +73,17 @@ internal class FabToBottomAdapter(
                     !new.fabToBottom && old.fabToBottom -> fabContainer.startAnimation(animationOut)
                 }
             }
-            if (old?.newMessagesCount != new.newMessagesCount) {
+            if (old?.lastMessageShowed != new.lastMessageShowed) {
                 tvToBottom.run {
                     text = when {
-                        new.newMessagesCount > 99 -> "99+"
-                        else -> new.newMessagesCount.toString()
+                        new.lastMessageShowed > 99 -> "99+"
+                        else -> new.lastMessageShowed.toString()
                     }
-                    visibility = visibleInvisible(new.newMessagesCount > 0)
+                    visibility = visibleInvisible(new.lastMessageShowed > 0)
                 }
+            }
+            if (old?.goToBottom != new.goToBottom) {
+                new.goToBottom?.process { onClickListener() }
             }
         }
     }

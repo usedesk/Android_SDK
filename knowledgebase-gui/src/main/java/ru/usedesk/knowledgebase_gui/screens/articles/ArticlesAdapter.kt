@@ -57,15 +57,14 @@ internal class ArticlesAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
-        return ArticleViewHolder(inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = ArticleViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_article_info,
-            R.style.Usedesk_KnowledgeBase_Articles_Page_Article
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        })
-    }
+            R.style.Usedesk_KnowledgeBase_Articles_Page_Article,
+            ::Binding
+        )
+    )
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
         articleViewHolder.bind(items[i])
@@ -79,9 +78,7 @@ internal class ArticlesAdapter(
 
         fun bind(articleInfo: UsedeskArticleInfo) {
             binding.tvTitle.text = articleInfo.title
-            binding.lClickable.setOnClickListener {
-                onArticleInfoClick(articleInfo)
-            }
+            binding.lClickable.setOnClickListener { onArticleInfoClick(articleInfo) }
         }
     }
 

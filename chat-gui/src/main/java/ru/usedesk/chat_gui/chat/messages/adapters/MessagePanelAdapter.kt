@@ -33,7 +33,7 @@ internal class MessagePanelAdapter(
         binding.etMessage.run {
             setText(viewModel.modelFlow.value.messageDraft.text)
             addTextChangedListener(UsedeskTextChangeListener {
-                viewModel.onMessageChanged(it)
+                viewModel.onIntent(MessagesViewModel.Intent.MessageChanged(it))
             })
         }
         viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
@@ -48,7 +48,7 @@ internal class MessagePanelAdapter(
     }
 
     private fun onSendClick() {
-        viewModel.onSend()
+        viewModel.onIntent(MessagesViewModel.Intent.SendDraft)
         binding.etMessage.setText("")
     }
 

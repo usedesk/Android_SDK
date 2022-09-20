@@ -57,13 +57,14 @@ internal class AttachedFilesAdapter(
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-        return ViewHolder(inflateItem(
-            viewGroup,
-            R.layout.usedesk_item_chat_attached_file,
-            R.style.Usedesk_Chat_Attached_File
-        ) { rootView, defaultStyleId ->
-            AttachedFileBinding(rootView, defaultStyleId)
-        })
+        return ViewHolder(
+            inflateItem(
+                viewGroup,
+                R.layout.usedesk_item_chat_attached_file,
+                R.style.Usedesk_Chat_Attached_File,
+                ::AttachedFileBinding
+            )
+        )
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
@@ -89,14 +90,11 @@ internal class AttachedFilesAdapter(
             )
 
             binding.ivDetach.setOnClickListener {
-                viewModel.detachFile(usedeskFileInfo)
+                viewModel.onIntent(MessagesViewModel.Intent.DetachFile(usedeskFileInfo))
             }
-            binding.tvTitle.text = if (usedeskFileInfo.isImage() ||
-                usedeskFileInfo.isVideo()
-            ) {
-                ""
-            } else {
-                usedeskFileInfo.name
+            binding.tvTitle.text = when {
+                usedeskFileInfo.isImage() || usedeskFileInfo.isVideo() -> ""
+                else -> usedeskFileInfo.name
             }
         }
     }

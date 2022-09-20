@@ -58,15 +58,14 @@ internal class ArticlesSearchAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
-        return ArticleViewHolder(inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = ArticleViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_article_content,
-            R.style.Usedesk_KnowledgeBase_Articles_Search_Page_Article
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        })
-    }
+            R.style.Usedesk_KnowledgeBase_Articles_Search_Page_Article,
+            ::Binding
+        )
+    )
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
         articleViewHolder.bind(articles[i])
@@ -81,9 +80,7 @@ internal class ArticlesSearchAdapter(
         fun bind(articleContent: UsedeskArticleContent) {
             binding.tvTitle.text = articleContent.title
             binding.tvDescription.text = Html.fromHtml(articleContent.text).trim()
-            binding.lClickable.setOnClickListener {
-                onArticleClick(articleContent)
-            }
+            binding.lClickable.setOnClickListener { onArticleClick(articleContent) }
         }
     }
 

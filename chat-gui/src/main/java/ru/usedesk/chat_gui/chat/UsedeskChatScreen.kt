@@ -51,10 +51,9 @@ class UsedeskChatScreen : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_screen_chat,
-            R.style.Usedesk_Chat_Screen
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_Chat_Screen,
+            ::Binding
+        )
 
         navHostFragment =
             childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment

@@ -1,15 +1,14 @@
 package ru.usedesk.common_gui
 
 import android.annotation.SuppressLint
-import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -24,6 +23,28 @@ open class UsedeskViewModel<MODEL>(
     private val disposables = mutableListOf<Disposable>()
     private var inited = false
 
+    private val jobs = mutableListOf<Job>()
+    private val jobMutex = Mutex()
+
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
+    private fun doSuspend(scope: CoroutineScope, onDo: suspend () -> Unit) = runBlocking {
+        jobMutex.withLock {
+            scope.launch {
+                try {
+                    onDo()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }.also(jobs::add)
+        }
+    }
+
+    fun doMain(onDo: suspend () -> Unit) = doSuspend(mainScope, onDo)
+
+    fun doIo(onDo: suspend () -> Unit) = doSuspend(ioScope, onDo)
+
     protected fun doInit(init: () -> Unit) {
         if (!inited) {
             inited = true
@@ -31,17 +52,14 @@ open class UsedeskViewModel<MODEL>(
         }
     }
 
-    @MainThread
     protected fun setModel(onUpdate: MODEL.() -> MODEL) = runBlocking {
-        if (mutex.isLocked) {
-            println()
-        }
         mutex.withLock {
-            onUpdate(modelFlow.value).also {
-                modelFlow.value = it
+            val model = modelFlow.value
+            val newModel = onUpdate(model)
+            if (model != newModel) {
+                modelFlow.value = newModel
             }
         }
-        println()
     }
 
     protected fun addDisposable(disposable: Disposable) {
@@ -119,8 +137,8 @@ open class UsedeskViewModel<MODEL>(
     override fun onCleared() {
         super.onCleared()
 
-        disposables.forEach {
-            it.dispose()
-        }
+        disposables.forEach(Disposable::dispose)
+
+        jobs.forEach(Job::cancel)
     }
 }

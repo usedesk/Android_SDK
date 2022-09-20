@@ -59,15 +59,14 @@ internal class CategoriesAdapter internal constructor(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
-        return SectionViewHolder(inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = SectionViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_category,
-            R.style.Usedesk_KnowledgeBase_Categories_Page_Category
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        })
-    }
+            R.style.Usedesk_KnowledgeBase_Categories_Page_Category,
+            ::Binding
+        )
+    )
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
         sectionViewHolder.bind(categories[i])
@@ -83,9 +82,7 @@ internal class CategoriesAdapter internal constructor(
             binding.tvTitle.text = category.title
             binding.tvDescription.text = Html.fromHtml(category.description).trim()
             binding.tvCount.text = category.articles.size.toString()
-            binding.lClickable.setOnClickListener {
-                onCategoryClick(category.id, category.title)
-            }
+            binding.lClickable.setOnClickListener { onCategoryClick(category.id, category.title) }
         }
     }
 

@@ -30,10 +30,9 @@ internal class ArticlePage : UsedeskFragment(), IOnArticlePagesListener {
             inflater,
             container,
             R.layout.usedesk_page_article_content,
-            R.style.Usedesk_KnowledgeBase_Article_Content_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_KnowledgeBase_Article_Content_Page,
+            ::Binding
+        )
 
         argsGetLong(CATEGORY_ID_KEY)?.let { categoryId ->
             argsGetLong(ARTICLE_ID_KEY)?.let { articleId ->

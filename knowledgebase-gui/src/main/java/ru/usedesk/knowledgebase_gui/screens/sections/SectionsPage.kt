@@ -30,10 +30,9 @@ internal class SectionsPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_list,
-            R.style.Usedesk_KnowledgeBase_Sections_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_KnowledgeBase_Sections_Page,
+            ::Binding
+        )
 
         sectionsAdapter = SectionsAdapter(
             binding.rvItems,

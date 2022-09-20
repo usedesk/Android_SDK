@@ -32,10 +32,9 @@ internal class LoadingPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_loading,
-            R.style.Usedesk_Chat_Screen_Loading_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_Chat_Screen_Loading_Page,
+            ::Binding
+        )
 
         loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoadingBinding)
 

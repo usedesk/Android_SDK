@@ -33,17 +33,14 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_screen_show_file,
-            R.style.Usedesk_Chat_Show_File
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_Chat_Show_File,
+            ::Binding
+        )
 
         downloadStatusStyleValues = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
 
-        binding.ivBack.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
+        binding.ivBack.setOnClickListener { requireActivity().onBackPressed() }
 
         binding.ivShare.setOnClickListener {
             onShareFile(viewModel.modelFlow.value.file)
@@ -58,9 +55,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             }
         }
 
-        binding.ivError.setOnClickListener {
-            viewModel.onRetryPreview()
-        }
+        binding.ivError.setOnClickListener { viewModel.onRetryPreview() }
 
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)

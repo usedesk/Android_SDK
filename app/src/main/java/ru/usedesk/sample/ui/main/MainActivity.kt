@@ -95,6 +95,12 @@ class MainActivity : AppCompatActivity(),
         navController = navHostFragment.navController
 
         viewModel.modelFlow.onEachWithOld(lifecycleScope) { old, new ->
+            if (old?.first != new.first || old?.second != new.second) {
+                when {
+                    !new.first -> viewModel.first()
+                    !new.second -> viewModel.second()
+                }
+            }
             if (old?.configuration != new.configuration) {
                 initUsedeskService(new.configuration)
             }

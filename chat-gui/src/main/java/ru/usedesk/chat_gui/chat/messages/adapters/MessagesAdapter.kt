@@ -83,7 +83,6 @@ internal class MessagesAdapter(
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy != 0) {
-                        updateToBottomButton()
                         updateFloatingDate()
                         updateFirstVisibleIndex()
                     }
@@ -95,7 +94,6 @@ internal class MessagesAdapter(
                 onMessages(new.chatItems)
             }
         }
-        updateToBottomButton()
         updateFloatingDate()
         updateFirstVisibleIndex()
     }
@@ -104,7 +102,7 @@ internal class MessagesAdapter(
         val topItemIndex = layoutManager.findLastVisibleItemPosition()
         if (topItemIndex >= 0) {
             val bottomItemIndex = layoutManager.findFirstVisibleItemPosition()
-            viewModel.onMessagesShowed(bottomItemIndex..topItemIndex)
+            viewModel.onIntent(Intent.MessagesShowed(bottomItemIndex..topItemIndex))
         }
     }
 
@@ -139,12 +137,10 @@ internal class MessagesAdapter(
 
                 val floatingDateParentRect = dateBinding.rootView.makeGlobalVisibleRect()
                 val topDateRect = topDateHolder?.binding?.rootView?.makeGlobalVisibleRect()
-                val notVisibleDateIndex = if (topDateRect != null &&
-                    topDateRect.bottom <= floatingDateParentRect.bottom
-                ) {
-                    topDateIndex
-                } else {
-                    (topIndex + 1 until itemCount).firstOrNull { i ->
+                val notVisibleDateIndex = when {
+                    topDateRect != null &&
+                            topDateRect.bottom <= floatingDateParentRect.bottom -> topDateIndex
+                    else -> (topIndex + 1 until itemCount).firstOrNull { i ->
                         items.getOrNull(i) is ChatDate
                     } ?: -1
                 }
@@ -155,13 +151,12 @@ internal class MessagesAdapter(
                     val text = getDateText(targetDate)
                     dateBinding.tvDate.text = text
                     dateBinding.rootView.visibility = View.VISIBLE
-                    dateBinding.rootView.y = if (topDateRect != null &&
-                        topDateRect.top < floatingDateParentRect.bottom &&
-                        topDateRect.bottom > floatingDateParentRect.bottom
-                    ) {
-                        topDateRect.top - floatingDateParentRect.bottom
-                    } else {
-                        0
+                    dateBinding.rootView.y = when {
+                        topDateRect != null &&
+                                topDateRect.top < floatingDateParentRect.bottom &&
+                                topDateRect.bottom > floatingDateParentRect.bottom ->
+                            topDateRect.top - floatingDateParentRect.bottom
+                        else -> 0
                     }.toFloat()
 
                     (recyclerView.findViewHolderForAdapterPosition(
@@ -178,20 +173,11 @@ internal class MessagesAdapter(
         this.getGlobalVisibleRect(it)
     }
 
-    private fun updateToBottomButton() {
-        viewModel.showToBottomButton(
-            recyclerView.height > 0 &&
-                    items.isNotEmpty() &&
-                    !isAtBottom()
-        )
-    }
-
     private fun isAtBottom(): Boolean {
         val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
         val contentHeight = recyclerView.computeVerticalScrollRange()
         return visibleBottom >= contentHeight
     }
-
 
     private fun ChatMessage.isIdEquals(otherMessage: ChatMessage): Boolean {
         return (message.id == otherMessage.message.id) ||
@@ -257,133 +243,126 @@ internal class MessagesAdapter(
             recyclerView.post {
                 stateRestorationPolicy = StateRestorationPolicy.ALLOW
                 recyclerView.post {
-                    updateToBottomButton()
                     updateFloatingDate()
                     updateFirstVisibleIndex()
                 }
             }
         }
-        var isScrollToBottom = false
-        if (oldItems.isEmpty()) {
-            if (!saved) {
-                isScrollToBottom = true
-            }
-        } else {
-            isScrollToBottom = isAtBottom()
+        val isScrollToBottom = when {
+            oldItems.isEmpty() -> !saved
+            else -> isAtBottom()
         }
         if (isScrollToBottom) {
             recyclerView.scrollToPosition(0)
-        } else {
-            updateToBottomButton()
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return when (viewType) {
-            R.layout.usedesk_item_chat_date ->
-                DateViewHolder(inflateItem(
+            R.layout.usedesk_item_chat_date -> DateViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Date
-                ) { rootView, defaultStyleId ->
-                    DateBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_loading ->
-                LoadingViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Date,
+                    ::DateBinding
+                )
+            )
+            R.layout.usedesk_item_chat_loading -> LoadingViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Loading
-                ) { rootView, defaultStyleId ->
-                    UsedeskBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_text_agent ->
-                MessageTextAgentViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Loading,
+                    ::UsedeskBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_text_agent -> MessageTextAgentViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Text_Agent
-                ) { rootView, defaultStyleId ->
-                    MessageTextAgentBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_file_agent ->
-                MessageFileAgentViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Text_Agent,
+                    ::MessageTextAgentBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_file_agent -> MessageFileAgentViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_File_Agent
-                ) { rootView, defaultStyleId ->
-                    MessageFileAgentBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_image_agent ->
-                MessageImageAgentViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_File_Agent,
+                    ::MessageFileAgentBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_image_agent -> MessageImageAgentViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Image_Agent
-                ) { rootView, defaultStyleId ->
-                    MessageImageAgentBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_video_agent ->
-                MessageVideoAgentViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Image_Agent,
+                    ::MessageImageAgentBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_video_agent -> MessageVideoAgentViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Video_Agent
-                ) { rootView, defaultStyleId ->
-                    MessageVideoAgentBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_audio_agent ->
-                MessageAudioAgentViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Video_Agent,
+                    ::MessageVideoAgentBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_audio_agent -> MessageAudioAgentViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Audio_Agent
-                ) { rootView, defaultStyleId ->
-                    MessageAudioAgentBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_text_client ->
-                MessageTextClientViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Audio_Agent,
+                    ::MessageAudioAgentBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_text_client -> MessageTextClientViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Text_Client
-                ) { rootView, defaultStyleId ->
-                    MessageTextClientBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_file_client ->
-                MessageFileClientViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Text_Client,
+                    ::MessageTextClientBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_file_client -> MessageFileClientViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_File_Client
-                ) { rootView, defaultStyleId ->
-                    MessageFileClientBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_image_client ->
-                MessageImageClientViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_File_Client,
+                    ::MessageFileClientBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_image_client -> MessageImageClientViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Image_Client
-                ) { rootView, defaultStyleId ->
-                    MessageImageClientBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_video_client ->
-                MessageVideoClientViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Image_Client,
+                    ::MessageImageClientBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_video_client -> MessageVideoClientViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Video_Client
-                ) { rootView, defaultStyleId ->
-                    MessageVideoClientBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_audio_client ->
-                MessageAudioClientViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Video_Client,
+                    ::MessageVideoClientBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_audio_client -> MessageAudioClientViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Audio_Client
-                ) { rootView, defaultStyleId ->
-                    MessageAudioClientBinding(rootView, defaultStyleId)
-                })
-            R.layout.usedesk_item_chat_message_agent_name ->
-                MessageAgentNameViewHolder(inflateItem(
+                    R.style.Usedesk_Chat_Message_Audio_Client,
+                    ::MessageAudioClientBinding
+                )
+            )
+            R.layout.usedesk_item_chat_message_agent_name -> MessageAgentNameViewHolder(
+                inflateItem(
                     parent,
                     viewType,
-                    R.style.Usedesk_Chat_Message_Text_Agent
-                ) { rootView, defaultStyleId ->
-                    MessageAgentNameBinding(rootView, defaultStyleId)
-                })
+                    R.style.Usedesk_Chat_Message_Text_Agent,
+                    ::MessageAgentNameBinding
+                )
+            )
             else -> throw RuntimeException("Unknown view type:$viewType")
         }
     }
@@ -454,10 +433,9 @@ internal class MessagesAdapter(
         private fun getDrawableIcon(attrId: Int): Drawable? {
             val id = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
                 .getIdOrZero(attrId)
-            return if (id != 0) {
-                tvTime.resources.getDrawable(id)
-            } else {
-                null
+            return when {
+                id != 0 -> tvTime.resources.getDrawable(id)
+                else -> null
             }
         }
 
@@ -473,18 +451,18 @@ internal class MessagesAdapter(
                     timeFormatText.length,
                     bounds
                 )
-                val iconWidth = if (isClient) {
-                    val maxWidth = max(
-                        sendingDrawable?.intrinsicWidth ?: 0,
-                        successfullyDrawable?.intrinsicWidth ?: 0
-                    )
-                    if (maxWidth > 0) {
-                        maxWidth + tvTime.compoundDrawablePadding
-                    } else {
-                        0
+                val iconWidth = when {
+                    isClient -> {
+                        val maxWidth = max(
+                            sendingDrawable?.intrinsicWidth ?: 0,
+                            successfullyDrawable?.intrinsicWidth ?: 0
+                        )
+                        when {
+                            maxWidth > 0 -> maxWidth + tvTime.compoundDrawablePadding
+                            else -> 0
+                        }
                     }
-                } else {
-                    0
+                    else -> 0
                 }
                 return tvTime.marginLeft +
                         tvTime.marginRight +
@@ -567,13 +545,10 @@ internal class MessagesAdapter(
                             inflate(R.menu.usedesk_messages_error_popup)
                             setOnMenuItemClickListener { item ->
                                 when (item.itemId) {
-                                    R.id.send_again -> {
-                                        viewModel.sendAgain(clientMessage.localId)
-                                    }
-                                    R.id.remove_message -> {
-                                        viewModel.removeMessage(clientMessage.localId)
-                                    }
-                                }
+                                    R.id.send_again -> Intent.SendAgain(clientMessage.localId)
+                                    R.id.remove_message -> Intent.RemoveMessage(clientMessage.localId)
+                                    else -> null
+                                }?.let(viewModel::onIntent)
                                 true
                             }
                             show()
@@ -588,10 +563,9 @@ internal class MessagesAdapter(
             vEmpty: View,
             isClient: Boolean
         ) {
-            val last = if (isClient) {
-                items.getOrNull(adapterPosition + 1) is UsedeskMessageAgent
-            } else {
-                items.getOrNull(adapterPosition + 1) is UsedeskMessageClient
+            val last = when {
+                isClient -> items.getOrNull(adapterPosition + 1) is UsedeskMessageAgent
+                else -> items.getOrNull(adapterPosition + 1) is UsedeskMessageClient
             }
             vEmpty.visibility = visibleGone(last)
         }
@@ -701,15 +675,18 @@ internal class MessagesAdapter(
                     messageFile.file.content,
                     loadingImageId,
                     binding.pbLoading,
-                    binding.ivError, {
+                    binding.ivError,
+                    onSuccess = {
                         binding.ivPreview.setOnClickListener {
                             onFileClick(messageFile.file)
                         }
-                    }, {
+                    },
+                    onError = {
                         binding.ivError.setOnClickListener {
                             bindImage(chatItem)
                         }
-                    })
+                    }
+                )
             } else {
                 showImage(
                     binding.ivPreview,
@@ -766,9 +743,7 @@ internal class MessagesAdapter(
                 showPlay = true,
             )
 
-            val doOnCancelPlay = {
-                showPreview()
-            }
+            val doOnCancelPlay = this::showPreview
 
             val doOnControlsVisibilityChanged: ((Int) -> Unit) = { height ->
                 binding.tvTime.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -883,21 +858,13 @@ internal class MessagesAdapter(
         private fun bindAudio(messageFile: UsedeskMessageFile) {
             this.usedeskFile = messageFile.file
 
-            changeElements(
-                stub = true
-            )
+            changeElements(stub = true)
 
             binding.exoPosition.text = ""
 
-            binding.tvDownload.setOnClickListener {
-                onFileDownloadClick(usedeskFile)
-            }
+            binding.tvDownload.setOnClickListener { onFileDownloadClick(usedeskFile) }
 
-            val doOnCancel = {
-                changeElements(
-                    stub = true
-                )
-            }
+            val doOnCancel = { changeElements(stub = true) }
 
             binding.ivExoPlay.setOnClickListener {
                 mediaPlayerAdapter.attachPlayer(
@@ -920,9 +887,7 @@ internal class MessagesAdapter(
             }
         }
 
-        private fun changeElements(
-            stub: Boolean = false
-        ) {
+        private fun changeElements(stub: Boolean = false) {
             binding.lStub.visibility = visibleGone(stub)
         }
     }
@@ -991,12 +956,10 @@ internal class MessagesAdapter(
         override fun bind(chatItem: ChatItem) {}
     }
 
-    private fun getDateText(chatDate: ChatDate): String {
-        return when {
-            isToday(chatDate.calendar) -> todayText
-            isYesterday(chatDate.calendar) -> yesterdayText
-            else -> dateFormat.format(chatDate.calendar.time)
-        }
+    private fun getDateText(chatDate: ChatDate) = when {
+        isToday(chatDate.calendar) -> todayText
+        isYesterday(chatDate.calendar) -> yesterdayText
+        else -> dateFormat.format(chatDate.calendar.time)
     }
 
     internal inner class MessageTextAgentViewHolder(
@@ -1014,10 +977,9 @@ internal class MessagesAdapter(
             .getString(R.attr.usedesk_text_1)
 
         private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
-            if (it.url.isNotEmpty()) {
-                onUrlClick(it.url)
-            } else {
-                viewModel.onSendButton(it.text)
+            when {
+                it.url.isNotEmpty() -> onUrlClick(it.url)
+                else -> viewModel.onIntent(Intent.ButtonSend(it.text))
             }
         }
 
@@ -1033,13 +995,11 @@ internal class MessagesAdapter(
             buttonsAdapter.update(messageAgentText.buttons)
 
             binding.content.rootView.layoutParams.apply {
-                width = if (messageAgentText.buttons.isEmpty()
-                    && !messageAgentText.feedbackNeeded
-                    && messageAgentText.feedback == null
-                ) {
-                    FrameLayout.LayoutParams.WRAP_CONTENT
-                } else {
-                    FrameLayout.LayoutParams.MATCH_PARENT
+                width = when {
+                    messageAgentText.buttons.isEmpty()
+                            && !messageAgentText.feedbackNeeded
+                            && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
+                    else -> FrameLayout.LayoutParams.MATCH_PARENT
                 }
             }
 
@@ -1081,7 +1041,12 @@ internal class MessagesAdapter(
                         goodImage,
                         goodColoredImage
                     ) {
-                        viewModel.sendFeedback(messageAgentText, UsedeskFeedback.LIKE)
+                        viewModel.onIntent(
+                            Intent.SendFeedback(
+                                messageAgentText,
+                                UsedeskFeedback.LIKE
+                            )
+                        )
                         binding.content.tvText.text = thanksText
                     }
 
@@ -1093,7 +1058,12 @@ internal class MessagesAdapter(
                         badImage,
                         badColoredImage
                     ) {
-                        viewModel.sendFeedback(messageAgentText, UsedeskFeedback.DISLIKE)
+                        viewModel.onIntent(
+                            Intent.SendFeedback(
+                                messageAgentText,
+                                UsedeskFeedback.DISLIKE
+                            )
+                        )
                         binding.content.tvText.text = thanksText
                     }
                 }

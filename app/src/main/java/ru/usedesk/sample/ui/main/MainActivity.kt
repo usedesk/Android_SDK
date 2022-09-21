@@ -299,8 +299,8 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    override fun goToSdk() {
-        viewModel.goSdk()
+    override fun goToSdk(configuration: Configuration) {
+        viewModel.goSdk(configuration)
     }
 
     override fun onClientToken(clientToken: String) {

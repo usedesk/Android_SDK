@@ -34,14 +34,16 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
         setModel { copy(second = true) }
     }
 
-    fun goSdk() {
+    fun goSdk(configuration: Configuration) {
         setModel {
             val usedeskChatConfiguration = configuration.toChatConfiguration()
             when {
                 usedeskChatConfiguration.validate().isAllValid() -> copy(
+                    configuration = configuration,
                     goSdk = UsedeskSingleLifeEvent(configuration.withKb)
                 )
                 else -> copy(
+                    configuration = configuration,
                     error = UsedeskSingleLifeEvent("Invalid configuration")
                 )
             }

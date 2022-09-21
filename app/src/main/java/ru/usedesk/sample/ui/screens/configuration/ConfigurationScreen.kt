@@ -68,8 +68,9 @@ class ConfigurationScreen : UsedeskFragment() {
             }
         }
         binding.btnGoToSdk.setOnClickListener {
-            if (viewModel.onGoSdkClick(getConfiguration())) {
-                (activity as IOnGoToSdkListener?)?.goToSdk()
+            val configuration = getConfiguration()
+            if (viewModel.onGoSdkClick(configuration)) {
+                (activity as IOnGoToSdkListener?)?.goToSdk(configuration)
             }
         }
         binding.btnCreateChat.setOnClickListener {
@@ -384,6 +385,6 @@ class ConfigurationScreen : UsedeskFragment() {
     }
 
     interface IOnGoToSdkListener {
-        fun goToSdk()
+        fun goToSdk(configuration: Configuration)
     }
 }

@@ -4,11 +4,9 @@ internal abstract class Converter<FROM, TO> {
 
     abstract fun convert(from: FROM): TO
 
-    protected fun <T> convertOrNull(onConvert: () -> T?): T? {
-        return try {
-            onConvert()
-        } catch (e: Exception) {
-            null
-        }
+    protected fun <T> convertOrNull(onConvert: () -> T?): T? = try {
+        onConvert()
+    } catch (e: Exception) {
+        null
     }
 }

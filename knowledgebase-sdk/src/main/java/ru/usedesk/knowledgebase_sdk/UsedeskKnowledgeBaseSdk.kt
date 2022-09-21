@@ -15,28 +15,21 @@ object UsedeskKnowledgeBaseSdk {
     }
 
     @JvmStatic
-    fun requireConfiguration(): UsedeskKnowledgeBaseConfiguration {
-        return configuration
-            ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
-    }
+    fun requireConfiguration(): UsedeskKnowledgeBaseConfiguration = configuration
+        ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
 
     @JvmStatic
-    fun init(context: Context): IUsedeskKnowledgeBase {
-        return (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
+    fun init(context: Context): IUsedeskKnowledgeBase =
+        (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
             injectBox = it
         }).knowledgeBaseInteractor
-    }
 
     @JvmStatic
-    fun getInstance(): IUsedeskKnowledgeBase? {
-        return injectBox?.knowledgeBaseInteractor
-    }
+    fun getInstance(): IUsedeskKnowledgeBase? = injectBox?.knowledgeBaseInteractor
 
     @JvmStatic
-    fun requireInstance(): IUsedeskKnowledgeBase {
-        return getInstance()
-            ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
-    }
+    fun requireInstance(): IUsedeskKnowledgeBase = getInstance()
+        ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.init(...) before")
 
     @JvmStatic
     fun release() {

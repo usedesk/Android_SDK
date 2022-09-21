@@ -16,9 +16,7 @@ import ru.usedesk.common_gui.inflateItem
 internal class LoadingPage : UsedeskFragment() {
 
     private val viewModel: LoadingViewModel by viewModels(
-        ownerProducer = {
-            requireChatViewModelStoreOwner()
-        }
+        ownerProducer = this@LoadingPage::requireChatViewModelStoreOwner
     )
 
     private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
@@ -34,10 +32,9 @@ internal class LoadingPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_loading,
-            R.style.Usedesk_Chat_Screen_Loading_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_Chat_Screen_Loading_Page,
+            ::Binding
+        )
 
         loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoadingBinding)
 
@@ -47,7 +44,7 @@ internal class LoadingPage : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
             }

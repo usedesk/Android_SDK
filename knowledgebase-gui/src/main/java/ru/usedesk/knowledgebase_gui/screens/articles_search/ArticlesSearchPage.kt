@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.*
@@ -37,10 +38,9 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_list,
-            R.style.Usedesk_KnowledgeBase_Articles_Search_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
+            R.style.Usedesk_KnowledgeBase_Articles_Search_Page,
+            ::Binding
+        ).apply {
             tvMessage.text = styleValues
                 .getStyleValues(R.attr.usedesk_knowledgebase_list_page_message_text)
                 .getString(R.attr.usedesk_text_1)
@@ -51,7 +51,7 @@ internal class ArticlesSearchPage : UsedeskFragment() {
         articlesSearchAdapter = ArticlesSearchAdapter(
             binding.rvItems,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         ) { articleContent ->
             findNavController().navigate(
                 R.id.action_articlesSearchPage_to_articlePage,
@@ -63,25 +63,21 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             )
         }
 
-        parentViewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        parentViewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.searchQuery != new.searchQuery) {
                 viewModel.onSearchQuery(new.searchQuery)
             }
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
                 when (new.state) {
-                    State.LOADED -> {
-                        updateVisible(
-                            showMessage = new.articles.isEmpty(),
-                            showItems = new.articles.isNotEmpty()
-                        )
-                    }
-                    else -> {
-                        updateVisible()
-                    }
+                    State.LOADED -> updateVisible(
+                        showMessage = new.articles.isEmpty(),
+                        showItems = new.articles.isNotEmpty()
+                    )
+                    else -> updateVisible()
                 }
             }
         }

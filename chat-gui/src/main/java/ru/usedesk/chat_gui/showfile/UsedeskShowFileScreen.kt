@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.showfile
 
 import android.content.ClipData
+import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -33,24 +34,21 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_screen_show_file,
-            R.style.Usedesk_Chat_Show_File
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_Chat_Show_File,
+            ::Binding
+        )
 
         downloadStatusStyleValues = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
 
-        binding.ivBack.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
+        binding.ivBack.setOnClickListener { requireActivity().onBackPressed() }
 
         binding.ivShare.setOnClickListener {
-            onShareFile(viewModel.modelLiveData.value.file)
+            onShareFile(viewModel.modelFlow.value.file)
         }
 
         binding.ivDownload.setOnClickListener {
-            viewModel.modelLiveData.value.file?.let { file ->
+            viewModel.modelFlow.value.file?.let { file ->
                 findParent<IUsedeskOnDownloadListener>()?.onDownload(
                     file.content,
                     file.name
@@ -58,9 +56,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             }
         }
 
-        binding.ivError.setOnClickListener {
-            viewModel.onRetryPreview()
-        }
+        binding.ivError.setOnClickListener { viewModel.onRetryPreview() }
 
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
@@ -77,7 +73,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             viewModel.init(file)
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.file != new.file ||
                 old?.error != new.error && !new.error
             ) {
@@ -131,7 +127,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = usedeskFile.type
                 val uri = Uri.parse(usedeskFile.content)
-                if (uri.scheme == "file" || uri.scheme == "content") {
+                if (uri.scheme == ContentResolver.SCHEME_FILE || uri.scheme == ContentResolver.SCHEME_CONTENT) {
                     val providerUri = toProviderUri(uri)
                     clipData = ClipData.newRawUri("", providerUri)
                     putExtra(Intent.EXTRA_STREAM, providerUri)

@@ -13,9 +13,7 @@ internal class TokenLoader(
         Context.MODE_PRIVATE
     )
 
-    override fun loadData(): String? {
-        return sharedPreferences.getString(KEY_TOKEN, null)
-    }
+    override fun loadData() = sharedPreferences.getString(KEY_TOKEN, null)
 
     override fun saveData(data: String) {
         sharedPreferences.edit()

@@ -3,7 +3,7 @@ package ru.usedesk.chat_gui.chat.offlineform
 import android.text.InputType
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,12 +14,13 @@ import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
 import ru.usedesk.common_gui.UsedeskCommonFieldListAdapter
 import ru.usedesk.common_gui.UsedeskCommonFieldTextAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 
 internal class OfflineFormFieldsAdapter(
     recyclerView: RecyclerView,
     binding: OfflineFormPage.Binding,
     private val viewModel: OfflineFormViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val onListFieldClick: (String) -> Unit
 ) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder<*>>() {
 
@@ -36,7 +37,7 @@ internal class OfflineFormFieldsAdapter(
             layoutManager = LinearLayoutManager(recyclerView.context)
             itemAnimator = null
         }
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.allFields != new.allFields) {
                 val oldItems = items
                 val newItems = new.allFields
@@ -71,26 +72,25 @@ internal class OfflineFormFieldsAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> =
-        when (viewType) {
-            R.layout.usedesk_item_field_text -> TextViewHolder(
-                inflateItem(
-                    parent,
-                    R.layout.usedesk_item_field_text,
-                    textFieldStyle,
-                    UsedeskCommonFieldTextAdapter::Binding
-                )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.usedesk_item_field_text -> TextViewHolder(
+            inflateItem(
+                parent,
+                R.layout.usedesk_item_field_text,
+                textFieldStyle,
+                UsedeskCommonFieldTextAdapter::Binding
             )
-            R.layout.usedesk_item_field_list -> ListViewHolder(
-                inflateItem(
-                    parent,
-                    R.layout.usedesk_item_field_list,
-                    listFieldStyle,
-                    UsedeskCommonFieldListAdapter::Binding
-                )
+        )
+        R.layout.usedesk_item_field_list -> ListViewHolder(
+            inflateItem(
+                parent,
+                R.layout.usedesk_item_field_list,
+                listFieldStyle,
+                UsedeskCommonFieldListAdapter::Binding
             )
-            else -> throw RuntimeException("Unknown list type")
-        }
+        )
+        else -> throw RuntimeException("Unknown list type")
+    }
 
     override fun onBindViewHolder(holderText: BaseViewHolder<*>, position: Int) {
         val item = items[position]

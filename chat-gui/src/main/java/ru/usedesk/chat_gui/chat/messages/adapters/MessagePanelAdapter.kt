@@ -3,17 +3,18 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskTextChangeListener
+import ru.usedesk.common_gui.onEachWithOld
 
 internal class MessagePanelAdapter(
     private val binding: Binding,
     private val viewModel: MessagesViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     onClickAttach: View.OnClickListener
 ) {
     private val attachedFilesAdapter: AttachedFilesAdapter
@@ -26,29 +27,28 @@ internal class MessagePanelAdapter(
         attachedFilesAdapter = AttachedFilesAdapter(
             binding.rvAttachedFiles,
             viewModel,
-            lifecycleOwner
+            lifecycleCoroutineScope
         )
 
         binding.etMessage.run {
-            setText(viewModel.modelLiveData.value.messageDraft.text)
+            setText(viewModel.modelFlow.value.messageDraft.text)
             addTextChangedListener(UsedeskTextChangeListener {
-                viewModel.onMessageChanged(it)
+                viewModel.onIntent(MessagesViewModel.Intent.MessageChanged(it))
             })
         }
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.messageDraft?.isNotEmpty != new.messageDraft.isNotEmpty) {
                 binding.ivSend.isEnabled = new.messageDraft.isNotEmpty
-                binding.ivSend.alpha = binding.sendAlpha * if (new.messageDraft.isNotEmpty) {
-                    1f
-                } else {
-                    0.5f
+                binding.ivSend.alpha = binding.sendAlpha * when {
+                    new.messageDraft.isNotEmpty -> 1f
+                    else -> 0.5f
                 }
             }
         }
     }
 
     private fun onSendClick() {
-        viewModel.onSend()
+        viewModel.onIntent(MessagesViewModel.Intent.SendDraft)
         binding.etMessage.setText("")
     }
 

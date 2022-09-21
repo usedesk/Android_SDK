@@ -3,18 +3,19 @@ package ru.usedesk.knowledgebase_gui.screens.articles
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 internal class ArticlesAdapter(
     recyclerView: RecyclerView,
     viewModel: ArticlesViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val onArticleInfoClick: (UsedeskArticleInfo) -> Unit
 ) : RecyclerView.Adapter<ArticlesAdapter.ArticleViewHolder>() {
 
@@ -22,7 +23,7 @@ internal class ArticlesAdapter(
 
     init {
         recyclerView.adapter = this
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.articleInfoList != new.articleInfoList) {
                 val oldItems = items
                 val newItems = new.articleInfoList
@@ -56,15 +57,14 @@ internal class ArticlesAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
-        return ArticleViewHolder(inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = ArticleViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_article_info,
-            R.style.Usedesk_KnowledgeBase_Articles_Page_Article
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        })
-    }
+            R.style.Usedesk_KnowledgeBase_Articles_Page_Article,
+            ::Binding
+        )
+    )
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
         articleViewHolder.bind(items[i])
@@ -78,9 +78,7 @@ internal class ArticlesAdapter(
 
         fun bind(articleInfo: UsedeskArticleInfo) {
             binding.tvTitle.text = articleInfo.title
-            binding.lClickable.setOnClickListener {
-                onArticleInfoClick(articleInfo)
-            }
+            binding.lClickable.setOnClickListener { onArticleInfoClick(articleInfo) }
         }
     }
 

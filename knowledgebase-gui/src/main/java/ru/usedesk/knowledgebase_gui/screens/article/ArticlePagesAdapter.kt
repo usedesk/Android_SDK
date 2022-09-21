@@ -3,8 +3,9 @@ package ru.usedesk.knowledgebase_gui.screens.article
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.viewpager.widget.ViewPager
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.knowledgebase_gui.screens.article.item.ArticleItem
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
@@ -12,7 +13,7 @@ internal class ArticlePagesAdapter(
     private val viewPager: ViewPager,
     fragmentManager: FragmentManager,
     private val viewModel: ArticlePageViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val withArticleRating: Boolean
 ) : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
@@ -37,7 +38,7 @@ internal class ArticlePagesAdapter(
         })
         viewPager.adapter = this
 
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.articles != new.articles) {
                 items = new.articles
 

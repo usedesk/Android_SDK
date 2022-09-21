@@ -3,13 +3,14 @@ package ru.usedesk.chat_gui.chat.messages
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.*
@@ -25,13 +26,12 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileSize
 
 internal class MessagesPage : UsedeskFragment() {
 
     private val viewModel: MessagesViewModel by viewModels(
-        ownerProducer = {
-            requireChatViewModelStoreOwner()
-        }
+        ownerProducer = this@MessagesPage::requireChatViewModelStoreOwner
     )
 
     private lateinit var binding: Binding
@@ -44,18 +44,15 @@ internal class MessagesPage : UsedeskFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_page_messages,
-            R.style.Usedesk_Chat_Screen_Messages_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
-
-        return binding.rootView
-    }
+    ) = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_page_messages,
+        R.style.Usedesk_Chat_Screen_Messages_Page,
+        ::Binding
+    ).also {
+        binding = it
+    }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -80,7 +77,7 @@ internal class MessagesPage : UsedeskFragment() {
 
         attachmentDialog = UsedeskAttachmentDialog.create(this).apply {
             setOnDismissListener {
-                viewModel.showAttachmentPanel(false)
+                viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(false))
             }
         }
 
@@ -94,23 +91,21 @@ internal class MessagesPage : UsedeskFragment() {
             attachFiles(files)
         }
         registerCamera {
-            viewModel.useCameraFile { cameraFile ->
+            useCameraFile { cameraFile ->
                 if (it) {
                     val file = UsedeskFileInfo.create(
                         requireContext(),
-                        Uri.fromFile(cameraFile)
+                        cameraFile.toUri()
                     )
                     attachFiles(setOf(file))
                 }
             }
         }
         registerCameraPermission {
-            val cameraFile = generateCameraFile()
-            viewModel.setCameraFile(cameraFile)
-            startCamera(cameraFile)
+            startCamera(generateCameraFile())
         }
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
                 if (new.attachmentPanelVisible) {
                     attachmentDialog?.show()
@@ -121,54 +116,23 @@ internal class MessagesPage : UsedeskFragment() {
 
     private fun attachFiles(files: Set<UsedeskFileInfo>) {
         val filteredFiles = files.filter { fileInfo ->
-            try {
-                var size = -1L
-                when (fileInfo.uri.scheme) {
-                    "content" -> {
-                        requireContext().contentResolver.query(
-                            fileInfo.uri,
-                            null,
-                            null,
-                            null,
-                            null
-                        )?.use { cursor ->
-                            if (cursor.moveToFirst()) {
-                                val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
-                                size = cursor.getLong(columnIndex)
-                            }
-                        }
-                    }
-                    "file" -> {
-                        requireContext().contentResolver.openAssetFileDescriptor(
-                            fileInfo.uri,
-                            "r"
-                        )?.use {
-                            size = it.length
-                        }
-                    }
-                }
-                return@filter size in 0..MAX_FILE_SIZE
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            false
+            val size = requireContext().getFileSize(fileInfo.uri)
+            return@filter size in 0..MAX_FILE_SIZE
         }.toSet()
 
         val rejectedFiles = files - filteredFiles
         if (rejectedFiles.isNotEmpty()) {
             val message = getString(
-                if (rejectedFiles.size == 1) {
-                    R.string.usedesk_file_size_exceeds
-                } else {
-                    R.string.usedesk_files_size_exceeds
-                }, MAX_FILE_SIZE_MB
+                when (rejectedFiles.size) {
+                    1 -> R.string.usedesk_file_size_exceeds
+                    else -> R.string.usedesk_files_size_exceeds
+                },
+                MAX_FILE_SIZE_MB
             )
-            val toastText = message + "\n" + rejectedFiles.joinToString(separator = "\n") {
-                it.name
-            }
+            val toastText = "$message\n" + rejectedFiles.joinToString(separator = "\n") { it.name }
             Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
         }
-        viewModel.attachFiles(filteredFiles)
+        viewModel.onIntent(MessagesViewModel.Intent.AttachFiles(filteredFiles))
     }
 
     override fun onDestroyView() {
@@ -192,16 +156,16 @@ internal class MessagesPage : UsedeskFragment() {
         adaptiveTextMessageTimePadding: Boolean,
         groupAgentMessages: Boolean
     ) {
-        viewModel.groupAgentMessages = groupAgentMessages
+        viewModel.onIntent(MessagesViewModel.Intent.Init(groupAgentMessages))
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
             binding.messagePanel,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         ) {
             findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-                ?: viewModel.showAttachmentPanel(true)
+                ?: viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(true))
         }
 
         val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter
@@ -210,17 +174,13 @@ internal class MessagesPage : UsedeskFragment() {
             binding.rvMessages,
             binding.dateBinding,
             viewModel,
-            viewLifecycleOwner,
+            lifecycleScope,
             agentName,
             rejectedFileExtensions,
-            mediaPlayerAdapter, {
-                findParent<IUsedeskOnFileClickListener>()?.onFileClick(it)
-            }, {
-                findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it)
-                    ?: onUrlClick(it)
-            }, {
-                findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name)
-            },
+            mediaPlayerAdapter,
+            { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
+            { findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it) },
+            { findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name) },
             messagesDateFormat,
             messageTimeFormat,
             adaptiveTextMessageTimePadding,
@@ -233,10 +193,9 @@ internal class MessagesPage : UsedeskFragment() {
             binding.tvToBottom,
             binding.styleValues,
             viewModel,
-            viewLifecycleOwner
-        ) {
-            messagesAdapter?.scrollToBottom()
-        }
+            lifecycleScope,
+            onClickListener = { messagesAdapter?.scrollToBottom() }
+        )
     }
 
     private fun onUrlClick(url: String) {
@@ -262,10 +221,9 @@ internal class MessagesPage : UsedeskFragment() {
 
         private fun getDateBinding(rootView: ViewGroup): DateBinding {
             val dateView = rootView.findViewWithTag<View>(DATE_ITEM_VIEW_TAG)
-            return if (dateView != null) {
-                DateBinding(dateView, R.style.Usedesk_Chat_Date)
-            } else {
-                inflateItem(
+            return when {
+                dateView != null -> DateBinding(dateView, R.style.Usedesk_Chat_Date)
+                else -> inflateItem(
                     rootView,
                     R.layout.usedesk_item_chat_date,
                     R.style.Usedesk_Chat_Date

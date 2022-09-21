@@ -186,7 +186,7 @@ internal class CachedMessagesInteractor(
     }
 
     private fun findUserKey(): String? {
-        val config = userInfoRepository.getConfigurationNullable(this.configuration)
+        val config = userInfoRepository.getConfiguration(this.configuration)
             ?: configuration
         val token = config.clientToken
         return if (token?.isNotEmpty() == true) {

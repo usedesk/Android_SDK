@@ -5,11 +5,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 internal interface IConfigurationLoader {
     fun initLegacyData(onGetClientToken: () -> String?)
 
-    fun loadData(): Array<UsedeskChatConfiguration>?
-
-    fun getData(): Array<UsedeskChatConfiguration>
-
-    fun getDataNullable(): Array<UsedeskChatConfiguration>?
+    fun getData(): Array<UsedeskChatConfiguration>?
 
     fun setData(data: Array<UsedeskChatConfiguration>?)
 

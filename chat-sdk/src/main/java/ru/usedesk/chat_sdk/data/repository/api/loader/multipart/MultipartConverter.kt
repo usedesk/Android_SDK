@@ -17,9 +17,9 @@ internal class MultipartConverter(
             is String -> MultipartBody.Part.createFormData(pair.key, value)
             is Long -> MultipartBody.Part.createFormData(pair.key, value.toString())
             is Uri -> {
-                val mimeType = getMimeType(contentResolver, value)
+                val mimeType = contentResolver.getMimeType(value)
                 val mediaType = MediaType.parse(mimeType)
-                val name = getFileName(contentResolver, value)
+                val name = contentResolver.getFileName(value)
                 val requestBody = RequestBody.create(mediaType, value.toFile())
                 MultipartBody.Part.createFormData(pair.key, name, requestBody)
             }
@@ -32,9 +32,9 @@ internal class MultipartConverter(
         originalFile: String
     ): MultipartBody.Part {
         val uri = Uri.parse(originalFile)
-        val mimeType = getMimeType(contentResolver, uri)
+        val mimeType = contentResolver.getMimeType(uri)
         val mediaType = MediaType.parse(mimeType)
-        val name = getFileName(contentResolver, uri)
+        val name = contentResolver.getFileName(uri)
         val requestBody = RequestBody.create(mediaType, byteArray)
         return MultipartBody.Part.createFormData(key, name, requestBody)
     }

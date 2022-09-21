@@ -19,7 +19,8 @@ internal class MessageResponseConverter :
 
 
     fun convertText(text: String) = try {
-        text.split('\n')
+        text.trim('\n', '\r', ' ')
+            .split('\n')
             .asSequence()
             .map {
                 it.convertMarkdownUrls()

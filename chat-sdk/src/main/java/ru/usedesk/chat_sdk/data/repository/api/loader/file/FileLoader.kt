@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.file
 import android.content.Context
 import android.net.Uri
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
-import ru.usedesk.common_sdk.utils.UsedeskFileUtil
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
 import java.io.File
 import java.io.FileOutputStream
 
@@ -24,7 +24,7 @@ internal class FileLoader(
                     throw UsedeskDataNotFoundException("Can't read file: $inputUri")
                 }
 
-                val fileName = UsedeskFileUtil.getFileName(contentResolver, inputUri)
+                val fileName = contentResolver.getFileName(inputUri)
                 val name = "${System.currentTimeMillis()}${fileName.hashCode()}"
                 val newFileName = fileName.replaceBeforeLast(
                     '.',

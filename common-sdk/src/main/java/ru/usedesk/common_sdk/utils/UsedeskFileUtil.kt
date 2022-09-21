@@ -7,53 +7,87 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 
 object UsedeskFileUtil {
-    fun getFileName(context: Context, uri: Uri): String {
-        return getFileName(context.contentResolver, uri)
-    }
+    fun Context.getFileName(uri: Uri) = contentResolver.getFileName(uri)
 
-    fun getFileName(contentResolver: ContentResolver, uri: Uri): String {
-        var result: String? = null
-        if (uri.scheme == "content") {
-            contentResolver.query(
-                uri,
-                null,
-                null,
-                null,
-                null
-            )?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+    fun Context.getFileSize(uri: Uri) = contentResolver.getFileSize(uri)
+
+    fun Context.getMimeType(uri: Uri) = contentResolver.getMimeType(uri)
+
+    fun ContentResolver.getFileSize(uri: Uri): Long {
+        var size = -1L
+        try {
+            when (uri.scheme) {
+                ContentResolver.SCHEME_CONTENT -> query(
+                    uri,
+                    null,
+                    null,
+                    null,
+                    null
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
+                        size = cursor.getLong(columnIndex)
+                    }
+                }
+                ContentResolver.SCHEME_FILE -> openAssetFileDescriptor(
+                    uri,
+                    "r"
+                )?.use {
+                    size = it.length
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        if (result == null) {
-            uri.path?.also {
-                val cut = it.lastIndexOf('/')
-                result = if (cut >= 0) {
-                    it.substring(cut + 1)
-                } else {
-                    it
+        return size
+    }
+
+    fun ContentResolver.getFileName(uri: Uri): String {
+        var name: String? = null
+        if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+            try {
+                query(
+                    uri,
+                    null,
+                    null,
+                    null,
+                    null
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        name = cursor.getString(index)
+                    }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
-        return result ?: ""
+        if (name == null) {
+            try {
+                uri.path?.also {
+                    val cut = it.lastIndexOf('/')
+                    name = when {
+                        cut >= 0 -> it.substring(cut + 1)
+                        else -> it
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return name ?: ""
     }
 
-    fun getMimeType(context: Context, uri: Uri): String {
-        return getMimeType(context.contentResolver, uri)
-    }
-
-    fun getExtension(context: Context, uri: Uri): String {
-        val mimeType = getMimeType(context, uri)
-        return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: ""
-    }
-
-    fun getMimeType(contentResolver: ContentResolver, uri: Uri): String {
-        return if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
-            contentResolver.getType(uri)
-        } else {
-            val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString()).lowercase()
-            MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-        } ?: ""
-    }
+    fun ContentResolver.getMimeType(uri: Uri) = try {
+        when (uri.scheme) {
+            ContentResolver.SCHEME_CONTENT -> getType(uri)
+            else -> {
+                val extension = MimeTypeMap.getFileExtensionFromUrl(uri.toString()).lowercase()
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    } ?: ""
 }

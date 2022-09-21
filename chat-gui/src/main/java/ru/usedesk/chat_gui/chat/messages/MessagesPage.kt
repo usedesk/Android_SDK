@@ -3,12 +3,12 @@ package ru.usedesk.chat_gui.chat.messages
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +26,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileSize
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -94,15 +95,14 @@ internal class MessagesPage : UsedeskFragment() {
                 if (it) {
                     val file = UsedeskFileInfo.create(
                         requireContext(),
-                        Uri.fromFile(cameraFile)
+                        cameraFile.toUri()
                     )
                     attachFiles(setOf(file))
                 }
             }
         }
         registerCameraPermission {
-            val cameraFile = generateCameraFile()
-            startCamera(cameraFile)
+            startCamera(generateCameraFile())
         }
 
         viewModel.modelFlow.onEachWithOld { old, new ->
@@ -116,33 +116,8 @@ internal class MessagesPage : UsedeskFragment() {
 
     private fun attachFiles(files: Set<UsedeskFileInfo>) {
         val filteredFiles = files.filter { fileInfo ->
-            try {
-                var size = -1L
-                when (fileInfo.uri.scheme) {
-                    "content" -> requireContext().contentResolver.query(
-                        fileInfo.uri,
-                        null,
-                        null,
-                        null,
-                        null
-                    )?.use { cursor ->
-                        if (cursor.moveToFirst()) {
-                            val columnIndex = cursor.getColumnIndexOrThrow(OpenableColumns.SIZE)
-                            size = cursor.getLong(columnIndex)
-                        }
-                    }
-                    "file" -> requireContext().contentResolver.openAssetFileDescriptor(
-                        fileInfo.uri,
-                        "r"
-                    )?.use {
-                        size = it.length
-                    }
-                }
-                return@filter size in 0..MAX_FILE_SIZE
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            false
+            val size = requireContext().getFileSize(fileInfo.uri)
+            return@filter size in 0..MAX_FILE_SIZE
         }.toSet()
 
         val rejectedFiles = files - filteredFiles

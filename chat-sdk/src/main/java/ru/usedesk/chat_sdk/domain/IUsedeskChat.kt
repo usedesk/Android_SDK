@@ -61,7 +61,7 @@ interface IUsedeskChat {
      * @return
      * true - can load next messages page
      */
-    suspend fun loadPreviousMessagesPage(): Boolean
+    fun loadPreviousMessagesPage(): Boolean
 
     fun release()
 

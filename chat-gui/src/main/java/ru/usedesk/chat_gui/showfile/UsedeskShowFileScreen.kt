@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.showfile
 
 import android.content.ClipData
+import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -126,7 +127,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = usedeskFile.type
                 val uri = Uri.parse(usedeskFile.content)
-                if (uri.scheme == "file" || uri.scheme == "content") {
+                if (uri.scheme == ContentResolver.SCHEME_FILE || uri.scheme == ContentResolver.SCHEME_CONTENT) {
                     val providerUri = toProviderUri(uri)
                     clipData = ClipData.newRawUri("", providerUri)
                     putExtra(Intent.EXTRA_STREAM, providerUri)

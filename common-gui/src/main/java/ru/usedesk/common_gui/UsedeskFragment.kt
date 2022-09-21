@@ -1,6 +1,7 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
+import android.content.ContentResolver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -38,18 +39,16 @@ abstract class UsedeskFragment : Fragment() {
 
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
         cameraLauncher = cameraLauncher ?: registerForActivityResult(
-            ActivityResultContracts.TakePicture()
-        ) {
-            onCameraResult(it)
-        }
+            ActivityResultContracts.TakePicture(),
+            onCameraResult
+        )
     }
 
     fun registerFiles(onContentResult: (List<Uri>) -> Unit) {
         filesLauncher = filesLauncher ?: registerForActivityResult(
-            ActivityResultContracts.GetMultipleContents()
-        ) { uris ->
-            onContentResult(uris)
-        }
+            ActivityResultContracts.GetMultipleContents(),
+            onContentResult
+        )
     }
 
     fun needCameraPermission() {
@@ -116,17 +115,16 @@ abstract class UsedeskFragment : Fragment() {
         }
     }
 
-    protected fun toProviderUri(uri: Uri): Uri {
-        return if (uri.scheme == "file") {
+    protected fun toProviderUri(uri: Uri) = when (uri.scheme) {
+        ContentResolver.SCHEME_FILE -> {
             val applicationContext = requireContext().applicationContext
             FileProvider.getUriForFile(
                 applicationContext,
                 "${applicationContext.packageName}.provider",
                 uri.toFile()
             )
-        } else {
-            uri
         }
+        else -> uri
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {
@@ -135,62 +133,49 @@ abstract class UsedeskFragment : Fragment() {
 
     protected fun argsGetInt(key: String): Int? {
         val args = arguments
-        return if (args?.containsKey(key) == true) {
-            args.getInt(key)
-        } else {
-            null
+        return when {
+            args?.containsKey(key) == true -> args.getInt(key)
+            else -> null
         }
     }
 
-    protected fun argsGetLong(key: String, default: Long): Long {
-        return arguments?.getLong(key, default) ?: default
-    }
+    protected fun argsGetLong(key: String, default: Long): Long =
+        arguments?.getLong(key, default) ?: default
 
     protected fun argsGetLong(key: String): Long? {
         val args = arguments
-        return if (args?.containsKey(key) == true) {
-            args.getLong(key)
-        } else {
-            null
+        return when {
+            args?.containsKey(key) == true -> args.getLong(key)
+            else -> null
         }
     }
 
-    protected fun argsGetBoolean(key: String, default: Boolean): Boolean {
-        return arguments?.getBoolean(key, default) ?: default
-    }
+    protected fun argsGetBoolean(key: String, default: Boolean): Boolean =
+        arguments?.getBoolean(key, default) ?: default
 
     protected fun argsGetBoolean(key: String): Boolean? {
         val args = arguments
-        return if (args?.containsKey(key) == true) {
-            args.getBoolean(key)
-        } else {
-            null
+        return when {
+            args?.containsKey(key) == true -> args.getBoolean(key)
+            else -> null
         }
     }
 
-    protected fun argsGetString(key: String): String? {
-        return arguments?.getString(key)
-    }
+    protected fun argsGetString(key: String): String? = arguments?.getString(key)
 
-    protected fun argsGetString(key: String, default: String): String {
-        return argsGetString(key) ?: default
-    }
+    protected fun argsGetString(key: String, default: String): String =
+        argsGetString(key) ?: default
 
-    protected fun <T : Parcelable> argsGetParcelable(key: String): T? {
-        return arguments?.getParcelable(key)
-    }
+    protected fun <T : Parcelable> argsGetParcelable(key: String): T? =
+        arguments?.getParcelable(key)
 
-    protected fun <T : Parcelable> argsGetParcelable(key: String, default: T): T {
-        return argsGetParcelable(key) ?: default
-    }
+    protected fun <T : Parcelable> argsGetParcelable(key: String, default: T): T =
+        argsGetParcelable(key) ?: default
 
-    protected fun argsGetStringArray(key: String): Array<String>? {
-        return arguments?.getStringArray(key)
-    }
+    protected fun argsGetStringArray(key: String): Array<String>? = arguments?.getStringArray(key)
 
-    protected fun argsGetStringArray(key: String, default: Array<String>): Array<String> {
-        return argsGetStringArray(key) ?: default
-    }
+    protected fun argsGetStringArray(key: String, default: Array<String>): Array<String> =
+        argsGetStringArray(key) ?: default
 
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
         UsedeskSnackbar.create(
@@ -206,11 +191,12 @@ abstract class UsedeskFragment : Fragment() {
 
         var parent = parentFragment
         while (parent != null) {
-            if (parent is T) {
-                listener = parent
-                break
-            } else {
-                parent = parent.parentFragment
+            when (parent) {
+                is T -> {
+                    listener = parent
+                    break
+                }
+                else -> parent = parent.parentFragment
             }
         }
 

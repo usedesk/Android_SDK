@@ -793,40 +793,13 @@ internal class ChatInteractor(
     private val oldMutex = Mutex()
     private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
-    override suspend fun loadPreviousMessagesPage() = oldMutex.withLock {
-        oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
-    }?.await() ?: true
+    override fun loadPreviousMessagesPage() = runBlocking {
+        oldMutex.withLock {
+            oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
+        }?.await()
+    } ?: true
 
-    /*override suspend fun loadPreviousMessagesPage(): Boolean {
-        val messages = messagesSubject.value
-        val oldestMessageId = messages?.firstOrNull()?.id
-        val token = token
-        return when {
-            oldestMessageId != null && token != null -> try {
-                val hasUnloadedMessages = apiRepository.loadPreviousMessages(
-                    configuration,
-                    token,
-                    oldestMessageId
-                )
-                oldMutex.withLock {
-                    oldMessagesLoadDeferred = when {
-                        hasUnloadedMessages -> null
-                        else -> CompletableDeferred(false)
-                    }
-                }
-                hasUnloadedMessages
-            } catch (e: Exception) {
-                e.printStackTrace()
-                oldMutex.withLock {
-                    oldMessagesLoadDeferred = null
-                }
-                true
-            }
-            else -> true
-        }
-    }*/
-
-    private suspend fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
+    private fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
         val messages = messagesSubject.value
         val oldestMessageId = messages?.firstOrNull()?.id
         val token = token

@@ -2,6 +2,7 @@ package ru.usedesk.sample.ui.main
 
 import android.Manifest
 import android.app.DownloadManager
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -95,12 +96,6 @@ class MainActivity : AppCompatActivity(),
         navController = navHostFragment.navController
 
         viewModel.modelFlow.onEachWithOld(lifecycleScope) { old, new ->
-            if (old?.first != new.first || old?.second != new.second) {
-                when {
-                    !new.first -> viewModel.first()
-                    !new.second -> viewModel.second()
-                }
-            }
             if (old?.configuration != new.configuration) {
                 initUsedeskService(new.configuration)
             }
@@ -167,7 +162,7 @@ class MainActivity : AppCompatActivity(),
                 val downloadManager =
                     getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 val uri = Uri.parse(downloadFile.url)
-                if (uri.scheme == "file" || uri.scheme == "content") {
+                if (uri.scheme == ContentResolver.SCHEME_FILE || uri.scheme == ContentResolver.SCHEME_CONTENT) {
                     contentResolver.openInputStream(uri).use { inputStream ->
                         if (inputStream == null) {
                             throw UsedeskDataNotFoundException("Can't read file: ${downloadFile.url}")

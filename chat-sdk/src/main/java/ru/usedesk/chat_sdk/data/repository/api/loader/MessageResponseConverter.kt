@@ -19,14 +19,15 @@ internal class MessageResponseConverter :
 
 
     fun convertText(text: String) = try {
-        text.trim('\n', '\r', ' ')
+        text.trim('\n', '\r', ' ', '\u200B')
             .split('\n')
-            .asSequence()
-            .map {
-                it.convertMarkdownUrls()
+            .joinToString("\n") {
+                it.trim('\r', ' ', '\u200B')
+                    .convertMarkdownUrls()
                     .convertMarkdownText()
             }
-            .joinToString("<br>")
+            .replace("\n\n", "\n")
+            .replace("\n", "<br>")
     } catch (e: Exception) {
         e.printStackTrace()
         text
@@ -202,7 +203,6 @@ internal class MessageResponseConverter :
                         .replace("</em>", "</i>")
                         .replace("</p>", "")
                         .removePrefix("<p>")
-                        .trim('\u200B', ' ', '\r', '\n')
 
                     buttons.forEach {
                         val show: String

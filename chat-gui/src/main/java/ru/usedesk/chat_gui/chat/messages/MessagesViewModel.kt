@@ -63,44 +63,46 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
 
     data class Model(
         val messages: List<UsedeskMessage> = listOf(),
+        val agentItems: List<ChatItem.Message.Agent> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
         val attachmentPanelVisible: Boolean = false,
-        val lastMessageShowed: Int = 0,
+        val agentIndexShowed: Int = 0,
         val hasPreviousMessages: Boolean = true,
         val groupAgentMessages: Boolean = false,
         val previousLoading: Boolean = false,
         val goToBottom: UsedeskEvent<Unit>? = null
     )
 
-    internal sealed interface ChatItem
+    internal sealed interface ChatItem {
 
-    sealed class ChatMessage(
-        val message: UsedeskMessage,
-        val isLastOfGroup: Boolean
-    ) : ChatItem
+        sealed class Message(
+            val message: UsedeskMessage,
+            val isLastOfGroup: Boolean
+        ) : ChatItem {
+            class Client(
+                message: UsedeskMessage,
+                isLastOfGroup: Boolean
+            ) : Message(message, isLastOfGroup)
 
-    class ClientMessage(
-        message: UsedeskMessage,
-        isLastOfGroup: Boolean
-    ) : ChatMessage(message, isLastOfGroup)
+            class Agent(
+                message: UsedeskMessage,
+                isLastOfGroup: Boolean,
+                val showName: Boolean,
+                val showAvatar: Boolean
+            ) : Message(message, isLastOfGroup)
+        }
 
-    class AgentMessage(
-        message: UsedeskMessage,
-        isLastOfGroup: Boolean,
-        val showName: Boolean,
-        val showAvatar: Boolean
-    ) : ChatMessage(message, isLastOfGroup)
+        class MessageAgentName(
+            val name: String
+        ) : ChatItem
 
-    class MessageAgentName(
-        val name: String
-    ) : ChatItem
+        class ChatDate(
+            val calendar: Calendar
+        ) : ChatItem
 
-    class ChatDate(
-        val calendar: Calendar
-    ) : ChatItem
-
-    object ChatLoading : ChatItem
+        object Loading : ChatItem
+    }
 }

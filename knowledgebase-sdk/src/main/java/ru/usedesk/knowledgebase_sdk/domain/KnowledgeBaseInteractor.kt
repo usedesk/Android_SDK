@@ -1,99 +1,54 @@
 package ru.usedesk.knowledgebase_sdk.domain
 
-import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApiRepository
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.SearchQueryRequest
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
+import javax.inject.Inject
 
-internal class KnowledgeBaseInteractor(
-    private val knowledgeApiRepository: IKnowledgeBaseApiRepository
+internal class KnowledgeBaseInteractor @Inject constructor(
+    private val knowledgeApiRepository: IKnowledgeBaseApi
 ) : IUsedeskKnowledgeBase {
 
     private val ioScheduler = Schedulers.io()
 
-    override fun getSectionsRx(): Single<List<UsedeskSection>> {
-        return safeSingleIo(ioScheduler) {
-            getSections()
-        }
-    }
+    override fun getSectionsRx() = safeSingleIo(ioScheduler) { getSections() }
 
-    override fun getArticleRx(articleId: Long): Single<UsedeskArticleContent> {
-        return safeSingleIo(ioScheduler) {
-            getArticle(articleId)
-        }
-    }
+    override fun getArticleRx(articleId: Long) = safeSingleIo(ioScheduler) { getArticle(articleId) }
 
-    override fun getCategoriesRx(sectionId: Long): Single<List<UsedeskCategory>> {
-        return safeSingleIo(ioScheduler) {
-            getCategories(sectionId)
-        }
-    }
+    override fun getCategoriesRx(sectionId: Long) =
+        safeSingleIo(ioScheduler) { getCategories(sectionId) }
 
-    override fun getArticlesRx(categoryId: Long): Single<List<UsedeskArticleInfo>> {
-        return safeSingleIo(ioScheduler) {
-            getArticles(categoryId)
-        }
-    }
+    override fun getArticlesRx(categoryId: Long) =
+        safeSingleIo(ioScheduler) { getArticles(categoryId) }
 
-    override fun getArticlesRx(searchQuery: String): Single<List<UsedeskArticleContent>> {
-        return safeSingleIo(ioScheduler) {
-            getArticles(searchQuery)
-        }
-    }
+    override fun getArticlesRx(searchQuery: String) =
+        safeSingleIo(ioScheduler) { getArticles(searchQuery) }
 
-    override fun addViewsRx(articleId: Long): Completable {
-        return safeCompletableIo(ioScheduler) {
-            addViews(articleId)
-        }
-    }
+    override fun addViewsRx(articleId: Long) =
+        safeCompletableIo(ioScheduler) { addViews(articleId) }
 
-    override fun sendRatingRx(articleId: Long, good: Boolean): Completable {
-        return safeCompletableIo(ioScheduler) {
-            sendRating(articleId, good)
-        }
-    }
+    override fun sendRatingRx(articleId: Long, good: Boolean) =
+        safeCompletableIo(ioScheduler) { sendRating(articleId, good) }
 
-    override fun sendRatingRx(articleId: Long, message: String): Completable {
-        return safeCompletableIo(ioScheduler) {
-            sendRating(articleId, message)
-        }
-    }
+    override fun sendRatingRx(articleId: Long, message: String) =
+        safeCompletableIo(ioScheduler) { sendRating(articleId, message) }
 
-    @Throws(UsedeskException::class)
-    override fun getCategories(sectionId: Long): List<UsedeskCategory> {
-        return knowledgeApiRepository.getCategories(sectionId)
-    }
+    override fun getCategories(sectionId: Long) = knowledgeApiRepository.getCategories(sectionId)
 
-    @Throws(UsedeskException::class)
-    override fun getSections(): List<UsedeskSection> {
-        return knowledgeApiRepository.getSections()
-    }
+    override fun getSections() = knowledgeApiRepository.getSections()
 
-    @Throws(UsedeskException::class)
-    override fun getArticle(articleId: Long): UsedeskArticleContent {
-        return knowledgeApiRepository.getArticle(articleId)
-    }
+    override fun getArticle(articleId: Long) = knowledgeApiRepository.getArticle(articleId)
 
-    @Throws(UsedeskException::class)
     override fun getArticles(searchQuery: String): List<UsedeskArticleContent> {
         val query = SearchQueryRequest(searchQuery)
         return knowledgeApiRepository.getArticles(query)
     }
 
-    @Throws(UsedeskException::class)
-    override fun getArticles(categoryId: Long): List<UsedeskArticleInfo> {
-        return knowledgeApiRepository.getArticles(categoryId)
-    }
+    override fun getArticles(categoryId: Long) = knowledgeApiRepository.getArticles(categoryId)
 
-    @Throws(UsedeskException::class)
     override fun addViews(articleId: Long) {
         knowledgeApiRepository.addViews(articleId)
     }

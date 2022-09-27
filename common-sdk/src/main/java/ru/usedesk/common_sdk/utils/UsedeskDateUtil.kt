@@ -5,14 +5,13 @@ import java.util.*
 
 class UsedeskDateUtil {
     companion object {
-        fun getLocalCalendar(pattern: String, dateValue: String): Calendar {
-            return Calendar.getInstance().apply {
+        fun getLocalCalendar(pattern: String, dateValue: String): Calendar = Calendar.getInstance()
+            .apply {
                 time = SimpleDateFormat(pattern, Locale.getDefault())
                     .parse(dateValue)!!
 
                 val hoursOffset = TimeZone.getDefault().rawOffset / 3600000
                 add(Calendar.HOUR, hoursOffset)
             }
-        }
     }
 }

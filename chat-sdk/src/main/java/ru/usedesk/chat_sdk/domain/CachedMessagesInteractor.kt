@@ -9,8 +9,9 @@ import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import javax.inject.Inject
 
-internal class CachedMessagesInteractor(
+internal class CachedMessagesInteractor @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
     private val userInfoRepository: IUserInfoRepository

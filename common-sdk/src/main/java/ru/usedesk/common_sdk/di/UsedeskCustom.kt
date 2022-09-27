@@ -1,5 +1,5 @@
 package ru.usedesk.common_sdk.di
 
-class UsedeskCustom<INSTANCE>(
+class UsedeskCustom<INSTANCE>( //TODO:
     val customInstance: INSTANCE?
 )

@@ -3,8 +3,9 @@ package ru.usedesk.chat_sdk.data.repository.configuration
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import javax.inject.Inject
 
-internal class UserInfoRepository(
+internal class UserInfoRepository @Inject constructor(
     private val configurationLoader: IConfigurationLoader,
     private val tokenLoader: ITokenLoader
 ) : IUserInfoRepository {

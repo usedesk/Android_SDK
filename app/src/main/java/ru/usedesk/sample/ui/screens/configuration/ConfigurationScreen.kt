@@ -42,6 +42,11 @@ class ConfigurationScreen : UsedeskFragment() {
         )
 
         viewModel.modelFlow.onEachWithOld { old, new ->
+            if (old?.avatar != new.avatar) {
+                GlideApp.with(binding.ivAvatar)
+                    .load(new.avatar)
+                    .into(binding.ivAvatar)
+            }
             if (old?.configuration != new.configuration) {
                 new.configuration.onNewConfiguration()
             }
@@ -127,10 +132,9 @@ class ConfigurationScreen : UsedeskFragment() {
         }
         registerFiles {
             it.firstOrNull()?.let { uri ->
-                binding.ivAvatar.tag = uri.toString()
-                GlideApp.with(binding.ivAvatar)
-                    .load(uri)
-                    .into(binding.ivAvatar)
+                val url = uri.toString()
+                binding.ivAvatar.tag = url
+                viewModel.setAvatar(url)
             }
         }
         return binding.root

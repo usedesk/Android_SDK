@@ -6,8 +6,9 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-internal class FileLoader(
+internal class FileLoader @Inject constructor(
     appContext: Context
 ) : IFileLoader {
 

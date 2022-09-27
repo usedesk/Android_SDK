@@ -6,7 +6,7 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-internal interface IKnowledgeBaseApiRepository {
+internal interface IKnowledgeBaseApi {
     fun getSections(): List<UsedeskSection>
 
     fun getCategories(sectionId: Long): List<UsedeskCategory>

@@ -73,13 +73,13 @@ internal class FabToBottomAdapter(
                     !new.fabToBottom && old.fabToBottom -> fabContainer.startAnimation(animationOut)
                 }
             }
-            if (old?.lastMessageShowed != new.lastMessageShowed) {
+            if (old?.agentIndexShowed != new.agentIndexShowed) {
                 tvToBottom.run {
                     text = when {
-                        new.lastMessageShowed > 99 -> "99+"
-                        else -> new.lastMessageShowed.toString()
+                        new.agentIndexShowed > 99 -> "99+"
+                        else -> new.agentIndexShowed.toString()
                     }
-                    visibility = visibleInvisible(new.lastMessageShowed > 0)
+                    visibility = visibleInvisible(new.agentIndexShowed > 0)
                 }
             }
             if (old?.goToBottom != new.goToBottom) {

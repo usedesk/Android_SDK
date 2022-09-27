@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
@@ -64,7 +65,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun startCamera(cameraFile: File) {
-        val cameraUri = toProviderUri(Uri.fromFile(cameraFile))
+        val cameraUri = cameraFile.toUri().toProviderUri()
         cameraLauncher?.launch(cameraUri)
     }
 
@@ -115,16 +116,16 @@ abstract class UsedeskFragment : Fragment() {
         }
     }
 
-    protected fun toProviderUri(uri: Uri) = when (uri.scheme) {
+    protected fun Uri.toProviderUri() = when (scheme) {
         ContentResolver.SCHEME_FILE -> {
             val applicationContext = requireContext().applicationContext
             FileProvider.getUriForFile(
                 applicationContext,
                 "${applicationContext.packageName}.provider",
-                uri.toFile()
+                toFile()
             )
         }
-        else -> uri
+        else -> this
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {

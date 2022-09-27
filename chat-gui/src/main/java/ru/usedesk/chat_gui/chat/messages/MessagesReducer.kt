@@ -1,7 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages
 
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Intent
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Model
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
@@ -112,7 +111,7 @@ internal class MessagesReducer(
 
     private fun Model.messagesShowed(intent: Intent.MessagesShowed): Model {
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
-            i <= intent.messagesRange.last && chatItems[i] is MessagesViewModel.ChatMessage
+            i <= intent.messagesRange.last && chatItems[i] is ChatItem.Message
         }
         var previousLoading = this.previousLoading
         if (lastMessageIndex + ITEMS_UNTIL_LAST >= chatItems.size &&
@@ -130,6 +129,14 @@ internal class MessagesReducer(
                 Intent.PreviousMessagesResult(hasPreviousMessages)
             }
         }
+        val curAgentItemShowed = intent.messagesRange
+            .asSequence()
+            .map(chatItems::getOrNull)
+            .firstOrNull { it is ChatItem.Message.Agent }
+        val newAgentIndexShowed = when (curAgentItemShowed) {
+            null -> agentIndexShowed
+            else -> min(agentIndexShowed, agentItems.indexOf(curAgentItemShowed))
+        }
         return copy(
             previousLoading = previousLoading,
             fabToBottom = intent.messagesRange.first > 0,
@@ -140,7 +147,7 @@ internal class MessagesReducer(
                     groupAgentMessages
                 )
             },
-            lastMessageShowed = min(lastMessageShowed, intent.messagesRange.first)
+            agentIndexShowed = newAgentIndexShowed
         )
     }
 
@@ -148,47 +155,46 @@ internal class MessagesReducer(
         messageDraft = intent.messageDraft
     )
 
+    private fun Model.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
+        when (val lastMessage = agentItems.getOrNull(agentIndexShowed)) {
+            null -> 0
+            else -> newAgentItems.indexOfFirst { it.message.id == lastMessage.message.id }
+        }
+
     private fun Model.messages(intent: Intent.Messages): Model {
-        val newMessages = intent.messages
-        val lastMessage = messages.getOrNull(messages.size - lastMessageShowed - 1)
+        val newChatItems = intent.messages.convert(
+            hasPreviousMessages,
+            groupAgentMessages
+        )
+        val newAgentItems = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
+        val newAgentMessageShowed = getNewAgentIndexShowed(newAgentItems)
         return copy(
-            messages = newMessages,
-            chatItems = newMessages.convert(
-                hasPreviousMessages,
-                groupAgentMessages
-            ),
-            lastMessageShowed = when (lastMessage) {
-                null -> 0
-                else -> newMessages.size - 1 - newMessages.indexOfLast {
-                    when (lastMessage) {
-                        is UsedeskMessageClient -> it is UsedeskMessageClient &&
-                                lastMessage.localId == it.localId
-                        else -> lastMessage.id == it.id
-                    }
-                }
-            }
+            messages = intent.messages,
+            agentItems = newAgentItems,
+            chatItems = newChatItems,
+            agentIndexShowed = newAgentMessageShowed
         )
     }
 
     private fun List<UsedeskMessage>.convert(
         hasPreviousMessages: Boolean,
         groupAgentMessages: Boolean
-    ): List<MessagesViewModel.ChatItem> {
+    ): List<ChatItem> {
         val newMessages = this.reversed().groupBy {
             it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR]
         }.flatMap {
             it.value.mapIndexed { i, message ->
                 val lastOfGroup = i == 0
                 when (message) {
-                    is UsedeskMessageClient -> MessagesViewModel.ClientMessage(message, lastOfGroup)
-                    else -> MessagesViewModel.AgentMessage(
+                    is UsedeskMessageClient -> ChatItem.Message.Client(message, lastOfGroup)
+                    else -> ChatItem.Message.Agent(
                         message,
                         lastOfGroup,
                         showName = true,
                         showAvatar = true
                     )
                 }
-            }.asSequence() + MessagesViewModel.ChatDate(
+            }.asSequence() + ChatItem.ChatDate(
                 (it.value.first().createdAt.clone() as Calendar).apply {
                     set(Calendar.MILLISECOND, 0)
                     set(Calendar.SECOND, 0)
@@ -199,15 +205,15 @@ internal class MessagesReducer(
 
         val messages = if (groupAgentMessages) {
             newMessages.flatMapIndexed { index, item ->
-                if (item is MessagesViewModel.AgentMessage) {
+                if (item is ChatItem.Message.Agent) {
                     item.message as UsedeskMessageAgent
                     val previous =
-                        (newMessages.getOrNull(index - 1) as? MessagesViewModel.AgentMessage)?.message
+                        (newMessages.getOrNull(index - 1) as? ChatItem.Message.Agent)?.message
                                 as? UsedeskMessageAgent
                     val next =
-                        (newMessages.getOrNull(index + 1) as? MessagesViewModel.AgentMessage)?.message
+                        (newMessages.getOrNull(index + 1) as? ChatItem.Message.Agent)?.message
                                 as? UsedeskMessageAgent
-                    val newItem = MessagesViewModel.AgentMessage(
+                    val newItem = ChatItem.Message.Agent(
                         item.message,
                         item.isLastOfGroup,
                         showName = false,
@@ -217,7 +223,7 @@ internal class MessagesReducer(
                         true -> sequenceOf(newItem)
                         else -> sequenceOf(
                             newItem,
-                            MessagesViewModel.MessageAgentName(item.message.name)
+                            ChatItem.MessageAgentName(item.message.name)
                         )
                     }
                 } else {
@@ -230,11 +236,11 @@ internal class MessagesReducer(
         return when {
             hasPreviousMessages -> messages.toMutableList().apply {
                 add(
-                    when (lastOrNull() as? MessagesViewModel.ChatDate) {
+                    when (lastOrNull() as? ChatItem.ChatDate) {
                         null -> messages.size
                         else -> messages.size - 1
                     },
-                    MessagesViewModel.ChatLoading
+                    ChatItem.Loading
                 )
             }
             else -> messages

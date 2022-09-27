@@ -128,7 +128,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 type = usedeskFile.type
                 val uri = Uri.parse(usedeskFile.content)
                 if (uri.scheme == ContentResolver.SCHEME_FILE || uri.scheme == ContentResolver.SCHEME_CONTENT) {
-                    val providerUri = toProviderUri(uri)
+                    val providerUri = uri.toProviderUri()
                     clipData = ClipData.newRawUri("", providerUri)
                     putExtra(Intent.EXTRA_STREAM, providerUri)
                     setDataAndType(providerUri, usedeskFile.type)

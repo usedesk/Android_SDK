@@ -10,30 +10,29 @@ import java.net.InetAddress
 import java.net.Socket
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import javax.inject.Inject
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
-class UsedeskOkHttpClientFactory(
+class UsedeskOkHttpClientFactory @Inject constructor(
     private val appContext: Context
 ) {
-    fun createInstance(): OkHttpClient {
-        return OkHttpClient.Builder().apply {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-                try {
-                    ProviderInstaller.installIfNeeded(appContext)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                try {
-                    applyProtocol(this, TlsVersion.TLS_1_2.javaName())
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+    fun createInstance(): OkHttpClient = OkHttpClient.Builder().apply {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                ProviderInstaller.installIfNeeded(appContext)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        }.build()
-    }
+            try {
+                applyProtocol(this, TlsVersion.TLS_1_2.javaName())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }.build()
 
     private fun applyProtocol(builder: OkHttpClient.Builder, protocolName: String) {
         builder.apply {
@@ -62,9 +61,7 @@ class UsedeskOkHttpClientFactory(
             val sslSocketFactory = ProtocolSocketFactory(sslContext.socketFactory, protocolName)
 
             sslSocketFactory(sslSocketFactory, allTrustManager)
-            hostnameVerifier { _, _ ->
-                true
-            }
+            hostnameVerifier { _, _ -> true }
         }
     }
 
@@ -80,55 +77,46 @@ class UsedeskOkHttpClientFactory(
         override fun getSupportedCipherSuites(): Array<String> =
             sslSocketFactory.supportedCipherSuites
 
-        override fun createSocket(s: Socket, host: String, port: Int, autoClose: Boolean): Socket? {
-            return enableProtocolOnSocket(sslSocketFactory.createSocket(s, host, port, autoClose))
-        }
+        override fun createSocket(s: Socket, host: String, port: Int, autoClose: Boolean): Socket? =
+            enableProtocolOnSocket(sslSocketFactory.createSocket(s, host, port, autoClose))
 
-        override fun createSocket(host: String, port: Int): Socket? {
-            return enableProtocolOnSocket(sslSocketFactory.createSocket(host, port))
-        }
+        override fun createSocket(host: String, port: Int): Socket? =
+            enableProtocolOnSocket(sslSocketFactory.createSocket(host, port))
 
         override fun createSocket(
             host: String,
             port: Int,
             localHost: InetAddress,
             localPort: Int
-        ): Socket? {
-            return enableProtocolOnSocket(
-                sslSocketFactory.createSocket(
-                    host,
-                    port,
-                    localHost,
-                    localPort
-                )
+        ): Socket? = enableProtocolOnSocket(
+            sslSocketFactory.createSocket(
+                host,
+                port,
+                localHost,
+                localPort
             )
-        }
+        )
 
-        override fun createSocket(host: InetAddress, port: Int): Socket? {
-            return enableProtocolOnSocket(sslSocketFactory.createSocket(host, port))
-        }
+        override fun createSocket(host: InetAddress, port: Int): Socket? =
+            enableProtocolOnSocket(sslSocketFactory.createSocket(host, port))
 
         override fun createSocket(
             address: InetAddress,
             port: Int,
             localAddress: InetAddress,
             localPort: Int
-        ): Socket? {
-            return enableProtocolOnSocket(
-                sslSocketFactory.createSocket(
-                    address,
-                    port,
-                    localAddress,
-                    localPort
-                )
+        ): Socket? = enableProtocolOnSocket(
+            sslSocketFactory.createSocket(
+                address,
+                port,
+                localAddress,
+                localPort
             )
-        }
+        )
 
-        private fun enableProtocolOnSocket(socket: Socket?): Socket? {
-            return socket?.also {
-                if (it is SSLSocket) {
-                    it.enabledProtocols = protocols
-                }
+        private fun enableProtocolOnSocket(socket: Socket?): Socket? = socket?.also {
+            if (it is SSLSocket) {
+                it.enabledProtocols = protocols
             }
         }
     }

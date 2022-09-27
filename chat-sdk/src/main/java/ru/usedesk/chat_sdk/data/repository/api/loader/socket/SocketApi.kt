@@ -20,8 +20,9 @@ import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.net.HttpURLConnection
 import java.net.URISyntaxException
+import javax.inject.Inject
 
-internal class SocketApi(
+internal class SocketApi @Inject constructor(
     private val gson: Gson,
     private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
 ) {

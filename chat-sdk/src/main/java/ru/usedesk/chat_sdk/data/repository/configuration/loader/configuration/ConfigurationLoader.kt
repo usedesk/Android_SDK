@@ -7,8 +7,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import javax.inject.Inject
 
-internal class ConfigurationLoader(
+internal class ConfigurationLoader @Inject constructor(
     context: Context,
 ) : DataLoader<Array<UsedeskChatConfiguration>>(), IConfigurationLoader {
 

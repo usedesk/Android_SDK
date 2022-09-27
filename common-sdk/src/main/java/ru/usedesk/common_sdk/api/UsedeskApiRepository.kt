@@ -1,14 +1,17 @@
 package ru.usedesk.common_sdk.api
 
 import com.google.gson.Gson
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.entity.ApiError
+import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 
 abstract class UsedeskApiRepository<API>(
     private val apiFactory: IUsedeskApiFactory,
+    private val multipartConverter: IUsedeskMultipartConverter,
     private val gson: Gson,
     private val apiClass: Class<API>
 ) {
@@ -19,6 +22,19 @@ abstract class UsedeskApiRepository<API>(
         getCall: API.() -> Call<ResponseBody>
     ): RESPONSE = execute(gson, responseClass) {
         getCall(apiFactory.getInstance(urlApi, apiClass))
+    }
+
+    protected fun <RESPONSE> doRequestMultipart(
+        urlApi: String,
+        parts: List<Pair<String, Any?>>,
+        responseClass: Class<RESPONSE>,
+        apiMethod: API.(parts: List<MultipartBody.Part>) -> Call<ResponseBody>
+    ): RESPONSE {
+        val multipartParts = parts.mapNotNull(multipartConverter::convert)
+        return execute(gson, responseClass) {
+            apiFactory.getInstance(urlApi, apiClass)
+                .apiMethod(multipartParts)
+        }
     }
 
     private fun <RESPONSE> execute(

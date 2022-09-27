@@ -21,8 +21,9 @@ import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
 import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-internal class ChatInteractor(
+internal class ChatInteractor @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,

@@ -7,7 +7,7 @@ import retrofit2.Call
 import retrofit2.http.*
 import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFieldsRequest
 
-internal interface IHttpApi {
+internal interface RetrofitApi {
     @POST("widget.js/post")
     fun sendOfflineForm(@Body json: JsonObject): Call<ResponseBody>
 

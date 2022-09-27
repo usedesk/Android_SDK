@@ -6,8 +6,9 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.Mes
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import java.util.regex.Pattern
+import javax.inject.Inject
 
-internal class MessageResponseConverter :
+internal class MessageResponseConverter @Inject constructor() :
     Converter<MessageResponse.Message?, List<UsedeskMessage>>() {
 
     private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()

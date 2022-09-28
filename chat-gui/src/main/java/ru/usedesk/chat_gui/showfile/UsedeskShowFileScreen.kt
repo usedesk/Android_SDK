@@ -29,23 +29,21 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_screen_show_file,
-            R.style.Usedesk_Chat_Show_File,
-            ::Binding
-        )
+    ) = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_screen_show_file,
+        R.style.Usedesk_Chat_Show_File,
+        ::Binding
+    ).apply {
+        binding = this
 
         downloadStatusStyleValues = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
 
         binding.ivBack.setOnClickListener { requireActivity().onBackPressed() }
 
-        binding.ivShare.setOnClickListener {
-            onShareFile(viewModel.modelFlow.value.file)
-        }
+        binding.ivShare.setOnClickListener { onShareFile(viewModel.modelFlow.value.file) }
 
         binding.ivDownload.setOnClickListener {
             viewModel.modelFlow.value.file?.let { file ->
@@ -60,18 +58,14 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         setBlur(binding.lToolbar)
         setBlur(binding.lBottom)
-
-        return binding.rootView
-    }
+    }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         hideKeyboard(binding.rootView)
 
-        argsGetParcelable<UsedeskFile>(FILE_KEY)?.let { file ->
-            viewModel.init(file)
-        }
+        argsGetParcelable<UsedeskFile>(FILE_KEY)?.let(viewModel::setFile)
 
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.file != new.file ||
@@ -127,14 +121,16 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = usedeskFile.type
                 val uri = Uri.parse(usedeskFile.content)
-                if (uri.scheme == ContentResolver.SCHEME_FILE || uri.scheme == ContentResolver.SCHEME_CONTENT) {
-                    val providerUri = uri.toProviderUri()
-                    clipData = ClipData.newRawUri("", providerUri)
-                    putExtra(Intent.EXTRA_STREAM, providerUri)
-                    setDataAndType(providerUri, usedeskFile.type)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                } else {
-                    putExtra(Intent.EXTRA_TEXT, usedeskFile.content)
+                when (uri.scheme) {
+                    ContentResolver.SCHEME_FILE,
+                    ContentResolver.SCHEME_CONTENT -> {
+                        val providerUri = uri.toProviderUri()
+                        clipData = ClipData.newRawUri("", providerUri)
+                        putExtra(Intent.EXTRA_STREAM, providerUri)
+                        setDataAndType(providerUri, usedeskFile.type)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    else -> putExtra(Intent.EXTRA_TEXT, usedeskFile.content)
                 }
             }
             val chooserShareIntent = Intent.createChooser(shareIntent, null)
@@ -146,17 +142,13 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         private const val FILE_KEY = "fileKey"
 
         @JvmStatic
-        fun newInstance(usedeskFile: UsedeskFile): UsedeskShowFileScreen {
-            return UsedeskShowFileScreen().apply {
-                arguments = createBundle(usedeskFile)
-            }
+        fun newInstance(usedeskFile: UsedeskFile) = UsedeskShowFileScreen().apply {
+            arguments = createBundle(usedeskFile)
         }
 
         @JvmStatic
-        fun createBundle(usedeskFile: UsedeskFile): Bundle {
-            return Bundle().apply {
-                putParcelable(FILE_KEY, usedeskFile)
-            }
+        fun createBundle(usedeskFile: UsedeskFile) = Bundle().apply {
+            putParcelable(FILE_KEY, usedeskFile)
         }
     }
 

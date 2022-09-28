@@ -21,7 +21,6 @@ internal class OfflineFormPage : UsedeskFragment() {
         ownerProducer = this@OfflineFormPage::requireChatViewModelStoreOwner
     )
 
-    private var rootView: View? = null
     private lateinit var binding: Binding
     private lateinit var fieldsAdapter: OfflineFormFieldsAdapter
 
@@ -29,15 +28,14 @@ internal class OfflineFormPage : UsedeskFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_page_offline_form,
-            R.style.Usedesk_Chat_Screen_Offline_Form_Page,
-            ::Binding
-        )
-        rootView = binding.rootView
+    ) = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_page_offline_form,
+        R.style.Usedesk_Chat_Screen_Offline_Form_Page,
+        ::Binding
+    ).apply {
+        binding = this
 
         binding.tvSend.setOnClickListener {
             hideKeyboard(it)
@@ -47,9 +45,7 @@ internal class OfflineFormPage : UsedeskFragment() {
         updateActionButton(false)
 
         init()
-
-        return binding.rootView
-    }
+    }.rootView
 
     private fun init() {
         viewModel.init(

@@ -4,7 +4,10 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
+import android.text.Spannable
+import android.text.method.LinkMovementMethod
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -15,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.makeramen.roundedimageview.RoundedImageView
-import ru.usedesk.chat_gui.NoMoveLinkMovementMethod
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
@@ -1343,5 +1345,16 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val vEmpty: View = rootView.findViewById(R.id.v_empty)
         val ivSentFailed: ImageView = rootView.findViewById(R.id.iv_sent_failed)
+    }
+}
+
+internal object NoMoveLinkMovementMethod : LinkMovementMethod() {
+    override fun onTouchEvent(
+        widget: TextView?,
+        buffer: Spannable?,
+        event: MotionEvent?
+    ): Boolean = when (event?.action) {
+        MotionEvent.ACTION_DOWN -> false
+        else -> super.onTouchEvent(widget, buffer, event)
     }
 }

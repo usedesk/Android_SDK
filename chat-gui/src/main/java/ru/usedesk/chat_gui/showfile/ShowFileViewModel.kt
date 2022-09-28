@@ -5,10 +5,8 @@ import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class ShowFileViewModel : UsedeskViewModel<ShowFileViewModel.Model>(Model()) {
 
-    fun init(file: UsedeskFile) {
-        doInit {
-            setModel { copy(file = file) }
-        }
+    fun setFile(file: UsedeskFile) {
+        setModel { copy(file = file) }
     }
 
     fun onLoaded(success: Boolean) {

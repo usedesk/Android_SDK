@@ -33,9 +33,7 @@ internal class SocketApi @Inject constructor(
     private lateinit var eventListener: EventListener
     private lateinit var initChatRequest: InitChatRequest
 
-    private val disconnectEmitterListener = Emitter.Listener {
-        eventListener.onDisconnected()
-    }
+    private val disconnectEmitterListener = Emitter.Listener { eventListener.onDisconnected() }
 
     private val connectErrorEmitterListener = Emitter.Listener {
         it.getOrNull(0)?.also { arg ->
@@ -51,9 +49,7 @@ internal class SocketApi @Inject constructor(
         sendRequest(initChatRequest)
     }
 
-    private val baseEventEmitterListener = Emitter.Listener {
-        onResponse(it[0].toString())
-    }
+    private val baseEventEmitterListener = Emitter.Listener { onResponse(it[0].toString()) }
 
     private fun onResponse(rawResponse: String) {
         try {
@@ -90,9 +86,7 @@ internal class SocketApi @Inject constructor(
         }
     }
 
-    fun isConnected(): Boolean {
-        return socket?.connected() == true
-    }
+    fun isConnected() = socket?.connected() == true
 
     fun connect(
         url: String,
@@ -152,28 +146,26 @@ internal class SocketApi @Inject constructor(
         }
     }
 
-    private fun process(rawResponse: String): BaseResponse {
-        return try {
-            val baseResponse = gson.fromJson(rawResponse, BaseResponse::class.java)
-            val responseClass = when (baseResponse.type) {
-                InitChatResponse.TYPE -> InitChatResponse::class.java
-                ErrorResponse.TYPE -> ErrorResponse::class.java
-                MessageResponse.TYPE -> MessageResponse::class.java
-                FeedbackResponse.TYPE -> FeedbackResponse::class.java
-                SetClientResponse.TYPE -> SetClientResponse::class.java
-                else -> throw RuntimeException("Could not find response class by type")
-            }
-            gson.fromJson(rawResponse, responseClass)
-        } catch (e: Exception) {
-            UsedeskLog.onLog(
-                "SOCKET",
-                "Failed to parse the response: $rawResponse"
-            )
-            throw UsedeskSocketException(
-                UsedeskSocketException.Error.JSON_ERROR,
-                e.message
-            )
+    private fun process(rawResponse: String) = try {
+        val baseResponse = gson.fromJson(rawResponse, BaseResponse::class.java)
+        val responseClass = when (baseResponse.type) {
+            InitChatResponse.TYPE -> InitChatResponse::class.java
+            ErrorResponse.TYPE -> ErrorResponse::class.java
+            MessageResponse.TYPE -> MessageResponse::class.java
+            FeedbackResponse.TYPE -> FeedbackResponse::class.java
+            SetClientResponse.TYPE -> SetClientResponse::class.java
+            else -> throw RuntimeException("Could not find response class by type")
         }
+        gson.fromJson(rawResponse, responseClass)
+    } catch (e: Exception) {
+        UsedeskLog.onLog(
+            "SOCKET",
+            "Failed to parse the response: $rawResponse"
+        )
+        throw UsedeskSocketException(
+            UsedeskSocketException.Error.JSON_ERROR,
+            e.message
+        )
     }
 
     companion object {

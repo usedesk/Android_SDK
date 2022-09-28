@@ -29,7 +29,7 @@ internal class OfflineFormFieldsAdapter(
     private val listFieldStyle =
         binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_list_field)
 
-    private var items: List<OfflineFormItem> = listOf()
+    private var items = listOf<OfflineFormItem>()
 
     init {
         recyclerView.run {
@@ -147,10 +147,10 @@ internal class OfflineFormFieldsAdapter(
             adapter.run {
                 setTitle(item.title, item.required)
                 setText(
-                    item.items.getOrNull(item.selected)
-                        ?: binding.rootView.resources.getString(R.string.usedesk_not_selected)
+                    item.items.getOrNull(item.selected) ?: binding.rootView.resources.getString(
+                        R.string.usedesk_not_selected
+                    )
                 )
-
                 setOnClickListener { onListFieldClick(item.key) }
             }
         }

@@ -21,14 +21,11 @@ import ru.usedesk.common_gui.inflateItem
 class UsedeskChatScreen : UsedeskFragment() {
 
     private val viewModel: ChatViewModel by viewModels(
-        ownerProducer = {
-            findChatViewModelStoreOwner() ?: this
-        }
+        ownerProducer = { findChatViewModelStoreOwner() ?: this }
     )
     private val playerViewModel: PlayerViewModel by viewModels(
-        ownerProducer = {
-            findChatViewModelStoreOwner() ?: this
-        })
+        ownerProducer = { findChatViewModelStoreOwner() ?: this }
+    )
 
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
@@ -46,23 +43,21 @@ class UsedeskChatScreen : UsedeskFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_screen_chat,
-            R.style.Usedesk_Chat_Screen,
-            ::Binding
-        )
+    ) = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_screen_chat,
+        R.style.Usedesk_Chat_Screen,
+        ::Binding
+    ).apply {
+        binding = this
 
         navHostFragment =
             childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
         navController = navHostFragment.navController
 
         toolbarAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
-            setBackButton {
-                requireActivity().onBackPressed()
-            }
+            setBackButton(requireActivity()::onBackPressed)
         }
 
         getBundleArgs { chatConfiguration, _, _, _, _, _, _ ->
@@ -71,9 +66,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
             init()
         }
-
-        return binding.rootView
-    }
+    }.rootView
 
     internal fun getBundleArgs(
         onArgs: (
@@ -124,12 +117,9 @@ class UsedeskChatScreen : UsedeskFragment() {
             if (old?.offlineFormSettings != new.offlineFormSettings) {
                 updateTitle(navController.currentDestination)
             }
-        }
-
-        viewModel.init()
-
-        viewModel.goLoadingEvent.process {
-            navController.navigate(R.id.dest_loading_page)
+            if (old?.goLoading != new.goLoading) {
+                new.goLoading?.process { navController.navigate(R.id.dest_loading_page) }
+            }
         }
     }
 
@@ -186,18 +176,16 @@ class UsedeskChatScreen : UsedeskFragment() {
             messageTimeFormat: String? = null,
             adaptiveTextMessageTimePadding: Boolean = false,
             groupAgentMessages: Boolean = true
-        ): UsedeskChatScreen {
-            return UsedeskChatScreen().apply {
-                arguments = createBundle(
-                    agentName,
-                    rejectedFileExtensions,
-                    usedeskChatConfiguration,
-                    messagesDateFormat,
-                    messageTimeFormat,
-                    adaptiveTextMessageTimePadding,
-                    groupAgentMessages
-                )
-            }
+        ): UsedeskChatScreen = UsedeskChatScreen().apply {
+            arguments = createBundle(
+                agentName,
+                rejectedFileExtensions,
+                usedeskChatConfiguration,
+                messagesDateFormat,
+                messageTimeFormat,
+                adaptiveTextMessageTimePadding,
+                groupAgentMessages
+            )
         }
 
         @JvmOverloads
@@ -210,23 +198,21 @@ class UsedeskChatScreen : UsedeskFragment() {
             messageTimeFormat: String? = null,
             adaptiveTextMessageTimePadding: Boolean = false,
             groupAgentMessages: Boolean = true
-        ): Bundle {
-            return Bundle().apply {
-                if (agentName != null) {
-                    putString(AGENT_NAME_KEY, agentName)
-                }
-                val extensions = rejectedFileExtensions?.map {
-                    '.' + it.trim(' ', '.')
-                }?.toTypedArray() ?: arrayOf()
-                if (usedeskChatConfiguration != null) {
-                    putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
-                }
-                putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
-                putString(MESSAGES_DATE_FORMAT_KEY, messagesDateFormat)
-                putString(MESSAGE_TIME_FORMAT_KEY, messageTimeFormat)
-                putBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, adaptiveTextMessageTimePadding)
-                putBoolean(GROUP_AGENT_MESSAGES, groupAgentMessages)
+        ): Bundle = Bundle().apply {
+            if (agentName != null) {
+                putString(AGENT_NAME_KEY, agentName)
             }
+            val extensions = rejectedFileExtensions?.map {
+                '.' + it.trim(' ', '.')
+            }?.toTypedArray() ?: arrayOf()
+            if (usedeskChatConfiguration != null) {
+                putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
+            }
+            putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
+            putString(MESSAGES_DATE_FORMAT_KEY, messagesDateFormat)
+            putString(MESSAGE_TIME_FORMAT_KEY, messageTimeFormat)
+            putBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, adaptiveTextMessageTimePadding)
+            putBoolean(GROUP_AGENT_MESSAGES, groupAgentMessages)
         }
     }
 

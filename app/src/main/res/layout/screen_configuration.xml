@@ -67,6 +67,20 @@
                     android:textSize="18sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_token"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_token"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/configuration_usedesk_margin"
+                        android:hint="@string/api_token_hint"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_email"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -130,7 +144,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/url_offline_form_hint"
+                        android:hint="@string/url_chat_api"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -597,7 +611,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/url_api"
+                        android:hint="@string/url_kb_api"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -613,20 +627,6 @@
                         android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/account_id_hint"
                         android:inputType="numberDecimal" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_token"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_token"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:hint="@string/api_token_hint"
-                        android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <androidx.appcompat.widget.SwitchCompat

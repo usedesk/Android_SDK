@@ -129,9 +129,7 @@ internal class MessageResponseConverter @Inject constructor() :
                         )
                     }
                 }
-            }?.let {
-                fileMessages.add(it)
-            }
+            }?.let(fileMessages::add)
 
             val textMessage = convertOrNull {
                 if (from.text?.isNotEmpty() == true) {
@@ -259,19 +257,17 @@ internal class MessageResponseConverter @Inject constructor() :
         while (i < this.length) {
             builder.append(
                 when (this[i]) {
-                    '*' -> {
-                        when {
-                            this.getOrNull(i + 1) == '*' -> {
-                                i++
-                                boldOpen = !boldOpen
-                                if (boldOpen) "</b>"
-                                else "<b>"
-                            }
-                            else -> {
-                                italicOpen = !italicOpen
-                                if (italicOpen) "</i>"
-                                else "<i>"
-                            }
+                    '*' -> when {
+                        this.getOrNull(i + 1) == '*' -> {
+                            i++
+                            boldOpen = !boldOpen
+                            if (boldOpen) "</b>"
+                            else "<b>"
+                        }
+                        else -> {
+                            italicOpen = !italicOpen
+                            if (italicOpen) "</i>"
+                            else "<i>"
                         }
                     }
                     '\n' -> "<br>"
@@ -304,9 +300,9 @@ internal class MessageResponseConverter @Inject constructor() :
             } else {
                 null
             }
-        }.asSequence()).filter {
-            it.first <= it.last && it.first in this.indices && it.last in this.indices
-        }.toSet()
+        }.asSequence())
+            .filter { it.first <= it.last && it.first in this.indices && it.last in this.indices }
+            .toSet()
             .toList()
     }
 

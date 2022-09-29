@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
@@ -16,7 +17,7 @@ import ru.usedesk.common_gui.inflateItem
 internal class OfflineFormSelectorPage : UsedeskFragment() {
 
     private val viewModel: OfflineFormViewModel by viewModels(
-        ownerProducer = { requireChatViewModelStoreOwner() }
+        ownerProducer = this@OfflineFormSelectorPage::requireChatViewModelStoreOwner
     )
 
     private lateinit var binding: Binding
@@ -29,10 +30,9 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
         inflater,
         container,
         R.layout.usedesk_page_offline_form_selector,
-        R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page
-    ) { rootView, defaultStyleId ->
-        Binding(rootView, defaultStyleId)
-    }.apply {
+        R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page,
+        ::Binding
+    ).apply {
         binding = this
 
         val key = argsGetString(KEY_KEY, "")
@@ -41,7 +41,7 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
             rvItems,
             binding,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         )
     }.rootView
 

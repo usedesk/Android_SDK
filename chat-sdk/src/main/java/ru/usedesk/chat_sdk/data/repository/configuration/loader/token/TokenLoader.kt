@@ -3,8 +3,9 @@ package ru.usedesk.chat_sdk.data.repository.configuration.loader.token
 import android.content.Context
 import android.content.SharedPreferences
 import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
+import javax.inject.Inject
 
-internal class TokenLoader(
+internal class TokenLoader @Inject constructor(
     context: Context
 ) : DataLoader<String>(), ITokenLoader {
 
@@ -13,9 +14,7 @@ internal class TokenLoader(
         Context.MODE_PRIVATE
     )
 
-    override fun loadData(): String? {
-        return sharedPreferences.getString(KEY_TOKEN, null)
-    }
+    override fun loadData() = sharedPreferences.getString(KEY_TOKEN, null)
 
     override fun saveData(data: String) {
         sharedPreferences.edit()

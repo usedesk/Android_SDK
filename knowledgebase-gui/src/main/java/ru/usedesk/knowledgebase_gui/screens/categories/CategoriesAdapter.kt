@@ -4,18 +4,19 @@ import android.text.Html
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesAdapter internal constructor(
     recyclerView: RecyclerView,
     viewModel: CategoriesViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val onCategoryClick: (Long, String) -> Unit
 ) : RecyclerView.Adapter<CategoriesAdapter.SectionViewHolder>() {
 
@@ -23,7 +24,7 @@ internal class CategoriesAdapter internal constructor(
 
     init {
         recyclerView.adapter = this
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.categories != new.categories) {
                 val oldItems = categories
                 val newItems = new.categories
@@ -58,15 +59,14 @@ internal class CategoriesAdapter internal constructor(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): SectionViewHolder {
-        return SectionViewHolder(inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = SectionViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_category,
-            R.style.Usedesk_KnowledgeBase_Categories_Page_Category
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        })
-    }
+            R.style.Usedesk_KnowledgeBase_Categories_Page_Category,
+            ::Binding
+        )
+    )
 
     override fun onBindViewHolder(sectionViewHolder: SectionViewHolder, i: Int) {
         sectionViewHolder.bind(categories[i])
@@ -82,9 +82,7 @@ internal class CategoriesAdapter internal constructor(
             binding.tvTitle.text = category.title
             binding.tvDescription.text = Html.fromHtml(category.description).trim()
             binding.tvCount.text = category.articles.size.toString()
-            binding.lClickable.setOnClickListener {
-                onCategoryClick(category.id, category.title)
-            }
+            binding.lClickable.setOnClickListener { onCategoryClick(category.id, category.title) }
         }
     }
 

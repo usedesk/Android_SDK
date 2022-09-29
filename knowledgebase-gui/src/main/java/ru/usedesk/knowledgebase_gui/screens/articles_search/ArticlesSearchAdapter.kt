@@ -4,18 +4,19 @@ import android.text.Html
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticlesSearchAdapter(
     recyclerView: RecyclerView,
     viewModel: ArticlesSearchViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     private val onArticleClick: (UsedeskArticleContent) -> Unit
 ) : RecyclerView.Adapter<ArticlesSearchAdapter.ArticleViewHolder>() {
 
@@ -23,7 +24,7 @@ internal class ArticlesSearchAdapter(
 
     init {
         recyclerView.adapter = this
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.articles != new.articles) {
                 val oldItems = articles
                 val newItems = new.articles
@@ -57,15 +58,14 @@ internal class ArticlesSearchAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ArticleViewHolder {
-        return ArticleViewHolder(inflateItem(
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = ArticleViewHolder(
+        inflateItem(
             viewGroup,
             R.layout.usedesk_item_article_content,
-            R.style.Usedesk_KnowledgeBase_Articles_Search_Page_Article
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        })
-    }
+            R.style.Usedesk_KnowledgeBase_Articles_Search_Page_Article,
+            ::Binding
+        )
+    )
 
     override fun onBindViewHolder(articleViewHolder: ArticleViewHolder, i: Int) {
         articleViewHolder.bind(articles[i])
@@ -80,9 +80,7 @@ internal class ArticlesSearchAdapter(
         fun bind(articleContent: UsedeskArticleContent) {
             binding.tvTitle.text = articleContent.title
             binding.tvDescription.text = Html.fromHtml(articleContent.text).trim()
-            binding.lClickable.setOnClickListener {
-                onArticleClick(articleContent)
-            }
+            binding.lClickable.setOnClickListener { onArticleClick(articleContent) }
         }
     }
 

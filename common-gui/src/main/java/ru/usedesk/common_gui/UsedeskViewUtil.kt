@@ -7,33 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 
-fun <T> initAndObserve(
-    lifecycleOwner: LifecycleOwner,
-    liveData: LiveData<T?>,
-    lambda: (T?) -> (Unit)
-) {
-    justInit(liveData, lambda)
-    observe(lifecycleOwner, liveData, lambda)
-}
-
-fun <T> justInit(
-    liveData: LiveData<T?>,
-    lambda: (T?) -> (Unit)
-) {
-    lambda(liveData.value)
-}
-
-fun <T> observe(
-    lifecycleOwner: LifecycleOwner,
-    liveData: LiveData<T?>,
-    lambda: (T?) -> (Unit)
-) {
-    liveData.observe(lifecycleOwner, Observer(lambda))
-}
 
 private fun getInputMethodManager(view: View) =
     view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
@@ -45,32 +19,20 @@ fun showKeyboard(editText: EditText) {
     }, 100)
 }
 
-fun showKeyboardIfFocused(editText: EditText) {
-    if (editText.isFocused) {
-        showKeyboard(editText)
-    }
-}
-
 fun hideKeyboard(view: View) {
     view.post {
         getInputMethodManager(view)?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
 
-fun visibleGone(visible: Boolean): Int {
-    return if (visible) {
-        View.VISIBLE
-    } else {
-        View.GONE
-    }
+fun visibleGone(visible: Boolean) = when {
+    visible -> View.VISIBLE
+    else -> View.GONE
 }
 
-fun visibleInvisible(visible: Boolean): Int {
-    return if (visible) {
-        View.VISIBLE
-    } else {
-        View.INVISIBLE
-    }
+fun visibleInvisible(visible: Boolean) = when {
+    visible -> View.VISIBLE
+    else -> View.INVISIBLE
 }
 
 fun showInstead(
@@ -79,15 +41,13 @@ fun showInstead(
     firstShow: Boolean = true,
     gone: Boolean = true
 ) {
-    viewVisible.visibility = if (gone) {
-        visibleGone(firstShow)
-    } else {
-        visibleInvisible(firstShow)
+    viewVisible.visibility = when {
+        gone -> visibleGone(firstShow)
+        else -> visibleInvisible(firstShow)
     }
-    viewGone.visibility = if (gone) {
-        visibleGone(!firstShow)
-    } else {
-        visibleInvisible(!firstShow)
+    viewGone.visibility = when {
+        gone -> visibleGone(!firstShow)
+        else -> visibleInvisible(!firstShow)
     }
 }
 
@@ -96,15 +56,13 @@ fun <BINDING> inflateItem(
     defaultLayoutId: Int,
     defaultStyleId: Int,
     createBinding: (View, Int) -> BINDING
-): BINDING {
-    return inflateItem(
-        LayoutInflater.from(container.context),
-        container,
-        defaultLayoutId,
-        defaultStyleId,
-        createBinding
-    )
-}
+): BINDING = inflateItem(
+    LayoutInflater.from(container.context),
+    container,
+    defaultLayoutId,
+    defaultStyleId,
+    createBinding
+)
 
 fun <BINDING> inflateItem(
     inflater: LayoutInflater,

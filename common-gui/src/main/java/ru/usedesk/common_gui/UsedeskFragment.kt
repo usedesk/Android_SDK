@@ -1,6 +1,7 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
+import android.content.ContentResolver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -8,7 +9,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
@@ -16,6 +23,8 @@ abstract class UsedeskFragment : Fragment() {
     private var permissionCameraLauncher: PermissionLauncher? = null
     private var filesLauncher: ActivityResultLauncher<String>? = null
     private var cameraLauncher: ActivityResultLauncher<Uri>? = null
+
+    private var cameraFile: File? = null
 
     open fun onBackPressed(): Boolean = false
 
@@ -31,18 +40,16 @@ abstract class UsedeskFragment : Fragment() {
 
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
         cameraLauncher = cameraLauncher ?: registerForActivityResult(
-            ActivityResultContracts.TakePicture()
-        ) {
-            onCameraResult(it)
-        }
+            ActivityResultContracts.TakePicture(),
+            onCameraResult
+        )
     }
 
     fun registerFiles(onContentResult: (List<Uri>) -> Unit) {
         filesLauncher = filesLauncher ?: registerForActivityResult(
-            ActivityResultContracts.GetMultipleContents()
-        ) { uris ->
-            onContentResult(uris)
-        }
+            ActivityResultContracts.GetMultipleContents(),
+            onContentResult
+        )
     }
 
     fun needCameraPermission() {
@@ -58,7 +65,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun startCamera(cameraFile: File) {
-        val cameraUri = toProviderUri(Uri.fromFile(cameraFile))
+        val cameraUri = cameraFile.toUri().toProviderUri()
         cameraLauncher?.launch(cameraUri)
     }
 
@@ -66,12 +73,20 @@ abstract class UsedeskFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         permissionCameraLauncher?.save(outState)
+
+        cameraFile?.let {
+            outState.putString(CAMERA_FILE_KEY, it.absolutePath)
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
         permissionCameraLauncher?.load(savedInstanceState)
+
+        savedInstanceState?.getString(CAMERA_FILE_KEY)?.let {
+            cameraFile = File(it)
+        }
     }
 
     override fun onDestroyView() {
@@ -87,22 +102,30 @@ abstract class UsedeskFragment : Fragment() {
         filesLauncher = null
     }
 
-    protected fun generateCameraFile(): File {
-        val fileName = "camera_${System.currentTimeMillis()}.jpg"
-        return File(requireContext().cacheDir, fileName)
+    protected fun generateCameraFile() = File(
+        requireContext().cacheDir,
+        "camera_${System.currentTimeMillis()}.jpg"
+    ).also {
+        cameraFile = it
     }
 
-    protected fun toProviderUri(uri: Uri): Uri {
-        return if (uri.scheme == "file") {
+    fun useCameraFile(onCameraFile: (File) -> Unit) {
+        cameraFile?.let {
+            cameraFile = null
+            onCameraFile(it)
+        }
+    }
+
+    protected fun Uri.toProviderUri() = when (scheme) {
+        ContentResolver.SCHEME_FILE -> {
             val applicationContext = requireContext().applicationContext
             FileProvider.getUriForFile(
                 applicationContext,
                 "${applicationContext.packageName}.provider",
-                uri.toFile()
+                toFile()
             )
-        } else {
-            uri
         }
+        else -> this
     }
 
     protected fun argsGetInt(key: String, default: Int): Int {
@@ -111,62 +134,49 @@ abstract class UsedeskFragment : Fragment() {
 
     protected fun argsGetInt(key: String): Int? {
         val args = arguments
-        return if (args?.containsKey(key) == true) {
-            args.getInt(key)
-        } else {
-            null
+        return when {
+            args?.containsKey(key) == true -> args.getInt(key)
+            else -> null
         }
     }
 
-    protected fun argsGetLong(key: String, default: Long): Long {
-        return arguments?.getLong(key, default) ?: default
-    }
+    protected fun argsGetLong(key: String, default: Long): Long =
+        arguments?.getLong(key, default) ?: default
 
     protected fun argsGetLong(key: String): Long? {
         val args = arguments
-        return if (args?.containsKey(key) == true) {
-            args.getLong(key)
-        } else {
-            null
+        return when {
+            args?.containsKey(key) == true -> args.getLong(key)
+            else -> null
         }
     }
 
-    protected fun argsGetBoolean(key: String, default: Boolean): Boolean {
-        return arguments?.getBoolean(key, default) ?: default
-    }
+    protected fun argsGetBoolean(key: String, default: Boolean): Boolean =
+        arguments?.getBoolean(key, default) ?: default
 
     protected fun argsGetBoolean(key: String): Boolean? {
         val args = arguments
-        return if (args?.containsKey(key) == true) {
-            args.getBoolean(key)
-        } else {
-            null
+        return when {
+            args?.containsKey(key) == true -> args.getBoolean(key)
+            else -> null
         }
     }
 
-    protected fun argsGetString(key: String): String? {
-        return arguments?.getString(key)
-    }
+    protected fun argsGetString(key: String): String? = arguments?.getString(key)
 
-    protected fun argsGetString(key: String, default: String): String {
-        return argsGetString(key) ?: default
-    }
+    protected fun argsGetString(key: String, default: String): String =
+        argsGetString(key) ?: default
 
-    protected fun <T : Parcelable> argsGetParcelable(key: String): T? {
-        return arguments?.getParcelable(key)
-    }
+    protected fun <T : Parcelable> argsGetParcelable(key: String): T? =
+        arguments?.getParcelable(key)
 
-    protected fun <T : Parcelable> argsGetParcelable(key: String, default: T): T {
-        return argsGetParcelable(key) ?: default
-    }
+    protected fun <T : Parcelable> argsGetParcelable(key: String, default: T): T =
+        argsGetParcelable(key) ?: default
 
-    protected fun argsGetStringArray(key: String): Array<String>? {
-        return arguments?.getStringArray(key)
-    }
+    protected fun argsGetStringArray(key: String): Array<String>? = arguments?.getStringArray(key)
 
-    protected fun argsGetStringArray(key: String, default: Array<String>): Array<String> {
-        return argsGetStringArray(key) ?: default
-    }
+    protected fun argsGetStringArray(key: String, default: Array<String>): Array<String> =
+        argsGetStringArray(key) ?: default
 
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
         UsedeskSnackbar.create(
@@ -182,19 +192,38 @@ abstract class UsedeskFragment : Fragment() {
 
         var parent = parentFragment
         while (parent != null) {
-            if (parent is T) {
-                listener = parent
-                break
-            } else {
-                parent = parent.parentFragment
+            when (parent) {
+                is T -> {
+                    listener = parent
+                    break
+                }
+                else -> parent = parent.parentFragment
             }
         }
 
         return listener ?: activity as? T
     }
 
+    fun <T> Flow<T>.onEachWithOld(action: suspend (old: T?, new: T) -> Unit) = onEachWithOld(
+        lifecycleScope,
+        action
+    )
+
+
     companion object {
+        private const val CAMERA_FILE_KEY = "tempCameraFileKey"
         private const val MIME_TYPE_ALL_IMAGES = "image/*"
         private const val MIME_TYPE_ALL_FILES = "*/*"
     }
+}
+
+fun <T> Flow<T>.onEachWithOld(
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
+    action: suspend (old: T?, new: T) -> Unit
+) {
+    var oldValue: T? = null
+    onEach { new ->
+        action(oldValue, new)
+        oldValue = new
+    }.launchIn(lifecycleCoroutineScope)
 }

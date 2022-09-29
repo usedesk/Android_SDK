@@ -41,34 +41,41 @@ class ConfigurationScreen : UsedeskFragment() {
             false
         )
 
-        viewModel.configurationValidation.observe(viewLifecycleOwner) {
-            it?.let {
-                onNewConfigurationValidation(it)
+        viewModel.modelFlow.onEachWithOld { old, new ->
+            if (old?.avatar != new.avatar) {
+                GlideApp.with(binding.ivAvatar)
+                    .load(new.avatar)
+                    .into(binding.ivAvatar)
             }
-        }
-        viewModel.clientTokenLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
-            if (old?.loading != new.loading) {
-                showInstead(binding.pbCreateChat, binding.btnCreateChat, new.loading)
+            if (old?.configuration != new.configuration) {
+                new.configuration.onNewConfiguration()
             }
-            new.completed?.process {
-                binding.etClientToken.setText(it)
-                Toast.makeText(
-                    requireContext(),
-                    "Success:$it",
-                    Toast.LENGTH_SHORT
-                ).show()
+            if (old?.validation != new.validation) {
+                new.validation?.onNewConfigurationValidation()
             }
-            new.error?.process {
-                Toast.makeText(
-                    requireContext(),
-                    "Failed:$it",
-                    Toast.LENGTH_SHORT
-                ).show()
+            if (old?.clientToken != new.clientToken) {
+                showInstead(binding.pbCreateChat, binding.btnCreateChat, new.clientToken.loading)
+                new.clientToken.completed?.process {
+                    binding.etClientToken.setText(it)
+                    Toast.makeText(
+                        requireContext(),
+                        "Success:$it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                new.clientToken.error?.process {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed:$it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
         binding.btnGoToSdk.setOnClickListener {
-            if (viewModel.onGoSdkClick(getConfiguration())) {
-                (activity as IOnGoToSdkListener?)?.goToSdk()
+            val configuration = getConfiguration()
+            if (viewModel.onGoSdkClick(configuration)) {
+                (activity as IOnGoToSdkListener?)?.goToSdk(configuration)
             }
         }
         binding.btnCreateChat.setOnClickListener {
@@ -125,19 +132,12 @@ class ConfigurationScreen : UsedeskFragment() {
         }
         registerFiles {
             it.firstOrNull()?.let { uri ->
-                binding.ivAvatar.tag = uri.toString()
-                GlideApp.with(binding.ivAvatar)
-                    .load(uri)
-                    .into(binding.ivAvatar)
+                val url = uri.toString()
+                binding.ivAvatar.tag = url
+                viewModel.setAvatar(url)
             }
         }
         return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        onNewConfiguration(viewModel.configurationLiveData.value)
     }
 
     private fun updateServiceValue(foregroundService: Boolean?) {
@@ -180,10 +180,9 @@ class ConfigurationScreen : UsedeskFragment() {
         }.map {
             it.key.toLong() to it.value
         }.toMap()
-        val additionalNestedFields = if (nestedFields.isEmpty()) {
-            listOf()
-        } else {
-            listOf(nestedFields)
+        val additionalNestedFields = when {
+            nestedFields.isEmpty() -> listOf()
+            else -> listOf(nestedFields)
         }
         return Configuration(
             binding.switchMaterialComponents.isChecked,
@@ -207,10 +206,8 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etCustomDateFormat.text.toString(),
             binding.etCustomTimeFormat.text.toString(),
             when {
-                binding.tvServiceType.text.contains(getString(R.string.service_type_foreground)) ->
-                    true
-                binding.tvServiceType.text.contains(getString(R.string.service_type_simple)) ->
-                    false
+                binding.tvServiceType.text.contains(getString(R.string.service_type_foreground)) -> true
+                binding.tvServiceType.text.contains(getString(R.string.service_type_simple)) -> false
                 else -> null
             },
             binding.switchCacheFiles.isChecked,
@@ -224,48 +221,48 @@ class ConfigurationScreen : UsedeskFragment() {
         )
     }
 
-    private fun onNewConfiguration(configuration: Configuration) {
-        binding.switchMaterialComponents.isChecked = configuration.materialComponents
-        binding.etUrlChat.setText(configuration.urlChat)
-        binding.etUrlOfflineForm.setText(configuration.urlChatApi)
-        binding.etUrlApi.setText(configuration.urlApi)
-        binding.etCompanyId.setText(configuration.companyId)
-        binding.etChannelId.setText(configuration.channelId)
-        binding.etMessagesPageSize.setText(configuration.messagesPageSize.toString())
-        binding.etAccountId.setText(configuration.accountId)
-        binding.etToken.setText(configuration.token)
-        binding.etClientToken.setText(configuration.clientToken)
-        binding.etClientEmail.setText(configuration.clientEmail)
-        binding.etClientName.setText(configuration.clientName)
-        binding.etClientPhoneNumber.setText(configuration.clientPhoneNumber?.toString() ?: "")
-        binding.etClientAdditionalId.setText(configuration.clientAdditionalId ?: "")
-        binding.etClientInitMessage.setText(configuration.clientInitMessage)
-        binding.etCustomAgentName.setText(configuration.customAgentName)
-        binding.etCustomDateFormat.setText(configuration.messagesDateFormat)
-        binding.etCustomTimeFormat.setText(configuration.messageTimeFormat)
-        updateServiceValue(configuration.foregroundService)
-        binding.switchCacheFiles.isChecked = configuration.cacheFiles
-        binding.switchGroupAgentMessages.isChecked = configuration.groupAgentMessages
-        binding.adaptiveTimePadding.isChecked = configuration.adaptiveTimePadding
+    private fun Configuration.onNewConfiguration() {
+        binding.switchMaterialComponents.isChecked = materialComponents
+        binding.etUrlChat.setText(urlChat)
+        binding.etUrlOfflineForm.setText(urlChatApi)
+        binding.etUrlApi.setText(urlApi)
+        binding.etCompanyId.setText(companyId)
+        binding.etChannelId.setText(channelId)
+        binding.etMessagesPageSize.setText(messagesPageSize.toString())
+        binding.etAccountId.setText(accountId)
+        binding.etToken.setText(token)
+        binding.etClientToken.setText(clientToken)
+        binding.etClientEmail.setText(clientEmail)
+        binding.etClientName.setText(clientName)
+        binding.etClientPhoneNumber.setText(clientPhoneNumber?.toString() ?: "")
+        binding.etClientAdditionalId.setText(clientAdditionalId ?: "")
+        binding.etClientInitMessage.setText(clientInitMessage)
+        binding.etCustomAgentName.setText(customAgentName)
+        binding.etCustomDateFormat.setText(messagesDateFormat)
+        binding.etCustomTimeFormat.setText(messageTimeFormat)
+        updateServiceValue(foregroundService)
+        binding.switchCacheFiles.isChecked = cacheFiles
+        binding.switchGroupAgentMessages.isChecked = groupAgentMessages
+        binding.adaptiveTimePadding.isChecked = adaptiveTimePadding
         setAdditionalField(
             binding.etAdditionalField1Id,
             binding.etAdditionalField1Value,
-            configuration.additionalFields,
+            additionalFields,
             0
         )
         setAdditionalField(
             binding.etAdditionalField2Id,
             binding.etAdditionalField2Value,
-            configuration.additionalFields,
+            additionalFields,
             1
         )
         setAdditionalField(
             binding.etAdditionalField3Id,
             binding.etAdditionalField3Value,
-            configuration.additionalFields,
+            additionalFields,
             2
         )
-        val nested = configuration.additionalNestedFields.firstOrNull() ?: mapOf()
+        val nested = additionalNestedFields.firstOrNull() ?: mapOf()
         setAdditionalField(
             binding.etAdditionalNestedField1Id,
             binding.etAdditionalNestedField1Value,
@@ -284,9 +281,9 @@ class ConfigurationScreen : UsedeskFragment() {
             nested,
             2
         )
-        binding.switchKb.isChecked = configuration.withKb
-        binding.switchKbWithSupportButton.isChecked = configuration.withKbSupportButton
-        binding.switchKbWithArticleRating.isChecked = configuration.withKbArticleRating
+        binding.switchKb.isChecked = withKb
+        binding.switchKbWithSupportButton.isChecked = withKbSupportButton
+        binding.switchKbWithArticleRating.isChecked = withKbArticleRating
     }
 
     private fun setAdditionalField(
@@ -332,15 +329,14 @@ class ConfigurationScreen : UsedeskFragment() {
         isValid: Boolean,
         errorStringId: Int
     ) {
-        textInputLayout.error = if (isValid) {
-            null
-        } else {
-            resources.getString(errorStringId)
+        textInputLayout.error = when {
+            isValid -> null
+            else -> resources.getString(errorStringId)
         }
     }
 
-    private fun onNewConfigurationValidation(configurationValidation: ConfigurationValidation) {
-        configurationValidation.chatConfigurationValidation.run {
+    private fun ConfigurationValidation.onNewConfigurationValidation() {
+        chatConfigurationValidation.run {
             showError(
                 binding.tilUrlChat,
                 validUrlChat,
@@ -373,7 +369,7 @@ class ConfigurationScreen : UsedeskFragment() {
             )
         }
 
-        configurationValidation.knowledgeBaseConfiguration.run {
+        knowledgeBaseConfiguration.run {
             showError(
                 binding.tilUrlApi,
                 validUrlApi,
@@ -393,12 +389,6 @@ class ConfigurationScreen : UsedeskFragment() {
     }
 
     interface IOnGoToSdkListener {
-        fun goToSdk()
-    }
-
-    companion object {
-        fun newInstance(): ConfigurationScreen {
-            return ConfigurationScreen()
-        }
+        fun goToSdk(configuration: Configuration)
     }
 }

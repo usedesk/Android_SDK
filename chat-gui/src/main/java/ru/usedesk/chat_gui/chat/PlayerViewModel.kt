@@ -42,7 +42,7 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
     }
 
     fun onBackPressed(): Boolean {
-        val modelValue = modelLiveData.value
+        val modelValue = modelFlow.value
         return if (modelValue.fullscreen || modelValue.fullscreen) {
             setModel { copy(fullscreen = false) }
             true

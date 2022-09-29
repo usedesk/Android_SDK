@@ -24,10 +24,9 @@ internal class UsedeskAttachmentDialog private constructor(
             layoutInflater,
             container,
             R.layout.usedesk_dialog_attachment,
-            dialogStyle
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            dialogStyle,
+            ::Binding
+        )
 
         setContentView(binding.rootView)
 

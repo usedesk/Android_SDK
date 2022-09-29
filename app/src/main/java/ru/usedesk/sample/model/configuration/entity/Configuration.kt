@@ -35,43 +35,30 @@ data class Configuration(
     val withKbArticleRating: Boolean = true
 ) {
 
-    fun toChatConfiguration(): UsedeskChatConfiguration {
-        val defaultChatConfiguration = UsedeskChatConfiguration(
-            companyId = companyId,
-            channelId = channelId
-        )
-        return UsedeskChatConfiguration(
-            urlChat,
-            urlChatApi.ifEmpty { defaultChatConfiguration.urlChatApi },
-            companyId,
-            channelId,
-            messagesPageSize,
-            clientToken,
-            clientEmail,
-            clientName,
-            clientNote,
-            clientPhoneNumber,
-            clientAdditionalId,
-            clientInitMessage,
-            clientAvatar,
-            cacheFiles,
-            additionalFields,
-            additionalNestedFields
-        )
-    }
+    fun toChatConfiguration() = UsedeskChatConfiguration(
+        urlChat = urlChat,
+        urlChatApi = urlChatApi,
+        companyId = companyId,
+        channelId = channelId,
+        messagesPageSize = messagesPageSize,
+        clientToken = clientToken,
+        clientEmail = clientEmail,
+        clientName = clientName,
+        clientNote = clientNote,
+        clientPhoneNumber = clientPhoneNumber,
+        clientAdditionalId = clientAdditionalId,
+        clientInitMessage = clientInitMessage,
+        clientAvatar = clientAvatar,
+        cacheMessagesWithFile = cacheFiles,
+        additionalFields = additionalFields,
+        additionalNestedFields = additionalNestedFields
+    )
 
-    fun toKbConfiguration(): UsedeskKnowledgeBaseConfiguration {
-        val defaultConfiguration = UsedeskKnowledgeBaseConfiguration(
-            accountId,
-            token,
-            clientEmail
-        )
-        return UsedeskKnowledgeBaseConfiguration(
-            urlApi.ifEmpty { defaultConfiguration.urlApi },
-            accountId,
-            token,
-            clientEmail,
-            clientName
-        )
-    }
+    fun toKbConfiguration() = UsedeskKnowledgeBaseConfiguration(
+        urlApi = urlApi,
+        accountId = accountId,
+        token = token,
+        clientEmail = clientEmail,
+        clientName = clientName
+    )
 }

@@ -1,34 +1,26 @@
 package ru.usedesk.knowledgebase_sdk.di
 
-import com.google.gson.Gson
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import ru.usedesk.common_sdk.api.IUsedeskApiFactory
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApiRepository
-import ru.usedesk.knowledgebase_sdk.data.repository.api.KnowledgeBaseApiRepository
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi
+import ru.usedesk.knowledgebase_sdk.data.repository.api.KnowledgeBaseApi
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.domain.KnowledgeBaseInteractor
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import javax.inject.Scope
 
+@Module(includes = [KnowledgeBaseModuleProvides::class, KnowledgeBaseModuleBinds::class])
+internal interface KnowledgeBaseModule
+
 @Module
-internal object KnowledgeBaseModule {
+internal class KnowledgeBaseModuleProvides
 
-    @[Provides KnowledgeBaseScope]
-    fun provideApiRepository(
-        knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration,
-        apiFactory: IUsedeskApiFactory,
-        gson: Gson
-    ): IKnowledgeBaseApiRepository = KnowledgeBaseApiRepository(
-        knowledgeBaseConfiguration,
-        apiFactory,
-        gson
-    )
+@Module
+internal interface KnowledgeBaseModuleBinds {
+    @[Binds KnowledgeBaseScope]
+    fun knowledgeBaseApi(repository: KnowledgeBaseApi): IKnowledgeBaseApi
 
-    @[Provides KnowledgeBaseScope]
-    fun provideKnowledgeBaseInteractor(
-        knowledgeBaseApiRepository: IKnowledgeBaseApiRepository
-    ): IUsedeskKnowledgeBase = KnowledgeBaseInteractor(knowledgeBaseApiRepository)
+    @[Binds KnowledgeBaseScope]
+    fun knowledgeBaseInteractor(interactor: KnowledgeBaseInteractor): IUsedeskKnowledgeBase
 }
 
 @Scope

@@ -3,42 +3,38 @@ package ru.usedesk.knowledgebase_sdk.data.repository.api
 import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
+import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
 import ru.usedesk.knowledgebase_sdk.entity.*
 import java.util.*
+import javax.inject.Inject
 
-internal class KnowledgeBaseApiRepository(
+internal class KnowledgeBaseApi @Inject constructor(
     private val configuration: UsedeskKnowledgeBaseConfiguration,
+    multipartConverter: IUsedeskMultipartConverter,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
-) : UsedeskApiRepository<ApiRetrofit>(apiFactory, gson, ApiRetrofit::class.java),
-    IKnowledgeBaseApiRepository {
+) : UsedeskApiRepository<ApiRetrofit>(
+    apiFactory,
+    multipartConverter,
+    gson,
+    ApiRetrofit::class.java
+), IKnowledgeBaseApi {
 
     private var sections: List<UsedeskSection>? = null
 
-    override fun getSections(): List<UsedeskSection> {
-        return sections ?: loadSections().also {
-            sections = it
-        }
-    }
+    override fun getSections() = sections ?: loadSections().also { sections = it }
 
-    override fun getCategories(sectionId: Long): List<UsedeskCategory> {
-        return getSections().firstOrNull {
-            it.id == sectionId
-        }?.categories
-            ?: throw UsedeskDataNotFoundException("Categories not found by section id($sectionId)")
-    }
+    override fun getCategories(sectionId: Long) = getSections().firstOrNull { it.id == sectionId }
+        ?.categories
+        ?: throw UsedeskDataNotFoundException("Categories not found by section id($sectionId)")
 
-    override fun getArticles(categoryId: Long): List<UsedeskArticleInfo> {
-        return getSections().flatMap {
-            it.categories
-        }.firstOrNull {
-            it.id == categoryId
-        }?.articles
-            ?: throw UsedeskDataNotFoundException("Articles not found by category id($categoryId)")
-    }
+    override fun getArticles(categoryId: Long) = getSections().flatMap { it.categories }
+        .firstOrNull { it.id == categoryId }
+        ?.articles
+        ?: throw UsedeskDataNotFoundException("Articles not found by category id($categoryId)")
 
     override fun getArticle(articleId: Long): UsedeskArticleContent {
         val articleContentResponse = doRequest(
@@ -140,42 +136,40 @@ internal class KnowledgeBaseApiRepository(
         }
     }
 
-    private fun loadSections(): List<UsedeskSection> {
-        return doRequest(
-            configuration.urlApi,
-            Array<SectionResponse>::class.java
-        ) {
-            getSections(configuration.accountId, configuration.token)
-        }.mapNotNull { sectionResponse ->
-            valueOrNull {
-                val categories = sectionResponse.categories?.mapNotNull { categoryResponse ->
-                    valueOrNull {
-                        val categoryId = categoryResponse!!.id!!
-                        val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
-                            valueOrNull {
-                                UsedeskArticleInfo(
-                                    articleResponse!!.id!!,
-                                    articleResponse.title ?: "",
-                                    categoryId,
-                                    articleResponse.views ?: 0
-                                )
-                            }
-                        } ?: listOf()
-                        UsedeskCategory(
-                            categoryId,
-                            categoryResponse.title ?: "",
-                            categoryResponse.description ?: "",
-                            articles
-                        )
-                    }
-                } ?: listOf()
-                UsedeskSection(
-                    sectionResponse.id!!,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                )
-            }
+    private fun loadSections(): List<UsedeskSection> = doRequest(
+        configuration.urlApi,
+        Array<SectionResponse>::class.java
+    ) {
+        getSections(configuration.accountId, configuration.token)
+    }.mapNotNull { sectionResponse ->
+        valueOrNull {
+            val categories = sectionResponse.categories?.mapNotNull { categoryResponse ->
+                valueOrNull {
+                    val categoryId = categoryResponse!!.id!!
+                    val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
+                        valueOrNull {
+                            UsedeskArticleInfo(
+                                articleResponse!!.id!!,
+                                articleResponse.title ?: "",
+                                categoryId,
+                                articleResponse.views ?: 0
+                            )
+                        }
+                    } ?: listOf()
+                    UsedeskCategory(
+                        categoryId,
+                        categoryResponse.title ?: "",
+                        categoryResponse.description ?: "",
+                        articles
+                    )
+                }
+            } ?: listOf()
+            UsedeskSection(
+                sectionResponse.id!!,
+                sectionResponse.title ?: "",
+                sectionResponse.image,
+                categories
+            )
         }
     }
 }

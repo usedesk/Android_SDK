@@ -1,51 +1,45 @@
 package ru.usedesk.sample.ui.screens.configuration
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_gui.UsedeskLiveData
+import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import ru.usedesk.sample.ServiceLocator
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
+import ru.usedesk.sample.ui.screens.configuration.ConfigurationViewModel.Model
 
-class ConfigurationViewModel : ViewModel() {
+class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     private val configurationRepository = ServiceLocator.configurationRepository
 
-    val configurationLiveData = UsedeskLiveData(
-        configurationRepository.getConfigurationFlow().value
-    )
-    val configurationValidation = MutableLiveData<ConfigurationValidation?>()
-    val avatarLiveData = MutableLiveData<String?>()
-
-    val clientTokenLiveData = UsedeskLiveData(ClientToken())
-
     private val mainScope = CoroutineScope(Dispatchers.Main)
+
+    data class Model(
+        val configuration: Configuration = Configuration(),
+        val validation: ConfigurationValidation? = null,
+        val avatar: String? = null,
+        val clientToken: ClientToken = ClientToken()
+    )
 
     init {
         mainScope.launch {
             configurationRepository.getConfigurationFlow().collect {
-                configurationLiveData.value = it
+                setModel { copy(configuration = it) }
             }
         }
     }
 
     fun onGoSdkClick(configuration: Configuration): Boolean {
         val configurationValidation = validate(configuration)
-        this.configurationValidation.postValue(configurationValidation)
+        setModel { copy(validation = configurationValidation) }
         return if (configurationValidation.chatConfigurationValidation.isAllValid()
             && configurationValidation.knowledgeBaseConfiguration.isAllValid()
         ) {
-            this.configurationLiveData.postValue(configuration)
             configurationRepository.setConfiguration(configuration)
             true
         } else {
@@ -55,11 +49,10 @@ class ConfigurationViewModel : ViewModel() {
 
     fun onCreateChat(configuration: Configuration): Boolean {
         val configurationValidation = validate(configuration)
-        this.configurationValidation.postValue(configurationValidation)
+        setModel { copy(validation = configurationValidation) }
         return if (configurationValidation.chatConfigurationValidation.isAllValid()
             && configurationValidation.knowledgeBaseConfiguration.isAllValid()
         ) {
-            this.configurationLiveData.postValue(configuration)
             configurationRepository.setConfiguration(configuration)
             true
         } else {
@@ -68,11 +61,11 @@ class ConfigurationViewModel : ViewModel() {
     }
 
     fun setTempConfiguration(configuration: Configuration) {
-        this.configurationLiveData.value = configuration
+        setModel { copy(configuration = configuration) }
     }
 
     fun setAvatar(avatar: String?) {
-        avatarLiveData.value = avatar
+        setModel { copy(avatar = avatar) }
     }
 
     private fun validate(configuration: Configuration): ConfigurationValidation {
@@ -111,38 +104,39 @@ class ConfigurationViewModel : ViewModel() {
         mainScope.cancel()
     }
 
-    fun isMaterialComponentsSwitched(configuration: Configuration): Boolean {
-        return if (configuration.materialComponents != configurationLiveData.value.materialComponents) {
+    fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
+        if (configuration.materialComponents != modelFlow.value.configuration.materialComponents) {
             configurationRepository.setConfiguration(configuration)
             true
         } else {
             false
         }
-    }
 
     fun createChat(apiToken: String) {
-        clientTokenLiveData.value = clientTokenLiveData.value.copy(
-            loading = true
-        )
-        val ignored = Single.create<String> {
-            it.onSuccess(
-                UsedeskChatSdk.requireInstance().createChat(apiToken)
-            )
-        }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread()).subscribe { clientToken, throwable ->
-                clientTokenLiveData.value = clientTokenLiveData.value.copy(
-                    loading = false,
-                    completed = when {
-                        clientToken != null -> UsedeskSingleLifeEvent(clientToken)
-                        else -> null
-                    },
-                    error = when {
-                        clientToken != null -> null
-                        else -> UsedeskSingleLifeEvent(throwable?.message)
-                    }
-                )
-                UsedeskChatSdk.release(false)
+        setModel { copy(clientToken = clientToken.copy(loading = true)) }
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val token = UsedeskChatSdk.requireInstance().createChat(apiToken)
+                setModel {
+                    copy(
+                        clientToken = clientToken.copy(
+                            loading = false,
+                            completed = UsedeskSingleLifeEvent(token)
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                setModel {
+                    copy(
+                        clientToken = clientToken.copy(
+                            loading = false,
+                            error = UsedeskSingleLifeEvent(e.message)
+                        )
+                    )
+                }
             }
+            UsedeskChatSdk.release(false)
+        }
     }
 
     data class ClientToken(

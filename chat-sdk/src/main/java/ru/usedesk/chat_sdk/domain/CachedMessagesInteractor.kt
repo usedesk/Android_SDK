@@ -9,8 +9,9 @@ import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import javax.inject.Inject
 
-internal class CachedMessagesInteractor(
+internal class CachedMessagesInteractor @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
     private val userInfoRepository: IUserInfoRepository
@@ -186,7 +187,7 @@ internal class CachedMessagesInteractor(
     }
 
     private fun findUserKey(): String? {
-        val config = userInfoRepository.getConfigurationNullable(this.configuration)
+        val config = userInfoRepository.getConfiguration(this.configuration)
             ?: configuration
         val token = config.clientToken
         return if (token?.isNotEmpty() == true) {

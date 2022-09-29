@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -40,7 +41,7 @@ internal class MediaPlayerAdapter(
         rootView as PlayerView
     }
 
-    private var restored = playerViewModel.modelLiveData.value.key.isNotEmpty()
+    private var restored = playerViewModel.modelFlow.value.key.isNotEmpty()
 
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
         ?: ExoPlayer.Builder(fragment.requireContext())
@@ -86,7 +87,7 @@ internal class MediaPlayerAdapter(
         }
 
         videoBinding.ivDownload.setOnClickListener {
-            val model = playerViewModel.modelLiveData.value
+            val model = playerViewModel.modelFlow.value
             downloadListener?.onDownload(model.key, model.name)
         }
         videoBinding.ivDownload.visibility = visibleGone(downloadListener != null)
@@ -96,7 +97,7 @@ internal class MediaPlayerAdapter(
         }
         videoBinding.fullscreenButton.visibility = visibleGone(fullscreenListener != null)
 
-        playerViewModel.modelLiveData.initAndObserveWithOld(fragment) { old, new ->
+        playerViewModel.modelFlow.onEachWithOld(fragment.lifecycleScope) { old, new ->
             if (!restored && old?.mode != new.mode) {
                 resetPlayer()
             }
@@ -147,7 +148,7 @@ internal class MediaPlayerAdapter(
             }
 
             override fun onResume(owner: LifecycleOwner) {
-                val model = playerViewModel.modelLiveData.value
+                val model = playerViewModel.modelFlow.value
                 if (model.fullscreen &&
                     (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
                 ) {
@@ -170,7 +171,7 @@ internal class MediaPlayerAdapter(
     }
 
     private fun changeFullscreen(fullscreen: Boolean) {
-        when (playerViewModel.modelLiveData.value.mode) {
+        when (playerViewModel.modelFlow.value.mode) {
             PlayerViewModel.Mode.VIDEO_EXO_PLAYER -> {
                 (pvVideoExoPlayer.parent as? ViewGroup)?.removeView(pvVideoExoPlayer)
 
@@ -262,7 +263,7 @@ internal class MediaPlayerAdapter(
      * Detach current player view if mediaKey is equal to the mediaKey of current player.
      */
     fun detachPlayer(key: String): Boolean {
-        val model = playerViewModel.modelLiveData.value
+        val model = playerViewModel.modelFlow.value
         return if (model.key == key && !model.fullscreen) {
             lastMinimizeView = currentMinimizeView
             resetPlayer()
@@ -290,7 +291,7 @@ internal class MediaPlayerAdapter(
         onCancel: () -> Unit,
         onControlsHeightChanged: ((Int) -> Unit) = {}
     ): Boolean {
-        val model = playerViewModel.modelLiveData.value
+        val model = playerViewModel.modelFlow.value
         return if (model.key == mediaKey) {
             //Сохраним данные для плеера
             currentMinimizeView = MinimizeView(

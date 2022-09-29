@@ -5,11 +5,12 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_gui.visibleInvisible
 
 internal class FabToBottomAdapter(
@@ -18,7 +19,7 @@ internal class FabToBottomAdapter(
     tvToBottom: TextView,
     parentStyleValues: UsedeskResourceManager.StyleValues,
     viewModel: MessagesViewModel,
-    lifecycleOwner: LifecycleOwner,
+    lifecycleCoroutineScope: LifecycleCoroutineScope,
     onClickListener: () -> Unit
 ) {
     private val animationIn: Animation
@@ -62,27 +63,27 @@ internal class FabToBottomAdapter(
             })
         }
         fabContainer.visibility = View.INVISIBLE
-        fabToBottom.setOnClickListener {
-            onClickListener()
-        }
-        viewModel.modelLiveData.initAndObserveWithOld(lifecycleOwner) { old, new ->
+        fabToBottom.setOnClickListener { onClickListener() }
+        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             if (old?.fabToBottom != new.fabToBottom) {
-                if (old?.fabToBottom == null) {
-                    fabContainer.visibility = visibleInvisible(new.fabToBottom)
-                } else if (new.fabToBottom && !old.fabToBottom) {
-                    fabContainer.startAnimation(animationIn)
-                } else if (!new.fabToBottom && old.fabToBottom) {
-                    fabContainer.startAnimation(animationOut)
+                when {
+                    old?.fabToBottom == null ->
+                        fabContainer.visibility = visibleInvisible(new.fabToBottom)
+                    new.fabToBottom && !old.fabToBottom -> fabContainer.startAnimation(animationIn)
+                    !new.fabToBottom && old.fabToBottom -> fabContainer.startAnimation(animationOut)
                 }
             }
-            if (old?.newMessagesCount != new.newMessagesCount) {
+            if (old?.agentIndexShowed != new.agentIndexShowed) {
                 tvToBottom.run {
                     text = when {
-                        new.newMessagesCount > 99 -> "99+"
-                        else -> new.newMessagesCount.toString()
+                        new.agentIndexShowed > 99 -> "99+"
+                        else -> new.agentIndexShowed.toString()
                     }
-                    visibility = visibleInvisible(new.newMessagesCount > 0)
+                    visibility = visibleInvisible(new.agentIndexShowed > 0)
                 }
+            }
+            if (old?.goToBottom != new.goToBottom) {
+                new.goToBottom?.process { onClickListener() }
             }
         }
     }

@@ -18,7 +18,7 @@ internal class ArticlesSearchViewModel : UsedeskViewModel<ArticlesSearchViewMode
     }
 
     fun onSearchQuery(searchQuery: String) {
-        if (lastQuery != searchQuery || modelLiveData.value.state == State.FAILED) {
+        if (lastQuery != searchQuery || modelFlow.value.state == State.FAILED) {
             lastQuery = searchQuery
             loadingDisposable?.dispose()
             setModel {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.common_gui.*
@@ -29,15 +30,14 @@ internal class SectionsPage : UsedeskFragment() {
             inflater,
             container,
             R.layout.usedesk_page_list,
-            R.style.Usedesk_KnowledgeBase_Sections_Page
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }
+            R.style.Usedesk_KnowledgeBase_Sections_Page,
+            ::Binding
+        )
 
         sectionsAdapter = SectionsAdapter(
             binding.rvItems,
             viewModel,
-            viewLifecycleOwner
+            lifecycleScope
         ) { id, title ->
             findNavController().navigate(
                 R.id.action_sectionsPage_to_categoriesPage,
@@ -47,7 +47,7 @@ internal class SectionsPage : UsedeskFragment() {
 
         loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoading)
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
                 binding.rvItems.visibility = visibleInvisible(new.state == State.LOADED)

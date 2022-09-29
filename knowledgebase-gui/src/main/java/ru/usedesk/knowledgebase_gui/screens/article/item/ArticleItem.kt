@@ -27,7 +27,7 @@ internal class ArticleItem : UsedeskFragment() {
 
     private val viewModel: ArticleItemViewModel by viewModels()
     private val parentViewModel: ArticlePageViewModel by viewModels(
-        ownerProducer = { requireParentFragment() }
+        ownerProducer = this@ArticleItem::requireParentFragment
     )
 
     private lateinit var messageStyleValues: UsedeskResourceManager.StyleValues
@@ -50,10 +50,9 @@ internal class ArticleItem : UsedeskFragment() {
             layoutInflater,
             container,
             R.layout.usedesk_page_item_article_content,
-            R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item
-        ) { rootView, defaultStyleId ->
-            Binding(rootView, defaultStyleId)
-        }.apply {
+            R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item,
+            ::Binding
+        ).apply {
             messageStyleValues = styleValues
                 .getStyleValues(R.attr.usedesk_knowledgebase_article_content_page_rating_title_text)
 
@@ -116,7 +115,7 @@ internal class ArticleItem : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
                 binding.wvContent.visibility = visibleInvisible(new.state == State.LOADED)
@@ -128,7 +127,7 @@ internal class ArticleItem : UsedeskFragment() {
                 }
             }
         }
-        parentViewModel.modelLiveData.initAndObserveWithOld(viewLifecycleOwner) { old, new ->
+        parentViewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.selectedArticle != new.selectedArticle) {
                 currentArticleId?.let {
                     if (new.selectedArticle?.id != it) {

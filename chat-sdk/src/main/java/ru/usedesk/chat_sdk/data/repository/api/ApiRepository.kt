@@ -7,13 +7,12 @@ import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import ru.usedesk.chat_sdk.data.repository._extra.retrofit.IHttpApi
+import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendResult
 import ru.usedesk.chat_sdk.data.repository.api.entity.*
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.multipart.IMultipartConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
@@ -23,23 +22,30 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.Mes
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
+import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
+import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.min
 
-internal class ApiRepository(
+internal class ApiRepository @Inject constructor(
     private val socketApi: SocketApi,
-    private val multipartConverter: IMultipartConverter,
     private val initChatResponseConverter: InitChatResponseConverter,
     private val messageResponseConverter: MessageResponseConverter,
     private val contentResolver: ContentResolver,
+    multipartConverter: IUsedeskMultipartConverter,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
-) : UsedeskApiRepository<IHttpApi>(apiFactory, gson, IHttpApi::class.java),
-    IApiRepository {
+) : UsedeskApiRepository<RetrofitApi>(
+    apiFactory,
+    multipartConverter,
+    gson,
+    RetrofitApi::class.java
+), IApiRepository {
 
     private fun isConnected() = socketApi.isConnected()
 
@@ -85,10 +91,10 @@ internal class ApiRepository(
         override fun onNew(messageResponse: MessageResponse) {
             val messages = messageResponseConverter.convert(messageResponse.message)
             messages.forEach {
-                if (it is UsedeskMessageClient && it.id != it.localId) {
-                    eventListener.onMessageUpdated(it)
-                } else {
-                    eventListener.onMessagesNewReceived(listOf(it))
+                when {
+                    it is UsedeskMessageClient && it.id != it.localId ->
+                        eventListener.onMessageUpdated(it)
+                    else -> eventListener.onMessagesNewReceived(listOf(it))
                 }
             }
         }
@@ -102,7 +108,7 @@ internal class ApiRepository(
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): String {
-        val parts = mapOf(
+        val parts = listOf(
             "api_token" to apiToken,
             "company_id" to configuration.companyId,
             "channel_id" to configuration.channelId,
@@ -113,12 +119,13 @@ internal class ApiRepository(
             "note" to configuration.clientNote,
             "avatar" to getAvatarMultipartBodyPart(configuration),
             "platform" to "sdk"
-        ).mapNotNull(multipartConverter::convert)
-        val response = doRequest(
+        )
+        val response = doRequestMultipart(
             configuration.urlChatApi,
-            CreateChatResponse::class.java
-        ) { createChat(parts) }
-
+            parts,
+            CreateChatResponse::class.java,
+            RetrofitApi::createChat
+        )
         return response.token
     }
 
@@ -177,16 +184,18 @@ internal class ApiRepository(
     ) {
         checkConnection()
 
-        val parts = mapOf(
+        val parts = listOf(
             "chat_token" to token,
             "file" to fileInfo.uri,
             "message_id" to messageId
-        ).mapNotNull(multipartConverter::convert)
+        )
 
-        doRequest(
+        doRequestMultipart(
             configuration.urlChatApi,
-            FileResponse::class.java
-        ) { postFile(parts) }
+            parts,
+            FileResponse::class.java,
+            RetrofitApi::postFile
+        )
     }
 
     override fun setClient(
@@ -195,21 +204,22 @@ internal class ApiRepository(
         checkConnection()
 
         try {
-            val parts = (mapOf(
+            val parts = listOf(
                 "email" to configuration.clientEmail?.getCorrectStringValue(),
                 "username" to configuration.clientName?.getCorrectStringValue(),
                 "token" to configuration.clientToken,
                 "note" to configuration.clientNote,
                 "phone" to configuration.clientPhoneNumber,
                 "additional_id" to configuration.clientAdditionalId,
-                "company_id" to configuration.companyId
-            ).map(multipartConverter::convert) + getAvatarMultipartBodyPart(configuration)).filterNotNull()
-
-            doRequest(
+                "company_id" to configuration.companyId,
+                "avatar" to getAvatarMultipartBodyPart(configuration)
+            )
+            doRequestMultipart(
                 configuration.urlChatApi,
-                SetClientResponse::class.java
-            ) { setClient(parts) }
-
+                parts,
+                SetClientResponse::class.java,
+                RetrofitApi::setClient
+            )
             socketEventListener.onSetEmailSuccess()
         } catch (e: IOException) {
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
@@ -248,11 +258,7 @@ internal class ApiRepository(
                 val byteArray = outputStream.toByteArray()
                 avatarBitmap.recycle()
 
-                multipartConverter.convert(
-                    "avatar",
-                    byteArray,
-                    configuration.clientAvatar
-                )
+                FileBytes(byteArray, configuration.clientAvatar)
             } catch (e: Exception) {
                 e.printStackTrace()
                 null

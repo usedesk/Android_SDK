@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.entity
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
@@ -23,6 +24,9 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val additionalFields: Map<Long, String> = mapOf(),
     val additionalNestedFields: List<Map<Long, String>> = listOf()
 ) : Parcelable {
+    @IgnoredOnParcel
+    val userKey: String = """${clientEmail ?: ""}_${clientPhoneNumber ?: ""}_${clientName ?: ""}"""
+
     fun getCompanyAndChannel(): String = "${companyId}_$channelId"
 
     fun validate(): Validation {
@@ -37,13 +41,10 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         )
     }
 
-    private fun isNotEmptyNumber(value: String): Boolean {
-        return value.isNotEmpty() && value.all { it in '0'..'9' }
-    }
+    private fun isNotEmptyNumber(value: String): Boolean =
+        value.isNotEmpty() && value.all { it in '0'..'9' }
 
-    private fun isValidClientToken(value: String?): Boolean {
-        return value == null || value.length >= 64
-    }
+    private fun isValidClientToken(value: String?): Boolean = value == null || value.length >= 64
 
     class Validation(
         val validUrlChat: Boolean,
@@ -54,23 +55,19 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         val validClientEmail: Boolean,
         val validClientPhoneNumber: Boolean
     ) {
-        fun isAllValid(): Boolean {
-            return validUrlChat
-                    && validUrlOfflineForm
-                    && validCompanyId
-                    && validChannelId
-                    && validClientEmail
-                    && validClientPhoneNumber
-        }
+        fun isAllValid(): Boolean = validUrlChat
+                && validUrlOfflineForm
+                && validCompanyId
+                && validChannelId
+                && validClientEmail
+                && validClientPhoneNumber
 
-        override fun toString(): String {
-            return "Validation(validUrlChat=$validUrlChat, " +
-                    "validUrlOfflineForm=$validUrlOfflineForm, " +
-                    "validCompanyId=$validCompanyId, " +
-                    "validChannelId=$validChannelId, " +
-                    "validClientToken=$validClientToken, " +
-                    "validClientEmail=$validClientEmail, " +
-                    "validClientPhoneNumber=$validClientPhoneNumber)"
-        }
+        override fun toString(): String = "Validation(validUrlChat=$validUrlChat, " +
+                "validUrlOfflineForm=$validUrlOfflineForm, " +
+                "validCompanyId=$validCompanyId, " +
+                "validChannelId=$validChannelId, " +
+                "validClientToken=$validClientToken, " +
+                "validClientEmail=$validClientEmail, " +
+                "validClientPhoneNumber=$validClientPhoneNumber)"
     }
 }

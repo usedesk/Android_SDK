@@ -290,15 +290,14 @@ internal class MessageResponseConverter @Inject constructor() :
     private fun String.getExcludeRanges(
         includedRanges: List<IntRange>
     ): List<IntRange> {
-        val ranges = includedRanges.sortedBy { it.first }
+        val ranges = includedRanges.sortedBy(IntRange::first)
         return (sequenceOf(
             0 until (ranges.firstOrNull()?.first ?: length),
             (ranges.lastOrNull()?.last?.inc() ?: 0) until length
         ) + ranges.indices.mapNotNull { i ->
-            if (i < ranges.size - 1) {
-                ranges[i].last + 1 until ranges[i + 1].first
-            } else {
-                null
+            when {
+                i < ranges.size - 1 -> ranges[i].last + 1 until ranges[i + 1].first
+                else -> null
             }
         }.asSequence())
             .filter { it.first <= it.last && it.first in this.indices && it.last in this.indices }
@@ -329,7 +328,7 @@ internal class MessageResponseConverter @Inject constructor() :
         val builder = StringBuilder()
 
         (withPhonesRanges + noPhones).toSet()
-            .sortedBy { it.first }
+            .sortedBy(IntRange::first)
             .forEach {
                 val part = this.substring(it)
                 builder.append(when (it) {

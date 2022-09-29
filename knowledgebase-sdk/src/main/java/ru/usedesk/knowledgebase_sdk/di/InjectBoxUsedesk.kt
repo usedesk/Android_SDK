@@ -14,8 +14,8 @@ internal class InjectBoxUsedesk(
 
     init {
         val knowledgeBaseComponent = DaggerKnowledgeBaseComponent.builder()
-            .bindAppContext(appContext)
-            .bindKnowledgeBaseConfiguration(knowledgeBaseConfiguration)
+            .appContext(appContext)
+            .configuration(knowledgeBaseConfiguration)
             .build()
 
         this.knowledgeBaseComponent = knowledgeBaseComponent

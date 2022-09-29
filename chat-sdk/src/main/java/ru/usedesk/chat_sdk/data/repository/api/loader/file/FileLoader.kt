@@ -33,9 +33,7 @@ internal class FileLoader @Inject constructor(
                     missingDelimiterValue = name
                 )
                 val outputFile = File(cacheDir, newFileName)
-                FileOutputStream(outputFile).use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
+                FileOutputStream(outputFile).use(inputStream::copyTo)
 
                 outputUri = Uri.fromFile(outputFile)
             }

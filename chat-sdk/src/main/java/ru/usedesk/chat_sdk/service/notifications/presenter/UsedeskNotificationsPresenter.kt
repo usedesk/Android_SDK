@@ -16,21 +16,17 @@ class UsedeskNotificationsPresenter {
             actionListenerRx = object : IUsedeskActionListenerRx() {
                 override fun onNewMessageObservable(
                     newMessageObservable: Observable<UsedeskMessage>
-                ) = newMessageObservable.filter {
-                    it is UsedeskMessageAgent
-                }.map {
-                    UsedeskNotificationsModel(it)
-                }.map {
-                    val curModel = lastModel
-                    lastModel = if (curModel == null) {
-                        it
-                    } else {
-                        UsedeskNotificationsModel(it.message, curModel.count + 1)
-                    }
-                    lastModel
-                }.subscribe {
-                    onModel(it)
-                }
+                ) = newMessageObservable
+                    .filter { it is UsedeskMessageAgent }
+                    .map(::UsedeskNotificationsModel)
+                    .map {
+                        val curModel = lastModel
+                        lastModel = when (curModel) {
+                            null -> it
+                            else -> UsedeskNotificationsModel(it.message, curModel.count + 1)
+                        }
+                        lastModel
+                    }.subscribe(onModel)
             }
 
             addActionListener(actionListenerRx)

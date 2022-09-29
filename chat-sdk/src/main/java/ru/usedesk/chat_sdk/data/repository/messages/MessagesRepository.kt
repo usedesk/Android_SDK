@@ -61,9 +61,7 @@ internal class MessagesRepository(
     @Synchronized
     override fun getNotSentMessages(userKey: String): List<UsedeskMessageClient> {
         initIfNeeded(userKey)
-        return notSentMessages.values.map {
-            toClientMessage(it)
-        }
+        return notSentMessages.values.map(this@MessagesRepository::toClientMessage)
     }
 
     @Synchronized

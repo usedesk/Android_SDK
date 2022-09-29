@@ -38,9 +38,7 @@ internal class SectionsViewModel : UsedeskViewModel<SectionsViewModel.Model>(Mod
                     state = State.FAILED
                 )
             }
-            doIt(Completable.timer(3, TimeUnit.SECONDS), {
-                reload()
-            })
+            doIt(Completable.timer(3, TimeUnit.SECONDS), this::reload)
         })
     }
 

@@ -32,9 +32,6 @@ internal interface UsedeskCommonModuleBinds {
     @Binds
     fun dateConverter(converter: MultipartConverter): IUsedeskMultipartConverter
 
-    /*@Binds
-    fun okHttpClientFactory(factory: UsedeskOkHttpClientFactory): UsedeskOkHttpClientFactory*/
-
     @Binds
     fun apiFactory(factory: ApiFactory): IUsedeskApiFactory
 }

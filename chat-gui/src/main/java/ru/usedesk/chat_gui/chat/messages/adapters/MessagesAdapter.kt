@@ -172,9 +172,7 @@ internal class MessagesAdapter(
         }
     }
 
-    private fun View.makeGlobalVisibleRect() = Rect().also {
-        this.getGlobalVisibleRect(it)
-    }
+    private fun View.makeGlobalVisibleRect() = Rect().also(this::getGlobalVisibleRect)
 
     private fun isAtBottom(): Boolean {
         val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
@@ -632,7 +630,7 @@ internal class MessagesAdapter(
             val name = messageFile.file.name
             binding.tvFileName.text = name
             binding.tvExtension.text = name.substringAfterLast('.')
-            if (rejectedFileExtensions.any { name.endsWith(it) }) {
+            if (rejectedFileExtensions.any(name::endsWith)) {
                 val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_2)
                 binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
                 binding.tvFileSize.setTextColor(textColor)

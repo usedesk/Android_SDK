@@ -62,12 +62,6 @@ internal interface ChatModuleBinds {
     @[Binds ChatScope]
     fun userInfoRepository(repository: UserInfoRepository): IUserInfoRepository
 
-    /*@[Binds ChatScope]
-    fun initChatResponseConverter(converter: InitChatResponseConverter): InitChatResponseConverter*/
-
-    /*@[Binds ChatScope]
-    fun messageResponseConverter(converter: MessageResponseConverter): MessageResponseConverter*/
-
     @[Binds ChatScope]
     fun fileLoader(loader: FileLoader): IFileLoader
 
@@ -76,9 +70,6 @@ internal interface ChatModuleBinds {
 
     @[Binds ChatScope]
     fun configurationLoader(loader: ConfigurationLoader): IConfigurationLoader
-
-    /*@[Binds ChatScope]
-    fun socketApi(api: SocketApi): SocketApi*/
 }
 
 @Scope

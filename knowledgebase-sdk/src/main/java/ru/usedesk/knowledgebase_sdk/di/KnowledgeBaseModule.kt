@@ -17,10 +17,10 @@ internal class KnowledgeBaseModuleProvides
 @Module
 internal interface KnowledgeBaseModuleBinds {
     @[Binds KnowledgeBaseScope]
-    fun knowledgeBaseApi(repository: KnowledgeBaseApi): IKnowledgeBaseApi
+    fun api(api: KnowledgeBaseApi): IKnowledgeBaseApi
 
     @[Binds KnowledgeBaseScope]
-    fun knowledgeBaseInteractor(interactor: KnowledgeBaseInteractor): IUsedeskKnowledgeBase
+    fun interactor(interactor: KnowledgeBaseInteractor): IUsedeskKnowledgeBase
 }
 
 @Scope

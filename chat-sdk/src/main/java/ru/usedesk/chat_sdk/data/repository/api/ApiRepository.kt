@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendResult
@@ -136,11 +137,13 @@ internal class ApiRepository @Inject constructor(
         eventListener: EventListener
     ) {
         this.eventListener = eventListener
-        socketApi.connect(
-            url,
-            configuration.getInitChatRequest(token),
-            socketEventListener
-        )
+        runBlocking {
+            socketApi.connect(
+                url,
+                configuration.getInitChatRequest(token),
+                socketEventListener
+            )
+        }
     }
 
     override fun init(
@@ -345,7 +348,9 @@ internal class ApiRepository @Inject constructor(
     private fun String.getCorrectStringValue() = replace("\"", "\\\"")
 
     override fun disconnect() {
-        socketApi.disconnect()
+        runBlocking {
+            socketApi.disconnect()
+        }
     }
 
     private fun checkConnection() {

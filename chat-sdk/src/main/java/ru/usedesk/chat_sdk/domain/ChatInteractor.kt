@@ -618,7 +618,6 @@ internal class ChatInteractor @Inject constructor(
             }
             else -> apiRepository.send(
                 configuration,
-                configuration.getCompanyAndChannel(),
                 offlineForm
             )
         }
@@ -694,7 +693,8 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun removeMessageRx(id: Long) = safeCompletableIo(ioScheduler) { removeMessage(id) }
+    override fun removeMessageRx(id: Long) =
+        safeCompletableIo(ioScheduler) { removeMessage(id) }
 
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
@@ -784,7 +784,8 @@ internal class ChatInteractor @Inject constructor(
 
     override fun sendAgainRx(id: Long) = safeCompletableIo(ioScheduler) { sendAgain(id) }
 
-    override fun disconnectRx() = safeCompletableIo(ioScheduler, this@ChatInteractor::disconnect)
+    override fun disconnectRx() =
+        safeCompletableIo(ioScheduler, this@ChatInteractor::disconnect)
 
     override fun loadPreviousMessagesPage() = runBlocking {
         oldMutex.withLock {

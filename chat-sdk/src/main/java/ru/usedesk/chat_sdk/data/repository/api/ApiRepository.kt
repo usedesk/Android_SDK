@@ -273,23 +273,22 @@ internal class ApiRepository @Inject constructor(
 
     override fun send(
         configuration: UsedeskChatConfiguration,
-        companyId: String,
         offlineForm: UsedeskOfflineForm
     ) {
         try {
-            val params = mapOf(
-                "email" to offlineForm.clientEmail.getCorrectStringValue(),
-                "name" to offlineForm.clientName.getCorrectStringValue(),
-                "company_id" to companyId.getCorrectStringValue(),
-                "message" to offlineForm.message.getCorrectStringValue(),
-                "topic" to offlineForm.topic.getCorrectStringValue()
-            )
-            val customFields = offlineForm.fields
-                .filter { field -> field.value.isNotEmpty() }
-                .map { field -> field.key to field.value.getCorrectStringValue() }
-            val json = JsonObject()
-            (params + customFields).forEach { param ->
-                json.addProperty(param.key, param.value)
+            val json = JsonObject().apply {
+                (mapOf(
+                    "email" to offlineForm.clientEmail,
+                    "name" to offlineForm.clientName,
+                    "company_id" to configuration.getCompanyAndChannel(),
+                    "message" to offlineForm.message,
+                    "topic" to offlineForm.topic
+                ) + offlineForm.fields.map { it.key to it.value }).forEach {
+                    val correctValue = it.value.getCorrectStringValue()
+                    if (correctValue.isNotEmpty()) {
+                        addProperty(it.key, correctValue)
+                    }
+                }
             }
             doRequest(
                 configuration.urlChatApi,

@@ -17,13 +17,14 @@ internal class MessageResponseConverter @Inject constructor() :
     private val mdUrlRegex = Pattern.compile(
         "\\[[^\\[\\]\\(\\)]+\\]\\(${urlRegex.pattern}/?\\)"
     ).toRegex()
-
+    private val badUrlRegex = Pattern.compile("""<${urlRegex.pattern}/>""")
 
     fun convertText(text: String) = try {
         text.trim('\n', '\r', ' ', '\u200B')
             .split('\n')
-            .joinToString("\n") {
-                it.trim('\r', ' ', '\u200B')
+            .joinToString("\n") { line ->
+                line.trim('\r', ' ', '\u200B')
+                    .replace(badUrlRegex.toRegex()) { it.value.drop(1).dropLast(2) }
                     .convertMarkdownUrls()
                     .convertMarkdownText()
             }

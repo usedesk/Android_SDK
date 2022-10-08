@@ -57,7 +57,7 @@ internal class SocketConnection(
         }
     }
 
-    private fun process(rawResponse: String) = try {
+    private fun parse(rawResponse: String) = try {
         val baseResponse = gson.fromJson(rawResponse, BaseResponse::class.java)
         val responseClass = when (baseResponse.type) {
             InitChatResponse.TYPE -> InitChatResponse::class.java
@@ -81,7 +81,7 @@ internal class SocketConnection(
 
     private fun onResponse(rawResponse: String) {
         try {
-            when (val response = process(rawResponse)) {
+            when (val response = parse(rawResponse)) {
                 is ErrorResponse -> {
                     val usedeskSocketException = when (response.code) {
                         HttpURLConnection.HTTP_FORBIDDEN -> {

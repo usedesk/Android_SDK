@@ -17,7 +17,6 @@ internal interface IApiRepository {
 
     fun send(
         configuration: UsedeskChatConfiguration,
-        companyId: String,
         offlineForm: UsedeskOfflineForm
     )
 

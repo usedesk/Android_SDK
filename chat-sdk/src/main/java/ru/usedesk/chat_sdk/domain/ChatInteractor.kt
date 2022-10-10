@@ -597,6 +597,7 @@ internal class ChatInteractor @Inject constructor(
                 agentMessage.text,
                 agentMessage.convertedText,
                 agentMessage.buttons,
+                agentMessage.fields,
                 false,
                 feedback,
                 agentMessage.name,

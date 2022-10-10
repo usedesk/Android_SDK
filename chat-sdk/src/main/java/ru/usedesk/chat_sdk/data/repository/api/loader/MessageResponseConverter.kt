@@ -4,27 +4,33 @@ import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 internal class MessageResponseConverter @Inject constructor() :
-    Converter<MessageResponse.Message?, List<UsedeskMessage>>() {
+    Converter<MessageResponse.Message?, List<UsedeskMessage>> {
 
     private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
     private val phoneRegex = Patterns.PHONE.toRegex()
     private val urlRegex = Patterns.WEB_URL.toRegex()
-    private val mdUrlRegex = Pattern.compile(
-        "\\[[^\\[\\]\\(\\)]+\\]\\(${urlRegex.pattern}/?\\)"
-    ).toRegex()
-    private val badUrlRegex = Pattern.compile("""<${urlRegex.pattern}/>""")
+    private val mdUrlRegex = """\[[^\[\]\(\)]+\]\(${urlRegex.pattern}/?\)""".toRegex()
+    private val badUrlRegex = """<${urlRegex.pattern}/>""".toRegex()
+    private val objectRegex = """\{\{[^\{\}:]*:([^\{\};]*;){2}[^\{\};]*\}\}""".toRegex()
+    private val imageRegexp = """!\[[^]]*]\((.*?)\s*(\"(?:.*[^\"])\")?\s*\)""".toRegex()
 
-    fun convertText(text: String) = try {
-        text.trim('\n', '\r', ' ', '\u200B')
+    fun convertText(text: String): String = try {
+        text.replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
+            .replace("</strong>", "</b>")
+            .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
+            .replace("</em>", "</i>")
+            .replace("</p>", "")
+            .removePrefix("<p>")
+            .trim('\n', '\r', ' ', '\u200B')
             .split('\n')
             .joinToString("\n") { line ->
                 line.trim('\r', ' ', '\u200B')
-                    .replace(badUrlRegex.toRegex()) { it.value.drop(1).dropLast(2) }
+                    .replace(badUrlRegex) { it.value.drop(1).dropLast(2) }
                     .convertMarkdownUrls()
                     .convertMarkdownText()
             }
@@ -35,223 +41,184 @@ internal class MessageResponseConverter @Inject constructor() :
         text
     }
 
-    override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> {
-        return convertOrNull {
-            val fromClient = when (from!!.type) {
-                MessageResponse.TYPE_CLIENT_TO_OPERATOR,
-                MessageResponse.TYPE_CLIENT_TO_BOT -> true
-                MessageResponse.TYPE_OPERATOR_TO_CLIENT,
-                MessageResponse.TYPE_BOT_TO_CLIENT -> false
-                else -> null
-            }!!
+    override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> = valueOrNull {
+        val fromClient = when (from!!.type) {
+            MessageResponse.TYPE_CLIENT_TO_OPERATOR,
+            MessageResponse.TYPE_CLIENT_TO_BOT -> true
+            MessageResponse.TYPE_OPERATOR_TO_CLIENT,
+            MessageResponse.TYPE_BOT_TO_CLIENT -> false
+            else -> null
+        }!!
 
-            val createdAt = from.createdAt!!
+        val createdAt = from.createdAt!!
 
-            val messageDate = try {
-                getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss'Z'", createdAt)
-            } catch (e: Exception) {
-                getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
-            }
+        val messageDate = try {
+            getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss'Z'", createdAt)
+        } catch (e: Exception) {
+            getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
+        }
 
-            val id = from.id!!
-            val localId = from.payload?.messageId ?: id
-            val name = from.name ?: ""
-            val avatar = from.payload?.avatar ?: ""
+        val id = from.id!!
+        val localId = from.payload?.messageId ?: id
+        val name = from.name ?: ""
+        val avatar = from.payload?.avatar ?: ""
 
-            val fileMessages = mutableListOf<UsedeskMessageFile>()
+        val fileMessage = valueOrNull {
+            val file = UsedeskFile.create(
+                from.file!!.content!!,
+                from.file!!.type,
+                from.file!!.size!!,
+                from.file!!.name!!
+            )
 
-            convertOrNull {
-                val file = UsedeskFile.create(
-                    from.file!!.content!!,
-                    from.file!!.type,
-                    from.file!!.size!!,
-                    from.file!!.name!!
-                )
-
-                when {
-                    fromClient -> when {
-                        file.isImage() -> UsedeskMessageClientImage(
-                            id,
-                            messageDate,
-                            file,
-                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                            localId
-                        )
-                        file.isVideo() -> UsedeskMessageClientVideo(
-                            id,
-                            messageDate,
-                            file,
-                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                            localId
-                        )
-                        file.isAudio() -> UsedeskMessageClientAudio(
-                            id,
-                            messageDate,
-                            file,
-                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                            localId
-                        )
-                        else -> UsedeskMessageClientFile(
-                            id,
-                            messageDate,
-                            file,
-                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                            localId
-                        )
-                    }
-                    else -> when {
-                        file.isImage() -> UsedeskMessageAgentImage(
-                            id,
-                            messageDate,
-                            file,
-                            name,
-                            avatar
-                        )
-                        file.isVideo() -> UsedeskMessageAgentVideo(
-                            id,
-                            messageDate,
-                            file,
-                            name,
-                            avatar
-                        )
-                        file.isAudio() -> UsedeskMessageAgentAudio(
-                            id,
-                            messageDate,
-                            file,
-                            name,
-                            avatar
-                        )
-                        else -> UsedeskMessageAgentFile(
-                            id,
-                            messageDate,
-                            file,
-                            name,
-                            avatar
-                        )
-                    }
+            when {
+                fromClient -> when {
+                    file.isImage() -> UsedeskMessageClientImage(
+                        id,
+                        messageDate,
+                        file,
+                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        localId
+                    )
+                    file.isVideo() -> UsedeskMessageClientVideo(
+                        id,
+                        messageDate,
+                        file,
+                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        localId
+                    )
+                    file.isAudio() -> UsedeskMessageClientAudio(
+                        id,
+                        messageDate,
+                        file,
+                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        localId
+                    )
+                    else -> UsedeskMessageClientFile(
+                        id,
+                        messageDate,
+                        file,
+                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        localId
+                    )
                 }
-            }?.let(fileMessages::add)
+                else -> when {
+                    file.isImage() -> UsedeskMessageAgentImage(
+                        id,
+                        messageDate,
+                        file,
+                        name,
+                        avatar
+                    )
+                    file.isVideo() -> UsedeskMessageAgentVideo(
+                        id,
+                        messageDate,
+                        file,
+                        name,
+                        avatar
+                    )
+                    file.isAudio() -> UsedeskMessageAgentAudio(
+                        id,
+                        messageDate,
+                        file,
+                        name,
+                        avatar
+                    )
+                    else -> UsedeskMessageAgentFile(
+                        id,
+                        messageDate,
+                        file,
+                        name,
+                        avatar
+                    )
+                }
+            }
+        }
 
-            val textMessage = convertOrNull {
-                if (from.text?.isNotEmpty() == true) {
-                    val buttons: List<UsedeskMessageButton>
-                    val feedbackNeeded: Boolean
-                    val feedback: UsedeskFeedback?
-                    if (!fromClient) {
-                        buttons = getButtons(from.text!!)
-                        feedback = when (from.payload?.userRating) {
-                            "LIKE" -> UsedeskFeedback.LIKE
-                            "DISLIKE" -> UsedeskFeedback.DISLIKE
-                            else -> null
-                        }
-                        feedbackNeeded = feedback == null && from.payload?.buttons?.any {
-                            it?.data == "GOOD_CHAT" ||
-                                    it?.data == "BAD_CHAT" ||
-                                    it?.icon == "like" ||
-                                    it?.icon == "dislike"
-                        } ?: false
-                    } else {
-                        buttons = listOf()
-                        feedbackNeeded = false
-                        feedback = null
-                    }
+        valueOrNull {
+            val objects: List<MessageObject>
+            val feedbackNeeded: Boolean
+            val feedback: UsedeskFeedback?
+            if (!fromClient) {
+                objects = from.text?.toMessageObjects() ?: listOf()
+                feedback = when (from.payload?.userRating) {
+                    "LIKE" -> UsedeskFeedback.LIKE
+                    "DISLIKE" -> UsedeskFeedback.DISLIKE
+                    else -> null
+                }
+                feedbackNeeded = feedback == null && from.payload?.buttons?.any {
+                    it?.data == "GOOD_CHAT" ||
+                            it?.data == "BAD_CHAT" ||
+                            it?.icon == "like" ||
+                            it?.icon == "dislike"
+                } ?: false
+            } else {
+                objects = listOf(MessageObject.Text(from.text ?: ""))
+                feedbackNeeded = false
+                feedback = null
+            }
+            val buttons = objects.filterIsInstance<MessageObject.Button>()
+                .map(MessageObject.Button::button)
 
-                    val imageRegexp = "!\\[[^]]*]\\((.*?)\\s*(\"(?:.*[^\"])\")?\\s*\\)".toRegex()
+            val fields = objects.filterIsInstance<MessageObject.Field>()
+                .map(MessageObject.Field::field)
 
-                    var convertedText = from.text!!
-
-                    var matcher = imageRegexp.find(convertedText)
-                    while (matcher != null) {
-                        val section = matcher.value.removePrefix("![")
-                            .removeSuffix(")")
-                        val fileName = section.substringBefore("](")
-                        val fileUrl = section.substringAfter("](")
-                        convertedText = convertedText.replace(matcher.value, "")
-                        matcher = imageRegexp.find(convertedText)
-
-                        val file = UsedeskFile.create(
-                            fileUrl,
-                            "image/*",
-                            "0",
-                            fileName
-                        )
-                        fileMessages.add(
-                            when {
-                                fromClient -> UsedeskMessageClientImage(
-                                    id,
-                                    messageDate,
-                                    file,
-                                    UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
-                                    localId
-                                )
-                                else -> UsedeskMessageAgentImage(
-                                    id,
-                                    messageDate,
-                                    file,
-                                    name,
-                                    avatar
-                                )
-                            }
-                        )
-                    }
-
-                    convertedText = convertedText.replace(
-                        "<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">",
-                        "<b>"
-                    ).replace("</strong>", "</b>")
-                        .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
-                        .replace("</em>", "</i>")
-                        .replace("</p>", "")
-                        .removePrefix("<p>")
-
-                    buttons.forEach {
-                        val show: String
-                        val replaceBy: String
-                        if (it.isShow) {
-                            show = "show"
-                            replaceBy = it.text
-                        } else {
-                            show = "noshow"
-                            replaceBy = ""
-                        }
-                        val buttonRaw = "{{button:${it.text};${it.url};${it.type};$show}}"
-                        convertedText = convertedText.replaceFirst(buttonRaw, replaceBy)
-                    }
-                    convertedText = convertText(convertedText)
-
+            val fileMessages = objects.filterIsInstance<MessageObject.Image>()
+                .map {
                     when {
-                        convertedText.isEmpty() && buttons.isEmpty() -> null
-                        fromClient -> UsedeskMessageClientText(
+                        fromClient -> UsedeskMessageClientImage(
                             id,
                             messageDate,
-                            from.text!!,
-                            convertedText,
+                            it.file,
                             UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
                             localId
                         )
-                        else -> UsedeskMessageAgentText(
+                        else -> UsedeskMessageAgentImage(
                             id,
                             messageDate,
-                            from.text!!,
-                            convertedText,
-                            buttons,
-                            feedbackNeeded,
-                            feedback,
+                            it.file,
                             name,
                             avatar
                         )
                     }
-                } else {
-                    null
                 }
-            }
 
-            (listOf(textMessage) + fileMessages).filterNotNull()
-        } ?: listOf()
-    }
+            val convertedText = convertText(
+                objects.filterIsInstance<MessageObject.Text>()
+                    .joinToString(separator = "", transform = MessageObject.Text::text)
+            )
 
-    private fun String.convertMarkdownText(): String {
-        val builder = StringBuilder()
+            listOf(
+                when {
+                    convertedText.isEmpty() &&
+                            buttons.isEmpty() &&
+                            fields.isEmpty() -> null
+                    fromClient -> UsedeskMessageClientText(
+                        id,
+                        messageDate,
+                        from.text!!,
+                        convertedText,
+                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        localId
+                    )
+                    else -> UsedeskMessageAgentText(
+                        id,
+                        messageDate,
+                        from.text!!,
+                        convertedText,
+                        buttons,
+                        fields,
+                        feedbackNeeded,
+                        feedback,
+                        name,
+                        avatar
+                    )
+                }
+            ) + fileMessage + fileMessages
+        }?.filterNotNull()
+    } ?: listOf()
+
+    private fun String.convertMarkdownText() = StringBuilder().also { builder ->
         var i = 0
         var boldOpen = true
         var italicOpen = true
@@ -277,20 +244,17 @@ internal class MessageResponseConverter @Inject constructor() :
             )
             i++
         }
-        return builder.toString()
-    }
+    }.toString()
 
     private fun Regex.findAll(
         text: String,
         includedRanges: List<IntRange>
     ) = includedRanges.flatMap { part ->
-        this.findAll(text.substring(part))
+        findAll(text.substring(part))
             .map { (it.range.first + part.first)..(it.range.last + part.first) }
     }
 
-    private fun String.getExcludeRanges(
-        includedRanges: List<IntRange>
-    ): List<IntRange> {
+    private fun String.getExcludeRanges(includedRanges: List<IntRange>): List<IntRange> {
         val ranges = includedRanges.sortedBy(IntRange::first)
         return (sequenceOf(
             0 until (ranges.firstOrNull()?.first ?: length),
@@ -352,37 +316,91 @@ internal class MessageResponseConverter @Inject constructor() :
 
     private fun makeHtmlUrl(url: String, title: String = url) = "<a href=\"$url\">$title</a>"
 
-    private fun getButtons(messageText: String): List<UsedeskMessageButton> {
-        val messageButtons = mutableListOf<UsedeskMessageButton>()
-
-        var start = 0
-        while (messageText.indexOf("{{button:", start).apply { start = this } >= 0) {
-            val end = messageText.indexOf("}}", start)
-
-            val buttonText = messageText.substring(start, end + 2)
-            val messageButton = getButton(buttonText)
-            if (messageButton != null) {
-                messageButtons.add(messageButton)
-            }
-            start++
-        }
-
-        return messageButtons
+    sealed interface MessageObject {
+        class Text(val text: String) : MessageObject
+        class Button(val button: UsedeskMessageButton) : MessageObject
+        class Field(val field: UsedeskMessageField) : MessageObject
+        class Image(val file: UsedeskFile) : MessageObject
     }
 
-    private fun getButton(messageText: String): UsedeskMessageButton? {
-        val sections = messageText.replace("{{button:", "")
-            .replace("}}", "")
-            .split(";")
-        return when (sections.size) {
-            4 -> {
-                val text = sections[0]
-                val url = sections[1]
-                val type = sections[2]
-                val isShow = sections[3] == "show"
-                UsedeskMessageButton(text, url, type, isShow)
+    private fun <PARENT, OUT : PARENT, IN : PARENT> String.parts(
+        regex: Regex,
+        outConverter: String.() -> List<OUT>,
+        inConverter: String.() -> List<IN>
+    ): List<PARENT> {
+        val ranges = regex.findAll(this)
+            .map(MatchResult::range)
+            .toList()
+        val indexes = ranges.flatMap { sequenceOf(it.first, it.last + 1) } +
+                sequenceOf(length)
+        var i = 0
+        return indexes.toSet().map { index ->
+            val part = when (index) {
+                i -> ""
+                else -> substring(i, index)
             }
-            else -> null
+            when (i until index) {
+                in ranges -> part.inConverter()
+                else -> part.outConverter()
+            }.apply { i = index }
+        }.flatten()
+    }
+
+    private fun String.toMessageImage(): MessageObject {
+        val section = drop(2).dropLast(1)
+        val fileName = section.substringBefore("](")
+        val fileUrl = section.substringAfter("](")
+
+        val image = UsedeskFile.create(
+            fileUrl,
+            "image/*",
+            "0",
+            fileName
+        )
+
+        return MessageObject.Image(image)
+    }
+
+    private fun String.toMessageObjects() = parts(
+        objectRegex,
+        inConverter = { listOf(toMessageObject()) },
+        outConverter = {
+            parts(
+                imageRegexp,
+                outConverter = { listOf(MessageObject.Text(this)) },
+                inConverter = { listOf(toMessageImage()) }
+            )
         }
+    )
+
+    private fun String.toMessageObject(): MessageObject {
+        val isButton = startsWith("{{button:")
+        if (isButton || startsWith("{{field:")) {
+            val parts = substringAfter(':')
+                .dropLast(2)
+                .split(";")
+            if (parts.size == 4) {
+                return when {
+                    isButton -> MessageObject.Button(
+                        UsedeskMessageButton(
+                            parts[0],
+                            parts[1],
+                            parts[2],
+                            parts[3] == "show"
+                        )
+                    )
+                    else -> MessageObject.Field(
+                        UsedeskMessageField(
+                            parts[0],
+                            parts[1],
+                            parts[2],
+                            parts[3] == "show"
+                        )
+                    )
+                }
+            }
+        }
+
+        return MessageObject.Text(this)
     }
 }

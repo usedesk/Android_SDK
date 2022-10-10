@@ -88,8 +88,8 @@ abstract class UsedeskApiRepository<API>(
     companion object {
         private const val MAX_ATTEMPTS = 3
 
-        fun <T> valueOrNull(lambda: () -> T): T? = try {
-            lambda()
+        fun <T> valueOrNull(getValue: () -> T): T? = try {
+            getValue()
         } catch (e: Exception) {
             null
         }

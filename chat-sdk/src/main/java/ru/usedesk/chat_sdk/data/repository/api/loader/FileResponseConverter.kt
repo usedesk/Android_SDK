@@ -5,7 +5,7 @@ import ru.usedesk.chat_sdk.data.repository.api.entity.FileResponse
 import ru.usedesk.chat_sdk.entity.*
 import java.util.*
 
-internal class FileResponseConverter : Converter<FileResponse, UsedeskMessage>() {
+internal class FileResponseConverter : Converter<FileResponse, UsedeskMessage> {
 
     override fun convert(from: FileResponse): UsedeskMessage {
         val file = UsedeskFile.create(

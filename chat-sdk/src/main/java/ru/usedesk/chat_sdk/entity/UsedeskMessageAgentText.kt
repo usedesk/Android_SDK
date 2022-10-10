@@ -8,6 +8,7 @@ class UsedeskMessageAgentText(
     text: String,
     convertedText: String,
     val buttons: List<UsedeskMessageButton>,
+    val fields: List<UsedeskMessageField>,
     val feedbackNeeded: Boolean,
     val feedback: UsedeskFeedback?,
     override val name: String,

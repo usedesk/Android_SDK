@@ -146,7 +146,7 @@ internal class ApiRepository @Inject constructor(
 
     private fun UsedeskChatConfiguration.getInitChatRequest(token: String?) = InitChatRequest(
         token,
-        getCompanyAndChannel(),
+        companyAndChannel(),
         urlChat,
         when {
             messagesPageSize > 0 -> messagesPageSize
@@ -280,7 +280,7 @@ internal class ApiRepository @Inject constructor(
                 (mapOf(
                     "email" to offlineForm.clientEmail,
                     "name" to offlineForm.clientName,
-                    "company_id" to configuration.getCompanyAndChannel(),
+                    "company_id" to configuration.companyAndChannel(),
                     "message" to offlineForm.message,
                     "topic" to offlineForm.topic
                 ) + offlineForm.fields.map { it.key to it.value }).forEach {
@@ -298,6 +298,8 @@ internal class ApiRepository @Inject constructor(
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
+
+    private fun UsedeskChatConfiguration.companyAndChannel() = "${companyId}_$channelId"
 
     override fun send(
         token: String,

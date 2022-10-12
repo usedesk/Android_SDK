@@ -41,7 +41,10 @@ data class Configuration(
         companyId = companyId,
         channelId = channelId,
         messagesPageSize = messagesPageSize,
-        clientToken = clientToken,
+        clientToken = when (clientToken) {
+            "null" -> null
+            else -> clientToken
+        },
         clientEmail = clientEmail,
         clientName = clientName,
         clientNote = clientNote,

@@ -686,12 +686,12 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun removeMessage(id: Long) {
-        cachedMessages.getNotSentMessages().firstOrNull {
-            it.localId == id
-        }?.let {
-            cachedMessages.removeNotSentMessage(it)
-            onMessageRemove(it as UsedeskMessage)
-        }
+        cachedMessages.getNotSentMessages()
+            .firstOrNull { it.localId == id }
+            ?.let {
+                cachedMessages.removeNotSentMessage(it)
+                onMessageRemove(it as UsedeskMessage)
+            }
     }
 
     override fun removeMessageRx(id: Long) =

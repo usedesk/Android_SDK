@@ -4,6 +4,7 @@ import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageField.Associate
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import javax.inject.Inject
@@ -16,13 +17,15 @@ internal class MessageResponseConverter @Inject constructor() :
     private val urlRegex = Patterns.WEB_URL.toRegex()
     private val mdUrlRegex = """\[[^\[\]\(\)]+\]\(${urlRegex.pattern}/?\)""".toRegex()
     private val badUrlRegex = """<${urlRegex.pattern}/>""".toRegex()
-    private val objectRegex = """\{\{[^\{\}:]*:([^\{\};]*;){2}[^\{\};]*\}\}""".toRegex()
+    private val objectRegex = """\{\{$OBJECT_ANY\}\}""".toRegex()
+    private val buttonRegex = """\{\{$OBJECT_NAME($OBJECT_PART){2}$OBJECT_ANY\}\}""".toRegex()
+    private val fieldRegex = """\{\{($OBJECT_PART){3}$OBJECT_ANY\}\}""".toRegex()
     private val imageRegexp = """!\[[^]]*]\((.*?)\s*(\"(?:.*[^\"])\")?\s*\)""".toRegex()
 
     fun convertText(text: String): String = try {
-        text.replace("<strong data-verified=\"redactor\" data-redactor-tag=\"strong\">", "<b>")
+        text.replace("""<strong data-verified="redactor" data-redactor-tag="strong">""", "<b>")
             .replace("</strong>", "</b>")
-            .replace("<em data-verified=\"redactor\" data-redactor-tag=\"em\">", "<i>")
+            .replace("""<em data-verified="redactor" data-redactor-tag="em">""", "<i>")
             .replace("</em>", "</i>")
             .replace("</p>", "")
             .removePrefix("<p>")
@@ -225,8 +228,8 @@ internal class MessageResponseConverter @Inject constructor() :
         while (i < this.length) {
             builder.append(
                 when (this[i]) {
-                    '*' -> when {
-                        this.getOrNull(i + 1) == '*' -> {
+                    '*' -> when (getOrNull(i + 1)) {
+                        '*' -> {
                             i++
                             boldOpen = !boldOpen
                             if (boldOpen) "</b>"
@@ -373,34 +376,57 @@ internal class MessageResponseConverter @Inject constructor() :
         }
     )
 
-    private fun String.toMessageObject(): MessageObject {
-        val isButton = startsWith("{{button:")
-        if (isButton || startsWith("{{field:")) {
-            val parts = substringAfter(':')
-                .dropLast(2)
-                .split(";")
-            if (parts.size == 4) {
-                return when {
-                    isButton -> MessageObject.Button(
-                        UsedeskMessageButton(
-                            parts[0],
-                            parts[1],
-                            parts[2],
-                            parts[3] == "show"
-                        )
-                    )
-                    else -> MessageObject.Field(
-                        UsedeskMessageField(
-                            parts[0],
-                            parts[1],
-                            parts[2],
-                            parts[3] == "show"
-                        )
-                    )
-                }
-            }
+    private fun String.toMessageButton(): MessageObject.Button? {
+        val parts = drop(9)
+            .dropLast(2)
+            .split(";")
+        return when (parts.size) {
+            4 -> MessageObject.Button(
+                UsedeskMessageButton(
+                    parts[0],
+                    parts[1],
+                    parts[2],
+                    parts[3] == "show"
+                )
+            )
+            else -> null
         }
+    }
 
-        return MessageObject.Text(this)
+    private fun String.toMessageField(): MessageObject.Field? {
+        val parts = drop(8)
+            .dropLast(2)
+            .split(";")
+        return when (parts.size) {
+            2, 3 -> valueOrNull {
+                MessageObject.Field(
+                    UsedeskMessageField(
+                        parts[0],
+                        when (val associate = parts[1]) {
+                            "email" -> Associate.Email
+                            "phone" -> Associate.Phone
+                            "name" -> Associate.Name
+                            "note" -> Associate.Note
+                            "position" -> Associate.Position
+                            else -> Associate.Id(associate.toLong())
+                        },
+                        parts.getOrNull(2) == "true"
+                    )
+                )
+            }
+            else -> null
+        }
+    }
+
+    private fun String.toMessageObject() = when {
+        buttonRegex.matches(this) -> toMessageButton()
+        fieldRegex.matches(this) -> toMessageField()
+        else -> null
+    } ?: MessageObject.Text(this)
+
+    companion object {
+        private const val OBJECT_ANY = """[^\{\}]*"""
+        private const val OBJECT_NAME = """[^\{\}:]*:"""
+        private const val OBJECT_PART = """[^\{\};]*;"""
     }
 }

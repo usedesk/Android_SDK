@@ -70,7 +70,7 @@ class UsedeskChatScreen : UsedeskFragment() {
 
     internal fun getBundleArgs(
         onArgs: (
-            UsedeskChatConfiguration?,
+            UsedeskChatConfiguration,
             String?,
             Array<String>?,
             String,
@@ -80,7 +80,8 @@ class UsedeskChatScreen : UsedeskFragment() {
         ) -> Unit
     ) {
         onArgs(
-            argsGetParcelable(CHAT_CONFIGURATION_KEY),
+            argsGetParcelable(CHAT_CONFIGURATION_KEY)
+                ?: throw RuntimeException("UsedeskChatConfiguration not found. Call the newInstance method and put the configuration inside"),
             argsGetString(AGENT_NAME_KEY),
             argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
             argsGetString(MESSAGES_DATE_FORMAT_KEY, MESSAGES_DATE_FORMAT_DEFAULT),
@@ -149,9 +150,8 @@ class UsedeskChatScreen : UsedeskFragment() {
         UsedeskChatSdk.startService(requireContext())
     }
 
-    override fun onBackPressed(): Boolean {
-        return mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
-    }
+    override fun onBackPressed() =
+        mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
 
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"
@@ -169,18 +169,18 @@ class UsedeskChatScreen : UsedeskFragment() {
         @JvmOverloads
         @JvmStatic
         fun newInstance(
+            usedeskChatConfiguration: UsedeskChatConfiguration,
             agentName: String? = null,
             rejectedFileExtensions: Collection<String>? = null,
-            usedeskChatConfiguration: UsedeskChatConfiguration? = null,
             messagesDateFormat: String? = null,
             messageTimeFormat: String? = null,
             adaptiveTextMessageTimePadding: Boolean = false,
             groupAgentMessages: Boolean = true
         ): UsedeskChatScreen = UsedeskChatScreen().apply {
             arguments = createBundle(
+                usedeskChatConfiguration,
                 agentName,
                 rejectedFileExtensions,
-                usedeskChatConfiguration,
                 messagesDateFormat,
                 messageTimeFormat,
                 adaptiveTextMessageTimePadding,
@@ -191,23 +191,22 @@ class UsedeskChatScreen : UsedeskFragment() {
         @JvmOverloads
         @JvmStatic
         fun createBundle(
+            usedeskChatConfiguration: UsedeskChatConfiguration,
             agentName: String? = null,
             rejectedFileExtensions: Collection<String>? = null,
-            usedeskChatConfiguration: UsedeskChatConfiguration? = null,
             messagesDateFormat: String? = null,
             messageTimeFormat: String? = null,
             adaptiveTextMessageTimePadding: Boolean = false,
             groupAgentMessages: Boolean = true
         ): Bundle = Bundle().apply {
+            putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
             if (agentName != null) {
                 putString(AGENT_NAME_KEY, agentName)
             }
-            val extensions = rejectedFileExtensions?.map {
-                '.' + it.trim(' ', '.')
-            }?.toTypedArray() ?: arrayOf()
-            if (usedeskChatConfiguration != null) {
-                putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
-            }
+            val extensions = rejectedFileExtensions
+                ?.map { '.' + it.trim(' ', '.') }
+                ?.toTypedArray()
+                ?: arrayOf()
             putStringArray(REJECTED_FILE_EXTENSIONS_KEY, extensions)
             putString(MESSAGES_DATE_FORMAT_KEY, messagesDateFormat)
             putString(MESSAGE_TIME_FORMAT_KEY, messageTimeFormat)

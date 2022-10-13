@@ -5,11 +5,9 @@ import ru.usedesk.common_gui.UsedeskFragment
 
 interface IUsedeskChatViewModelStoreOwner : ViewModelStoreOwner
 
-internal fun UsedeskFragment.requireChatViewModelStoreOwner(): ViewModelStoreOwner {
-    return findChatViewModelStoreOwner() ?: throw RuntimeException("Can't find ViewModelStoreOwner")
-}
+internal fun UsedeskFragment.requireChatViewModelStoreOwner(): ViewModelStoreOwner =
+    findChatViewModelStoreOwner() ?: throw RuntimeException("Can't find ViewModelStoreOwner")
 
-internal fun UsedeskFragment.findChatViewModelStoreOwner(): ViewModelStoreOwner? {
-    return findParent<IUsedeskChatViewModelStoreOwner>()
+internal fun UsedeskFragment.findChatViewModelStoreOwner(): ViewModelStoreOwner? =
+    findParent<IUsedeskChatViewModelStoreOwner>()
         ?: findParent<UsedeskChatScreen>()
-}

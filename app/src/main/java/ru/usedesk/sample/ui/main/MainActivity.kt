@@ -276,9 +276,9 @@ class MainActivity : AppCompatActivity(),
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
         return UsedeskChatScreen.createBundle(
+            chatConfiguration,
             configuration.customAgentName.ifEmpty { null },
             REJECTED_FILE_TYPES,
-            chatConfiguration,
             messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
             messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null },
             groupAgentMessages = configuration.groupAgentMessages,

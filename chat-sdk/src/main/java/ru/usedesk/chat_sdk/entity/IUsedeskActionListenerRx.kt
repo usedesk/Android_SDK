@@ -31,9 +31,7 @@ abstract class IUsedeskActionListenerRx {
             onOfflineFormExpectedObservable(offlineFormExpectedObservable),
             onFeedbackObservable(feedbackObservable),
             onExceptionObservable(exceptionObservable)
-        ).forEach {
-            disposables.add(it)
-        }
+        ).forEach(disposables::add)
     }
 
     open fun onConnectionStateObservable(
@@ -77,8 +75,6 @@ abstract class IUsedeskActionListenerRx {
     ): Disposable? = null
 
     open fun onDispose() {
-        disposables.forEach {
-            it.dispose()
-        }
+        disposables.forEach(Disposable::dispose)
     }
 }

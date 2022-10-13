@@ -129,7 +129,10 @@ internal class MessagesPage : UsedeskFragment() {
                 },
                 MAX_FILE_SIZE_MB
             )
-            val toastText = "$message\n" + rejectedFiles.joinToString(separator = "\n") { it.name }
+            val toastText = "$message\n" + rejectedFiles.joinToString(
+                separator = "\n",
+                transform = UsedeskFileInfo::name
+            )
             Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
         }
         viewModel.onIntent(MessagesViewModel.Intent.AttachFiles(filteredFiles))

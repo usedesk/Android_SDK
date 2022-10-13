@@ -69,6 +69,9 @@ internal class ChatInteractor @Inject constructor(
     private var additionalFieldsNeeded: Boolean = true
     private val listenersMutex = Mutex()
 
+    private val oldMutex = Mutex()
+    private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
+
     init {
         listenersDisposables.apply {
             add(connectionStateSubject.subscribe {
@@ -108,27 +111,23 @@ internal class ChatInteractor @Inject constructor(
             })
 
             add(messageRemovedSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessageRemoved()
-                }
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach(IUsedeskActionListener::onMessageRemoved)
             })
 
             add(offlineFormExpectedSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onOfflineFormExpected(it)
-                }
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach { listener -> listener.onOfflineFormExpected(it) }
             })
 
             add(feedbackSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onFeedbackReceived()
-                }
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach(IUsedeskActionListener::onFeedbackReceived)
             })
 
             add(exceptionSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onException(it)
-                }
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach { listener -> listener.onException(it) }
             })
         }
     }
@@ -585,9 +584,7 @@ internal class ChatInteractor @Inject constructor(
                 UsedeskMessageClient.Status.SEND_FAILED
             )
             else -> null
-        }?.let {
-            onMessageUpdate(it)
-        }
+        }?.let(this@ChatInteractor::onMessageUpdate)
     }
 
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
@@ -617,11 +614,10 @@ internal class ChatInteractor @Inject constructor(
                 val strings =
                     listOf(clientName, clientEmail, topic) + fields + offlineForm.message
                 initClientOfflineForm = strings.joinToString(separator = "\n")
-                chatInited?.let { onChatInited(it) }
+                chatInited?.let(this@ChatInteractor::onChatInited)
             }
             else -> apiRepository.send(
                 configuration,
-                configuration.getCompanyAndChannel(),
                 offlineForm
             )
         }
@@ -697,7 +693,8 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun removeMessageRx(id: Long) = safeCompletableIo(ioScheduler) { removeMessage(id) }
+    override fun removeMessageRx(id: Long) =
+        safeCompletableIo(ioScheduler) { removeMessage(id) }
 
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
@@ -711,7 +708,8 @@ internal class ChatInteractor @Inject constructor(
 
     override fun getMessageDraft() = runBlocking { cachedMessages.getMessageDraft() }
 
-    override fun getMessageDraftRx() = safeSingleIo(ioScheduler) { getMessageDraft() }
+    override fun getMessageDraftRx() =
+        safeSingleIo(ioScheduler, this@ChatInteractor::getMessageDraft)
 
     override fun sendMessageDraft() {
         runBlocking {
@@ -726,19 +724,16 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun sendMessageDraftRx() = safeCompletableIo(ioScheduler) { sendMessageDraft() }
+    override fun sendMessageDraftRx() =
+        safeCompletableIo(ioScheduler, this@ChatInteractor::sendMessageDraft)
 
-    private fun createSendingMessage(text: String): UsedeskMessageClientText {
-        val localId = cachedMessages.getNextLocalId()
-        val calendar = Calendar.getInstance()
-        return UsedeskMessageClientText(
-            localId,
-            calendar,
-            text,
-            apiRepository.convertText(text),
-            UsedeskMessageClient.Status.SENDING
-        )
-    }
+    private fun createSendingMessage(text: String) = UsedeskMessageClientText(
+        cachedMessages.getNextLocalId(),
+        Calendar.getInstance(),
+        text,
+        apiRepository.convertText(text),
+        UsedeskMessageClient.Status.SENDING
+    )
 
     private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessageFile {
         val localId = cachedMessages.getNextLocalId()
@@ -777,7 +772,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun connectRx() = safeCompletableIo(ioScheduler) { connect() }
+    override fun connectRx() = safeCompletableIo(ioScheduler, this@ChatInteractor::connect)
 
     override fun sendRx(
         agentMessage: UsedeskMessageAgentText,
@@ -789,10 +784,8 @@ internal class ChatInteractor @Inject constructor(
 
     override fun sendAgainRx(id: Long) = safeCompletableIo(ioScheduler) { sendAgain(id) }
 
-    override fun disconnectRx() = safeCompletableIo(ioScheduler) { disconnect() }
-
-    private val oldMutex = Mutex()
-    private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
+    override fun disconnectRx() =
+        safeCompletableIo(ioScheduler, this@ChatInteractor::disconnect)
 
     override fun loadPreviousMessagesPage() = runBlocking {
         oldMutex.withLock {
@@ -834,9 +827,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun release() {
-        listenersDisposables.forEach {
-            it.dispose()
-        }
+        listenersDisposables.forEach(Disposable::dispose)
         runBlocking {
             jobsMutex.withLock {
                 jobsScope.cancel()
@@ -845,7 +836,7 @@ internal class ChatInteractor @Inject constructor(
         disconnect()
     }
 
-    override fun releaseRx() = safeCompletableIo(ioScheduler) { release() }
+    override fun releaseRx() = safeCompletableIo(ioScheduler, this@ChatInteractor::release)
 
     private fun sendUserEmail() {
         try {
@@ -898,14 +889,12 @@ internal class ChatInteractor @Inject constructor(
         }
         when {
             needToResendMessages -> {
-                val initedNotSentIds = initedNotSentMessages.map { it.id }
+                val initedNotSentIds = initedNotSentMessages.map(UsedeskMessage::id)
                 notSentMessages.filter {
                     it.id !in initedNotSentIds
                 }.forEach {
                     listenersDisposables.add(
-                        sendAgainRx(it.id).subscribe({}, { throwable ->
-                            throwable.printStackTrace()
-                        })
+                        sendAgainRx(it.id).subscribe({}, Throwable::printStackTrace)
                     )
                 }
             }
@@ -915,7 +904,7 @@ internal class ChatInteractor @Inject constructor(
 
     private fun CoroutineScope.launchSafe(
         onRun: () -> Unit,
-        onThrowable: (Throwable) -> Unit = { it.printStackTrace() }
+        onThrowable: (Throwable) -> Unit = Throwable::printStackTrace
     ) = launch {
         try {
             onRun()

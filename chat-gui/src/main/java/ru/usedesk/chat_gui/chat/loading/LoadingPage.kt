@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.loading.LoadingViewModel.Page
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter
@@ -48,15 +49,13 @@ internal class LoadingPage : UsedeskFragment() {
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
             }
-            new.goNext.process { page ->
-                when (page) {
-                    LoadingViewModel.Page.OFFLINE_FORM -> {
-                        findNavController().navigate(R.id.action_loadingPage_to_offlineFormPage)
+            new.goNext?.process { page ->
+                findNavController().navigate(
+                    when (page) {
+                        Page.OFFLINE_FORM -> R.id.action_loadingPage_to_offlineFormPage
+                        Page.MESSAGES -> R.id.action_loadingPage_to_messagesPage
                     }
-                    LoadingViewModel.Page.MESSAGES -> {
-                        findNavController().navigate(R.id.action_loadingPage_to_messagesPage)
-                    }
-                }
+                )
             }
         }
     }

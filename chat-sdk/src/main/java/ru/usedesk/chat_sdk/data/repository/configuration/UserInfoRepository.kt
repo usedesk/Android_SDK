@@ -9,9 +9,7 @@ internal class UserInfoRepository @Inject constructor(
     private val configurationLoader: IConfigurationLoader,
     private val tokenLoader: ITokenLoader
 ) : IUserInfoRepository {
-    override fun getConfiguration(
-        configuration: UsedeskChatConfiguration
-    ): UsedeskChatConfiguration? {
+    override fun getConfiguration(configuration: UsedeskChatConfiguration): UsedeskChatConfiguration? {
         configurationLoader.initLegacyData(tokenLoader::getData)
         val configurations = configurationLoader.getData()
         return configurations?.firstOrNull { it.userKey == configuration.userKey }

@@ -8,9 +8,8 @@ object UsedeskResourceManager {
     private val resourceMap = hashMapOf<Int, Int>()
 
     @JvmStatic
-    fun getResourceId(defaultResourceId: Int): Int {
-        return resourceMap[defaultResourceId] ?: defaultResourceId
-    }
+    fun getResourceId(defaultResourceId: Int): Int =
+        resourceMap[defaultResourceId] ?: defaultResourceId
 
     @JvmStatic
     fun replaceResourceId(defaultResourceId: Int, customResourceId: Int) {
@@ -18,72 +17,36 @@ object UsedeskResourceManager {
     }
 
     @JvmStatic
-    fun getStyleValues(context: Context, defaultStyleId: Int): StyleValues {
-        return StyleValues(context, defaultStyleId)
-    }
+    fun getStyleValues(context: Context, defaultStyleId: Int): StyleValues =
+        StyleValues(context, defaultStyleId)
 
     class StyleValues(
         private val context: Context,
         private val defaultStyleId: Int
     ) {
 
-        fun findString(attrId: Int): String? {
-            return getValue(attrId) { attrs, index ->
-                attrs.getString(index)
-            }
+        fun findString(attrId: Int): String? = getValue(attrId, TypedArray::getString)
+
+        fun getString(attrId: Int): String = getValue(attrId, TypedArray::getStringOrThrow)
+
+        fun getStyleValues(attrId: Int): StyleValues = StyleValues(context, getId(attrId))
+
+        fun getInt(attrId: Int): Int = getValue(attrId, TypedArray::getIntOrThrow)
+
+        fun getId(attrId: Int): Int = getValue(attrId, TypedArray::getResourceIdOrThrow)
+
+        fun getIdOrZero(attrId: Int): Int = getValue(attrId) { attrs, index ->
+            attrs.getResourceId(index, 0)
         }
 
-        fun getString(attrId: Int): String {
-            return getValue(attrId) { attrs, index ->
-                attrs.getStringOrThrow(index)
-            }
-        }
+        fun getStyle(attrId: Int): Int = getValue(attrId, TypedArray::getResourceIdOrThrow)
 
-        fun getStyleValues(attrId: Int): StyleValues {
-            val styleId = getId(attrId)
-            return StyleValues(context, styleId)
-        }
+        fun getColor(attrId: Int): Int = getValue(attrId, TypedArray::getColorOrThrow)
 
-        fun getInt(attrId: Int): Int {
-            return getValue(attrId) { attrs, index ->
-                attrs.getIntOrThrow(index)
-            }
-        }
+        fun getFloat(attrId: Int): Float = getValue(attrId, TypedArray::getDimensionOrThrow)
 
-        fun getId(attrId: Int): Int {
-            return getValue(attrId) { attrs, index ->
-                attrs.getResourceIdOrThrow(index)
-            }
-        }
-
-        fun getIdOrZero(attrId: Int): Int {
-            return getValue(attrId) { attrs, index ->
-                attrs.getResourceId(index, 0)
-            }
-        }
-
-        fun getStyle(attrId: Int): Int {
-            return getValue(attrId) { attrs, index ->
-                attrs.getResourceIdOrThrow(index)
-            }
-        }
-
-        fun getColor(attrId: Int): Int {
-            return getValue(attrId) { attrs, index ->
-                attrs.getColorOrThrow(index)
-            }
-        }
-
-        fun getFloat(attrId: Int): Float {
-            return getValue(attrId) { attrs, index ->
-                attrs.getDimensionOrThrow(index)
-            }
-        }
-
-        fun getFloat(attrId: Int, default: Float): Float {
-            return getValue(attrId) { attrs, index ->
-                attrs.getDimension(index, default)
-            }
+        fun getFloat(attrId: Int, default: Float): Float = getValue(attrId) { attrs, index ->
+            attrs.getDimension(index, default)
         }
 
         private fun <T> getValue(
@@ -94,9 +57,9 @@ object UsedeskResourceManager {
                 getResourceId(defaultStyleId),
                 intArrayOf(attrId)
             )
-            val value = onValue(attrs, 0)
-            attrs.recycle()
-            return value
+            return onValue(attrs, 0).apply {
+                attrs.recycle()
+            }
         }
     }
 }

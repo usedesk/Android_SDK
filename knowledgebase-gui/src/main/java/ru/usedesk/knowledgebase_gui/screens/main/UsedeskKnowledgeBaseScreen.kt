@@ -120,9 +120,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.init {
-            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)?.let {
-                UsedeskKnowledgeBaseSdk.setConfiguration(it)
-            }
+            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)
+                ?.let(UsedeskKnowledgeBaseSdk::setConfiguration)
             UsedeskKnowledgeBaseSdk.init(requireContext())
         }
     }

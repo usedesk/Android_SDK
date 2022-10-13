@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 import javax.inject.Inject
@@ -71,19 +72,16 @@ internal class CachedMessagesInteractor @Inject constructor(
         messagesRepository.removeNotSentMessage(userKey, notSentMessage)
     }
 
-    override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> {
-        return mutex.withLock {
-            getCachedFileInnerAsync(uri)
-        }
+    override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> = mutex.withLock {
+        getCachedFileInnerAsync(uri)
     }
 
-    private fun getCachedFileInnerAsync(uri: Uri): Deferred<Uri> {
-        return deferredCachedUriMap[uri] ?: CoroutineScope(Dispatchers.IO).async {
+    private fun getCachedFileInnerAsync(uri: Uri): Deferred<Uri> = deferredCachedUriMap[uri]
+        ?: CoroutineScope(Dispatchers.IO).async {
             messagesRepository.addFileToCache(uri)
         }.also {
             deferredCachedUriMap[uri] = it
         }
-    }
 
     override suspend fun removeFileFromCache(uri: Uri) {
         if (configuration.cacheMessagesWithFile) {
@@ -128,13 +126,11 @@ internal class CachedMessagesInteractor @Inject constructor(
                 }
             }
         } else {
-            if (draftJob == null) {
-                draftJob = CoroutineScope(Dispatchers.IO).launch {
-                    delay(2000)
-                    yield()
-                    mutex.withLock {
-                        updateMessageDraft(true)
-                    }
+            draftJob = draftJob ?: CoroutineScope(Dispatchers.IO).launch {
+                delay(2000)
+                yield()
+                mutex.withLock {
+                    updateMessageDraft(true)
                 }
             }
         }
@@ -143,42 +139,25 @@ internal class CachedMessagesInteractor @Inject constructor(
     override suspend fun setMessageDraft(
         messageDraft: UsedeskMessageDraft,
         cacheFiles: Boolean
-    ): UsedeskMessageDraft {
-        return mutex.withLock {
-            val userKey = requireUserKey()
-            val oldMessageDraft = messagesRepository.getDraft(userKey)
+    ): UsedeskMessageDraft = mutex.withLock {
+        val userKey = requireUserKey()
+        messagesRepository.getDraft(userKey).also { oldMessageDraft ->
             messagesRepository.setDraft(userKey, messageDraft)
             if (cacheFiles) {
-                val oldFiles = oldMessageDraft.files.map {
-                    it.uri
-                }
-                val newFiles = messageDraft.files.map {
-                    it.uri
-                }
-                oldFiles.filter {
-                    it !in newFiles
-                }.forEach {
-                    removeDeferredCache(it)
-                }
-                newFiles.filter {
-                    it !in oldFiles
-                }.map { uri ->
-                    deferredCachedUriMap[uri] = getCachedFileInnerAsync(uri)
-                }
+                val oldFiles = oldMessageDraft.files.map(UsedeskFileInfo::uri)
+                val newFiles = messageDraft.files.map(UsedeskFileInfo::uri)
+                oldFiles.filter { it !in newFiles }
+                    .forEach { removeDeferredCache(it) }
+                newFiles.filter { it !in oldFiles }
+                    .map { uri -> deferredCachedUriMap[uri] = getCachedFileInnerAsync(uri) }
             }
-            updateMessageDraft(
-                messageDraft.text.isEmpty() &&
-                        messageDraft.files.isEmpty()
-            )
-            oldMessageDraft
+            updateMessageDraft(messageDraft.text.isEmpty() && messageDraft.files.isEmpty())
         }
     }
 
-    override suspend fun getMessageDraft(): UsedeskMessageDraft {
-        return mutex.withLock {
-            val userKey = requireUserKey()
-            messagesRepository.getDraft(userKey)
-        }
+    override suspend fun getMessageDraft(): UsedeskMessageDraft = mutex.withLock {
+        val userKey = requireUserKey()
+        messagesRepository.getDraft(userKey)
     }
 
     override fun getNextLocalId(): Long {
@@ -190,14 +169,12 @@ internal class CachedMessagesInteractor @Inject constructor(
         val config = userInfoRepository.getConfiguration(this.configuration)
             ?: configuration
         val token = config.clientToken
-        return if (token?.isNotEmpty() == true) {
-            token
-        } else {
-            null
+        return when (token?.isNotEmpty()) {
+            true -> token
+            else -> null
         }
     }
 
-    private fun requireUserKey(): String {
-        return findUserKey() ?: throw RuntimeException("Can't find configuration")
-    }
+    private fun requireUserKey(): String = findUserKey()
+        ?: throw RuntimeException("Can't find configuration")
 }

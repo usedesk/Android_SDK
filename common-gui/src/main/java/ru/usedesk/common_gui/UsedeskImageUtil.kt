@@ -14,19 +14,20 @@ fun setImage(
     imageImageView: ImageView,
     pictureUrl: String,
     errorResId: Int,
-    onError: (() -> Unit)? = null,
-    onSuccess: (() -> Unit)? = null
+    onError: () -> Unit = {},
+    onSuccess: () -> Unit = {}
 ) {
     imageImageView.setImageResource(errorResId)
     if (!TextUtils.isEmpty(pictureUrl)) {
         Glide.with(imageImageView.context)
             .load(pictureUrl)
             .error(errorResId)
-            .listener(AppRequestListener(onError = {
-                onError?.invoke()
-            }, onSuccess = {
-                onSuccess?.invoke()
-            }))
+            .listener(
+                AppRequestListener(
+                    onError = onError,
+                    onSuccess = onSuccess
+                )
+            )
             .into(imageImageView)
     }
 }
@@ -48,17 +49,15 @@ fun showImage(
         .load(url)
         .listener(AppRequestListener(vLoading, vError, onSuccess, onError))
 
-    glide = if (ignoreCache) {
-        glide.skipMemoryCache(true)
+    glide = when {
+        ignoreCache -> glide.skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-    } else {
-        glide.diskCacheStrategy(DiskCacheStrategy.ALL)
+        else -> glide.diskCacheStrategy(DiskCacheStrategy.ALL)
     }
 
-    glide = if (ivTarget.scaleType == ImageView.ScaleType.FIT_CENTER) {
-        glide.fitCenter()
-    } else {
-        glide.centerCrop()
+    glide = when (ivTarget.scaleType) {
+        ImageView.ScaleType.FIT_CENTER -> glide.fitCenter()
+        else -> glide.centerCrop()
     }
 
     when {

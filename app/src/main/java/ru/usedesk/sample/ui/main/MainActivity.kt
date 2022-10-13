@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(),
                 downloadFile()
             } else {
                 val snackbarStyleId = UsedeskResourceManager.getResourceId(
-                    ru.usedesk.common_gui.R.style.Usedesk_Common_No_Permission_Snackbar
+                    R.style.Usedesk_Common_No_Permission_Snackbar
                 )
                 UsedeskResourceManager.StyleValues(
                     this,
@@ -138,11 +138,11 @@ class MainActivity : AppCompatActivity(),
                 ).apply {
                     UsedeskSnackbar.create(
                         binding.root,
-                        getColor(ru.usedesk.common_gui.R.attr.usedesk_background_color_1),
-                        getString(ru.usedesk.common_gui.R.attr.usedesk_text_1),
-                        getColor(ru.usedesk.common_gui.R.attr.usedesk_text_color_1),
-                        getString(ru.usedesk.common_gui.R.attr.usedesk_text_2),
-                        getColor(ru.usedesk.common_gui.R.attr.usedesk_text_color_2)
+                        getColor(R.attr.usedesk_background_color_1),
+                        getString(R.attr.usedesk_text_1),
+                        getColor(R.attr.usedesk_text_color_1),
+                        getString(R.attr.usedesk_text_2),
+                        getColor(R.attr.usedesk_text_color_2)
                     ).show()
                 }
             }
@@ -162,36 +162,35 @@ class MainActivity : AppCompatActivity(),
                 val downloadManager =
                     getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 val uri = Uri.parse(downloadFile.url)
-                if (uri.scheme == ContentResolver.SCHEME_FILE || uri.scheme == ContentResolver.SCHEME_CONTENT) {
-                    contentResolver.openInputStream(uri).use { inputStream ->
-                        if (inputStream == null) {
-                            throw UsedeskDataNotFoundException("Can't read file: ${downloadFile.url}")
-                        }
-                        val outputPath = Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOWNLOADS
-                        )
-                        var outputFile = File(outputPath, downloadFile.name)
-                        val fileName = outputFile.nameWithoutExtension
-                        val fileExtension = outputFile.extension
-                        var count = 0
-                        while (outputFile.exists()) {
-                            count++
-                            var name = "$fileName $count"
-                            if (name.length - fileExtension.length > 254) {
-                                name = "${fileName.hashCode()} $count"
+                when (uri.scheme) {
+                    ContentResolver.SCHEME_FILE,
+                    ContentResolver.SCHEME_CONTENT -> contentResolver.openInputStream(uri)
+                        .use { inputStream ->
+                            if (inputStream == null) {
+                                throw UsedeskDataNotFoundException("Can't read file: ${downloadFile.url}")
                             }
-                            if (fileExtension.isNotEmpty()) {
-                                name = "$name.${outputFile.extension}"
-                            }
+                            val outputPath = Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS
+                            )
+                            var outputFile = File(outputPath, downloadFile.name)
+                            val fileName = outputFile.nameWithoutExtension
+                            val fileExtension = outputFile.extension
+                            var count = 0
+                            while (outputFile.exists()) {
+                                count++
+                                var name = "$fileName $count"
+                                if (name.length - fileExtension.length > 254) {
+                                    name = "${fileName.hashCode()} $count"
+                                }
+                                if (fileExtension.isNotEmpty()) {
+                                    name = "$name.${outputFile.extension}"
+                                }
 
-                            outputFile = File(outputPath, name)
+                                outputFile = File(outputPath, name)
+                            }
+                            FileOutputStream(outputFile).use(inputStream::copyTo)
                         }
-                        FileOutputStream(outputFile).use { outputStream ->
-                            inputStream.copyTo(outputStream)
-                        }
-                    }
-                } else {
-                    downloadManager.enqueue(
+                    else -> downloadManager.enqueue(
                         DownloadManager.Request(uri)
                             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
                             .setTitle(downloadFile.name)
@@ -221,27 +220,23 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this, "$description:\n${name}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun UsedeskEvent<String>.onError() {
-        process { text: String? ->
-            Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
-        }
+    private fun UsedeskEvent<String>.onError() = process { text: String? ->
+        Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
     }
 
     private fun initUsedeskService(configuration: Configuration) {
-        when (configuration.foregroundService) {
-            true -> CustomForegroundNotificationsService.Factory()
-            false -> CustomSimpleNotificationsService.Factory()
-            else -> null
-        }.let { factory ->
-            setNotificationsServiceFactory(factory)
-        }
+        setNotificationsServiceFactory(
+            when (configuration.foregroundService) {
+                true -> CustomForegroundNotificationsService.Factory()
+                false -> CustomSimpleNotificationsService.Factory()
+                else -> null
+            }
+        )
     }
 
     override fun getFullscreenLayout() = binding.lFullscreen
 
-    override fun onFullscreenChanged(fullscreen: Boolean) {
-        fullscreenMode(fullscreen)
-    }
+    override fun onFullscreenChanged(fullscreen: Boolean) = fullscreenMode(fullscreen)
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
         navController.navigate(
@@ -278,10 +273,7 @@ class MainActivity : AppCompatActivity(),
                 R.style.Usedesk_Chat_Message_Text_Client to R.style.Usedesk_Chat_Message_Text_Client
             )
         }.forEach {
-            UsedeskResourceManager.replaceResourceId(
-                it.key,
-                it.value
-            )
+            UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
         return UsedeskChatScreen.createBundle(
             configuration.customAgentName.ifEmpty { null },
@@ -294,13 +286,9 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    override fun goToSdk(configuration: Configuration) {
-        viewModel.goSdk(configuration)
-    }
+    override fun goToSdk(configuration: Configuration) = viewModel.goSdk(configuration)
 
-    override fun onClientToken(clientToken: String) {
-        viewModel.onClientToken(clientToken)
-    }
+    override fun onClientToken(clientToken: String) = viewModel.onClientToken(clientToken)
 
     private fun fullscreenMode(enable: Boolean) {
         ViewCompat.getWindowInsetsController(binding.root)?.run {

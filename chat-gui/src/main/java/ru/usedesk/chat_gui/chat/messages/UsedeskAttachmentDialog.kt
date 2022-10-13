@@ -52,12 +52,10 @@ internal class UsedeskAttachmentDialog private constructor(
     companion object {
         fun create(
             screen: UsedeskFragment
-        ): UsedeskAttachmentDialog {
-            val dialogStyle = UsedeskResourceManager.getResourceId(
-                R.style.Usedesk_Chat_Attachment_Dialog
-            )
-            return UsedeskAttachmentDialog(screen, dialogStyle)
-        }
+        ) = UsedeskAttachmentDialog(
+            screen,
+            UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Attachment_Dialog)
+        )
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

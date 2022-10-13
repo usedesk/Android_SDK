@@ -18,7 +18,7 @@ internal class AttachedFilesAdapter(
     lifecycleCoroutineScope: LifecycleCoroutineScope,
 ) : RecyclerView.Adapter<AttachedFilesAdapter.ViewHolder>() {
 
-    private var files: List<UsedeskFileInfo> = listOf()
+    private var files = listOf<UsedeskFileInfo>()
 
     init {
         recyclerView.adapter = this
@@ -56,20 +56,16 @@ internal class AttachedFilesAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-        return ViewHolder(
-            inflateItem(
-                viewGroup,
-                R.layout.usedesk_item_chat_attached_file,
-                R.style.Usedesk_Chat_Attached_File,
-                ::AttachedFileBinding
-            )
+    override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = ViewHolder(
+        inflateItem(
+            viewGroup,
+            R.layout.usedesk_item_chat_attached_file,
+            R.style.Usedesk_Chat_Attached_File,
+            ::AttachedFileBinding
         )
-    }
+    )
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
-        viewHolder.bind(files[i])
-    }
+    override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) = viewHolder.bind(files[i])
 
     override fun getItemCount() = files.size
 

@@ -13,7 +13,6 @@ internal class InstanceBoxUsedesk(
     chatConfiguration: UsedeskChatConfiguration,
     messagesRepository: IUsedeskMessagesRepository?
 ) {
-
     private val ioScheduler = Schedulers.io()
 
     private var daggerChatComponent: ChatComponent?
@@ -22,9 +21,9 @@ internal class InstanceBoxUsedesk(
 
     init {
         val daggerChatComponent = DaggerChatComponent.builder()
-            .bindAppContext(context.applicationContext)
-            .bindChatConfiguration(chatConfiguration)
-            .bindCustomMessagesRepository(UsedeskCustom(messagesRepository))
+            .appContext(context.applicationContext)
+            .configuration(chatConfiguration)
+            .customMessagesRepository(UsedeskCustom(messagesRepository))
             .build()
 
         this.daggerChatComponent = daggerChatComponent

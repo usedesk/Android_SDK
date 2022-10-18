@@ -6,8 +6,8 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 data class Configuration(
     val materialComponents: Boolean = false,
     val urlChat: String = "https://pubsubsec.usedesk.ru",
-    val urlChatApi: String = "https://secure.usedesk.ru/",
-    val urlApi: String = "https://api.usedesk.ru/",
+    val urlChatApi: String = "https://secure.usedesk.ru",
+    val urlApi: String = "https://api.usedesk.ru",
     val companyId: String = "",
     val channelId: String = "",
     val accountId: String = "",

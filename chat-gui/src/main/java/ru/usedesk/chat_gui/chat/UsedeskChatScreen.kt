@@ -61,9 +61,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         }
 
         getBundleArgs { chatConfiguration, _, _, _, _, _, _ ->
-            if (chatConfiguration != null) {
-                UsedeskChatSdk.setConfiguration(chatConfiguration)
-            }
+            UsedeskChatSdk.setConfiguration(chatConfiguration)
             init()
         }
     }.rootView

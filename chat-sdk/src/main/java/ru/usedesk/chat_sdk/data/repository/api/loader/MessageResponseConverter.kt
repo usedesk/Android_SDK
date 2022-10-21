@@ -4,7 +4,8 @@ import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageField.Associate
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item.Field.Text.Type
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import javax.inject.Inject
@@ -143,7 +144,16 @@ internal class MessageResponseConverter @Inject constructor() :
             val feedbackNeeded: Boolean
             val feedback: UsedeskFeedback?
             if (!fromClient) {
+                from.text = (from.text ?: "") +
+                        "{{button:click me;;;show}}\n\n" +
+                        "{{field;emaila;email;true}}\n\n" +
+                        "{{field;fona;phone;true}}\n\n" +
+                        "{{button:don't click me;;;show}}\n\n" +
+                        "{{field;nama;name;true}}\n\n" +
+                        "{{field;not;note;true}}\n\n" +
+                        "{{field;pozition;position;true}}\n\n"
                 objects = from.text?.toMessageObjects() ?: listOf()
+                //objects = from.text?.toMessageObjects() ?: listOf()
                 feedback = when (from.payload?.userRating) {
                     "LIKE" -> UsedeskFeedback.LIKE
                     "DISLIKE" -> UsedeskFeedback.DISLIKE
@@ -160,8 +170,6 @@ internal class MessageResponseConverter @Inject constructor() :
                 feedbackNeeded = false
                 feedback = null
             }
-            val buttons = objects.filterIsInstance<MessageObject.Button>()
-                .map(MessageObject.Button::button)
 
             val fields = objects.filterIsInstance<MessageObject.Field>()
                 .map(MessageObject.Field::field)
@@ -193,9 +201,7 @@ internal class MessageResponseConverter @Inject constructor() :
 
             listOf(
                 when {
-                    convertedText.isEmpty() &&
-                            buttons.isEmpty() &&
-                            fields.isEmpty() -> null
+                    convertedText.isEmpty() && fields.isEmpty() -> null
                     fromClient -> UsedeskMessageClientText(
                         id,
                         messageDate,
@@ -209,7 +215,6 @@ internal class MessageResponseConverter @Inject constructor() :
                         messageDate,
                         from.text!!,
                         convertedText,
-                        buttons,
                         fields,
                         feedbackNeeded,
                         feedback,
@@ -321,8 +326,7 @@ internal class MessageResponseConverter @Inject constructor() :
 
     sealed interface MessageObject {
         class Text(val text: String) : MessageObject
-        class Button(val button: UsedeskMessageButton) : MessageObject
-        class Field(val field: UsedeskMessageField) : MessageObject
+        class Field(val field: Item) : MessageObject
         class Image(val file: UsedeskFile) : MessageObject
     }
 
@@ -376,13 +380,13 @@ internal class MessageResponseConverter @Inject constructor() :
         }
     )
 
-    private fun String.toMessageButton(): MessageObject.Button? {
+    private fun String.toMessageButton(): MessageObject.Field? {
         val parts = drop(9)
             .dropLast(2)
             .split(";")
         return when (parts.size) {
-            4 -> MessageObject.Button(
-                UsedeskMessageButton(
+            4 -> MessageObject.Field(
+                Item.Button(
                     parts[0],
                     parts[1],
                     parts[2],
@@ -399,19 +403,31 @@ internal class MessageResponseConverter @Inject constructor() :
             .split(";")
         return when (parts.size) {
             2, 3 -> valueOrNull {
+                val associate = parts[1]
+                val textType = when (associate) {
+                    "email" -> Type.EMAIL
+                    "phone" -> Type.PHONE
+                    "name" -> Type.NAME
+                    "note" -> Type.NOTE
+                    "position" -> Type.POSITION
+                    else -> null
+                }
+                val required = parts.getOrNull(2) == "true"
                 MessageObject.Field(
-                    UsedeskMessageField(
-                        parts[0],
-                        when (val associate = parts[1]) {
-                            "email" -> Associate.Email
-                            "phone" -> Associate.Phone
-                            "name" -> Associate.Name
-                            "note" -> Associate.Note
-                            "position" -> Associate.Position
-                            else -> Associate.Id(associate.toLong())
-                        },
-                        parts.getOrNull(2) == "true"
-                    )
+                    when (textType) {
+                        null -> Item.Field.List(
+                            parts[0],
+                            associate.toLong(),
+                            0L,
+                            required
+                        )
+                        else -> Item.Field.Text(
+                            parts[0],
+                            textType,
+                            "",
+                            required
+                        )
+                    }
                 )
             }
             else -> null

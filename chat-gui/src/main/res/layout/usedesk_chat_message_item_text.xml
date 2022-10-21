@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="?attr/usedesk_common_container_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:theme="@style/Usedesk.Chat.Message.Text.Button">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/usedesk_background_message_text_item">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/et_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:includeFontPadding="false"
+            android:padding="8dp" />
+    </FrameLayout>
+</FrameLayout>

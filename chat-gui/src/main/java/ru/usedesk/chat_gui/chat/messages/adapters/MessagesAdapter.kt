@@ -163,8 +163,10 @@ internal class MessagesAdapter(
                     }.toFloat()
 
                     (recyclerView.findViewHolderForAdapterPosition(
-                        if (targetDate == notVisibleDate) notVisibleDateIndex
-                        else topDateIndex
+                        when (targetDate) {
+                            notVisibleDate -> notVisibleDateIndex
+                            else -> topDateIndex
+                        }
                     ) as? DateViewHolder)?.binding?.rootView?.visibility = View.INVISIBLE
                 }
             }
@@ -630,18 +632,18 @@ internal class MessagesAdapter(
             val name = messageFile.file.name
             binding.tvFileName.text = name
             binding.tvExtension.text = name.substringAfterLast('.')
-            if (rejectedFileExtensions.any(name::endsWith)) {
-                val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_2)
-                binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
-                binding.tvFileSize.setTextColor(textColor)
-            } else {
-                val textColor = textSizeStyleValues.getColor(R.attr.usedesk_text_color_1)
-                binding.tvFileSize.text = messageFile.file.size
-                binding.tvFileSize.setTextColor(textColor)
+            val textColorId = when {
+                rejectedFileExtensions.any(name::endsWith) -> {
+                    binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
+                    R.attr.usedesk_text_color_2
+                }
+                else -> {
+                    binding.tvFileSize.text = messageFile.file.size
+                    R.attr.usedesk_text_color_1
+                }
             }
-            binding.rootView.setOnClickListener {
-                onFileClick(messageFile.file)
-            }
+            binding.tvFileSize.setTextColor(textSizeStyleValues.getColor(textColorId))
+            binding.rootView.setOnClickListener { onFileClick(messageFile.file) }
         }
     }
 
@@ -666,47 +668,46 @@ internal class MessagesAdapter(
             chatItem as ChatItem.Message
             val messageFile = chatItem.message as UsedeskMessageFile
 
-            if (oldItem?.isIdEquals(chatItem) != true) {
-                clearImage(binding.ivPreview)
+            when (oldItem?.isIdEquals(chatItem)) {
+                null -> {
+                    showImage(
+                        binding.ivPreview,
+                        messageFile.file.content,
+                        vError = binding.ivError,
+                        onSuccess = {
+                            binding.pbLoading.visibility = View.INVISIBLE
+                            binding.ivPreview.setOnClickListener {
+                                onFileClick(messageFile.file)
+                            }
+                        },
+                        onError = {
+                            binding.pbLoading.visibility = View.INVISIBLE
+                            binding.ivError.setOnClickListener {
+                                bindImage(chatItem)
+                            }
+                        },
+                        oldPlaceholder = true
+                    )
+                }
+                else -> {
+                    clearImage(binding.ivPreview)
 
-                binding.ivPreview.setOnClickListener(null)
-                binding.ivError.setOnClickListener(null)
+                    binding.ivPreview.setOnClickListener(null)
+                    binding.ivError.setOnClickListener(null)
 
-                showImage(binding.ivPreview,
-                    messageFile.file.content,
-                    loadingImageId,
-                    binding.pbLoading,
-                    binding.ivError,
-                    onSuccess = {
-                        binding.ivPreview.setOnClickListener {
-                            onFileClick(messageFile.file)
+                    showImage(binding.ivPreview,
+                        messageFile.file.content,
+                        loadingImageId,
+                        binding.pbLoading,
+                        binding.ivError,
+                        onSuccess = {
+                            binding.ivPreview.setOnClickListener { onFileClick(messageFile.file) }
+                        },
+                        onError = {
+                            binding.ivError.setOnClickListener { bindImage(chatItem) }
                         }
-                    },
-                    onError = {
-                        binding.ivError.setOnClickListener {
-                            bindImage(chatItem)
-                        }
-                    }
-                )
-            } else {
-                showImage(
-                    binding.ivPreview,
-                    messageFile.file.content,
-                    vError = binding.ivError,
-                    onSuccess = {
-                        binding.pbLoading.visibility = View.INVISIBLE
-                        binding.ivPreview.setOnClickListener {
-                            onFileClick(messageFile.file)
-                        }
-                    },
-                    onError = {
-                        binding.pbLoading.visibility = View.INVISIBLE
-                        binding.ivError.setOnClickListener {
-                            bindImage(chatItem)
-                        }
-                    },
-                    oldPlaceholder = true
-                )
+                    )
+                }
             }
 
             oldItem = chatItem
@@ -977,7 +978,7 @@ internal class MessagesAdapter(
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
 
-        private val buttonsAdapter = ButtonsAdapter(binding.content.rvButtons) {
+        private val itemsAdapter = MessageItemsAdapter(binding.content.rvItems) {
             when {
                 it.url.isNotEmpty() -> onUrlClick(it.url)
                 else -> viewModel.onIntent(Intent.ButtonSend(it.text))
@@ -994,11 +995,11 @@ internal class MessagesAdapter(
 
             val messageAgentText =
                 (chatItem as ChatItem.Message.Agent).message as UsedeskMessageAgentText
-            buttonsAdapter.update(messageAgentText.buttons)
+            itemsAdapter.update(chatItem.message.id, messageAgentText.items)
 
             binding.content.rootView.layoutParams.apply {
                 width = when {
-                    messageAgentText.buttons.isEmpty()
+                    messageAgentText.items.isEmpty()
                             && !messageAgentText.feedbackNeeded
                             && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT
@@ -1069,9 +1070,7 @@ internal class MessagesAdapter(
                         binding.content.tvText.text = thanksText
                     }
                 }
-                else -> {
-                    binding.content.lFeedback.visibility = View.GONE
-                }
+                else -> binding.content.lFeedback.visibility = View.GONE
             }
         }
 
@@ -1086,10 +1085,9 @@ internal class MessagesAdapter(
                 post {
                     x = container.width / 4.0f
                 }
-                alpha = if (visible) {
-                    1.0f
-                } else {
-                    0.0f
+                alpha = when {
+                    visible -> 1.0f
+                    else -> 0.0f
                 }
                 isEnabled = false
                 isClickable = false
@@ -1108,10 +1106,9 @@ internal class MessagesAdapter(
         ) {
             imageViewMain.apply {
                 post {
-                    x = if (initStart) {
-                        0.0f
-                    } else {
-                        container.width / 2.0f
+                    x = when {
+                        initStart -> 0.0f
+                        else -> container.width / 2.0f
                     }
                 }
                 alpha = 1.0f
@@ -1210,17 +1207,12 @@ internal class MessagesAdapter(
             return (yesterday[Calendar.YEAR] == calendar[Calendar.YEAR]
                     && yesterday[Calendar.DAY_OF_YEAR] == calendar[Calendar.DAY_OF_YEAR])
         }
-
-        /*private fun isSameDay(calendarA: Calendar?, calendarB: Calendar): Boolean {
-            return calendarA?.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR) &&
-                    calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR)
-        }*/
     }
 
     internal class MessageTextBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val rvButtons: RecyclerView = rootView.findViewById(R.id.rv_buttons)
+        val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
         val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
         val lContent: ViewGroup = rootView.findViewById(R.id.l_content)

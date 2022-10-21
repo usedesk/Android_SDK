@@ -31,11 +31,12 @@
             style="?attr/usedesk_chat_message_text_message_text"
             tools:text="ASjdasklj 412897412897 124784128947 192847128947 192847192847 12984710hr38e9gft2 32t893 2593gt 923t4 293g5t42 73t2783 gt273 gf273 gr2r73g 28r73g 23gr7da" />
 
+
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_buttons"
+            android:id="@+id/rv_items"
             style="?attr/usedesk_common_container_6"
             tools:itemCount="4"
-            tools:listitem="@layout/usedesk_item_chat_button" />
+            tools:listitem="@layout/usedesk_chat_message_item_button" />
     </LinearLayout>
 
     <TextView

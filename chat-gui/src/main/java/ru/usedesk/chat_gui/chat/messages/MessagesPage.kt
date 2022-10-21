@@ -37,7 +37,6 @@ internal class MessagesPage : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private var messagesAdapter: MessagesAdapter? = null
-
     private var attachmentDialog: UsedeskAttachmentDialog? = null
 
     override fun onCreateView(

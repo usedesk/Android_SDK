@@ -27,32 +27,25 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun requireConfiguration(): UsedeskChatConfiguration {
-        return chatConfiguration
-            ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
-    }
+    fun requireConfiguration(): UsedeskChatConfiguration = chatConfiguration
+        ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
 
     @JvmStatic
-    fun init(context: Context): IUsedeskChat {
-        return (instanceBox
-            ?: InstanceBoxUsedesk(
-                context,
-                requireConfiguration(),
-                usedeskMessagesRepository
-            ).also {
-                instanceBox = it
-            }).chatInteractor
-    }
+    fun init(context: Context): IUsedeskChat = (instanceBox
+        ?: InstanceBoxUsedesk(
+            context,
+            requireConfiguration(),
+            usedeskMessagesRepository
+        ).also {
+            instanceBox = it
+        }).chatInteractor
 
     @JvmStatic
-    fun getInstance(): IUsedeskChat? {
-        return instanceBox?.chatInteractor
-    }
+    fun getInstance(): IUsedeskChat? = instanceBox?.chatInteractor
 
     @JvmStatic
-    fun requireInstance(): IUsedeskChat {
-        return getInstance() ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
-    }
+    fun requireInstance(): IUsedeskChat = getInstance()
+        ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
 
     /**
      * Завершает работу IUsedeskChat

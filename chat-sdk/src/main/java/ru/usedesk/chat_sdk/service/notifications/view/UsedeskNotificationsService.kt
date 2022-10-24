@@ -65,9 +65,7 @@ abstract class UsedeskNotificationsService : Service() {
             UsedeskChatSdk.setConfiguration(chatConfiguration)
             UsedeskChatSdk.init(this)
 
-            presenter.init {
-                renderModel(it)
-            }
+            presenter.init(this@UsedeskNotificationsService::renderModel)
         } else {
             stopSelf(startId)
         }
@@ -77,9 +75,7 @@ abstract class UsedeskNotificationsService : Service() {
 
     private fun renderModel(model: UsedeskNotificationsModel?) {
         model?.also {
-            createNotification(it)?.also { notification ->
-                showNotification(notification)
-            }
+            createNotification(it)?.also(this@UsedeskNotificationsService::showNotification)
         }
     }
 

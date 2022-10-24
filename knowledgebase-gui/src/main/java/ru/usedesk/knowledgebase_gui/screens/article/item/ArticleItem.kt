@@ -122,9 +122,7 @@ internal class ArticleItem : UsedeskFragment() {
                 binding.lRating.visibility = visibleInvisible(new.state == State.LOADED)
             }
             if (old?.articleContent != new.articleContent) {
-                new.articleContent?.let { articleContent ->
-                    onArticleContent(articleContent)
-                }
+                new.articleContent?.let(this@ArticleItem::onArticleContent)
             }
         }
         parentViewModel.modelFlow.onEachWithOld { old, new ->

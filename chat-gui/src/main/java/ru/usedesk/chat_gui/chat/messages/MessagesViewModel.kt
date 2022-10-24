@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.UsedeskViewModel
@@ -15,9 +14,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
     private val messagesReducer = MessagesReducer(usedeskChat, this)
 
     fun onIntent(intent: Intent) {
-        runBlocking {
-            setModel { messagesReducer.reduceModel(this, intent) }
-        }
+        setModel { messagesReducer.reduceModel(this, intent) }
     }
 
     init {

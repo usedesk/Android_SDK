@@ -31,7 +31,8 @@ internal class KnowledgeBaseApi @Inject constructor(
         ?.categories
         ?: throw UsedeskDataNotFoundException("Categories not found by section id($sectionId)")
 
-    override fun getArticles(categoryId: Long) = getSections().flatMap { it.categories }
+    override fun getArticles(categoryId: Long) = getSections()
+        .flatMap(UsedeskSection::categories)
         .firstOrNull { it.id == categoryId }
         ?.articles
         ?: throw UsedeskDataNotFoundException("Articles not found by category id($categoryId)")

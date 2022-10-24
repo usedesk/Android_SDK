@@ -19,17 +19,13 @@ internal interface ChatComponent {
     interface Builder {
 
         @BindsInstance
-        fun bindAppContext(context: Context): Builder
+        fun appContext(context: Context): Builder
 
         @BindsInstance
-        fun bindChatConfiguration(
-            chatConfiguration: UsedeskChatConfiguration
-        ): Builder
+        fun configuration(chatConfiguration: UsedeskChatConfiguration): Builder
 
         @BindsInstance
-        fun bindCustomMessagesRepository(
-            customMessagesRepository: UsedeskCustom<IUsedeskMessagesRepository>
-        ): Builder
+        fun customMessagesRepository(repository: UsedeskCustom<IUsedeskMessagesRepository>): Builder
 
         fun build(): ChatComponent
     }

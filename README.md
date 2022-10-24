@@ -1,6 +1,6 @@
-# Android Usedesk SDK (v3.12.14)
+# Android Usedesk SDK (v3.12.16)
 
-### !Важно! В версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases/tag/3.10.5)
+### !Важно! C версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases)
 
 - [Подключение к проекту](#preparation)
 - [Локализация](#gui_localization)
@@ -71,12 +71,6 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 <a name="chat_configuration"></a>
 ### Конфигурация
 
-Для работы с чатом необходимо задать конфигурацию:
-
-```
-UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
-```
-
 [**UsedeskChatConfiguration**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/UsedeskChatConfiguration.kt) - конфигурация чата:
 
 | Переменная | Тип | Описание |
@@ -135,7 +129,7 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 supportFragmentManager.beginTransaction()
     .replace(
         R.id.container, 
-        UsedeskChatScreen.newInstance(...)
+        UsedeskChatScreen.newInstance(chatConfiguration, ...)
     ).commit()
 ```
 
@@ -144,7 +138,7 @@ supportFragmentManager.beginTransaction()
 ```
 navController.navigate(
     R.id.action_configurationScreen_to_usedeskChatScreen,
-    UsedeskChatScreen.createBundle(...)
+    UsedeskChatScreen.createBundle(chatConfiguration, ...)
 )
 ```
 
@@ -152,9 +146,9 @@ navController.navigate(
 
 | Аргумент                        | Тип                       |                                                              |
 | ------------------------------- | ------------------------- | ------------------------------------------------------------ |
+| chatConfiguration               | UsedeskChatConfiguration  | `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
 | customAgentName                 | String?                   | Если задан, то все имена агентов в чате будут заменены на значение параметра. |
 | rejectedFileExtensions          | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
-| chatConfiguration               | UsedeskChatConfiguration? | Если задан, то `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
 | messagesDateFormat              | String?                   | Если задан, то меняет формат одображения даты группы сообщений |
 | messageTimeFormat               | String?                   | Если задан, то меняет формат одображения времени сообщений |
 | adaptiveTextMessageTimePadding  | Boolean                   | При значении `true` сдвигает текст сообщений относительно времени |
@@ -174,10 +168,10 @@ override fun onBackPressed() {
 }
 ```
 
-- Для привязки жизненного цикла ViewModel к родителю необходимо расширить
+- Для привязки жизненного цикла ViewModel к родителю необходимо реализовать
   интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
 
-- Расширить
+- Реализовать
   интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt)
   родителем, переопределив метод `onFileClick`, например:
 
@@ -194,11 +188,15 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 }
 ```
 
-- Расширить
+- Реализовать
   интерфейс [IUsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnDownloadListener.kt)
   родителем, переопределив метод `onDownload`.
 
-- Для отслеживания момента инициализации чата расширить
+- Для получения токена клиента реализовать
+  интерфейс [IUsedeskOnClientTokenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnClientTokenListener.kt)
+  родителем.
+
+- Для отслеживания момента инициализации чата реализовать
   интерфейс [IUsedeskOnChatInitedListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnChatInitedListener.kt)
   родителем.
 
@@ -219,16 +217,17 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 </provider>
 ```
 
-- Для возможности отображения видео во весь экран необходимо расширить
+- Для возможности отображения видео во весь экран необходимо реализовать
   интерфейс [IUsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFullscreenListener.kt)
 
 <a name="chat_sdk"></a>
 
 ### Использование без GUI
 
-После установки конфигурации нужно проинициализировать чат:
+Для работы с чатом необходимо задать конфигурацию и проинициализировать чат:
 
 ```
+UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
 val usedeskChat = UsedeskChatSdk.init(requireContext())
 ```
 
@@ -393,7 +392,7 @@ override fun onSupportClick() {
 
 - Для обработки кликов по ссылкам в статьях, необходимо реализовать
   интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt)
-  родителем и возвращать `true` методом `onWebUrl` если ссылка обработана, в ином случае ссылка
+  родителем и возвращать `true` в методе `onWebUrl` если ссылка обработана, в ином случае ссылка
   откроется внутри статьи.
 
 <a name="knowledge_base_sdk"></a>

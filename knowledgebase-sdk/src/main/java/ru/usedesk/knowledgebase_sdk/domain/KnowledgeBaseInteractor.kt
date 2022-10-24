@@ -14,7 +14,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
 
     private val ioScheduler = Schedulers.io()
 
-    override fun getSectionsRx() = safeSingleIo(ioScheduler) { getSections() }
+    override fun getSectionsRx() = safeSingleIo(ioScheduler, this::getSections)
 
     override fun getArticleRx(articleId: Long) = safeSingleIo(ioScheduler) { getArticle(articleId) }
 

@@ -16,7 +16,7 @@ open class UsedeskViewModel<MODEL>(
     defaultModel: MODEL
 ) : ViewModel() {
     val modelFlow = MutableStateFlow(defaultModel)
-    val mainThread = AndroidSchedulers.mainThread()
+    private val mainThread = AndroidSchedulers.mainThread()
 
     private val mutex = Mutex()
 
@@ -62,76 +62,45 @@ open class UsedeskViewModel<MODEL>(
         }
     }
 
-    protected fun addDisposable(disposable: Disposable) {
+    @Deprecated("Migrate to coroutines")
+    private fun addDisposable(disposable: Disposable) {
         disposables.add(disposable)
     }
 
+    @Deprecated("Migrate to coroutines")
     protected fun doIt(
         completable: Completable,
         onCompleted: () -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
+        onThrowable: (Throwable) -> Unit = Throwable::printStackTrace
     ) = completable.observeOn(mainThread)
-        .subscribe({ onCompleted() }, { onThrowable(it) }).also {
-            addDisposable(it)
-        }
+        .subscribe({ onCompleted() }, { onThrowable(it) })
+        .also(this::addDisposable)
 
-    protected fun doIt(
-        completableList: List<Completable>,
-        onCompleted: () -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ): Disposable {
-        val completable = Completable.concat(completableList)
-            .observeOn(mainThread)
-        return doIt(completable, onCompleted, onThrowable)
-    }
-
-    protected fun <T> doIt(
+    @Deprecated("Migrate to coroutines")
+    private fun <T> doIt(
         observable: Observable<T>,
         onValue: (T) -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
+        onThrowable: (Throwable) -> Unit = Throwable::printStackTrace
     ) = observable.observeOn(mainThread)
-        .subscribe({ onValue(it) }, { onThrowable(it) }).also {
-            addDisposable(it)
-        }
+        .subscribe({ onValue(it) }, { onThrowable(it) })
+        .also(this::addDisposable)
 
+    @Deprecated("Migrate to coroutines")
     protected fun <T> doIt(
         single: Single<T>,
         onValue: (T) -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
+        onThrowable: (Throwable) -> Unit = Throwable::printStackTrace
     ) = doIt(single.toObservable(), onValue, onThrowable)
 
+    @Deprecated("Migrate to coroutines")
     @SuppressLint("CheckResult")
     protected fun justDoIt(
         completable: Completable,
         onSuccess: () -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
+        onThrowable: (Throwable) -> Unit = Throwable::printStackTrace
     ) {
         completable.observeOn(mainThread)
             .subscribe(onSuccess, onThrowable)
-    }
-
-    @SuppressLint("CheckResult")
-    protected fun <T> justDoIt(
-        single: Single<T>,
-        onResult: (T) -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ) {
-        single.observeOn(mainThread)
-            .subscribe(onResult, onThrowable)
-    }
-
-    @SuppressLint("CheckResult")
-    protected fun <T> justDoIt(
-        observable: Observable<T>,
-        onResult: (T) -> Unit = {},
-        onThrowable: (Throwable) -> Unit = { throwable(it) }
-    ) {
-        observable.observeOn(mainThread)
-            .subscribe(onResult, onThrowable)
-    }
-
-    private fun throwable(throwable: Throwable) {
-        throwable.printStackTrace()
     }
 
     override fun onCleared() {

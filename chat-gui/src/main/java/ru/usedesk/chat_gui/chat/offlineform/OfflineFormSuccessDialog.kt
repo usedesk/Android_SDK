@@ -29,12 +29,10 @@ internal class OfflineFormSuccessDialog private constructor(
     }
 
     companion object {
-        fun newInstance(container: View): OfflineFormSuccessDialog {
-            val dialogStyle = UsedeskResourceManager.getResourceId(
-                R.style.Usedesk_Chat_Offline_Form_Success_Dialog
-            )
-            return OfflineFormSuccessDialog(container as ViewGroup, dialogStyle)
-        }
+        fun newInstance(container: View) = OfflineFormSuccessDialog(
+            container as ViewGroup,
+            UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Offline_Form_Success_Dialog)
+        )
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {

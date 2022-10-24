@@ -14,8 +14,6 @@ import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationLoader
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
-import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.ITokenLoader
-import ru.usedesk.chat_sdk.data.repository.configuration.loader.token.TokenLoader
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository
 import ru.usedesk.chat_sdk.domain.CachedMessagesInteractor
@@ -62,23 +60,11 @@ internal interface ChatModuleBinds {
     @[Binds ChatScope]
     fun userInfoRepository(repository: UserInfoRepository): IUserInfoRepository
 
-    /*@[Binds ChatScope]
-    fun initChatResponseConverter(converter: InitChatResponseConverter): InitChatResponseConverter*/
-
-    /*@[Binds ChatScope]
-    fun messageResponseConverter(converter: MessageResponseConverter): MessageResponseConverter*/
-
     @[Binds ChatScope]
     fun fileLoader(loader: FileLoader): IFileLoader
 
     @[Binds ChatScope]
-    fun tokenLoader(loader: TokenLoader): ITokenLoader
-
-    @[Binds ChatScope]
     fun configurationLoader(loader: ConfigurationLoader): IConfigurationLoader
-
-    /*@[Binds ChatScope]
-    fun socketApi(api: SocketApi): SocketApi*/
 }
 
 @Scope

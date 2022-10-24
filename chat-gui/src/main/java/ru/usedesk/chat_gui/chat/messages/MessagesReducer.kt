@@ -42,7 +42,7 @@ internal class MessagesReducer(
         copy(attachmentPanelVisible = intent.show)
 
     private fun Model.removeMessage(intent: Intent.RemoveMessage) = this.apply {
-        viewModel.doIo { usedeskChat.removeMessageRx(intent.id) }
+        viewModel.doIo { usedeskChat.removeMessage(intent.id) }
     }
 
     private fun Model.sendAgain(intent: Intent.SendAgain) = this.apply {
@@ -180,58 +180,58 @@ internal class MessagesReducer(
         hasPreviousMessages: Boolean,
         groupAgentMessages: Boolean
     ): List<ChatItem> {
-        val newMessages = this.reversed().groupBy {
-            it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR]
-        }.flatMap {
-            it.value.mapIndexed { i, message ->
-                val lastOfGroup = i == 0
-                when (message) {
-                    is UsedeskMessageClient -> ChatItem.Message.Client(message, lastOfGroup)
-                    else -> ChatItem.Message.Agent(
-                        message,
-                        lastOfGroup,
-                        showName = true,
-                        showAvatar = true
-                    )
-                }
-            }.asSequence() + ChatItem.ChatDate(
-                (it.value.first().createdAt.clone() as Calendar).apply {
-                    set(Calendar.MILLISECOND, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.HOUR, 0)
-                })
-        }.toList()
-
-        val messages = if (groupAgentMessages) {
-            newMessages.flatMapIndexed { index, item ->
-                if (item is ChatItem.Message.Agent) {
-                    item.message as UsedeskMessageAgent
-                    val previous =
-                        (newMessages.getOrNull(index - 1) as? ChatItem.Message.Agent)?.message
-                                as? UsedeskMessageAgent
-                    val next =
-                        (newMessages.getOrNull(index + 1) as? ChatItem.Message.Agent)?.message
-                                as? UsedeskMessageAgent
-                    val newItem = ChatItem.Message.Agent(
-                        item.message,
-                        item.isLastOfGroup,
-                        showName = false,
-                        showAvatar = previous?.isAgentsTheSame(item.message) != true
-                    )
-                    when (next?.isAgentsTheSame(item.message)) {
-                        true -> sequenceOf(newItem)
-                        else -> sequenceOf(
-                            newItem,
-                            ChatItem.MessageAgentName(item.message.name)
+        val newMessages = reversed()
+            .groupBy { it.createdAt[Calendar.YEAR] * 1000 + it.createdAt[Calendar.DAY_OF_YEAR] }
+            .flatMap {
+                it.value.mapIndexed { i, message ->
+                    val lastOfGroup = i == 0
+                    when (message) {
+                        is UsedeskMessageClient -> ChatItem.Message.Client(message, lastOfGroup)
+                        else -> ChatItem.Message.Agent(
+                            message,
+                            lastOfGroup,
+                            showName = true,
+                            showAvatar = true
                         )
                     }
-                } else {
-                    sequenceOf(item)
+                }.asSequence() + ChatItem.ChatDate(
+                    (it.value.first().createdAt.clone() as Calendar).apply {
+                        set(Calendar.MILLISECOND, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.HOUR, 0)
+                    })
+            }.toList()
+
+        val messages = when {
+            groupAgentMessages -> newMessages.flatMapIndexed { index, item ->
+                when (item) {
+                    is ChatItem.Message.Agent -> {
+                        item.message as UsedeskMessageAgent
+                        val previous = (newMessages.getOrNull(index - 1)
+                                as? ChatItem.Message.Agent)?.message
+                                as? UsedeskMessageAgent
+                        val next = (newMessages.getOrNull(index + 1)
+                                as? ChatItem.Message.Agent)?.message
+                                as? UsedeskMessageAgent
+                        val newItem = ChatItem.Message.Agent(
+                            item.message,
+                            item.isLastOfGroup,
+                            showName = false,
+                            showAvatar = previous?.isAgentsTheSame(item.message) != true
+                        )
+                        when (next?.isAgentsTheSame(item.message)) {
+                            true -> sequenceOf(newItem)
+                            else -> sequenceOf(
+                                newItem,
+                                ChatItem.MessageAgentName(item.message.name)
+                            )
+                        }
+                    }
+                    else -> sequenceOf(item)
                 }
             }
-        } else {
-            newMessages
+            else -> newMessages
         }
         return when {
             hasPreviousMessages -> messages.toMutableList().apply {

@@ -17,13 +17,14 @@ internal class MessageResponseConverter @Inject constructor() :
     private val mdUrlRegex = Pattern.compile(
         "\\[[^\\[\\]\\(\\)]+\\]\\(${urlRegex.pattern}/?\\)"
     ).toRegex()
-
+    private val badUrlRegex = Pattern.compile("""<${urlRegex.pattern}/>""")
 
     fun convertText(text: String) = try {
         text.trim('\n', '\r', ' ', '\u200B')
             .split('\n')
-            .joinToString("\n") {
-                it.trim('\r', ' ', '\u200B')
+            .joinToString("\n") { line ->
+                line.trim('\r', ' ', '\u200B')
+                    .replace(badUrlRegex.toRegex()) { it.value.drop(1).dropLast(2) }
                     .convertMarkdownUrls()
                     .convertMarkdownText()
             }
@@ -129,9 +130,7 @@ internal class MessageResponseConverter @Inject constructor() :
                         )
                     }
                 }
-            }?.let {
-                fileMessages.add(it)
-            }
+            }?.let(fileMessages::add)
 
             val textMessage = convertOrNull {
                 if (from.text?.isNotEmpty() == true) {
@@ -259,19 +258,17 @@ internal class MessageResponseConverter @Inject constructor() :
         while (i < this.length) {
             builder.append(
                 when (this[i]) {
-                    '*' -> {
-                        when {
-                            this.getOrNull(i + 1) == '*' -> {
-                                i++
-                                boldOpen = !boldOpen
-                                if (boldOpen) "</b>"
-                                else "<b>"
-                            }
-                            else -> {
-                                italicOpen = !italicOpen
-                                if (italicOpen) "</i>"
-                                else "<i>"
-                            }
+                    '*' -> when {
+                        this.getOrNull(i + 1) == '*' -> {
+                            i++
+                            boldOpen = !boldOpen
+                            if (boldOpen) "</b>"
+                            else "<b>"
+                        }
+                        else -> {
+                            italicOpen = !italicOpen
+                            if (italicOpen) "</i>"
+                            else "<i>"
                         }
                     }
                     '\n' -> "<br>"
@@ -294,19 +291,18 @@ internal class MessageResponseConverter @Inject constructor() :
     private fun String.getExcludeRanges(
         includedRanges: List<IntRange>
     ): List<IntRange> {
-        val ranges = includedRanges.sortedBy { it.first }
+        val ranges = includedRanges.sortedBy(IntRange::first)
         return (sequenceOf(
             0 until (ranges.firstOrNull()?.first ?: length),
             (ranges.lastOrNull()?.last?.inc() ?: 0) until length
         ) + ranges.indices.mapNotNull { i ->
-            if (i < ranges.size - 1) {
-                ranges[i].last + 1 until ranges[i + 1].first
-            } else {
-                null
+            when {
+                i < ranges.size - 1 -> ranges[i].last + 1 until ranges[i + 1].first
+                else -> null
             }
-        }.asSequence()).filter {
-            it.first <= it.last && it.first in this.indices && it.last in this.indices
-        }.toSet()
+        }.asSequence())
+            .filter { it.first <= it.last && it.first in this.indices && it.last in this.indices }
+            .toSet()
             .toList()
     }
 
@@ -333,7 +329,7 @@ internal class MessageResponseConverter @Inject constructor() :
         val builder = StringBuilder()
 
         (withPhonesRanges + noPhones).toSet()
-            .sortedBy { it.first }
+            .sortedBy(IntRange::first)
             .forEach {
                 val part = this.substring(it)
                 builder.append(when (it) {

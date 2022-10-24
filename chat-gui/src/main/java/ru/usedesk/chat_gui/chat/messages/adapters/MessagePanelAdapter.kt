@@ -21,9 +21,7 @@ internal class MessagePanelAdapter(
 
     init {
         binding.ivAttachFile.setOnClickListener(onClickAttach)
-        binding.ivSend.setOnClickListener {
-            onSendClick()
-        }
+        binding.ivSend.setOnClickListener { onSendClick() }
         attachedFilesAdapter = AttachedFilesAdapter(
             binding.rvAttachedFiles,
             viewModel,

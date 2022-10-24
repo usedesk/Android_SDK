@@ -17,13 +17,10 @@ internal interface KnowledgeBaseComponent {
     interface Builder {
 
         @BindsInstance
-        fun bindAppContext(context: Context): Builder
+        fun appContext(context: Context): Builder
 
         @BindsInstance
-        fun bindKnowledgeBaseConfiguration(
-            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration
-        ): Builder
-
+        fun configuration(configuration: UsedeskKnowledgeBaseConfiguration): Builder
 
         fun build(): KnowledgeBaseComponent
     }

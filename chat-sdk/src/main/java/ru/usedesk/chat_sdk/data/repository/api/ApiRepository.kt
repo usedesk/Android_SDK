@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendResult
@@ -20,6 +21,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
@@ -47,50 +49,38 @@ internal class ApiRepository @Inject constructor(
     RetrofitApi::class.java
 ), IApiRepository {
 
-    private fun isConnected() = socketApi.isConnected()
-
     private lateinit var eventListener: EventListener
 
     private val socketEventListener = object : SocketApi.EventListener {
-        override fun onConnected() {
-            eventListener.onConnected()
-        }
+        override fun onConnected() = eventListener.onConnected()
 
-        override fun onDisconnected() {
-            eventListener.onDisconnected()
-        }
+        override fun onDisconnected() = eventListener.onDisconnected()
 
-        override fun onTokenError() {
-            eventListener.onTokenError()
-        }
+        override fun onTokenError() = eventListener.onTokenError()
 
-        override fun onFeedback() {
-            eventListener.onFeedback()
-        }
+        override fun onFeedback() = eventListener.onFeedback()
 
-        override fun onException(exception: Exception) {
-            eventListener.onException(exception)
-        }
+        override fun onException(exception: Exception) = eventListener.onException(exception)
 
         override fun onInited(initChatResponse: InitChatResponse) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
             chatInited.offlineFormSettings.run {
-                if ((workType == UsedeskOfflineFormSettings.WorkType.CHECK_WORKING_TIMES
-                            && noOperators)
-                    || (workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
-                            && initChatResponse.setup?.ticket?.statusId in STATUSES_FOR_FORM)
-                    || workType == UsedeskOfflineFormSettings.WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT
-                ) {
-                    eventListener.onOfflineForm(this, chatInited)
-                } else {
-                    eventListener.onChatInited(chatInited)
+                val offlineForm = when (workType) {
+                    WorkType.CHECK_WORKING_TIMES -> noOperators
+                    WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT ->
+                        initChatResponse.setup?.ticket?.statusId in STATUSES_FOR_FORM
+                    WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT -> true
+                    else -> false
+                }
+                when {
+                    offlineForm -> eventListener.onOfflineForm(this, chatInited)
+                    else -> eventListener.onChatInited(chatInited)
                 }
             }
         }
 
         override fun onNew(messageResponse: MessageResponse) {
-            val messages = messageResponseConverter.convert(messageResponse.message)
-            messages.forEach {
+            messageResponseConverter.convert(messageResponse.message).forEach {
                 when {
                     it is UsedeskMessageClient && it.id != it.localId ->
                         eventListener.onMessageUpdated(it)
@@ -103,6 +93,8 @@ internal class ApiRepository @Inject constructor(
             eventListener.onSetEmailSuccess()
         }
     }
+
+    private fun isConnected() = socketApi.isConnected()
 
     override fun initChat(
         configuration: UsedeskChatConfiguration,
@@ -117,7 +109,7 @@ internal class ApiRepository @Inject constructor(
             "phone" to configuration.clientPhoneNumber,
             "additional_id" to configuration.clientAdditionalId,
             "note" to configuration.clientNote,
-            "avatar" to getAvatarMultipartBodyPart(configuration),
+            "avatar" to configuration.clientAvatar?.toFileBytes(),
             "platform" to "sdk"
         )
         val response = doRequestMultipart(
@@ -136,11 +128,13 @@ internal class ApiRepository @Inject constructor(
         eventListener: EventListener
     ) {
         this.eventListener = eventListener
-        socketApi.connect(
-            url,
-            configuration.getInitChatRequest(token),
-            socketEventListener
-        )
+        runBlocking {
+            socketApi.connect(
+                url,
+                configuration.getInitChatRequest(token),
+                socketEventListener
+            )
+        }
     }
 
     override fun init(
@@ -152,7 +146,7 @@ internal class ApiRepository @Inject constructor(
 
     private fun UsedeskChatConfiguration.getInitChatRequest(token: String?) = InitChatRequest(
         token,
-        getCompanyAndChannel(),
+        companyAndChannel(),
         urlChat,
         when {
             messagesPageSize > 0 -> messagesPageSize
@@ -198,9 +192,7 @@ internal class ApiRepository @Inject constructor(
         )
     }
 
-    override fun setClient(
-        configuration: UsedeskChatConfiguration
-    ) {
+    override fun setClient(configuration: UsedeskChatConfiguration) {
         checkConnection()
 
         try {
@@ -212,7 +204,7 @@ internal class ApiRepository @Inject constructor(
                 "phone" to configuration.clientPhoneNumber,
                 "additional_id" to configuration.clientAdditionalId,
                 "company_id" to configuration.companyId,
-                "avatar" to getAvatarMultipartBodyPart(configuration)
+                "avatar" to configuration.clientAvatar?.toFileBytes()
             )
             doRequestMultipart(
                 configuration.urlChatApi,
@@ -226,44 +218,39 @@ internal class ApiRepository @Inject constructor(
         }
     }
 
-    private fun getAvatarMultipartBodyPart(configuration: UsedeskChatConfiguration) =
-        if (configuration.clientAvatar != null) {
-            try {
-                val uri = Uri.parse(configuration.clientAvatar)
-                val originalBitmap = contentResolver.openInputStream(uri)
-                    .use {
-                        BitmapFactory.decodeStream(it)
-                    }
-                val side = min(originalBitmap.width, originalBitmap.height)
-                val outputStream = ByteArrayOutputStream()
+    private fun String.toFileBytes() = try {
+        val uri = Uri.parse(this)
+        val originalBitmap = contentResolver.openInputStream(uri)
+            .use(BitmapFactory::decodeStream)
+        val side = min(originalBitmap.width, originalBitmap.height)
+        val outputStream = ByteArrayOutputStream()
 
-                val quadBitmap = Bitmap.createBitmap(
-                    originalBitmap,
-                    (originalBitmap.width - side) / 2,
-                    (originalBitmap.height - side) / 2,
-                    side,
-                    side
-                )
-                originalBitmap.recycle()
-                val avatarBitmap = quadBitmap.scale(
-                    AVATAR_SIZE,
-                    AVATAR_SIZE
-                )
-                quadBitmap.recycle()
-                avatarBitmap.compress(
-                    Bitmap.CompressFormat.JPEG,
-                    100,
-                    outputStream
-                )
-                val byteArray = outputStream.toByteArray()
-                avatarBitmap.recycle()
+        val quadBitmap = Bitmap.createBitmap(
+            originalBitmap,
+            (originalBitmap.width - side) / 2,
+            (originalBitmap.height - side) / 2,
+            side,
+            side
+        )
+        originalBitmap.recycle()
+        val avatarBitmap = quadBitmap.scale(
+            AVATAR_SIZE,
+            AVATAR_SIZE
+        )
+        quadBitmap.recycle()
+        avatarBitmap.compress(
+            Bitmap.CompressFormat.JPEG,
+            100,
+            outputStream
+        )
+        val byteArray = outputStream.toByteArray()
+        avatarBitmap.recycle()
 
-                FileBytes(byteArray, configuration.clientAvatar)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
-        } else null
+        FileBytes(byteArray, this)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 
     override fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
@@ -279,34 +266,29 @@ internal class ApiRepository @Inject constructor(
                 messageId
             )
         }
-        val messages = messagesResponse.flatMap {
-            messageResponseConverter.convert(it)
-        }
+        val messages = messagesResponse.flatMap(messageResponseConverter::convert)
         eventListener.onMessagesOldReceived(messages)
         return messagesResponse.isNotEmpty()
     }
 
     override fun send(
         configuration: UsedeskChatConfiguration,
-        companyId: String,
         offlineForm: UsedeskOfflineForm
     ) {
         try {
-            val params = mapOf(
-                "email" to offlineForm.clientEmail.getCorrectStringValue(),
-                "name" to offlineForm.clientName.getCorrectStringValue(),
-                "company_id" to companyId.getCorrectStringValue(),
-                "message" to offlineForm.message.getCorrectStringValue(),
-                "topic" to offlineForm.topic.getCorrectStringValue()
-            )
-            val customFields = offlineForm.fields.filter { field ->
-                field.value.isNotEmpty()
-            }.map { field ->
-                field.key to field.value.getCorrectStringValue()
-            }
-            val json = JsonObject()
-            (params + customFields).forEach { param ->
-                json.addProperty(param.key, param.value)
+            val json = JsonObject().apply {
+                (mapOf(
+                    "email" to offlineForm.clientEmail,
+                    "name" to offlineForm.clientName,
+                    "company_id" to configuration.companyAndChannel(),
+                    "message" to offlineForm.message,
+                    "topic" to offlineForm.topic
+                ) + offlineForm.fields.map { it.key to it.value }).forEach {
+                    val correctValue = it.value.getCorrectStringValue()
+                    if (correctValue.isNotEmpty()) {
+                        addProperty(it.key, correctValue)
+                    }
+                }
             }
             doRequest(
                 configuration.urlChatApi,
@@ -316,6 +298,8 @@ internal class ApiRepository @Inject constructor(
             throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
         }
     }
+
+    private fun UsedeskChatConfiguration.companyAndChannel() = "${companyId}_$channelId"
 
     override fun send(
         token: String,
@@ -345,7 +329,9 @@ internal class ApiRepository @Inject constructor(
     private fun String.getCorrectStringValue() = replace("\"", "\\\"")
 
     override fun disconnect() {
-        socketApi.disconnect()
+        runBlocking {
+            socketApi.disconnect()
+        }
     }
 
     private fun checkConnection() {

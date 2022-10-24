@@ -38,7 +38,7 @@ internal class MessagesPage : UsedeskFragment() {
 
     private var messagesAdapter: MessagesAdapter? = null
 
-    private var attachmentDialog: UsedeskAttachmentDialog? = null
+    private var attachmentDialog: AttachmentDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,6 +53,10 @@ internal class MessagesPage : UsedeskFragment() {
     ).also {
         binding = it
     }.rootView
+
+    fun dismissAttachmentDialog() {
+        attachmentDialog?.dismiss()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,7 +79,7 @@ internal class MessagesPage : UsedeskFragment() {
             )
         }
 
-        attachmentDialog = UsedeskAttachmentDialog.create(this).apply {
+        attachmentDialog = AttachmentDialog.create(this).apply {
             setOnDismissListener {
                 viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(false))
             }
@@ -109,6 +113,8 @@ internal class MessagesPage : UsedeskFragment() {
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
                 if (new.attachmentPanelVisible) {
                     attachmentDialog?.show()
+                } else {
+                    attachmentDialog?.dismiss()
                 }
             }
         }

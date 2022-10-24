@@ -245,12 +245,24 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
+    private inline fun <reified T> getChildFragment(): T? = navHostFragment
+        .childFragmentManager
+        .fragments
+        .filterIsInstance<T>()
+        .firstOrNull()
+
     override fun onBackPressed() {
-        val currentFragment = navHostFragment.childFragmentManager.fragments.getOrNull(0)
-                as? UsedeskFragment
+        val currentFragment = getChildFragment<UsedeskFragment>()
         if (currentFragment?.onBackPressed() != true && !navController.popBackStack()) {
             super.onBackPressed()
         }
+    }
+
+    override fun onStop() {
+        getChildFragment<UsedeskChatScreen>()
+            ?.dismissAttachmentDialog()
+
+        super.onStop()
     }
 
     override fun onSupportClick() {

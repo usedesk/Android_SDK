@@ -258,13 +258,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onStop() {
-        getChildFragment<UsedeskChatScreen>()
-            ?.dismissAttachmentDialog()
-
-        super.onStop()
-    }
-
     override fun onSupportClick() {
         navController.navigate(
             R.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,

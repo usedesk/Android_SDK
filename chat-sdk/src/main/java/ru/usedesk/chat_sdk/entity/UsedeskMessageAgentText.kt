@@ -29,10 +29,10 @@ class UsedeskMessageAgentText(
 
         sealed class Field(val required: Boolean) : Item {
             class Text(
+                required: Boolean,
                 val name: String,
                 val type: Type,
-                val text: String,
-                required: Boolean
+                val text: String = ""
             ) : Field(required) {
                 enum class Type {
                     EMAIL,
@@ -43,18 +43,35 @@ class UsedeskMessageAgentText(
                 }
             }
 
-            class List(
+            class CheckBox(
+                required: Boolean,
                 val name: String,
-                val id: Long,
-                val selectedId: Long, //TODO: может сюда лучше лист сразу
-                required: Boolean
+                val checked: Boolean = false
             ) : Field(required)
 
-            class CheckBox(
+            open class ItemList(
+                required: Boolean,
                 val name: String,
-                val checked: Boolean,
-                required: Boolean
+                val id: Long
             ) : Field(required)
+
+            class LoadedItemList(
+                required: Boolean,
+                name: String,
+                id: Long,
+                val multiselect: Boolean,
+                val items: List<ListItem>
+            ) : ItemList(
+                required,
+                name,
+                id
+            ) {
+                data class ListItem(
+                    val id: Long,
+                    val name: String,
+                    val selected: Boolean
+                )
+            }
         }
     }
 }

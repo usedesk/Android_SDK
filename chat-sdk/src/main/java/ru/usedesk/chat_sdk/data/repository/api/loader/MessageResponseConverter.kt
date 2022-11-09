@@ -415,17 +415,15 @@ internal class MessageResponseConverter @Inject constructor() :
                 val required = parts.getOrNull(2) == "true"
                 MessageObject.Field(
                     when (textType) {
-                        null -> Item.Field.List(
+                        null -> Item.Field.ItemList(
+                            required,
                             parts[0],
-                            associate.toLong(),
-                            0L,
-                            required
+                            associate.toLong()
                         )
                         else -> Item.Field.Text(
+                            required,
                             parts[0],
-                            textType,
-                            "",
-                            required
+                            textType
                         )
                     }
                 )

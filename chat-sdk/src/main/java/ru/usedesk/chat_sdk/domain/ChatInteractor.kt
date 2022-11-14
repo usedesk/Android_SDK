@@ -680,6 +680,7 @@ internal class ChatInteractor @Inject constructor(
                     onMessageUpdate(sendingMessage)
                     sendFile(sendingMessage)
                 }
+                else -> {}
             }
         }
     }

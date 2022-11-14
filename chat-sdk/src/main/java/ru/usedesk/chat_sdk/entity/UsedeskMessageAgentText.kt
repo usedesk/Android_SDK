@@ -19,21 +19,29 @@ class UsedeskMessageAgentText(
     convertedText
 ), UsedeskMessageAgent {
 
-    sealed interface Item {
+    sealed class Item(
+        val id: Long,
+        val name: String
+    ) {
         class Button(
-            val text: String,
+            id: Long,
+            name: String,
             val url: String,
             val type: String,
             val isShow: Boolean
-        ) : Item
+        ) : Item(id, name)
 
-        sealed class Field(val required: Boolean) : Item {
+        sealed class Field(
+            id: Long,
+            name: String,
+            val required: Boolean
+        ) : Item(id, name) {
             class Text(
+                id: Long,
+                name: String,
                 required: Boolean,
-                val name: String,
-                val type: Type,
-                val text: String = ""
-            ) : Field(required) {
+                val type: Type
+            ) : Field(id, name, required) {
                 enum class Type {
                     EMAIL,
                     PHONE,
@@ -44,28 +52,18 @@ class UsedeskMessageAgentText(
             }
 
             class CheckBox(
-                required: Boolean,
-                val name: String,
-                val checked: Boolean = false
-            ) : Field(required)
+                id: Long,
+                name: String,
+                required: Boolean
+            ) : Field(id, name, required)
 
             open class ItemList(
-                required: Boolean,
-                val name: String,
-                val id: Long
-            ) : Field(required)
-
-            class LoadedItemList(
-                required: Boolean,
-                name: String,
                 id: Long,
-                val multiselect: Boolean,
-                val items: List<ListItem>
-            ) : ItemList(
-                required,
-                name,
-                id
-            ) {
+                name: String,
+                required: Boolean,
+                val multiselect: Boolean = false,
+                val items: List<ListItem> = listOf()
+            ) : Field(id, name, required) {
                 data class ListItem(
                     val id: Long,
                     val name: String,

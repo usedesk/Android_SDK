@@ -8,19 +8,23 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item.Field.Text.Type
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
 internal class MessageResponseConverter @Inject constructor() :
     Converter<MessageResponse.Message?, List<UsedeskMessage>> {
+
+    private val fieldId = AtomicLong(-1L)
 
     private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
     private val phoneRegex = Patterns.PHONE.toRegex()
     private val urlRegex = Patterns.WEB_URL.toRegex()
     private val mdUrlRegex = """\[[^\[\]\(\)]+\]\(${urlRegex.pattern}/?\)""".toRegex()
     private val badUrlRegex = """<${urlRegex.pattern}/>""".toRegex()
+    private val nextLineRegex = """\n{2,}""".toRegex()
     private val objectRegex = """\{\{$OBJECT_ANY\}\}""".toRegex()
-    private val buttonRegex = """\{\{$OBJECT_NAME($OBJECT_PART){2}$OBJECT_ANY\}\}""".toRegex()
-    private val fieldRegex = """\{\{($OBJECT_PART){3}$OBJECT_ANY\}\}""".toRegex()
+    private val buttonRegex = """\{\{button:($OBJECT_PART){2}$OBJECT_ANY\}\}""".toRegex()
+    private val fieldRegex = """\{\{form;($OBJECT_PART){1,2}$OBJECT_ANY\}\}""".toRegex()
     private val imageRegexp = """!\[[^]]*]\((.*?)\s*(\"(?:.*[^\"])\")?\s*\)""".toRegex()
 
     fun convertText(text: String): String = try {
@@ -30,7 +34,6 @@ internal class MessageResponseConverter @Inject constructor() :
             .replace("</em>", "</i>")
             .replace("</p>", "")
             .removePrefix("<p>")
-            .trim('\n', '\r', ' ', '\u200B')
             .split('\n')
             .joinToString("\n") { line ->
                 line.trim('\r', ' ', '\u200B')
@@ -38,7 +41,8 @@ internal class MessageResponseConverter @Inject constructor() :
                     .convertMarkdownUrls()
                     .convertMarkdownText()
             }
-            .replace("\n\n", "\n")
+            .trim('\n')
+            .replace(nextLineRegex, "\n\n")
             .replace("\n", "<br>")
     } catch (e: Exception) {
         e.printStackTrace()
@@ -144,14 +148,14 @@ internal class MessageResponseConverter @Inject constructor() :
             val feedbackNeeded: Boolean
             val feedback: UsedeskFeedback?
             if (!fromClient) {
-                from.text = (from.text ?: "") +
+                from.text = (from.text ?: "")/* +
                         "{{button:click me;;;show}}\n\n" +
                         "{{field;emaila;email;true}}\n\n" +
                         "{{field;fona;phone;true}}\n\n" +
                         "{{button:don't click me;;;show}}\n\n" +
                         "{{field;nama;name;true}}\n\n" +
                         "{{field;not;note;true}}\n\n" +
-                        "{{field;pozition;position;true}}\n\n"
+                        "{{field;pozition;position;true}}\n\n"*/
                 objects = from.text?.toMessageObjects() ?: listOf()
                 //objects = from.text?.toMessageObjects() ?: listOf()
                 feedback = when (from.payload?.userRating) {
@@ -387,6 +391,7 @@ internal class MessageResponseConverter @Inject constructor() :
         return when (parts.size) {
             4 -> MessageObject.Field(
                 Item.Button(
+                    fieldId.decrementAndGet(),
                     parts[0],
                     parts[1],
                     parts[2],
@@ -398,7 +403,7 @@ internal class MessageResponseConverter @Inject constructor() :
     }
 
     private fun String.toMessageField(): MessageObject.Field? {
-        val parts = drop(8)
+        val parts = drop(7)
             .dropLast(2)
             .split(";")
         return when (parts.size) {
@@ -416,13 +421,14 @@ internal class MessageResponseConverter @Inject constructor() :
                 MessageObject.Field(
                     when (textType) {
                         null -> Item.Field.ItemList(
-                            required,
+                            associate.toLong(),
                             parts[0],
-                            associate.toLong()
+                            required
                         )
                         else -> Item.Field.Text(
-                            required,
+                            fieldId.decrementAndGet(),
                             parts[0],
+                            required,
                             textType
                         )
                     }
@@ -440,7 +446,6 @@ internal class MessageResponseConverter @Inject constructor() :
 
     companion object {
         private const val OBJECT_ANY = """[^\{\}]*"""
-        private const val OBJECT_NAME = """[^\{\}:]*:"""
         private const val OBJECT_PART = """[^\{\};]*;"""
     }
 }

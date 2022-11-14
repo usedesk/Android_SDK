@@ -15,56 +15,66 @@ internal class MessagesReducer(
     private val viewModel: MessagesViewModel
 ) {
 
-    fun reduceModel(model: Model, intent: Intent): Model = model.reduce(intent)
+    fun reduceModel(state: State, event: Event): State = state.reduce(event)
 
-    private fun Model.reduce(intent: Intent) = when (intent) {
-        is Intent.Init -> init(intent)
-        is Intent.Messages -> messages(intent)
-        is Intent.MessageDraft -> messageDraft(intent)
-        is Intent.MessagesShowed -> messagesShowed(intent)
-        is Intent.PreviousMessagesResult -> previousMessagesResult(intent)
-        is Intent.MessageChanged -> messageChanged(intent)
-        is Intent.SendFeedback -> sendFeedback(intent)
-        is Intent.AttachFiles -> attachFiles(intent)
-        is Intent.DetachFile -> detachFile(intent)
-        is Intent.ButtonSend -> buttonSend(intent)
-        is Intent.SendAgain -> sendAgain(intent)
-        is Intent.RemoveMessage -> removeMessage(intent)
-        is Intent.ShowToBottomButton -> showToBottomButton(intent)
-        is Intent.ShowAttachmentPanel -> showAttachmentPanel(intent)
-        Intent.SendDraft -> sendDraft()
+    private fun State.reduce(event: Event) = when (event) {
+        is Event.Init -> init(event)
+        is Event.Messages -> messages(event)
+        is Event.MessageDraft -> messageDraft(event)
+        is Event.MessagesShowed -> messagesShowed(event)
+        is Event.PreviousMessagesResult -> previousMessagesResult(event)
+        is Event.MessageChanged -> messageChanged(event)
+        is Event.SendFeedback -> sendFeedback(event)
+        is Event.AttachFiles -> attachFiles(event)
+        is Event.DetachFile -> detachFile(event)
+        is Event.ButtonSend -> buttonSend(event)
+        is Event.SendAgain -> sendAgain(event)
+        is Event.RemoveMessage -> removeMessage(event)
+        is Event.ShowToBottomButton -> showToBottomButton(event)
+        is Event.ShowAttachmentPanel -> showAttachmentPanel(event)
+        Event.SendDraft -> sendDraft()
+        is Event.AgentItemChanged -> agentItemChanged(event)
     }
 
-    private fun Model.showToBottomButton(intent: Intent.ShowToBottomButton) =
-        copy(fabToBottom = intent.show)
+    private fun State.agentItemChanged(event: Event.AgentItemChanged) = copy(
+        agentItems = agentItems.map {
+            when (it.item.id) {
+                event.agentItem.item.id -> event.agentItem
+                else -> it
+            }
+        }
+    )
 
-    private fun Model.showAttachmentPanel(intent: Intent.ShowAttachmentPanel) =
-        copy(attachmentPanelVisible = intent.show)
+    private fun State.showToBottomButton(event: Event.ShowToBottomButton) =
+        copy(fabToBottom = event.show)
 
-    private fun Model.removeMessage(intent: Intent.RemoveMessage) = this.apply {
-        viewModel.doIo { usedeskChat.removeMessage(intent.id) }
+    private fun State.showAttachmentPanel(event: Event.ShowAttachmentPanel) =
+        copy(attachmentPanelVisible = event.show)
+
+    private fun State.removeMessage(event: Event.RemoveMessage) = this.apply {
+        viewModel.doIo { usedeskChat.removeMessage(event.id) }
     }
 
-    private fun Model.sendAgain(intent: Intent.SendAgain) = this.apply {
-        viewModel.doIo { usedeskChat.sendAgain(intent.id) }
+    private fun State.sendAgain(event: Event.SendAgain) = this.apply {
+        viewModel.doIo { usedeskChat.sendAgain(event.id) }
     }
 
-    private fun Model.sendDraft() = copy(
+    private fun State.sendDraft() = copy(
         messageDraft = UsedeskMessageDraft(),
         goToBottom = UsedeskSingleLifeEvent(Unit)
     ).apply {
         viewModel.doIo { usedeskChat.sendMessageDraft() }
     }
 
-    private fun Model.buttonSend(intent: Intent.ButtonSend) = copy(
+    private fun State.buttonSend(event: Event.ButtonSend) = copy(
         goToBottom = UsedeskSingleLifeEvent(Unit)
     ).apply {
-        viewModel.doIo { usedeskChat.send(intent.message) }
+        viewModel.doIo { usedeskChat.send(event.message) }
     }
 
-    private fun Model.attachFiles(intent: Intent.AttachFiles) = copy(
+    private fun State.attachFiles(event: Event.AttachFiles) = copy(
         messageDraft = messageDraft.copy(
-            files = (messageDraft.files + intent.files).toSet().toList()
+            files = (messageDraft.files + event.files).toSet().toList()
         ),
         attachmentPanelVisible = false
     ).apply {
@@ -72,46 +82,46 @@ internal class MessagesReducer(
     }
 
 
-    private fun Model.detachFile(intent: Intent.DetachFile) = copy(
-        messageDraft = messageDraft.copy(files = messageDraft.files - intent.file)
+    private fun State.detachFile(event: Event.DetachFile) = copy(
+        messageDraft = messageDraft.copy(files = messageDraft.files - event.file)
     ).apply {
         viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
     }
 
-    private fun Model.sendFeedback(intent: Intent.SendFeedback) = this.apply {
+    private fun State.sendFeedback(event: Event.SendFeedback) = this.apply {
         viewModel.doIo {
             usedeskChat.send(
-                intent.message,
-                intent.feedback
+                event.message,
+                event.feedback
             )
         }
     }
 
-    private fun Model.messageChanged(intent: Intent.MessageChanged): Model = when (intent.message) {
+    private fun State.messageChanged(event: Event.MessageChanged): State = when (event.message) {
         messageDraft.text -> this
-        else -> copy(messageDraft = messageDraft.copy(text = intent.message)).apply {
+        else -> copy(messageDraft = messageDraft.copy(text = event.message)).apply {
             viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
         }
     }
 
-    private fun Model.init(intent: Intent.Init) =
-        copy(groupAgentMessages = intent.groupAgentMessages)
+    private fun State.init(event: Event.Init) =
+        copy(groupAgentMessages = event.groupAgentMessages)
 
-    private fun Model.previousMessagesResult(intent: Intent.PreviousMessagesResult) = copy(
-        hasPreviousMessages = intent.hasPreviousMessages,
+    private fun State.previousMessagesResult(event: Event.PreviousMessagesResult) = copy(
+        hasPreviousMessages = event.hasPreviousMessages,
         previousLoading = false,
         chatItems = when (this.hasPreviousMessages) {
-            intent.hasPreviousMessages -> chatItems
+            event.hasPreviousMessages -> chatItems
             else -> messages.convert(
-                intent.hasPreviousMessages,
+                event.hasPreviousMessages,
                 groupAgentMessages
             )
         }
     )
 
-    private fun Model.messagesShowed(intent: Intent.MessagesShowed): Model {
+    private fun State.messagesShowed(event: Event.MessagesShowed): State {
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
-            i <= intent.messagesRange.last && chatItems[i] is ChatItem.Message
+            i <= event.messagesRange.last && chatItems[i] is ChatItem.Message
         }
         var previousLoading = this.previousLoading
         if (lastMessageIndex + ITEMS_UNTIL_LAST >= chatItems.size &&
@@ -126,20 +136,20 @@ internal class MessagesReducer(
                     e.printStackTrace()
                     true
                 }
-                Intent.PreviousMessagesResult(hasPreviousMessages)
+                Event.PreviousMessagesResult(hasPreviousMessages)
             }
         }
-        val curAgentItemShowed = intent.messagesRange
+        val agentMessageShowed = event.messagesRange
             .asSequence()
             .map(chatItems::getOrNull)
             .firstOrNull { it is ChatItem.Message.Agent }
-        val newAgentIndexShowed = when (curAgentItemShowed) {
+        val newAgentIndexShowed = when (agentMessageShowed) {
             null -> agentIndexShowed
-            else -> min(agentIndexShowed, agentItems.indexOf(curAgentItemShowed))
+            else -> min(agentIndexShowed, agentMessages.indexOf(agentMessageShowed))
         }
         return copy(
             previousLoading = previousLoading,
-            fabToBottom = intent.messagesRange.first > 0,
+            fabToBottom = event.messagesRange.first > 0,
             chatItems = when (this.previousLoading) {
                 previousLoading -> chatItems
                 else -> messages.convert(
@@ -151,26 +161,26 @@ internal class MessagesReducer(
         )
     }
 
-    private fun Model.messageDraft(intent: Intent.MessageDraft) = copy(
-        messageDraft = intent.messageDraft
+    private fun State.messageDraft(event: Event.MessageDraft) = copy(
+        messageDraft = event.messageDraft
     )
 
-    private fun Model.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
-        when (val lastMessage = agentItems.getOrNull(agentIndexShowed)) {
+    private fun State.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
+        when (val lastMessage = agentMessages.getOrNull(agentIndexShowed)) {
             null -> 0
             else -> newAgentItems.indexOfFirst { it.message.id == lastMessage.message.id }
         }
 
-    private fun Model.messages(intent: Intent.Messages): Model {
-        val newChatItems = intent.messages.convert(
+    private fun State.messages(event: Event.Messages): State {
+        val newChatItems = event.messages.convert(
             hasPreviousMessages,
             groupAgentMessages
         )
         val newAgentItems = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
         val newAgentMessageShowed = getNewAgentIndexShowed(newAgentItems)
         return copy(
-            messages = intent.messages,
-            agentItems = newAgentItems,
+            messages = event.messages,
+            agentMessages = newAgentItems,
             chatItems = newChatItems,
             agentIndexShowed = newAgentMessageShowed
         )
@@ -250,9 +260,9 @@ internal class MessagesReducer(
     private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean =
         avatar == other.avatar && name == other.name
 
-    private fun ioIntent(getIntent: suspend () -> Intent) {
+    private fun ioIntent(getEvent: suspend () -> Event) {
         viewModel.doIo {
-            val intent = getIntent()
+            val intent = getEvent()
             viewModel.doMain { viewModel.onIntent(intent) }
         }
     }

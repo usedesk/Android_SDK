@@ -2,27 +2,28 @@ package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
 
-internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
+internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(State()) {
 
     private val actionListener: IUsedeskActionListener
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 
     private val messagesReducer = MessagesReducer(usedeskChat, this)
 
-    fun onIntent(intent: Intent) {
-        setModel { messagesReducer.reduceModel(this, intent) }
+    fun onIntent(event: Event) {
+        setModel { messagesReducer.reduceModel(this, event) }
     }
 
     init {
-        onIntent(Intent.MessageDraft(usedeskChat.getMessageDraft()))
+        onIntent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
         actionListener = object : IUsedeskActionListener {
             override fun onMessagesReceived(messages: List<UsedeskMessage>) {
-                doMain { onIntent(Intent.Messages(messages)) }
+                doMain { onIntent(Event.Messages(messages)) }
             }
         }
         usedeskChat.addActionListener(actionListener)
@@ -36,31 +37,33 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         UsedeskChatSdk.release(false)
     }
 
-    sealed interface Intent {
-        class Init(val groupAgentMessages: Boolean) : Intent
-        class Messages(val messages: List<UsedeskMessage>) : Intent
-        class MessageDraft(val messageDraft: UsedeskMessageDraft) : Intent
-        class MessagesShowed(val messagesRange: IntRange) : Intent
-        class MessageChanged(val message: String) : Intent
-        class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Intent
+    sealed interface Event {
+        class Init(val groupAgentMessages: Boolean) : Event
+        class Messages(val messages: List<UsedeskMessage>) : Event
+        class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
+        class MessagesShowed(val messagesRange: IntRange) : Event
+        class MessageChanged(val message: String) : Event
+        class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Event
         class SendFeedback(
             val message: UsedeskMessageAgentText,
             val feedback: UsedeskFeedback
-        ) : Intent
+        ) : Event
 
-        class AttachFiles(val files: Set<UsedeskFileInfo>) : Intent
-        class DetachFile(val file: UsedeskFileInfo) : Intent
-        class ButtonSend(val message: String) : Intent
-        class SendAgain(val id: Long) : Intent
-        class RemoveMessage(val id: Long) : Intent
-        class ShowToBottomButton(val show: Boolean) : Intent
-        class ShowAttachmentPanel(val show: Boolean) : Intent
-        object SendDraft : Intent
+        class AttachFiles(val files: Set<UsedeskFileInfo>) : Event
+        class DetachFile(val file: UsedeskFileInfo) : Event
+        class ButtonSend(val message: String) : Event
+        class SendAgain(val id: Long) : Event
+        class RemoveMessage(val id: Long) : Event
+        class ShowToBottomButton(val show: Boolean) : Event
+        class ShowAttachmentPanel(val show: Boolean) : Event
+        object SendDraft : Event
+        class AgentItemChanged(val agentItem: AgentItem<*, *>) : Event
     }
 
-    data class Model(
+    data class State(
         val messages: List<UsedeskMessage> = listOf(),
-        val agentItems: List<ChatItem.Message.Agent> = listOf(),
+        val agentMessages: List<ChatItem.Message.Agent> = listOf(),
+        val agentItems: List<AgentItem<*, *>> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
@@ -72,6 +75,36 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         val previousLoading: Boolean = false,
         val goToBottom: UsedeskEvent<Unit>? = null
     )
+
+    internal sealed interface AgentItem<ITEM : Item, STATE : ItemState> {
+        val item: ITEM
+        val state: STATE
+
+        data class Text(
+            override val item: Item.Field.Text,
+            override val state: ItemState.Text
+        ) : AgentItem<Item.Field.Text, ItemState.Text>
+
+        data class CheckBox(
+            override val item: Item.Field.CheckBox,
+            override val state: ItemState.CheckBox
+        ) : AgentItem<Item.Field.CheckBox, ItemState.CheckBox>
+
+        data class ItemList(
+            override val item: Item.Field.ItemList,
+            override val state: ItemState.ItemList
+        ) : AgentItem<Item.Field.ItemList, ItemState.ItemList>
+    }
+
+    internal sealed interface ItemState {
+        data class Button(val enabled: Boolean = false) : ItemState
+        data class CheckBox(val checked: Boolean = false) : ItemState
+        data class ItemList(val selected: List<Item.Field.ItemList.ListItem> = listOf()) : ItemState
+        data class Text(
+            val text: String = "",
+            val focused: Boolean = false
+        ) : ItemState
+    }
 
     internal sealed interface ChatItem {
 

@@ -23,7 +23,7 @@ import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Intent
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
 import java.text.SimpleDateFormat
@@ -105,7 +105,7 @@ internal class MessagesAdapter(
         val topItemIndex = layoutManager.findLastVisibleItemPosition()
         if (topItemIndex >= 0) {
             val bottomItemIndex = layoutManager.findFirstVisibleItemPosition()
-            viewModel.onIntent(Intent.MessagesShowed(bottomItemIndex..topItemIndex))
+            viewModel.onIntent(Event.MessagesShowed(bottomItemIndex..topItemIndex))
         }
     }
 
@@ -548,8 +548,8 @@ internal class MessagesAdapter(
                             inflate(R.menu.usedesk_messages_error_popup)
                             setOnMenuItemClickListener { item ->
                                 when (item.itemId) {
-                                    R.id.send_again -> Intent.SendAgain(clientMessage.localId)
-                                    R.id.remove_message -> Intent.RemoveMessage(clientMessage.localId)
+                                    R.id.send_again -> Event.SendAgain(clientMessage.localId)
+                                    R.id.remove_message -> Event.RemoveMessage(clientMessage.localId)
                                     else -> null
                                 }?.let(viewModel::onIntent)
                                 true
@@ -981,7 +981,7 @@ internal class MessagesAdapter(
         private val itemsAdapter = MessageItemsAdapter(binding.content.rvItems) {
             when {
                 it.url.isNotEmpty() -> onUrlClick(it.url)
-                else -> viewModel.onIntent(Intent.ButtonSend(it.text))
+                else -> viewModel.onIntent(Event.ButtonSend(it.name))
             }
         }
 
@@ -1045,7 +1045,7 @@ internal class MessagesAdapter(
                         goodColoredImage
                     ) {
                         viewModel.onIntent(
-                            Intent.SendFeedback(
+                            Event.SendFeedback(
                                 messageAgentText,
                                 UsedeskFeedback.LIKE
                             )
@@ -1062,7 +1062,7 @@ internal class MessagesAdapter(
                         badColoredImage
                     ) {
                         viewModel.onIntent(
-                            Intent.SendFeedback(
+                            Event.SendFeedback(
                                 messageAgentText,
                                 UsedeskFeedback.DISLIKE
                             )

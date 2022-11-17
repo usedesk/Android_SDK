@@ -105,11 +105,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     }
 
     private fun setBlur(blurView: BlurView) {
-        blurView.setupWith(binding.rootView as ViewGroup)
+        blurView.setupWith(binding.rootView as ViewGroup, RenderScriptBlur(context))
             .setFrameClearDrawable(blurView.background)
-            .setBlurAlgorithm(RenderScriptBlur(context))
             .setBlurRadius(16f)
-            .setHasFixedTransformationMatrix(true)
     }
 
     private fun onError(error: Boolean?) {

@@ -41,7 +41,7 @@ dependencies {
 
     implementation "com.google.android.material:material:$materialVersion"
 
-    implementation "com.github.Dimezis:BlurView:version-1.6.6"
+    implementation "com.github.Dimezis:BlurView:version-2.0.2"
 
     implementation "com.github.chrisbanes:PhotoView:2.3.0"
 

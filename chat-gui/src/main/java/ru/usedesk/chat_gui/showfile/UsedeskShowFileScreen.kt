@@ -56,8 +56,8 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivError.setOnClickListener { viewModel.onRetryPreview() }
 
-        setBlur(binding.lToolbar)
-        setBlur(binding.lBottom)
+        binding.lToolbar.setBlur()
+        binding.lBottom.setBlur()
     }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,12 +104,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         }
     }
 
-    private fun setBlur(blurView: BlurView) {
-        blurView.setupWith(binding.rootView as ViewGroup)
-            .setFrameClearDrawable(blurView.background)
-            .setBlurAlgorithm(RenderScriptBlur(context))
+    private fun BlurView.setBlur() {
+        setupWith(binding.rootView as ViewGroup, RenderScriptBlur(context))
+            .setFrameClearDrawable(background)
             .setBlurRadius(16f)
-            .setHasFixedTransformationMatrix(true)
     }
 
     private fun onError(error: Boolean?) {

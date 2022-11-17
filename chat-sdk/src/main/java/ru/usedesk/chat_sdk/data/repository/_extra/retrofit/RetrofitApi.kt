@@ -5,6 +5,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
+import ru.usedesk.chat_sdk.data.repository.api.entity.LoadFields
 import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFieldsRequest
 
 internal interface RetrofitApi {
@@ -23,6 +24,9 @@ internal interface RetrofitApi {
         @Query("chat_token") chatToken: String,
         @Query("comment_id") commentId: Long
     ): Call<ResponseBody>
+
+    @POST("v1/widget/field_list")
+    fun loadFieldList(@Body body: LoadFields.Request): Call<ResponseBody>
 
     @Multipart
     @POST("v1/chat/setClient")

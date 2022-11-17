@@ -53,9 +53,8 @@ internal class ChatInteractor @Inject constructor(
 
     private var reconnectDisposable: Disposable? = null
     private val listenersDisposables = mutableListOf<Disposable>()
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val jobsScope = CoroutineScope(Dispatchers.IO)
-    private val jobsMutex = Mutex()
+    private val eventScope = CoroutineScope(Dispatchers.IO)
+    private val eventMutex = Mutex()
     private val firstMessageMutex = Mutex()
     private var firstMessageLock: Mutex? = null
 
@@ -255,7 +254,7 @@ internal class ChatInteractor @Inject constructor(
 
     private fun onMessageUpdate(message: UsedeskMessage) {
         runBlocking {
-            jobsMutex.withLock {
+            eventMutex.withLock {
                 lastMessages = lastMessages.map {
                     when {
                         it is UsedeskMessageClient &&
@@ -359,8 +358,8 @@ internal class ChatInteractor @Inject constructor(
             eventListener.onMessagesNewReceived(listOf(sendingMessage))
 
             runBlocking {
-                jobsMutex.withLock {
-                    jobsScope.launchSafe({ sendCached(sendingMessage) })
+                eventMutex.withLock {
+                    eventScope.launchSafe({ sendCached(sendingMessage) })
                 }
             }
         }
@@ -377,13 +376,13 @@ internal class ChatInteractor @Inject constructor(
 
     private fun sendAdditionalFieldsIfNeededAsync() {
         runBlocking {
-            jobsMutex.withLock {
+            eventMutex.withLock {
                 if (additionalFieldsNeeded) {
                     additionalFieldsNeeded = false
                     if (configuration.additionalFields.isNotEmpty() ||
                         configuration.additionalNestedFields.isNotEmpty()
                     ) {
-                        ioScope.launch {
+                        eventScope.launch {
                             try {
                                 waitFirstMessage()
                                 delay(3000)
@@ -411,9 +410,9 @@ internal class ChatInteractor @Inject constructor(
         eventListener.onMessagesNewReceived(sendingMessages)
 
         runBlocking {
-            jobsMutex.withLock {
+            eventMutex.withLock {
                 sendingMessages.forEach { msg ->
-                    jobsScope.launchSafe({ sendCached(msg) })
+                    eventScope.launchSafe({ sendCached(msg) })
                 }
             }
         }
@@ -587,6 +586,25 @@ internal class ChatInteractor @Inject constructor(
         }?.let(this@ChatInteractor::onMessageUpdate)
     }
 
+
+    private val formLoadSet = mutableSetOf<Long>()
+
+    override fun loadForm(id: Long) {
+        eventScope.launch {
+            eventMutex.withLock {
+                if (!formLoadSet.contains(id)) {
+                    formLoadSet.add(id)
+                    eventScope.launch {
+                        while (true) {
+                            apiRepository.loadForm(id)
+                            //TODO: load form and update messages
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
         apiRepository.send(agentMessage.id, feedback)
 
@@ -596,8 +614,9 @@ internal class ChatInteractor @Inject constructor(
                 agentMessage.createdAt,
                 agentMessage.text,
                 agentMessage.convertedText,
-                agentMessage.items,
-                false,
+                agentMessage.forms,
+                formsLoaded = agentMessage.formsLoaded,
+                feedbackNeeded = false,
                 feedback,
                 agentMessage.name,
                 agentMessage.avatar
@@ -830,8 +849,8 @@ internal class ChatInteractor @Inject constructor(
     override fun release() {
         listenersDisposables.forEach(Disposable::dispose)
         runBlocking {
-            jobsMutex.withLock {
-                jobsScope.cancel()
+            eventMutex.withLock {
+                eventScope.cancel()
             }
         }
         disconnect()

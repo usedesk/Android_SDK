@@ -105,7 +105,7 @@ internal class MessagesAdapter(
         val topItemIndex = layoutManager.findLastVisibleItemPosition()
         if (topItemIndex >= 0) {
             val bottomItemIndex = layoutManager.findFirstVisibleItemPosition()
-            viewModel.onIntent(Event.MessagesShowed(bottomItemIndex..topItemIndex))
+            viewModel.onEvent(Event.MessagesShowed(bottomItemIndex..topItemIndex))
         }
     }
 
@@ -551,7 +551,7 @@ internal class MessagesAdapter(
                                     R.id.send_again -> Event.SendAgain(clientMessage.localId)
                                     R.id.remove_message -> Event.RemoveMessage(clientMessage.localId)
                                     else -> null
-                                }?.let(viewModel::onIntent)
+                                }?.let(viewModel::onEvent)
                                 true
                             }
                             show()
@@ -978,12 +978,16 @@ internal class MessagesAdapter(
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
 
-        private val itemsAdapter = MessageItemsAdapter(binding.content.rvItems) {
-            when {
-                it.url.isNotEmpty() -> onUrlClick(it.url)
-                else -> viewModel.onIntent(Event.ButtonSend(it.name))
+        private val itemsAdapter = MessageItemsAdapter(
+            binding.content.rvItems,
+            onEvent = viewModel::onEvent,
+            onButtonClick = {
+                when {
+                    it.url.isNotEmpty() -> onUrlClick(it.url)
+                    else -> viewModel.onEvent(Event.ButtonSend(it.name))
+                }
             }
-        }
+        )
 
         private val goodAtStart = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
@@ -995,11 +999,14 @@ internal class MessagesAdapter(
 
             val messageAgentText =
                 (chatItem as ChatItem.Message.Agent).message as UsedeskMessageAgentText
-            itemsAdapter.update(chatItem.message.id, messageAgentText.items)
+            itemsAdapter.update(
+                messageAgentText,
+                viewModel.modelFlow.value.agentItemsState
+            )
 
             binding.content.rootView.layoutParams.apply {
                 width = when {
-                    messageAgentText.items.isEmpty()
+                    messageAgentText.forms.isEmpty()
                             && !messageAgentText.feedbackNeeded
                             && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT
@@ -1044,7 +1051,7 @@ internal class MessagesAdapter(
                         goodImage,
                         goodColoredImage
                     ) {
-                        viewModel.onIntent(
+                        viewModel.onEvent(
                             Event.SendFeedback(
                                 messageAgentText,
                                 UsedeskFeedback.LIKE
@@ -1061,7 +1068,7 @@ internal class MessagesAdapter(
                         badImage,
                         badColoredImage
                     ) {
-                        viewModel.onIntent(
+                        viewModel.onEvent(
                             Event.SendFeedback(
                                 messageAgentText,
                                 UsedeskFeedback.DISLIKE

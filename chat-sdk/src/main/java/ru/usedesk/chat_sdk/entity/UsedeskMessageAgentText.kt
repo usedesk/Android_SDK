@@ -7,7 +7,8 @@ class UsedeskMessageAgentText(
     createdAt: Calendar,
     text: String,
     convertedText: String,
-    val items: List<Item>,
+    val forms: List<Form>,
+    val formsLoaded: Boolean,
     val feedbackNeeded: Boolean,
     val feedback: UsedeskFeedback?,
     override val name: String,
@@ -19,7 +20,7 @@ class UsedeskMessageAgentText(
     convertedText
 ), UsedeskMessageAgent {
 
-    sealed class Item(
+    sealed class Form(
         val id: Long,
         val name: String
     ) {
@@ -27,15 +28,24 @@ class UsedeskMessageAgentText(
             id: Long,
             name: String,
             val url: String,
-            val type: String,
-            val isShow: Boolean
-        ) : Item(id, name)
+            val type: String
+        ) : Form(id, name) {
+            companion object {
+                const val FORM_APPLY_BUTTON_ID = 0L
+            }
+        }
 
         sealed class Field(
             id: Long,
             name: String,
             val required: Boolean
-        ) : Item(id, name) {
+        ) : Form(id, name) {
+            class Stub(
+                id: Long,
+                name: String,
+                required: Boolean
+            ) : Field(id, name, required)
+
             class Text(
                 id: Long,
                 name: String,
@@ -57,17 +67,15 @@ class UsedeskMessageAgentText(
                 required: Boolean
             ) : Field(id, name, required)
 
-            open class ItemList(
+            class List(
                 id: Long,
                 name: String,
                 required: Boolean,
-                val multiselect: Boolean = false,
-                val items: List<ListItem> = listOf()
+                val items: kotlin.collections.List<Item>
             ) : Field(id, name, required) {
-                data class ListItem(
+                data class Item(
                     val id: Long,
-                    val name: String,
-                    val selected: Boolean
+                    val name: String
                 )
             }
         }

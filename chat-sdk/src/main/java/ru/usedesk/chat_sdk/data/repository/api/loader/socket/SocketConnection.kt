@@ -69,10 +69,7 @@ internal class SocketConnection(
         }
         gson.fromJson(rawResponse, responseClass)
     } catch (e: Exception) {
-        UsedeskLog.onLog(
-            "SOCKET",
-            "Failed to parse the response: $rawResponse"
-        )
+        UsedeskLog.onLog("SOCKET") { "Failed to parse the response: $rawResponse" }
         throw UsedeskSocketException(
             UsedeskSocketException.Error.JSON_ERROR,
             e.message

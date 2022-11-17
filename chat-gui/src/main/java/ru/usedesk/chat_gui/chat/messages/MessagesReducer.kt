@@ -2,10 +2,7 @@ package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.UsedeskMessage
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
-import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
@@ -32,16 +29,19 @@ internal class MessagesReducer(
         is Event.RemoveMessage -> removeMessage(event)
         is Event.ShowToBottomButton -> showToBottomButton(event)
         is Event.ShowAttachmentPanel -> showAttachmentPanel(event)
+        is Event.FormChanged -> formChanged(event)
+        is Event.FormApplyClick -> formApplyClick(event)
+        is Event.FormListClicked -> formListClicked(event)
         Event.SendDraft -> sendDraft()
-        is Event.AgentItemChanged -> agentItemChanged(event)
     }
 
-    private fun State.agentItemChanged(event: Event.AgentItemChanged) = copy(
-        agentItems = agentItems.map {
-            when (it.item.id) {
-                event.agentItem.item.id -> event.agentItem
-                else -> it
-            }
+    private fun State.formApplyClick(event: Event.FormApplyClick) = copy()
+
+    private fun State.formListClicked(event: Event.FormListClicked) = copy()
+
+    private fun State.formChanged(event: Event.FormChanged) = copy(
+        agentItemsState = agentItemsState.toMutableMap().apply {
+            put(event.form.id, event.formItemState)
         }
     )
 
@@ -129,7 +129,7 @@ internal class MessagesReducer(
             && hasPreviousMessages
         ) {
             previousLoading = true
-            ioIntent {
+            ioEvent {
                 val hasPreviousMessages = try {
                     usedeskChat.loadPreviousMessagesPage()
                 } catch (e: Exception) {
@@ -139,9 +139,17 @@ internal class MessagesReducer(
                 Event.PreviousMessagesResult(hasPreviousMessages)
             }
         }
-        val agentMessageShowed = event.messagesRange
-            .asSequence()
-            .map(chatItems::getOrNull)
+        val agentMessages = event.messagesRange
+            .map { chatItems.getOrNull(it) }
+        agentMessages.forEach {
+            if (it is ChatItem.Message &&
+                it.message is UsedeskMessageAgentText &&
+                it.message.formsLoaded
+            ) {
+                usedeskChat.loadForm(it.message.id)
+            }
+        }
+        val agentMessageShowed = agentMessages
             .firstOrNull { it is ChatItem.Message.Agent }
         val newAgentIndexShowed = when (agentMessageShowed) {
             null -> agentIndexShowed
@@ -176,11 +184,11 @@ internal class MessagesReducer(
             hasPreviousMessages,
             groupAgentMessages
         )
-        val newAgentItems = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
-        val newAgentMessageShowed = getNewAgentIndexShowed(newAgentItems)
+        val newAgentMessages = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
+        val newAgentMessageShowed = getNewAgentIndexShowed(newAgentMessages)
         return copy(
             messages = event.messages,
-            agentMessages = newAgentItems,
+            agentMessages = newAgentMessages,
             chatItems = newChatItems,
             agentIndexShowed = newAgentMessageShowed
         )
@@ -260,10 +268,10 @@ internal class MessagesReducer(
     private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean =
         avatar == other.avatar && name == other.name
 
-    private fun ioIntent(getEvent: suspend () -> Event) {
+    private fun ioEvent(getEvent: suspend () -> Event) {
         viewModel.doIo {
             val intent = getEvent()
-            viewModel.doMain { viewModel.onIntent(intent) }
+            viewModel.doMain { viewModel.onEvent(intent) }
         }
     }
 

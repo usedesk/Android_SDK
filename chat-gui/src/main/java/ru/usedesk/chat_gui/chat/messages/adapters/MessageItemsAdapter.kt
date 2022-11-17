@@ -5,42 +5,112 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.AgentItem
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ItemState
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageItemsAdapter.BaseViewHolder
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormItemState
+import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 
 //TODO: вытащить вьюхолдеры во вне
 internal class MessageItemsAdapter(
     recyclerView: RecyclerView,
-    private val onClick: (Item.Button) -> Unit
-) : RecyclerView.Adapter<BaseViewHolder>() {
+    private val onEvent: (Event) -> Unit,
+    private val onButtonClick: (Form.Button) -> Unit
+) : RecyclerView.Adapter<BaseViewHolder<out Form, out FormItemState>>() {
 
     private var messageId = 0L
-    private var items: List<AgentItem<*, *>> = listOf()
+    private var forms: List<Form> = listOf()
+    private var itemsState: Map<Long, FormItemState> = mapOf()
 
     init {
         recyclerView.adapter = this
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun update(messageId: Long, newItems: List<AgentItem<*, *>>) {
-        val oldItems = items
-        items = newItems
-        when (messageId) {
-            /*this.messageId -> {
-                //TODO: DiffUtil??
-            }*/
+    fun update(
+        messageAgentText: UsedeskMessageAgentText,
+        agentItems: Map<Long, FormItemState>
+    ) {
+        val oldItems = forms
+        val oldAgentItems = itemsState
+        forms = messageAgentText.forms
+        when (messageAgentText.id) {
+            this.messageId -> DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() = oldItems.size
+
+                override fun getNewListSize() = forms.size
+
+                override fun areItemsTheSame(
+                    oldItemPosition: Int,
+                    newItemPosition: Int
+                ): Boolean = oldItems[oldItemPosition].id == forms[newItemPosition].id
+
+                override fun areContentsTheSame(
+                    oldItemPosition: Int,
+                    newItemPosition: Int
+                ): Boolean {
+                    val oldItem = oldItems[oldItemPosition]
+                    val newItem = forms[newItemPosition]
+                    return oldItem.name == newItem.name && when (oldItem) {
+                        is Form.Button -> oldItem.areContentsTheSame(
+                            newItem as Form.Button,
+                            oldAgentItems[oldItem.id] as FormItemState.Button?,
+                            agentItems[oldItem.id] as FormItemState.Button?
+                        )
+                        is Form.Field.CheckBox -> oldItem.areContentsTheSame(
+                            newItem as Form.Field.CheckBox,
+                            oldAgentItems[oldItem.id] as FormItemState.CheckBox?,
+                            agentItems[oldItem.id] as FormItemState.CheckBox?
+                        )
+                        is Form.Field.List -> oldItem.areContentsTheSame(
+                            newItem as Form.Field.List,
+                            oldAgentItems[oldItem.id] as FormItemState.ItemList?,
+                            agentItems[oldItem.id] as FormItemState.ItemList?
+                        )
+                        is Form.Field.Text -> oldItem.areContentsTheSame(
+                            newItem as Form.Field.Text,
+                            oldAgentItems[oldItem.id] as FormItemState.Text?,
+                            agentItems[oldItem.id] as FormItemState.Text?
+                        )
+                    }
+                }
+            }).dispatchUpdatesTo(this)
             else -> {
-                this.messageId = messageId
+                this.messageId = messageAgentText.id
                 notifyDataSetChanged()
             }
         }
     }
+
+    private fun Form.Field.List.areContentsTheSame(
+        newForm: Form.Field.List,
+        oldFormItemState: FormItemState.ItemList?,
+        newFormItemState: FormItemState.ItemList?
+    ): Boolean = items == newForm.items ||
+            oldFormItemState?.selected == newFormItemState?.selected
+
+    private fun Form.Field.CheckBox.areContentsTheSame(
+        newForm: Form.Field.CheckBox,
+        oldFormItemState: FormItemState.CheckBox?,
+        newFormItemState: FormItemState.CheckBox?
+    ): Boolean = oldFormItemState?.checked == newFormItemState?.checked
+
+    private fun Form.Field.Text.areContentsTheSame(
+        newForm: Form.Field.Text,
+        oldFormItemState: FormItemState.Text?,
+        newFormItemState: FormItemState.Text?
+    ): Boolean = true
+
+    private fun Form.Button.areContentsTheSame(
+        newForm: Form.Button,
+        oldFormItemState: FormItemState.Button?,
+        newFormItemState: FormItemState.Button?
+    ): Boolean = oldFormItemState?.enabled == newFormItemState?.enabled
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.usedesk_chat_message_item_button -> ButtonViewHolder(
@@ -49,7 +119,9 @@ internal class MessageItemsAdapter(
                 R.layout.usedesk_chat_message_item_button,
                 R.style.Usedesk_Chat_Message_Text_Button,
                 ::ButtonBinding
-            )
+            ),
+            onEvent,
+            onButtonClick
         )
         R.layout.usedesk_chat_message_item_text -> TextViewHolder(
             inflateItem(
@@ -57,7 +129,8 @@ internal class MessageItemsAdapter(
                 R.layout.usedesk_chat_message_item_text,
                 R.style.Usedesk_Chat_Message_Text_Button,
                 ::TextBinding
-            )
+            ),
+            onEvent
         )
         R.layout.usedesk_chat_message_item_checkbox -> CheckBoxViewHolder(
             inflateItem(
@@ -65,7 +138,8 @@ internal class MessageItemsAdapter(
                 R.layout.usedesk_chat_message_item_checkbox,
                 R.style.Usedesk_Chat_Message_Text_Button,
                 ::CheckBoxBinding
-            )
+            ),
+            onEvent
         )
         R.layout.usedesk_chat_message_item_itemlist -> ItemListViewHolder(
             inflateItem(
@@ -73,86 +147,41 @@ internal class MessageItemsAdapter(
                 R.layout.usedesk_chat_message_item_itemlist,
                 R.style.Usedesk_Chat_Message_Text_ItemList,
                 ::ItemListBinding
-            )
+            ),
+            onEvent
         )
         else -> throw RuntimeException("Unknown view type: $viewType")
     }
 
-    override fun getItemViewType(position: Int) = when (items[position].item) {
-        is Item.Button -> R.layout.usedesk_chat_message_item_button
-        is Item.Field.Text -> R.layout.usedesk_chat_message_item_text
-        is Item.Field.CheckBox -> R.layout.usedesk_chat_message_item_checkbox
-        is Item.Field.ItemList -> R.layout.usedesk_chat_message_item_itemlist
+    override fun getItemViewType(position: Int) = when (forms[position]) {
+        is Form.Button -> R.layout.usedesk_chat_message_item_button
+        is Form.Field.Text -> R.layout.usedesk_chat_message_item_text
+        is Form.Field.CheckBox -> R.layout.usedesk_chat_message_item_checkbox
+        is Form.Field.List -> R.layout.usedesk_chat_message_item_itemlist
         else -> 0
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        holder.bind(items[position])
-    }
-
-    override fun getItemCount() = items.size
-
-    internal abstract class BaseViewHolder(rootView: View) : RecyclerView.ViewHolder(rootView) {
-
-        abstract fun bind(agentItem: AgentItem<*, *>)
-    }
-
-    inner class ButtonViewHolder(private val binding: ButtonBinding) :
-        BaseViewHolder(binding.rootView) {
-
-        override fun bind(agentItem: AgentItem<*, *>) {
-            agentItem as AgentItem<Item.Button, ItemState.Button>
-            binding.tvTitle.run {
-                text = agentItem.item.name
-                isEnabled = agentItem.state.enabled
-                isClickable = agentItem.state.enabled
-                isFocusable = agentItem.state.enabled
-                setOnClickListener(when {
-                    agentItem.state.enabled -> {
-                        { onClick(agentItem.item) }
-                    }
-                    else -> null
-                })
+    override fun onBindViewHolder(
+        holder: BaseViewHolder<out Form, out FormItemState>,
+        position: Int
+    ) {
+        val formItem = forms[position]
+        val state = itemsState[formItem.id]
+        holder.bindItem(
+            messageId,
+            formItem,
+            state ?: when (formItem) {
+                is Form.Button -> FormItemState.Button(
+                    enabled = formItem.id != Form.Button.FORM_APPLY_BUTTON_ID
+                )
+                is Form.Field.CheckBox -> FormItemState.CheckBox()
+                is Form.Field.List -> FormItemState.ItemList()
+                is Form.Field.Text -> FormItemState.Text()
             }
-        }
+        )
     }
 
-    inner class TextViewHolder(private val binding: TextBinding) :
-        BaseViewHolder(binding.rootView) {
-
-        override fun bind(agentItem: AgentItem<*, *>) {
-            agentItem as AgentItem<Item.Field.Text, ItemState.Text>
-            binding.etText.run {
-                hint = agentItem.item.name
-                setText(agentItem.state.text)
-            }
-        }
-    }
-
-    inner class CheckBoxViewHolder(private val binding: CheckBoxBinding) :
-        BaseViewHolder(binding.rootView) {
-
-        override fun bind(agentItem: AgentItem<*, *>) {
-            agentItem as AgentItem<Item.Field.CheckBox, ItemState.CheckBox>
-            binding.tvText.text = agentItem.item.name
-        }
-    }
-
-    inner class ItemListViewHolder(private val binding: ItemListBinding) :
-        BaseViewHolder(binding.rootView) {
-
-        override fun bind(agentItem: AgentItem<*, *>) {
-            agentItem as AgentItem<Item.Field.ItemList, ItemState.ItemList>
-            val name = when {
-                agentItem.item.items.isNotEmpty() -> agentItem.state.selected.joinToString(separator = ", ") {
-                    it.name
-                }.ifEmpty { null }
-                else -> null
-            }
-            binding.tvText.text = name ?: agentItem.item.name
-            //binding.tvText.setTextColor() //TODO: цвет текста
-        }
-    }
+    override fun getItemCount() = forms.size
 
     internal class ButtonBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {

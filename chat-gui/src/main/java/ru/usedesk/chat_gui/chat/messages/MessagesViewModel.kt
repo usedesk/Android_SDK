@@ -2,7 +2,7 @@ package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Item
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
@@ -14,16 +14,16 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
 
     private val messagesReducer = MessagesReducer(usedeskChat, this)
 
-    fun onIntent(event: Event) {
+    fun onEvent(event: Event) {
         setModel { messagesReducer.reduceModel(this, event) }
     }
 
     init {
-        onIntent(Event.MessageDraft(usedeskChat.getMessageDraft()))
+        onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
         actionListener = object : IUsedeskActionListener {
             override fun onMessagesReceived(messages: List<UsedeskMessage>) {
-                doMain { onIntent(Event.Messages(messages)) }
+                doMain { onEvent(Event.Messages(messages)) }
             }
         }
         usedeskChat.addActionListener(actionListener)
@@ -57,13 +57,22 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         class ShowToBottomButton(val show: Boolean) : Event
         class ShowAttachmentPanel(val show: Boolean) : Event
         object SendDraft : Event
-        class AgentItemChanged(val agentItem: AgentItem<*, *>) : Event
+        class FormApplyClick(val messageId: Long) : Event
+        class FormChanged(
+            val form: Form,
+            val formItemState: FormItemState
+        ) : Event
+
+        class FormListClicked(
+            val form: Form.Field.List,
+            val formItemState: FormItemState.ItemList
+        ) : Event
     }
 
     data class State(
         val messages: List<UsedeskMessage> = listOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
-        val agentItems: List<AgentItem<*, *>> = listOf(),
+        val agentItemsState: Map<Long, FormItemState> = mapOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
@@ -76,38 +85,14 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val goToBottom: UsedeskEvent<Unit>? = null
     )
 
-    internal sealed interface AgentItem<ITEM : Item, STATE : ItemState> {
-        val item: ITEM
-        val state: STATE
-
-        data class Text(
-            override val item: Item.Field.Text,
-            override val state: ItemState.Text
-        ) : AgentItem<Item.Field.Text, ItemState.Text>
-
-        data class CheckBox(
-            override val item: Item.Field.CheckBox,
-            override val state: ItemState.CheckBox
-        ) : AgentItem<Item.Field.CheckBox, ItemState.CheckBox>
-
-        data class ItemList(
-            override val item: Item.Field.ItemList,
-            override val state: ItemState.ItemList
-        ) : AgentItem<Item.Field.ItemList, ItemState.ItemList>
-    }
-
-    internal sealed interface ItemState {
-        data class Button(val enabled: Boolean = false) : ItemState
-        data class CheckBox(val checked: Boolean = false) : ItemState
-        data class ItemList(val selected: List<Item.Field.ItemList.ListItem> = listOf()) : ItemState
-        data class Text(
-            val text: String = "",
-            val focused: Boolean = false
-        ) : ItemState
+    internal sealed interface FormItemState {
+        data class Button(val enabled: Boolean = false) : FormItemState
+        data class CheckBox(val checked: Boolean = false) : FormItemState
+        data class ItemList(val selected: List<Form.Field.List.Item> = listOf()) : FormItemState
+        data class Text(val text: String = "") : FormItemState
     }
 
     internal sealed interface ChatItem {
-
         sealed class Message(
             val message: UsedeskMessage,
             val isLastOfGroup: Boolean

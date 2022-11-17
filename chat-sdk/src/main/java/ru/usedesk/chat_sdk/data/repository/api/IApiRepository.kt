@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 
 internal interface IApiRepository {
     fun connect(
@@ -57,6 +58,11 @@ internal interface IApiRepository {
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): String
+
+    fun loadForm(
+        configuration: UsedeskChatConfiguration,
+        fields: List<Field.Stub>
+    ): List<Field>
 
     sealed interface SendResult {
         object Done : SendResult

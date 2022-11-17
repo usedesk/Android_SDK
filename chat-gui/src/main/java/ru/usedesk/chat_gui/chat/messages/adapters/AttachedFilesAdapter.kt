@@ -86,7 +86,7 @@ internal class AttachedFilesAdapter(
             )
 
             binding.ivDetach.setOnClickListener {
-                viewModel.onIntent(MessagesViewModel.Event.DetachFile(usedeskFileInfo))
+                viewModel.onEvent(MessagesViewModel.Event.DetachFile(usedeskFileInfo))
             }
             binding.tvTitle.text = when {
                 usedeskFileInfo.isImage() || usedeskFileInfo.isVideo() -> ""

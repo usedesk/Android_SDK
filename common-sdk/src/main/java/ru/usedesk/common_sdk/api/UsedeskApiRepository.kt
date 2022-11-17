@@ -21,7 +21,20 @@ abstract class UsedeskApiRepository<API>(
         responseClass: Class<RESPONSE>,
         getCall: API.() -> Call<ResponseBody>
     ): RESPONSE = execute(gson, responseClass) {
-        getCall(apiFactory.getInstance(urlApi, apiClass))
+        apiFactory.getInstance(urlApi, apiClass).getCall()
+    }
+
+    protected fun <REQUEST, RESPONSE> doRequestJson(
+        urlApi: String,
+        body: REQUEST,
+        responseClass: Class<RESPONSE>,
+        getCall: API.(REQUEST) -> Call<ResponseBody>
+    ): RESPONSE = execute(gson, responseClass) {
+        UsedeskLog.onLog("Api request") {
+            //TODO:GSON
+            "todo"
+        }
+        apiFactory.getInstance(urlApi, apiClass).getCall(body)
     }
 
     protected fun <RESPONSE> doRequestMultipart(
@@ -41,7 +54,7 @@ abstract class UsedeskApiRepository<API>(
         gson: Gson,
         tClass: Class<RESPONSE>,
         onGetCall: () -> Call<ResponseBody>
-    ): RESPONSE {
+    ): RESPONSE? {
         var rawResponseBody = ""
         return try {
             val response = (0 until MAX_ATTEMPTS).asSequence().map { attempt ->
@@ -52,17 +65,16 @@ abstract class UsedeskApiRepository<API>(
             }.filter {
                 val filter = it.isSuccessful && it.code() == 200 && it.body() != null
                 if (!filter) {
-                    UsedeskLog.onLog(
-                        "API",
+                    UsedeskLog.onLog("API") {
                         "ResponseFailed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
-                    )
+                    }
                 }
                 filter
             }.firstOrNull() ?: throw UsedeskHttpException("Failed to get a response")
 
             //rawResponseBody = "{\"ticket_id\":102937549,\"status\":200}"
             rawResponseBody = response.body()?.string() ?: ""
-            UsedeskLog.onLog("RESP", rawResponseBody)
+            UsedeskLog.onLog("RESP") { rawResponseBody }
             try {
                 val errorResponse = gson.fromJson(rawResponseBody, ApiError::class.java)
                 val code = errorResponse.code
@@ -75,10 +87,52 @@ abstract class UsedeskApiRepository<API>(
             gson.fromJson(rawResponseBody, tClass)
         } catch (e: Exception) {
             if (rawResponseBody.isNotEmpty()) {
-                UsedeskLog.onLog(
-                    "API",
-                    "Failed to parse the response: $rawResponseBody"
-                )
+                UsedeskLog.onLog("API") { "Failed to parse the response: $rawResponseBody" }
+            }
+            e.printStackTrace()
+            null
+        }
+    }
+
+    @Deprecated
+    private fun <RESPONSE> execute(
+        gson: Gson,
+        tClass: Class<RESPONSE>,
+        onGetCall: () -> Call<ResponseBody>
+    ): RESPONSE {
+        var rawResponseBody = ""
+        return try {
+            val response = (0 until MAX_ATTEMPTS).asSequence().map { attempt ->
+                if (attempt != 0) {
+                    Thread.sleep(200)
+                }
+                onGetCall().execute()
+            }.filter {
+                val filter = it.isSuccessful && it.code() == 200 && it.body() != null
+                if (!filter) {
+                    UsedeskLog.onLog("API") {
+                        "ResponseFailed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
+                    }
+                }
+                filter
+            }.firstOrNull() ?: throw UsedeskHttpException("Failed to get a response")
+
+            //rawResponseBody = "{\"ticket_id\":102937549,\"status\":200}"
+            rawResponseBody = response.body()?.string() ?: ""
+            UsedeskLog.onLog("RESP") { rawResponseBody }
+            try {
+                val errorResponse = gson.fromJson(rawResponseBody, ApiError::class.java)
+                val code = errorResponse.code
+                if (code != null && errorResponse.error != null) {
+                    throw UsedeskHttpException(errorResponse.error)
+                }
+            } catch (e: Exception) {
+                //nothing
+            }
+            gson.fromJson(rawResponseBody, tClass)
+        } catch (e: Exception) {
+            if (rawResponseBody.isNotEmpty()) {
+                UsedeskLog.onLog("API") { "Failed to parse the response: $rawResponseBody" }
             }
             e.printStackTrace()
             throw UsedeskHttpException()

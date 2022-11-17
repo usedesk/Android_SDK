@@ -23,6 +23,8 @@ interface IUsedeskChat {
 
     fun disconnectRx(): Completable
 
+    fun loadForm(id: Long)
+
     fun send(textMessage: String)
 
     fun send(usedeskFileInfoList: List<UsedeskFileInfo>)

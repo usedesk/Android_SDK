@@ -21,6 +21,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.In
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
@@ -142,6 +143,24 @@ internal class ApiRepository @Inject constructor(
         token: String?
     ) {
         socketApi.sendRequest(configuration.getInitChatRequest(token))
+    }
+
+    override fun loadForm(
+        configuration: UsedeskChatConfiguration,
+        fields: List<Field.Stub>
+    ): List<Field> {
+        val request = LoadFields.Request(
+            configuration.clientToken!!,
+            fields.map(Field.Stub::id)
+        )
+        val messagesResponse = doRequestJson(
+            configuration.urlChatApi,
+            request,
+            LoadFields.Response::class.java,
+            RetrofitApi::loadFieldList
+        )
+        messagesResponse
+        return listOf()
     }
 
     private fun UsedeskChatConfiguration.getInitChatRequest(token: String?) = InitChatRequest(

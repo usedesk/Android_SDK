@@ -76,7 +76,7 @@ internal class MessagesPage : UsedeskFragment() {
 
         attachmentDialog = UsedeskAttachmentDialog.create(this).apply {
             setOnDismissListener {
-                viewModel.onIntent(MessagesViewModel.Event.ShowAttachmentPanel(false))
+                viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(false))
             }
         }
 
@@ -134,7 +134,7 @@ internal class MessagesPage : UsedeskFragment() {
             )
             Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
         }
-        viewModel.onIntent(MessagesViewModel.Event.AttachFiles(filteredFiles))
+        viewModel.onEvent(MessagesViewModel.Event.AttachFiles(filteredFiles))
     }
 
     override fun onDestroyView() {
@@ -158,7 +158,7 @@ internal class MessagesPage : UsedeskFragment() {
         adaptiveTextMessageTimePadding: Boolean,
         groupAgentMessages: Boolean
     ) {
-        viewModel.onIntent(MessagesViewModel.Event.Init(groupAgentMessages))
+        viewModel.onEvent(MessagesViewModel.Event.Init(groupAgentMessages))
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
@@ -167,7 +167,7 @@ internal class MessagesPage : UsedeskFragment() {
             lifecycleScope
         ) {
             findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-                ?: viewModel.onIntent(MessagesViewModel.Event.ShowAttachmentPanel(true))
+                ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
         }
 
         val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter

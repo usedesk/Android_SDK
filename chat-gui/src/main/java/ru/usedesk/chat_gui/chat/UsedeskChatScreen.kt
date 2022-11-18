@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnChatInitedListener
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskBinding
@@ -65,6 +66,15 @@ class UsedeskChatScreen : UsedeskFragment() {
             init()
         }
     }.rootView
+
+    fun dismissAttachmentDialog() {
+        navHostFragment
+            .childFragmentManager
+            .fragments
+            .filterIsInstance<MessagesPage>()
+            .firstOrNull()
+            ?.dismissAttachmentDialog()
+    }
 
     internal fun getBundleArgs(
         onArgs: (

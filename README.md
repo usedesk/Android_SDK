@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v3.12.16)
+# Android Usedesk SDK (v3.12.19)
 
 ### !Важно! C версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases)
 

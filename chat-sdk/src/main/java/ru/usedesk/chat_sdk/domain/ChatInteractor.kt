@@ -1,26 +1,22 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.InitChatResponse
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.LoadPreviousMessageResult
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.CreateChatResult
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
-import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
-import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
-import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class ChatInteractor @Inject constructor(
@@ -30,35 +26,80 @@ internal class ChatInteractor @Inject constructor(
     private val cachedMessages: ICachedMessagesInteractor
 ) : IUsedeskChat {
 
-    private val mainThread = AndroidSchedulers.mainThread()
-    private val ioScheduler = Schedulers.io()
     private var token: String? = null
     private var initClientMessage: String? = configuration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
-    private var actionListeners = mutableSetOf<IUsedeskActionListener>()
-    private var actionListenersRx = mutableSetOf<IUsedeskActionListenerRx>()
+    private class ActionListeners : IUsedeskActionListener {
+        private val listenersMutex = Mutex()
+        private var listeners = mutableSetOf<IUsedeskActionListener>()
 
-    private val connectionStateSubject =
-        BehaviorSubject.createDefault(UsedeskConnectionState.CONNECTING)
-    private val clientTokenSubject = BehaviorSubject.create<String>()
-    private val messagesSubject = BehaviorSubject.create<List<UsedeskMessage>>()
-    private val messageSubject = BehaviorSubject.create<UsedeskMessage>()
-    private val newMessageSubject = PublishSubject.create<UsedeskMessage>()
-    private val messageUpdateSubject = PublishSubject.create<UsedeskMessage>()
-    private val messageRemovedSubject = PublishSubject.create<UsedeskMessage>()
-    private val offlineFormExpectedSubject = BehaviorSubject.create<UsedeskOfflineFormSettings>()
-    private val feedbackSubject = BehaviorSubject.create<UsedeskEvent<Any?>>()
-    private val exceptionSubject = BehaviorSubject.create<Exception>()
+        fun add(listener: IUsedeskActionListener) {
+            runBlocking {
+                listenersMutex.withLock {
+                    listeners.add(listener)
+                }
+            }
+        }
 
-    private var reconnectDisposable: Disposable? = null
-    private val listenersDisposables = mutableListOf<Disposable>()
-    private val eventScope = CoroutineScope(Dispatchers.IO)
+        fun remove(listener: IUsedeskActionListener) {
+            runBlocking {
+                listenersMutex.withLock {
+                    listeners.remove(listener)
+                }
+            }
+        }
+
+        fun isNoListeners() = runBlocking { listenersMutex.withLock { listeners } }.isEmpty()
+
+        override fun onConnectionState(connectionState: UsedeskConnectionState) {
+            listeners.forEach { it.onConnectionState(connectionState) }
+        }
+
+        override fun onClientTokenReceived(clientToken: String) {
+            listeners.forEach { it.onClientTokenReceived(clientToken) }
+        }
+
+        override fun onMessageReceived(message: UsedeskMessage) {
+            listeners.forEach { it.onMessageReceived(message) }
+        }
+
+        override fun onNewMessageReceived(message: UsedeskMessage) {
+            listeners.forEach { it.onNewMessageReceived(message) }
+        }
+
+        override fun onMessagesReceived(messages: List<UsedeskMessage>) {
+            listeners.forEach { it.onMessagesReceived(messages) }
+        }
+
+        override fun onMessageUpdated(message: UsedeskMessage) {
+            listeners.forEach { it.onMessageUpdated(message) }
+        }
+
+        override fun onMessageRemoved() {
+            listeners.forEach { it.onMessageRemoved() }
+        }
+
+        override fun onFeedbackReceived() {
+            listeners.forEach { it.onFeedbackReceived() }
+        }
+
+        override fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {
+            listeners.forEach { it.onOfflineFormExpected(offlineFormSettings) }
+        }
+
+        override fun onException(usedeskException: Exception) {
+            listeners.forEach { it.onException(usedeskException) }
+        }
+    }
+
+    private val actionListeners = ActionListeners()
+
+    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var reconnectJob: Job? = null
     private val eventMutex = Mutex()
     private val firstMessageMutex = Mutex()
     private var firstMessageLock: Mutex? = null
-
-    private var lastMessages = listOf<UsedeskMessage>()
 
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
@@ -66,88 +107,80 @@ internal class ChatInteractor @Inject constructor(
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
     private var additionalFieldsNeeded: Boolean = true
-    private val listenersMutex = Mutex()
 
     private val oldMutex = Mutex()
     private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
+    var oldModel: Model? = null
+    private fun Model.onModelUpdated(listener: IUsedeskActionListener) { //TODO: на каждый listener вызывается метод и начинает молотить тут всё
+        if (oldModel?.connectionState != connectionState) {
+            listener.onConnectionState(connectionState)
+        }
+        if (oldModel?.clientToken != clientToken && clientToken != null) {
+            listener.onClientTokenReceived(clientToken)
+        }
+        if (oldModel?.offlineFormSettings != offlineFormSettings &&
+            offlineFormSettings != null
+        ) {
+            listener.onOfflineFormExpected(offlineFormSettings)
+        }
+        if (oldModel?.feedbackEvent != feedbackEvent) {
+            listener.onFeedbackReceived()
+        }
+        if (oldModel?.messages != messages) {
+            listener.onMessagesReceived(messages)
+            messages.forEach { message ->
+                val oldMessage = oldModel?.messages?.firstOrNull { it.id == message.id }
+                when {
+                    oldMessage == null -> {
+                        if (!inited) {
+                            listener.onNewMessageReceived(message)
+                        }
+                        listener.onMessageReceived(message)
+                    }
+                    oldMessage != message -> listener.onMessageUpdated(message)
+                }
+            }
+            oldModel?.messages?.forEach { oldMessage ->
+                if (messages.all { message -> message.id != oldMessage.id }) {
+                    listener.onMessageRemoved()
+                }
+            }
+        }
+        oldModel = this
+    }
+
     init {
-        listenersDisposables.apply {
-            add(connectionStateSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onConnectionState(it)
-                }
-            })
-
-            add(clientTokenSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onClientTokenReceived(it)
-                }
-            })
-
-            add(messagesSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessagesReceived(it)
-                }
-            })
-
-            add(messageSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessageReceived(it)
-                }
-            })
-
-            add(newMessageSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onNewMessageReceived(it)
-                }
-            })
-
-            add(messageUpdateSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessageUpdated(it)
-                }
-            })
-
-            add(messageRemovedSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach(IUsedeskActionListener::onMessageRemoved)
-            })
-
-            add(offlineFormExpectedSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach { listener -> listener.onOfflineFormExpected(it) }
-            })
-
-            add(feedbackSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach(IUsedeskActionListener::onFeedbackReceived)
-            })
-
-            add(exceptionSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach { listener -> listener.onException(it) }
-            })
+        ioScope.launch {
+            modelFlow.collect { model ->
+                model.onModelUpdated(actionListeners)
+            }
         }
     }
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
-            connectionStateSubject.onNext(UsedeskConnectionState.CONNECTED)
+            runBlocking {
+                setModel {
+                    copy(connectionState = UsedeskConnectionState.CONNECTED)
+                }
+            }
         }
 
         override fun onDisconnected() {
-            if (reconnectDisposable?.isDisposed != false) {
-                reconnectDisposable = Completable.timer(5, TimeUnit.SECONDS).subscribe {
-                    try {
-                        connect()
-                    } catch (e: Exception) {
-                        //nothing
-                    }
+            runBlocking {
+                reconnectJob?.cancel()
+                reconnectJob = ioScope.launch {
+                    delay(5000)
+                    yield()
+                    connect()
+                }
+                setModel {
+                    copy(
+                        connectionState = UsedeskConnectionState.DISCONNECTED
+                    )
                 }
             }
-
-            connectionStateSubject.onNext(UsedeskConnectionState.DISCONNECTED)
         }
 
         override fun onTokenError() {
@@ -159,11 +192,15 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onFeedback() {
-            feedbackSubject.onNext(UsedeskSingleLifeEvent(null))
+            runBlocking {
+                setModel {
+                    copy(feedbackEvent = UsedeskSingleLifeEvent(Unit))
+                }
+            }
         }
 
         override fun onException(exception: Exception) {
-            exceptionSubject.onNext(exception)
+            actionListeners.onException(exception)
         }
 
         @Synchronized
@@ -200,7 +237,11 @@ internal class ChatInteractor @Inject constructor(
             this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.offlineFormToChat =
                 offlineFormSettings.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
-            offlineFormExpectedSubject.onNext(offlineFormSettings)
+            runBlocking {
+                setModel {
+                    copy(offlineFormSettings = offlineFormSettings)
+                }
+            }
         }
 
         override fun onSetEmailSuccess() {
@@ -221,60 +262,83 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun createChat(apiToken: String) = apiRepository.initChat(
-        configuration,
-        apiToken
-    ).also { clientToken ->
-        userInfoRepository.setConfiguration(configuration.copy(clientToken = clientToken))
+    override fun createChat(apiToken: String): CreateChatResult {
+        val response = apiRepository.initChat(
+            configuration,
+            apiToken
+        )
+        return when (response) {
+            is InitChatResponse.ApiError -> CreateChatResult.Error(response.code)
+            is InitChatResponse.Done -> {
+                userInfoRepository.setConfiguration(configuration.copy(clientToken = response.clientToken))
+                CreateChatResult.Done(response.clientToken)
+            }
+        }
     }
 
     override fun connect() {
-        val curState = connectionStateSubject.value
-        if (curState != UsedeskConnectionState.CONNECTED) {
-            if (curState != UsedeskConnectionState.CONNECTING) {
-                connectionStateSubject.onNext(UsedeskConnectionState.RECONNECTING)
+        runBlocking {
+            setModel {
+                copy(
+                    connectionState = when (connectionState) {
+                        UsedeskConnectionState.DISCONNECTED -> UsedeskConnectionState.RECONNECTING.apply {
+                            reconnectJob?.cancel()
+                            token = (configuration.clientToken
+                                ?: userInfoRepository.getConfiguration(configuration)?.clientToken)
+                                ?.ifEmpty { null }
+                            ioScope.launch {
+
+                                unlockFirstMessage()
+                                resetFirstMessageLock()
+
+                                apiRepository.connect(
+                                    configuration.urlChat,
+                                    token,
+                                    configuration,
+                                    eventListener
+                                )
+                            }
+                        }
+                        else -> connectionState
+                    }
+                )
             }
-            reconnectDisposable?.dispose()
-            reconnectDisposable = null
-            token = (configuration.clientToken
-                ?: userInfoRepository.getConfiguration(configuration)?.clientToken)
-                ?.ifEmpty { null }
+        }
+    }
 
-            unlockFirstMessage()
-            resetFirstMessageLock()
-
-            apiRepository.connect(
-                configuration.urlChat,
-                token,
-                configuration,
-                eventListener
-            )
+    private suspend fun setModel(onUpdate: Model.() -> Model): Model = eventMutex.withLock {
+        modelFlow.value.onUpdate().also {
+            modelFlow.value = it
         }
     }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
         runBlocking {
             eventMutex.withLock {
-                lastMessages = lastMessages.map {
-                    when {
-                        it is UsedeskMessageClient &&
-                                message is UsedeskMessageClient &&
-                                it.localId == message.localId || it is UsedeskMessageAgent &&
-                                message is UsedeskMessageAgent &&
-                                it.id == message.id -> message
-                        else -> it
-                    }
+                setModel {
+                    copy(messages = messages.map {
+                        when {
+                            it is UsedeskMessageClient &&
+                                    message is UsedeskMessageClient &&
+                                    it.localId == message.localId || it is UsedeskMessageAgent &&
+                                    message is UsedeskMessageAgent &&
+                                    it.id == message.id -> message
+                            else -> it
+                        }
+                    })
                 }
-                messagesSubject.onNext(lastMessages)
-                messageUpdateSubject.onNext(message)
             }
         }
     }
 
     private fun onMessageRemove(message: UsedeskMessage) {
-        lastMessages = lastMessages.filter { it.id != message.id }
-        messagesSubject.onNext(lastMessages)
-        messageRemovedSubject.onNext(message)
+        runBlocking {
+            setModel {
+                copy(
+                    messages = messages.filter { it.id != message.id }
+                )
+            }
+        }
     }
 
     private fun onMessagesNew(
@@ -282,74 +346,37 @@ internal class ChatInteractor @Inject constructor(
         new: List<UsedeskMessage> = listOf(),
         isInited: Boolean
     ) {
-        lastMessages = old + lastMessages + new
-        (old.asSequence() + new.asSequence()).forEach { message ->
-            messageSubject.onNext(message)
-            if (!isInited) {
-                newMessageSubject.onNext(message)
+        runBlocking {
+            setModel {
+                copy(
+                    messages = old + messages + new,
+                    inited = isInited
+                )
             }
         }
-        messagesSubject.onNext(lastMessages)
     }
 
     override fun disconnect() {
-        apiRepository.disconnect()
+        reconnectJob?.cancel()
+        ioScope.launch {
+            apiRepository.disconnect()
+        }
     }
 
     override fun addActionListener(listener: IUsedeskActionListener) {
-        runBlocking {
-            listenersMutex.withLock {
-                connectionStateSubject.value?.let(listener::onConnectionState)
-
-                clientTokenSubject.value?.let(listener::onClientTokenReceived)
-
-                messagesSubject.value?.let(listener::onMessagesReceived)
-
-                messageSubject.value?.let(listener::onMessageReceived)
-
-                offlineFormExpectedSubject.value?.let(listener::onOfflineFormExpected)
-
-                feedbackSubject.value?.let { listener.onFeedbackReceived() }
-
-                exceptionSubject.value?.let(listener::onException)
-
-                actionListeners.add(listener)
+        actionListeners.add(listener)
+        modelFlow.value.apply {
+            ioScope.launch {
+                onModelUpdated(listener)
             }
         }
     }
 
     override fun removeActionListener(listener: IUsedeskActionListener) {
-        runBlocking {
-            listenersMutex.withLock {
-                actionListeners.remove(listener)
-            }
-        }
+        actionListeners.remove(listener)
     }
 
-    override fun addActionListener(listener: IUsedeskActionListenerRx) {
-        actionListenersRx.add(listener)
-        listener.onObservables(
-            connectionStateSubject.observeOn(mainThread),
-            clientTokenSubject.observeOn(mainThread),
-            messageSubject.observeOn(mainThread),
-            newMessageSubject.observeOn(mainThread),
-            messagesSubject.observeOn(mainThread),
-            messageUpdateSubject.observeOn(mainThread),
-            messageRemovedSubject.observeOn(mainThread),
-            offlineFormExpectedSubject.observeOn(mainThread),
-            feedbackSubject.observeOn(mainThread),
-            exceptionSubject.observeOn(mainThread)
-        )
-    }
-
-    override fun removeActionListener(listener: IUsedeskActionListenerRx) {
-        actionListenersRx.remove(listener)
-        listener.onDispose()
-    }
-
-    override fun isNoListeners(): Boolean = runBlocking {
-        listenersMutex.withLock { actionListeners }
-    }.isEmpty() && actionListenersRx.isEmpty()
+    override fun isNoListeners(): Boolean = actionListeners.isNoListeners()
 
     override fun send(textMessage: String) {
         val message = textMessage.trim()
@@ -359,7 +386,7 @@ internal class ChatInteractor @Inject constructor(
 
             runBlocking {
                 eventMutex.withLock {
-                    eventScope.launchSafe({ sendCached(sendingMessage) })
+                    ioScope.launchSafe({ sendCached(sendingMessage) })
                 }
             }
         }
@@ -382,7 +409,7 @@ internal class ChatInteractor @Inject constructor(
                     if (configuration.additionalFields.isNotEmpty() ||
                         configuration.additionalNestedFields.isNotEmpty()
                     ) {
-                        eventScope.launch {
+                        ioScope.launch {
                             try {
                                 waitFirstMessage()
                                 delay(3000)
@@ -395,7 +422,7 @@ internal class ChatInteractor @Inject constructor(
                             } catch (e: Exception) {
                                 e.printStackTrace()
                                 additionalFieldsNeeded = true
-                                exceptionSubject.onNext(e)
+                                actionListeners.onException(e)
                             }
                         }
                     }
@@ -412,7 +439,7 @@ internal class ChatInteractor @Inject constructor(
         runBlocking {
             eventMutex.withLock {
                 sendingMessages.forEach { msg ->
-                    eventScope.launchSafe({ sendCached(msg) })
+                    ioScope.launchSafe({ sendCached(msg) })
                 }
             }
         }
@@ -586,19 +613,30 @@ internal class ChatInteractor @Inject constructor(
         }?.let(this@ChatInteractor::onMessageUpdate)
     }
 
+    private val modelFlow = MutableStateFlow(Model())
 
     private val formLoadSet = mutableSetOf<Long>()
 
-    override fun loadForm(id: Long) {
-        eventScope.launch {
-            eventMutex.withLock {
-                if (!formLoadSet.contains(id)) {
-                    formLoadSet.add(id)
-                    eventScope.launch {
-                        while (true) {
-                            apiRepository.loadForm(id)
-                            //TODO: load form and update messages
-                        }
+    override fun loadForm(messageId: Long) {
+        ioScope.launch {
+            val form = eventMutex.withLock {
+                if (!formLoadSet.contains(messageId)) {
+                    formLoadSet.add(messageId)
+                    modelFlow.value.messages
+                        .asSequence()
+                        .filterIsInstance<UsedeskMessageAgentText>()
+                        .firstOrNull { it.id == messageId }
+                        ?.forms
+                        ?.filterIsInstance<Field.Stub>()
+                } else null
+            }
+            if (form?.isNotEmpty() == true) {
+                ioScope.launch {
+                    while (true) {
+                        val loadedForm = apiRepository.loadForm(
+                            configuration,
+                            form
+                        )
                     }
                 }
             }
@@ -643,7 +681,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun sendAgain(id: Long) {
-        val message = lastMessages.firstOrNull { it.id == id }
+        val message = modelFlow.value.messages.firstOrNull { it.id == id }
         if (message is UsedeskMessageClient
             && message.status == UsedeskMessageClient.Status.SEND_FAILED
         ) {
@@ -713,9 +751,6 @@ internal class ChatInteractor @Inject constructor(
             }
     }
 
-    override fun removeMessageRx(id: Long) =
-        safeCompletableIo(ioScheduler) { removeMessage(id) }
-
     @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
         runBlocking {
@@ -723,13 +758,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun setMessageDraftRx(messageDraft: UsedeskMessageDraft) =
-        safeCompletableIo(ioScheduler) { setMessageDraft(messageDraft) }
-
     override fun getMessageDraft() = runBlocking { cachedMessages.getMessageDraft() }
-
-    override fun getMessageDraftRx() =
-        safeSingleIo(ioScheduler, this@ChatInteractor::getMessageDraft)
 
     override fun sendMessageDraft() {
         runBlocking {
@@ -743,9 +772,6 @@ internal class ChatInteractor @Inject constructor(
             //TODO: sync
         }
     }
-
-    override fun sendMessageDraftRx() =
-        safeCompletableIo(ioScheduler, this@ChatInteractor::sendMessageDraft)
 
     private fun createSendingMessage(text: String) = UsedeskMessageClientText(
         cachedMessages.getNextLocalId(),
@@ -792,21 +818,6 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun connectRx() = safeCompletableIo(ioScheduler, this@ChatInteractor::connect)
-
-    override fun sendRx(
-        agentMessage: UsedeskMessageAgentText,
-        feedback: UsedeskFeedback
-    ) = safeCompletableIo(ioScheduler) { send(agentMessage, feedback) }
-
-    override fun sendRx(offlineForm: UsedeskOfflineForm) =
-        safeCompletableIo(ioScheduler) { send(offlineForm) }
-
-    override fun sendAgainRx(id: Long) = safeCompletableIo(ioScheduler) { sendAgain(id) }
-
-    override fun disconnectRx() =
-        safeCompletableIo(ioScheduler, this@ChatInteractor::disconnect)
-
     override fun loadPreviousMessagesPage() = runBlocking {
         oldMutex.withLock {
             oldMessagesLoadDeferred ?: createPreviousMessagesJobLockedAsync()
@@ -814,31 +825,25 @@ internal class ChatInteractor @Inject constructor(
     } ?: true
 
     private fun createPreviousMessagesJobLockedAsync(): Deferred<Boolean>? {
-        val messages = messagesSubject.value
-        val oldestMessageId = messages?.firstOrNull()?.id
+        val messages = modelFlow.value.messages
+        val oldestMessageId = messages.firstOrNull()?.id
         val token = token
         return when {
-            oldestMessageId != null && token != null -> CoroutineScope(Dispatchers.IO).async {
-                try {
-                    val hasUnloadedMessages = apiRepository.loadPreviousMessages(
-                        configuration,
-                        token,
-                        oldestMessageId
-                    )
-                    oldMutex.withLock {
-                        oldMessagesLoadDeferred = when {
-                            hasUnloadedMessages -> null
-                            else -> CompletableDeferred(false)
-                        }
+            oldestMessageId != null && token != null -> ioScope.async {
+                val result = apiRepository.loadPreviousMessages(
+                    configuration,
+                    token,
+                    oldestMessageId
+                )
+                val hasUnloadedMessages = result !is LoadPreviousMessageResult.Done ||
+                        result.messages.isNotEmpty()
+                oldMutex.withLock {
+                    oldMessagesLoadDeferred = when {
+                        hasUnloadedMessages -> null
+                        else -> CompletableDeferred(false)
                     }
-                    hasUnloadedMessages
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    oldMutex.withLock {
-                        oldMessagesLoadDeferred = null
-                    }
-                    true
                 }
+                hasUnloadedMessages
             }.also {
                 oldMessagesLoadDeferred = it
             }
@@ -847,16 +852,9 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun release() {
-        listenersDisposables.forEach(Disposable::dispose)
-        runBlocking {
-            eventMutex.withLock {
-                eventScope.cancel()
-            }
-        }
+        ioScope.cancel()
         disconnect()
     }
-
-    override fun releaseRx() = safeCompletableIo(ioScheduler, this@ChatInteractor::release)
 
     private fun sendUserEmail() {
         try {
@@ -868,14 +866,18 @@ internal class ChatInteractor @Inject constructor(
                 )
             }
         } catch (e: UsedeskException) {
-            exceptionSubject.onNext(e)
+            actionListeners.onException(e)
         }
     }
 
     private fun onChatInited(chatInited: ChatInited) {
         this.token = chatInited.token
         if (configuration.clientToken != chatInited.token) {
-            clientTokenSubject.onNext(chatInited.token)
+            runBlocking {
+                setModel {
+                    copy(clientToken = chatInited.token)
+                }
+            }
         }
 
         if (chatInited.status in ACTIVE_STATUSES) {
@@ -892,12 +894,13 @@ internal class ChatInteractor @Inject constructor(
 
         userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
 
-        val ids = lastMessages.map(UsedeskMessage::id)
+        val model = modelFlow.value
+        val ids = model.messages.map(UsedeskMessage::id)
         val filteredMessages = chatInited.messages.filter { it.id !in ids }
         val notSentMessages = cachedMessages.getNotSentMessages()
             .mapNotNull { it as? UsedeskMessage }
         val filteredNotSentMessages = notSentMessages.filter { it.id !in ids }
-        val needToResendMessages = lastMessages.isNotEmpty()
+        val needToResendMessages = model.messages.isNotEmpty()
         onMessagesNew(
             new = filteredMessages + filteredNotSentMessages,
             isInited = true
@@ -913,9 +916,9 @@ internal class ChatInteractor @Inject constructor(
                 notSentMessages.filter {
                     it.id !in initedNotSentIds
                 }.forEach {
-                    listenersDisposables.add(
-                        sendAgainRx(it.id).subscribe({}, Throwable::printStackTrace)
-                    )
+                    ioScope.launch {
+                        sendAgain(it.id)
+                    }
                 }
             }
             else -> initedNotSentMessages = notSentMessages

@@ -6,14 +6,10 @@ import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONException
 import org.json.JSONObject
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.error.ErrorResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.ErrorResponse
 import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
@@ -23,7 +19,7 @@ internal class SocketConnection(
     private val gson: Gson,
     url: String,
     usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory,
-    private val initChatRequest: InitChatRequest,
+    private val initChatRequest: SocketRequest.Init,
     private val eventListener: SocketApi.EventListener
 ) {
     private val socket: Socket
@@ -58,13 +54,13 @@ internal class SocketConnection(
     }
 
     private fun parse(rawResponse: String) = try {
-        val baseResponse = gson.fromJson(rawResponse, BaseResponse::class.java)
+        val baseResponse = gson.fromJson(rawResponse, SocketResponse::class.java)
         val responseClass = when (baseResponse.type) {
-            InitChatResponse.TYPE -> InitChatResponse::class.java
+            Inited.TYPE -> Inited::class.java
             ErrorResponse.TYPE -> ErrorResponse::class.java
-            MessageResponse.TYPE -> MessageResponse::class.java
+            AddMessage.TYPE -> AddMessage::class.java
             FeedbackResponse.TYPE -> FeedbackResponse::class.java
-            SetClientResponse.TYPE -> SetClientResponse::class.java
+            SetClient.TYPE -> SetClient::class.java
             else -> throw RuntimeException("Could not find response class by type")
         }
         gson.fromJson(rawResponse, responseClass)
@@ -100,19 +96,19 @@ internal class SocketConnection(
                     }
                     eventListener.onException(usedeskSocketException)
                 }
-                is InitChatResponse -> eventListener.onInited(response)
-                is SetClientResponse -> eventListener.onSetEmailSuccess()
-                is MessageResponse -> eventListener.onNew(response)
-                is FeedbackResponse -> eventListener.onFeedback()
+                is Inited -> eventListener.onInited(response)
+                is SetClient -> eventListener.onSetEmailSuccess()
+                is AddMessage -> eventListener.onNew(response)
+                is FeedbackResponse -> eventListener.onFeedback() //TODO: бессмысленный вызов, нужны какие-то идентификаторы какой вообще фидбек получен
             }
         } catch (e: Exception) {
             eventListener.onException(e)
         }
     }
 
-    fun sendRequest(baseRequest: BaseRequest) {
+    fun sendRequest(socketRequest: SocketRequest) {
         try {
-            val rawRequest = gson.toJson(baseRequest)
+            val rawRequest = gson.toJson(socketRequest)
             val jsonRequest = JSONObject(rawRequest)
             socket.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {

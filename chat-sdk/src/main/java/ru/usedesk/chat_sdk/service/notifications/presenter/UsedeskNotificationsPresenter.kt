@@ -2,7 +2,6 @@ package ru.usedesk.chat_sdk.service.notifications.presenter
 
 import io.reactivex.Observable
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListenerRx
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
 

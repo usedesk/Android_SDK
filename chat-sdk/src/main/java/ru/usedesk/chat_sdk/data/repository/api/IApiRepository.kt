@@ -48,7 +48,12 @@ internal interface IApiRepository {
         configuration: UsedeskChatConfiguration,
         token: String,
         messageId: Long
-    ): Boolean
+    ): LoadPreviousMessageResult
+
+    sealed interface LoadPreviousMessageResult {
+        class Done(val messages: List<UsedeskMessage>) : LoadPreviousMessageResult
+        class Error(val code: Int?) : LoadPreviousMessageResult
+    }
 
     fun disconnect()
 
@@ -57,7 +62,12 @@ internal interface IApiRepository {
     fun initChat(
         configuration: UsedeskChatConfiguration,
         apiToken: String
-    ): String
+    ): InitChatResponse
+
+    sealed interface InitChatResponse {
+        class Done(val clientToken: String) : InitChatResponse
+        class ApiError(val code: Int?) : InitChatResponse
+    }
 
     fun loadForm(
         configuration: UsedeskChatConfiguration,

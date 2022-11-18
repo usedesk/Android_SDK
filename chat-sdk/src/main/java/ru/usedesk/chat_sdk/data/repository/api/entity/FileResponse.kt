@@ -1,10 +1,12 @@
 package ru.usedesk.chat_sdk.data.repository.api.entity
 
-internal class FileResponse {
-    var status: Int? = null
-    var fileLink: String? = null
-    var size: String? = null
-    var id: String? = null
-    var type: String? = null
-    var name: String? = null
-}
+import ru.usedesk.common_sdk.api.entity.UsedeskApiError
+
+internal class FileResponse(
+    var status: Int?,
+    var fileLink: String?,
+    var size: String?,
+    var id: String?,
+    var type: String?,
+    var name: String?
+) : UsedeskApiError()

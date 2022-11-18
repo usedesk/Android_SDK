@@ -51,7 +51,7 @@ internal class KnowledgeBaseApi @Inject constructor(
                 articleContentResponse.text ?: "",
                 articleContentResponse.categoryId?.toLongOrNull()!!
             )
-        } ?: throw UsedeskHttpException("Wrong response")
+        } ?: throw UsedeskHttpException(message = "Wrong response")
     }
 
     override fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent> {
@@ -139,7 +139,7 @@ internal class KnowledgeBaseApi @Inject constructor(
 
     private fun loadSections(): List<UsedeskSection> = doRequest(
         configuration.urlApi,
-        Array<SectionResponse>::class.java
+        Array<SectionResponse>::class.java //TODO:
     ) {
         getSections(configuration.accountId, configuration.token)
     }.mapNotNull { sectionResponse ->

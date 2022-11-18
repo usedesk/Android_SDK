@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.CreateChatResult
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -18,6 +19,7 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     private val configurationRepository = ServiceLocator.configurationRepository
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val ioScope = CoroutineScope(Dispatchers.IO)
 
     data class Model(
         val configuration: Configuration = Configuration(),
@@ -98,12 +100,6 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
         )
     }
 
-    override fun onCleared() {
-        super.onCleared()
-
-        mainScope.cancel()
-    }
-
     fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
         if (configuration.materialComponents != modelFlow.value.configuration.materialComponents) {
             configurationRepository.setConfiguration(configuration)
@@ -114,34 +110,37 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
 
     fun createChat(apiToken: String) {
         setModel { copy(clientToken = clientToken.copy(loading = true)) }
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val token = UsedeskChatSdk.requireInstance().createChat(apiToken)
-                setModel {
-                    copy(
-                        clientToken = clientToken.copy(
+        ioScope.launch {
+            val result = UsedeskChatSdk.requireInstance().createChat(apiToken)
+            setModel {
+                copy(
+                    clientToken = when (result) {
+                        is CreateChatResult.Done -> clientToken.copy(
                             loading = false,
-                            completed = UsedeskSingleLifeEvent(token)
+                            completed = UsedeskSingleLifeEvent(result.clientToken)
                         )
-                    )
-                }
-            } catch (e: Exception) {
-                setModel {
-                    copy(
-                        clientToken = clientToken.copy(
+                        is CreateChatResult.Error -> clientToken.copy(
                             loading = false,
-                            error = UsedeskSingleLifeEvent(e.message)
+                            error = UsedeskSingleLifeEvent(result.code)
                         )
-                    )
-                }
+                    }
+                )
             }
+
             UsedeskChatSdk.release(false)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        mainScope.cancel()
+        ioScope.cancel()
     }
 
     data class ClientToken(
         val loading: Boolean = false,
         val completed: UsedeskSingleLifeEvent<String?>? = null,
-        val error: UsedeskSingleLifeEvent<String?>? = null
+        val error: UsedeskSingleLifeEvent<Int?>? = null
     )
 }

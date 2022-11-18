@@ -3,8 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 import com.google.gson.Gson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
@@ -43,8 +42,8 @@ internal class SocketApi @Inject constructor(
         }
     }
 
-    fun sendRequest(baseRequest: BaseRequest) {
-        socketConnection?.sendRequest(baseRequest)
+    fun sendRequest(socketRequest: SocketRequest) {
+        socketConnection?.sendRequest(socketRequest)
     }
 
     suspend fun disconnect() {

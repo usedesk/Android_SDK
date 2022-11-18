@@ -1,6 +1,6 @@
 package ru.usedesk.common_sdk.api.entity
 
-internal data class ApiError(
-    val code: String? = null,
+open class UsedeskApiError {
+    val code: Int? = null
     val error: String? = null
-)
+}

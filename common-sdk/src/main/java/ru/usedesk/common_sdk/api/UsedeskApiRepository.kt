@@ -5,7 +5,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.common_sdk.api.entity.ApiError
+import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 
@@ -20,48 +20,49 @@ abstract class UsedeskApiRepository<API>(
         urlApi: String,
         responseClass: Class<RESPONSE>,
         getCall: API.() -> Call<ResponseBody>
-    ): RESPONSE = execute(gson, responseClass) {
+    ): RESPONSE = execute(responseClass) {
         apiFactory.getInstance(urlApi, apiClass).getCall()
     }
 
-    protected fun <REQUEST, RESPONSE> doRequestJson(
+    protected fun <REQUEST, RESPONSE : UsedeskApiError> doRequestJson(
         urlApi: String,
         body: REQUEST,
         responseClass: Class<RESPONSE>,
         getCall: API.(REQUEST) -> Call<ResponseBody>
-    ): RESPONSE = execute(gson, responseClass) {
-        UsedeskLog.onLog("Api request") {
-            //TODO:GSON
-            "todo"
-        }
-        apiFactory.getInstance(urlApi, apiClass).getCall(body)
+    ): RESPONSE? {
+        UsedeskLog.onLog("jsonBody") { gson.toJson(body) }
+        return executeSafe(
+            urlApi,
+            responseClass
+        ) { getCall(body) }
     }
 
-    protected fun <RESPONSE> doRequestMultipart(
+    protected fun <RESPONSE : UsedeskApiError> doRequestMultipart(
         urlApi: String,
         parts: List<Pair<String, Any?>>,
         responseClass: Class<RESPONSE>,
         apiMethod: API.(parts: List<MultipartBody.Part>) -> Call<ResponseBody>
-    ): RESPONSE {
+    ): RESPONSE? {
+        UsedeskLog.onLog("multipartBody") { gson.toJson(parts) }
         val multipartParts = parts.mapNotNull(multipartConverter::convert)
-        return execute(gson, responseClass) {
-            apiFactory.getInstance(urlApi, apiClass)
-                .apiMethod(multipartParts)
-        }
+        return executeSafe(
+            urlApi,
+            responseClass
+        ) { apiMethod(multipartParts) }
     }
 
-    private fun <RESPONSE> execute(
-        gson: Gson,
+    private fun <RESPONSE : UsedeskApiError> executeSafe(
+        urlApi: String,
         tClass: Class<RESPONSE>,
-        onGetCall: () -> Call<ResponseBody>
+        onGetCall: API.() -> Call<ResponseBody>
     ): RESPONSE? {
-        var rawResponseBody = ""
-        return try {
+        val rawResponseBody = try {
+            val api = apiFactory.getInstance(urlApi, apiClass)
             val response = (0 until MAX_ATTEMPTS).asSequence().map { attempt ->
                 if (attempt != 0) {
                     Thread.sleep(200)
                 }
-                onGetCall().execute()
+                api.onGetCall().execute()
             }.filter {
                 val filter = it.isSuccessful && it.code() == 200 && it.body() != null
                 if (!filter) {
@@ -70,33 +71,25 @@ abstract class UsedeskApiRepository<API>(
                     }
                 }
                 filter
-            }.firstOrNull() ?: throw UsedeskHttpException("Failed to get a response")
+            }.firstOrNull()
 
-            //rawResponseBody = "{\"ticket_id\":102937549,\"status\":200}"
-            rawResponseBody = response.body()?.string() ?: ""
-            UsedeskLog.onLog("RESP") { rawResponseBody }
-            try {
-                val errorResponse = gson.fromJson(rawResponseBody, ApiError::class.java)
-                val code = errorResponse.code
-                if (code != null && errorResponse.error != null) {
-                    throw UsedeskHttpException(errorResponse.error)
-                }
-            } catch (e: Exception) {
-                //nothing
-            }
+            response?.body()?.string()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+        UsedeskLog.onLog("rawResponseBody") { rawResponseBody ?: "null" }
+
+        return try {
             gson.fromJson(rawResponseBody, tClass)
         } catch (e: Exception) {
-            if (rawResponseBody.isNotEmpty()) {
-                UsedeskLog.onLog("API") { "Failed to parse the response: $rawResponseBody" }
-            }
             e.printStackTrace()
             null
         }
     }
 
-    @Deprecated
+    @Deprecated("Call executeSafe instead")
     private fun <RESPONSE> execute(
-        gson: Gson,
         tClass: Class<RESPONSE>,
         onGetCall: () -> Call<ResponseBody>
     ): RESPONSE {
@@ -115,19 +108,17 @@ abstract class UsedeskApiRepository<API>(
                     }
                 }
                 filter
-            }.firstOrNull() ?: throw UsedeskHttpException("Failed to get a response")
+            }.firstOrNull() ?: throw UsedeskHttpException(message = "Failed to get a response")
 
-            //rawResponseBody = "{\"ticket_id\":102937549,\"status\":200}"
             rawResponseBody = response.body()?.string() ?: ""
             UsedeskLog.onLog("RESP") { rawResponseBody }
-            try {
-                val errorResponse = gson.fromJson(rawResponseBody, ApiError::class.java)
-                val code = errorResponse.code
-                if (code != null && errorResponse.error != null) {
-                    throw UsedeskHttpException(errorResponse.error)
-                }
+            val errorResponse = try {
+                gson.fromJson(rawResponseBody, UsedeskApiError::class.java)
             } catch (e: Exception) {
-                //nothing
+                null
+            }
+            if (errorResponse?.error != null && errorResponse.code != null) {
+                throw UsedeskHttpException(message = errorResponse.error)
             }
             gson.fromJson(rawResponseBody, tClass)
         } catch (e: Exception) {
@@ -135,7 +126,10 @@ abstract class UsedeskApiRepository<API>(
                 UsedeskLog.onLog("API") { "Failed to parse the response: $rawResponseBody" }
             }
             e.printStackTrace()
-            throw UsedeskHttpException()
+            throw when (e) {
+                is UsedeskHttpException -> e
+                else -> UsedeskHttpException()
+            }
         }
     }
 

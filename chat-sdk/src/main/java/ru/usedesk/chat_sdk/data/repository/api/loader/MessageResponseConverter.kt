@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository._extra.Converter
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Button.Companion.FORM_APPLY_BUTTON_ID
@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
 internal class MessageResponseConverter @Inject constructor() :
-    Converter<MessageResponse.Message?, List<UsedeskMessage>> {
+    Converter<AddMessage.Message?, List<UsedeskMessage>> {
 
     private val fieldId = AtomicLong(-1L)
 
@@ -50,12 +50,12 @@ internal class MessageResponseConverter @Inject constructor() :
         text
     }
 
-    override fun convert(from: MessageResponse.Message?): List<UsedeskMessage> = valueOrNull {
+    override fun convert(from: AddMessage.Message?): List<UsedeskMessage> = valueOrNull {
         val fromClient = when (from!!.type) {
-            MessageResponse.TYPE_CLIENT_TO_OPERATOR,
-            MessageResponse.TYPE_CLIENT_TO_BOT -> true
-            MessageResponse.TYPE_OPERATOR_TO_CLIENT,
-            MessageResponse.TYPE_BOT_TO_CLIENT -> false
+            AddMessage.TYPE_CLIENT_TO_OPERATOR,
+            AddMessage.TYPE_CLIENT_TO_BOT -> true
+            AddMessage.TYPE_OPERATOR_TO_CLIENT,
+            AddMessage.TYPE_BOT_TO_CLIENT -> false
             else -> null
         }!!
 
@@ -148,17 +148,9 @@ internal class MessageResponseConverter @Inject constructor() :
             val objects: List<MessageObject>
             val feedbackNeeded: Boolean
             val feedback: UsedeskFeedback?
+            val text = from.text ?: ""
             if (!fromClient) {
-                from.text = (from.text ?: "")/* +
-                        "{{button:click me;;;show}}\n\n" +
-                        "{{field;emaila;email;true}}\n\n" +
-                        "{{field;fona;phone;true}}\n\n" +
-                        "{{button:don't click me;;;show}}\n\n" +
-                        "{{field;nama;name;true}}\n\n" +
-                        "{{field;not;note;true}}\n\n" +
-                        "{{field;pozition;position;true}}\n\n"*/
-                objects = from.text?.toMessageObjects() ?: listOf()
-                //objects = from.text?.toMessageObjects() ?: listOf()
+                objects = text.toMessageObjects()
                 feedback = when (from.payload?.userRating) {
                     "LIKE" -> UsedeskFeedback.LIKE
                     "DISLIKE" -> UsedeskFeedback.DISLIKE
@@ -171,7 +163,7 @@ internal class MessageResponseConverter @Inject constructor() :
                             it?.icon == "dislike"
                 } ?: false
             } else {
-                objects = listOf(MessageObject.Text(from.text ?: ""))
+                objects = listOf(MessageObject.Text(text))
                 feedbackNeeded = false
                 feedback = null
             }
@@ -210,7 +202,7 @@ internal class MessageResponseConverter @Inject constructor() :
                     fromClient -> UsedeskMessageClientText(
                         id,
                         messageDate,
-                        from.text!!,
+                        text,
                         convertedText,
                         UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
                         localId
@@ -218,7 +210,7 @@ internal class MessageResponseConverter @Inject constructor() :
                     else -> UsedeskMessageAgentText(
                         id,
                         messageDate,
-                        from.text!!,
+                        text,
                         convertedText,
                         when {
                             fields.any { it is Form.Field } -> fields.filter { it !is Form.Button } +

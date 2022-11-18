@@ -2,6 +2,8 @@ package ru.usedesk.chat_sdk.entity
 
 interface IUsedeskActionListener {
 
+    fun onModel() {}
+
     fun onConnectionState(connectionState: UsedeskConnectionState) {}
 
     fun onClientTokenReceived(clientToken: String) {}
@@ -14,9 +16,9 @@ interface IUsedeskActionListener {
 
     fun onMessageUpdated(message: UsedeskMessage) {}
 
-    fun onMessageRemoved() {}
+    fun onMessageRemoved() {} //TODO:
 
-    fun onFeedbackReceived() {}
+    fun onFeedbackReceived() {} //TODO:
 
     fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {}
 

@@ -1,8 +1,6 @@
 package ru.usedesk.chat_sdk.di
 
 import android.content.Context
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
@@ -13,8 +11,6 @@ internal class InstanceBoxUsedesk(
     chatConfiguration: UsedeskChatConfiguration,
     messagesRepository: IUsedeskMessagesRepository?
 ) {
-    private val ioScheduler = Schedulers.io()
-
     private var daggerChatComponent: ChatComponent?
 
     val chatInteractor: IUsedeskChat
@@ -31,11 +27,7 @@ internal class InstanceBoxUsedesk(
     }
 
     fun release() {
-        chatInteractor.releaseRx()
-            .subscribeOn(ioScheduler)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
-
+        chatInteractor.release()
         daggerChatComponent = null
     }
 }

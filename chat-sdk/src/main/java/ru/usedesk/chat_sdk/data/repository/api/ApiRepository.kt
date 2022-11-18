@@ -9,17 +9,14 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendResult
 import ru.usedesk.chat_sdk.data.repository.api.entity.*
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
@@ -63,7 +60,7 @@ internal class ApiRepository @Inject constructor(
 
         override fun onException(exception: Exception) = eventListener.onException(exception)
 
-        override fun onInited(initChatResponse: InitChatResponse) {
+        override fun onInited(initChatResponse: SocketResponse.Inited) {
             val chatInited = initChatResponseConverter.convert(initChatResponse)
             chatInited.offlineFormSettings.run {
                 val offlineForm = when (workType) {
@@ -80,7 +77,7 @@ internal class ApiRepository @Inject constructor(
             }
         }
 
-        override fun onNew(messageResponse: MessageResponse) {
+        override fun onNew(messageResponse: SocketResponse.AddMessage) {
             messageResponseConverter.convert(messageResponse.message).forEach {
                 when {
                     it is UsedeskMessageClient && it.id != it.localId ->
@@ -100,7 +97,7 @@ internal class ApiRepository @Inject constructor(
     override fun initChat(
         configuration: UsedeskChatConfiguration,
         apiToken: String
-    ): String {
+    ): InitChatResponse {
         val parts = listOf(
             "api_token" to apiToken,
             "company_id" to configuration.companyId,
@@ -119,7 +116,10 @@ internal class ApiRepository @Inject constructor(
             CreateChatResponse::class.java,
             RetrofitApi::createChat
         )
-        return response.token
+        return when (val clientToken = response?.token) {
+            null -> InitChatResponse.ApiError(response?.code)
+            else -> InitChatResponse.Done(clientToken)
+        }
     }
 
     override fun connect(
@@ -132,7 +132,7 @@ internal class ApiRepository @Inject constructor(
         runBlocking {
             socketApi.connect(
                 url,
-                configuration.getInitChatRequest(token),
+                configuration.toInitChatRequest(token),
                 socketEventListener
             )
         }
@@ -142,7 +142,7 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         token: String?
     ) {
-        socketApi.sendRequest(configuration.getInitChatRequest(token))
+        socketApi.sendRequest(configuration.toInitChatRequest(token))
     }
 
     override fun loadForm(
@@ -159,11 +159,11 @@ internal class ApiRepository @Inject constructor(
             LoadFields.Response::class.java,
             RetrofitApi::loadFieldList
         )
-        messagesResponse
+        //TODO:TEMP
         return listOf()
     }
 
-    private fun UsedeskChatConfiguration.getInitChatRequest(token: String?) = InitChatRequest(
+    private fun UsedeskChatConfiguration.toInitChatRequest(token: String?) = SocketRequest.Init(
         token,
         companyAndChannel(),
         urlChat,
@@ -180,12 +180,12 @@ internal class ApiRepository @Inject constructor(
         feedback: UsedeskFeedback
     ) {
         checkConnection()
-        socketApi.sendRequest(FeedbackRequest(messageId, feedback))
+        socketApi.sendRequest(SocketRequest.Feedback(messageId, feedback))
     }
 
     override fun send(messageText: UsedeskMessageText) {
         checkConnection()
-        val request = MessageRequest(messageText.text, messageText.id)
+        val request = SocketRequest.SendMessage(messageText.text, messageText.id)
         socketApi.sendRequest(request)
     }
 
@@ -275,19 +275,30 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         token: String,
         messageId: Long
-    ): Boolean {
-        val messagesResponse = doRequest(
+    ): LoadPreviousMessageResult {
+        val request = LoadPreviousMessages.Request(
+            token,
+            messageId
+        )
+        val response = doRequestJson(
             configuration.urlChatApi,
-            Array<MessageResponse.Message>::class.java
+            request,
+            LoadPreviousMessages.Response::class.java
         ) {
             loadPreviousMessages(
-                token,
-                messageId
+                it.chatToken,
+                it.commentId
             )
         }
-        val messages = messagesResponse.flatMap(messageResponseConverter::convert)
-        eventListener.onMessagesOldReceived(messages)
-        return messagesResponse.isNotEmpty()
+        return when (response?.items) {
+            null -> LoadPreviousMessageResult.Error(response?.code)
+            else -> {
+                val messages = response.items
+                    .flatMap(messageResponseConverter::convert)
+                    .also { eventListener.onMessagesOldReceived(it) }
+                LoadPreviousMessageResult.Done(messages)
+            }
+        }
     }
 
     override fun send(

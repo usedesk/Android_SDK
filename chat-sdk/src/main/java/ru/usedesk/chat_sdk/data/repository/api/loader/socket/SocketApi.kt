@@ -4,8 +4,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import javax.inject.Inject
@@ -21,7 +20,7 @@ internal class SocketApi @Inject constructor(
 
     suspend fun connect(
         url: String,
-        initChatRequest: InitChatRequest,
+        initChatRequest: SocketRequest.Init,
         eventListener: EventListener
     ) {
         mutex.withLock {
@@ -59,8 +58,8 @@ internal class SocketApi @Inject constructor(
         fun onTokenError()
         fun onFeedback()
         fun onException(exception: Exception)
-        fun onInited(initChatResponse: InitChatResponse)
-        fun onNew(messageResponse: MessageResponse)
+        fun onInited(initChatResponse: SocketResponse.Inited)
+        fun onNew(messageResponse: SocketResponse.AddMessage)
         fun onSetEmailSuccess()
     }
 }

@@ -14,9 +14,7 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
     protected abstract val serviceClass: Class<*>
     protected abstract val foregroundId: Int
 
-    protected open val notificationTitle: String by lazy {
-        getString(R.string.usedesk_chat_with_support)
-    }
+    protected open val notificationTitle: String by lazy { getString(R.string.usedesk_chat_with_support) }
 
     override fun onCreate() {
         super.onCreate()
@@ -28,19 +26,17 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
         startForeground(foregroundId, notification)
     }
 
-    override fun getClosePendingIntent(): PendingIntent? {
-        return PendingIntent.getService(
-            applicationContext,
-            0,
-            Intent(applicationContext, serviceClass).apply {
-                putExtra(STOP_SELF_KEY, true)
-            },
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
-    }
+    override fun getClosePendingIntent(): PendingIntent? = PendingIntent.getService(
+        applicationContext,
+        0,
+        Intent(applicationContext, serviceClass).apply {
+            putExtra(STOP_SELF_KEY, true)
+        },
+        PendingIntent.FLAG_CANCEL_CURRENT
+    )
 
-    protected open fun createStartNotification(): Notification {
-        val notification = NotificationCompat.Builder(this, channelId)
+    protected open fun createStartNotification(): Notification =
+        NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_email)
             .setContentTitle(notificationTitle)
             .setContentIntent(getContentPendingIntent())
@@ -50,10 +46,10 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
                 getString(R.string.usedesk_close),
                 getClosePendingIntent()
             )
-            .build()
-        notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
-        return notification
-    }
+            .build().apply {
+                flags = flags or Notification.FLAG_AUTO_CANCEL
+            }
+
 
     companion object {
         const val STOP_SELF_KEY = "stopSelfKey"

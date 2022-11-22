@@ -81,7 +81,12 @@ abstract class UsedeskApiRepository<API>(
         UsedeskLog.onLog("rawResponseBody") { rawResponseBody ?: "null" }
 
         return try {
-            gson.fromJson(rawResponseBody, tClass)
+            val safeRawResponse = when {
+                rawResponseBody == "" -> "{}"
+                rawResponseBody?.startsWith("[") == true -> """{"items":$rawResponseBody}"""
+                else -> rawResponseBody
+            }
+            gson.fromJson(safeRawResponse, tClass)
         } catch (e: Exception) {
             e.printStackTrace()
             null

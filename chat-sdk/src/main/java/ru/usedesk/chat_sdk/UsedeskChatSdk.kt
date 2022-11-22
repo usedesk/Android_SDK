@@ -14,7 +14,8 @@ object UsedeskChatSdk {
 
     private var instanceBox: InstanceBoxUsedesk? = null
     private var chatConfiguration: UsedeskChatConfiguration? = null
-    private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? = null
+    private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
+        null //TODO:вынести функционал из sdk
     private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
 
     @JvmStatic

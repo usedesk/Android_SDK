@@ -14,14 +14,14 @@ open class UsedeskNotificationsServiceFactory {
         context: Context,
         usedeskChatConfiguration: UsedeskChatConfiguration
     ) {
-        Intent(context, serviceClass).also {
-            it.putExtra(USEDESK_CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
-            context.startService(it)
-        }
+        context.startService(
+            Intent(context, serviceClass).apply {
+                putExtra(USEDESK_CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
+            }
+        )
     }
 
     open fun stopService(context: Context) {
-        val intent = Intent(context, serviceClass)
-        context.stopService(intent)
+        context.stopService(Intent(context, serviceClass))
     }
 }

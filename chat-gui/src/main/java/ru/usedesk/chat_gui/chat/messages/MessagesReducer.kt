@@ -41,7 +41,7 @@ internal class MessagesReducer(
 
     private fun State.formChanged(event: Event.FormChanged) = copy(
         agentItemsState = agentItemsState.toMutableMap().apply {
-            put(event.form.id, event.formItemState)
+            put(event.form.id, event.formState)
         }
     )
 

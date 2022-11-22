@@ -8,7 +8,6 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
 import ru.usedesk.knowledgebase_sdk.entity.*
-import java.util.*
 import javax.inject.Inject
 
 internal class KnowledgeBaseApi @Inject constructor(
@@ -137,40 +136,48 @@ internal class KnowledgeBaseApi @Inject constructor(
         }
     }
 
-    private fun loadSections(): List<UsedeskSection> = doRequest(
-        configuration.urlApi,
-        Array<SectionResponse>::class.java //TODO:
-    ) {
-        getSections(configuration.accountId, configuration.token)
-    }.mapNotNull { sectionResponse ->
-        valueOrNull {
-            val categories = sectionResponse.categories?.mapNotNull { categoryResponse ->
-                valueOrNull {
-                    val categoryId = categoryResponse!!.id!!
-                    val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
-                        valueOrNull {
-                            UsedeskArticleInfo(
-                                articleResponse!!.id!!,
-                                articleResponse.title ?: "",
-                                categoryId,
-                                articleResponse.views ?: 0
-                            )
-                        }
-                    } ?: listOf()
-                    UsedeskCategory(
-                        categoryId,
-                        categoryResponse.title ?: "",
-                        categoryResponse.description ?: "",
-                        articles
-                    )
-                }
-            } ?: listOf()
-            UsedeskSection(
-                sectionResponse.id!!,
-                sectionResponse.title ?: "",
-                sectionResponse.image,
-                categories
-            )
+    private fun loadSections(): List<UsedeskSection> {
+        val request = LoadSections.Request(
+            configuration.token,
+            configuration.accountId
+        )
+        val response = doRequestJson(
+            configuration.urlApi,
+            request,
+            LoadSections.Response::class.java
+        ) {
+            getSections(it.accountId, it.token)
+        }
+        return response!!.items!!.mapNotNull { sectionResponse ->
+            valueOrNull {
+                val categories = sectionResponse!!.categories?.mapNotNull { categoryResponse ->
+                    valueOrNull {
+                        val categoryId = categoryResponse!!.id!!
+                        val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
+                            valueOrNull {
+                                UsedeskArticleInfo(
+                                    articleResponse!!.id!!,
+                                    articleResponse.title ?: "",
+                                    categoryId,
+                                    articleResponse.views ?: 0
+                                )
+                            }
+                        } ?: listOf()
+                        UsedeskCategory(
+                            categoryId,
+                            categoryResponse.title ?: "",
+                            categoryResponse.description ?: "",
+                            articles
+                        )
+                    }
+                } ?: listOf()
+                UsedeskSection(
+                    sectionResponse.id!!,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                )
+            }
         }
     }
 }

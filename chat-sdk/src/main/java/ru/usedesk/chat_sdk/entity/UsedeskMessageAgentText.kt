@@ -40,12 +40,6 @@ class UsedeskMessageAgentText(
             name: String,
             val required: Boolean
         ) : Form(id, name) {
-            class Stub(
-                id: Long,
-                name: String,
-                required: Boolean
-            ) : Field(id, name, required)
-
             class Text(
                 id: Long,
                 name: String,
@@ -71,7 +65,8 @@ class UsedeskMessageAgentText(
                 id: Long,
                 name: String,
                 required: Boolean,
-                val items: kotlin.collections.List<Item>
+                val items: kotlin.collections.List<Item>,
+                val loaded: Boolean
             ) : Field(id, name, required) {
                 data class Item(
                     val id: Long,

@@ -60,19 +60,19 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         class FormApplyClick(val messageId: Long) : Event
         class FormChanged(
             val form: Form,
-            val formItemState: FormItemState
+            val formState: FormState
         ) : Event
 
         class FormListClicked(
             val form: Form.Field.List,
-            val formItemState: FormItemState.ItemList
+            val formState: FormState.List
         ) : Event
     }
 
     data class State(
         val messages: List<UsedeskMessage> = listOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
-        val agentItemsState: Map<Long, FormItemState> = mapOf(),
+        val agentItemsState: Map<Long, FormState> = mapOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
@@ -85,11 +85,13 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val goToBottom: UsedeskEvent<Unit>? = null
     )
 
-    internal sealed interface FormItemState {
-        data class Button(val enabled: Boolean = false) : FormItemState
-        data class CheckBox(val checked: Boolean = false) : FormItemState
-        data class ItemList(val selected: List<Form.Field.List.Item> = listOf()) : FormItemState
-        data class Text(val text: String = "") : FormItemState
+    internal sealed interface FormState {
+        data class Button(val enabled: Boolean = false) : FormState
+        data class CheckBox(val checked: Boolean = false) : FormState
+        data class List(val selected: kotlin.collections.List<UsedeskMessageAgentText.Form.Field.List.Item> = listOf()) :
+            FormState
+
+        data class Text(val text: String = "") : FormState
     }
 
     internal sealed interface ChatItem {

@@ -2,17 +2,11 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity
 
 import com.google.gson.annotations.SerializedName
 
-internal sealed class SocketResponse {
-    val type: String? = null
-
+internal sealed interface SocketResponse {
     class Inited(
         val token: String?,
         val setup: Setup?
-    ) : SocketResponse() {
-
-        companion object {
-            const val TYPE = "@@chat/current/INITED"
-        }
+    ) : SocketResponse {
 
         class Setup(
             @SerializedName("noOperators")
@@ -52,10 +46,10 @@ internal sealed class SocketResponse {
         }
     }
 
-    internal class SetClient(
+    class SetClient(
         val state: State?,
         val reset: Boolean?
-    ) : SocketResponse() {
+    ) : SocketResponse {
 
         class State {
             val client: Client? = null
@@ -66,17 +60,11 @@ internal sealed class SocketResponse {
                 val chat: Int? = null
             }
         }
-
-        companion object {
-            const val TYPE = "@@chat/current/SET"
-        }
     }
 
-    internal class AddMessage(val message: Message?) : SocketResponse() {
+    class AddMessage(val message: Message?) : SocketResponse {
 
         companion object {
-            const val TYPE = "@@chat/current/ADD_MESSAGE"
-
             const val TYPE_OPERATOR_TO_CLIENT = "operator_to_client"
             const val TYPE_CLIENT_TO_OPERATOR = "client_to_operator"
             const val TYPE_CLIENT_TO_BOT = "client_to_bot"
@@ -118,20 +106,12 @@ internal sealed class SocketResponse {
         }
     }
 
-    internal class FeedbackResponse(val answer: Answer?) : SocketResponse() {
+    class FeedbackResponse(val answer: Answer?) : SocketResponse {
         class Answer(val status: Boolean? = null)
-
-        companion object {
-            const val TYPE = "@@chat/current/CALLBACK_ANSWER"
-        }
     }
 
-    internal class ErrorResponse : SocketResponse() {
+    class ErrorResponse : SocketResponse {
         val message: String? = null
         val code: Int? = null
-
-        companion object {
-            const val TYPE = "@@redbone/ERROR"
-        }
     }
 }

@@ -147,11 +147,11 @@ internal class ApiRepository @Inject constructor(
 
     override fun loadForm(
         configuration: UsedeskChatConfiguration,
-        fields: List<Field.Stub>
+        fields: List<Field.List>
     ): List<Field> {
         val request = LoadFields.Request(
             configuration.clientToken!!,
-            fields.map(Field.Stub::id)
+            fields.map(Field.List::id)
         )
         val messagesResponse = doRequestJson(
             configuration.urlChatApi,

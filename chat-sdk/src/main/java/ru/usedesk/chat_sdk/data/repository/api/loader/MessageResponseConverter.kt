@@ -425,10 +425,12 @@ internal class MessageResponseConverter @Inject constructor() :
                 listOf(
                     MessageObject.Field(
                         when (textType) {
-                            null -> Form.Field.Stub(
+                            null -> Form.Field.List(
                                 associate.toLong(),
                                 parts[0],
-                                required
+                                required,
+                                listOf(),
+                                false
                             )
                             else -> Form.Field.Text(
                                 fieldId.decrementAndGet(),

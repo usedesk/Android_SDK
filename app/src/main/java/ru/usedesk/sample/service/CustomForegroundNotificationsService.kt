@@ -11,11 +11,14 @@ class CustomForegroundNotificationsService : UsedeskForegroundNotificationsServi
 
     override val foregroundId = 137
 
-    override fun getContentPendingIntent(): PendingIntent? {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        return PendingIntent.getActivity(this, 0, intent, 0)
-    }
+    override fun getContentPendingIntent(): PendingIntent? = PendingIntent.getActivity(
+        this,
+        0,
+        Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        },
+        0
+    )
 
     class Factory : UsedeskNotificationsServiceFactory() {
         override val serviceClass: Class<*> = CustomForegroundNotificationsService::class.java

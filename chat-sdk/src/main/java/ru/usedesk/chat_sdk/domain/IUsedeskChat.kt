@@ -4,6 +4,7 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 interface IUsedeskChat {
+    //TODO: сделать все методы асинхронными
     fun addActionListener(listener: IUsedeskActionListener)
 
     fun removeActionListener(listener: IUsedeskActionListener)
@@ -50,7 +51,7 @@ interface IUsedeskChat {
     fun release()
 
     data class Model(
-        val connectionState: UsedeskConnectionState = UsedeskConnectionState.CONNECTING,
+        val connectionState: UsedeskConnectionState = UsedeskConnectionState.DISCONNECTED,
         val clientToken: String? = null,
         val messages: List<UsedeskMessage> = listOf(),
         val inited: Boolean = false,

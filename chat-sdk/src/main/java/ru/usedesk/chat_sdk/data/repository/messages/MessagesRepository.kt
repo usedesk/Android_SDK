@@ -32,7 +32,6 @@ internal class MessagesRepository(
         return appContext.getSharedPreferences(PREF_NAME + userKey, Context.MODE_PRIVATE)
     }
 
-    @Synchronized
     override fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient) {
         initIfNeeded(userKey)
 
@@ -47,7 +46,6 @@ internal class MessagesRepository(
         }
     }
 
-    @Synchronized
     override fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient) {
         initIfNeeded(userKey)
 
@@ -58,13 +56,11 @@ internal class MessagesRepository(
             .apply()
     }
 
-    @Synchronized
     override fun getNotSentMessages(userKey: String): List<UsedeskMessageClient> {
         initIfNeeded(userKey)
         return notSentMessages.values.map(this@MessagesRepository::toClientMessage)
     }
 
-    @Synchronized
     override fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft) {
         initIfNeeded(userKey)
 
@@ -89,7 +85,6 @@ internal class MessagesRepository(
         }
     }
 
-    @Synchronized
     override fun getDraft(userKey: String): UsedeskMessageDraft {
         initIfNeeded(userKey)
 

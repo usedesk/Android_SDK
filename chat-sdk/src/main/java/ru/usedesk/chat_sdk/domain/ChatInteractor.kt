@@ -30,6 +30,10 @@ internal class ChatInteractor @Inject constructor(
     private var initClientMessage: String? = configuration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
+    private val modelFlow = MutableStateFlow(Model())
+
+    private val formLoadSet = mutableSetOf<Long>()
+
     private class ActionListeners : IUsedeskActionListener {
         private val listenersMutex = Mutex()
         private var listeners = mutableSetOf<IUsedeskActionListener>()
@@ -112,7 +116,7 @@ internal class ChatInteractor @Inject constructor(
     private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
     var oldModel: Model? = null
-    private fun Model.onModelUpdated(listener: IUsedeskActionListener) { //TODO: на каждый listener вызывается метод и начинает молотить тут всё
+    private fun Model.onModelUpdated(oldModel: Model?, listener: IUsedeskActionListener) {
         if (oldModel?.connectionState != connectionState) {
             listener.onConnectionState(connectionState)
         }
@@ -147,13 +151,13 @@ internal class ChatInteractor @Inject constructor(
                 }
             }
         }
-        oldModel = this
     }
 
     init {
         ioScope.launch {
             modelFlow.collect { model ->
-                model.onModelUpdated(actionListeners)
+                model.onModelUpdated(oldModel, actionListeners)
+                oldModel = model
             }
         }
     }
@@ -203,13 +207,11 @@ internal class ChatInteractor @Inject constructor(
             actionListeners.onException(exception)
         }
 
-        @Synchronized
         override fun onChatInited(chatInited: ChatInited) {
             this@ChatInteractor.chatInited = chatInited
             this@ChatInteractor.onChatInited(chatInited)
         }
 
-        @Synchronized
         override fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>) {
             this@ChatInteractor.onMessagesNew(
                 old = oldMessages,
@@ -217,7 +219,6 @@ internal class ChatInteractor @Inject constructor(
             )
         }
 
-        @Synchronized
         override fun onMessagesNewReceived(newMessages: List<UsedeskMessage>) {
             this@ChatInteractor.onMessagesNew(
                 new = newMessages,
@@ -225,7 +226,6 @@ internal class ChatInteractor @Inject constructor(
             )
         }
 
-        @Synchronized
         override fun onMessageUpdated(message: UsedeskMessage) {
             this@ChatInteractor.onMessageUpdate(message)
         }
@@ -287,7 +287,6 @@ internal class ChatInteractor @Inject constructor(
                                 ?: userInfoRepository.getConfiguration(configuration)?.clientToken)
                                 ?.ifEmpty { null }
                             ioScope.launch {
-
                                 unlockFirstMessage()
                                 resetFirstMessageLock()
 
@@ -367,7 +366,7 @@ internal class ChatInteractor @Inject constructor(
         actionListeners.add(listener)
         modelFlow.value.apply {
             ioScope.launch {
-                onModelUpdated(listener)
+                onModelUpdated(null, listener)
             }
         }
     }
@@ -613,10 +612,6 @@ internal class ChatInteractor @Inject constructor(
         }?.let(this@ChatInteractor::onMessageUpdate)
     }
 
-    private val modelFlow = MutableStateFlow(Model())
-
-    private val formLoadSet = mutableSetOf<Long>()
-
     override fun loadForm(messageId: Long) {
         ioScope.launch {
             val form = eventMutex.withLock {
@@ -627,7 +622,7 @@ internal class ChatInteractor @Inject constructor(
                         .filterIsInstance<UsedeskMessageAgentText>()
                         .firstOrNull { it.id == messageId }
                         ?.forms
-                        ?.filterIsInstance<Field.Stub>()
+                        ?.filterIsInstance<Field.List>()
                 } else null
             }
             if (form?.isNotEmpty() == true) {
@@ -644,22 +639,24 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
-        apiRepository.send(agentMessage.id, feedback)
+        ioScope.launch {
+            apiRepository.send(agentMessage.id, feedback)
 
-        onMessageUpdate(
-            UsedeskMessageAgentText(
-                agentMessage.id,
-                agentMessage.createdAt,
-                agentMessage.text,
-                agentMessage.convertedText,
-                agentMessage.forms,
-                formsLoaded = agentMessage.formsLoaded,
-                feedbackNeeded = false,
-                feedback,
-                agentMessage.name,
-                agentMessage.avatar
+            onMessageUpdate(
+                UsedeskMessageAgentText(
+                    agentMessage.id,
+                    agentMessage.createdAt,
+                    agentMessage.text,
+                    agentMessage.convertedText,
+                    agentMessage.forms,
+                    formsLoaded = agentMessage.formsLoaded,
+                    feedbackNeeded = false,
+                    feedback,
+                    agentMessage.name,
+                    agentMessage.avatar
+                )
             )
-        )
+        }
     }
 
     override fun send(offlineForm: UsedeskOfflineForm) {
@@ -751,7 +748,6 @@ internal class ChatInteractor @Inject constructor(
             }
     }
 
-    @Synchronized
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
         runBlocking {
             cachedMessages.setMessageDraft(messageDraft, true)

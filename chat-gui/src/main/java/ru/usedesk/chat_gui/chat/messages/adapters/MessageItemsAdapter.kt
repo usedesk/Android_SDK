@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormItemState
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormState
 import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
@@ -21,11 +21,11 @@ internal class MessageItemsAdapter(
     recyclerView: RecyclerView,
     private val onEvent: (Event) -> Unit,
     private val onButtonClick: (Form.Button) -> Unit
-) : RecyclerView.Adapter<BaseViewHolder<out Form, out FormItemState>>() {
+) : RecyclerView.Adapter<BaseViewHolder<out Form, out FormState>>() {
 
     private var messageId = 0L
     private var forms: List<Form> = listOf()
-    private var itemsState: Map<Long, FormItemState> = mapOf()
+    private var itemsState: Map<Long, FormState> = mapOf()
 
     init {
         recyclerView.adapter = this
@@ -34,7 +34,7 @@ internal class MessageItemsAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun update(
         messageAgentText: UsedeskMessageAgentText,
-        agentItems: Map<Long, FormItemState>
+        agentItems: Map<Long, FormState>
     ) {
         val oldItems = forms
         val oldAgentItems = itemsState
@@ -59,23 +59,23 @@ internal class MessageItemsAdapter(
                     return oldItem.name == newItem.name && when (oldItem) {
                         is Form.Button -> oldItem.areContentsTheSame(
                             newItem as Form.Button,
-                            oldAgentItems[oldItem.id] as FormItemState.Button?,
-                            agentItems[oldItem.id] as FormItemState.Button?
+                            oldAgentItems[oldItem.id] as FormState.Button?,
+                            agentItems[oldItem.id] as FormState.Button?
                         )
                         is Form.Field.CheckBox -> oldItem.areContentsTheSame(
                             newItem as Form.Field.CheckBox,
-                            oldAgentItems[oldItem.id] as FormItemState.CheckBox?,
-                            agentItems[oldItem.id] as FormItemState.CheckBox?
+                            oldAgentItems[oldItem.id] as FormState.CheckBox?,
+                            agentItems[oldItem.id] as FormState.CheckBox?
                         )
                         is Form.Field.List -> oldItem.areContentsTheSame(
                             newItem as Form.Field.List,
-                            oldAgentItems[oldItem.id] as FormItemState.ItemList?,
-                            agentItems[oldItem.id] as FormItemState.ItemList?
+                            oldAgentItems[oldItem.id] as FormState.List?,
+                            agentItems[oldItem.id] as FormState.List?
                         )
                         is Form.Field.Text -> oldItem.areContentsTheSame(
                             newItem as Form.Field.Text,
-                            oldAgentItems[oldItem.id] as FormItemState.Text?,
-                            agentItems[oldItem.id] as FormItemState.Text?
+                            oldAgentItems[oldItem.id] as FormState.Text?,
+                            agentItems[oldItem.id] as FormState.Text?
                         )
                     }
                 }
@@ -89,28 +89,28 @@ internal class MessageItemsAdapter(
 
     private fun Form.Field.List.areContentsTheSame(
         newForm: Form.Field.List,
-        oldFormItemState: FormItemState.ItemList?,
-        newFormItemState: FormItemState.ItemList?
+        oldFormState: FormState.List?,
+        newFormState: FormState.List?
     ): Boolean = items == newForm.items ||
-            oldFormItemState?.selected == newFormItemState?.selected
+            oldFormState?.selected == newFormState?.selected
 
     private fun Form.Field.CheckBox.areContentsTheSame(
         newForm: Form.Field.CheckBox,
-        oldFormItemState: FormItemState.CheckBox?,
-        newFormItemState: FormItemState.CheckBox?
-    ): Boolean = oldFormItemState?.checked == newFormItemState?.checked
+        oldFormState: FormState.CheckBox?,
+        newFormState: FormState.CheckBox?
+    ): Boolean = oldFormState?.checked == newFormState?.checked
 
     private fun Form.Field.Text.areContentsTheSame(
         newForm: Form.Field.Text,
-        oldFormItemState: FormItemState.Text?,
-        newFormItemState: FormItemState.Text?
+        oldFormState: FormState.Text?,
+        newFormState: FormState.Text?
     ): Boolean = true
 
     private fun Form.Button.areContentsTheSame(
         newForm: Form.Button,
-        oldFormItemState: FormItemState.Button?,
-        newFormItemState: FormItemState.Button?
-    ): Boolean = oldFormItemState?.enabled == newFormItemState?.enabled
+        oldFormState: FormState.Button?,
+        newFormState: FormState.Button?
+    ): Boolean = oldFormState?.enabled == newFormState?.enabled
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.usedesk_chat_message_item_button -> ButtonViewHolder(
@@ -158,11 +158,10 @@ internal class MessageItemsAdapter(
         is Form.Field.Text -> R.layout.usedesk_chat_message_item_text
         is Form.Field.CheckBox -> R.layout.usedesk_chat_message_item_checkbox
         is Form.Field.List -> R.layout.usedesk_chat_message_item_itemlist
-        else -> 0
     }
 
     override fun onBindViewHolder(
-        holder: BaseViewHolder<out Form, out FormItemState>,
+        holder: BaseViewHolder<out Form, out FormState>,
         position: Int
     ) {
         val formItem = forms[position]
@@ -171,12 +170,12 @@ internal class MessageItemsAdapter(
             messageId,
             formItem,
             state ?: when (formItem) {
-                is Form.Button -> FormItemState.Button(
+                is Form.Button -> FormState.Button(
                     enabled = formItem.id != Form.Button.FORM_APPLY_BUTTON_ID
                 )
-                is Form.Field.CheckBox -> FormItemState.CheckBox()
-                is Form.Field.List -> FormItemState.ItemList()
-                is Form.Field.Text -> FormItemState.Text()
+                is Form.Field.CheckBox -> FormState.CheckBox()
+                is Form.Field.List -> FormState.List()
+                is Form.Field.Text -> FormState.Text()
             }
         )
     }

@@ -563,6 +563,10 @@
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Item.Container1</item>
     </style>
 
+    <style name="Usedesk.Chat.Message.Text.Form" parent="">
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Item.Container1</item>
+    </style>
+
     <style name="Usedesk.Chat.Message.Text.Agent.Container1" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

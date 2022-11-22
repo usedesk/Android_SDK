@@ -1,8 +1,7 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import ru.usedesk.chat_sdk.data.repository._extra.Converter
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
@@ -10,18 +9,18 @@ import javax.inject.Inject
 
 internal class InitChatResponseConverter @Inject constructor(
     private val messageResponseConverter: MessageResponseConverter
-) : Converter<InitChatResponse, ChatInited> {
+) : Converter<SocketResponse.Inited, ChatInited> {
 
-    override fun convert(from: InitChatResponse) = ChatInited(
+    override fun convert(from: SocketResponse.Inited) = ChatInited(
         from.token!!,
         true,
         convert(from.setup?.messages ?: listOf()),
         convert(from.setup?.callbackSettings, from.setup!!.noOperators),
-        from.setup?.ticket?.statusId
+        from.setup.ticket?.statusId
     )
 
     private fun convert(
-        callbackSettings: InitChatResponse.Setup.CallbackSettings?,
+        callbackSettings: SocketResponse.Inited.Setup.CallbackSettings?,
         noOperators: Boolean?
     ): UsedeskOfflineFormSettings = valueOrNull {
         val topics = callbackSettings!!.topics
@@ -64,6 +63,6 @@ internal class InitChatResponseConverter @Inject constructor(
         UsedeskOfflineFormSettings.WorkType.NEVER
     )
 
-    private fun convert(messages: List<MessageResponse.Message?>) =
+    private fun convert(messages: List<SocketResponse.AddMessage.Message?>) =
         messages.flatMap(messageResponseConverter::convert)
 }

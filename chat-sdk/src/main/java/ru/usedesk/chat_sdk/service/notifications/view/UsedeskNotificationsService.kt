@@ -6,34 +6,57 @@ import android.os.Build
 import android.os.IBinder
 import android.text.Html
 import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
-import ru.usedesk.chat_sdk.entity.UsedeskMessageText
-import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsModel
-import ru.usedesk.chat_sdk.service.notifications.presenter.UsedeskNotificationsPresenter
+import ru.usedesk.chat_sdk.entity.*
 
 abstract class UsedeskNotificationsService : Service() {
-    private lateinit var presenter: UsedeskNotificationsPresenter
-
     lateinit var notificationManager: NotificationManager
         private set
 
     protected open val showCloseButton = false
 
     protected open val channelId = "newUsedeskMessages"
-    protected open val channelTitle: String by lazy {
-        getString(R.string.usedesk_notification_channel_title)
+    protected open val channelTitle: String by lazy { getString(R.string.usedesk_notification_channel_title) }
+    protected open val fileMessage: String by lazy { getString(R.string.usedesk_notification_file_message) }
+
+    private var model = Model()
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val modelMutex = Mutex()
+    private val actionListener = object : IUsedeskActionListener {
+        override fun onNewMessageReceived(message: UsedeskMessage) {
+            if (message is UsedeskMessageAgent) {
+                updateModel {
+                    copy(
+                        message = message,
+                        count = when (model.message) {
+                            null -> 1
+                            else -> model.count + 1
+                        }
+                    )
+                }
+
+            }
+        }
     }
-    protected open val fileMessage: String by lazy {
-        getString(R.string.usedesk_notification_file_message)
+
+    private fun updateModel(onUpdate: Model.() -> Model) {
+        mainScope.launch {
+            modelMutex.withLock {
+                model = model.onUpdate()
+                model.render()
+            }
+        }
     }
 
     override fun onCreate() {
         super.onCreate()
 
-        presenter = UsedeskNotificationsPresenter()
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
         registerNotification()
@@ -61,22 +84,22 @@ abstract class UsedeskNotificationsService : Service() {
         val chatConfiguration = intent?.getParcelableExtra<UsedeskChatConfiguration>(
             USEDESK_CHAT_CONFIGURATION_KEY
         )
-        if (chatConfiguration != null) {
-            UsedeskChatSdk.setConfiguration(chatConfiguration)
-            UsedeskChatSdk.init(this)
-
-            presenter.init(this@UsedeskNotificationsService::renderModel)
-        } else {
-            stopSelf(startId)
+        when {
+            chatConfiguration != null -> {
+                UsedeskChatSdk.setConfiguration(chatConfiguration)
+                UsedeskChatSdk.init(this).apply {
+                    addActionListener(actionListener)
+                    connect()
+                }
+            }
+            else -> stopSelf(startId)
         }
 
         return START_REDELIVER_INTENT
     }
 
-    private fun renderModel(model: UsedeskNotificationsModel?) {
-        model?.also {
-            createNotification(it)?.also(this@UsedeskNotificationsService::showNotification)
-        }
+    private fun Model.render() {
+        createNotification()?.also(this@UsedeskNotificationsService::showNotification)
     }
 
     protected abstract fun showNotification(notification: Notification)
@@ -85,18 +108,20 @@ abstract class UsedeskNotificationsService : Service() {
     protected open fun getDeletePendingIntent(): PendingIntent? = null
     protected open fun getClosePendingIntent(): PendingIntent? = null
 
-    protected open fun createNotification(model: UsedeskNotificationsModel): Notification? {
-        return if (model.message is UsedeskMessageAgent) {
-            var title = model.message.name
-            val text = if (model.message is UsedeskMessageText) {
-                Html.fromHtml(model.message.convertedText)
-            } else {
-                fileMessage
+    protected open fun Model.createNotification(): Notification? = when (message) {
+        is UsedeskMessageAgent -> {
+            var title = message.name
+            val text = when (message) {
+                is UsedeskMessageText -> Html.fromHtml(message.convertedText)
+                else -> fileMessage
             }
             if (model.count > 1) {
-                title += " (" + model.count + ")"
+                title += " (${model.count})"
             }
-            NotificationCompat.Builder(this, channelId).apply {
+            NotificationCompat.Builder(
+                this@UsedeskNotificationsService,
+                channelId
+            ).apply {
                 setSmallIcon(android.R.drawable.ic_dialog_email)
                 setContentTitle(title)
                 setContentText(text)
@@ -112,17 +137,25 @@ abstract class UsedeskNotificationsService : Service() {
             }.build().apply {
                 flags = flags or Notification.FLAG_AUTO_CANCEL
             }
-        } else {
-            null
         }
+        else -> null
+    }
+
+    protected fun resetModel() {
+        updateModel { Model() }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        presenter.onClear()
+        UsedeskChatSdk.requireInstance().removeActionListener(actionListener)
         UsedeskChatSdk.release(false)
     }
+
+    data class Model @JvmOverloads constructor(
+        val message: UsedeskMessage? = null,
+        val count: Int = 0
+    )
 
     companion object {
         const val USEDESK_CHAT_CONFIGURATION_KEY = "usedeskChatConfigurationKey"

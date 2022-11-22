@@ -1,15 +1,14 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONException
 import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.ErrorResponse
 import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
@@ -54,16 +53,16 @@ internal class SocketConnection(
     }
 
     private fun parse(rawResponse: String) = try {
-        val baseResponse = gson.fromJson(rawResponse, SocketResponse::class.java)
-        val responseClass = when (baseResponse.type) {
-            Inited.TYPE -> Inited::class.java
-            ErrorResponse.TYPE -> ErrorResponse::class.java
-            AddMessage.TYPE -> AddMessage::class.java
-            FeedbackResponse.TYPE -> FeedbackResponse::class.java
-            SetClient.TYPE -> SetClient::class.java
-            else -> throw RuntimeException("Could not find response class by type")
+        val jsonObject = gson.fromJson(rawResponse, JsonObject::class.java)
+        val responseClass = when (val type = jsonObject.get("type").asString) {
+            "@@chat/current/INITED" -> Inited::class.java
+            "@@chat/current/ADD_MESSAGE" -> AddMessage::class.java
+            "@@chat/current/CALLBACK_ANSWER" -> FeedbackResponse::class.java
+            "@@chat/current/SET" -> SetClient::class.java
+            "@@redbone/ERROR" -> ErrorResponse::class.java
+            else -> throw RuntimeException("""Could not find response class by type: "$type"""")
         }
-        gson.fromJson(rawResponse, responseClass)
+        gson.fromJson(jsonObject, responseClass)
     } catch (e: Exception) {
         UsedeskLog.onLog("SOCKET") { "Failed to parse the response: $rawResponse" }
         throw UsedeskSocketException(

@@ -71,7 +71,7 @@ internal interface IApiRepository {
 
     fun loadForm(
         configuration: UsedeskChatConfiguration,
-        fields: List<Field.Stub>
+        fields: List<Field.List>
     ): List<Field>
 
     sealed interface SendResult {

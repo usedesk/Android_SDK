@@ -44,7 +44,7 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
 
     init {
         usedeskChat.addActionListener(actionListener)
-        doIo { (usedeskChat.connect()) }
+        usedeskChat.connect()
     }
 
     override fun onCleared() {

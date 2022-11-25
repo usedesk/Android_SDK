@@ -1,6 +1,8 @@
 package ru.usedesk.common_sdk.api
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.annotations.Expose
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -37,14 +39,34 @@ abstract class UsedeskApiRepository<API>(
         ) { getCall(body) }
     }
 
-    protected fun <RESPONSE : UsedeskApiError> doRequestMultipart(
+    protected fun <REQUEST : JsonRequest, RESPONSE : UsedeskApiError> doRequestJsonObject(
         urlApi: String,
-        parts: List<Pair<String, Any?>>,
+        body: REQUEST,
+        responseClass: Class<RESPONSE>,
+        getCall: API.(JsonObject) -> Call<ResponseBody>
+    ): RESPONSE? {
+        val jsonObject = (gson.toJsonTree(body) as JsonObject).apply {
+            body.jsonFields.forEach {
+                if (it.second != null) {
+                    addProperty(it.first, it.second)
+                }
+            }
+        }
+        UsedeskLog.onLog("jsonBody") { gson.toJson(jsonObject) }
+        return executeSafe(
+            urlApi,
+            responseClass
+        ) { getCall(jsonObject) }
+    }
+
+    protected fun <REQUEST : MultipartRequest, RESPONSE : UsedeskApiError> doRequestMultipart(
+        urlApi: String,
+        request: REQUEST,
         responseClass: Class<RESPONSE>,
         apiMethod: API.(parts: List<MultipartBody.Part>) -> Call<ResponseBody>
     ): RESPONSE? {
-        UsedeskLog.onLog("multipartBody") { gson.toJson(parts) }
-        val multipartParts = parts.mapNotNull(multipartConverter::convert)
+        UsedeskLog.onLog("multipartBody") { gson.toJson(request.parts) }
+        val multipartParts = request.parts.mapNotNull(multipartConverter::convert)
         return executeSafe(
             urlApi,
             responseClass
@@ -137,6 +159,13 @@ abstract class UsedeskApiRepository<API>(
             }
         }
     }
+
+    abstract class MultipartRequest(vararg val parts: Pair<String, Any?>)
+
+    abstract class JsonRequest(
+        @Expose(serialize = false)
+        val jsonFields: List<Pair<String, String?>> = listOf()
+    )
 
     companion object {
         private const val MAX_ATTEMPTS = 3

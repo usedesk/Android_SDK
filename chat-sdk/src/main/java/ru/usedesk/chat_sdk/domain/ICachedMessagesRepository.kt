@@ -5,7 +5,7 @@ import kotlinx.coroutines.Deferred
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 
-internal interface ICachedMessagesInteractor {
+internal interface ICachedMessagesRepository {
 
     fun getNotSentMessages(): List<UsedeskMessageClient>
 

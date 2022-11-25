@@ -9,51 +9,46 @@ internal interface IApiRepository {
         token: String?,
         configuration: UsedeskChatConfiguration,
         eventListener: EventListener
-    )
+    ): SocketSendResponse
 
-    fun init(
+    fun sendInit(
         configuration: UsedeskChatConfiguration,
         token: String?
-    )
+    ): SocketSendResponse
 
-    fun send(
+    fun sendOfflineForm(
         configuration: UsedeskChatConfiguration,
         offlineForm: UsedeskOfflineForm
-    )
+    ): SendOfflineFormResponse
 
-    fun send(
+    fun sendFeedback(
         messageId: Long,
         feedback: UsedeskFeedback
-    )
+    ): SocketSendResponse
 
-    fun send(messageText: UsedeskMessageText)
+    fun sendText(messageText: UsedeskMessageText): SocketSendResponse
 
-    fun send(
+    fun sendFile(
         configuration: UsedeskChatConfiguration,
         token: String,
         fileInfo: UsedeskFileInfo,
         messageId: Long
-    )
+    ): SendFileResponse
 
-    fun setClient(configuration: UsedeskChatConfiguration)
+    fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse
 
     fun send(
         token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
-    ): SendResult
+    ): SendAdditionalFieldsResponse
 
     fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
         token: String,
         messageId: Long
-    ): LoadPreviousMessageResult
-
-    sealed interface LoadPreviousMessageResult {
-        class Done(val messages: List<UsedeskMessage>) : LoadPreviousMessageResult
-        class Error(val code: Int?) : LoadPreviousMessageResult
-    }
+    ): LoadPreviousMessageResponse
 
     fun disconnect()
 
@@ -64,19 +59,50 @@ internal interface IApiRepository {
         apiToken: String
     ): InitChatResponse
 
+    fun loadForm(
+        configuration: UsedeskChatConfiguration,
+        fields: List<Field.List>
+    ): LoadFormResponse
+
+    interface LoadFormResponse {
+        class Done(val fields: List<Field>) : LoadFormResponse
+        class Error(val error: Int? = null) : LoadFormResponse
+    }
+
+    interface SendFileResponse {
+        object Done : SendFileResponse
+        class Error(val error: Int? = null) : SendFileResponse
+    }
+
+    interface SendOfflineFormResponse {
+        object Done : SendOfflineFormResponse
+        class Error(val error: Int? = null) : SendOfflineFormResponse
+    }
+
+
+    interface SocketSendResponse {
+        object Done : SocketSendResponse
+        object Error : SocketSendResponse
+    }
+
     sealed interface InitChatResponse {
         class Done(val clientToken: String) : InitChatResponse
         class ApiError(val code: Int?) : InitChatResponse
     }
 
-    fun loadForm(
-        configuration: UsedeskChatConfiguration,
-        fields: List<Field.List>
-    ): List<Field>
+    sealed interface SetClientResponse {
+        object Done : SetClientResponse
+        class Error(val error: Int? = null) : SetClientResponse
+    }
 
-    sealed interface SendResult {
-        object Done : SendResult
-        object Error : SendResult
+    sealed interface LoadPreviousMessageResponse {
+        class Done(val messages: List<UsedeskMessage>) : LoadPreviousMessageResponse
+        class Error(val code: Int?) : LoadPreviousMessageResponse
+    }
+
+    sealed interface SendAdditionalFieldsResponse {
+        object Done : SendAdditionalFieldsResponse
+        object Error : SendAdditionalFieldsResponse
     }
 
     interface EventListener {

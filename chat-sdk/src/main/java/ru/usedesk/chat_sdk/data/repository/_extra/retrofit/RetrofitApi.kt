@@ -6,7 +6,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 import ru.usedesk.chat_sdk.data.repository.api.entity.LoadFields
-import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFieldsRequest
+import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFields
 
 internal interface RetrofitApi {
     @POST("widget.js/post")
@@ -17,7 +17,7 @@ internal interface RetrofitApi {
     fun postFile(@Part parts: List<MultipartBody.Part>): Call<ResponseBody>
 
     @POST("uapi/v1/addFieldsToChat")
-    fun postAdditionalFields(@Body body: SendAdditionalFieldsRequest): Call<ResponseBody>
+    fun postAdditionalFields(@Body body: SendAdditionalFields.Request): Call<ResponseBody>
 
     @GET("uapi/chat/getChatMessage")
     fun loadPreviousMessages(

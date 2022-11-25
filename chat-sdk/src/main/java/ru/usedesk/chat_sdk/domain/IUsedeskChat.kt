@@ -37,23 +37,23 @@ interface IUsedeskChat {
 
     fun createChat(apiToken: String): CreateChatResult
 
+    fun createChat(apiToken: String, onResult: (CreateChatResult) -> Unit)
+
+    fun loadPreviousMessagesPage()
+
+    fun release()
+
     sealed interface CreateChatResult {
         class Done(val clientToken: String) : CreateChatResult
         class Error(val code: Int?) : CreateChatResult
     }
 
-    /**
-     * @return
-     * true - can load next messages page
-     */
-    fun loadPreviousMessagesPage(): Boolean
-
-    fun release()
-
     data class Model(
         val connectionState: UsedeskConnectionState = UsedeskConnectionState.DISCONNECTED,
         val clientToken: String? = null,
         val messages: List<UsedeskMessage> = listOf(),
+        val previousPageIsAvailable: Boolean = true,
+        val previousPageIsLoading: Boolean = false,
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
         val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null

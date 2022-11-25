@@ -12,11 +12,11 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 import javax.inject.Inject
 
-internal class CachedMessagesInteractor @Inject constructor(
+internal class CachedMessagesRepository @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
     private val userInfoRepository: IUserInfoRepository
-) : ICachedMessagesInteractor {
+) : ICachedMessagesRepository {
 
     private var draftJob: Job? = null
     private var saveJob: Job? = null

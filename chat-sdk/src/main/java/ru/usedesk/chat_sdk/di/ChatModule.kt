@@ -16,9 +16,9 @@ import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.Co
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository
-import ru.usedesk.chat_sdk.domain.CachedMessagesInteractor
+import ru.usedesk.chat_sdk.domain.CachedMessagesRepository
 import ru.usedesk.chat_sdk.domain.ChatInteractor
-import ru.usedesk.chat_sdk.domain.ICachedMessagesInteractor
+import ru.usedesk.chat_sdk.domain.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.di.UsedeskCustom
@@ -52,7 +52,7 @@ internal interface ChatModuleBinds {
     fun chatInteractor(interactor: ChatInteractor): IUsedeskChat
 
     @[Binds ChatScope]
-    fun cachedMessagesInteractor(interactor: CachedMessagesInteractor): ICachedMessagesInteractor
+    fun cachedMessagesInteractor(interactor: CachedMessagesRepository): ICachedMessagesRepository
 
     @[Binds ChatScope]
     fun apiRepository(repository: ApiRepository): IApiRepository

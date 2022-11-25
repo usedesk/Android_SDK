@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
@@ -24,10 +23,7 @@ import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.min
@@ -61,18 +57,17 @@ internal class ApiRepository @Inject constructor(
         override fun onException(exception: Exception) = eventListener.onException(exception)
 
         override fun onInited(initChatResponse: SocketResponse.Inited) {
-            val chatInited = initChatResponseConverter.convert(initChatResponse)
-            chatInited.offlineFormSettings.run {
-                val offlineForm = when (workType) {
-                    WorkType.CHECK_WORKING_TIMES -> noOperators
+            initChatResponseConverter.convert(initChatResponse).apply {
+                val offlineForm = when (offlineFormSettings.workType) {
+                    WorkType.CHECK_WORKING_TIMES -> offlineFormSettings.noOperators
                     WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT ->
                         initChatResponse.setup?.ticket?.statusId in STATUSES_FOR_FORM
                     WorkType.ALWAYS_ENABLED_CALLBACK_WITHOUT_CHAT -> true
                     else -> false
                 }
                 when {
-                    offlineForm -> eventListener.onOfflineForm(this, chatInited)
-                    else -> eventListener.onChatInited(chatInited)
+                    offlineForm -> eventListener.onOfflineForm(offlineFormSettings, this)
+                    else -> eventListener.onChatInited(this)
                 }
             }
         }
@@ -98,22 +93,21 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): InitChatResponse {
-        val parts = listOf(
-            "api_token" to apiToken,
-            "company_id" to configuration.companyId,
-            "channel_id" to configuration.channelId,
-            "name" to configuration.clientName,
-            "email" to configuration.clientEmail,
-            "phone" to configuration.clientPhoneNumber,
-            "additional_id" to configuration.clientAdditionalId,
-            "note" to configuration.clientNote,
-            "avatar" to configuration.clientAvatar?.toFileBytes(),
-            "platform" to "sdk"
+        val request = CreateChat.Request(
+            apiToken,
+            configuration.companyId,
+            configuration.channelId,
+            configuration.clientName,
+            configuration.clientEmail,
+            configuration.clientPhoneNumber,
+            configuration.clientAdditionalId,
+            configuration.clientNote,
+            configuration.clientAvatar?.toFileBytes()
         )
         val response = doRequestMultipart(
             configuration.urlChatApi,
-            parts,
-            CreateChatResponse::class.java,
+            request,
+            CreateChat.Response::class.java,
             RetrofitApi::createChat
         )
         return when (val clientToken = response?.token) {
@@ -127,40 +121,44 @@ internal class ApiRepository @Inject constructor(
         token: String?,
         configuration: UsedeskChatConfiguration,
         eventListener: EventListener
-    ) {
+    ): SocketSendResponse = try {
         this.eventListener = eventListener
-        runBlocking {
-            socketApi.connect(
-                url,
-                configuration.toInitChatRequest(token),
-                socketEventListener
-            )
-        }
+        socketApi.connect(
+            url,
+            configuration.toInitChatRequest(token),
+            socketEventListener
+        )
+        SocketSendResponse.Done
+    } catch (e: Exception) {
+        eventListener.onException(e)
+        SocketSendResponse.Error
     }
 
-    override fun init(
+    override fun sendInit(
         configuration: UsedeskChatConfiguration,
         token: String?
-    ) {
-        socketApi.sendRequest(configuration.toInitChatRequest(token))
-    }
+    ) = socketApi.sendRequest(configuration.toInitChatRequest(token))
 
     override fun loadForm(
         configuration: UsedeskChatConfiguration,
         fields: List<Field.List>
-    ): List<Field> {
+    ): LoadFormResponse {
         val request = LoadFields.Request(
             configuration.clientToken!!,
             fields.map(Field.List::id)
         )
-        val messagesResponse = doRequestJson(
+        val response = doRequestJson(
             configuration.urlChatApi,
             request,
             LoadFields.Response::class.java,
             RetrofitApi::loadFieldList
         )
-        //TODO:TEMP
-        return listOf()
+        return when (response?.status) {
+            /*200 -> LoadFormResponse.Done(response?.fields?.mapNotNull {
+                //TODO:TEMP
+            })*/
+            else -> LoadFormResponse.Error(response?.code)
+        }
     }
 
     private fun UsedeskChatConfiguration.toInitChatRequest(token: String?) = SocketRequest.Init(
@@ -175,66 +173,72 @@ internal class ApiRepository @Inject constructor(
 
     override fun convertText(text: String) = messageResponseConverter.convertText(text)
 
-    override fun send(
+    override fun sendFeedback(
         messageId: Long,
         feedback: UsedeskFeedback
-    ) {
-        checkConnection()
-        socketApi.sendRequest(SocketRequest.Feedback(messageId, feedback))
-    }
+    ) = socketApi.sendRequest(SocketRequest.Feedback(messageId, feedback))
 
-    override fun send(messageText: UsedeskMessageText) {
-        checkConnection()
-        val request = SocketRequest.SendMessage(messageText.text, messageText.id)
-        socketApi.sendRequest(request)
-    }
+    override fun sendText(messageText: UsedeskMessageText) = socketApi.sendRequest(
+        SocketRequest.SendMessage(
+            messageText.text,
+            messageText.id
+        )
+    )
 
-    override fun send(
+    override fun sendFile(
         configuration: UsedeskChatConfiguration,
         token: String,
         fileInfo: UsedeskFileInfo,
         messageId: Long
-    ) {
-        checkConnection()
+    ): SendFileResponse = when {
+        isConnected() -> {
+            val request = SendFile.Request(
+                token,
+                messageId,
+                fileInfo.uri
+            )
 
-        val parts = listOf(
-            "chat_token" to token,
-            "file" to fileInfo.uri,
-            "message_id" to messageId
-        )
-
-        doRequestMultipart(
-            configuration.urlChatApi,
-            parts,
-            FileResponse::class.java,
-            RetrofitApi::postFile
-        )
+            val response = doRequestMultipart(
+                configuration.urlChatApi,
+                request,
+                SendFile.Response::class.java,
+                RetrofitApi::postFile
+            )
+            when (response?.status) {
+                200 -> SendFileResponse.Done
+                else -> SendFileResponse.Error(response?.code)
+            }
+        }
+        else -> SendFileResponse.Error()
     }
 
-    override fun setClient(configuration: UsedeskChatConfiguration) {
-        checkConnection()
-
-        try {
-            val parts = listOf(
-                "email" to configuration.clientEmail?.getCorrectStringValue(),
-                "username" to configuration.clientName?.getCorrectStringValue(),
-                "token" to configuration.clientToken,
-                "note" to configuration.clientNote,
-                "phone" to configuration.clientPhoneNumber,
-                "additional_id" to configuration.clientAdditionalId,
-                "company_id" to configuration.companyId,
-                "avatar" to configuration.clientAvatar?.toFileBytes()
+    override fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse = when {
+        isConnected() -> {
+            val request = SetClient.Request(
+                configuration.clientToken,
+                configuration.companyId,
+                configuration.clientEmail?.getCorrectStringValue(),
+                configuration.clientName?.getCorrectStringValue(),
+                configuration.clientNote,
+                configuration.clientPhoneNumber,
+                configuration.clientAdditionalId,
+                configuration.clientAvatar?.toFileBytes()
             )
-            doRequestMultipart(
+            val response = doRequestMultipart(
                 configuration.urlChatApi,
-                parts,
-                SetClientResponse::class.java,
+                request,
+                SetClient.Response::class.java,
                 RetrofitApi::setClient
             )
-            socketEventListener.onSetEmailSuccess()
-        } catch (e: IOException) {
-            throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
+            when (response?.clientId) {
+                null -> SetClientResponse.Error(response?.code)
+                else -> {
+                    socketEventListener.onSetEmailSuccess()
+                    SetClientResponse.Done
+                }
+            }
         }
+        else -> SetClientResponse.Error()
     }
 
     private fun String.toFileBytes() = try {
@@ -275,7 +279,7 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         token: String,
         messageId: Long
-    ): LoadPreviousMessageResult {
+    ): LoadPreviousMessageResponse {
         val request = LoadPreviousMessages.Request(
             token,
             messageId
@@ -291,41 +295,39 @@ internal class ApiRepository @Inject constructor(
             )
         }
         return when (response?.items) {
-            null -> LoadPreviousMessageResult.Error(response?.code)
+            null -> LoadPreviousMessageResponse.Error(response?.code)
             else -> {
                 val messages = response.items
                     .flatMap(messageResponseConverter::convert)
                     .also { eventListener.onMessagesOldReceived(it) }
-                LoadPreviousMessageResult.Done(messages)
+                LoadPreviousMessageResponse.Done(messages)
             }
         }
     }
 
-    override fun send(
+    override fun sendOfflineForm(
         configuration: UsedeskChatConfiguration,
         offlineForm: UsedeskOfflineForm
-    ) {
-        try {
-            val json = JsonObject().apply {
-                (mapOf(
-                    "email" to offlineForm.clientEmail,
-                    "name" to offlineForm.clientName,
-                    "company_id" to configuration.companyAndChannel(),
-                    "message" to offlineForm.message,
-                    "topic" to offlineForm.topic
-                ) + offlineForm.fields.map { it.key to it.value }).forEach {
-                    val correctValue = it.value.getCorrectStringValue()
-                    if (correctValue.isNotEmpty()) {
-                        addProperty(it.key, correctValue)
-                    }
-                }
+    ): SendOfflineFormResponse {
+        val request = SendOfflineForm.Request(
+            offlineForm.clientEmail,
+            offlineForm.clientName,
+            configuration.companyAndChannel(),
+            offlineForm.message.getCorrectStringValue(),
+            offlineForm.topic,
+            offlineForm.fields.map {
+                it.key to it.value.getCorrectStringValue().ifEmpty { null }
             }
-            doRequest(
-                configuration.urlChatApi,
-                OfflineFormResponse::class.java
-            ) { sendOfflineForm(json) }
-        } catch (e: IOException) {
-            throw UsedeskHttpException(UsedeskHttpException.Error.IO_ERROR, e.message)
+        )
+        val response = doRequestJsonObject(
+            configuration.urlChatApi,
+            request,
+            SendOfflineForm.Response::class.java,
+            RetrofitApi::sendOfflineForm
+        )
+        return when (response?.status) {
+            200 -> SendOfflineFormResponse.Done
+            else -> SendOfflineFormResponse.Error(response?.code)
         }
     }
 
@@ -336,23 +338,25 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
-    ): SendResult {
+    ): SendAdditionalFieldsResponse {
         val totalFields =
             (additionalFields.toList() + additionalNestedFields.flatMap(Map<Long, String>::toList))
                 .map { field ->
-                    SendAdditionalFieldsRequest.AdditionalField(
+                    SendAdditionalFields.Request.AdditionalField(
                         field.first,
                         field.second
                     )
                 }
-        val request = SendAdditionalFieldsRequest(token, totalFields)
-        val response = doRequest(
+        val request = SendAdditionalFields.Request(token, totalFields)
+        val response = doRequestJson(
             configuration.urlChatApi,
-            SendAdditionalFieldsResponse::class.java
-        ) { postAdditionalFields(request) }
-        return when (response.status) {
-            200 -> SendResult.Done
-            else -> SendResult.Error
+            request,
+            SendAdditionalFields.Response::class.java,
+            RetrofitApi::postAdditionalFields
+        )
+        return when (response?.status) {
+            200 -> SendAdditionalFieldsResponse.Done
+            else -> SendAdditionalFieldsResponse.Error
         }
     }
 
@@ -361,12 +365,6 @@ internal class ApiRepository @Inject constructor(
     override fun disconnect() {
         runBlocking {
             socketApi.disconnect()
-        }
-    }
-
-    private fun checkConnection() {
-        if (!isConnected()) {
-            throw UsedeskSocketException(UsedeskSocketException.Error.DISCONNECTED)
         }
     }
 

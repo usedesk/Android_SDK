@@ -8,8 +8,8 @@ import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import javax.inject.Inject
 
 internal class CachedMessagesRepository @Inject constructor(
@@ -51,23 +51,23 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
 
-    override fun getNotSentMessages(): List<UsedeskMessageClient> {
+    override fun getNotSentMessages(): List<UsedeskMessageOwner.Client> {
         val userKey = requireUserKey()
         return messagesRepository.getNotSentMessages(userKey)
     }
 
-    override fun addNotSentMessage(notSentMessage: UsedeskMessageClient) {
+    override fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val userKey = requireUserKey()
         messagesRepository.addNotSentMessage(userKey, notSentMessage)
     }
 
-    override fun updateNotSentMessage(notSentMessage: UsedeskMessageClient) {
+    override fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val requireUserKey = requireUserKey()
         messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage)
         messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
-    override fun removeNotSentMessage(notSentMessage: UsedeskMessageClient) {
+    override fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val userKey = requireUserKey()
         messagesRepository.removeNotSentMessage(userKey, notSentMessage)
     }

@@ -1,9 +1,11 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
+import androidx.annotation.CheckResult
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 
 internal interface IApiRepository {
+    @CheckResult
     fun connect(
         url: String,
         token: String?,
@@ -11,23 +13,28 @@ internal interface IApiRepository {
         eventListener: EventListener
     ): SocketSendResponse
 
+    @CheckResult
     fun sendInit(
         configuration: UsedeskChatConfiguration,
         token: String?
     ): SocketSendResponse
 
+    @CheckResult
     fun sendOfflineForm(
         configuration: UsedeskChatConfiguration,
         offlineForm: UsedeskOfflineForm
     ): SendOfflineFormResponse
 
+    @CheckResult
     fun sendFeedback(
         messageId: Long,
         feedback: UsedeskFeedback
     ): SocketSendResponse
 
-    fun sendText(messageText: UsedeskMessageText): SocketSendResponse
+    @CheckResult
+    fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse
 
+    @CheckResult
     fun sendFile(
         configuration: UsedeskChatConfiguration,
         token: String,
@@ -35,15 +42,18 @@ internal interface IApiRepository {
         messageId: Long
     ): SendFileResponse
 
+    @CheckResult
     fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse
 
-    fun send(
+    @CheckResult
+    fun sendFields(
         token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
         additionalNestedFields: List<Map<Long, String>>
     ): SendAdditionalFieldsResponse
 
+    @CheckResult
     fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
         token: String,
@@ -54,33 +64,34 @@ internal interface IApiRepository {
 
     fun convertText(text: String): String
 
+    @CheckResult
     fun initChat(
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): InitChatResponse
 
+    @CheckResult
     fun loadForm(
         configuration: UsedeskChatConfiguration,
         fields: List<Field.List>
     ): LoadFormResponse
 
-    interface LoadFormResponse {
+    sealed interface LoadFormResponse {
         class Done(val fields: List<Field>) : LoadFormResponse
         class Error(val error: Int? = null) : LoadFormResponse
     }
 
-    interface SendFileResponse {
+    sealed interface SendFileResponse {
         object Done : SendFileResponse
         class Error(val error: Int? = null) : SendFileResponse
     }
 
-    interface SendOfflineFormResponse {
+    sealed interface SendOfflineFormResponse {
         object Done : SendOfflineFormResponse
         class Error(val error: Int? = null) : SendOfflineFormResponse
     }
 
-
-    interface SocketSendResponse {
+    sealed interface SocketSendResponse {
         object Done : SocketSendResponse
         object Error : SocketSendResponse
     }
@@ -102,7 +113,7 @@ internal interface IApiRepository {
 
     sealed interface SendAdditionalFieldsResponse {
         object Done : SendAdditionalFieldsResponse
-        object Error : SendAdditionalFieldsResponse
+        class Error(val code: Int? = null) : SendAdditionalFieldsResponse
     }
 
     interface EventListener {

@@ -101,33 +101,40 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
-        if (configuration.materialComponents != modelFlow.value.configuration.materialComponents) {
-            configurationRepository.setConfiguration(configuration)
-            true
-        } else {
-            false
+        when (configuration.materialComponents) {
+            modelFlow.value.configuration.materialComponents -> false
+            else -> {
+                configurationRepository.setConfiguration(configuration)
+                true
+            }
         }
 
     fun createChat(apiToken: String) {
-        setModel { copy(clientToken = clientToken.copy(loading = true)) }
-        ioScope.launch {
-            val result = UsedeskChatSdk.requireInstance().createChat(apiToken)
-            setModel {
-                copy(
-                    clientToken = when (result) {
-                        is CreateChatResult.Done -> clientToken.copy(
-                            loading = false,
-                            completed = UsedeskSingleLifeEvent(result.clientToken)
-                        )
-                        is CreateChatResult.Error -> clientToken.copy(
-                            loading = false,
-                            error = UsedeskSingleLifeEvent(result.code)
-                        )
-                    }
-                )
-            }
+        setModel {
+            when {
+                clientToken.loading -> this
+                else -> {
+                    UsedeskChatSdk.requireInstance().createChat(apiToken) { result ->
+                        setModel {
+                            copy(
+                                clientToken = when (result) {
+                                    is CreateChatResult.Done -> clientToken.copy(
+                                        loading = false,
+                                        completed = UsedeskSingleLifeEvent(result.clientToken)
+                                    )
+                                    CreateChatResult.Error -> clientToken.copy(
+                                        loading = false,
+                                        error = UsedeskSingleLifeEvent(Unit)
+                                    )
+                                }
+                            )
+                        }
 
-            UsedeskChatSdk.release(false)
+                        UsedeskChatSdk.release(false)
+                    }
+                    copy(clientToken = clientToken.copy(loading = true))
+                }
+            }
         }
     }
 
@@ -141,6 +148,6 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     data class ClientToken(
         val loading: Boolean = false,
         val completed: UsedeskSingleLifeEvent<String?>? = null,
-        val error: UsedeskSingleLifeEvent<Int?>? = null
+        val error: UsedeskSingleLifeEvent<Unit>? = null
     )
 }

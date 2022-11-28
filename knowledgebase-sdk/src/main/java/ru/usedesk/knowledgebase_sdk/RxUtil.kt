@@ -1,12 +1,12 @@
-package ru.usedesk.common_sdk.utils
+package ru.usedesk.knowledgebase_sdk
 
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 
-object UsedeskRxUtil {
-    fun <T : Any> safeSingle(run: () -> T): Single<T> = Single.create { emitter ->
+internal object RxUtil {
+    private fun <T : Any> safeSingle(run: () -> T): Single<T> = Single.create { emitter ->
         try {
             emitter.onSuccess(run())
         } catch (e: Exception) {
@@ -20,7 +20,7 @@ object UsedeskRxUtil {
         .subscribeOn(ioScheduler)
         .observeOn(AndroidSchedulers.mainThread())
 
-    fun safeCompletable(run: () -> Unit): Completable = Completable.create { emitter ->
+    private fun safeCompletable(run: () -> Unit): Completable = Completable.create { emitter ->
         try {
             run()
         } catch (e: Exception) {

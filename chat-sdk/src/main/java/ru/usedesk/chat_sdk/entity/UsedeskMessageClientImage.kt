@@ -2,10 +2,10 @@ package ru.usedesk.chat_sdk.entity
 
 import java.util.*
 
-class UsedeskMessageClientImage @JvmOverloads constructor(
-    id: Long,
-    createdAt: Calendar,
-    file: UsedeskFile,
-    override val status: UsedeskMessageClient.Status,
+data class UsedeskMessageClientImage @JvmOverloads constructor(
+    override val id: Long,
+    override val createdAt: Calendar,
+    override val file: UsedeskFile,
+    override val status: UsedeskMessageOwner.Client.Status,
     override val localId: Long = id
-) : UsedeskMessageFile(id, createdAt, file), UsedeskMessageClient
+) : UsedeskMessage.File, UsedeskMessageOwner.Client

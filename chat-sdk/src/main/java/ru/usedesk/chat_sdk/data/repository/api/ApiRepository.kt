@@ -75,7 +75,7 @@ internal class ApiRepository @Inject constructor(
         override fun onNew(messageResponse: SocketResponse.AddMessage) {
             messageResponseConverter.convert(messageResponse.message).forEach {
                 when {
-                    it is UsedeskMessageClient && it.id != it.localId ->
+                    it is UsedeskMessageOwner.Client && it.id != it.localId ->
                         eventListener.onMessageUpdated(it)
                     else -> eventListener.onMessagesNewReceived(listOf(it))
                 }
@@ -178,7 +178,7 @@ internal class ApiRepository @Inject constructor(
         feedback: UsedeskFeedback
     ) = socketApi.sendRequest(SocketRequest.Feedback(messageId, feedback))
 
-    override fun sendText(messageText: UsedeskMessageText) = socketApi.sendRequest(
+    override fun sendText(messageText: UsedeskMessage.Text) = socketApi.sendRequest(
         SocketRequest.SendMessage(
             messageText.text,
             messageText.id
@@ -333,7 +333,7 @@ internal class ApiRepository @Inject constructor(
 
     private fun UsedeskChatConfiguration.companyAndChannel() = "${companyId}_$channelId"
 
-    override fun send(
+    override fun sendFields(
         token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
@@ -356,7 +356,7 @@ internal class ApiRepository @Inject constructor(
         )
         return when (response?.status) {
             200 -> SendAdditionalFieldsResponse.Done
-            else -> SendAdditionalFieldsResponse.Error
+            else -> SendAdditionalFieldsResponse.Error(response?.code)
         }
     }
 

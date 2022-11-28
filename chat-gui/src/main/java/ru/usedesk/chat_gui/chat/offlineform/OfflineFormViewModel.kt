@@ -4,6 +4,7 @@ import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormItem
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
@@ -101,19 +102,19 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                 message
             )
             copy(offlineFormState = OfflineFormState.SENDING).apply {
-                doIo {
-                    try {
-                        UsedeskChatSdk.requireInstance().send(offlineForm)
-                        setModel {
-                            copy(
+                UsedeskChatSdk.requireInstance().send(offlineForm) { result ->
+                    setModel {
+                        when (result) {
+                            SendOfflineFormResult.Done -> copy(
                                 offlineFormState = OfflineFormState.SENT_SUCCESSFULLY,
                                 goExit = UsedeskSingleLifeEvent(
                                     workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
                                 )
                             )
+                            is SendOfflineFormResult.Error -> copy(
+                                offlineFormState = OfflineFormState.FAILED_TO_SEND
+                            )
                         }
-                    } catch (e: Exception) {
-                        setModel { copy(offlineFormState = OfflineFormState.FAILED_TO_SEND) }
                     }
                 }
             }

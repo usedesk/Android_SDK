@@ -2,18 +2,18 @@ package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
 import kotlinx.coroutines.Deferred
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 
 internal interface ICachedMessagesRepository {
 
-    fun getNotSentMessages(): List<UsedeskMessageClient>
+    fun getNotSentMessages(): List<UsedeskMessageOwner.Client>
 
-    fun addNotSentMessage(notSentMessage: UsedeskMessageClient)
+    fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
-    fun updateNotSentMessage(notSentMessage: UsedeskMessageClient)
+    fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
-    fun removeNotSentMessage(notSentMessage: UsedeskMessageClient)
+    fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
     suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
 

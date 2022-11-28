@@ -2,10 +2,10 @@ package ru.usedesk.chat_sdk.entity
 
 import java.util.*
 
-class UsedeskMessageAgentAudio(
-    id: Long,
-    createdAt: Calendar,
-    usedeskFile: UsedeskFile,
+data class UsedeskMessageAgentAudio(
+    override val id: Long,
+    override val createdAt: Calendar,
+    override val file: UsedeskFile,
     override val name: String,
     override val avatar: String
-) : UsedeskMessageFile(id, createdAt, usedeskFile), UsedeskMessageAgent
+) : UsedeskMessage.File, UsedeskMessageOwner.Agent

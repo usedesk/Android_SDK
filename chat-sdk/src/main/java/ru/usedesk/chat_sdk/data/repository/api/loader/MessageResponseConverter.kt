@@ -75,9 +75,9 @@ internal class MessageResponseConverter @Inject constructor() :
         val fileMessage = valueOrNull {
             val file = UsedeskFile.create(
                 from.file!!.content!!,
-                from.file!!.type,
-                from.file!!.size!!,
-                from.file!!.name!!
+                from.file.type,
+                from.file.size!!,
+                from.file.name!!
             )
 
             when {
@@ -86,28 +86,28 @@ internal class MessageResponseConverter @Inject constructor() :
                         id,
                         messageDate,
                         file,
-                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
                     file.isVideo() -> UsedeskMessageClientVideo(
                         id,
                         messageDate,
                         file,
-                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
                     file.isAudio() -> UsedeskMessageClientAudio(
                         id,
                         messageDate,
                         file,
-                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
                     else -> UsedeskMessageClientFile(
                         id,
                         messageDate,
                         file,
-                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
                 }
@@ -178,7 +178,7 @@ internal class MessageResponseConverter @Inject constructor() :
                             id,
                             messageDate,
                             it.file,
-                            UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                            UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                             localId
                         )
                         else -> UsedeskMessageAgentImage(
@@ -204,7 +204,7 @@ internal class MessageResponseConverter @Inject constructor() :
                         messageDate,
                         text,
                         convertedText,
-                        UsedeskMessageClient.Status.SUCCESSFULLY_SENT,
+                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
                     else -> UsedeskMessageAgentText(
@@ -212,17 +212,17 @@ internal class MessageResponseConverter @Inject constructor() :
                         messageDate,
                         text,
                         convertedText,
+                        name,
+                        avatar,
+                        feedbackNeeded,
+                        feedback,
                         when {
                             fields.any { it is Form.Field } -> fields.filter { it !is Form.Button } +
                                     Form.Button(FORM_APPLY_BUTTON_ID, "", "", "") +
                                     fields.filterIsInstance<Form.Button>()
                             else -> fields
                         },
-                        formsLoaded = false,
-                        feedbackNeeded,
-                        feedback,
-                        name,
-                        avatar
+                        formsLoaded = false
                     )
                 }
             ) + fileMessage + fileMessages

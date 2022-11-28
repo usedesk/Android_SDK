@@ -4,7 +4,6 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
 interface IUsedeskChat {
-    //TODO: сделать все методы асинхронными
     fun addActionListener(listener: IUsedeskActionListener)
 
     fun removeActionListener(listener: IUsedeskActionListener)
@@ -23,11 +22,9 @@ interface IUsedeskChat {
 
     fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback)
 
-    fun send(offlineForm: UsedeskOfflineForm)
+    fun sendAgain(messageId: Long)
 
-    fun sendAgain(id: Long)
-
-    fun removeMessage(id: Long)
+    fun removeMessage(messageId: Long)
 
     fun setMessageDraft(messageDraft: UsedeskMessageDraft)
 
@@ -35,7 +32,7 @@ interface IUsedeskChat {
 
     fun sendMessageDraft()
 
-    fun createChat(apiToken: String): CreateChatResult
+    fun send(offlineForm: UsedeskOfflineForm, onResult: (SendOfflineFormResult) -> Unit)
 
     fun createChat(apiToken: String, onResult: (CreateChatResult) -> Unit)
 
@@ -43,14 +40,19 @@ interface IUsedeskChat {
 
     fun release()
 
+    sealed interface SendOfflineFormResult {
+        object Done : SendOfflineFormResult
+        object Error : SendOfflineFormResult
+    }
+
     sealed interface CreateChatResult {
         class Done(val clientToken: String) : CreateChatResult
-        class Error(val code: Int?) : CreateChatResult
+        object Error : CreateChatResult
     }
 
     data class Model(
         val connectionState: UsedeskConnectionState = UsedeskConnectionState.DISCONNECTED,
-        val clientToken: String? = null,
+        val clientToken: String = "",
         val messages: List<UsedeskMessage> = listOf(),
         val previousPageIsAvailable: Boolean = true,
         val previousPageIsLoading: Boolean = false,

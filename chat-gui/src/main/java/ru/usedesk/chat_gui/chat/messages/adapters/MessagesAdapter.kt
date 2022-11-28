@@ -184,8 +184,8 @@ internal class MessagesAdapter(
 
     private fun ChatItem.Message.isIdEquals(otherMessage: ChatItem.Message): Boolean {
         return (message.id == otherMessage.message.id) ||
-                (message is UsedeskMessageClient &&
-                        otherMessage.message is UsedeskMessageClient &&
+                (message is UsedeskMessageOwner.Client &&
+                        otherMessage.message is UsedeskMessageOwner.Client &&
                         message.localId == otherMessage.message.localId)
     }
 
@@ -225,12 +225,12 @@ internal class MessagesAdapter(
                     is ChatItem.Message -> when {
                         old !is ChatItem.Message -> false
                         (new.isLastOfGroup != old.isLastOfGroup) -> false
-                        (new.message as? UsedeskMessageText)?.convertedText !=
-                                (old.message as? UsedeskMessageText)?.convertedText -> false
-                        (new.message as? UsedeskMessageFile)?.file?.content !=
-                                (old.message as? UsedeskMessageFile)?.file?.content -> false
-                        (new.message as? UsedeskMessageClient)?.status !=
-                                (old.message as? UsedeskMessageClient)?.status -> false
+                        (new.message as? UsedeskMessage.Text)?.convertedText !=
+                                (old.message as? UsedeskMessage.Text)?.convertedText -> false
+                        (new.message as? UsedeskMessage.File)?.file?.content !=
+                                (old.message as? UsedeskMessage.File)?.file?.content -> false
+                        (new.message as? UsedeskMessageOwner.Client)?.status !=
+                                (old.message as? UsedeskMessageOwner.Client)?.status -> false
                         (new as? ChatItem.Message.Agent)?.showAvatar !=
                                 (old as? ChatItem.Message.Agent)?.showAvatar -> false
                         (new as? ChatItem.Message.Agent)?.showName !=
@@ -485,7 +485,8 @@ internal class MessagesAdapter(
             chatItem: ChatItem,
             agentBinding: AgentBinding
         ) {
-            val messageAgent = (chatItem as ChatItem.Message.Agent).message as UsedeskMessageAgent
+            val messageAgent =
+                (chatItem as ChatItem.Message.Agent).message as UsedeskMessageOwner.Agent
 
             agentBinding.tvName.text = customAgentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(chatItem.showName)
@@ -526,9 +527,9 @@ internal class MessagesAdapter(
             chatItem: ChatItem,
             clientBinding: ClientBinding
         ) {
-            val clientMessage = (chatItem as ChatItem.Message).message as UsedeskMessageClient
+            val clientMessage = (chatItem as ChatItem.Message).message as UsedeskMessageOwner.Client
             val statusDrawable = when (clientMessage.status) {
-                UsedeskMessageClient.Status.SUCCESSFULLY_SENT -> successfullyDrawable
+                UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT -> successfullyDrawable
                 else -> sendingDrawable
             }
 
@@ -542,7 +543,7 @@ internal class MessagesAdapter(
             clientBinding.apply {
                 ivSentFailed.apply {
                     visibility =
-                        visibleInvisible(clientMessage.status == UsedeskMessageClient.Status.SEND_FAILED)
+                        visibleInvisible(clientMessage.status == UsedeskMessageOwner.Client.Status.SEND_FAILED)
                     setOnClickListener {
                         PopupMenu(it.context, it).apply {
                             inflate(R.menu.usedesk_messages_error_popup)
@@ -567,8 +568,8 @@ internal class MessagesAdapter(
             isClient: Boolean
         ) {
             val last = when {
-                isClient -> items.getOrNull(adapterPosition + 1) is UsedeskMessageAgent
-                else -> items.getOrNull(adapterPosition + 1) is UsedeskMessageClient
+                isClient -> items.getOrNull(adapterPosition + 1) is UsedeskMessageOwner.Agent
+                else -> items.getOrNull(adapterPosition + 1) is UsedeskMessageOwner.Client
             }
             vEmpty.visibility = visibleGone(last)
         }
@@ -606,7 +607,7 @@ internal class MessagesAdapter(
 
             binding.lFeedback.visibility = View.GONE
 
-            val messageText = (chatItem as ChatItem.Message).message as UsedeskMessageText
+            val messageText = (chatItem as ChatItem.Message).message as UsedeskMessage.Text
 
             binding.tvText.run {
                 text = Html.fromHtml(messageText.convertedText + " ") //TODO: temp fix
@@ -627,7 +628,7 @@ internal class MessagesAdapter(
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
 
-            val messageFile = (chatItem as ChatItem.Message).message as UsedeskMessageFile
+            val messageFile = (chatItem as ChatItem.Message).message as UsedeskMessage.File
 
             val name = messageFile.file.name
             binding.tvFileName.text = name
@@ -666,7 +667,7 @@ internal class MessagesAdapter(
 
         private fun bindImage(chatItem: ChatItem) {
             chatItem as ChatItem.Message
-            val messageFile = chatItem.message as UsedeskMessageFile
+            val messageFile = chatItem.message as UsedeskMessage.File
 
             when (oldItem?.isIdEquals(chatItem)) {
                 null -> {
@@ -737,7 +738,7 @@ internal class MessagesAdapter(
             })
         }
 
-        private fun bindVideo(messageFile: UsedeskMessageFile) {
+        private fun bindVideo(messageFile: UsedeskMessage.File) {
             this.usedeskFile = messageFile.file
 
             changeElements(
@@ -809,7 +810,7 @@ internal class MessagesAdapter(
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
-            bindVideo((chatItem as ChatItem.Message).message as UsedeskMessageFile)
+            bindVideo((chatItem as ChatItem.Message).message as UsedeskMessage.File)
         }
     }
 
@@ -853,11 +854,11 @@ internal class MessagesAdapter(
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
 
-            val audioMessage = (chatItem as ChatItem.Message).message as UsedeskMessageFile
+            val audioMessage = (chatItem as ChatItem.Message).message as UsedeskMessage.File
             bindAudio(audioMessage)
         }
 
-        private fun bindAudio(messageFile: UsedeskMessageFile) {
+        private fun bindAudio(messageFile: UsedeskMessage.File) {
             this.usedeskFile = messageFile.file
 
             changeElements(stub = true)

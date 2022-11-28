@@ -2,7 +2,10 @@ package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
@@ -52,24 +55,24 @@ internal class MessagesReducer(
         copy(attachmentPanelVisible = event.show)
 
     private fun State.removeMessage(event: Event.RemoveMessage) = this.apply {
-        viewModel.doIo { usedeskChat.removeMessage(event.id) }
+        usedeskChat.removeMessage(event.id)
     }
 
     private fun State.sendAgain(event: Event.SendAgain) = this.apply {
-        viewModel.doIo { usedeskChat.sendAgain(event.id) }
+        usedeskChat.sendAgain(event.id)
     }
 
     private fun State.sendDraft() = copy(
         messageDraft = UsedeskMessageDraft(),
         goToBottom = UsedeskSingleLifeEvent(Unit)
     ).apply {
-        viewModel.doIo { usedeskChat.sendMessageDraft() }
+        usedeskChat.sendMessageDraft()
     }
 
     private fun State.buttonSend(event: Event.ButtonSend) = copy(
         goToBottom = UsedeskSingleLifeEvent(Unit)
     ).apply {
-        viewModel.doIo { usedeskChat.send(event.message) }
+        usedeskChat.send(event.message)
     }
 
     private fun State.attachFiles(event: Event.AttachFiles) = copy(
@@ -78,29 +81,27 @@ internal class MessagesReducer(
         ),
         attachmentPanelVisible = false
     ).apply {
-        viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
+        usedeskChat.setMessageDraft(messageDraft)
     }
 
 
     private fun State.detachFile(event: Event.DetachFile) = copy(
         messageDraft = messageDraft.copy(files = messageDraft.files - event.file)
     ).apply {
-        viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
+        usedeskChat.setMessageDraft(messageDraft)
     }
 
-    private fun State.sendFeedback(event: Event.SendFeedback) = this.apply {
-        viewModel.doIo {
-            usedeskChat.send(
-                event.message,
-                event.feedback
-            )
-        }
+    private fun State.sendFeedback(event: Event.SendFeedback) = apply {
+        usedeskChat.send(
+            event.message,
+            event.feedback
+        )
     }
 
     private fun State.messageChanged(event: Event.MessageChanged): State = when (event.message) {
         messageDraft.text -> this
         else -> copy(messageDraft = messageDraft.copy(text = event.message)).apply {
-            viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
+            usedeskChat.setMessageDraft(messageDraft)
         }
     }
 
@@ -129,15 +130,7 @@ internal class MessagesReducer(
             && hasPreviousMessages
         ) {
             previousLoading = true
-            ioEvent {
-                val hasPreviousMessages = try {
-                    usedeskChat.loadPreviousMessagesPage()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    true
-                }
-                Event.PreviousMessagesResult(hasPreviousMessages)
-            }
+            usedeskChat.loadPreviousMessagesPage()
         }
         val agentMessages = event.messagesRange
             .map { chatItems.getOrNull(it) }
@@ -204,7 +197,10 @@ internal class MessagesReducer(
                 it.value.mapIndexed { i, message ->
                     val lastOfGroup = i == 0
                     when (message) {
-                        is UsedeskMessageClient -> ChatItem.Message.Client(message, lastOfGroup)
+                        is UsedeskMessageOwner.Client -> ChatItem.Message.Client(
+                            message,
+                            lastOfGroup
+                        )
                         else -> ChatItem.Message.Agent(
                             message,
                             lastOfGroup,
@@ -225,13 +221,13 @@ internal class MessagesReducer(
             groupAgentMessages -> newMessages.flatMapIndexed { index, item ->
                 when (item) {
                     is ChatItem.Message.Agent -> {
-                        item.message as UsedeskMessageAgent
+                        item.message as UsedeskMessageOwner.Agent
                         val previous = (newMessages.getOrNull(index - 1)
                                 as? ChatItem.Message.Agent)?.message
-                                as? UsedeskMessageAgent
+                                as? UsedeskMessageOwner.Agent
                         val next = (newMessages.getOrNull(index + 1)
                                 as? ChatItem.Message.Agent)?.message
-                                as? UsedeskMessageAgent
+                                as? UsedeskMessageOwner.Agent
                         val newItem = ChatItem.Message.Agent(
                             item.message,
                             item.isLastOfGroup,
@@ -265,15 +261,15 @@ internal class MessagesReducer(
         }
     }
 
-    private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean =
+    private fun UsedeskMessageOwner.Agent.isAgentsTheSame(other: UsedeskMessageOwner.Agent): Boolean =
         avatar == other.avatar && name == other.name
 
-    private fun ioEvent(getEvent: suspend () -> Event) {
+    /*private fun ioEvent(getEvent: suspend () -> Event) {
         viewModel.doIo {
             val intent = getEvent()
             viewModel.doMain { viewModel.onEvent(intent) }
         }
-    }
+    }*/
 
     companion object {
         private const val ITEMS_UNTIL_LAST = 5

@@ -13,7 +13,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 
 abstract class UsedeskNotificationsService : Service() {
     lateinit var notificationManager: NotificationManager
@@ -30,7 +33,7 @@ abstract class UsedeskNotificationsService : Service() {
     private val modelMutex = Mutex()
     private val actionListener = object : IUsedeskActionListener {
         override fun onNewMessageReceived(message: UsedeskMessage) {
-            if (message is UsedeskMessageAgent) {
+            if (message is UsedeskMessageOwner.Agent) {
                 updateModel {
                     copy(
                         message = message,
@@ -109,10 +112,10 @@ abstract class UsedeskNotificationsService : Service() {
     protected open fun getClosePendingIntent(): PendingIntent? = null
 
     protected open fun Model.createNotification(): Notification? = when (message) {
-        is UsedeskMessageAgent -> {
+        is UsedeskMessageOwner.Agent -> {
             var title = message.name
             val text = when (message) {
-                is UsedeskMessageText -> Html.fromHtml(message.convertedText)
+                is UsedeskMessage.Text -> Html.fromHtml(message.convertedText)
                 else -> fileMessage
             }
             if (model.count > 1) {

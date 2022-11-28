@@ -2,23 +2,18 @@ package ru.usedesk.chat_sdk.entity
 
 import java.util.*
 
-class UsedeskMessageAgentText(
-    id: Long,
-    createdAt: Calendar,
-    text: String,
-    convertedText: String,
-    val forms: List<Form>,
-    val formsLoaded: Boolean,
+data class UsedeskMessageAgentText(
+    override val id: Long,
+    override val createdAt: Calendar,
+    override val text: String,
+    override val convertedText: String,
+    override val name: String,
+    override val avatar: String,
     val feedbackNeeded: Boolean,
     val feedback: UsedeskFeedback?,
-    override val name: String,
-    override val avatar: String
-) : UsedeskMessageText(
-    id,
-    createdAt,
-    text,
-    convertedText
-), UsedeskMessageAgent {
+    val forms: List<Form>,
+    val formsLoaded: Boolean
+) : UsedeskMessage.Text, UsedeskMessageOwner.Agent {
 
     sealed class Form(
         val id: Long,

@@ -1,8 +1,10 @@
 package ru.usedesk.chat_sdk.entity
 
+import ru.usedesk.chat_sdk.domain.IUsedeskChat
+
 interface IUsedeskActionListener {
 
-    fun onModel() {}
+    fun onModel(model: IUsedeskChat.Model) {}
 
     fun onConnectionState(connectionState: UsedeskConnectionState) {}
 

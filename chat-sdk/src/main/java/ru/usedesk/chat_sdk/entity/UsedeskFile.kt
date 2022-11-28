@@ -11,17 +11,11 @@ data class UsedeskFile(
     val size: String,
     val name: String
 ) : Parcelable {
-    fun isImage(): Boolean {
-        return type.startsWith(UsedeskFileInfo.IMAGE_TYPE)
-    }
+    fun isImage(): Boolean = type.startsWith(UsedeskFileInfo.IMAGE_TYPE)
 
-    fun isVideo(): Boolean {
-        return type.startsWith(UsedeskFileInfo.VIDEO_TYPE)
-    }
+    fun isVideo(): Boolean = type.startsWith(UsedeskFileInfo.VIDEO_TYPE)
 
-    fun isAudio(): Boolean {
-        return type.startsWith(UsedeskFileInfo.AUDIO_TYPE)
-    }
+    fun isAudio(): Boolean = type.startsWith(UsedeskFileInfo.AUDIO_TYPE)
 
     companion object {
         fun create(
@@ -30,10 +24,9 @@ data class UsedeskFile(
             size: String,
             name: String
         ): UsedeskFile {
-            val mimeType = if (type?.contains('/') == true) {
-                type
-            } else {
-                MimeTypeMap.getSingleton().getMimeTypeFromExtension(type ?: "")
+            val mimeType = when {
+                type?.contains('/') == true -> type
+                else -> MimeTypeMap.getSingleton().getMimeTypeFromExtension(type ?: "")
             } ?: ""
             return UsedeskFile(content, mimeType, size, name)
         }

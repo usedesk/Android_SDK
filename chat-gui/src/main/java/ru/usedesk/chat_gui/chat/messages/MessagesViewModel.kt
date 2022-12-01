@@ -22,6 +22,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
         actionListener = object : IUsedeskActionListener {
+            //TODO: model
             override fun onMessagesReceived(messages: List<UsedeskMessage>) {
                 doMain { onEvent(Event.Messages(messages)) }
             }

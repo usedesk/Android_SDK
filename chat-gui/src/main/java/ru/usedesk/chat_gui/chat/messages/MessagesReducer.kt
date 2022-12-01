@@ -124,12 +124,10 @@ internal class MessagesReducer(
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
             i <= event.messagesRange.last && chatItems[i] is ChatItem.Message
         }
-        var previousLoading = this.previousLoading
         if (lastMessageIndex + ITEMS_UNTIL_LAST >= chatItems.size &&
             !previousLoading
             && hasPreviousMessages
         ) {
-            previousLoading = true
             usedeskChat.loadPreviousMessagesPage()
         }
         val agentMessages = event.messagesRange

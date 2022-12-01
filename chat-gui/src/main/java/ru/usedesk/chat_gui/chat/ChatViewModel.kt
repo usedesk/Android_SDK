@@ -10,6 +10,7 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 
     private val actionListener = object : IUsedeskActionListener {
+        //TODO: model
         override fun onClientTokenReceived(clientToken: String) {
             doMain { setModel { copy(clientToken = clientToken) } }
         }

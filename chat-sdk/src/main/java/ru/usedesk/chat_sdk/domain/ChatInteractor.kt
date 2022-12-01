@@ -268,18 +268,17 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun launchConnect() {
-        modelLocked {
-            ioScope.launch {
-                unlockFirstMessage()
-                resetFirstMessageLock()
+        ioScope.launch {
+            unlockFirstMessage()
+            resetFirstMessageLock()
 
-                apiRepository.connect(
-                    configuration.urlChat,
-                    clientToken,
-                    configuration,
-                    eventListener
-                )
-            }
+            val model = modelLocked()
+            apiRepository.connect(
+                configuration.urlChat,
+                model.clientToken,
+                configuration,
+                eventListener
+            )
         }
     }
 
@@ -724,24 +723,24 @@ internal class ChatInteractor @Inject constructor(
 
     override fun loadPreviousMessagesPage() {
         setModel {
+            val oldestMessageId = messages.firstOrNull()?.id
             copy(
                 previousPageIsLoading = when {
-                    !previousPageIsLoading && previousPageIsAvailable -> {
+                    !previousPageIsLoading && previousPageIsAvailable && oldestMessageId != null -> {
                         ioScope.launch {
-                            messages.firstOrNull()?.id?.let { oldestMessageId ->
-                                val response = apiRepository.loadPreviousMessages(
-                                    configuration,
-                                    clientToken,
-                                    oldestMessageId
+                            //TODO: инит приходит позже чем запрос на загрузку страницы, поэтому ничего и не запускается
+                            val response = apiRepository.loadPreviousMessages(
+                                configuration,
+                                clientToken,
+                                oldestMessageId
+                            )
+                            setModel {
+                                copy(
+                                    previousPageIsLoading = false,
+                                    previousPageIsAvailable =
+                                    response !is LoadPreviousMessageResponse.Done ||
+                                            response.messages.isNotEmpty()
                                 )
-                                setModel {
-                                    copy(
-                                        previousPageIsLoading = false,
-                                        previousPageIsAvailable =
-                                        response !is LoadPreviousMessageResponse.Done ||
-                                                response.messages.isNotEmpty()
-                                    )
-                                }
                             }
                         }
                         true

@@ -14,6 +14,7 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 
     private val actionListener = object : IUsedeskActionListener {
+        //TODO: model
         override fun onConnectionState(connectionState: UsedeskConnectionState) {
             doMain {
                 setModel {

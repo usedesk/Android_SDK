@@ -19,6 +19,7 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     private val configuration = UsedeskChatSdk.requireConfiguration()
 
     private val actionListener: IUsedeskActionListener = object : IUsedeskActionListener {
+        //TODO: model
         override fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {
             doMain {
                 setModel {

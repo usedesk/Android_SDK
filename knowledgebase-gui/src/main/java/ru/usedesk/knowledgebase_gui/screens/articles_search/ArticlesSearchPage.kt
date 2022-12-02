@@ -53,7 +53,8 @@ internal class ArticlesSearchPage : UsedeskFragment() {
             viewModel,
             lifecycleScope
         ) { articleContent ->
-            findNavController().navigate(
+            findNavController().navigateSafe(
+                R.id.dest_articlesSearchPage,
                 R.id.action_articlesSearchPage_to_articlePage,
                 ArticlePage.createBundle(
                     articleContent.title,

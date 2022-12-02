@@ -51,7 +51,8 @@ internal class ArticlesPage : UsedeskFragment() {
             viewModel,
             lifecycleScope
         ) { articleInfo ->
-            findNavController().navigate(
+            findNavController().navigateSafe(
+                R.id.dest_articlesPage,
                 R.id.action_articlesPage_to_articlePage,
                 ArticlePage.createBundle(
                     articleInfo.title,

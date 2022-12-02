@@ -14,10 +14,7 @@ import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_gui.UsedeskBinding
-import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.UsedeskToolbarAdapter
-import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.*
 
 class UsedeskChatScreen : UsedeskFragment() {
 
@@ -35,8 +32,6 @@ class UsedeskChatScreen : UsedeskFragment() {
         )
     }
 
-    private lateinit var binding: Binding
-    private lateinit var toolbarAdapter: UsedeskToolbarAdapter
     private lateinit var navHostFragment: NavHostFragment
     private lateinit var navController: NavController
 
@@ -51,21 +46,12 @@ class UsedeskChatScreen : UsedeskFragment() {
         R.style.Usedesk_Chat_Screen,
         ::Binding
     ).apply {
-        binding = this
-
         navHostFragment =
             childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
         navController = navHostFragment.navController
 
-        toolbarAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
-            setBackButton(requireActivity()::onBackPressed)
-        }
-
         getBundleArgs { chatConfiguration, _, _, _, _, _, _ ->
-            if (chatConfiguration != null) {
-                UsedeskChatSdk.setConfiguration(chatConfiguration)
-            }
-            init()
+            init(chatConfiguration)
         }
     }.rootView
 
@@ -91,7 +77,7 @@ class UsedeskChatScreen : UsedeskFragment() {
     ) {
         onArgs(
             argsGetParcelable(CHAT_CONFIGURATION_KEY)
-                ?: throw RuntimeException("UsedeskChatConfiguration not found. Call the newInstance method and put the configuration inside"),
+                ?: throw RuntimeException("UsedeskChatConfiguration not found. Call the newInstance or createBundle method and put the configuration inside"),
             argsGetString(AGENT_NAME_KEY),
             argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
             argsGetString(MESSAGES_DATE_FORMAT_KEY, MESSAGES_DATE_FORMAT_DEFAULT),
@@ -101,22 +87,18 @@ class UsedeskChatScreen : UsedeskFragment() {
         )
     }
 
-    private fun init() {
+    private fun Binding.init(chatConfiguration: UsedeskChatConfiguration) {
+        UsedeskChatSdk.setConfiguration(chatConfiguration)
+
+        val toolbarAdapter = UsedeskToolbarAdapter(toolbar).apply {
+            setBackButton(requireActivity()::onBackPressed)
+        }
+
         val usedeskChat = UsedeskChatSdk.init(requireContext())
         findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val title = when (destination.id) {
-                R.id.dest_loading_page,
-                R.id.dest_messages_page -> binding.styleValues
-                    .getStyleValues(R.attr.usedesk_common_toolbar)
-                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                    .getString(android.R.attr.text)
-                R.id.dest_offline_form_page -> viewModel.modelFlow.value.offlineFormSettings?.callbackTitle
-                R.id.dest_offline_form_selector_page -> viewModel.modelFlow.value.offlineFormSettings?.topicsTitle
-                else -> null
-            }
-            toolbarAdapter.setTitle(title)
+            toolbarAdapter.updateTitle(styleValues, destination)
         }
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old != null &&
@@ -126,26 +108,34 @@ class UsedeskChatScreen : UsedeskFragment() {
                 findParent<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
             }
             if (old?.offlineFormSettings != new.offlineFormSettings) {
-                updateTitle(navController.currentDestination)
+                toolbarAdapter.updateTitle(styleValues, navController.currentDestination)
             }
             if (old?.goLoading != new.goLoading) {
-                new.goLoading?.process { navController.navigate(R.id.dest_loading_page) }
+                new.goLoading.process {
+                    while (navController.popBackStack()) continue
+                    navController.navigate(R.id.dest_loadingPage)
+                }
             }
         }
     }
 
-    private fun updateTitle(destination: NavDestination?) {
-        val title = when (destination?.id) {
-            R.id.dest_loading_page,
-            R.id.dest_messages_page -> binding.styleValues
-                .getStyleValues(R.attr.usedesk_common_toolbar)
-                .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-                .getString(android.R.attr.text)
-            R.id.dest_offline_form_page -> viewModel.modelFlow.value.offlineFormSettings?.callbackTitle
-            R.id.dest_offline_form_selector_page -> viewModel.modelFlow.value.offlineFormSettings?.topicsTitle
-            else -> null
-        }
-        toolbarAdapter.setTitle(title)
+    private fun UsedeskToolbarAdapter.updateTitle(
+        styleValues: UsedeskResourceManager.StyleValues,
+        destination: NavDestination?
+    ) {
+        val model = viewModel.modelFlow.value
+        setTitle(
+            when (destination?.id) {
+                R.id.dest_loadingPage,
+                R.id.dest_messagesPage -> styleValues
+                    .getStyleValues(R.attr.usedesk_common_toolbar)
+                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                    .getString(android.R.attr.text)
+                R.id.dest_offlineFormPage -> model.offlineFormSettings?.callbackTitle
+                R.id.dest_offlineFormSelectorPage -> model.offlineFormSettings?.topicsTitle
+                else -> null
+            }
+        )
     }
 
     override fun onStart() {

@@ -77,7 +77,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             setBackButton(requireActivity()::onBackPressed)
 
             setActionButton {
-                navController.navigate(R.id.articlesSearchPage)
+                navController.apply {
+                    if (currentDestination?.id != R.id.dest_articlesSearchPage) {
+                        navigate(R.id.dest_articlesSearchPage)
+                    }
+                }
             }
         }
 
@@ -94,10 +98,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
         navController.addOnDestinationChangedListener { _, destination, args ->
             when (destination.id) {
-                R.id.sectionsPage,
-                R.id.categoriesPage,
-                R.id.articlesPage,
-                R.id.articlePage -> {
+                R.id.dest_sectionsPage,
+                R.id.dest_categoriesPage,
+                R.id.dest_articlesPage,
+                R.id.dest_articlePage -> {
                     toolbarDefaultAdapter.show()
                     toolbarSearchAdapter.hide()
                     toolbarDefaultAdapter.setTitle(
@@ -105,7 +109,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                             ?: sectionsTitle
                     )
                 }
-                R.id.articlesSearchPage -> {
+                R.id.dest_articlesSearchPage -> {
                     toolbarDefaultAdapter.hide()
                     toolbarSearchAdapter.show()
                 }

@@ -72,66 +72,6 @@ internal class ChatInteractor @Inject constructor(
     private val oldMutex = Mutex()
     private var oldMessagesLoadDeferred: Deferred<Boolean>? = null
 
-    init {
-        listenersDisposables.apply {
-            add(connectionStateSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onConnectionState(it)
-                }
-            })
-
-            add(clientTokenSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onClientTokenReceived(it)
-                }
-            })
-
-            add(messagesSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessagesReceived(it)
-                }
-            })
-
-            add(messageSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessageReceived(it)
-                }
-            })
-
-            add(newMessageSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onNewMessageReceived(it)
-                }
-            })
-
-            add(messageUpdateSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
-                    listener.onMessageUpdated(it)
-                }
-            })
-
-            add(messageRemovedSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach(IUsedeskActionListener::onMessageRemoved)
-            })
-
-            add(offlineFormExpectedSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach { listener -> listener.onOfflineFormExpected(it) }
-            })
-
-            add(feedbackSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach(IUsedeskActionListener::onFeedbackReceived)
-            })
-
-            add(exceptionSubject.subscribe {
-                runBlocking { listenersMutex.withLock { actionListeners } }
-                    .forEach { listener -> listener.onException(it) }
-            })
-        }
-    }
-
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
             connectionStateSubject.onNext(UsedeskConnectionState.CONNECTED)
@@ -206,6 +146,66 @@ internal class ChatInteractor @Inject constructor(
 
         override fun onSetEmailSuccess() {
             sendInitMessage()
+        }
+    }
+
+    init {
+        listenersDisposables.apply {
+            add(connectionStateSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
+                    listener.onConnectionState(it)
+                }
+            })
+
+            add(clientTokenSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
+                    listener.onClientTokenReceived(it)
+                }
+            })
+
+            add(messagesSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
+                    listener.onMessagesReceived(it)
+                }
+            })
+
+            add(messageSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
+                    listener.onMessageReceived(it)
+                }
+            })
+
+            add(newMessageSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
+                    listener.onNewMessageReceived(it)
+                }
+            })
+
+            add(messageUpdateSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
+                    listener.onMessageUpdated(it)
+                }
+            })
+
+            add(messageRemovedSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach(IUsedeskActionListener::onMessageRemoved)
+            })
+
+            add(offlineFormExpectedSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach { listener -> listener.onOfflineFormExpected(it) }
+            })
+
+            add(feedbackSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach(IUsedeskActionListener::onFeedbackReceived)
+            })
+
+            add(exceptionSubject.subscribe {
+                runBlocking { listenersMutex.withLock { actionListeners } }
+                    .forEach { listener -> listener.onException(it) }
+            })
         }
     }
 

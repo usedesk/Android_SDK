@@ -163,11 +163,9 @@ class ConfigurationScreen : UsedeskFragment() {
                     binding.etAdditionalField2Value.text.toString().trim(),
             binding.etAdditionalField3Id.text.toString().trim() to
                     binding.etAdditionalField3Value.text.toString().trim()
-        ).filter {
-            it.key.isNotEmpty()
-        }.map {
-            it.key.toLong() to it.value
-        }.toMap()
+        ).filter { it.key.isNotEmpty() }
+            .map { it.key.toLong() to it.value }
+            .toMap()
         val nestedFields = mapOf(
             binding.etAdditionalNestedField1Id.text.toString().trim() to
                     binding.etAdditionalNestedField1Value.text.toString().trim(),
@@ -175,11 +173,9 @@ class ConfigurationScreen : UsedeskFragment() {
                     binding.etAdditionalNestedField2Value.text.toString().trim(),
             binding.etAdditionalNestedField3Id.text.toString().trim() to
                     binding.etAdditionalNestedField3Value.text.toString().trim()
-        ).filter {
-            it.key.isNotEmpty()
-        }.map {
-            it.key.toLong() to it.value
-        }.toMap()
+        ).filter { it.key.isNotEmpty() }
+            .map { it.key.toLong() to it.value }
+            .toMap()
         val additionalNestedFields = when {
             nestedFields.isEmpty() -> listOf()
             else -> listOf(nestedFields)

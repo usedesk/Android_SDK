@@ -22,25 +22,19 @@ internal class LoadingPage : UsedeskFragment() {
 
     private lateinit var loadingAdapter: UsedeskCommonViewLoadingAdapter
 
-    private lateinit var binding: Binding
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_page_loading,
-            R.style.Usedesk_Chat_Screen_Loading_Page,
-            ::Binding
-        )
-
-        loadingAdapter = UsedeskCommonViewLoadingAdapter(binding.vLoadingBinding)
-
-        return binding.rootView
-    }
+    ): View = inflateItem(
+        inflater,
+        container,
+        R.layout.usedesk_page_loading,
+        R.style.Usedesk_Chat_Screen_Loading_Page,
+        ::Binding
+    ).apply {
+        loadingAdapter = UsedeskCommonViewLoadingAdapter(vLoadingBinding)
+    }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,7 +44,8 @@ internal class LoadingPage : UsedeskFragment() {
                 loadingAdapter.update(new.state)
             }
             new.goNext?.process { page ->
-                findNavController().navigate(
+                findNavController().navigateSafe(
+                    R.id.dest_loadingPage,
                     when (page) {
                         Page.OFFLINE_FORM -> R.id.action_loadingPage_to_offlineFormPage
                         Page.MESSAGES -> R.id.action_loadingPage_to_messagesPage

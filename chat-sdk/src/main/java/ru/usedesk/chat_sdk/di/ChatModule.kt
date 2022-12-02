@@ -21,7 +21,6 @@ import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.domain.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_sdk.di.UsedeskCustom
 import javax.inject.Scope
 
 @Module(includes = [ChatModuleProvides::class, ChatModuleBinds::class])

@@ -48,6 +48,9 @@ dependencies {
         exclude group: "glide-parent"
     }
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
 }
 
 afterEvaluate {

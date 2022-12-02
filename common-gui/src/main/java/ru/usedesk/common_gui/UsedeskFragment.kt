@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.IdRes
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -209,6 +211,15 @@ abstract class UsedeskFragment : Fragment() {
         action
     )
 
+    protected fun NavController.navigateSafe(
+        @IdRes startId: Int,
+        @IdRes actionId: Int,
+        args: Bundle? = null
+    ) {
+        if (currentDestination?.id == startId) {
+            navigate(actionId, args)
+        }
+    }
 
     companion object {
         private const val CAMERA_FILE_KEY = "tempCameraFileKey"

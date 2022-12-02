@@ -2,42 +2,42 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chat_nav_graph"
-    app:startDestination="@id/dest_loading_page">
+    app:startDestination="@id/dest_loadingPage">
 
     <fragment
-        android:id="@+id/dest_loading_page"
+        android:id="@+id/dest_loadingPage"
         android:name="ru.usedesk.chat_gui.chat.loading.LoadingPage"
         android:label="LoadingPage">
         <action
             android:id="@+id/action_loadingPage_to_offlineFormPage"
-            app:destination="@id/dest_offline_form_page"
+            app:destination="@id/dest_offlineFormPage"
             app:popUpTo="@id/chat_nav_graph"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_loadingPage_to_messagesPage"
-            app:destination="@id/dest_messages_page"
+            app:destination="@id/dest_messagesPage"
             app:popUpTo="@id/chat_nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/dest_offline_form_page"
+        android:id="@+id/dest_offlineFormPage"
         android:name="ru.usedesk.chat_gui.chat.offlineform.OfflineFormPage"
         android:label="OfflineFormPage">
         <action
             android:id="@+id/action_offlineFormPage_to_offlineFormSelectorPage"
-            app:destination="@id/dest_offline_form_selector_page" />
+            app:destination="@id/dest_offlineFormSelectorPage" />
         <action
             android:id="@+id/action_offlineFormPage_to_messagesPage"
-            app:destination="@id/dest_messages_page"
+            app:destination="@id/dest_messagesPage"
             app:popUpTo="@id/chat_nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/dest_offline_form_selector_page"
+        android:id="@+id/dest_offlineFormSelectorPage"
         android:name="ru.usedesk.chat_gui.chat.offlineformselector.OfflineFormSelectorPage"
         android:label="OfflineFormSelectorPage" />
     <fragment
-        android:id="@+id/dest_messages_page"
+        android:id="@+id/dest_messagesPage"
         android:name="ru.usedesk.chat_gui.chat.messages.MessagesPage"
         android:label="MessagesPage" />
 </navigation>

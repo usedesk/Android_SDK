@@ -60,7 +60,8 @@ internal class OfflineFormPage : UsedeskFragment() {
             viewModel,
             lifecycleScope
         ) { key ->
-            findNavController().navigate(
+            findNavController().navigateSafe(
+                R.id.dest_offlineFormPage,
                 R.id.action_offlineFormPage_to_offlineFormSelectorPage,
                 OfflineFormSelectorPage.createBundle(key)
             )
@@ -79,7 +80,10 @@ internal class OfflineFormPage : UsedeskFragment() {
             if (old?.goExit != new.goExit) {
                 new.goExit?.process { goToChat ->
                     if (goToChat) {
-                        findNavController().navigate(R.id.action_offlineFormPage_to_messagesPage)
+                        findNavController().navigateSafe(
+                            R.id.dest_offlineFormPage,
+                            R.id.action_offlineFormPage_to_messagesPage
+                        )
                     } else {
                         OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
                             setOnDismissListener {

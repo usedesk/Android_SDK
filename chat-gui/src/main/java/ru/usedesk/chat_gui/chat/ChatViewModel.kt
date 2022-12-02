@@ -36,6 +36,6 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
     data class Model(
         val clientToken: String? = null,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
-        val goLoading: UsedeskSingleLifeEvent<Unit>? = null
+        val goLoading: UsedeskSingleLifeEvent<Unit> = UsedeskSingleLifeEvent(Unit)
     )
 }

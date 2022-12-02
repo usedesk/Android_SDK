@@ -51,7 +51,8 @@ internal class CategoriesPage : UsedeskFragment() {
             viewModel,
             lifecycleScope
         ) { id, title ->
-            findNavController().navigate(
+            findNavController().navigateSafe(
+                R.id.dest_categoriesPage,
                 R.id.action_categoriesPage_to_articlesPage,
                 ArticlesPage.createBundle(title, id)
             )

@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
@@ -104,21 +105,25 @@ class MainActivity : AppCompatActivity(),
             }
             if (old?.goSdk != new.goSdk) {
                 new.goSdk?.process {
-                    if (new.configuration.withKb) {
-                        val kbConfiguration = new.configuration.toKbConfiguration()
-                        navController.navigate(
-                            R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-                            UsedeskKnowledgeBaseScreen.createBundle(
-                                new.configuration.withKbSupportButton,
-                                new.configuration.withKbArticleRating,
-                                kbConfiguration
-                            )
-                        )
-                    } else {
-                        navController.navigate(
-                            R.id.action_configurationScreen_to_usedeskChatScreen,
-                            createChatScreenBundle(new.configuration)
-                        )
+                    navController.apply {
+                        if (currentDestination?.id == R.id.dest_configurationScreen) {
+                            if (new.configuration.withKb) {
+                                val kbConfiguration = new.configuration.toKbConfiguration()
+                                navigate(
+                                    R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+                                    UsedeskKnowledgeBaseScreen.createBundle(
+                                        new.configuration.withKbSupportButton,
+                                        new.configuration.withKbArticleRating,
+                                        kbConfiguration
+                                    )
+                                )
+                            } else {
+                                navigate(
+                                    R.id.action_configurationScreen_to_usedeskChatScreen,
+                                    createChatScreenBundle(new.configuration)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -239,7 +244,8 @@ class MainActivity : AppCompatActivity(),
     override fun onFullscreenChanged(fullscreen: Boolean) = fullscreenMode(fullscreen)
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
-        navController.navigate(
+        navController.navigateSafe(
+            R.id.dest_usedeskChatScreen,
             R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
             UsedeskShowFileScreen.createBundle(usedeskFile)
         )
@@ -259,7 +265,8 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onSupportClick() {
-        navController.navigate(
+        navController.navigateSafe(
+            R.id.dest_usedeskKnowledgeBaseScreen,
             R.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,
             createChatScreenBundle(viewModel.modelFlow.value.configuration)
         )
@@ -309,5 +316,15 @@ class MainActivity : AppCompatActivity(),
 
     companion object {
         private val REJECTED_FILE_TYPES = listOf("apk", "jar", "dex", "so", "aab")
+    }
+}
+
+fun NavController.navigateSafe(
+    @IdRes startId: Int,
+    @IdRes actionId: Int,
+    args: Bundle? = null
+) {
+    if (currentDestination?.id == startId) {
+        navigate(actionId, args)
     }
 }

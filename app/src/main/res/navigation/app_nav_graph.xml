@@ -2,37 +2,37 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_nav_graph"
-    app:startDestination="@id/configurationScreen">
+    app:startDestination="@id/dest_configurationScreen">
 
     <fragment
-        android:id="@+id/configurationScreen"
+        android:id="@+id/dest_configurationScreen"
         android:name="ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen"
         android:label="ConfigurationScreen">
         <action
             android:id="@+id/action_configurationScreen_to_usedeskKnowledgeBaseScreen"
-            app:destination="@id/usedeskKnowledgeBaseScreen" />
+            app:destination="@id/dest_usedeskKnowledgeBaseScreen" />
         <action
             android:id="@+id/action_configurationScreen_to_usedeskChatScreen"
-            app:destination="@id/usedeskChatScreen" />
+            app:destination="@id/dest_usedeskChatScreen" />
     </fragment>
     <fragment
-        android:id="@+id/usedeskChatScreen"
+        android:id="@+id/dest_usedeskChatScreen"
         android:name="ru.usedesk.chat_gui.chat.UsedeskChatScreen"
         android:label="UsedeskChatScreen">
         <action
             android:id="@+id/action_usedeskChatScreen_to_usedeskShowFileScreen"
-            app:destination="@id/usedeskShowFileScreen" />
+            app:destination="@id/dest_usedeskShowFileScreen" />
     </fragment>
     <fragment
-        android:id="@+id/usedeskKnowledgeBaseScreen"
+        android:id="@+id/dest_usedeskKnowledgeBaseScreen"
         android:name="ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen"
         android:label="UsedeskKnowledgeBaseScreen">
         <action
             android:id="@+id/action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen"
-            app:destination="@id/usedeskChatScreen" />
+            app:destination="@id/dest_usedeskChatScreen" />
     </fragment>
     <fragment
-        android:id="@+id/usedeskShowFileScreen"
+        android:id="@+id/dest_usedeskShowFileScreen"
         android:name="ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen"
         android:label="UsedeskShowFileScreen" />
 </navigation>

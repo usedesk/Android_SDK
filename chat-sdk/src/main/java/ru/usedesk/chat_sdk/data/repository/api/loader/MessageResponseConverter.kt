@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field.Text.Type
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import java.util.concurrent.atomic.AtomicLong
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 internal class MessageResponseConverter @Inject constructor() :
@@ -21,7 +22,10 @@ internal class MessageResponseConverter @Inject constructor() :
     private val phoneRegex = Patterns.PHONE.toRegex()
     private val urlRegex = Patterns.WEB_URL.toRegex()
     private val mdUrlRegex = """\[[^\[\]\(\)]+\]\(${urlRegex.pattern}/?\)""".toRegex()
-    private val badUrlRegex = """<${urlRegex.pattern}/>""".toRegex()
+    private val badTagRegex1 =
+        Pattern.compile("""<((${urlRegex.pattern})|(${emailRegex.pattern}))/>""")
+    private val badTagRegex2 =
+        Pattern.compile("""<((${urlRegex.pattern})|(${emailRegex.pattern}))>""")
     private val nextLineRegex = """\n{2,}""".toRegex()
     private val objectRegex = """\{\{$OBJECT_ANY\}\}""".toRegex()
     private val buttonRegex = """\{\{button:($OBJECT_PART){2}$OBJECT_ANY\}\}""".toRegex()
@@ -38,7 +42,8 @@ internal class MessageResponseConverter @Inject constructor() :
             .split('\n')
             .joinToString("\n") { line ->
                 line.trim('\r', ' ', '\u200B')
-                    .replace(badUrlRegex) { it.value.drop(1).dropLast(2) }
+                    .replace(badTagRegex1.toRegex()) { it.value.drop(1).dropLast(2) }
+                    .replace(badTagRegex2.toRegex()) { it.value.drop(1).dropLast(1) }
                     .convertMarkdownUrls()
                     .convertMarkdownText()
             }

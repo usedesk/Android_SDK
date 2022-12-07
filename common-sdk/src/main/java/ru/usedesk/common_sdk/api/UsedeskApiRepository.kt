@@ -14,7 +14,7 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
 abstract class UsedeskApiRepository<API>(
     private val apiFactory: IUsedeskApiFactory,
     private val multipartConverter: IUsedeskMultipartConverter,
-    private val gson: Gson,
+    protected val gson: Gson,
     private val apiClass: Class<API>
 ) {
 

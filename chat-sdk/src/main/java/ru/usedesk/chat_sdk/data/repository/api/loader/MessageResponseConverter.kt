@@ -430,7 +430,7 @@ internal class MessageResponseConverter @Inject constructor() :
                                 parts[0],
                                 required,
                                 listOf(),
-                                false
+                                null
                             )
                             else -> Form.Field.Text(
                                 fieldId.decrementAndGet(),

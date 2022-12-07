@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
@@ -141,11 +142,15 @@ internal class ApiRepository @Inject constructor(
 
     override fun loadForm(
         configuration: UsedeskChatConfiguration,
-        fields: List<Field.List>
+        forms: List<UsedeskMessageAgentText.Form>
     ): LoadFormResponse {
+        val listsId = forms.asSequence()
+            .filterIsInstance<Field.List>()
+            .map(Field.List::id)
+            .toList()
         val request = LoadFields.Request(
             configuration.clientToken!!,
-            fields.map(Field.List::id)
+            listsId
         )
         val response = doRequestJson(
             configuration.urlChatApi,
@@ -154,10 +159,56 @@ internal class ApiRepository @Inject constructor(
             RetrofitApi::loadFieldList
         )
         return when (response?.status) {
-            /*200 -> LoadFormResponse.Done(response?.fields?.mapNotNull {
-                //TODO:TEMP
-            })*/
+            /*200 -> {
+                val fieldsSet = response.fields?.map {
+
+                }
+                val loadedForms = forms.map { form ->
+                    when (form) {
+                        is Field.List -> valueOrNull {
+                            response.fields
+                                ?.asSequence()
+                                ?.map { it.getAsJsonObject(form.id.toString()) }
+                                ?.firstOrNull()
+                                ?.convertToList()
+                        } ?: form
+                        else -> form
+                    }
+                }
+                LoadFormResponse.Done(loadedForms)
+            }*/
             else -> LoadFormResponse.Error(response?.code)
+        }
+    }
+
+    class FieldLoadedList(
+        val children: Array<Children>
+    ) {
+        class Children(
+            val id: Long,
+            val value: String
+        )
+    }
+
+    private fun JsonObject.convertToList(form: Field.List): Field.List? = valueOrNull {
+        val list = getAsJsonObject("list")
+        when (list) {
+            null -> {
+                val fieldLoaded = gson.fromJson(this, FieldLoadedList::class.java)
+                form.copy(
+                    items = fieldLoaded.children.map {
+                        Field.List.Item(
+                            it.id,
+                            it.value,
+                            null
+                        )
+                    }
+                )
+            }
+            else -> {
+                list.entrySet()
+                null
+            }
         }
     }
 

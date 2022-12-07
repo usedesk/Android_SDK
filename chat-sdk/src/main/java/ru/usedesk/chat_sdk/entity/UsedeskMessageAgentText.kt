@@ -15,32 +15,30 @@ data class UsedeskMessageAgentText(
     val formsLoaded: Boolean
 ) : UsedeskMessage.Text, UsedeskMessageOwner.Agent {
 
-    sealed class Form(
-        val id: Long,
+    sealed interface Form {
+        val id: Long
         val name: String
-    ) {
-        class Button(
-            id: Long,
-            name: String,
+
+        data class Button(
+            override val id: Long,
+            override val name: String,
             val url: String,
             val type: String
-        ) : Form(id, name) {
+        ) : Form {
             companion object {
                 const val FORM_APPLY_BUTTON_ID = 0L
             }
         }
 
-        sealed class Field(
-            id: Long,
-            name: String,
+        sealed interface Field : Form {
             val required: Boolean
-        ) : Form(id, name) {
-            class Text(
-                id: Long,
-                name: String,
-                required: Boolean,
+
+            data class Text(
+                override val id: Long,
+                override val name: String,
+                override val required: Boolean,
                 val type: Type
-            ) : Field(id, name, required) {
+            ) : Field {
                 enum class Type {
                     EMAIL,
                     PHONE,
@@ -50,22 +48,23 @@ data class UsedeskMessageAgentText(
                 }
             }
 
-            class CheckBox(
-                id: Long,
-                name: String,
-                required: Boolean
-            ) : Field(id, name, required)
+            data class CheckBox(
+                override val id: Long,
+                override val name: String,
+                override val required: Boolean
+            ) : Field
 
-            class List(
-                id: Long,
-                name: String,
-                required: Boolean,
+            data class List(
+                override val id: Long,
+                override val name: String,
+                override val required: Boolean,
                 val items: kotlin.collections.List<Item>,
-                val loaded: Boolean
-            ) : Field(id, name, required) {
+                val parentId: Long?
+            ) : Field {
                 data class Item(
                     val id: Long,
-                    val name: String
+                    val name: String,
+                    val parentValueId: Long?
                 )
             }
         }

@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.data.repository.api
 
 import androidx.annotation.CheckResult
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 
 internal interface IApiRepository {
     @CheckResult
@@ -73,11 +73,11 @@ internal interface IApiRepository {
     @CheckResult
     fun loadForm(
         configuration: UsedeskChatConfiguration,
-        fields: List<Field.List>
+        forms: List<Form>
     ): LoadFormResponse
 
     sealed interface LoadFormResponse {
-        class Done(val fields: List<Field>) : LoadFormResponse
+        class Done(val forms: List<Form>) : LoadFormResponse
         class Error(val error: Int? = null) : LoadFormResponse
     }
 

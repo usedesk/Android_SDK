@@ -516,7 +516,7 @@ internal class ChatInteractor @Inject constructor(
                 firstMessageLock?.apply {
                     if (isLocked) {
                         delay(1000)
-                        unlock(this@ChatInteractor)
+                        unlock(this@ChatInteractor) //TODO: тут крашнулось, может раньше этот эксепшн нигде не вылетал, а сейчас нет safe обработчиков?
                     }
                     firstMessageLock = null
                 }
@@ -539,29 +539,38 @@ internal class ChatInteractor @Inject constructor(
         unlockFirstMessage()
     }
 
-    override fun loadForm(messageId: Long) { //TODO:!!!
-        /*ioScope.launch {
-            val form = modelLocked {
-                if (!formLoadSet.contains(messageId)) {
-                    formLoadSet.add(messageId)
-                    messages.asSequence()
-                        .filterIsInstance<UsedeskMessageAgentText>()
-                        .firstOrNull { it.id == messageId }
-                        ?.forms
-                        ?.filterIsInstance<Field.List>()
-                } else null
-            }
-            if (form?.isNotEmpty() == true) {
+    override fun loadForm(messageId: Long) {
+        modelLocked {
+            val message = messages.firstOrNull { it.id == messageId } as? UsedeskMessageAgentText
+            if (message?.formsLoaded == false && !formLoadSet.contains(messageId)) {
+                formLoadSet.add(messageId)
                 ioScope.launch {
-                    while (true) {
-                        val loadedForm = apiRepository.loadForm(
-                            configuration,
-                            form
-                        )
+                    val response = apiRepository.loadForm(
+                        configuration,
+                        message.forms
+                    )
+                    when (response) {
+                        is LoadFormResponse.Done -> setModel {
+                            copy(
+                                messages = messages.map {
+                                    when (it.id) {
+                                        messageId -> (it as UsedeskMessageAgentText).copy(
+                                            forms = response.forms,
+                                            formsLoaded = true
+                                        )
+                                        else -> it
+                                    }
+                                }
+                            )
+                        }
+                        is LoadFormResponse.Error -> {
+                            delay(5000)
+                            loadForm(messageId)
+                        }
                     }
                 }
             }
-        }*/
+        }
     }
 
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
@@ -722,32 +731,35 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun loadPreviousMessagesPage() {
-        setModel {
-            val oldestMessageId = messages.firstOrNull()?.id
-            copy(
-                previousPageIsLoading = when {
-                    !previousPageIsLoading && previousPageIsAvailable && oldestMessageId != null -> {
-                        ioScope.launch {
-                            //TODO: инит приходит позже чем запрос на загрузку страницы, поэтому ничего и не запускается
-                            val response = apiRepository.loadPreviousMessages(
-                                configuration,
-                                clientToken,
-                                oldestMessageId
-                            )
-                            setModel {
-                                copy(
-                                    previousPageIsLoading = false,
-                                    previousPageIsAvailable =
-                                    response !is LoadPreviousMessageResponse.Done ||
-                                            response.messages.isNotEmpty()
+        ioScope.launch {
+            delay(5000)
+            setModel {
+                val oldestMessageId = messages.firstOrNull()?.id
+                copy(
+                    previousPageIsLoading = when {
+                        !previousPageIsLoading && previousPageIsAvailable && oldestMessageId != null -> {
+                            ioScope.launch {
+                                //TODO: инит приходит позже чем запрос на загрузку страницы, поэтому ничего и не запускается
+                                val response = apiRepository.loadPreviousMessages(
+                                    configuration,
+                                    clientToken,
+                                    oldestMessageId
                                 )
+                                setModel {
+                                    copy(
+                                        previousPageIsLoading = false,
+                                        previousPageIsAvailable =
+                                        response !is LoadPreviousMessageResponse.Done ||
+                                                response.messages.isNotEmpty()
+                                    )
+                                }
                             }
+                            true
                         }
-                        true
+                        else -> previousPageIsLoading
                     }
-                    else -> previousPageIsLoading
-                }
-            )
+                )
+            }
         }
     }
 

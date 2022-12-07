@@ -11,7 +11,6 @@ internal interface LoadFields {
 
     class Response(
         val status: Int?,
-        val fields: Array<JsonObject>?
-        //TODO: из-за того, что в ответе не массив, а набор полей, приходится парсить вручну
+        val fields: Set<Map.Entry<String, JsonObject>>?
     ) : UsedeskApiError()
 }

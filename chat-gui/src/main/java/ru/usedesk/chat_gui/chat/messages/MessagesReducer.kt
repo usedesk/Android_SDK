@@ -135,7 +135,7 @@ internal class MessagesReducer(
         agentMessages.forEach {
             if (it is ChatItem.Message &&
                 it.message is UsedeskMessageAgentText &&
-                it.message.formsLoaded
+                !it.message.formsLoaded
             ) {
                 usedeskChat.loadForm(it.message.id)
             }

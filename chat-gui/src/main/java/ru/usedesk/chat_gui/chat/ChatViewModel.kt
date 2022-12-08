@@ -21,8 +21,8 @@ internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
             doMain {
                 setModel {
                     copy(
-                        clientToken = clientToken,
-                        offlineFormSettings = offlineFormSettings
+                        clientToken = model.clientToken,
+                        offlineFormSettings = model.offlineFormSettings
                     )
                 }
             }

@@ -235,6 +235,8 @@ internal class MessagesAdapter(
                                 (old as? ChatItem.Message.Agent)?.showAvatar -> false
                         (new as? ChatItem.Message.Agent)?.showName !=
                                 (old as? ChatItem.Message.Agent)?.showName -> false
+                        (new.message as? UsedeskMessageAgentText)?.formsLoaded !=
+                                (old.message as? UsedeskMessageAgentText)?.formsLoaded -> false
                         else -> true
                     }
                 }

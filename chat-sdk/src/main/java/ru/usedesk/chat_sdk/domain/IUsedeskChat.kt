@@ -58,6 +58,7 @@ interface IUsedeskChat {
         val previousPageIsLoading: Boolean = false,
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
-        val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null
+        val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null,
+        val formLoadSet: Set<Long> = setOf()
     )
 }

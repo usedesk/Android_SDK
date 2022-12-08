@@ -18,6 +18,7 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
@@ -142,12 +143,11 @@ internal class ApiRepository @Inject constructor(
 
     override fun loadForm(
         configuration: UsedeskChatConfiguration,
-        forms: List<UsedeskMessageAgentText.Form>
+        forms: List<Form>
     ): LoadFormResponse {
         val listsId = forms.asSequence()
             .filterIsInstance<Field.List>()
-            .map(Field.List::id)
-            .toList()
+            .joinToString(",") { it.id.toString() }
         val request = LoadFields.Request(
             configuration.clientToken!!,
             listsId
@@ -158,59 +158,62 @@ internal class ApiRepository @Inject constructor(
             LoadFields.Response::class.java,
             RetrofitApi::loadFieldList
         )
-        return when (response?.status) {
-            /*200 -> {
-                val fieldsSet = response.fields?.map {
-
-                }
-                val loadedForms = forms.map { form ->
-                    when (form) {
-                        is Field.List -> valueOrNull {
-                            response.fields
-                                ?.asSequence()
-                                ?.map { it.getAsJsonObject(form.id.toString()) }
-                                ?.firstOrNull()
-                                ?.convertToList()
-                        } ?: form
-                        else -> form
+        return when (response?.fields) {
+            null -> LoadFormResponse.Error(response?.code)
+            else -> {
+                val formMap = forms.associateBy { it.id }
+                val listMap = response.fields
+                    .map { it.key to it.value.convertToList(formMap) }
+                    .toMap()
+                val loadedForms = forms.mapNotNull {
+                    when (it) {
+                        is Field.List -> listMap[it.id.toString()]
+                        else -> listOf(it)
                     }
-                }
-                LoadFormResponse.Done(loadedForms)
-            }*/
-            else -> LoadFormResponse.Error(response?.code)
+                }.flatten()
+                LoadFormResponse.Done(loadedForms + Form.Button())
+            }
         }
     }
 
     class FieldLoadedList(
+        val id: Long,
         val children: Array<Children>
     ) {
         class Children(
             val id: Long,
-            val value: String
+            val value: String,
+            val parentFieldId: Long?
         )
     }
 
-    private fun JsonObject.convertToList(form: Field.List): Field.List? = valueOrNull {
-        val list = getAsJsonObject("list")
-        when (list) {
-            null -> {
-                val fieldLoaded = gson.fromJson(this, FieldLoadedList::class.java)
-                form.copy(
-                    items = fieldLoaded.children.map {
-                        Field.List.Item(
-                            it.id,
-                            it.value,
-                            null
+    private fun JsonObject.convertToList(lists: Map<Long, Form>): List<Field.List>? =
+        valueOrNull {
+            when (val list = getAsJsonObject("list")) {
+                null -> {
+                    val fieldLoaded = gson.fromJson(this, FieldLoadedList::class.java)
+                    when {
+                        fieldLoaded.children.isEmpty() -> null
+                        else -> listOfNotNull(
+                            (lists[fieldLoaded.id] as? Field.List)?.copy(
+                                items = fieldLoaded.children.map {
+                                    Field.List.Item(
+                                        it.id,
+                                        it.value,
+                                        it.parentFieldId
+                                    )
+                                }
+                            )
                         )
                     }
-                )
-            }
-            else -> {
-                list.entrySet()
-                null
+                }
+                else -> {
+                    list.entrySet().mapNotNull {
+                        (it.value as JsonObject).convertToList(lists)
+                    }.flatten()
+                }
             }
         }
-    }
 
     private fun UsedeskChatConfiguration.toInitChatRequest(token: String?) = SocketRequest.Init(
         token,

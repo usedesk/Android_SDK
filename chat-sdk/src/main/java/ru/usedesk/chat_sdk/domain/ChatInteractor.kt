@@ -27,8 +27,6 @@ internal class ChatInteractor @Inject constructor(
 
     private val modelFlow = MutableStateFlow(Model(clientToken = configuration.clientToken ?: ""))
 
-    private val formLoadSet = mutableSetOf<Long>()
-
     private class ActionListeners : IUsedeskActionListener {
         private val listenersMutex = Mutex()
         private var listeners = mutableSetOf<IUsedeskActionListener>()
@@ -523,34 +521,43 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun loadForm(messageId: Long) {
-        modelLocked {
+        setModel {
             val message = messages.firstOrNull { it.id == messageId } as? UsedeskMessageAgentText
-            if (message?.formsLoaded == false && !formLoadSet.contains(messageId)) {
-                formLoadSet.add(messageId)
-                ioScope.launch {
-                    val response = apiRepository.loadForm(
-                        configuration,
-                        message.forms
+            when {
+                message?.formsLoaded == false && !formLoadSet.contains(messageId) -> copy(
+                    formLoadSet = formLoadSet + messageId
+                ).apply {
+                    launchLoadForm(message)
+                }
+                else -> this
+            }
+        }
+    }
+
+    private fun launchLoadForm(message: UsedeskMessageAgentText) {
+        ioScope.launch {
+            val response = apiRepository.loadForm(
+                configuration,
+                message.forms
+            )
+            when (response) {
+                is LoadFormResponse.Done -> setModel {
+                    copy(
+                        formLoadSet = formLoadSet - message.id,
+                        messages = messages.map {
+                            when (it.id) {
+                                message.id -> (it as UsedeskMessageAgentText).copy(
+                                    forms = response.forms,
+                                    formsLoaded = true
+                                )
+                                else -> it
+                            }
+                        }
                     )
-                    when (response) {
-                        is LoadFormResponse.Done -> setModel {
-                            copy(
-                                messages = messages.map {
-                                    when (it.id) {
-                                        messageId -> (it as UsedeskMessageAgentText).copy(
-                                            forms = response.forms,
-                                            formsLoaded = true
-                                        )
-                                        else -> it
-                                    }
-                                }
-                            )
-                        }
-                        is LoadFormResponse.Error -> {
-                            delay(5000)
-                            loadForm(messageId)
-                        }
-                    }
+                }
+                is LoadFormResponse.Error -> {
+                    delay(5000)
+                    launchLoadForm(message)
                 }
             }
         }
@@ -558,8 +565,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
         ioScope.launch {
-            val response = apiRepository.sendFeedback(agentMessage.id, feedback)
-            when (response) {
+            when (apiRepository.sendFeedback(agentMessage.id, feedback)) {
                 is SocketSendResponse.Done -> onMessageUpdate(
                     agentMessage.copy(
                         feedbackNeeded = false,

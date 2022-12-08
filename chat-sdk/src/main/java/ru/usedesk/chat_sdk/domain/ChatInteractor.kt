@@ -51,40 +51,20 @@ internal class ChatInteractor @Inject constructor(
 
         fun isNoListeners() = runBlocking { listenersMutex.withLock { listeners } }.isEmpty()
 
-        override fun onConnectionState(connectionState: UsedeskConnectionState) {
-            listeners.forEach { it.onConnectionState(connectionState) }
-        }
-
-        override fun onClientTokenReceived(clientToken: String) {
-            listeners.forEach { it.onClientTokenReceived(clientToken) }
-        }
-
-        override fun onMessageReceived(message: UsedeskMessage) {
-            listeners.forEach { it.onMessageReceived(message) }
-        }
-
-        override fun onNewMessageReceived(message: UsedeskMessage) {
-            listeners.forEach { it.onNewMessageReceived(message) }
-        }
-
-        override fun onMessagesReceived(messages: List<UsedeskMessage>) {
-            listeners.forEach { it.onMessagesReceived(messages) }
-        }
-
-        override fun onMessageUpdated(message: UsedeskMessage) {
-            listeners.forEach { it.onMessageUpdated(message) }
-        }
-
-        override fun onMessageRemoved() {
-            listeners.forEach { it.onMessageRemoved() }
-        }
-
-        override fun onFeedbackReceived() {
-            listeners.forEach { it.onFeedbackReceived() }
-        }
-
-        override fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {
-            listeners.forEach { it.onOfflineFormExpected(offlineFormSettings) }
+        override fun onModel(
+            model: Model,
+            newMessages: List<UsedeskMessage>,
+            updatedMessages: List<UsedeskMessage>,
+            removedMessages: List<UsedeskMessage>
+        ) {
+            listeners.forEach {
+                it.onModel(
+                    model,
+                    newMessages,
+                    updatedMessages,
+                    removedMessages
+                )
+            }
         }
 
         override fun onException(usedeskException: Exception) {
@@ -109,38 +89,41 @@ internal class ChatInteractor @Inject constructor(
 
     var oldModel: Model? = null
     private fun Model.onModelUpdated(oldModel: Model?, listener: IUsedeskActionListener) {
-        if (oldModel?.connectionState != connectionState) {
-            listener.onConnectionState(connectionState)
-        }
-        if (oldModel?.clientToken != clientToken && clientToken.isNotEmpty()) {
-            listener.onClientTokenReceived(clientToken)
-        }
-        if (oldModel?.offlineFormSettings != offlineFormSettings &&
-            offlineFormSettings != null
-        ) {
-            listener.onOfflineFormExpected(offlineFormSettings)
-        }
-        if (oldModel?.feedbackEvent != feedbackEvent) {
-            listener.onFeedbackReceived()
-        }
-        if (oldModel?.messages != messages) {
-            listener.onMessagesReceived(messages)
-            messages.forEach { message ->
-                val oldMessage = oldModel?.messages?.firstOrNull { it.id == message.id }
-                when {
-                    oldMessage == null -> {
-                        if (!inited) {
-                            listener.onNewMessageReceived(message)
-                        }
-                        listener.onMessageReceived(message)
-                    }
-                    oldMessage != message -> listener.onMessageUpdated(message)
-                }
+        when (oldModel?.messages) {
+            messages -> {
+                listener.onModel(
+                    this,
+                    listOf(),
+                    listOf(),
+                    listOf()
+                )
             }
-            oldModel?.messages?.forEach { oldMessage ->
-                if (messages.all { message -> message.id != oldMessage.id }) {
-                    listener.onMessageRemoved()
+            else -> {
+                val newMessages = mutableListOf<UsedeskMessage>()
+                val updatedMessages = mutableListOf<UsedeskMessage>()
+                val removedMessages = mutableListOf<UsedeskMessage>()
+                messages.forEach { message ->
+                    val oldMessage = oldModel?.messages?.firstOrNull { it.id == message.id }
+                    when {
+                        oldMessage == null -> {
+                            if (!inited) {
+                                newMessages.add(message)
+                            }
+                        }
+                        oldMessage != message -> updatedMessages.add(message)
+                    }
                 }
+                oldModel?.messages?.forEach { oldMessage ->
+                    if (messages.all { message -> message.id != oldMessage.id }) {
+                        removedMessages.add(oldMessage)
+                    }
+                }
+                listener.onModel(
+                    this,
+                    newMessages,
+                    updatedMessages,
+                    removedMessages
+                )
             }
         }
     }
@@ -499,11 +482,11 @@ internal class ChatInteractor @Inject constructor(
             firstMessageMutex.withLock {
                 val lock = firstMessageLock
                 when (lock?.isLocked) {
+                    true -> lock
                     false -> {
-                        lock.lock()
+                        lock.lock(this@ChatInteractor)
                         null
                     }
-                    true -> lock
                     else -> null
                 }
             }?.withLock { }
@@ -516,7 +499,7 @@ internal class ChatInteractor @Inject constructor(
                 firstMessageLock?.apply {
                     if (isLocked) {
                         delay(1000)
-                        unlock(this@ChatInteractor) //TODO: тут крашнулось, может раньше этот эксепшн нигде не вылетал, а сейчас нет safe обработчиков?
+                        unlock(this@ChatInteractor)
                     }
                     firstMessageLock = null
                 }
@@ -731,15 +714,13 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun loadPreviousMessagesPage() {
-        ioScope.launch {
-            delay(5000)
-            setModel {
-                val oldestMessageId = messages.firstOrNull()?.id
-                copy(
+        setModel {
+            when (val oldestMessageId = messages.firstOrNull()?.id) {
+                null -> this
+                else -> copy(
                     previousPageIsLoading = when {
-                        !previousPageIsLoading && previousPageIsAvailable && oldestMessageId != null -> {
+                        !previousPageIsLoading && previousPageIsAvailable -> {
                             ioScope.launch {
-                                //TODO: инит приходит позже чем запрос на загрузку страницы, поэтому ничего и не запускается
                                 val response = apiRepository.loadPreviousMessages(
                                     configuration,
                                     clientToken,

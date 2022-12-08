@@ -66,7 +66,6 @@
 ## common-sdk End
 
 ## chat-sdk Start
--keepclassmembers enum ru.usedesk.chat_sdk.entity.UsedeskFeedback { *; }
 -keepclassmembers class ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration { *; }
 -keepclassmembers class ru.usedesk.chat_sdk.entity.UsedeskFile { *; }
 -keepclassmembers class ru.usedesk.chat_sdk.data.repository.api.entity.** { *; }

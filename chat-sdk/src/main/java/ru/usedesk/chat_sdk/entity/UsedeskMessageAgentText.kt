@@ -20,10 +20,10 @@ data class UsedeskMessageAgentText(
         val name: String
 
         data class Button(
-            override val id: Long,
-            override val name: String,
-            val url: String,
-            val type: String
+            override val id: Long = FORM_APPLY_BUTTON_ID,
+            override val name: String = "",
+            val url: String = "",
+            val type: String = ""
         ) : Form {
             companion object {
                 const val FORM_APPLY_BUTTON_ID = 0L

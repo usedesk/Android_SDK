@@ -19,10 +19,10 @@ internal class MessagesReducer(
 
     private fun State.reduce(event: Event) = when (event) {
         is Event.Init -> init(event)
-        is Event.Messages -> messages(event)
+        is Event.ChatModel -> chatModel(event)
         is Event.MessageDraft -> messageDraft(event)
         is Event.MessagesShowed -> messagesShowed(event)
-        is Event.PreviousMessagesResult -> previousMessagesResult(event)
+        //is Event.PreviousMessagesResult -> previousMessagesResult(event)
         is Event.MessageChanged -> messageChanged(event)
         is Event.SendFeedback -> sendFeedback(event)
         is Event.AttachFiles -> attachFiles(event)
@@ -108,7 +108,7 @@ internal class MessagesReducer(
     private fun State.init(event: Event.Init) =
         copy(groupAgentMessages = event.groupAgentMessages)
 
-    private fun State.previousMessagesResult(event: Event.PreviousMessagesResult) = copy(
+    /*private fun State.previousMessagesResult(event: Event.PreviousMessagesResult) = copy(
         hasPreviousMessages = event.hasPreviousMessages,
         previousLoading = false,
         chatItems = when (this.hasPreviousMessages) {
@@ -118,7 +118,7 @@ internal class MessagesReducer(
                 groupAgentMessages
             )
         }
-    )
+    )*/
 
     private fun State.messagesShowed(event: Event.MessagesShowed): State {
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
@@ -143,20 +143,12 @@ internal class MessagesReducer(
         val agentMessageShowed = agentMessages
             .firstOrNull { it is ChatItem.Message.Agent }
         val newAgentIndexShowed = when (agentMessageShowed) {
-            null -> agentIndexShowed
-            else -> min(agentIndexShowed, agentMessages.indexOf(agentMessageShowed))
+            null -> this.agentMessageShowed
+            else -> min(this.agentMessageShowed, agentMessages.indexOf(agentMessageShowed))
         }
         return copy(
-            previousLoading = previousLoading,
             fabToBottom = event.messagesRange.first > 0,
-            chatItems = when (this.previousLoading) {
-                previousLoading -> chatItems
-                else -> messages.convert(
-                    hasPreviousMessages,
-                    groupAgentMessages
-                )
-            },
-            agentIndexShowed = newAgentIndexShowed
+            agentMessageShowed = newAgentIndexShowed
         )
     }
 
@@ -165,25 +157,32 @@ internal class MessagesReducer(
     )
 
     private fun State.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
-        when (val lastMessage = agentMessages.getOrNull(agentIndexShowed)) {
+        when (val lastMessage = agentMessages.getOrNull(agentMessageShowed)) {
             null -> 0
             else -> newAgentItems.indexOfFirst { it.message.id == lastMessage.message.id }
         }
 
-    private fun State.messages(event: Event.Messages): State {
-        val newChatItems = event.messages.convert(
-            hasPreviousMessages,
-            groupAgentMessages
-        )
-        val newAgentMessages = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
-        val newAgentMessageShowed = getNewAgentIndexShowed(newAgentMessages)
-        return copy(
-            messages = event.messages,
-            agentMessages = newAgentMessages,
-            chatItems = newChatItems,
-            agentIndexShowed = newAgentMessageShowed
-        )
-    }
+    private fun State.chatModel(event: Event.ChatModel): State = when {
+        event.model.messages == messages &&
+                event.model.previousPageIsAvailable == hasPreviousMessages -> this
+        else -> {
+            val newChatItems = event.model.messages.convert(
+                event.model.previousPageIsAvailable,
+                groupAgentMessages
+            )
+            val newAgentMessages = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
+            copy(
+                agentMessages = newAgentMessages,
+                chatItems = newChatItems,
+                agentMessageShowed = getNewAgentIndexShowed(newAgentMessages)
+            )
+        }
+    }.copy(
+        lastChatModel = event.model,
+        messages = event.model.messages,
+        previousLoading = event.model.previousPageIsLoading,
+        hasPreviousMessages = event.model.previousPageIsAvailable
+    )
 
     private fun List<UsedeskMessage>.convert(
         hasPreviousMessages: Boolean,

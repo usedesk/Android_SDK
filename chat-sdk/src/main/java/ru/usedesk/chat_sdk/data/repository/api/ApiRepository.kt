@@ -227,7 +227,15 @@ internal class ApiRepository @Inject constructor(
     override fun sendFeedback(
         messageId: Long,
         feedback: UsedeskFeedback
-    ) = socketApi.sendRequest(SocketRequest.Feedback(messageId, feedback))
+    ) = socketApi.sendRequest(
+        SocketRequest.Feedback(
+            messageId,
+            when (feedback) {
+                UsedeskFeedback.LIKE -> "LIKE"
+                UsedeskFeedback.DISLIKE -> "DISLIKE"
+            }
+        )
+    )
 
     override fun sendText(messageText: UsedeskMessage.Text) = socketApi.sendRequest(
         SocketRequest.SendMessage(

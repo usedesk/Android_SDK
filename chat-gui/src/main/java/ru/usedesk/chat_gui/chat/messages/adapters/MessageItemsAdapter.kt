@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -15,10 +16,12 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.visibleGone
 
 //TODO: вытащить вьюхолдеры во вне
 internal class MessageItemsAdapter(
     recyclerView: RecyclerView,
+    private val pbLoading: ProgressBar,
     private val onEvent: (Event) -> Unit,
     private val onButtonClick: (Form.Button) -> Unit
 ) : RecyclerView.Adapter<BaseViewHolder<out Form, out FormState>>() {
@@ -34,11 +37,15 @@ internal class MessageItemsAdapter(
     @SuppressLint("NotifyDataSetChanged")
     fun update(
         messageAgentText: UsedeskMessageAgentText,
-        agentItems: Map<Long, FormState>
+        agentItems: Map<Long, FormState>,
+        formsLoaded: Boolean
     ) {
         val oldItems = forms
         val oldAgentItems = itemsState
-        forms = messageAgentText.forms
+        forms = when {
+            formsLoaded -> messageAgentText.forms
+            else -> messageAgentText.forms.filterIsInstance<Form.Button>()
+        }
         when (messageAgentText.id) {
             this.messageId -> DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                 override fun getOldListSize() = oldItems.size
@@ -85,6 +92,7 @@ internal class MessageItemsAdapter(
                 notifyDataSetChanged()
             }
         }
+        pbLoading.visibility = visibleGone(!formsLoaded)
     }
 
     private fun Form.Field.List.areContentsTheSame(

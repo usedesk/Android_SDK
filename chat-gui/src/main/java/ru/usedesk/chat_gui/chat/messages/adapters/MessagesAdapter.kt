@@ -258,116 +258,115 @@ internal class MessagesAdapter(
         if (isScrollToBottom) {
             recyclerView.scrollToPosition(0)
         }
+
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        return when (viewType) {
-            R.layout.usedesk_item_chat_date -> DateViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Date,
-                    ::DateBinding
-                )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        R.layout.usedesk_item_chat_date -> DateViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Date,
+                ::DateBinding
             )
-            R.layout.usedesk_item_chat_loading -> LoadingViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Loading,
-                    ::UsedeskBinding
-                )
+        )
+        R.layout.usedesk_item_chat_loading -> LoadingViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Loading,
+                ::UsedeskBinding
             )
-            R.layout.usedesk_item_chat_message_text_agent -> MessageTextAgentViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Text_Agent,
-                    ::MessageTextAgentBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_text_agent -> MessageTextAgentViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Text_Agent,
+                ::MessageTextAgentBinding
             )
-            R.layout.usedesk_item_chat_message_file_agent -> MessageFileAgentViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_File_Agent,
-                    ::MessageFileAgentBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_file_agent -> MessageFileAgentViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_File_Agent,
+                ::MessageFileAgentBinding
             )
-            R.layout.usedesk_item_chat_message_image_agent -> MessageImageAgentViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Image_Agent,
-                    ::MessageImageAgentBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_image_agent -> MessageImageAgentViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Image_Agent,
+                ::MessageImageAgentBinding
             )
-            R.layout.usedesk_item_chat_message_video_agent -> MessageVideoAgentViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Video_Agent,
-                    ::MessageVideoAgentBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_video_agent -> MessageVideoAgentViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Video_Agent,
+                ::MessageVideoAgentBinding
             )
-            R.layout.usedesk_item_chat_message_audio_agent -> MessageAudioAgentViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Audio_Agent,
-                    ::MessageAudioAgentBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_audio_agent -> MessageAudioAgentViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Audio_Agent,
+                ::MessageAudioAgentBinding
             )
-            R.layout.usedesk_item_chat_message_text_client -> MessageTextClientViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Text_Client,
-                    ::MessageTextClientBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_text_client -> MessageTextClientViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Text_Client,
+                ::MessageTextClientBinding
             )
-            R.layout.usedesk_item_chat_message_file_client -> MessageFileClientViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_File_Client,
-                    ::MessageFileClientBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_file_client -> MessageFileClientViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_File_Client,
+                ::MessageFileClientBinding
             )
-            R.layout.usedesk_item_chat_message_image_client -> MessageImageClientViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Image_Client,
-                    ::MessageImageClientBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_image_client -> MessageImageClientViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Image_Client,
+                ::MessageImageClientBinding
             )
-            R.layout.usedesk_item_chat_message_video_client -> MessageVideoClientViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Video_Client,
-                    ::MessageVideoClientBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_video_client -> MessageVideoClientViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Video_Client,
+                ::MessageVideoClientBinding
             )
-            R.layout.usedesk_item_chat_message_audio_client -> MessageAudioClientViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Audio_Client,
-                    ::MessageAudioClientBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_audio_client -> MessageAudioClientViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Audio_Client,
+                ::MessageAudioClientBinding
             )
-            R.layout.usedesk_item_chat_message_agent_name -> MessageAgentNameViewHolder(
-                inflateItem(
-                    parent,
-                    viewType,
-                    R.style.Usedesk_Chat_Message_Text_Agent,
-                    ::MessageAgentNameBinding
-                )
+        )
+        R.layout.usedesk_item_chat_message_agent_name -> MessageAgentNameViewHolder(
+            inflateItem(
+                parent,
+                viewType,
+                R.style.Usedesk_Chat_Message_Text_Agent,
+                ::MessageAgentNameBinding
             )
-            else -> throw RuntimeException("Unknown view type:$viewType")
-        }
+        )
+        else -> throw RuntimeException("Unknown view type:$viewType")
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
@@ -902,6 +901,7 @@ internal class MessagesAdapter(
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
+            binding.content.pbLoading.visibility = View.GONE
         }
     }
 
@@ -981,6 +981,7 @@ internal class MessagesAdapter(
 
         private val itemsAdapter = MessageItemsAdapter(
             binding.content.rvItems,
+            binding.content.pbLoading,
             onEvent = viewModel::onEvent,
             onButtonClick = {
                 when {
@@ -995,14 +996,15 @@ internal class MessagesAdapter(
             .getInt(android.R.attr.layout_gravity) in arrayOf(Gravity.START, Gravity.LEFT)
 
         override fun bind(chatItem: ChatItem) {
+            chatItem as ChatItem.Message.Agent
             super.bind(chatItem)
             bindAgent(chatItem, binding.agent)
 
-            val messageAgentText =
-                (chatItem as ChatItem.Message.Agent).message as UsedeskMessageAgentText
+            val messageAgentText = chatItem.message as UsedeskMessageAgentText
             itemsAdapter.update(
                 messageAgentText,
-                viewModel.modelFlow.value.agentItemsState
+                viewModel.modelFlow.value.agentItemsState,
+                chatItem.message.formsLoaded
             )
 
             binding.content.rootView.layoutParams.apply {
@@ -1221,6 +1223,7 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
+        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
         val lContent: ViewGroup = rootView.findViewById(R.id.l_content)

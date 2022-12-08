@@ -5,7 +5,6 @@ import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Button.Companion.FORM_APPLY_BUTTON_ID
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field.Text.Type
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
@@ -212,23 +211,27 @@ internal class MessageResponseConverter @Inject constructor() :
                         UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
-                    else -> UsedeskMessageAgentText(
-                        id,
-                        messageDate,
-                        text,
-                        convertedText,
-                        name,
-                        avatar,
-                        feedbackNeeded,
-                        feedback,
-                        when {
-                            fields.any { it is Form.Field } -> fields.filter { it !is Form.Button } +
-                                    Form.Button(FORM_APPLY_BUTTON_ID, "", "", "") +
-                                    fields.filterIsInstance<Form.Button>()
-                            else -> fields
-                        },
-                        formsLoaded = false
-                    )
+                    else -> {
+                        val formsLoaded = fields.all { it !is Form.Field.List }
+                        val buttons = fields.filterIsInstance<Form.Button>()
+                        val forms = fields.filter { it !is Form.Button }
+
+                        UsedeskMessageAgentText(
+                            id,
+                            messageDate,
+                            text,
+                            convertedText,
+                            name,
+                            avatar,
+                            feedbackNeeded,
+                            feedback,
+                            when {
+                                forms.isNotEmpty() && formsLoaded -> buttons + forms + Form.Button()
+                                else -> buttons + forms
+                            },
+                            formsLoaded = formsLoaded
+                        )
+                    }
                 }
             ) + fileMessage + fileMessages
         }?.filterNotNull()

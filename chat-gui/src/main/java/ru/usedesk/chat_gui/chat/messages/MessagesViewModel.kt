@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.common_gui.UsedeskViewModel
@@ -22,9 +23,15 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
         actionListener = object : IUsedeskActionListener {
-            //TODO: model
-            override fun onMessagesReceived(messages: List<UsedeskMessage>) {
-                doMain { onEvent(Event.Messages(messages)) }
+            override fun onModel(
+                model: IUsedeskChat.Model,
+                newMessages: List<UsedeskMessage>,
+                updatedMessages: List<UsedeskMessage>,
+                removedMessages: List<UsedeskMessage>
+            ) {
+                doMain {
+                    onEvent(Event.ChatModel(model))
+                }
             }
         }
         usedeskChat.addActionListener(actionListener)
@@ -40,11 +47,12 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
 
     sealed interface Event {
         class Init(val groupAgentMessages: Boolean) : Event
-        class Messages(val messages: List<UsedeskMessage>) : Event
+        class ChatModel(val model: IUsedeskChat.Model) : Event
         class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
         class MessagesShowed(val messagesRange: IntRange) : Event
         class MessageChanged(val message: String) : Event
-        class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Event
+
+        //class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Event
         class SendFeedback(
             val message: UsedeskMessageAgentText,
             val feedback: UsedeskFeedback
@@ -79,11 +87,12 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
         val attachmentPanelVisible: Boolean = false,
-        val agentIndexShowed: Int = 0,
+        val agentMessageShowed: Int = 0,
         val hasPreviousMessages: Boolean = true,
         val groupAgentMessages: Boolean = false,
         val previousLoading: Boolean = false,
-        val goToBottom: UsedeskEvent<Unit>? = null
+        val goToBottom: UsedeskEvent<Unit>? = null,
+        val lastChatModel: IUsedeskChat.Model? = null
     )
 
     internal sealed interface FormState {

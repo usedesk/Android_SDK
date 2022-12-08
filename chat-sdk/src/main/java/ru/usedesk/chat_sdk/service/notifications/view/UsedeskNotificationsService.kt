@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.R
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
@@ -32,18 +33,24 @@ abstract class UsedeskNotificationsService : Service() {
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val modelMutex = Mutex()
     private val actionListener = object : IUsedeskActionListener {
-        override fun onNewMessageReceived(message: UsedeskMessage) {
-            if (message is UsedeskMessageOwner.Agent) {
-                updateModel {
-                    copy(
-                        message = message,
-                        count = when (model.message) {
-                            null -> 1
-                            else -> model.count + 1
-                        }
-                    )
+        override fun onModel(
+            model: IUsedeskChat.Model,
+            newMessages: List<UsedeskMessage>,
+            updatedMessages: List<UsedeskMessage>,
+            removedMessages: List<UsedeskMessage>
+        ) {
+            newMessages.forEach { message ->
+                if (message is UsedeskMessageOwner.Agent) {
+                    updateModel {
+                        copy(
+                            message = message,
+                            count = when (this@UsedeskNotificationsService.model.message) {
+                                null -> 1
+                                else -> this@UsedeskNotificationsService.model.count + 1
+                            }
+                        )
+                    }
                 }
-
             }
         }
     }

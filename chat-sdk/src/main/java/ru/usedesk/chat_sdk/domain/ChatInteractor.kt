@@ -146,8 +146,7 @@ internal class ChatInteractor @Inject constructor(
             runBlocking {
                 reconnectJob?.cancel()
                 reconnectJob = ioScope.launch {
-                    delay(5000)
-                    yield()
+                    delay(REPEAT_DELAY)
                     connect()
                 }
                 setModel {
@@ -378,7 +377,7 @@ internal class ChatInteractor @Inject constructor(
                 ) {
                     ioScope.launch {
                         firstMessageLock?.withLock {}
-                        delay(3000)
+                        delay(REPEAT_DELAY)
                         val response = apiRepository.sendFields(
                             clientToken,
                             configuration,
@@ -556,7 +555,7 @@ internal class ChatInteractor @Inject constructor(
                     )
                 }
                 is LoadFormResponse.Error -> {
-                    delay(5000)
+                    delay(REPEAT_DELAY)
                     launchLoadForm(message)
                 }
             }
@@ -573,7 +572,7 @@ internal class ChatInteractor @Inject constructor(
                     )
                 )
                 is SocketSendResponse.Error -> {
-                    delay(3000)
+                    delay(REPEAT_DELAY)
                     send(agentMessage, feedback)
                 }
             }
@@ -812,5 +811,6 @@ internal class ChatInteractor @Inject constructor(
 
     companion object {
         private val ACTIVE_STATUSES = listOf(1, 5, 6, 8)
+        private const val REPEAT_DELAY = 5000L
     }
 }

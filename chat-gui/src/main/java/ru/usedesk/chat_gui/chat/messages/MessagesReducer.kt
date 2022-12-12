@@ -4,6 +4,7 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -42,11 +43,42 @@ internal class MessagesReducer(
 
     private fun State.formListClicked(event: Event.FormListClicked) = copy()
 
-    private fun State.formChanged(event: Event.FormChanged) = copy(
-        agentItemsState = agentItemsState.toMutableMap().apply {
-            put(event.form.id, event.formState)
+    private fun State.formChanged(event: Event.FormChanged): State {
+        val newAgentItemsState = agentItemsState.toMutableMap().apply {
+            val formsMap = getOrPut(event.message.id) { mapOf() }
+                .toMutableMap()
+                .apply {
+                    put(event.form.id, event.formState)
+                }
+            event.message.forms.all { form ->
+                when (form) {
+                    is Form.Button -> true
+                    is Form.Field -> when (form) {
+                        is Form.Field.CheckBox -> !form.required ||
+                                (formsMap[form.id] as? FormState.CheckBox)?.checked == true
+                        is Form.Field.List -> {
+                            //TODO: тут вообще проверять всех родительских и дочерних
+                            false
+                        }
+                        is Form.Field.Text -> {
+                            val text = (formsMap[form.id] as? FormState.Text)?.text
+
+                            when (form.type) {
+                                Form.Field.Text.Type.EMAIL -> TODO()
+                                Form.Field.Text.Type.PHONE -> TODO()
+                                Form.Field.Text.Type.NAME -> TODO()
+                                Form.Field.Text.Type.NOTE -> TODO()
+                                Form.Field.Text.Type.POSITION -> text?.isNotEmpty() == true
+                            }
+                        }
+                    }
+                }
+            }
         }
-    )
+        return copy(
+            agentItemsState = newAgentItemsState
+        )
+    }
 
     private fun State.showToBottomButton(event: Event.ShowToBottomButton) =
         copy(fabToBottom = event.show)

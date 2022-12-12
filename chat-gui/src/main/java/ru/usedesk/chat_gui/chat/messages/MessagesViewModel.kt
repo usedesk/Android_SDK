@@ -68,6 +68,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         object SendDraft : Event
         class FormApplyClick(val messageId: Long) : Event
         class FormChanged(
+            val message: UsedeskMessageAgentText,
             val form: Form,
             val formState: FormState
         ) : Event
@@ -81,7 +82,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
     data class State(
         val messages: List<UsedeskMessage> = listOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
-        val agentItemsState: Map<Long, FormState> = mapOf(),
+        val agentItemsState: Map<Long, Map<Long, FormState>> = mapOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
@@ -98,7 +99,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
     internal sealed interface FormState {
         data class Button(val enabled: Boolean = false) : FormState
         data class CheckBox(val checked: Boolean = false) : FormState
-        data class List(val selected: kotlin.collections.List<UsedeskMessageAgentText.Form.Field.List.Item> = listOf()) :
+        data class List(val selected: kotlin.collections.List<Form.Field.List.Item> = listOf()) :
             FormState
 
         data class Text(val text: String = "") : FormState

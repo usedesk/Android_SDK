@@ -150,6 +150,17 @@ internal class ChatInteractor @Inject constructor(
     }
 
     init {
+        val oldConfiguration = userInfoRepository.getConfiguration()
+
+        initClientMessage = when {
+            initClientOfflineForm != null ||
+                    oldConfiguration?.clientInitMessage == initClientMessage -> null
+            else -> configuration.clientInitMessage
+        }
+        token = (configuration.clientToken
+            ?: oldConfiguration?.clientToken)
+            ?.ifEmpty { null }
+
         listenersDisposables.apply {
             add(connectionStateSubject.subscribe {
                 runBlocking { listenersMutex.withLock { actionListeners } }.forEach { listener ->
@@ -226,7 +237,7 @@ internal class ChatInteractor @Inject constructor(
         configuration,
         apiToken
     ).also { clientToken ->
-        userInfoRepository.setConfiguration(configuration.copy(clientToken = clientToken))
+        userInfoRepository.updateConfiguration { copy(clientToken = clientToken) }
     }
 
     override fun connect() {
@@ -237,9 +248,6 @@ internal class ChatInteractor @Inject constructor(
             }
             reconnectDisposable?.dispose()
             reconnectDisposable = null
-            token = (configuration.clientToken
-                ?: userInfoRepository.getConfiguration(configuration)?.clientToken)
-                ?.ifEmpty { null }
 
             unlockFirstMessage()
             resetFirstMessageLock()
@@ -523,7 +531,6 @@ internal class ChatInteractor @Inject constructor(
                         unlock(this@ChatInteractor)
                     }
                     firstMessageLock = null
-                    println()
                 }
             }
         }
@@ -841,11 +848,7 @@ internal class ChatInteractor @Inject constructor(
     private fun sendUserEmail() {
         try {
             token?.let {
-                apiRepository.setClient(
-                    configuration.copy(
-                        clientToken = it
-                    )
-                )
+                apiRepository.setClient(configuration.copy(clientToken = it))
             }
         } catch (e: UsedeskException) {
             exceptionSubject.onNext(e)
@@ -853,8 +856,9 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun onChatInited(chatInited: ChatInited) {
-        this.token = chatInited.token
-        if (configuration.clientToken != chatInited.token) {
+        if (chatInited.token != this.token) {
+            this.token = chatInited.token
+            userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
             clientTokenSubject.onNext(chatInited.token)
         }
 
@@ -862,15 +866,7 @@ internal class ChatInteractor @Inject constructor(
             unlockFirstMessage()
         }
 
-        val oldConfiguration = userInfoRepository.getConfiguration(configuration)
-
-        if (initClientOfflineForm != null ||
-            oldConfiguration?.clientInitMessage == initClientMessage
-        ) {
-            initClientMessage = null
-        }
-
-        userInfoRepository.setConfiguration(configuration.copy(clientToken = token))
+        userInfoRepository.updateConfiguration { copy(clientToken = token) }
 
         val ids = lastMessages.map(UsedeskMessage::id)
         val filteredMessages = chatInited.messages.filter { it.id !in ids }

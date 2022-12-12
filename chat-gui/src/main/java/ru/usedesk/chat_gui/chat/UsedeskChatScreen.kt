@@ -50,7 +50,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
         navController = navHostFragment.navController
 
-        getBundleArgs { chatConfiguration, _, _, _, _, _, _ ->
+        getBundleArgs(savedInstanceState) { chatConfiguration, _, _, _, _, _, _ ->
             init(chatConfiguration)
         }
     }.rootView
@@ -65,6 +65,7 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     internal fun getBundleArgs(
+        savedInstanceState: Bundle?,
         onArgs: (
             UsedeskChatConfiguration,
             String?,
@@ -76,7 +77,8 @@ class UsedeskChatScreen : UsedeskFragment() {
         ) -> Unit
     ) {
         onArgs(
-            argsGetParcelable(CHAT_CONFIGURATION_KEY)
+            savedInstanceState?.getParcelable(CHAT_CONFIGURATION_KEY)
+                ?: argsGetParcelable(CHAT_CONFIGURATION_KEY)
                 ?: throw RuntimeException("UsedeskChatConfiguration not found. Call the newInstance or createBundle method and put the configuration inside"),
             argsGetString(AGENT_NAME_KEY),
             argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
@@ -85,6 +87,16 @@ class UsedeskChatScreen : UsedeskFragment() {
             argsGetBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, false),
             argsGetBoolean(GROUP_AGENT_MESSAGES, true)
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        getBundleArgs(outState) { configuration, _, _, _, _, _, _ ->
+            outState.putParcelable(
+                CHAT_CONFIGURATION_KEY,
+                configuration.copy(clientToken = viewModel.modelFlow.value.clientToken)
+            )
+        }
+        super.onSaveInstanceState(outState)
     }
 
     private fun Binding.init(chatConfiguration: UsedeskChatConfiguration) {

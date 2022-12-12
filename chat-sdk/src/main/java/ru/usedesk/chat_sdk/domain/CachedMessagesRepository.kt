@@ -166,7 +166,7 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     private fun findUserKey(): String? {
-        val config = userInfoRepository.getConfiguration(this.configuration)
+        val config = userInfoRepository.getConfiguration()
             ?: configuration
         val token = config.clientToken
         return when (token?.isNotEmpty()) {

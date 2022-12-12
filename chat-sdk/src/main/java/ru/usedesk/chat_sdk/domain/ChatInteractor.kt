@@ -16,16 +16,16 @@ import java.util.*
 import javax.inject.Inject
 
 internal class ChatInteractor @Inject constructor(
-    private val configuration: UsedeskChatConfiguration,
+    private val initConfiguration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
     private val cachedMessagesRepository: ICachedMessagesRepository //Переместить в ap
 ) : IUsedeskChat {
 
-    private var initClientMessage: String? = configuration.clientInitMessage
+    private var initClientMessage: String? = initConfiguration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
-    private val modelFlow = MutableStateFlow(Model(clientToken = configuration.clientToken ?: ""))
+    private val modelFlow: MutableStateFlow<Model>
 
     private class ActionListeners : IUsedeskActionListener {
         private val listenersMutex = Mutex()
@@ -127,6 +127,22 @@ internal class ChatInteractor @Inject constructor(
     }
 
     init {
+        val oldConfiguration = userInfoRepository.getConfiguration()
+
+        initClientMessage = when {
+            initClientOfflineForm != null ||
+                    oldConfiguration?.clientInitMessage == initClientMessage -> null
+            else -> initConfiguration.clientInitMessage
+        }
+
+        modelFlow = MutableStateFlow(
+            Model(
+                clientToken = initConfiguration.clientToken
+                    ?: oldConfiguration?.clientToken
+                    ?: ""
+            )
+        )
+
         ioScope.launch {
             modelFlow.collect { model ->
                 model.onModelUpdated(oldModel, actionListeners)
@@ -161,7 +177,7 @@ internal class ChatInteractor @Inject constructor(
             modelLocked {
                 if (clientToken.isNotEmpty()) {
                     ioScope.launch {
-                        val response = apiRepository.sendInit(configuration, clientToken)
+                        val response = apiRepository.sendInit(initConfiguration, clientToken)
                     }
                 }
             }
@@ -233,13 +249,13 @@ internal class ChatInteractor @Inject constructor(
     override fun createChat(apiToken: String, onResult: (CreateChatResult) -> Unit) {
         ioScope.launch {
             val response = apiRepository.initChat(
-                configuration,
+                initConfiguration,
                 apiToken
             )
             val result = when (response) {
                 is InitChatResponse.ApiError -> CreateChatResult.Error
                 is InitChatResponse.Done -> {
-                    userInfoRepository.setConfiguration(configuration.copy(clientToken = response.clientToken))
+                    userInfoRepository.updateConfiguration { copy(clientToken = clientToken) }
                     CreateChatResult.Done(response.clientToken)
                 }
             }
@@ -254,9 +270,9 @@ internal class ChatInteractor @Inject constructor(
 
             val model = modelLocked()
             apiRepository.connect(
-                configuration.urlChat,
+                initConfiguration.urlChat,
                 model.clientToken,
-                configuration,
+                initConfiguration,
                 eventListener
             )
         }
@@ -265,8 +281,8 @@ internal class ChatInteractor @Inject constructor(
     override fun connect() {
         setModel {
             copy(
-                clientToken = configuration.clientToken
-                    ?: userInfoRepository.getConfiguration(configuration)?.clientToken
+                clientToken = initConfiguration.clientToken
+                    ?: userInfoRepository.getConfiguration()?.clientToken
                     ?: clientToken,
                 connectionState = when (connectionState) {
                     UsedeskConnectionState.DISCONNECTED -> {
@@ -372,17 +388,17 @@ internal class ChatInteractor @Inject constructor(
         modelLocked {
             if (additionalFieldsNeeded) {
                 additionalFieldsNeeded = false
-                if (configuration.additionalFields.isNotEmpty() ||
-                    configuration.additionalNestedFields.isNotEmpty()
+                if (initConfiguration.additionalFields.isNotEmpty() ||
+                    initConfiguration.additionalNestedFields.isNotEmpty()
                 ) {
                     ioScope.launch {
                         firstMessageLock?.withLock {}
                         delay(REPEAT_DELAY)
                         val response = apiRepository.sendFields(
                             clientToken,
-                            configuration,
-                            configuration.additionalFields,
-                            configuration.additionalNestedFields
+                            initConfiguration,
+                            initConfiguration.additionalFields,
+                            initConfiguration.additionalNestedFields
                         )
                         if (response is SendAdditionalFieldsResponse.Error) {
                             eventMutex.withLock {
@@ -428,7 +444,7 @@ internal class ChatInteractor @Inject constructor(
                 firstMessageLock?.withLock {}
                 val model = modelLocked()
                 val response = apiRepository.sendFile(
-                    configuration,
+                    initConfiguration,
                     model.clientToken,
                     UsedeskFileInfo(
                         cachedUri,
@@ -536,7 +552,7 @@ internal class ChatInteractor @Inject constructor(
     private fun launchLoadForm(message: UsedeskMessageAgentText) {
         ioScope.launch {
             val response = apiRepository.loadForm(
-                configuration,
+                initConfiguration,
                 message.forms
             )
             when (response) {
@@ -595,7 +611,7 @@ internal class ChatInteractor @Inject constructor(
             }
             else -> {
                 val response = apiRepository.sendOfflineForm(
-                    configuration,
+                    initConfiguration,
                     offlineForm
                 )
                 when (response) {
@@ -727,7 +743,7 @@ internal class ChatInteractor @Inject constructor(
                         !previousPageIsLoading && previousPageIsAvailable -> {
                             ioScope.launch {
                                 val response = apiRepository.loadPreviousMessages(
-                                    configuration,
+                                    initConfiguration,
                                     clientToken,
                                     oldestMessageId
                                 )
@@ -755,25 +771,12 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun onChatInited(chatInited: ChatInited) {
-        setModel {
-            copy(clientToken = chatInited.token)
-        }
+        val model = setModel { copy(clientToken = chatInited.token) }
+        userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
 
         if (chatInited.status in ACTIVE_STATUSES) {
             unlockFirstMessage()
         }
-
-        val oldConfiguration = userInfoRepository.getConfiguration(configuration)
-
-        if (initClientOfflineForm != null ||
-            oldConfiguration?.clientInitMessage == initClientMessage
-        ) {
-            initClientMessage = null
-        }
-
-        val model = modelLocked()
-
-        userInfoRepository.setConfiguration(configuration.copy(clientToken = model.clientToken))
 
         val ids = model.messages.map(UsedeskMessage::id)
         val filteredMessages = chatInited.messages.filter { it.id !in ids }
@@ -789,7 +792,7 @@ internal class ChatInteractor @Inject constructor(
         when {
             chatInited.waitingEmail -> model.clientToken.let {
                 apiRepository.setClient(
-                    configuration.copy(clientToken = it)
+                    initConfiguration.copy(clientToken = it)
                 )
             }
             else -> eventListener.onSetEmailSuccess()
@@ -797,13 +800,13 @@ internal class ChatInteractor @Inject constructor(
         when {
             needToResendMessages -> {
                 val initedNotSentIds = initedNotSentMessages.map(UsedeskMessage::id)
-                notSentMessages.filter {
-                    it.id !in initedNotSentIds
-                }.forEach {
-                    ioScope.launch {
-                        sendAgain(it.id)
+                notSentMessages
+                    .filter { it.id !in initedNotSentIds }
+                    .forEach {
+                        ioScope.launch {
+                            sendAgain(it.id)
+                        }
                     }
-                }
             }
             else -> initedNotSentMessages = notSentMessages
         }

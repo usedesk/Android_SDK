@@ -87,7 +87,13 @@ internal class TextViewHolder(
                 }
             }
             onTextChangedListener = {
-                onEvent(Event.FormChanged(form, formState.copy(text = it)))
+                onEvent(
+                    Event.FormChanged(
+                        messageId,
+                        form,
+                        formState.copy(text = it)
+                    )
+                )
             }
         }
     }

@@ -19,6 +19,7 @@ internal class CheckBoxViewHolder(
         binding.rootView.setOnClickListener {
             onEvent(
                 Event.FormChanged(
+                    messageId,
                     form,
                     formState.copy(checked = !formState.checked)
                 )

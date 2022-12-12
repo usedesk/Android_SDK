@@ -1005,7 +1005,7 @@ internal class MessagesAdapter(
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
             itemsAdapter.update(
                 messageAgentText,
-                viewModel.modelFlow.value.agentItemsState,
+                viewModel.modelFlow.value.agentItemsState[chatItem.message.id] ?: mapOf(),
                 chatItem.message.formsLoaded
             )
 

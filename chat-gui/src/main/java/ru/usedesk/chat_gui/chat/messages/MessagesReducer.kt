@@ -45,12 +45,13 @@ internal class MessagesReducer(
 
     private fun State.formChanged(event: Event.FormChanged): State {
         val newAgentItemsState = agentItemsState.toMutableMap().apply {
-            val formsMap = getOrPut(event.message.id) { mapOf() }
+            val message = messages.first { it.id == event.messageId } as UsedeskMessageAgentText
+            val formsMap = getOrPut(event.messageId) { mapOf() }
                 .toMutableMap()
                 .apply {
                     put(event.form.id, event.formState)
                 }
-            event.message.forms.all { form ->
+            message.forms.all { form ->
                 when (form) {
                     is Form.Button -> true
                     is Form.Field -> when (form) {

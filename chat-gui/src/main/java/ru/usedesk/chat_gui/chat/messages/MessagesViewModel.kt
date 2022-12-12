@@ -68,7 +68,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         object SendDraft : Event
         class FormApplyClick(val messageId: Long) : Event
         class FormChanged(
-            val message: UsedeskMessageAgentText,
+            val messageId: Long,
             val form: Form,
             val formState: FormState
         ) : Event

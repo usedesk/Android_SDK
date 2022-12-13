@@ -61,7 +61,7 @@ internal class MessagesPage : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        findParent<UsedeskChatScreen>()?.getBundleArgs { _,
+        findParent<UsedeskChatScreen>()?.getBundleArgs(savedInstanceState) { _,
             agentName,
             rejectedFileExtensions,
             messagesDateFormat,

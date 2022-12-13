@@ -100,14 +100,15 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     private fun Binding.init(chatConfiguration: UsedeskChatConfiguration) {
-        UsedeskChatSdk.setConfiguration(chatConfiguration)
+        val usedeskChat = UsedeskChatSdk.init(
+            requireContext(),
+            chatConfiguration
+        )
+        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         val toolbarAdapter = UsedeskToolbarAdapter(toolbar).apply {
             setBackButton(requireActivity()::onBackPressed)
         }
-
-        val usedeskChat = UsedeskChatSdk.init(requireContext())
-        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             toolbarAdapter.updateTitle(styleValues, destination)

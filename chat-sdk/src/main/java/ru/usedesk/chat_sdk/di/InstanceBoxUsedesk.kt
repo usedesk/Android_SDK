@@ -2,7 +2,7 @@ package ru.usedesk.chat_sdk.di
 
 import android.content.Context
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 
 internal class InstanceBoxUsedesk(
@@ -12,7 +12,7 @@ internal class InstanceBoxUsedesk(
 ) {
     private var daggerChatComponent: ChatComponent?
 
-    val chatInteractor: IUsedeskChat
+    val chatInteractor: ChatInteractor
 
     init {
         val daggerChatComponent = DaggerChatComponent.builder()

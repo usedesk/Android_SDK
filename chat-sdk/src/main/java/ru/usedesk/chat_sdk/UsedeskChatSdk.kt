@@ -1,6 +1,9 @@
 package ru.usedesk.chat_sdk
 
 import android.content.Context
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.di.InstanceBoxUsedesk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
@@ -12,10 +15,11 @@ object UsedeskChatSdk {
     const val MAX_FILE_SIZE_MB = 128
     const val MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 
+    private val mutex = Mutex()
     private var instanceBox: InstanceBoxUsedesk? = null
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
-        null //TODO:вынести функционал из sdk
+        null //TODO: вынести функционал из sdk
     private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
 
     @JvmStatic
@@ -32,14 +36,22 @@ object UsedeskChatSdk {
         ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
 
     @JvmStatic
-    fun init(context: Context): IUsedeskChat = (instanceBox
-        ?: InstanceBoxUsedesk(
-            context,
-            requireConfiguration(),
-            usedeskMessagesRepository
-        ).also {
-            instanceBox = it
-        }).chatInteractor
+    @JvmOverloads
+    fun init(
+        context: Context,
+        chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
+    ): IUsedeskChat = runBlocking {
+        mutex.withLock {
+            setConfiguration(chatConfiguration)
+            instanceBox ?: InstanceBoxUsedesk(
+                context,
+                requireConfiguration(),
+                usedeskMessagesRepository
+            ).also {
+                instanceBox = it
+            }
+        }
+    }.chatInteractor
 
     @JvmStatic
     fun getInstance(): IUsedeskChat? = instanceBox?.chatInteractor
@@ -55,10 +67,14 @@ object UsedeskChatSdk {
     @JvmStatic
     @JvmOverloads
     fun release(force: Boolean = true) {
-        instanceBox?.also {
-            if (force || it.chatInteractor.isNoListeners()) {
-                it.release()
-                instanceBox = null
+        runBlocking {
+            mutex.withLock {
+                instanceBox?.also {
+                    if (force || it.chatInteractor.isNoListeners()) {
+                        it.release()
+                        instanceBox = null
+                    }
+                }
             }
         }
     }

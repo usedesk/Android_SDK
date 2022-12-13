@@ -344,7 +344,7 @@ internal class ChatInteractor @Inject constructor(
 
     private fun disconnect() {
         reconnectJob?.cancel()
-        ioScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             apiRepository.disconnect()
         }
     }
@@ -759,7 +759,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun release() {
+    internal fun release() {
         ioScope.cancel()
         disconnect()
     }

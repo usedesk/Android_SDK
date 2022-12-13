@@ -34,8 +34,6 @@ interface IUsedeskChat {
 
     fun loadPreviousMessagesPage()
 
-    fun release()
-
     sealed interface SendOfflineFormResult {
         object Done : SendOfflineFormResult
         object Error : SendOfflineFormResult

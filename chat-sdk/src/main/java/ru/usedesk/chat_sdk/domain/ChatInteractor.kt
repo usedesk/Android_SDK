@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class ChatInteractor @Inject constructor(
-    private val configuration: UsedeskChatConfiguration,
+    private val initConfiguration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
     private val cachedMessages: ICachedMessagesInteractor
@@ -33,7 +33,7 @@ internal class ChatInteractor @Inject constructor(
     private val mainThread = AndroidSchedulers.mainThread()
     private val ioScheduler = Schedulers.io()
     private var token: String? = null
-    private var initClientMessage: String? = configuration.clientInitMessage
+    private var initClientMessage: String? = initConfiguration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
     private var actionListeners = mutableSetOf<IUsedeskActionListener>()
@@ -93,7 +93,7 @@ internal class ChatInteractor @Inject constructor(
 
         override fun onTokenError() {
             try {
-                apiRepository.init(configuration, token)
+                apiRepository.init(initConfiguration, token)
             } catch (e: UsedeskException) {
                 onException(e)
             }
@@ -155,9 +155,9 @@ internal class ChatInteractor @Inject constructor(
         initClientMessage = when {
             initClientOfflineForm != null ||
                     oldConfiguration?.clientInitMessage == initClientMessage -> null
-            else -> configuration.clientInitMessage
+            else -> initConfiguration.clientInitMessage
         }
-        token = (configuration.clientToken
+        token = (initConfiguration.clientToken
             ?: oldConfiguration?.clientToken)
             ?.ifEmpty { null }
 
@@ -234,7 +234,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun createChat(apiToken: String) = apiRepository.initChat(
-        configuration,
+        initConfiguration,
         apiToken
     ).also { clientToken ->
         userInfoRepository.updateConfiguration { copy(clientToken = clientToken) }
@@ -253,9 +253,9 @@ internal class ChatInteractor @Inject constructor(
             resetFirstMessageLock()
 
             apiRepository.connect(
-                configuration.urlChat,
+                initConfiguration.urlChat,
                 token,
-                configuration,
+                initConfiguration,
                 eventListener
             )
         }
@@ -388,8 +388,8 @@ internal class ChatInteractor @Inject constructor(
             jobsMutex.withLock {
                 if (additionalFieldsNeeded) {
                     additionalFieldsNeeded = false
-                    if (configuration.additionalFields.isNotEmpty() ||
-                        configuration.additionalNestedFields.isNotEmpty()
+                    if (initConfiguration.additionalFields.isNotEmpty() ||
+                        initConfiguration.additionalNestedFields.isNotEmpty()
                     ) {
                         ioScope.launch {
                             try {
@@ -397,9 +397,9 @@ internal class ChatInteractor @Inject constructor(
                                 delay(3000)
                                 apiRepository.send(
                                     token!!,
-                                    configuration,
-                                    configuration.additionalFields,
-                                    configuration.additionalNestedFields
+                                    initConfiguration,
+                                    initConfiguration.additionalFields,
+                                    initConfiguration.additionalNestedFields
                                 )
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -480,7 +480,7 @@ internal class ChatInteractor @Inject constructor(
             eventListener.onMessageUpdated(cachedNotSentMessage)
             waitFirstMessage()
             apiRepository.send(
-                configuration,
+                initConfiguration,
                 token!!,
                 UsedeskFileInfo(
                     cachedUri,
@@ -624,7 +624,7 @@ internal class ChatInteractor @Inject constructor(
                 chatInited?.let(this@ChatInteractor::onChatInited)
             }
             else -> apiRepository.send(
-                configuration,
+                initConfiguration,
                 offlineForm
             )
         }
@@ -808,7 +808,7 @@ internal class ChatInteractor @Inject constructor(
             oldestMessageId != null && token != null -> CoroutineScope(Dispatchers.IO).async {
                 try {
                     val hasUnloadedMessages = apiRepository.loadPreviousMessages(
-                        configuration,
+                        initConfiguration,
                         token,
                         oldestMessageId
                     )
@@ -848,7 +848,7 @@ internal class ChatInteractor @Inject constructor(
     private fun sendUserEmail() {
         try {
             token?.let {
-                apiRepository.setClient(configuration.copy(clientToken = it))
+                apiRepository.setClient(initConfiguration.copy(clientToken = it))
             }
         } catch (e: UsedeskException) {
             exceptionSubject.onNext(e)

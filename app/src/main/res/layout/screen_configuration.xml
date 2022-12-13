@@ -69,13 +69,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_token"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_token"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/api_token_hint"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -83,13 +83,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_email"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_email_hint"
                         android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -97,13 +97,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_name"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_name"
                         android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -123,13 +123,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_url_chat"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_url_chat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/url_chat_hint"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -137,13 +137,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_url_offline_form"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_url_offline_form"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/url_chat_api"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -151,13 +151,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_company_id"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_company_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/company_id_hint"
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -165,13 +165,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_channel_id"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_channel_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/channel_id_hint"
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -179,28 +179,28 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_token"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_token"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
-                        android:saveEnabled="false"
                         android:hint="@string/client_token"
-                        android:inputType="textUri" />
+                        android:inputType="textUri"
+                        android:saveEnabled="false" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_note"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_note"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_note"
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -208,13 +208,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_phone_number"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_phone_number"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_phone"
                         android:inputType="number"
                         tools:ignore="TextFields" />
@@ -223,26 +223,26 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_additional_id"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_additional_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_additional_id" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_init_message"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_client_init_message"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/client_init_message"
                         android:inputType="textCapSentences" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -250,13 +250,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_custom_agent_name"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_custom_agent_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/custom_agent_name"
                         android:inputType="textCapWords" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -264,39 +264,39 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_custom_date_format"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_custom_date_format"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/custom_date_format" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_custom_time_format"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_custom_time_format"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/custom_time_format" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_messages_page_size"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_messages_page_size"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/messages_page_size"
                         android:inputType="numberDecimal"
                         android:maxLength="3" />
@@ -320,8 +320,8 @@
                         android:layout_height="50dp"
                         android:layout_margin="12dp"
                         android:clickable="true"
-                        app:srcCompat="@drawable/add_avatar"
-                        android:focusable="true" />
+                        android:focusable="true"
+                        app:srcCompat="@drawable/add_avatar" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <TextView

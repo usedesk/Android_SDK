@@ -39,13 +39,13 @@ internal class SocketConnection(
             }
             on(Socket.EVENT_CONNECT_ERROR) {
                 (it.getOrNull(0) as? Throwable)?.printStackTrace()
-                eventListener.onDisconnected()
+                this@SocketConnection.disconnect()
             }
             on(EVENT_SERVER_ACTION) {
                 onResponse(it[0].toString())
             }
             on(Socket.EVENT_DISCONNECT) {
-                eventListener.onDisconnected()
+                this@SocketConnection.disconnect()
             }
 
             connect()
@@ -73,6 +73,7 @@ internal class SocketConnection(
 
     private fun onResponse(rawResponse: String) {
         try {
+            UsedeskLog.onLog("Socket.rawResponse", rawResponse)
             when (val response = parse(rawResponse)) {
                 is ErrorResponse -> {
                     val usedeskSocketException = when (response.code) {
@@ -109,6 +110,7 @@ internal class SocketConnection(
         try {
             val rawRequest = gson.toJson(socketRequest)
             val jsonRequest = JSONObject(rawRequest)
+            UsedeskLog.onLog("Socket.sendRequest") { gson.toJson(rawRequest) }
             socket.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {
             throw UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message)
@@ -124,7 +126,9 @@ internal class SocketConnection(
             off(EVENT_SERVER_ACTION)
             off(Socket.EVENT_DISCONNECT)
             disconnect()
+            close()
         }
+        eventListener.onDisconnected()
     }
 
     companion object {

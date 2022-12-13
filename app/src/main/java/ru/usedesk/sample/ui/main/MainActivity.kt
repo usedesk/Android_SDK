@@ -106,23 +106,23 @@ class MainActivity : AppCompatActivity(),
             if (old?.goSdk != new.goSdk) {
                 new.goSdk?.process {
                     navController.apply {
-                        if (currentDestination?.id == R.id.dest_configurationScreen) {
-                            if (new.configuration.withKb) {
-                                val kbConfiguration = new.configuration.toKbConfiguration()
-                                navigate(
-                                    R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-                                    UsedeskKnowledgeBaseScreen.createBundle(
-                                        new.configuration.withKbSupportButton,
-                                        new.configuration.withKbArticleRating,
-                                        kbConfiguration
-                                    )
+                        if (new.configuration.withKb) {
+                            val kbConfiguration = new.configuration.toKbConfiguration()
+                            navigateSafe(
+                                R.id.dest_configurationScreen,
+                                R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+                                UsedeskKnowledgeBaseScreen.createBundle(
+                                    new.configuration.withKbSupportButton,
+                                    new.configuration.withKbArticleRating,
+                                    kbConfiguration
                                 )
-                            } else {
-                                navigate(
-                                    R.id.action_configurationScreen_to_usedeskChatScreen,
-                                    createChatScreenBundle(new.configuration)
-                                )
-                            }
+                            )
+                        } else {
+                            navigateSafe(
+                                R.id.dest_configurationScreen,
+                                R.id.action_configurationScreen_to_usedeskChatScreen,
+                                createChatScreenBundle(new.configuration)
+                            )
                         }
                     }
                 }

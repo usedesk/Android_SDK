@@ -43,7 +43,6 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
 
     init {
         usedeskChat.addActionListener(actionListener)
-        usedeskChat.connect()
     }
 
     override fun onCleared() {

@@ -10,10 +10,6 @@ interface IUsedeskChat {
 
     fun isNoListeners(): Boolean
 
-    fun connect()
-
-    fun disconnect()
-
     fun loadForm(messageId: Long)
 
     fun send(textMessage: String)
@@ -51,7 +47,7 @@ interface IUsedeskChat {
     }
 
     data class Model(
-        val connectionState: UsedeskConnectionState = UsedeskConnectionState.DISCONNECTED,
+        val connectionState: UsedeskConnectionState = UsedeskConnectionState.CONNECTING,
         val clientToken: String = "",
         val messages: List<UsedeskMessage> = listOf(),
         val previousPageIsAvailable: Boolean = true,

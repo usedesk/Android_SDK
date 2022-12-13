@@ -149,13 +149,13 @@ internal class ChatInteractor @Inject constructor(
                 oldModel = model
             }
         }
+
+        launchConnect()
     }
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
-            setModel {
-                copy(connectionState = UsedeskConnectionState.CONNECTED)
-            }
+            setModel { copy(connectionState = UsedeskConnectionState.CONNECTED) }
         }
 
         override fun onDisconnected() {
@@ -165,11 +165,7 @@ internal class ChatInteractor @Inject constructor(
                     delay(REPEAT_DELAY)
                     connect()
                 }
-                setModel {
-                    copy(
-                        connectionState = UsedeskConnectionState.DISCONNECTED
-                    )
-                }
+                setModel { copy(connectionState = UsedeskConnectionState.DISCONNECTED) }
             }
         }
 
@@ -184,9 +180,7 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onFeedback() {
-            setModel {
-                copy(feedbackEvent = UsedeskSingleLifeEvent(Unit))
-            }
+            setModel { copy(feedbackEvent = UsedeskSingleLifeEvent(Unit)) }
         }
 
         override fun onException(exception: Exception) {
@@ -278,21 +272,21 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun connect() {
+    private fun connect() {
         setModel {
-            copy(
-                clientToken = initConfiguration.clientToken
-                    ?: userInfoRepository.getConfiguration()?.clientToken
-                    ?: clientToken,
-                connectionState = when (connectionState) {
-                    UsedeskConnectionState.DISCONNECTED -> {
-                        reconnectJob?.cancel()
-                        launchConnect()
-                        UsedeskConnectionState.RECONNECTING
-                    }
-                    else -> connectionState
+            when (connectionState) {
+                UsedeskConnectionState.DISCONNECTED -> {
+                    reconnectJob?.cancel()
+                    launchConnect()
+                    copy(
+                        clientToken = initConfiguration.clientToken
+                            ?: userInfoRepository.getConfiguration()?.clientToken
+                            ?: clientToken,
+                        connectionState = UsedeskConnectionState.RECONNECTING
+                    )
                 }
-            )
+                else -> this
+            }
         }
     }
 
@@ -348,7 +342,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun disconnect() {
+    private fun disconnect() {
         reconnectJob?.cancel()
         ioScope.launch {
             apiRepository.disconnect()

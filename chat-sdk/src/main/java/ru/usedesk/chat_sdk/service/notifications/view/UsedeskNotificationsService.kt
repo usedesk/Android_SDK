@@ -99,7 +99,6 @@ abstract class UsedeskNotificationsService : Service() {
                 UsedeskChatSdk.setConfiguration(chatConfiguration)
                 UsedeskChatSdk.init(this).apply {
                     addActionListener(actionListener)
-                    connect()
                 }
             }
             else -> stopSelf(startId)

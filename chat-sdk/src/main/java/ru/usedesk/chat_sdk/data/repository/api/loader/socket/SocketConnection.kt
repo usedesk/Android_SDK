@@ -73,7 +73,7 @@ internal class SocketConnection(
 
     private fun onResponse(rawResponse: String) {
         try {
-            UsedeskLog.onLog("Socket.rawResponse", rawResponse)
+            UsedeskLog.onLog("Socket.rawResponse") { rawResponse }
             when (val response = parse(rawResponse)) {
                 is ErrorResponse -> {
                     val usedeskSocketException = when (response.code) {

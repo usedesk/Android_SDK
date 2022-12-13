@@ -26,14 +26,16 @@ internal class SocketApi @Inject constructor(
         eventListener: EventListener
     ) {
         mutex.withLock {
-            socketConnection = socketConnection ?: try {
-                SocketConnection(
-                    gson,
-                    url,
-                    usedeskOkHttpClientFactory,
-                    initChatRequest,
-                    eventListener
-                )
+            try {
+                if (!isConnected()) {
+                    socketConnection = SocketConnection(
+                        gson,
+                        url,
+                        usedeskOkHttpClientFactory,
+                        initChatRequest,
+                        eventListener
+                    )
+                }
             } catch (e: Exception) {
                 throw UsedeskSocketException(
                     UsedeskSocketException.Error.SOCKET_INIT_ERROR,

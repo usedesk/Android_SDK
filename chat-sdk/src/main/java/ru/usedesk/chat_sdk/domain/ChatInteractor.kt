@@ -8,7 +8,10 @@ import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.*
+import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
+import ru.usedesk.chat_sdk.di.IRelease
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -19,56 +22,13 @@ internal class ChatInteractor @Inject constructor(
     private val initConfiguration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
-    private val cachedMessagesRepository: ICachedMessagesRepository //Переместить в ap
-) : IUsedeskChat {
+    private val cachedMessagesRepository: ICachedMessagesRepository
+) : IUsedeskChat, IRelease {
 
     private var initClientMessage: String? = initConfiguration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
     private val modelFlow: MutableStateFlow<Model>
-
-    private class ActionListeners : IUsedeskActionListener {
-        private val listenersMutex = Mutex()
-        private var listeners = mutableSetOf<IUsedeskActionListener>()
-
-        fun add(listener: IUsedeskActionListener) {
-            runBlocking {
-                listenersMutex.withLock {
-                    listeners.add(listener)
-                }
-            }
-        }
-
-        fun remove(listener: IUsedeskActionListener) {
-            runBlocking {
-                listenersMutex.withLock {
-                    listeners.remove(listener)
-                }
-            }
-        }
-
-        fun isNoListeners() = runBlocking { listenersMutex.withLock { listeners } }.isEmpty()
-
-        override fun onModel(
-            model: Model,
-            newMessages: List<UsedeskMessage>,
-            updatedMessages: List<UsedeskMessage>,
-            removedMessages: List<UsedeskMessage>
-        ) {
-            listeners.forEach {
-                it.onModel(
-                    model,
-                    newMessages,
-                    updatedMessages,
-                    removedMessages
-                )
-            }
-        }
-
-        override fun onException(usedeskException: Exception) {
-            listeners.forEach { it.onException(usedeskException) }
-        }
-    }
 
     private val actionListeners = ActionListeners()
 
@@ -86,72 +46,6 @@ internal class ChatInteractor @Inject constructor(
     private var additionalFieldsNeeded: Boolean = true
 
     var oldModel: Model? = null
-    private fun Model.onModelUpdated(oldModel: Model?, listener: IUsedeskActionListener) {
-        when (oldModel?.messages) {
-            messages -> {
-                listener.onModel(
-                    this,
-                    listOf(),
-                    listOf(),
-                    listOf()
-                )
-            }
-            else -> {
-                val newMessages = mutableListOf<UsedeskMessage>()
-                val updatedMessages = mutableListOf<UsedeskMessage>()
-                val removedMessages = mutableListOf<UsedeskMessage>()
-                messages.forEach { message ->
-                    val oldMessage = oldModel?.messages?.firstOrNull { it.id == message.id }
-                    when {
-                        oldMessage == null -> {
-                            if (!inited) {
-                                newMessages.add(message)
-                            }
-                        }
-                        oldMessage != message -> updatedMessages.add(message)
-                    }
-                }
-                oldModel?.messages?.forEach { oldMessage ->
-                    if (messages.all { message -> message.id != oldMessage.id }) {
-                        removedMessages.add(oldMessage)
-                    }
-                }
-                listener.onModel(
-                    this,
-                    newMessages,
-                    updatedMessages,
-                    removedMessages
-                )
-            }
-        }
-    }
-
-    init {
-        val oldConfiguration = userInfoRepository.getConfiguration()
-
-        initClientMessage = when {
-            initClientOfflineForm != null ||
-                    oldConfiguration?.clientInitMessage == initClientMessage -> null
-            else -> initConfiguration.clientInitMessage
-        }
-
-        modelFlow = MutableStateFlow(
-            Model(
-                clientToken = initConfiguration.clientToken
-                    ?: oldConfiguration?.clientToken
-                    ?: ""
-            )
-        )
-
-        ioScope.launch {
-            modelFlow.collect { model ->
-                model.onModelUpdated(oldModel, actionListeners)
-                oldModel = model
-            }
-        }
-
-        launchConnect()
-    }
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
@@ -227,6 +121,73 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
+    private fun Model.onModelUpdated(oldModel: Model?, listener: IUsedeskActionListener) {
+        when (oldModel?.messages) {
+            messages -> {
+                listener.onModel(
+                    this,
+                    listOf(),
+                    listOf(),
+                    listOf()
+                )
+            }
+            else -> {
+                val newMessages = mutableListOf<UsedeskMessage>()
+                val updatedMessages = mutableListOf<UsedeskMessage>()
+                val removedMessages = mutableListOf<UsedeskMessage>()
+                messages.forEach { message ->
+                    val oldMessage = oldModel?.messages?.firstOrNull { it.id == message.id }
+                    when {
+                        oldMessage == null -> {
+                            if (!inited) {
+                                newMessages.add(message)
+                            }
+                        }
+                        oldMessage != message -> updatedMessages.add(message)
+                    }
+                }
+                oldModel?.messages?.forEach { oldMessage ->
+                    if (messages.all { message -> message.id != oldMessage.id }) {
+                        removedMessages.add(oldMessage)
+                    }
+                }
+                listener.onModel(
+                    this,
+                    newMessages,
+                    updatedMessages,
+                    removedMessages
+                )
+            }
+        }
+    }
+
+    init {
+        val oldConfiguration = userInfoRepository.getConfiguration()
+
+        initClientMessage = when {
+            initClientOfflineForm != null ||
+                    oldConfiguration?.clientInitMessage == initClientMessage -> null
+            else -> initConfiguration.clientInitMessage
+        }
+
+        modelFlow = MutableStateFlow(
+            Model(
+                clientToken = initConfiguration.clientToken
+                    ?: oldConfiguration?.clientToken
+                    ?: ""
+            )
+        )
+
+        ioScope.launch {
+            modelFlow.collect { model ->
+                model.onModelUpdated(oldModel, actionListeners)
+                oldModel = model
+            }
+        }
+
+        launchConnect()
+    }
+
     private fun sendInitMessage() {
         val initMessage = initClientOfflineForm ?: initClientMessage
         initMessage?.let {
@@ -237,23 +198,6 @@ internal class ChatInteractor @Inject constructor(
             } catch (e: Exception) {
                 //nothing
             }
-        }
-    }
-
-    override fun createChat(apiToken: String, onResult: (CreateChatResult) -> Unit) {
-        ioScope.launch {
-            val response = apiRepository.initChat(
-                initConfiguration,
-                apiToken
-            )
-            val result = when (response) {
-                is InitChatResponse.ApiError -> CreateChatResult.Error
-                is InitChatResponse.Done -> {
-                    userInfoRepository.updateConfiguration { copy(clientToken = clientToken) }
-                    CreateChatResult.Done(response.clientToken)
-                }
-            }
-            onResult(result)
         }
     }
 
@@ -759,7 +703,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    internal fun release() {
+    override fun release() {
         ioScope.cancel()
         disconnect()
     }
@@ -803,6 +747,49 @@ internal class ChatInteractor @Inject constructor(
                     }
             }
             else -> initedNotSentMessages = notSentMessages
+        }
+    }
+
+    private class ActionListeners : IUsedeskActionListener {
+        private val listenersMutex = Mutex()
+        private var listeners = mutableSetOf<IUsedeskActionListener>()
+
+        fun add(listener: IUsedeskActionListener) {
+            runBlocking {
+                listenersMutex.withLock {
+                    listeners.add(listener)
+                }
+            }
+        }
+
+        fun remove(listener: IUsedeskActionListener) {
+            runBlocking {
+                listenersMutex.withLock {
+                    listeners.remove(listener)
+                }
+            }
+        }
+
+        fun isNoListeners() = runBlocking { listenersMutex.withLock { listeners } }.isEmpty()
+
+        override fun onModel(
+            model: Model,
+            newMessages: List<UsedeskMessage>,
+            updatedMessages: List<UsedeskMessage>,
+            removedMessages: List<UsedeskMessage>
+        ) {
+            listeners.forEach {
+                it.onModel(
+                    model,
+                    newMessages,
+                    updatedMessages,
+                    removedMessages
+                )
+            }
+        }
+
+        override fun onException(usedeskException: Exception) {
+            listeners.forEach { it.onException(usedeskException) }
         }
     }
 

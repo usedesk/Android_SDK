@@ -1,24 +1,19 @@
-package ru.usedesk.chat_sdk.di
+package ru.usedesk.chat_sdk.di.chat
 
 import android.content.Context
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.FileLoader
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
-import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
-import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
-import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationLoader
-import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
+import ru.usedesk.chat_sdk.data.repository.messages.CachedMessagesRepository
+import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository
-import ru.usedesk.chat_sdk.domain.CachedMessagesRepository
+import ru.usedesk.chat_sdk.di.UsedeskCustom
 import ru.usedesk.chat_sdk.domain.ChatInteractor
-import ru.usedesk.chat_sdk.domain.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import javax.inject.Scope
@@ -54,16 +49,7 @@ internal interface ChatModuleBinds {
     fun cachedMessagesInteractor(interactor: CachedMessagesRepository): ICachedMessagesRepository
 
     @[Binds ChatScope]
-    fun apiRepository(repository: ApiRepository): IApiRepository
-
-    @[Binds ChatScope]
-    fun userInfoRepository(repository: UserInfoRepository): IUserInfoRepository
-
-    @[Binds ChatScope]
     fun fileLoader(loader: FileLoader): IFileLoader
-
-    @[Binds ChatScope]
-    fun configurationLoader(loader: ConfigurationLoader): IConfigurationLoader
 }
 
 @Scope

@@ -16,7 +16,10 @@ interface IUsedeskChat {
 
     fun send(usedeskFileInfoList: List<UsedeskFileInfo>)
 
-    fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback)
+    fun send(
+        agentMessage: UsedeskMessageAgentText,
+        feedback: UsedeskFeedback
+    )
 
     fun sendAgain(messageId: Long)
 
@@ -28,20 +31,16 @@ interface IUsedeskChat {
 
     fun sendMessageDraft()
 
-    fun send(offlineForm: UsedeskOfflineForm, onResult: (SendOfflineFormResult) -> Unit)
-
-    fun createChat(apiToken: String, onResult: (CreateChatResult) -> Unit)
+    fun send(
+        offlineForm: UsedeskOfflineForm,
+        onResult: (SendOfflineFormResult) -> Unit
+    )
 
     fun loadPreviousMessagesPage()
 
     sealed interface SendOfflineFormResult {
         object Done : SendOfflineFormResult
         object Error : SendOfflineFormResult
-    }
-
-    sealed interface CreateChatResult {
-        class Done(val clientToken: String) : CreateChatResult
-        object Error : CreateChatResult
     }
 
     data class Model(

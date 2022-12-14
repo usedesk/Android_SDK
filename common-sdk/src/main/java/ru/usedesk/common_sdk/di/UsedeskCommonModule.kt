@@ -30,7 +30,7 @@ internal class UsedeskCommonModuleProvides {
 @Module
 internal interface UsedeskCommonModuleBinds {
     @Binds
-    fun dateConverter(converter: MultipartConverter): IUsedeskMultipartConverter
+    fun multipartConverter(converter: MultipartConverter): IUsedeskMultipartConverter
 
     @Binds
     fun apiFactory(factory: ApiFactory): IUsedeskApiFactory

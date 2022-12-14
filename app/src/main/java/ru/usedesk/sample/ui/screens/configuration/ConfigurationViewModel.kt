@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.CreateChatResult
+import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -109,20 +109,23 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
             }
         }
 
-    fun createChat(apiToken: String) {
+    fun createChat(
+        preparationInteractor: IUsedeskPreparation,
+        apiToken: String
+    ) {
         setModel {
             when {
                 clientToken.loading -> this
                 else -> {
-                    UsedeskChatSdk.requireInstance().createChat(apiToken) { result ->
+                    preparationInteractor.createChat(apiToken) { result ->
                         setModel {
                             copy(
                                 clientToken = when (result) {
-                                    is CreateChatResult.Done -> clientToken.copy(
+                                    is IUsedeskPreparation.CreateChatResult.Done -> clientToken.copy(
                                         loading = false,
                                         completed = UsedeskSingleLifeEvent(result.clientToken)
                                     )
-                                    CreateChatResult.Error -> clientToken.copy(
+                                    IUsedeskPreparation.CreateChatResult.Error -> clientToken.copy(
                                         loading = false,
                                         error = UsedeskSingleLifeEvent(Unit)
                                     )
@@ -130,7 +133,7 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
                             )
                         }
 
-                        UsedeskChatSdk.release(false)
+                        UsedeskChatSdk.releasePreparation()
                     }
                     copy(clientToken = clientToken.copy(loading = true))
                 }

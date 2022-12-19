@@ -122,6 +122,7 @@ internal class MessageFormsAdapter(
         buttons: List<Button>
     ) {
         if (this.messageId != messageId) {
+            this.messageId = messageId
             adapterScope.cancel()
             adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
             this.form = UsedeskForm()

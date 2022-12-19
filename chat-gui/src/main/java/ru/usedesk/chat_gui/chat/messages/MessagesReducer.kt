@@ -42,11 +42,11 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
 
     private fun State.formListClicked(event: Event.FormListClicked) = copy() //TODO:
 
-    private fun State.formChanged(event: Event.FormChanged) = apply {
-        val form = formMap[event.messageId]
-        if (form != null) {
-            usedeskChat.saveForm(
-                form.copy(
+    private fun State.formChanged(event: Event.FormChanged): State =
+        when (val form = formMap[event.messageId]) {
+            null -> this
+            else -> {
+                val newForm = form.copy(
                     fields = form.fields.map {
                         when (it.id) {
                             event.field.id -> event.field
@@ -54,9 +54,14 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                         }
                     }
                 )
-            )
+                usedeskChat.saveForm(newForm)
+                copy(
+                    formMap = formMap.toMutableMap().apply {
+                        put(event.messageId, newForm)
+                    }
+                )
+            }
         }
-    }
 
     private fun State.showToBottomButton(event: Event.ShowToBottomButton) =
         copy(fabToBottom = event.show)
@@ -64,11 +69,11 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
     private fun State.showAttachmentPanel(event: Event.ShowAttachmentPanel) =
         copy(attachmentPanelVisible = event.show)
 
-    private fun State.removeMessage(event: Event.RemoveMessage) = this.apply {
+    private fun State.removeMessage(event: Event.RemoveMessage) = apply {
         usedeskChat.removeMessage(event.id)
     }
 
-    private fun State.sendAgain(event: Event.SendAgain) = this.apply {
+    private fun State.sendAgain(event: Event.SendAgain) = apply {
         usedeskChat.sendAgain(event.id)
     }
 
@@ -118,17 +123,6 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
     private fun State.init(event: Event.Init) =
         copy(groupAgentMessages = event.groupAgentMessages)
 
-    /*private fun State.previousMessagesResult(event: Event.PreviousMessagesResult) = copy(
-        hasPreviousMessages = event.hasPreviousMessages,
-        previousLoading = false,
-        chatItems = when (this.hasPreviousMessages) {
-            event.hasPreviousMessages -> chatItems
-            else -> messages.convert(
-                event.hasPreviousMessages,
-                groupAgentMessages
-            )
-        }
-    )*/
 
     private fun State.messagesShowed(event: Event.MessagesShowed): State {
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->

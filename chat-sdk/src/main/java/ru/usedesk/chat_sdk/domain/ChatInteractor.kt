@@ -606,7 +606,10 @@ internal class ChatInteractor @Inject constructor(
         //TODO
     }
 
-    override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
+    override fun send(
+        agentMessage: UsedeskMessageAgentText,
+        feedback: UsedeskFeedback
+    ) {
         ioScope.launch {
             when (apiRepository.sendFeedback(agentMessage.id, feedback)) {
                 is SocketSendResponse.Done -> onMessageUpdate(

@@ -1005,7 +1005,6 @@ internal class MessagesAdapter(
             )
 
             val formShowed = messageAgentText.buttons.isNotEmpty() || chatItem.form?.fields != null
-            binding.content.pbLoading.visibility = visibleGone(formShowed)
             binding.content.rvItems.visibility = visibleGone(formShowed)
 
             binding.content.rootView.layoutParams.apply {

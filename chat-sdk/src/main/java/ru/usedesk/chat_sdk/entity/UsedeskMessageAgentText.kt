@@ -57,8 +57,8 @@ data class UsedeskMessageAgentText(
             override val name: String,
             override val required: Boolean,
             override val hasError: Boolean = false,
+            val parentId: Long? = null,
             val items: kotlin.collections.List<Item> = listOf(),
-            val tree: kotlin.collections.List<List>? = null,
             val selected: Item? = null
         ) : Field {
             data class Item(

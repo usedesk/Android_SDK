@@ -8,6 +8,8 @@ import dagger.Provides
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.FileLoader
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
+import ru.usedesk.chat_sdk.data.repository.form.FormRepository
+import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
 import ru.usedesk.chat_sdk.data.repository.messages.CachedMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
@@ -46,7 +48,10 @@ internal interface ChatModuleBinds {
     fun chatInteractor(interactor: ChatInteractor): IUsedeskChat
 
     @[Binds ChatScope]
-    fun cachedMessagesInteractor(interactor: CachedMessagesRepository): ICachedMessagesRepository
+    fun cachedMessagesRepository(interactor: CachedMessagesRepository): ICachedMessagesRepository
+
+    @[Binds ChatScope]
+    fun formRepository(repository: FormRepository): IFormRepository
 
     @[Binds ChatScope]
     fun fileLoader(loader: FileLoader): IFileLoader

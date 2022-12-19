@@ -34,6 +34,9 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber?.toString())
     )
 
+    internal fun userKey() =
+        "${companyId}_${channelId}_${clientEmail}_${clientPhoneNumber}_${clientName}"
+
     private fun String.isNotEmptyNumber(): Boolean = isNotEmpty() && all(Char::isDigit)
 
     private fun String?.isValidClientToken(): Boolean = this == null || length >= 64

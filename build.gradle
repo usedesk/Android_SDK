@@ -22,6 +22,7 @@ buildscript {
         exoPlayerVersion = "2.18.1"
         annotationVersion = "1.5.0"
         multidexVersion = "1.0.3"
+        roomVersion = "2.4.3"
     }
     repositories {
         google()

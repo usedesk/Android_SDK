@@ -8,6 +8,7 @@ import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.di.IRelease
 import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
@@ -23,7 +24,8 @@ internal class ChatInteractor @Inject constructor(
     private val initConfiguration: UsedeskChatConfiguration,
     private val userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
-    private val cachedMessagesRepository: ICachedMessagesRepository
+    private val cachedMessagesRepository: ICachedMessagesRepository,
+    private val formRepository: IFormRepository
 ) : IUsedeskChat, IRelease {
 
     private var initClientMessage: String? = initConfiguration.clientInitMessage
@@ -536,7 +538,7 @@ internal class ChatInteractor @Inject constructor(
                 formMap = formMap.toMutableMap().apply {
                     put(form.id, form)
                     ioScope.launch {
-                        //TODO:
+                        formRepository.saveForm(form)
                     }
                 }
             )
@@ -554,8 +556,7 @@ internal class ChatInteractor @Inject constructor(
                                 hasError = field.required && !field.checked
                             )
                             is UsedeskMessageAgentText.Field.List -> {
-                                val tree = field.tree ?: listOf(field)
-                                val isValid = tree.all { !it.required || field.selected != null }
+                                val isValid = !field.required || field.selected != null
                                 field.copy(hasError = !isValid)
                             }
                             is UsedeskMessageAgentText.Field.Text -> {

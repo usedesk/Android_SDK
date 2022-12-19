@@ -16,7 +16,7 @@ import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationViewModel.Model
 
 class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
-    private val configurationRepository = ServiceLocator.configurationRepository
+    private val configurationRepository = ServiceLocator.instance.configurationRepository
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val ioScope = CoroutineScope(Dispatchers.IO)

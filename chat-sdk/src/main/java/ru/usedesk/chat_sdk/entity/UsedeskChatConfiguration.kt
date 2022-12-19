@@ -31,7 +31,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         validChannelId = channelId.isNotEmptyNumber(),
         validClientToken = clientToken.isValidClientToken(),
         validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
-        validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
+        validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber?.toString())
     )
 
     private fun String.isNotEmptyNumber(): Boolean = isNotEmpty() && all(Char::isDigit)

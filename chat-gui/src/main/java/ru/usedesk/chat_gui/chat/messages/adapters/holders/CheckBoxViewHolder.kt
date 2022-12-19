@@ -1,27 +1,31 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormState
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageItemsAdapter
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.ItemCheckBox
+import ru.usedesk.chat_sdk.entity.UsedeskForm
 
 internal class CheckBoxViewHolder(
-    private val binding: MessageItemsAdapter.CheckBoxBinding,
+    private val binding: MessageFormsAdapter.CheckBoxBinding,
     private val onEvent: (Event) -> Unit
-) : BaseViewHolder<Form.Field.CheckBox, FormState.CheckBox>(binding.rootView) {
+) : BaseViewHolder(binding.rootView) {
 
     override fun bind(
         messageId: Long,
-        form: Form.Field.CheckBox,
-        formState: FormState.CheckBox
+        item: Item,
+        state: UsedeskForm.State
     ) {
-        binding.tvText.text = form.name
+        item as ItemCheckBox
+        binding.tvText.text = item.checkBox.name
         binding.rootView.setOnClickListener {
             onEvent(
                 Event.FormChanged(
                     messageId,
-                    form,
-                    formState.copy(checked = !formState.checked)
+                    item.checkBox.copy(
+                        checked = !item.checkBox.checked,
+                        hasError = false
+                    )
                 )
             )
         }

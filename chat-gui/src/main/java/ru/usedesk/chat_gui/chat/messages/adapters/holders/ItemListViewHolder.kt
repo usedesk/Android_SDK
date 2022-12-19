@@ -1,30 +1,42 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
+import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormState
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageItemsAdapter
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.ItemList
+import ru.usedesk.chat_sdk.entity.UsedeskForm
 
 internal class ItemListViewHolder(
-    private val binding: MessageItemsAdapter.ItemListBinding,
+    private val binding: MessageFormsAdapter.ItemListBinding,
     private val onEvent: (Event) -> Unit
-) : BaseViewHolder<Form.Field.List, FormState.List>(binding.rootView) {
+) : BaseViewHolder(binding.rootView) {
 
     override fun bind(
         messageId: Long,
-        form: Form.Field.List,
-        formState: FormState.List
+        item: Item,
+        state: UsedeskForm.State
     ) {
-        val name = when {
-            form.items.isNotEmpty() -> formState.selected
-                .joinToString(separator = ", ") { it.name }
-                .ifEmpty { null }
-            else -> null
+        item as ItemList
+        binding.tvText.apply {
+            when (item.list.selected) {
+                null -> {
+                    text = item.list.name
+                    setTextColor(binding.rootView.resources.getColor(R.color.usedesk_gray_2)) //TODO: styleValues
+                }
+                else -> {
+                    text = item.list.selected?.name
+                    setTextColor(binding.rootView.resources.getColor(R.color.usedesk_black_3)) //TODO: styleValues
+                }
+            }
         }
         binding.rootView.setOnClickListener {
-            onEvent(Event.FormListClicked(form, formState))
+            onEvent(
+                Event.FormListClicked(
+                    messageId,
+                    item.list.id
+                )
+            )
         }
-        binding.tvText.text = name ?: form.name
-        //binding.tvText.setTextColor() //TODO: цвет текста
     }
 }

@@ -10,8 +10,6 @@ interface IUsedeskChat {
 
     fun isNoListeners(): Boolean
 
-    fun loadForm(messageId: Long)
-
     fun send(textMessage: String)
 
     fun send(usedeskFileInfoList: List<UsedeskFileInfo>)
@@ -38,6 +36,12 @@ interface IUsedeskChat {
 
     fun loadPreviousMessagesPage()
 
+    fun loadForm(messageId: Long)
+
+    fun saveForm(form: UsedeskForm)
+
+    fun send(form: UsedeskForm)
+
     sealed interface SendOfflineFormResult {
         object Done : SendOfflineFormResult
         object Error : SendOfflineFormResult
@@ -47,11 +51,11 @@ interface IUsedeskChat {
         val connectionState: UsedeskConnectionState = UsedeskConnectionState.CONNECTING,
         val clientToken: String = "",
         val messages: List<UsedeskMessage> = listOf(),
+        val formMap: Map<Long, UsedeskForm> = mapOf(),
         val previousPageIsAvailable: Boolean = true,
         val previousPageIsLoading: Boolean = false,
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
-        val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null,
-        val formLoadSet: Set<Long> = setOf()
+        val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null
     )
 }

@@ -4,6 +4,10 @@ import dagger.Binds
 import dagger.Module
 import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationLoader
@@ -26,6 +30,12 @@ internal interface CommonChatModuleBinds {
 
     @[Binds CommonChatScope]
     fun configurationLoader(loader: ConfigurationLoader): IConfigurationLoader
+
+    @[Binds CommonChatScope]
+    fun messageResponseConverter(loader: MessageResponseConverter): IMessageResponseConverter
+
+    @[Binds CommonChatScope]
+    fun initChatResponseConverter(loader: InitChatResponseConverter): IInitChatResponseConverter
 }
 
 @Scope

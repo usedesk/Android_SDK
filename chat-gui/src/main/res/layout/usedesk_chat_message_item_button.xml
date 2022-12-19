@@ -12,5 +12,11 @@
             android:id="@+id/tv_title"
             style="?attr/usedesk_chat_message_text_button_text"
             tools:text="ButtonButtonButtonButtonButtonButtonButtonButtonButtonButtonButtonButtonButton" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center" />
     </androidx.cardview.widget.CardView>
 </FrameLayout>

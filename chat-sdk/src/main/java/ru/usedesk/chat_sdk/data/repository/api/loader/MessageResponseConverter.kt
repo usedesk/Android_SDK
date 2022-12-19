@@ -1,19 +1,16 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import android.util.Patterns
-import ru.usedesk.chat_sdk.data.repository._extra.Converter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field.Text.Type
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import java.util.concurrent.atomic.AtomicLong
 import java.util.regex.Pattern
 import javax.inject.Inject
 
-internal class MessageResponseConverter @Inject constructor() :
-    Converter<AddMessage.Message?, List<UsedeskMessage>> {
+internal class MessageResponseConverter @Inject constructor() : IMessageResponseConverter {
 
     private val fieldId = AtomicLong(-1L)
 
@@ -31,7 +28,7 @@ internal class MessageResponseConverter @Inject constructor() :
     private val fieldRegex = """\{\{form;($OBJECT_PART){1,2}$OBJECT_ANY\}\}""".toRegex()
     private val imageRegexp = """!\[[^]]*]\((.*?)\s*(\"(?:.*[^\"])\")?\s*\)""".toRegex()
 
-    fun convertText(text: String): String = try {
+    override fun convertText(text: String): String = try {
         text.replace("""<strong data-verified="redactor" data-redactor-tag="strong">""", "<b>")
             .replace("</strong>", "</b>")
             .replace("""<em data-verified="redactor" data-redactor-tag="em">""", "<i>")
@@ -54,154 +51,158 @@ internal class MessageResponseConverter @Inject constructor() :
         text
     }
 
-    override fun convert(from: AddMessage.Message?): List<UsedeskMessage> = valueOrNull {
-        val fromClient = when (from!!.type) {
-            AddMessage.TYPE_CLIENT_TO_OPERATOR,
-            AddMessage.TYPE_CLIENT_TO_BOT -> true
-            AddMessage.TYPE_OPERATOR_TO_CLIENT,
-            AddMessage.TYPE_BOT_TO_CLIENT -> false
-            else -> null
-        }!!
-
-        val createdAt = from.createdAt!!
-
-        val messageDate = try {
-            getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss'Z'", createdAt)
-        } catch (e: Exception) {
-            getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
-        }
-
-        val id = from.id!!
-        val localId = from.payload?.messageId ?: id
-        val name = from.name ?: ""
-        val avatar = from.payload?.avatar ?: ""
-
-        val fileMessage = valueOrNull {
-            val file = UsedeskFile.create(
-                from.file!!.content!!,
-                from.file.type,
-                from.file.size!!,
-                from.file.name!!
-            )
-
-            when {
-                fromClient -> when {
-                    file.isImage() -> UsedeskMessageClientImage(
-                        id,
-                        messageDate,
-                        file,
-                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                        localId
-                    )
-                    file.isVideo() -> UsedeskMessageClientVideo(
-                        id,
-                        messageDate,
-                        file,
-                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                        localId
-                    )
-                    file.isAudio() -> UsedeskMessageClientAudio(
-                        id,
-                        messageDate,
-                        file,
-                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                        localId
-                    )
-                    else -> UsedeskMessageClientFile(
-                        id,
-                        messageDate,
-                        file,
-                        UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                        localId
-                    )
-                }
-                else -> when {
-                    file.isImage() -> UsedeskMessageAgentImage(
-                        id,
-                        messageDate,
-                        file,
-                        name,
-                        avatar
-                    )
-                    file.isVideo() -> UsedeskMessageAgentVideo(
-                        id,
-                        messageDate,
-                        file,
-                        name,
-                        avatar
-                    )
-                    file.isAudio() -> UsedeskMessageAgentAudio(
-                        id,
-                        messageDate,
-                        file,
-                        name,
-                        avatar
-                    )
-                    else -> UsedeskMessageAgentFile(
-                        id,
-                        messageDate,
-                        file,
-                        name,
-                        avatar
-                    )
-                }
-            }
-        }
-
+    override fun convert(from: AddMessage.Message?): IMessageResponseConverter.Result {
+        val messages = mutableListOf<UsedeskMessage?>()
+        var usedeskForm: UsedeskForm? = null
         valueOrNull {
-            val objects: List<MessageObject>
-            val feedbackNeeded: Boolean
-            val feedback: UsedeskFeedback?
-            val text = from.text ?: ""
-            if (!fromClient) {
-                objects = text.toMessageObjects()
-                feedback = when (from.payload?.userRating) {
-                    "LIKE" -> UsedeskFeedback.LIKE
-                    "DISLIKE" -> UsedeskFeedback.DISLIKE
-                    else -> null
-                }
-                feedbackNeeded = feedback == null && from.payload?.buttons?.any {
-                    it?.data == "GOOD_CHAT" ||
-                            it?.data == "BAD_CHAT" ||
-                            it?.icon == "like" ||
-                            it?.icon == "dislike"
-                } ?: false
-            } else {
-                objects = listOf(MessageObject.Text(text))
-                feedbackNeeded = false
-                feedback = null
+            val fromClient = when (from!!.type) {
+                AddMessage.TYPE_CLIENT_TO_OPERATOR,
+                AddMessage.TYPE_CLIENT_TO_BOT -> true
+                AddMessage.TYPE_OPERATOR_TO_CLIENT,
+                AddMessage.TYPE_BOT_TO_CLIENT -> false
+                else -> null
+            }!!
+
+            val createdAt = from.createdAt!!
+
+            val messageDate = try {
+                getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss'Z'", createdAt)
+            } catch (e: Exception) {
+                getLocalCalendar("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", createdAt)
             }
 
-            val fields = objects.filterIsInstance<MessageObject.Field>()
-                .map(MessageObject.Field::field)
+            val id = from.id!!
+            val localId = from.payload?.messageId ?: id
+            val name = from.name ?: ""
+            val avatar = from.payload?.avatar ?: ""
 
-            val fileMessages = objects.filterIsInstance<MessageObject.Image>()
-                .map {
-                    when {
-                        fromClient -> UsedeskMessageClientImage(
+            val fileMessage = valueOrNull {
+                val file = UsedeskFile.create(
+                    from.file!!.content!!,
+                    from.file.type,
+                    from.file.size!!,
+                    from.file.name!!
+                )
+
+                when {
+                    fromClient -> when {
+                        file.isImage() -> UsedeskMessageClientImage(
                             id,
                             messageDate,
-                            it.file,
+                            file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                             localId
                         )
-                        else -> UsedeskMessageAgentImage(
+                        file.isVideo() -> UsedeskMessageClientVideo(
                             id,
                             messageDate,
-                            it.file,
+                            file,
+                            UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
+                            localId
+                        )
+                        file.isAudio() -> UsedeskMessageClientAudio(
+                            id,
+                            messageDate,
+                            file,
+                            UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
+                            localId
+                        )
+                        else -> UsedeskMessageClientFile(
+                            id,
+                            messageDate,
+                            file,
+                            UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
+                            localId
+                        )
+                    }
+                    else -> when {
+                        file.isImage() -> UsedeskMessageAgentImage(
+                            id,
+                            messageDate,
+                            file,
+                            name,
+                            avatar
+                        )
+                        file.isVideo() -> UsedeskMessageAgentVideo(
+                            id,
+                            messageDate,
+                            file,
+                            name,
+                            avatar
+                        )
+                        file.isAudio() -> UsedeskMessageAgentAudio(
+                            id,
+                            messageDate,
+                            file,
+                            name,
+                            avatar
+                        )
+                        else -> UsedeskMessageAgentFile(
+                            id,
+                            messageDate,
+                            file,
                             name,
                             avatar
                         )
                     }
                 }
+            }
+            messages.add(fileMessage)
 
-            val convertedText = convertText(
-                objects.filterIsInstance<MessageObject.Text>()
-                    .joinToString(separator = "", transform = MessageObject.Text::text)
-            )
+            valueOrNull {
+                val objects: List<MessageObject>
+                val feedbackNeeded: Boolean
+                val feedback: UsedeskFeedback?
+                val text = from.text ?: ""
+                if (!fromClient) {
+                    objects = text.toMessageObjects()
+                    feedback = when (from.payload?.userRating) {
+                        "LIKE" -> UsedeskFeedback.LIKE
+                        "DISLIKE" -> UsedeskFeedback.DISLIKE
+                        else -> null
+                    }
+                    feedbackNeeded = feedback == null && from.payload?.buttons?.any {
+                        it?.data == "GOOD_CHAT" ||
+                                it?.data == "BAD_CHAT" ||
+                                it?.icon == "like" ||
+                                it?.icon == "dislike"
+                    } ?: false
+                } else {
+                    objects = listOf(MessageObject.Text(text))
+                    feedbackNeeded = false
+                    feedback = null
+                }
 
-            listOf(
-                when {
+                val fileMessages = objects.filterIsInstance<MessageObject.Image>()
+                    .map {
+                        when {
+                            fromClient -> UsedeskMessageClientImage(
+                                id,
+                                messageDate,
+                                it.file,
+                                UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
+                                localId
+                            )
+                            else -> UsedeskMessageAgentImage(
+                                id,
+                                messageDate,
+                                it.file,
+                                name,
+                                avatar
+                            )
+                        }
+                    }
+                messages.addAll(fileMessages)
+
+                val convertedText = convertText(
+                    objects.filterIsInstance<MessageObject.Text>()
+                        .joinToString(separator = "", transform = MessageObject.Text::text)
+                )
+
+                val fields = objects.filterIsInstance<MessageObject.Field>()
+                    .map(MessageObject.Field::field)
+
+                val textMessage = when {
                     convertedText.isEmpty() && fields.isEmpty() -> null
                     fromClient -> UsedeskMessageClientText(
                         id,
@@ -212,9 +213,18 @@ internal class MessageResponseConverter @Inject constructor() :
                         localId
                     )
                     else -> {
-                        val formsLoaded = fields.all { it !is Form.Field.List }
-                        val buttons = fields.filterIsInstance<Form.Button>()
-                        val forms = fields.filter { it !is Form.Button }
+                        val buttons = objects.filterIsInstance<MessageObject.Button>()
+                            .map(MessageObject.Button::button)
+                        val formState = when {
+                            fields.all { it !is UsedeskMessageAgentText.Field.List } -> UsedeskForm.State.LOADED
+                            else -> UsedeskForm.State.NOT_LOADED
+                        }
+
+                        usedeskForm = UsedeskForm(
+                            id,
+                            fields,
+                            formState
+                        )
 
                         UsedeskMessageAgentText(
                             id,
@@ -225,17 +235,19 @@ internal class MessageResponseConverter @Inject constructor() :
                             avatar,
                             feedbackNeeded,
                             feedback,
-                            when {
-                                forms.isNotEmpty() && formsLoaded -> buttons + forms + Form.Button()
-                                else -> buttons + forms
-                            },
-                            formsLoaded = formsLoaded
+                            buttons,
+                            hasForm = fields.isNotEmpty()
                         )
                     }
                 }
-            ) + fileMessage + fileMessages
-        }?.filterNotNull()
-    } ?: listOf()
+                messages.add(0, textMessage)
+            }
+        }
+        return IMessageResponseConverter.Result(
+            messages.filterNotNull(),
+            listOfNotNull(usedeskForm)
+        )
+    }
 
     private fun String.convertMarkdownText() = StringBuilder().also { builder ->
         var i = 0
@@ -337,7 +349,8 @@ internal class MessageResponseConverter @Inject constructor() :
 
     sealed interface MessageObject {
         class Text(val text: String) : MessageObject
-        class Field(val field: Form) : MessageObject
+        class Button(val button: UsedeskMessageAgentText.Button) : MessageObject
+        class Field(val field: UsedeskMessageAgentText.Field) : MessageObject
         class Image(val file: UsedeskFile) : MessageObject
     }
 
@@ -397,16 +410,15 @@ internal class MessageResponseConverter @Inject constructor() :
             .split(";")
         return when (parts.size) {
             4 -> {
-                val buttonObject = MessageObject.Field(
-                    Form.Button(
-                        fieldId.decrementAndGet(),
+                val buttonObject = MessageObject.Button(
+                    Button(
                         parts[0],
                         parts[1],
                         parts[2]
                     )
                 )
                 when (parts[3]) {
-                    "show" -> listOf(MessageObject.Text(buttonObject.field.name), buttonObject)
+                    "show" -> listOf(MessageObject.Text(buttonObject.button.name), buttonObject)
                     else -> listOf(buttonObject)
                 }
             }
@@ -422,29 +434,28 @@ internal class MessageResponseConverter @Inject constructor() :
             2, 3 -> valueOrNull {
                 val associate = parts[1]
                 val textType = when (associate) {
-                    "email" -> Type.EMAIL
-                    "phone" -> Type.PHONE
-                    "name" -> Type.NAME
-                    "note" -> Type.NOTE
-                    "position" -> Type.POSITION
+                    "email" -> UsedeskMessageAgentText.Field.Text.Type.EMAIL
+                    "phone" -> UsedeskMessageAgentText.Field.Text.Type.PHONE
+                    "name" -> UsedeskMessageAgentText.Field.Text.Type.NAME
+                    "note" -> UsedeskMessageAgentText.Field.Text.Type.NOTE
+                    "position" -> UsedeskMessageAgentText.Field.Text.Type.POSITION
                     else -> null
                 }
                 val required = parts.getOrNull(2) == "true"
                 listOf(
                     MessageObject.Field(
                         when (textType) {
-                            null -> Form.Field.List(
+                            null -> UsedeskMessageAgentText.Field.List(
                                 associate.toLong(),
                                 parts[0],
-                                required,
-                                listOf(),
-                                null
+                                required
                             )
-                            else -> Form.Field.Text(
+                            else -> UsedeskMessageAgentText.Field.Text(
                                 fieldId.decrementAndGet(),
                                 parts[0],
                                 required,
-                                textType
+                                hasError = false,
+                                type = textType
                             )
                         }
                     )

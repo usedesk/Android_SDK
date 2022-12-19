@@ -12,14 +12,12 @@ import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.entity.*
-import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form.Field
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
@@ -32,8 +30,8 @@ import kotlin.math.min
 
 internal class ApiRepository @Inject constructor(
     private val socketApi: SocketApi,
-    private val initChatResponseConverter: InitChatResponseConverter,
-    private val messageResponseConverter: MessageResponseConverter,
+    private val initChatResponseConverter: IInitChatResponseConverter,
+    private val messageResponseConverter: IMessageResponseConverter,
     private val contentResolver: ContentResolver,
     multipartConverter: IUsedeskMultipartConverter,
     apiFactory: IUsedeskApiFactory,
@@ -75,13 +73,15 @@ internal class ApiRepository @Inject constructor(
         }
 
         override fun onNew(messageResponse: SocketResponse.AddMessage) {
-            messageResponseConverter.convert(messageResponse.message).forEach {
-                when {
-                    it is UsedeskMessageOwner.Client && it.id != it.localId ->
-                        eventListener.onMessageUpdated(it)
-                    else -> eventListener.onMessagesNewReceived(listOf(it))
-                }
+            val result = messageResponseConverter.convert(messageResponse.message)
+            val updatedMessages = result?.messages
+                ?.filter { it is UsedeskMessageOwner.Client && it.id != it.localId }
+                ?: listOf()
+            val newMessages = result?.messages?.filter { it !in updatedMessages } ?: listOf()
+            if (newMessages.isNotEmpty()) {
+                eventListener.onMessagesNewReceived(newMessages, result?.forms ?: listOf())
             }
+            updatedMessages.forEach { eventListener.onMessageUpdated(it) }
         }
 
         override fun onSetEmailSuccess() {
@@ -143,10 +143,11 @@ internal class ApiRepository @Inject constructor(
 
     override fun loadForm(
         configuration: UsedeskChatConfiguration,
-        forms: List<Form>
+        form: UsedeskForm
     ): LoadFormResponse {
-        val listsId = forms.asSequence()
-            .filterIsInstance<Field.List>()
+        val listsId = form.fields
+            .asSequence()
+            .filterIsInstance<UsedeskMessageAgentText.Field.List>()
             .joinToString(",") { it.id.toString() }
         val request = LoadFields.Request(
             configuration.clientToken!!,
@@ -161,17 +162,22 @@ internal class ApiRepository @Inject constructor(
         return when (response?.fields) {
             null -> LoadFormResponse.Error(response?.code)
             else -> {
-                val formMap = forms.associateBy { it.id }
+                val fieldMap = form.fields.associateBy(UsedeskMessageAgentText.Field::id)
                 val listMap = response.fields
-                    .map { it.key to it.value.convertToList(formMap) }
+                    .map { it.key to it.value.convertToList(fieldMap) }
                     .toMap()
-                val loadedForms = forms.mapNotNull {
+                val loadedFields = form.fields.mapNotNull {
                     when (it) {
-                        is Field.List -> listMap[it.id.toString()]
+                        is UsedeskMessageAgentText.Field.List -> listMap[it.id.toString()]
                         else -> listOf(it)
                     }
                 }.flatten()
-                LoadFormResponse.Done(loadedForms + Form.Button())
+                LoadFormResponse.Done(
+                    form.copy(
+                        fields = loadedFields,
+                        state = UsedeskForm.State.LOADED
+                    )
+                )
             }
         }
     }
@@ -187,7 +193,7 @@ internal class ApiRepository @Inject constructor(
         )
     }
 
-    private fun JsonObject.convertToList(lists: Map<Long, Form>): List<Field.List>? =
+    private fun JsonObject.convertToList(lists: Map<Long, UsedeskMessageAgentText.Field>): List<UsedeskMessageAgentText.Field.List>? =
         valueOrNull {
             when (val list = getAsJsonObject("list")) {
                 null -> {
@@ -195,9 +201,9 @@ internal class ApiRepository @Inject constructor(
                     when {
                         fieldLoaded.children.isEmpty() -> null
                         else -> listOfNotNull(
-                            (lists[fieldLoaded.id] as? Field.List)?.copy(
+                            (lists[fieldLoaded.id] as? UsedeskMessageAgentText.Field.List)?.copy(
                                 items = fieldLoaded.children.map {
-                                    Field.List.Item(
+                                    UsedeskMessageAgentText.Field.List.Item(
                                         it.id,
                                         it.value,
                                         it.parentFieldId
@@ -359,10 +365,11 @@ internal class ApiRepository @Inject constructor(
         return when (response?.items) {
             null -> LoadPreviousMessageResponse.Error(response?.code)
             else -> {
-                val messages = response.items
-                    .flatMap(messageResponseConverter::convert)
-                    .also { eventListener.onMessagesOldReceived(it) }
-                LoadPreviousMessageResponse.Done(messages)
+                val results = response.items.mapNotNull(messageResponseConverter::convert)
+                val messages = results.flatMap { it.messages ?: listOf() }
+                val forms = results.flatMap { it.forms }
+                eventListener.onMessagesOldReceived(messages, forms)
+                LoadPreviousMessageResponse.Done(messages, forms)
             }
         }
     }

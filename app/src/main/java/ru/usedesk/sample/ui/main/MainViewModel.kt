@@ -12,7 +12,7 @@ import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.ui.main.MainViewModel.Model
 
 class MainViewModel : UsedeskViewModel<Model>(Model()) {
-    private val configurationRepository = ServiceLocator.configurationRepository
+    private val configurationRepository = ServiceLocator.instance.configurationRepository
 
     private var downloadFile: DownloadFile? = null
 

@@ -4,14 +4,15 @@ import android.text.InputType
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormState
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageItemsAdapter
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
+import ru.usedesk.chat_sdk.entity.UsedeskForm
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 
 internal class TextViewHolder(
-    private val binding: MessageItemsAdapter.TextBinding,
+    private val binding: MessageFormsAdapter.TextBinding,
     private val onEvent: (Event) -> Unit
-) : BaseViewHolder<Form.Field.Text, FormState.Text>(binding.rootView) {
+) : BaseViewHolder(binding.rootView) {
 
     private var onTextChangedListener: (String) -> Unit = {}
 
@@ -37,39 +38,41 @@ internal class TextViewHolder(
 
     override fun bind(
         messageId: Long,
-        form: Form.Field.Text,
-        formState: FormState.Text
+        item: Item,
+        state: UsedeskForm.State
     ) {
+        item as Item.ItemText
         binding.etText.run {
-            hint = form.name
+            clearFocus()
+            hint = item.text.name
             onTextChangedListener = {}
-            setText(formState.text)
+            setText(item.text.text)
             setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     postScrollTo(true)
                 }
             }
-            when (form.type) {
-                Form.Field.Text.Type.EMAIL -> {
+            when (item.text.type) {
+                Field.Text.Type.EMAIL -> {
                     inputType = InputType.TYPE_CLASS_TEXT or
                             InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                     maxLines = 1
                     setOnTouchListener { _, _ -> false }
                 }
-                Form.Field.Text.Type.PHONE -> {
+                Field.Text.Type.PHONE -> {
                     inputType = InputType.TYPE_CLASS_TEXT or
                             InputType.TYPE_CLASS_PHONE
                     maxLines = 1
                     setOnTouchListener { _, _ -> false }
                 }
-                Form.Field.Text.Type.NAME -> {
+                Field.Text.Type.NAME -> {
                     inputType = InputType.TYPE_CLASS_TEXT or
                             InputType.TYPE_TEXT_VARIATION_PERSON_NAME or
                             InputType.TYPE_TEXT_FLAG_CAP_WORDS
                     maxLines = 1
                     setOnTouchListener { _, _ -> false }
                 }
-                Form.Field.Text.Type.NOTE -> {
+                Field.Text.Type.NOTE -> {
                     inputType = InputType.TYPE_CLASS_TEXT or
                             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
                             InputType.TYPE_TEXT_FLAG_MULTI_LINE
@@ -79,7 +82,7 @@ internal class TextViewHolder(
                         false
                     }
                 }
-                Form.Field.Text.Type.POSITION -> {
+                Field.Text.Type.POSITION -> {
                     inputType = InputType.TYPE_CLASS_TEXT or
                             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
                     maxLines = 1
@@ -90,8 +93,7 @@ internal class TextViewHolder(
                 onEvent(
                     Event.FormChanged(
                         messageId,
-                        form,
-                        formState.copy(text = it)
+                        item.text.copy(text = it)
                     )
                 )
             }

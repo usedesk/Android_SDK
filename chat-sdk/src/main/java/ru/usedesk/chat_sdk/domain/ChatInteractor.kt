@@ -15,6 +15,7 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 import java.util.*
 import javax.inject.Inject
 
@@ -86,17 +87,25 @@ internal class ChatInteractor @Inject constructor(
             this@ChatInteractor.onChatInited(chatInited)
         }
 
-        override fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>) {
+        override fun onMessagesOldReceived(
+            messages: List<UsedeskMessage>,
+            forms: List<UsedeskForm>
+        ) {
             this@ChatInteractor.onMessagesNew(
-                old = oldMessages,
-                isInited = false
+                old = messages,
+                isInited = false,
+                forms = forms
             )
         }
 
-        override fun onMessagesNewReceived(newMessages: List<UsedeskMessage>) {
+        override fun onMessagesNewReceived(
+            messages: List<UsedeskMessage>,
+            forms: List<UsedeskForm>
+        ) {
             this@ChatInteractor.onMessagesNew(
-                new = newMessages,
-                isInited = false
+                new = messages,
+                isInited = false,
+                forms = forms
             )
         }
 
@@ -276,11 +285,15 @@ internal class ChatInteractor @Inject constructor(
     private fun onMessagesNew(
         old: List<UsedeskMessage> = listOf(),
         new: List<UsedeskMessage> = listOf(),
+        forms: List<UsedeskForm> = listOf(),
         isInited: Boolean
     ) {
         setModel {
             copy(
                 messages = old + messages + new,
+                formMap = formMap.toMutableMap().apply {
+                    forms.forEach { put(it.id, it) }
+                },
                 inited = isInited
             )
         }
@@ -312,7 +325,7 @@ internal class ChatInteractor @Inject constructor(
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message)
-            eventListener.onMessagesNewReceived(listOf(sendingMessage))
+            eventListener.onMessagesNewReceived(listOf(sendingMessage), listOf())
 
             runBlocking {
                 eventMutex.withLock {
@@ -353,7 +366,7 @@ internal class ChatInteractor @Inject constructor(
         ioScope.launch {
             val sendingMessages = usedeskFileInfoList.map(this@ChatInteractor::createSendingMessage)
 
-            eventListener.onMessagesNewReceived(sendingMessages)
+            eventListener.onMessagesNewReceived(sendingMessages, listOf())
 
             eventMutex.withLock {
                 sendingMessages.forEach(::sendFileAsync)
@@ -475,45 +488,122 @@ internal class ChatInteractor @Inject constructor(
 
     override fun loadForm(messageId: Long) {
         setModel {
-            val message = messages.firstOrNull { it.id == messageId } as? UsedeskMessageAgentText
-            when {
-                message?.formsLoaded == false && !formLoadSet.contains(messageId) -> copy(
-                    formLoadSet = formLoadSet + messageId
-                ).apply {
-                    launchLoadForm(message)
-                }
+            val form = formMap[messageId]
+            when (form?.state) {
+                UsedeskForm.State.NOT_LOADED -> copy(
+                    formMap = formMap.toMutableMap().apply {
+                        put(
+                            messageId,
+                            form.copy(state = UsedeskForm.State.LOADING).apply {
+                                launchLoadForm(form)
+                            }
+                        )
+                    }
+                )
                 else -> this
             }
         }
     }
 
-    private fun launchLoadForm(message: UsedeskMessageAgentText) {
+    private fun launchLoadForm(form: UsedeskForm) {
         ioScope.launch {
             val response = apiRepository.loadForm(
                 initConfiguration,
-                message.forms
+                form
             )
             when (response) {
                 is LoadFormResponse.Done -> setModel {
                     copy(
-                        formLoadSet = formLoadSet - message.id,
-                        messages = messages.map {
-                            when (it.id) {
-                                message.id -> (it as UsedeskMessageAgentText).copy(
-                                    forms = response.forms,
-                                    formsLoaded = true
-                                )
-                                else -> it
-                            }
+                        formMap = formMap.toMutableMap().apply {
+                            put(
+                                form.id,
+                                response.form
+                            )
                         }
                     )
                 }
                 is LoadFormResponse.Error -> {
                     delay(REPEAT_DELAY)
-                    launchLoadForm(message)
+                    launchLoadForm(form)
                 }
             }
         }
+    }
+
+    override fun saveForm(form: UsedeskForm) {
+        setModel {
+            copy(
+                formMap = formMap.toMutableMap().apply {
+                    put(form.id, form)
+                    ioScope.launch {
+                        //TODO:
+                    }
+                }
+            )
+        }
+    }
+
+    override fun send(form: UsedeskForm) {
+        setModel {
+            when (formMap[form.id]?.state) {
+                UsedeskForm.State.SENDING -> this
+                else -> {
+                    val newFields = form.fields.map { field ->
+                        when (field) {
+                            is UsedeskMessageAgentText.Field.CheckBox -> field.copy(
+                                hasError = field.required && !field.checked
+                            )
+                            is UsedeskMessageAgentText.Field.List -> {
+                                val tree = field.tree ?: listOf(field)
+                                val isValid = tree.all { !it.required || field.selected != null }
+                                field.copy(hasError = !isValid)
+                            }
+                            is UsedeskMessageAgentText.Field.Text -> {
+                                val text = field.text
+                                val isValid = when (field.type) {
+                                    UsedeskMessageAgentText.Field.Text.Type.EMAIL -> when {
+                                        field.required -> UsedeskValidatorUtil.isValidEmailNecessary(
+                                            text
+                                        )
+                                        else -> UsedeskValidatorUtil.isValidEmail(text)
+                                    }
+                                    UsedeskMessageAgentText.Field.Text.Type.PHONE -> when {
+                                        field.required -> UsedeskValidatorUtil.isValidPhoneNecessary(
+                                            text
+                                        )
+                                        else -> UsedeskValidatorUtil.isValidPhone(text)
+                                    }
+                                    else -> !field.required || text.any { it.isLetter() }
+                                }
+                                field.copy(hasError = !isValid)
+                            }
+                        }
+                    }
+                    val anyHasError = newFields.any { it.hasError }
+                    copy(
+                        formMap = formMap.toMutableMap().apply {
+                            val newForm = when {
+                                anyHasError -> form.copy(
+                                    fields = newFields,
+                                    state = UsedeskForm.State.LOADED
+                                )
+                                else -> form.copy(
+                                    fields = newFields,
+                                    state = UsedeskForm.State.SENDING
+                                ).apply {
+                                    launchSendForm(this)
+                                }
+                            }
+                            put(form.id, newForm)
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    private fun launchSendForm(form: UsedeskForm) {
+        //TODO
     }
 
     override fun send(agentMessage: UsedeskMessageAgentText, feedback: UsedeskFeedback) {
@@ -709,7 +799,12 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun onChatInited(chatInited: ChatInited) {
-        val model = setModel { copy(clientToken = chatInited.token) }
+        val model = setModel {
+            copy(
+                clientToken = chatInited.token,
+                formMap = chatInited.forms.associateBy { it.id }
+            )
+        }
         userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
 
         if (chatInited.status in ACTIVE_STATUSES) {

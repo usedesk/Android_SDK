@@ -2,19 +2,12 @@ package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.UsedeskMessage
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
-import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
-import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
 
-internal class MessagesReducer(
-    private val usedeskChat: IUsedeskChat,
-    private val viewModel: MessagesViewModel
-) {
+internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
 
     fun reduceModel(state: State, event: Event): State = state.reduce(event)
 
@@ -23,12 +16,11 @@ internal class MessagesReducer(
         is Event.ChatModel -> chatModel(event)
         is Event.MessageDraft -> messageDraft(event)
         is Event.MessagesShowed -> messagesShowed(event)
-        //is Event.PreviousMessagesResult -> previousMessagesResult(event)
         is Event.MessageChanged -> messageChanged(event)
         is Event.SendFeedback -> sendFeedback(event)
         is Event.AttachFiles -> attachFiles(event)
         is Event.DetachFile -> detachFile(event)
-        is Event.ButtonSend -> buttonSend(event)
+        is Event.MessageButtonClick -> messageButtonClick(event)
         is Event.SendAgain -> sendAgain(event)
         is Event.RemoveMessage -> removeMessage(event)
         is Event.ShowToBottomButton -> showToBottomButton(event)
@@ -39,46 +31,31 @@ internal class MessagesReducer(
         Event.SendDraft -> sendDraft()
     }
 
-    private fun State.formApplyClick(event: Event.FormApplyClick) = copy()
-
-    private fun State.formListClicked(event: Event.FormListClicked) = copy()
-
-    private fun State.formChanged(event: Event.FormChanged): State {
-        val newAgentItemsState = agentItemsState.toMutableMap().apply {
-            val message = messages.first { it.id == event.messageId } as UsedeskMessageAgentText
-            val formsMap = getOrPut(event.messageId) { mapOf() }
-                .toMutableMap()
-                .apply {
-                    put(event.form.id, event.formState)
-                }
-            message.forms.all { form ->
-                when (form) {
-                    is Form.Button -> true
-                    is Form.Field -> when (form) {
-                        is Form.Field.CheckBox -> !form.required ||
-                                (formsMap[form.id] as? FormState.CheckBox)?.checked == true
-                        is Form.Field.List -> {
-                            //TODO: тут вообще проверять всех родительских и дочерних
-                            false
-                        }
-                        is Form.Field.Text -> {
-                            val text = (formsMap[form.id] as? FormState.Text)?.text
-
-                            when (form.type) {
-                                Form.Field.Text.Type.EMAIL -> TODO()
-                                Form.Field.Text.Type.PHONE -> TODO()
-                                Form.Field.Text.Type.NAME -> TODO()
-                                Form.Field.Text.Type.NOTE -> TODO()
-                                Form.Field.Text.Type.POSITION -> text?.isNotEmpty() == true
-                            }
-                        }
-                    }
-                }
+    private fun State.formApplyClick(event: Event.FormApplyClick) = copy(
+        formMap = formMap.toMutableMap().apply {
+            val form = formMap[event.messageId]
+            if (form?.state == UsedeskForm.State.LOADED) {
+                usedeskChat.send(form)
             }
         }
-        return copy(
-            agentItemsState = newAgentItemsState
-        )
+    )
+
+    private fun State.formListClicked(event: Event.FormListClicked) = copy() //TODO:
+
+    private fun State.formChanged(event: Event.FormChanged) = apply {
+        val form = formMap[event.messageId]
+        if (form != null) {
+            usedeskChat.saveForm(
+                form.copy(
+                    fields = form.fields.map {
+                        when (it.id) {
+                            event.field.id -> event.field
+                            else -> it
+                        }
+                    }
+                )
+            )
+        }
     }
 
     private fun State.showToBottomButton(event: Event.ShowToBottomButton) =
@@ -102,10 +79,11 @@ internal class MessagesReducer(
         usedeskChat.sendMessageDraft()
     }
 
-    private fun State.buttonSend(event: Event.ButtonSend) = copy(
-        goToBottom = UsedeskSingleLifeEvent(Unit)
-    ).apply {
-        usedeskChat.send(event.message)
+    private fun State.messageButtonClick(event: Event.MessageButtonClick) = when {
+        event.button.url.isNotEmpty() -> copy(openUrl = UsedeskSingleLifeEvent(event.button.url))
+        else -> copy(goToBottom = UsedeskSingleLifeEvent(Unit)).apply {
+            usedeskChat.send(event.button.name)
+        }
     }
 
     private fun State.attachFiles(event: Event.AttachFiles) = copy(
@@ -116,7 +94,6 @@ internal class MessagesReducer(
     ).apply {
         usedeskChat.setMessageDraft(messageDraft)
     }
-
 
     private fun State.detachFile(event: Event.DetachFile) = copy(
         messageDraft = messageDraft.copy(files = messageDraft.files - event.file)
@@ -166,11 +143,12 @@ internal class MessagesReducer(
         val agentMessages = event.messagesRange
             .map { chatItems.getOrNull(it) }
         agentMessages.forEach {
-            if (it is ChatItem.Message &&
-                it.message is UsedeskMessageAgentText &&
-                !it.message.formsLoaded
-            ) {
-                usedeskChat.loadForm(it.message.id)
+            val message = (it as? ChatItem.Message.Agent)?.message
+            if (message is UsedeskMessageAgentText && message.hasForm) {
+                val form = formMap[message.id]
+                if (form == null || form.state == UsedeskForm.State.NOT_LOADED) {
+                    usedeskChat.loadForm(message.id)
+                }
             }
         }
         val agentMessageShowed = agentMessages
@@ -185,9 +163,8 @@ internal class MessagesReducer(
         )
     }
 
-    private fun State.messageDraft(event: Event.MessageDraft) = copy(
-        messageDraft = event.messageDraft
-    )
+    private fun State.messageDraft(event: Event.MessageDraft) =
+        copy(messageDraft = event.messageDraft)
 
     private fun State.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
         when (val lastMessage = agentMessages.getOrNull(agentMessageShowed)) {
@@ -197,9 +174,11 @@ internal class MessagesReducer(
 
     private fun State.chatModel(event: Event.ChatModel): State = when {
         event.model.messages == messages &&
+                event.model.formMap == formMap && //TODO: придумать как обновлять формы при обновлении их в модели
                 event.model.previousPageIsAvailable == hasPreviousMessages -> this
         else -> {
             val newChatItems = event.model.messages.convert(
+                formMap,
                 event.model.previousPageIsAvailable,
                 groupAgentMessages
             )
@@ -207,6 +186,13 @@ internal class MessagesReducer(
             copy(
                 agentMessages = newAgentMessages,
                 chatItems = newChatItems,
+                formMap = event.model.formMap.map {
+                    val stateForm = formMap[it.key]
+                    it.key to when (stateForm?.state) {
+                        it.value.state -> stateForm
+                        else -> it.value
+                    }
+                }.toMap(),
                 agentMessageShowed = getNewAgentIndexShowed(newAgentMessages)
             )
         }
@@ -218,6 +204,7 @@ internal class MessagesReducer(
     )
 
     private fun List<UsedeskMessage>.convert(
+        formMap: Map<Long, UsedeskForm>,
         hasPreviousMessages: Boolean,
         groupAgentMessages: Boolean
     ): List<ChatItem> {
@@ -231,11 +218,19 @@ internal class MessagesReducer(
                             message,
                             lastOfGroup
                         )
+                        is UsedeskMessageAgentText -> ChatItem.Message.Agent(
+                            message,
+                            lastOfGroup,
+                            showName = true,
+                            showAvatar = true,
+                            form = formMap[message.id]
+                        )
                         else -> ChatItem.Message.Agent(
                             message,
                             lastOfGroup,
                             showName = true,
-                            showAvatar = true
+                            showAvatar = true,
+                            form = null
                         )
                     }
                 }.asSequence() + ChatItem.ChatDate(
@@ -262,7 +257,8 @@ internal class MessagesReducer(
                             item.message,
                             item.isLastOfGroup,
                             showName = false,
-                            showAvatar = previous?.isAgentsTheSame(item.message) != true
+                            showAvatar = previous?.isAgentsTheSame(item.message) != true,
+                            form = null //TODO:точно???
                         )
                         when (next?.isAgentsTheSame(item.message)) {
                             true -> sequenceOf(newItem)

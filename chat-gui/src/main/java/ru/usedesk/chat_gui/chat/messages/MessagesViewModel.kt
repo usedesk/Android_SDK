@@ -3,7 +3,8 @@ package ru.usedesk.chat_gui.chat.messages
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
@@ -13,7 +14,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
     private val actionListener: IUsedeskActionListener
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 
-    private val messagesReducer = MessagesReducer(usedeskChat, this)
+    private val messagesReducer = MessagesReducer(usedeskChat)
 
     fun onEvent(event: Event) {
         setModel { messagesReducer.reduceModel(this, event) }
@@ -60,29 +61,21 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
 
         class AttachFiles(val files: Set<UsedeskFileInfo>) : Event
         class DetachFile(val file: UsedeskFileInfo) : Event
-        class ButtonSend(val message: String) : Event
         class SendAgain(val id: Long) : Event
         class RemoveMessage(val id: Long) : Event
         class ShowToBottomButton(val show: Boolean) : Event
         class ShowAttachmentPanel(val show: Boolean) : Event
         object SendDraft : Event
+        class MessageButtonClick(val button: Button) : Event
         class FormApplyClick(val messageId: Long) : Event
-        class FormChanged(
-            val messageId: Long,
-            val form: Form,
-            val formState: FormState
-        ) : Event
-
-        class FormListClicked(
-            val form: Form.Field.List,
-            val formState: FormState.List
-        ) : Event
+        class FormChanged(val messageId: Long, val field: Field) : Event
+        class FormListClicked(val messageId: Long, val fieldId: Long) : Event
     }
 
     data class State(
         val messages: List<UsedeskMessage> = listOf(),
+        val formMap: Map<Long, UsedeskForm> = mapOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
-        val agentItemsState: Map<Long, Map<Long, FormState>> = mapOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
@@ -93,34 +86,27 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val groupAgentMessages: Boolean = false,
         val previousLoading: Boolean = false,
         val goToBottom: UsedeskEvent<Unit>? = null,
+        val openUrl: UsedeskEvent<String>? = null,
         val lastChatModel: IUsedeskChat.Model? = null
     )
 
-    internal sealed interface FormState {
-        data class Button(val enabled: Boolean = false) : FormState
-        data class CheckBox(val checked: Boolean = false) : FormState
-        data class List(val selected: kotlin.collections.List<Form.Field.List.Item> = listOf()) :
-            FormState
-
-        data class Text(val text: String = "") : FormState
-    }
-
     internal sealed interface ChatItem {
-        sealed class Message(
-            val message: UsedeskMessage,
+        sealed interface Message : ChatItem {
+            val message: UsedeskMessage
             val isLastOfGroup: Boolean
-        ) : ChatItem {
-            class Client(
-                message: UsedeskMessage,
-                isLastOfGroup: Boolean
-            ) : Message(message, isLastOfGroup)
 
-            class Agent(
-                message: UsedeskMessage,
-                isLastOfGroup: Boolean,
+            data class Client(
+                override val message: UsedeskMessage,
+                override val isLastOfGroup: Boolean
+            ) : Message
+
+            data class Agent(
+                override val message: UsedeskMessage,
+                override val isLastOfGroup: Boolean,
                 val showName: Boolean,
-                val showAvatar: Boolean
-            ) : Message(message, isLastOfGroup)
+                val showAvatar: Boolean,
+                val form: UsedeskForm?
+            ) : Message
         }
 
         class MessageAgentName(

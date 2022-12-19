@@ -2,7 +2,6 @@ package ru.usedesk.chat_sdk.data.repository.api
 
 import androidx.annotation.CheckResult
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Form
 
 internal interface IApiRepository {
     @CheckResult
@@ -73,11 +72,11 @@ internal interface IApiRepository {
     @CheckResult
     fun loadForm(
         configuration: UsedeskChatConfiguration,
-        forms: List<Form>
+        form: UsedeskForm
     ): LoadFormResponse
 
     sealed interface LoadFormResponse {
-        class Done(val forms: List<Form>) : LoadFormResponse
+        class Done(val form: UsedeskForm) : LoadFormResponse
         class Error(val error: Int? = null) : LoadFormResponse
     }
 
@@ -107,7 +106,11 @@ internal interface IApiRepository {
     }
 
     sealed interface LoadPreviousMessageResponse {
-        class Done(val messages: List<UsedeskMessage>) : LoadPreviousMessageResponse
+        class Done(
+            val messages: List<UsedeskMessage>,
+            val forms: List<UsedeskForm>
+        ) : LoadPreviousMessageResponse
+
         class Error(val code: Int?) : LoadPreviousMessageResponse
     }
 
@@ -123,8 +126,8 @@ internal interface IApiRepository {
         fun onFeedback()
         fun onException(exception: Exception)
         fun onChatInited(chatInited: ChatInited)
-        fun onMessagesOldReceived(oldMessages: List<UsedeskMessage>)
-        fun onMessagesNewReceived(newMessages: List<UsedeskMessage>)
+        fun onMessagesOldReceived(messages: List<UsedeskMessage>, forms: List<UsedeskForm>)
+        fun onMessagesNewReceived(messages: List<UsedeskMessage>, forms: List<UsedeskForm>)
         fun onMessageUpdated(message: UsedeskMessage)
         fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings, chatInited: ChatInited)
         fun onSetEmailSuccess()

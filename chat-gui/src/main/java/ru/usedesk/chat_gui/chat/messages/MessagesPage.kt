@@ -110,10 +110,14 @@ internal class MessagesPage : UsedeskFragment() {
 
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
-                if (new.attachmentPanelVisible) {
-                    attachmentDialog?.show()
-                } else {
-                    attachmentDialog?.dismiss()
+                when {
+                    new.attachmentPanelVisible -> attachmentDialog?.show()
+                    else -> attachmentDialog?.dismiss()
+                }
+            }
+            if (old?.openUrl != new.openUrl) {
+                new.openUrl?.process {
+                    findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
                 }
             }
         }
@@ -187,7 +191,6 @@ internal class MessagesPage : UsedeskFragment() {
             rejectedFileExtensions,
             mediaPlayerAdapter,
             { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
-            { findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it) },
             { findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name) },
             messagesDateFormat,
             messageTimeFormat,

@@ -59,11 +59,7 @@ object UsedeskChatSdk {
     }.chatInteractor
 
     @JvmStatic
-    fun getInstance(): IUsedeskChat? {
-        val component = ChatComponent.chatComponent
-        val interactor = component?.chatInteractor
-        return interactor
-    }
+    fun getInstance(): IUsedeskChat? = ChatComponent.chatComponent?.chatInteractor
 
     @JvmStatic
     fun requireInstance(): IUsedeskChat = getInstance()

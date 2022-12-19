@@ -35,12 +35,11 @@ internal class MessagesAdapter(
     private val recyclerView: RecyclerView,
     private val dateBinding: DateBinding,
     private val viewModel: MessagesViewModel,
-    lifecycleCoroutineScope: LifecycleCoroutineScope,
+    private val lifecycleScope: LifecycleCoroutineScope,
     private val customAgentName: String?,
     private val rejectedFileExtensions: Array<String>,
     private val mediaPlayerAdapter: MediaPlayerAdapter,
     private val onFileClick: (UsedeskFile) -> Unit,
-    private val onUrlClick: (String) -> Unit,
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
     messagesDateFormat: String,
     messageTimeFormat: String,
@@ -92,7 +91,7 @@ internal class MessagesAdapter(
                 }
             })
         }
-        viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
+        viewModel.modelFlow.onEachWithOld(lifecycleScope) { old, new ->
             if (old?.chatItems != new.chatItems) {
                 onMessages(new.chatItems)
             }
@@ -183,10 +182,11 @@ internal class MessagesAdapter(
     }
 
     private fun ChatItem.Message.isIdEquals(otherMessage: ChatItem.Message): Boolean {
-        return (message.id == otherMessage.message.id) ||
-                (message is UsedeskMessageOwner.Client &&
-                        otherMessage.message is UsedeskMessageOwner.Client &&
-                        message.localId == otherMessage.message.localId)
+        val msg = message
+        val otherMsg = otherMessage.message
+        return (msg.id == otherMsg.id) || (msg is UsedeskMessageOwner.Client &&
+                otherMsg is UsedeskMessageOwner.Client &&
+                msg.localId == otherMsg.localId)
     }
 
     private fun onMessages(messages: List<ChatItem>) {
@@ -235,8 +235,8 @@ internal class MessagesAdapter(
                                 (old as? ChatItem.Message.Agent)?.showAvatar -> false
                         (new as? ChatItem.Message.Agent)?.showName !=
                                 (old as? ChatItem.Message.Agent)?.showName -> false
-                        (new.message as? UsedeskMessageAgentText)?.formsLoaded !=
-                                (old.message as? UsedeskMessageAgentText)?.formsLoaded -> false
+                        (new as? ChatItem.Message.Agent)?.form?.state !=
+                                (new as? ChatItem.Message.Agent)?.form?.state -> false
                         else -> true
                     }
                 }
@@ -981,16 +981,10 @@ internal class MessagesAdapter(
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
 
-        private val itemsAdapter = MessageItemsAdapter(
+        private val itemsAdapter = MessageFormsAdapter(
             binding.content.rvItems,
             binding.content.pbLoading,
-            onEvent = viewModel::onEvent,
-            onButtonClick = {
-                when {
-                    it.url.isNotEmpty() -> onUrlClick(it.url)
-                    else -> viewModel.onEvent(Event.ButtonSend(it.name))
-                }
-            }
+            onEvent = viewModel::onEvent
         )
 
         private val goodAtStart = binding.styleValues
@@ -1004,15 +998,21 @@ internal class MessagesAdapter(
 
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
             itemsAdapter.update(
-                messageAgentText,
-                viewModel.modelFlow.value.agentItemsState[chatItem.message.id] ?: mapOf(),
-                chatItem.message.formsLoaded
+                messageAgentText.id,
+                viewModel,
+                lifecycleScope,
+                messageAgentText.buttons
             )
+
+            val formShowed = messageAgentText.buttons.isNotEmpty() || chatItem.form?.fields != null
+            binding.content.pbLoading.visibility = visibleGone(formShowed)
+            binding.content.rvItems.visibility = visibleGone(formShowed)
 
             binding.content.rootView.layoutParams.apply {
                 width = when {
-                    messageAgentText.forms.isEmpty()
-                            && !messageAgentText.feedbackNeeded
+                    messageAgentText.buttons.isEmpty()
+                            && chatItem.form?.fields == null
+                            && !messageAgentText.feedbackNeeded //TODO:может если в rv задать match-parent, то это будет ненужно?
                             && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT
                 }

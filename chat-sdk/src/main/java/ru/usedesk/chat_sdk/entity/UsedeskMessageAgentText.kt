@@ -11,62 +11,61 @@ data class UsedeskMessageAgentText(
     override val avatar: String,
     val feedbackNeeded: Boolean,
     val feedback: UsedeskFeedback?,
-    val forms: List<Form>,
-    val formsLoaded: Boolean
+    val buttons: List<Button>,
+    val hasForm: Boolean
 ) : UsedeskMessage.Text, UsedeskMessageOwner.Agent {
 
-    sealed interface Form {
+    data class Button(
+        val name: String = "",
+        val url: String = "",
+        val type: String = ""
+    )
+
+    sealed interface Field {
         val id: Long
         val name: String
+        val required: Boolean
+        val hasError: Boolean
 
-        data class Button(
-            override val id: Long = FORM_APPLY_BUTTON_ID,
-            override val name: String = "",
-            val url: String = "",
-            val type: String = ""
-        ) : Form {
-            companion object {
-                const val FORM_APPLY_BUTTON_ID = 0L
+        data class Text(
+            override val id: Long,
+            override val name: String,
+            override val required: Boolean,
+            override val hasError: Boolean = false,
+            val type: Type,
+            val text: String = ""
+        ) : Field {
+            enum class Type {
+                EMAIL,
+                PHONE,
+                NAME,
+                NOTE,
+                POSITION
             }
         }
 
-        sealed interface Field : Form {
-            val required: Boolean
+        data class CheckBox(
+            override val id: Long,
+            override val name: String,
+            override val required: Boolean,
+            override val hasError: Boolean = false,
+            val checked: Boolean
+        ) : Field
 
-            data class Text(
-                override val id: Long,
-                override val name: String,
-                override val required: Boolean,
-                val type: Type
-            ) : Field {
-                enum class Type {
-                    EMAIL,
-                    PHONE,
-                    NAME,
-                    NOTE,
-                    POSITION
-                }
-            }
-
-            data class CheckBox(
-                override val id: Long,
-                override val name: String,
-                override val required: Boolean
-            ) : Field
-
-            data class List(
-                override val id: Long,
-                override val name: String,
-                override val required: Boolean,
-                val items: kotlin.collections.List<Item>,
-                val parentId: Long?
-            ) : Field {
-                data class Item(
-                    val id: Long,
-                    val name: String,
-                    val parentValueId: Long?
-                )
-            }
+        data class List(
+            override val id: Long,
+            override val name: String,
+            override val required: Boolean,
+            override val hasError: Boolean = false,
+            val items: kotlin.collections.List<Item> = listOf(),
+            val tree: kotlin.collections.List<List>? = null,
+            val selected: Item? = null
+        ) : Field {
+            data class Item(
+                val id: Long,
+                val name: String,
+                val parentValueId: Long?
+            )
         }
     }
 }

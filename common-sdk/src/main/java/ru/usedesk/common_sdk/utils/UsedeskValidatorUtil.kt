@@ -23,26 +23,28 @@ object UsedeskValidatorUtil {
             && customRule(text)
 
     @JvmStatic
-    fun isValidUrl(url: String?): Boolean = isValid(url, Patterns.WEB_URL)
+    fun isValidUrl(url: String?) = isValid(url, Patterns.WEB_URL)
 
     @JvmStatic
-    fun isValidUrlNecessary(url: String?): Boolean = isValidNecessary(url, Patterns.WEB_URL)
+    fun isValidUrlNecessary(url: String?) = isValidNecessary(url, Patterns.WEB_URL)
 
     @JvmStatic
-    fun isValidEmail(email: String?): Boolean = isValid(email, Patterns.EMAIL_ADDRESS)
+    fun isValidEmail(email: String?) = isValid(email, Patterns.EMAIL_ADDRESS)
 
     @JvmStatic
-    fun isValidEmailNecessary(email: String?): Boolean =
-        isValidNecessary(email, Patterns.EMAIL_ADDRESS)
+    fun isValidEmailNecessary(email: String?) = isValidNecessary(email, Patterns.EMAIL_ADDRESS)
 
     @JvmStatic
-    fun isValidPhone(phone: Long?): Boolean = isValid(phone?.toString(), Patterns.PHONE) {
-        it.length in 10..17
-    }
+    fun isValidPhone(phone: String?): Boolean = isValid(
+        phone,
+        Patterns.PHONE,
+        customRule = { it.length in 10..17 }
+    )
 
     @JvmStatic
-    fun isValidPhoneNecessary(phone: Long?): Boolean =
-        isValidNecessary(phone?.toString(), Patterns.PHONE) {
-            it.length in 10..17
-        }
+    fun isValidPhoneNecessary(phone: String?): Boolean = isValidNecessary(
+        phone,
+        Patterns.PHONE,
+        customRule = { it.length in 10..17 }
+    )
 }

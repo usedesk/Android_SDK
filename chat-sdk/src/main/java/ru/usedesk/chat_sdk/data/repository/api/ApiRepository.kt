@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
@@ -140,86 +139,6 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         token: String?
     ) = socketApi.sendRequest(configuration.toInitChatRequest(token))
-
-    override fun loadForm(
-        configuration: UsedeskChatConfiguration,
-        form: UsedeskForm
-    ): LoadFormResponse {
-        val listsId = form.fields
-            .asSequence()
-            .filterIsInstance<UsedeskMessageAgentText.Field.List>()
-            .joinToString(",") { it.id.toString() }
-        val request = LoadFields.Request(
-            configuration.clientToken!!,
-            listsId
-        )
-        val response = doRequestJson(
-            configuration.urlChatApi,
-            request,
-            LoadFields.Response::class.java,
-            RetrofitApi::loadFieldList
-        )
-        return when (response?.fields) {
-            null -> LoadFormResponse.Error(response?.code)
-            else -> {
-                val fieldMap = form.fields.associateBy(UsedeskMessageAgentText.Field::id)
-                val listMap = response.fields
-                    .map { it.key to it.value.convertToList(fieldMap) }
-                    .toMap()
-                val loadedFields = form.fields.mapNotNull {
-                    when (it) {
-                        is UsedeskMessageAgentText.Field.List -> listMap[it.id.toString()]
-                        else -> listOf(it)
-                    }
-                }.flatten()
-                LoadFormResponse.Done(
-                    form.copy(
-                        fields = loadedFields,
-                        state = UsedeskForm.State.LOADED
-                    )
-                )
-            }
-        }
-    }
-
-    class FieldLoadedList(
-        val id: Long,
-        val children: Array<Children>
-    ) {
-        class Children(
-            val id: Long,
-            val value: String,
-            val parentFieldId: Long?
-        )
-    }
-
-    private fun JsonObject.convertToList(lists: Map<Long, UsedeskMessageAgentText.Field>): List<UsedeskMessageAgentText.Field.List>? =
-        valueOrNull {
-            when (val list = getAsJsonObject("list")) {
-                null -> {
-                    val fieldLoaded = gson.fromJson(this, FieldLoadedList::class.java)
-                    when {
-                        fieldLoaded.children.isEmpty() -> null
-                        else -> listOfNotNull(
-                            (lists[fieldLoaded.id] as? UsedeskMessageAgentText.Field.List)?.copy(
-                                items = fieldLoaded.children.map {
-                                    UsedeskMessageAgentText.Field.List.Item(
-                                        it.id,
-                                        it.value,
-                                        it.parentFieldId
-                                    )
-                                }
-                            )
-                        )
-                    }
-                }
-                else -> {
-                    list.entrySet().mapNotNull {
-                        (it.value as JsonObject).convertToList(lists)
-                    }.flatten()
-                }
-            }
-        }
 
     private fun UsedeskChatConfiguration.toInitChatRequest(token: String?) = SocketRequest.Init(
         token,

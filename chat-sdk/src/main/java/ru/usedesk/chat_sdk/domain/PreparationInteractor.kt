@@ -12,7 +12,7 @@ internal class PreparationInteractor @Inject constructor(
     private val apiRepository: IApiRepository,
     private val userInfoRepository: IUserInfoRepository
 ) : IUsedeskPreparation, IRelease {
-    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     override fun createChat(
         apiToken: String,

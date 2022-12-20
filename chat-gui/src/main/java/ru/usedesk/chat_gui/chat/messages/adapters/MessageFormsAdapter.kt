@@ -25,7 +25,7 @@ import ru.usedesk.common_gui.visibleGone
 
 //TODO: вытащить вьюхолдеры во вне
 internal class MessageFormsAdapter(
-    recyclerView: RecyclerView,
+    private val recyclerView: RecyclerView,
     private val pbLoading: ProgressBar,
     private val onEvent: (Event) -> Unit
 ) : RecyclerView.Adapter<BaseViewHolder>() {
@@ -110,6 +110,7 @@ internal class MessageFormsAdapter(
                 ).dispatchUpdatesTo(this)
                 else -> notifyDataSetChanged()
             }
+            recyclerView.visibility = visibleGone(items.isNotEmpty())
             pbLoading.visibility = visibleGone(form.state == UsedeskForm.State.LOADING)
         }
     }

@@ -69,17 +69,6 @@ internal interface IApiRepository {
         apiToken: String
     ): InitChatResponse
 
-    @CheckResult
-    fun loadForm(
-        configuration: UsedeskChatConfiguration,
-        form: UsedeskForm
-    ): LoadFormResponse
-
-    sealed interface LoadFormResponse {
-        class Done(val form: UsedeskForm) : LoadFormResponse
-        class Error(val error: Int? = null) : LoadFormResponse
-    }
-
     sealed interface SendFileResponse {
         object Done : SendFileResponse
         class Error(val error: Int? = null) : SendFileResponse

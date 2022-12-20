@@ -9,6 +9,7 @@ import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
+import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.di.IRelease
 import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
@@ -35,7 +36,7 @@ internal class ChatInteractor @Inject constructor(
 
     private val actionListeners = ActionListeners()
 
-    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var reconnectJob: Job? = null
     private val eventMutex = Mutex()
     private val firstMessageMutex = Mutex()
@@ -497,7 +498,10 @@ internal class ChatInteractor @Inject constructor(
                         put(
                             messageId,
                             form.copy(state = UsedeskForm.State.LOADING).apply {
-                                launchLoadForm(form)
+                                launchLoadForm(
+                                    clientToken,
+                                    form
+                                )
                             }
                         )
                     }
@@ -507,10 +511,14 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    private fun launchLoadForm(form: UsedeskForm) {
+    private fun launchLoadForm(
+        clientToken: String,
+        form: UsedeskForm
+    ) {
         ioScope.launch {
-            val response = apiRepository.loadForm(
-                initConfiguration,
+            val response = formRepository.loadForm(
+                initConfiguration.urlChatApi,
+                clientToken,
                 form
             )
             when (response) {
@@ -526,7 +534,10 @@ internal class ChatInteractor @Inject constructor(
                 }
                 is LoadFormResponse.Error -> {
                     delay(REPEAT_DELAY)
-                    launchLoadForm(form)
+                    launchLoadForm(
+                        clientToken,
+                        form
+                    )
                 }
             }
         }

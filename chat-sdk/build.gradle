@@ -49,7 +49,7 @@ dependencies {
     implementation "com.google.code.gson:gson:$gsonVersion"
 
     implementation "androidx.room:room-runtime:$roomVersion"
-    annotationProcessor "androidx.room:room-compiler:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
 }
 
 afterEvaluate {

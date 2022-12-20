@@ -1004,9 +1004,6 @@ internal class MessagesAdapter(
                 messageAgentText.buttons
             )
 
-            val formShowed = messageAgentText.buttons.isNotEmpty() || chatItem.form?.fields != null
-            binding.content.rvItems.visibility = visibleGone(formShowed)
-
             binding.content.rootView.layoutParams.apply {
                 width = when {
                     messageAgentText.buttons.isEmpty()

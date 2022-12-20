@@ -94,13 +94,16 @@ internal class FormRepository @Inject constructor(
             null -> LoadFormResponse.Error(response?.code)
             else -> {
                 val fieldMap = form.fields.associateBy(Field::id)
-                val listMap = response.fields
-                    .map { it.key to it.value.convertToList(fieldMap) }
-                    .toMap()
                 val loadedFields = form.fields.mapNotNull {
                     when (it) {
-                        is Field.List -> listMap[it.id.toString()]
-                        else -> listOf(it)
+                        is Field.Text -> listOf(it)
+                        else -> {
+                            val field = response.fields[it.id.toString()]
+                            when (field?.get("list")) {
+                                null -> field?.convert(it)
+                                else -> field.convertToList(fieldMap)
+                            }
+                        }
                     }
                 }.flatten()
                 val loadedForm = form.copy(
@@ -148,6 +151,19 @@ internal class FormRepository @Inject constructor(
             val parentFieldId: Long?
         )
     }
+
+    private fun JsonObject.convert(field: Field): List<Field> =
+        when (get("ticket_field_type_id")?.asInt) {
+            3 -> listOf(
+                Field.CheckBox(
+                    field.id,
+                    field.name,
+                    field.required
+                )
+            )
+            1 -> listOf(field)
+            else -> listOf()
+        }
 
     private fun JsonObject.convertToList(lists: Map<Long, Field>): List<Field.List>? =
         valueOrNull {

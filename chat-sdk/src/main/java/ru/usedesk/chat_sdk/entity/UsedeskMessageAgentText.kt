@@ -49,7 +49,7 @@ data class UsedeskMessageAgentText(
             override val name: String,
             override val required: Boolean,
             override val hasError: Boolean = false,
-            val checked: Boolean
+            val checked: Boolean = false
         ) : Field
 
         data class List(

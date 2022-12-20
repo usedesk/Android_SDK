@@ -69,7 +69,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         class MessageButtonClick(val button: Button) : Event
         class FormApplyClick(val messageId: Long) : Event
         class FormChanged(val messageId: Long, val field: Field) : Event
-        class FormListClicked(val messageId: Long, val fieldId: Long) : Event
+        class FormListClicked(val messageId: Long, val field: Field) : Event
     }
 
     data class State(

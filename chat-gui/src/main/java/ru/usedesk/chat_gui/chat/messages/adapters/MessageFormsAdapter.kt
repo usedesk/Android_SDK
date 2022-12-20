@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -212,10 +213,13 @@ internal class MessageFormsAdapter(
     internal class CheckBoxBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
+        val lClickable: View = rootView.findViewById(R.id.l_clickable)
+        val ivChecked: ImageView = rootView.findViewById(R.id.iv_checked)
     }
 
     internal class ItemListBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
+        val lClickable: View = rootView.findViewById(R.id.l_clickable)
     }
 }

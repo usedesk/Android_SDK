@@ -12,8 +12,6 @@ import javax.inject.Inject
 
 internal class MessageResponseConverter @Inject constructor() : IMessageResponseConverter {
 
-    private val fieldId = AtomicLong(-1L)
-
     private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
     private val phoneRegex = Patterns.PHONE.toRegex()
     private val urlRegex = Patterns.WEB_URL.toRegex()
@@ -155,7 +153,8 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                 val feedback: UsedeskFeedback?
                 val text = from.text ?: ""
                 if (!fromClient) {
-                    objects = text.toMessageObjects()
+                    val fieldId = AtomicLong(-1L)
+                    objects = text.toMessageObjects(fieldId)
                     feedback = when (from.payload?.userRating) {
                         "LIKE" -> UsedeskFeedback.LIKE
                         "DISLIKE" -> UsedeskFeedback.DISLIKE
@@ -392,9 +391,9 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         return MessageObject.Image(image)
     }
 
-    private fun String.toMessageObjects() = parts(
+    private fun String.toMessageObjects(fieldId: AtomicLong) = parts(
         objectRegex,
-        inConverter = { toMessageObject() },
+        inConverter = { toMessageObject(fieldId) },
         outConverter = {
             parts(
                 imageRegexp,
@@ -426,7 +425,7 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         }
     }
 
-    private fun String.toMessageField(): List<MessageObject>? {
+    private fun String.toMessageField(fieldId: AtomicLong): List<MessageObject>? {
         val parts = drop(7)
             .dropLast(2)
             .split(";")
@@ -465,9 +464,9 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         }
     }
 
-    private fun String.toMessageObject() = when {
+    private fun String.toMessageObject(fieldId: AtomicLong) = when {
         buttonRegex.matches(this) -> toMessageButton()
-        fieldRegex.matches(this) -> toMessageField()
+        fieldRegex.matches(this) -> toMessageField(fieldId)
         else -> null
     } ?: listOf(MessageObject.Text(this))
 

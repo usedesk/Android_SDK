@@ -30,11 +30,11 @@ internal class ItemListViewHolder(
                 }
             }
         }
-        binding.rootView.setOnClickListener {
+        binding.lClickable.setOnClickListener {
             onEvent(
                 Event.FormListClicked(
                     messageId,
-                    item.list.id
+                    item.list
                 )
             )
         }

@@ -1007,8 +1007,8 @@ internal class MessagesAdapter(
             binding.content.rootView.layoutParams.apply {
                 width = when {
                     messageAgentText.buttons.isEmpty()
-                            && chatItem.form?.fields == null
-                            && !messageAgentText.feedbackNeeded //TODO:может если в rv задать match-parent, то это будет ненужно?
+                            && !messageAgentText.hasForm
+                            && !messageAgentText.feedbackNeeded
                             && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT
                 }

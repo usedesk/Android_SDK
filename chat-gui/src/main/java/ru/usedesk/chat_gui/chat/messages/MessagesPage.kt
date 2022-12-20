@@ -38,6 +38,7 @@ internal class MessagesPage : UsedeskFragment() {
 
     private var messagesAdapter: MessagesAdapter? = null
     private var attachmentDialog: AttachmentDialog? = null
+    private var formSelectorDialog: FormSelectorDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,8 +54,9 @@ internal class MessagesPage : UsedeskFragment() {
         binding = it
     }.rootView
 
-    fun dismissAttachmentDialog() {
+    fun dismissAnyDialog() {
         attachmentDialog?.dismiss()
+        formSelectorDialog?.dismiss()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,6 +86,8 @@ internal class MessagesPage : UsedeskFragment() {
             }
         }
 
+        formSelectorDialog = FormSelectorDialog.create(this)
+
         registerFiles { uris ->
             val files = uris.map {
                 UsedeskFileInfo.create(
@@ -109,6 +113,25 @@ internal class MessagesPage : UsedeskFragment() {
         }
 
         viewModel.modelFlow.onEachWithOld { old, new ->
+            if (old?.formSelector != new.formSelector) {
+                when (new.formSelector) {
+                    null -> formSelectorDialog?.dismiss()
+                    else -> formSelectorDialog?.run {
+                        update(
+                            new.formSelector.second,
+                            onSelected = { selected ->
+                                viewModel.onEvent(
+                                    MessagesViewModel.Event.FormChanged(
+                                        new.formSelector.first,
+                                        new.formSelector.second.copy(selected = selected)
+                                    )
+                                )
+                            }
+                        )
+                        show()
+                    }
+                }
+            }
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
                 when {
                     new.attachmentPanelVisible -> attachmentDialog?.show()
@@ -157,6 +180,12 @@ internal class MessagesPage : UsedeskFragment() {
             dismiss()
         }
         attachmentDialog = null
+
+        formSelectorDialog?.run {
+            setOnDismissListener(null)
+            dismiss()
+        }
+        formSelectorDialog = null
     }
 
     private fun init(

@@ -69,7 +69,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         class MessageButtonClick(val button: Button) : Event
         class FormApplyClick(val messageId: Long) : Event
         class FormChanged(val messageId: Long, val field: Field) : Event
-        class FormListClicked(val messageId: Long, val field: Field) : Event
+        class FormListClicked(val messageId: Long, val list: Field.List) : Event
     }
 
     data class State(
@@ -77,6 +77,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val formMap: Map<Long, UsedeskForm> = mapOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
+        val formSelector: Pair<Long, Field.List>? = null,
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,

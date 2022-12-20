@@ -61,7 +61,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             .fragments
             .filterIsInstance<MessagesPage>()
             .firstOrNull()
-            ?.dismissAttachmentDialog()
+            ?.dismissAnyDialog()
     }
 
     internal fun getBundleArgs(

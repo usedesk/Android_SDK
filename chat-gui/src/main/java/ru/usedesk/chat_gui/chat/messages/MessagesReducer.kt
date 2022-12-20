@@ -40,7 +40,9 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
         }
     )
 
-    private fun State.formListClicked(event: Event.FormListClicked) = copy() //TODO:
+    private fun State.formListClicked(event: Event.FormListClicked) = copy(
+        formSelector = Pair(event.messageId, event.list)
+    )
 
     private fun State.formChanged(event: Event.FormChanged): State =
         when (val form = formMap[event.messageId]) {
@@ -58,7 +60,8 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                 copy(
                     formMap = formMap.toMutableMap().apply {
                         put(event.messageId, newForm)
-                    }
+                    },
+                    formSelector = null
                 )
             }
         }

@@ -14,9 +14,10 @@
         app:cardCornerRadius="8dp">
 
         <FrameLayout
+            android:id="@+id/l_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/usedesk_message_field_text_simple">
+            android:background="@drawable/usedesk_message_field_simple">
 
             <LinearLayout
                 android:id="@+id/l_clickable"

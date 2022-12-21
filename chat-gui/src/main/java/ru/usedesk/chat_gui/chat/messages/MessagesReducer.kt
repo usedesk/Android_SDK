@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.chat.messages
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
@@ -35,6 +36,10 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
         formMap = formMap.toMutableMap().apply {
             val form = formMap[event.messageId]
             if (form?.state == UsedeskForm.State.LOADED) {
+                put(
+                    form.id,
+                    form.copy(state = UsedeskForm.State.SENDING)
+                )
                 usedeskChat.send(form)
             }
         }
@@ -44,15 +49,45 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
         formSelector = Pair(event.messageId, event.list)
     )
 
+    private fun List<Field.List>.getChilds(list: Field.List): List<String> {
+        val tree = mutableListOf<Field.List>()
+        var child: Field.List? = list
+        while (child != null) {
+            child = firstOrNull { (it as? Field.List)?.parentId == child?.id }
+            if (child != null) {
+                tree.add(child)
+            }
+        }
+        return tree.map { it.id }
+    }
+
     private fun State.formChanged(event: Event.FormChanged): State =
         when (val form = formMap[event.messageId]) {
             null -> this
             else -> {
+                val lists = form.fields.filterIsInstance<Field.List>()
+                val treeIds = when (event.field) {
+                    is Field.List -> lists.getChilds(event.field)
+                    else -> listOf(event.field.id)
+                }
                 val newForm = form.copy(
-                    fields = form.fields.map {
-                        when (it.id) {
+                    fields = form.fields.map { field ->
+                        when (field.id) {
                             event.field.id -> event.field
-                            else -> it
+                            in treeIds -> {
+                                when {
+                                    event.field is Field.List &&
+                                            field is Field.List -> {
+                                        val parentList = lists.first { it.id == field.parentId }
+                                        when (field.selected?.parentValueId) {
+                                            parentList.selected?.id -> field
+                                            else -> field.copy(selected = null)
+                                        }
+                                    }
+                                    else -> field
+                                }
+                            }
+                            else -> field
                         }
                     }
                 )

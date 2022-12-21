@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
+import android.text.Html
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
@@ -21,7 +22,12 @@ internal class ItemListViewHolder(
         binding.tvText.apply {
             when (val selected = item.list.selected) {
                 null -> {
-                    text = item.list.name
+                    text = Html.fromHtml(
+                        item.list.name + when {
+                            item.list.required -> REQUIRED_POSTFIX_HTML
+                            else -> ""
+                        }
+                    )
                     setTextColor(binding.rootView.resources.getColor(R.color.usedesk_gray_2)) //TODO: styleValues
                 }
                 else -> {
@@ -30,6 +36,12 @@ internal class ItemListViewHolder(
                 }
             }
         }
+        binding.lFrame.setBackgroundResource(
+            when {
+                item.list.hasError -> R.drawable.usedesk_message_field_error
+                else -> R.drawable.usedesk_message_field_simple
+            }
+        )
         binding.lClickable.setOnClickListener {
             onEvent(
                 Event.FormListClicked(

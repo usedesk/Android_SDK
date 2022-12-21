@@ -68,7 +68,7 @@ internal class MessageFormsAdapter(
     }
 
     private fun onUpdate(form: UsedeskForm) {
-        if (this.form?.state != form.state) {
+        if (this.form != form) {
             val oldForm = this.form
             val oldItems = items
             this.form = form
@@ -103,8 +103,12 @@ internal class MessageFormsAdapter(
                             return when (oldItem) {
                                 is ItemButton -> newItem is ItemButton
                                 is ItemCheckBox -> newItem is ItemCheckBox
-                                is ItemList -> newItem is ItemList && oldItem.list.selected == newItem.list.selected
+                                        && oldItem.checkBox.hasError == newItem.checkBox.hasError
+                                is ItemList -> newItem is ItemList
+                                        && oldItem.list.selected == newItem.list.selected
+                                        && oldItem.list.hasError == newItem.list.hasError
                                 is ItemText -> newItem is ItemText
+                                        && oldItem.text.hasError == newItem.text.hasError
                             }
                         }
                     }
@@ -220,6 +224,7 @@ internal class MessageFormsAdapter(
     internal class ItemListBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
+        val lFrame: View = rootView.findViewById(R.id.l_frame)
         val lClickable: View = rootView.findViewById(R.id.l_clickable)
     }
 }

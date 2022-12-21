@@ -5,6 +5,7 @@ import android.content.Context
 import com.google.gson.Gson
 import dagger.BindsInstance
 import dagger.Component
+import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
@@ -52,4 +53,5 @@ internal interface CommonChatDeps {
     val apiFactory: IUsedeskApiFactory
     val apiRepository: IApiRepository
     val userInfoRepository: IUserInfoRepository
+    val chatDatabase: ChatDatabase
 }

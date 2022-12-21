@@ -48,7 +48,7 @@ internal class FormSelectorDialog private constructor(
             value = 0
             displayedValues = values
             maxValue = values.size - 1
-            value = list.items.indexOfFirst { it.id == list.selected?.id }
+            value = list.items.indexOfFirst { it.id == list.selected?.id } + 1
         }
 
         setOnDismissListener {
@@ -56,6 +56,7 @@ internal class FormSelectorDialog private constructor(
         }
 
         binding.tvDone.setOnClickListener {
+            setOnDismissListener(null)
             dismiss()
             onSelected(
                 when (val index = binding.npPicker.value) {

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
+import android.text.Html
 import android.text.InputType
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
@@ -44,10 +45,12 @@ internal class TextViewHolder(
         item as Item.ItemText
         binding.etText.run {
             clearFocus()
-            hint = item.text.name + when {
-                item.text.required -> " *"
-                else -> ""
-            }
+            hint = Html.fromHtml(
+                item.text.name + when {
+                    item.text.required -> REQUIRED_POSTFIX_HTML
+                    else -> ""
+                }
+            )
             onTextChangedListener = {}
             setText(item.text.text)
             setOnFocusChangeListener { _, hasFocus ->
@@ -55,43 +58,14 @@ internal class TextViewHolder(
                     postScrollTo(true)
                 }
             }
-            maxLines = 1
-            when (item.text.type) {
-                Field.Text.Type.EMAIL -> {
-                    inputType = InputType.TYPE_CLASS_TEXT or
-                            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                    /*maxLines = 1
-                    setOnTouchListener { _, _ -> false }*/
-                }
-                Field.Text.Type.PHONE -> {
-                    inputType = InputType.TYPE_CLASS_TEXT or
-                            InputType.TYPE_CLASS_PHONE
-                    /*maxLines = 1
-                    setOnTouchListener { _, _ -> false }*/
-                }
-                Field.Text.Type.NAME -> {
-                    inputType = InputType.TYPE_CLASS_TEXT or
-                            InputType.TYPE_TEXT_VARIATION_PERSON_NAME or
-                            InputType.TYPE_TEXT_FLAG_CAP_WORDS
-                    /*maxLines = 1
-                    setOnTouchListener { _, _ -> false }*/
-                }
-                Field.Text.Type.NOTE -> {
-                    inputType = InputType.TYPE_CLASS_TEXT or
-                            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
-                            InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                    /*maxLines = 3
-                    setOnTouchListener { v, _ ->
-                        v.parent.requestDisallowInterceptTouchEvent(true)
-                        false
-                    }*/
-                }
-                Field.Text.Type.POSITION -> {
-                    inputType = InputType.TYPE_CLASS_TEXT or
-                            InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-                    /*maxLines = 1
-                    setOnTouchListener { _, _ -> false }*/
-                }
+            inputType = InputType.TYPE_CLASS_TEXT or when (item.text.type) {
+                Field.Text.Type.EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                Field.Text.Type.PHONE -> InputType.TYPE_CLASS_PHONE
+                Field.Text.Type.NAME -> InputType.TYPE_TEXT_VARIATION_PERSON_NAME or
+                        InputType.TYPE_TEXT_FLAG_CAP_WORDS
+                Field.Text.Type.NOTE -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
+                        InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                Field.Text.Type.POSITION -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             }
             onTextChangedListener = {
                 onEvent(

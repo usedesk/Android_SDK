@@ -1,7 +1,12 @@
 package ru.usedesk.chat_sdk.di.common
 
+import android.content.Context
+import androidx.room.Room
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
+import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
+import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase.Companion.DATABASE_NAME
 import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
@@ -18,7 +23,14 @@ import javax.inject.Scope
 internal interface CommonChatModule
 
 @Module
-internal class CommonChatModuleProvides
+internal class CommonChatModuleProvides {
+    @[Provides CommonChatScope]
+    fun chatDatabase(appContext: Context): ChatDatabase = Room.databaseBuilder(
+        appContext,
+        ChatDatabase::class.java,
+        DATABASE_NAME
+    ).build()
+}
 
 @Module
 internal interface CommonChatModuleBinds {

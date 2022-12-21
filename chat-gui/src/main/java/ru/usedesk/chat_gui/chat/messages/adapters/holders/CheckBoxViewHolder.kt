@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
+import android.text.Html
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
@@ -19,10 +20,12 @@ internal class CheckBoxViewHolder(
         state: UsedeskForm.State
     ) {
         item as ItemCheckBox
-        binding.tvText.text = item.checkBox.name + when {
-            item.checkBox.required -> " *"
-            else -> ""
-        }
+        binding.tvText.text = Html.fromHtml(
+            item.checkBox.name + when {
+                item.checkBox.required -> REQUIRED_POSTFIX_HTML
+                else -> ""
+            }
+        )
         updateChecked(messageId, item.checkBox)
     }
 
@@ -33,6 +36,7 @@ internal class CheckBoxViewHolder(
         binding.ivChecked.setImageResource(
             when {
                 checkBox.checked -> R.drawable.usedesk_ic_form_checked
+                checkBox.hasError -> R.drawable.usedesk_ic_form_unchecked_error
                 else -> R.drawable.usedesk_ic_form_unchecked
             }
         )

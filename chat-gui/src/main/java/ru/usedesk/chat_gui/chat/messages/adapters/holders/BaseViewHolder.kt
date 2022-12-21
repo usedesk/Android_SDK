@@ -13,4 +13,8 @@ internal sealed class BaseViewHolder(rootView: View) :
         item: MessageFormsAdapter.Item,
         state: UsedeskForm.State
     )
+
+    companion object {
+        const val REQUIRED_POSTFIX_HTML = "&thinsp;<font color=#ff0000>*</font>"
+    }
 }

@@ -13,7 +13,7 @@
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/et_text"
-            android:background="@drawable/usedesk_message_field_text_selector"
+            android:background="@drawable/usedesk_message_field_selector"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/usedesk_black_2"

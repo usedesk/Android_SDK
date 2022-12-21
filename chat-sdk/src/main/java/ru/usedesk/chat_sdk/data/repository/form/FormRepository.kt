@@ -1,21 +1,17 @@
 package ru.usedesk.chat_sdk.data.repository.form
 
-import android.content.Context
-import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
+import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
 import ru.usedesk.chat_sdk.data.repository.api.entity.LoadForm
 import ru.usedesk.chat_sdk.data.repository.api.entity.SaveForm
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
 import ru.usedesk.chat_sdk.data.repository.form.db.DbForm
-import ru.usedesk.chat_sdk.data.repository.form.db.FormDao
-import ru.usedesk.chat_sdk.data.repository.form.db.FormDatabase
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
@@ -26,30 +22,21 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 import javax.inject.Inject
 
 internal class FormRepository @Inject constructor(
-    appContext: Context,
+    database: ChatDatabase,
     initConfiguration: UsedeskChatConfiguration,
     multipartConverter: IUsedeskMultipartConverter,
     apiFactory: IUsedeskApiFactory,
     gson: Gson
-) : UsedeskApiRepository<RetrofitApi>(
+) : UsedeskApiRepository<FormApi>(
     apiFactory,
     multipartConverter,
     gson,
-    RetrofitApi::class.java
+    FormApi::class.java
 ), IFormRepository {
     private val userKey = initConfiguration.userKey()
-    private val formDao: FormDao
+    private val formDao = database.formDao()
     private val mutex = Mutex()
     private val dbGson = Gson()
-
-    init {
-        val database = Room.databaseBuilder(
-            appContext,
-            FormDatabase::class.java,
-            "usedesk"
-        ).build()
-        formDao = database.formDao()
-    }
 
     override suspend fun saveForm(form: UsedeskForm) {
         formDao.save(form.toDb())
@@ -92,7 +79,7 @@ internal class FormRepository @Inject constructor(
             urlChatApi,
             request,
             LoadForm.Response::class.java,
-            RetrofitApi::loadForm //TODO: вынести отдельно
+            FormApi::loadForm
         )
         return when (response?.fields) {
             null -> LoadFormResponse.Error(response?.code)
@@ -114,8 +101,7 @@ internal class FormRepository @Inject constructor(
                     fields = loadedFields,
                     state = UsedeskForm.State.LOADED
                 )
-                val dbForm = getDbForm(form.id)
-                val savedForm = when (dbForm) {
+                val savedForm = when (val dbForm = getDbForm(form.id)) {
                     null -> loadedForm
                     else -> {
                         val savedFields = dbGson.fromJson(dbForm.fields, JsonObject::class.java)
@@ -239,7 +225,7 @@ internal class FormRepository @Inject constructor(
             urlChatApi,
             request,
             SaveForm.Response::class.java,
-            RetrofitApi::saveForm
+            FormApi::saveForm
         )
         return when (response?.status) {
             1 -> {

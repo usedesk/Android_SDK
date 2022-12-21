@@ -11,7 +11,6 @@
         style="?attr/usedesk_common_container_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp">
@@ -23,17 +22,17 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
+            android:layout_gravity="top"
             android:padding="2dp" />
 
         <TextView
             android:id="@+id/tv_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
             android:includeFontPadding="false"
+            android:layout_gravity="center_vertical"
             android:paddingStart="4dp"
             android:paddingEnd="10dp"
-            android:singleLine="true"
             android:textColor="@color/usedesk_black_2"
             android:textSize="15sp" />
     </LinearLayout>

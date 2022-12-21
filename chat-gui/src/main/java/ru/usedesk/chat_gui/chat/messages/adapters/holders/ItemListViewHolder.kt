@@ -19,13 +19,13 @@ internal class ItemListViewHolder(
     ) {
         item as ItemList
         binding.tvText.apply {
-            when (item.list.selected) {
+            when (val selected = item.list.selected) {
                 null -> {
                     text = item.list.name
                     setTextColor(binding.rootView.resources.getColor(R.color.usedesk_gray_2)) //TODO: styleValues
                 }
                 else -> {
-                    text = item.list.selected?.name
+                    text = selected.name
                     setTextColor(binding.rootView.resources.getColor(R.color.usedesk_black_3)) //TODO: styleValues
                 }
             }

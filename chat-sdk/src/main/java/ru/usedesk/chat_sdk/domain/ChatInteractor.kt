@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
+import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.di.IRelease
 import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
@@ -17,7 +18,6 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
-import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 import java.util.*
 import javax.inject.Inject
 
@@ -559,53 +559,22 @@ internal class ChatInteractor @Inject constructor(
     override fun send(form: UsedeskForm) {
         setModel {
             when (formMap[form.id]?.state) {
+                UsedeskForm.State.NOT_LOADED,
                 UsedeskForm.State.SENDING -> this
                 else -> {
-                    val newFields = form.fields.map { field ->
-                        when (field) {
-                            is UsedeskMessageAgentText.Field.CheckBox -> field.copy(
-                                hasError = field.required && !field.checked
-                            )
-                            is UsedeskMessageAgentText.Field.List -> {
-                                val isValid = !field.required || field.selected != null
-                                field.copy(hasError = !isValid)
-                            }
-                            is UsedeskMessageAgentText.Field.Text -> {
-                                val text = field.text
-                                val isValid = when (field.type) {
-                                    UsedeskMessageAgentText.Field.Text.Type.EMAIL -> when {
-                                        field.required -> UsedeskValidatorUtil.isValidEmailNecessary(
-                                            text
-                                        )
-                                        else -> UsedeskValidatorUtil.isValidEmail(text)
-                                    }
-                                    UsedeskMessageAgentText.Field.Text.Type.PHONE -> when {
-                                        field.required -> UsedeskValidatorUtil.isValidPhoneNecessary(
-                                            text
-                                        )
-                                        else -> UsedeskValidatorUtil.isValidPhone(text)
-                                    }
-                                    else -> !field.required || text.any { it.isLetter() }
-                                }
-                                field.copy(hasError = !isValid)
-                            }
-                        }
+                    val validatedForm = formRepository.validateForm(form)
+                    val hasError = validatedForm.fields.any { it.hasError }
+                    if (!hasError) {
+                        launchSendForm(clientToken, validatedForm)
                     }
-                    val anyHasError = newFields.any { it.hasError }
                     copy(
                         formMap = formMap.toMutableMap().apply {
-                            val newForm = when {
-                                anyHasError -> form.copy(
-                                    fields = newFields,
-                                    state = UsedeskForm.State.LOADED
-                                )
-                                else -> form.copy(
-                                    fields = newFields,
-                                    state = UsedeskForm.State.SENDING
-                                ).apply {
-                                    launchSendForm(this)
+                            val newForm = validatedForm.copy(
+                                state = when {
+                                    hasError -> UsedeskForm.State.LOADED
+                                    else -> UsedeskForm.State.SENDING
                                 }
-                            }
+                            )
                             put(form.id, newForm)
                         }
                     )
@@ -614,8 +583,28 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    private fun launchSendForm(form: UsedeskForm) {
-        //TODO
+    private fun launchSendForm(
+        clientToken: String,
+        form: UsedeskForm
+    ) {
+        ioScope.launch {
+            val response = formRepository.sendForm(
+                initConfiguration.urlChatApi,
+                clientToken,
+                form
+            )
+            val newForm = when (response) {
+                is SendFormResponse.Done -> response.form
+                is SendFormResponse.Error -> form.copy(state = UsedeskForm.State.LOADED)
+            }
+            setModel {
+                copy(
+                    formMap = formMap.toMutableMap().apply {
+                        put(form.id, newForm)
+                    }
+                )
+            }
+        }
     }
 
     override fun send(

@@ -5,7 +5,8 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
-import ru.usedesk.chat_sdk.data.repository.api.entity.LoadFields
+import ru.usedesk.chat_sdk.data.repository.api.entity.LoadForm
+import ru.usedesk.chat_sdk.data.repository.api.entity.SaveForm
 import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFields
 
 internal interface RetrofitApi {
@@ -26,7 +27,10 @@ internal interface RetrofitApi {
     ): Call<ResponseBody>
 
     @POST("v1/widget/field_list")
-    fun loadFieldList(@Body body: LoadFields.Request): Call<ResponseBody>
+    fun loadForm(@Body body: LoadForm.Request): Call<ResponseBody>
+
+    @POST("/v1/widget/custom_form/save")
+    fun saveForm(@Body body: SaveForm.Request): Call<ResponseBody>
 
     @Multipart
     @POST("v1/chat/setClient")

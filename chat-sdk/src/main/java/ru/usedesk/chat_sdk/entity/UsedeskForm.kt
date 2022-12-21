@@ -10,6 +10,7 @@ data class UsedeskForm(
         LOADING,
         LOADED,
         SENDING,
+        SENDING_FAILED,
         SENT
     }
 }

@@ -4,9 +4,9 @@ import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
-import java.util.concurrent.atomic.AtomicLong
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -153,8 +153,7 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                 val feedback: UsedeskFeedback?
                 val text = from.text ?: ""
                 if (!fromClient) {
-                    val fieldId = AtomicLong(-1L)
-                    objects = text.toMessageObjects(fieldId)
+                    objects = text.toMessageObjects()
                     feedback = when (from.payload?.userRating) {
                         "LIKE" -> UsedeskFeedback.LIKE
                         "DISLIKE" -> UsedeskFeedback.DISLIKE
@@ -215,7 +214,7 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                         val buttons = objects.filterIsInstance<MessageObject.Button>()
                             .map(MessageObject.Button::button)
                         val formState = when {
-                            fields.all { it !is UsedeskMessageAgentText.Field.List } -> UsedeskForm.State.LOADED
+                            fields.all { it !is Field.List } -> UsedeskForm.State.LOADED
                             else -> UsedeskForm.State.NOT_LOADED
                         }
 
@@ -391,9 +390,9 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         return MessageObject.Image(image)
     }
 
-    private fun String.toMessageObjects(fieldId: AtomicLong) = parts(
+    private fun String.toMessageObjects() = parts(
         objectRegex,
-        inConverter = { toMessageObject(fieldId) },
+        inConverter = { toMessageObject() },
         outConverter = {
             parts(
                 imageRegexp,
@@ -425,7 +424,7 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         }
     }
 
-    private fun String.toMessageField(fieldId: AtomicLong): List<MessageObject>? {
+    private fun String.toMessageField(): List<MessageObject>? {
         val parts = drop(7)
             .dropLast(2)
             .split(";")
@@ -433,24 +432,24 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
             2, 3 -> valueOrNull {
                 val associate = parts[1]
                 val textType = when (associate) {
-                    "email" -> UsedeskMessageAgentText.Field.Text.Type.EMAIL
-                    "phone" -> UsedeskMessageAgentText.Field.Text.Type.PHONE
-                    "name" -> UsedeskMessageAgentText.Field.Text.Type.NAME
-                    "note" -> UsedeskMessageAgentText.Field.Text.Type.NOTE
-                    "position" -> UsedeskMessageAgentText.Field.Text.Type.POSITION
+                    "email" -> Field.Text.Type.EMAIL
+                    "phone" -> Field.Text.Type.PHONE
+                    "name" -> Field.Text.Type.NAME
+                    "note" -> Field.Text.Type.NOTE
+                    "position" -> Field.Text.Type.POSITION
                     else -> null
                 }
                 val required = parts.getOrNull(2) == "true"
                 listOf(
                     MessageObject.Field(
                         when (textType) {
-                            null -> UsedeskMessageAgentText.Field.List(
-                                associate.toLong(),
+                            null -> Field.List(
+                                associate,
                                 parts[0],
                                 required
                             )
-                            else -> UsedeskMessageAgentText.Field.Text(
-                                fieldId.decrementAndGet(),
+                            else -> Field.Text(
+                                associate,
                                 parts[0],
                                 required,
                                 hasError = false,
@@ -464,9 +463,9 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         }
     }
 
-    private fun String.toMessageObject(fieldId: AtomicLong) = when {
+    private fun String.toMessageObject() = when {
         buttonRegex.matches(this) -> toMessageButton()
-        fieldRegex.matches(this) -> toMessageField(fieldId)
+        fieldRegex.matches(this) -> toMessageField()
         else -> null
     } ?: listOf(MessageObject.Text(this))
 

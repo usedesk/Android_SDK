@@ -3,12 +3,16 @@ package ru.usedesk.chat_sdk.data.repository.form
 import android.content.Context
 import androidx.room.Room
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
-import ru.usedesk.chat_sdk.data.repository.api.entity.LoadFields
+import ru.usedesk.chat_sdk.data.repository.api.entity.LoadForm
+import ru.usedesk.chat_sdk.data.repository.api.entity.SaveForm
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
+import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
 import ru.usedesk.chat_sdk.data.repository.form.db.DbForm
 import ru.usedesk.chat_sdk.data.repository.form.db.FormDao
 import ru.usedesk.chat_sdk.data.repository.form.db.FormDatabase
@@ -18,6 +22,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
+import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 import javax.inject.Inject
 
 internal class FormRepository @Inject constructor(
@@ -67,9 +72,8 @@ internal class FormRepository @Inject constructor(
         )
     }
 
-    private suspend fun getDbForm(formId: Long): DbForm? {
-        return mutex.withLock { valueOrNull { formDao.get(formId) } }
-    }
+    private suspend fun getDbForm(formId: Long) =
+        mutex.withLock { valueOrNull { formDao.get(formId) } }
 
     override suspend fun loadForm(
         urlChatApi: String,
@@ -78,17 +82,17 @@ internal class FormRepository @Inject constructor(
     ): LoadFormResponse {
         val listsId = form.fields
             .asSequence()
-            .filterIsInstance<Field.List>()
-            .joinToString(",") { it.id.toString() }
-        val request = LoadFields.Request(
+            .filter { it !is Field.Text }
+            .joinToString(",") { it.id }
+        val request = LoadForm.Request(
             clientToken,
             listsId
         )
         val response = doRequestJson(
             urlChatApi,
             request,
-            LoadFields.Response::class.java,
-            RetrofitApi::loadFieldList
+            LoadForm.Response::class.java,
+            RetrofitApi::loadForm //TODO: вынести отдельно
         )
         return when (response?.fields) {
             null -> LoadFormResponse.Error(response?.code)
@@ -98,7 +102,7 @@ internal class FormRepository @Inject constructor(
                     when (it) {
                         is Field.Text -> listOf(it)
                         else -> {
-                            val field = response.fields[it.id.toString()]
+                            val field = response.fields[it.id]
                             when (field?.get("list")) {
                                 null -> field?.convert(it)
                                 else -> field.convertToList(fieldMap)
@@ -117,7 +121,7 @@ internal class FormRepository @Inject constructor(
                         val savedFields = dbGson.fromJson(dbForm.fields, JsonObject::class.java)
                         loadedForm.copy(
                             fields = loadedForm.fields.map { field ->
-                                when (val savedValue = savedFields[field.id.toString()]?.asString) {
+                                when (val savedValue = savedFields[field.id]?.asString) {
                                     null -> field
                                     else -> when (field) {
                                         is Field.CheckBox -> field.copy(checked = savedValue == "true")
@@ -141,15 +145,110 @@ internal class FormRepository @Inject constructor(
         }
     }
 
-    class FieldLoadedList(
-        val id: Long,
-        val children: Array<Children>
-    ) {
-        class Children(
-            val id: Long,
-            val value: String,
-            val parentFieldId: Long?
+    override fun validateForm(form: UsedeskForm): UsedeskForm = form.copy(
+        fields = form.fields.map { field ->
+            when (field) {
+                is Field.CheckBox -> field.copy(hasError = field.required && !field.checked)
+                is Field.List -> {
+                    val isValid = !field.required || field.selected != null
+                    field.copy(hasError = !isValid)
+                }
+                is Field.Text -> {
+                    val text = field.text
+                    val isValid = when (field.type) {
+                        Field.Text.Type.EMAIL -> when {
+                            field.required -> UsedeskValidatorUtil.isValidEmailNecessary(
+                                text
+                            )
+                            else -> UsedeskValidatorUtil.isValidEmail(text)
+                        }
+                        Field.Text.Type.PHONE -> when {
+                            field.required -> UsedeskValidatorUtil.isValidPhoneNecessary(
+                                text
+                            )
+                            else -> UsedeskValidatorUtil.isValidPhone(text)
+                        }
+                        else -> !field.required || text.any { it.isLetter() }
+                    }
+                    field.copy(hasError = !isValid)
+                }
+            }
+        }
+    )
+
+    override suspend fun sendForm(
+        urlChatApi: String,
+        clientToken: String,
+        form: UsedeskForm
+    ): SendFormResponse {
+        val request = SaveForm.Request(
+            clientToken,
+            form.fields.mapNotNull { field ->
+                val value = when (field) {
+                    is Field.CheckBox -> JsonPrimitive(field.checked.toString())
+                    is Field.List -> {
+                        when (field.parentId) {
+                            null -> {
+                                val lists = form.fields.filterIsInstance<Field.List>()
+                                val tree = mutableListOf(field)
+                                var lastChild: Field.List? = field
+                                while (lastChild != null) {
+                                    lastChild = lists.firstOrNull { list ->
+                                        list.parentId == lastChild?.id
+                                    }
+                                    if (lastChild != null) {
+                                        tree.add(lastChild)
+                                    }
+                                }
+                                when (tree.size) {
+                                    1 -> when (val selectedId = field.selected?.id?.toString()) {
+                                        null -> null
+                                        else -> JsonPrimitive(selectedId)
+                                    }
+                                    else -> JsonArray().apply {
+                                        tree.forEach { list ->
+                                            add(JsonObject().apply {
+                                                add("id", JsonPrimitive(list.id))
+                                                add(
+                                                    "value",
+                                                    JsonPrimitive(
+                                                        list.selected?.id?.toString() ?: ""
+                                                    )
+                                                )
+                                            })
+                                        }
+                                    }
+                                }
+                            }
+                            else -> null
+                        }
+                    }
+                    is Field.Text -> JsonPrimitive(field.text)
+                }
+                when (value) {
+                    null -> null
+                    else -> SaveForm.Request.Field(
+                        field.id,
+                        field.required,
+                        value
+                    )
+                }
+            }
         )
+        val response = doRequestJson(
+            urlChatApi,
+            request,
+            SaveForm.Response::class.java,
+            RetrofitApi::saveForm
+        )
+        return when (response?.status) {
+            1 -> {
+                val newForm = form.copy(state = UsedeskForm.State.SENT)
+                saveForm(newForm)
+                SendFormResponse.Done(newForm)
+            }
+            else -> SendFormResponse.Error(response?.code)
+        }
     }
 
     private fun JsonObject.convert(field: Field): List<Field> =
@@ -165,7 +264,7 @@ internal class FormRepository @Inject constructor(
             else -> listOf()
         }
 
-    private fun JsonObject.convertToList(lists: Map<Long, Field>): List<Field.List>? =
+    private fun JsonObject.convertToList(lists: Map<String, Field>): List<Field.List>? =
         valueOrNull {
             when (val list = getAsJsonObject("list")) {
                 null -> {
@@ -192,4 +291,15 @@ internal class FormRepository @Inject constructor(
                 }
             }
         }
+
+    class FieldLoadedList(
+        val id: String,
+        val children: Array<Children>
+    ) {
+        class Children(
+            val id: Long,
+            val value: String,
+            val parentFieldId: Long?
+        )
+    }
 }

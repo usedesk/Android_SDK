@@ -22,13 +22,13 @@ data class UsedeskMessageAgentText(
     )
 
     sealed interface Field {
-        val id: Long
+        val id: String
         val name: String
         val required: Boolean
         val hasError: Boolean
 
         data class Text(
-            override val id: Long,
+            override val id: String,
             override val name: String,
             override val required: Boolean,
             override val hasError: Boolean = false,
@@ -45,7 +45,7 @@ data class UsedeskMessageAgentText(
         }
 
         data class CheckBox(
-            override val id: Long,
+            override val id: String,
             override val name: String,
             override val required: Boolean,
             override val hasError: Boolean = false,
@@ -53,11 +53,11 @@ data class UsedeskMessageAgentText(
         ) : Field
 
         data class List(
-            override val id: Long,
+            override val id: String,
             override val name: String,
             override val required: Boolean,
             override val hasError: Boolean = false,
-            val parentId: Long? = null,
+            val parentId: String? = null,
             val items: kotlin.collections.List<Item> = listOf(),
             val selected: Item? = null
         ) : Field {

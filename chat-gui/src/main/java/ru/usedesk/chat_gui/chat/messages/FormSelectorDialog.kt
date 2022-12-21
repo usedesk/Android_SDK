@@ -27,6 +27,8 @@ internal class FormSelectorDialog private constructor(
             ::Binding
         )
 
+        binding.npPicker.wrapSelectorWheel = false
+
         setContentView(binding.rootView)
 
         BottomSheetBehavior.from(binding.rootView.parent as View).apply {
@@ -55,7 +57,12 @@ internal class FormSelectorDialog private constructor(
 
         binding.tvDone.setOnClickListener {
             dismiss()
-            onSelected(list.items[binding.npPicker.value])
+            onSelected(
+                when (val index = binding.npPicker.value) {
+                    0 -> null
+                    else -> list.items[index - 1]
+                }
+            )
         }
     }
 

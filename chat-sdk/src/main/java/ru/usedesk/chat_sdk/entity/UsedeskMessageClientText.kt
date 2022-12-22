@@ -2,16 +2,11 @@ package ru.usedesk.chat_sdk.entity
 
 import java.util.*
 
-class UsedeskMessageClientText @JvmOverloads constructor(
-    id: Long,
-    createdAt: Calendar,
-    text: String,
-    convertedText: String,
-    override val status: UsedeskMessageClient.Status,
+data class UsedeskMessageClientText @JvmOverloads constructor(
+    override val id: Long,
+    override val createdAt: Calendar,
+    override val text: String,
+    override val convertedText: String,
+    override val status: UsedeskMessageOwner.Client.Status,
     override val localId: Long = id
-) : UsedeskMessageText(
-    id,
-    createdAt,
-    text,
-    convertedText
-), UsedeskMessageClient
+) : UsedeskMessage.Text, UsedeskMessageOwner.Client

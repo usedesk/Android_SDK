@@ -7,6 +7,6 @@ class App : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         UsedeskLog.enable()
-        ServiceLocator.init(this)
+        ServiceLocator.instance = ServiceLocator(this)
     }
 }

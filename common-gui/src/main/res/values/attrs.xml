@@ -46,6 +46,8 @@
     <attr name="usedesk_text_color_2" format="color" />
 
     <attr name="usedesk_background_color_1" format="color" />
+    <attr name="usedesk_background_color_2" format="color" />
+    <attr name="usedesk_background_color_3" format="color" />
 
     <attr name="usedesk_drawable_1" format="reference" />
     <attr name="usedesk_drawable_2" format="reference" />

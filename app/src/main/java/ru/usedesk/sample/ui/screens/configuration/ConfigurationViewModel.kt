@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -15,9 +16,10 @@ import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationViewModel.Model
 
 class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
-    private val configurationRepository = ServiceLocator.configurationRepository
+    private val configurationRepository = ServiceLocator.instance.configurationRepository
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val ioScope = CoroutineScope(Dispatchers.IO)
 
     data class Model(
         val configuration: Configuration = Configuration(),
@@ -98,50 +100,57 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
         )
     }
 
+    fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
+        when (configuration.materialComponents) {
+            modelFlow.value.configuration.materialComponents -> false
+            else -> {
+                configurationRepository.setConfiguration(configuration)
+                true
+            }
+        }
+
+    fun createChat(
+        preparationInteractor: IUsedeskPreparation,
+        apiToken: String
+    ) {
+        setModel {
+            when {
+                clientToken.loading -> this
+                else -> {
+                    preparationInteractor.createChat(apiToken) { result ->
+                        setModel {
+                            copy(
+                                clientToken = when (result) {
+                                    is IUsedeskPreparation.CreateChatResult.Done -> clientToken.copy(
+                                        loading = false,
+                                        completed = UsedeskSingleLifeEvent(result.clientToken)
+                                    )
+                                    IUsedeskPreparation.CreateChatResult.Error -> clientToken.copy(
+                                        loading = false,
+                                        error = UsedeskSingleLifeEvent(Unit)
+                                    )
+                                }
+                            )
+                        }
+
+                        UsedeskChatSdk.releasePreparation()
+                    }
+                    copy(clientToken = clientToken.copy(loading = true))
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
 
         mainScope.cancel()
-    }
-
-    fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
-        if (configuration.materialComponents != modelFlow.value.configuration.materialComponents) {
-            configurationRepository.setConfiguration(configuration)
-            true
-        } else {
-            false
-        }
-
-    fun createChat(apiToken: String) {
-        setModel { copy(clientToken = clientToken.copy(loading = true)) }
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val token = UsedeskChatSdk.requireInstance().createChat(apiToken)
-                setModel {
-                    copy(
-                        clientToken = clientToken.copy(
-                            loading = false,
-                            completed = UsedeskSingleLifeEvent(token)
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                setModel {
-                    copy(
-                        clientToken = clientToken.copy(
-                            loading = false,
-                            error = UsedeskSingleLifeEvent(e.message)
-                        )
-                    )
-                }
-            }
-            UsedeskChatSdk.release(false)
-        }
+        ioScope.cancel()
     }
 
     data class ClientToken(
         val loading: Boolean = false,
         val completed: UsedeskSingleLifeEvent<String?>? = null,
-        val error: UsedeskSingleLifeEvent<String?>? = null
+        val error: UsedeskSingleLifeEvent<Unit>? = null
     )
 }

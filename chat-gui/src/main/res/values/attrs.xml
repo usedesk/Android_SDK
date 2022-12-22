@@ -7,6 +7,9 @@
     <attr name="usedesk_chat_attachment_dialog_storage_image" format="reference" />
     <attr name="usedesk_chat_attachment_dialog_storage_text" format="reference" />
 
+    <attr name="usedesk_chat_form_selector_dialog_apply_text" format="reference" />
+    <attr name="usedesk_chat_form_selector_dialog_picker" format="reference" />
+
     <attr name="usedesk_chat_offline_form_success_dialog_ok_image" format="reference" />
     <attr name="usedesk_chat_offline_form_success_dialog_ok_text" format="reference" />
     <attr name="usedesk_chat_offline_form_success_dialog_close_text" format="reference" />
@@ -47,6 +50,14 @@
 
     <attr name="usedesk_chat_message_text_message_text" format="reference" />
     <attr name="usedesk_chat_message_text_button_text" format="reference" />
+
+    <attr name="usedesk_chat_message_text_field_checkbox_image" format="reference" />
+    <attr name="usedesk_chat_message_text_field_checkbox_text" format="reference" />
+
+    <attr name="usedesk_chat_message_text_field_list_text" format="reference" />
+    <attr name="usedesk_chat_message_text_field_list_image" format="reference" />
+
+    <attr name="usedesk_chat_message_text_field_text_text" format="reference" />
 
     <attr name="usedesk_chat_message_audio_controls_layout" format="reference" />
     <attr name="usedesk_chat_message_audio_download_text" format="reference" />

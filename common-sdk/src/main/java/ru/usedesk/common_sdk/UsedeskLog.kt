@@ -24,9 +24,9 @@ object UsedeskLog {
         listeners.remove(logListener)
     }
 
-    fun onLog(logPrefix: String, logText: String) {
+    fun onLog(logPrefix: String, log: () -> String) {
         if (logsEnabled) {
-            val fullLog = "$logPrefix: $logText"
+            val fullLog = "$logPrefix: ${log()}"
             Log.d(LOG_KEY, fullLog)
             listeners.forEach { listener ->
                 listener(fullLog)

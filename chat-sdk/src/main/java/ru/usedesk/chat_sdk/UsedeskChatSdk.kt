@@ -1,9 +1,16 @@
 package ru.usedesk.chat_sdk
 
 import android.content.Context
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
-import ru.usedesk.chat_sdk.di.InstanceBoxUsedesk
+import ru.usedesk.chat_sdk.di.UsedeskCustom
+import ru.usedesk.chat_sdk.di.chat.ChatComponent
+import ru.usedesk.chat_sdk.di.common.CommonChatComponent
+import ru.usedesk.chat_sdk.di.preparation.PreparationComponent
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 
@@ -12,10 +19,12 @@ object UsedeskChatSdk {
     const val MAX_FILE_SIZE_MB = 128
     const val MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 
-    private var instanceBox: InstanceBoxUsedesk? = null
+    private val mutex = Mutex()
     private var chatConfiguration: UsedeskChatConfiguration? = null
-    private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? = null
-    private var usedeskMessagesRepository: IUsedeskMessagesRepository? = null
+    private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
+        null //TODO: вынести функционал из sdk
+    private var usedeskMessagesRepository = UsedeskCustom<IUsedeskMessagesRepository>()
+
 
     @JvmStatic
     fun setConfiguration(chatConfiguration: UsedeskChatConfiguration) {
@@ -31,17 +40,26 @@ object UsedeskChatSdk {
         ?: throw RuntimeException("Must call UsedeskChatSdk.setConfiguration(...) before")
 
     @JvmStatic
-    fun init(context: Context): IUsedeskChat = (instanceBox
-        ?: InstanceBoxUsedesk(
-            context,
-            requireConfiguration(),
-            usedeskMessagesRepository
-        ).also {
-            instanceBox = it
-        }).chatInteractor
+    @JvmOverloads
+    fun init(
+        context: Context,
+        chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
+    ): IUsedeskChat = runBlocking {
+        mutex.withLock {
+            setConfiguration(chatConfiguration)
+            val commonChatComponent = CommonChatComponent.open(
+                context,
+                chatConfiguration
+            )
+            ChatComponent.open(
+                commonChatComponent,
+                usedeskMessagesRepository
+            )
+        }
+    }.chatInteractor
 
     @JvmStatic
-    fun getInstance(): IUsedeskChat? = instanceBox?.chatInteractor
+    fun getInstance(): IUsedeskChat? = ChatComponent.chatComponent?.chatInteractor
 
     @JvmStatic
     fun requireInstance(): IUsedeskChat = getInstance()
@@ -54,10 +72,42 @@ object UsedeskChatSdk {
     @JvmStatic
     @JvmOverloads
     fun release(force: Boolean = true) {
-        instanceBox?.also {
-            if (force || it.chatInteractor.isNoListeners()) {
-                it.release()
-                instanceBox = null
+        runBlocking {
+            mutex.withLock {
+                if (force || ChatComponent.chatComponent?.chatInteractor?.isNoListeners() == true) {
+                    ChatComponent.close()
+                    if (PreparationComponent.preparationComponent == null) {
+                        CommonChatComponent.close()
+                    }
+                }
+            }
+        }
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun initPreparation(
+        context: Context,
+        chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
+    ): IUsedeskPreparation = runBlocking {
+        mutex.withLock {
+            setConfiguration(chatConfiguration)
+            val commonChatComponent = CommonChatComponent.open(
+                context,
+                chatConfiguration
+            )
+            PreparationComponent.open(commonChatComponent)
+        }
+    }.preparationInteractor
+
+    @JvmStatic
+    fun releasePreparation() {
+        runBlocking {
+            mutex.withLock {
+                PreparationComponent.close()
+                if (ChatComponent.chatComponent == null) {
+                    CommonChatComponent.close()
+                }
             }
         }
     }
@@ -71,7 +121,7 @@ object UsedeskChatSdk {
 
     @JvmStatic
     fun setUsedeskMessagesRepository(usedeskMessagesRepository: IUsedeskMessagesRepository?) {
-        this.usedeskMessagesRepository = usedeskMessagesRepository
+        this.usedeskMessagesRepository = UsedeskCustom(usedeskMessagesRepository)
     }
 
     @JvmStatic

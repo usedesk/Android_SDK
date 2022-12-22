@@ -81,9 +81,14 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.btnCreateChat.setOnClickListener {
             val configuration = getConfiguration()
             if (viewModel.onCreateChat(configuration)) {
-                UsedeskChatSdk.setConfiguration(configuration.toChatConfiguration())
-                UsedeskChatSdk.init(requireContext())
-                viewModel.createChat(configuration.token)
+                val preparation = UsedeskChatSdk.initPreparation(
+                    requireContext(),
+                    configuration.toChatConfiguration()
+                )
+                viewModel.createChat(
+                    preparation,
+                    configuration.token
+                )
             }
         }
         binding.tvServiceType.setOnClickListener {

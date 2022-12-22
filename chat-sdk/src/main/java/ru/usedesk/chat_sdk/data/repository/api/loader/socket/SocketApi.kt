@@ -1,12 +1,12 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
 import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SocketSendResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import javax.inject.Inject
@@ -20,33 +20,46 @@ internal class SocketApi @Inject constructor(
 
     fun isConnected() = socketConnection?.isConnected() == true
 
-    suspend fun connect(
+    fun connect(
         url: String,
-        initChatRequest: InitChatRequest,
+        initChatRequest: SocketRequest.Init,
         eventListener: EventListener
     ) {
-        mutex.withLock {
-            try {
-                if (!isConnected()) {
-                    socketConnection = SocketConnection(
-                        gson,
-                        url,
-                        usedeskOkHttpClientFactory,
-                        initChatRequest,
-                        eventListener
+        runBlocking {
+            mutex.withLock {
+                try {
+                    if (!isConnected()) {
+                        socketConnection = SocketConnection(
+                            gson,
+                            url,
+                            usedeskOkHttpClientFactory,
+                            initChatRequest,
+                            eventListener
+                        )
+                    }
+                } catch (e: Exception) {
+                    throw UsedeskSocketException(
+                        UsedeskSocketException.Error.SOCKET_INIT_ERROR,
+                        e.message
                     )
                 }
-            } catch (e: Exception) {
-                throw UsedeskSocketException(
-                    UsedeskSocketException.Error.SOCKET_INIT_ERROR,
-                    e.message
-                )
             }
         }
     }
 
-    fun sendRequest(baseRequest: BaseRequest) {
-        socketConnection?.sendRequest(baseRequest)
+    fun sendRequest(socketRequest: SocketRequest): SocketSendResponse = try {
+        runBlocking {
+            mutex.withLock {
+                when (socketConnection?.isConnected()) {
+                    true -> socketConnection
+                    else -> null
+                }
+            }
+        }?.sendRequest(socketRequest)
+            ?: throw UsedeskSocketException()
+        SocketSendResponse.Done
+    } catch (e: Exception) {
+        SocketSendResponse.Error
     }
 
     suspend fun disconnect() {
@@ -62,8 +75,8 @@ internal class SocketApi @Inject constructor(
         fun onTokenError()
         fun onFeedback()
         fun onException(exception: Exception)
-        fun onInited(initChatResponse: InitChatResponse)
-        fun onNew(messageResponse: MessageResponse)
+        fun onInited(initChatResponse: SocketResponse.Inited)
+        fun onNew(messageResponse: SocketResponse.AddMessage)
         fun onSetEmailSuccess()
     }
 }

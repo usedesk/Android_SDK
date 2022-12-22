@@ -1,10 +1,7 @@
 package ru.usedesk.common_gui
 
 import android.content.Context
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 
@@ -13,10 +10,13 @@ private fun getInputMethodManager(view: View) =
     view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager?
 
 fun showKeyboard(editText: EditText) {
-    editText.postDelayed({
-        editText.requestFocus()
-        getInputMethodManager(editText)?.showSoftInput(editText, 0)
-    }, 100)
+    editText.postDelayed(
+        {
+            editText.requestFocus()
+            getInputMethodManager(editText)?.showSoftInput(editText, 0)
+        },
+        100
+    )
 }
 
 fun hideKeyboard(view: View) {
@@ -49,32 +49,4 @@ fun showInstead(
         gone -> visibleGone(!firstShow)
         else -> visibleInvisible(!firstShow)
     }
-}
-
-fun <BINDING> inflateItem(
-    container: ViewGroup,
-    defaultLayoutId: Int,
-    defaultStyleId: Int,
-    createBinding: (View, Int) -> BINDING
-): BINDING = inflateItem(
-    LayoutInflater.from(container.context),
-    container,
-    defaultLayoutId,
-    defaultStyleId,
-    createBinding
-)
-
-fun <BINDING> inflateItem(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    defaultLayoutId: Int,
-    defaultStyleId: Int,
-    createBinding: (View, Int) -> BINDING
-): BINDING {
-    val customStyleId = UsedeskResourceManager.getResourceId(defaultStyleId)
-    val wrapper = ContextThemeWrapper(inflater.context, customStyleId)
-    val localInflater = inflater.cloneInContext(wrapper)
-    val layoutId = UsedeskResourceManager.getResourceId(defaultLayoutId)
-    val view = localInflater.inflate(layoutId, container, false)
-    return createBinding(view, defaultStyleId)
 }

@@ -1,13 +1,13 @@
 package ru.usedesk.chat_sdk.data.repository.messages
 
 import android.net.Uri
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 
 interface IUsedeskMessagesRepository {
-    fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient)
-    fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient)
-    fun getNotSentMessages(userKey: String): List<UsedeskMessageClient>
+    fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageOwner.Client)
+    fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageOwner.Client)
+    fun getNotSentMessages(userKey: String): List<UsedeskMessageOwner.Client>
 
     fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft)
     fun getDraft(userKey: String): UsedeskMessageDraft

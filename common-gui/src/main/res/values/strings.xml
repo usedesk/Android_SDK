@@ -3,12 +3,18 @@
     <string name="usedesk_settings">@string/usedesk_string_settings</string>
     <string name="usedesk_need_permission">@string/usedesk_string_need_permission</string>
     <string name="usedesk_send">@string/usedesk_string_send</string>
+    <string name="usedesk_sent">@string/usedesk_string_sent</string>
+    <string name="usedesk_error">@string/usedesk_string_error</string>
+    <string name="usedesk_done">@string/usedesk_string_done</string>
     <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
     <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
 
     <string name="usedesk_string_settings">Settings</string>
     <string name="usedesk_string_need_permission">Permission required</string>
     <string name="usedesk_string_send">Send</string>
+    <string name="usedesk_string_sent">Sent</string>
+    <string name="usedesk_string_error">Error</string>
+    <string name="usedesk_string_done">Done</string>
     <string name="usedesk_string_no_internet_title">No Internet</string>
     <string name="usedesk_string_no_internet_text">Try turning off airplane mode, turning on Wi-Fi or mobile internet and checking the network signal strength</string>
 </resources>

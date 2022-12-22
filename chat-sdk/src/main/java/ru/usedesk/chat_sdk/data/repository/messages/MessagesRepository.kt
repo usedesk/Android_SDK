@@ -32,8 +32,7 @@ internal class MessagesRepository(
         return appContext.getSharedPreferences(PREF_NAME + userKey, Context.MODE_PRIVATE)
     }
 
-    @Synchronized
-    override fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient) {
+    override fun addNotSentMessage(userKey: String, clientMessage: UsedeskMessageOwner.Client) {
         initIfNeeded(userKey)
 
         if (configuration.cacheMessagesWithFile || clientMessage is UsedeskMessageClientText) {
@@ -47,8 +46,7 @@ internal class MessagesRepository(
         }
     }
 
-    @Synchronized
-    override fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageClient) {
+    override fun removeNotSentMessage(userKey: String, clientMessage: UsedeskMessageOwner.Client) {
         initIfNeeded(userKey)
 
         notSentMessages.remove(clientMessage.localId)
@@ -58,13 +56,11 @@ internal class MessagesRepository(
             .apply()
     }
 
-    @Synchronized
-    override fun getNotSentMessages(userKey: String): List<UsedeskMessageClient> {
+    override fun getNotSentMessages(userKey: String): List<UsedeskMessageOwner.Client> {
         initIfNeeded(userKey)
         return notSentMessages.values.map(this@MessagesRepository::toClientMessage)
     }
 
-    @Synchronized
     override fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft) {
         initIfNeeded(userKey)
 
@@ -89,7 +85,6 @@ internal class MessagesRepository(
         }
     }
 
-    @Synchronized
     override fun getDraft(userKey: String): UsedeskMessageDraft {
         initIfNeeded(userKey)
 
@@ -158,8 +153,8 @@ internal class MessagesRepository(
         }
     }
 
-    private fun toMessage(clientMessageClient: UsedeskMessageClient): NotSentMessage {
-        return when (clientMessageClient) {
+    private fun toMessage(clientMessageClient: UsedeskMessageOwner.Client): NotSentMessage =
+        when (clientMessageClient) {
             is UsedeskMessageClientText -> NotSentMessage(
                 clientMessageClient.localId,
                 text = clientMessageClient.text
@@ -180,70 +175,50 @@ internal class MessagesRepository(
                 clientMessageClient.localId,
                 file = fileToJson(clientMessageClient.file)
             )
-            else -> throw RuntimeException("Unknown client message class: ${clientMessageClient::class.java}")
         }
-    }
 
-    private fun toClientMessage(notSentMessage: NotSentMessage): UsedeskMessageClient {
-        return when {
-            notSentMessage.text != null -> {
-                UsedeskMessageClientText(
-                    notSentMessage.localId,
-                    Calendar.getInstance(),
-                    notSentMessage.text,
-                    messageResponseConverter.convertText(notSentMessage.text),
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            notSentMessage.image != null -> {
-                val file = jsonToFile(notSentMessage.image)
-                UsedeskMessageClientImage(
-                    notSentMessage.localId,
-                    Calendar.getInstance(),
-                    file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            notSentMessage.video != null -> {
-                val file = jsonToFile(notSentMessage.video)
-                UsedeskMessageClientVideo(
-                    notSentMessage.localId,
-                    Calendar.getInstance(),
-                    file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            notSentMessage.audio != null -> {
-                val file = jsonToFile(notSentMessage.audio)
-                UsedeskMessageClientAudio(
-                    notSentMessage.localId,
-                    Calendar.getInstance(),
-                    file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            notSentMessage.file != null -> {
-                val file = jsonToFile(notSentMessage.file)
-                UsedeskMessageClientFile(
-                    notSentMessage.localId,
-                    Calendar.getInstance(),
-                    file,
-                    UsedeskMessageClient.Status.SEND_FAILED
-                )
-            }
-            else -> {
-                throw RuntimeException("Empty message")
-            }
+    private fun toClientMessage(notSentMessage: NotSentMessage): UsedeskMessageOwner.Client =
+        when {
+            notSentMessage.text != null -> UsedeskMessageClientText(
+                notSentMessage.localId,
+                Calendar.getInstance(),
+                notSentMessage.text,
+                messageResponseConverter.convertText(notSentMessage.text),
+                UsedeskMessageOwner.Client.Status.SEND_FAILED
+            )
+            notSentMessage.image != null -> UsedeskMessageClientImage(
+                notSentMessage.localId,
+                Calendar.getInstance(),
+                jsonToFile(notSentMessage.image),
+                UsedeskMessageOwner.Client.Status.SEND_FAILED
+            )
+            notSentMessage.video != null -> UsedeskMessageClientVideo(
+                notSentMessage.localId,
+                Calendar.getInstance(),
+                jsonToFile(notSentMessage.video),
+                UsedeskMessageOwner.Client.Status.SEND_FAILED
+            )
+            notSentMessage.audio != null -> UsedeskMessageClientAudio(
+                notSentMessage.localId,
+                Calendar.getInstance(),
+                jsonToFile(notSentMessage.audio),
+                UsedeskMessageOwner.Client.Status.SEND_FAILED
+            )
+            notSentMessage.file != null -> UsedeskMessageClientFile(
+                notSentMessage.localId,
+                Calendar.getInstance(),
+                jsonToFile(notSentMessage.file),
+                UsedeskMessageOwner.Client.Status.SEND_FAILED
+            )
+            else -> throw RuntimeException("Empty message")
         }
-    }
 
-    private fun fileToJson(file: UsedeskFile): String {
-        return gson.toJson(file)
-    }
+    private fun fileToJson(file: UsedeskFile): String = gson.toJson(file)
 
-    private fun jsonToFile(fileJson: String): UsedeskFile {
-        return gson.fromJson(fileJson, UsedeskFile::class.java)
-    }
+    private fun jsonToFile(fileJson: String): UsedeskFile = gson.fromJson(
+        fileJson,
+        UsedeskFile::class.java
+    )
 
     companion object {
         private const val PREF_NAME = "UsedeskMessagesRepository"

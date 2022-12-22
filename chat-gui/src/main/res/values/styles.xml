@@ -37,6 +37,51 @@
         <item name="android:paddingBottom">12dp</item>
     </style>
 
+    <style name="Usedesk.Chat.FormSelector.Dialog.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/usedesk_white_2</item>
+    </style>
+
+    <style name="Usedesk.Chat.FormSelector.Dialog.Apply.Text" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">end|center_vertical</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:text">@string/usedesk_done</item>
+        <item name="android:textColor">@color/usedesk_blue</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+    </style>
+
+    <style name="Usedesk.Chat.FormSelector.Dialog.Picker" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:descendantFocusability">blocksDescendants</item>
+    </style>
+
+    <style name="Usedesk.Chat.FormSelector.Dialog.ContainerRoot" parent="">
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Usedesk.Chat.FormSelector.Dialog" parent="Usedesk.Common.BottomSheetDialog">
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.FormSelector.Dialog.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.FormSelector.Dialog.Container1</item>
+        <item name="usedesk_chat_form_selector_dialog_apply_text">@style/Usedesk.Chat.FormSelector.Dialog.Apply.Text</item>
+        <item name="usedesk_chat_form_selector_dialog_picker">@style/Usedesk.Chat.FormSelector.Dialog.Picker</item>
+        <item name="usedesk_text_1">@string/usedesk_not_selected</item>
+    </style>
+
     <style name="Usedesk.Chat.Attachment.Dialog" parent="Usedesk.Common.BottomSheetDialog">
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Attachment.Dialog.ContainerRoot</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Attachment.Dialog.Container1</item>
@@ -541,13 +586,142 @@
         <item name="cardElevation">0dp</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button" parent="">
         <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Chat.Message.Text.Button.ProgressBar</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Button.Container1</item>
         <item name="usedesk_chat_message_text_button_text">@style/Usedesk.Chat.Message.Text.Button.Text</item>
+        <item name="usedesk_text_1">@string/usedesk_send</item>
+        <item name="usedesk_text_2">@string/usedesk_string_sent</item>
+        <item name="usedesk_text_3">@string/usedesk_string_error</item>
+        <item name="usedesk_background_color_1">@color/usedesk_black_2</item>
+        <item name="usedesk_background_color_2">@color/usedesk_green</item>
+        <item name="usedesk_background_color_3">@color/usedesk_red</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Button.ProgressBar" parent="Usedesk.Common.ProgressBar">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.Text.Text" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/usedesk_message_field_selector</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textColorHint">@color/usedesk_gray_cold_2</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.Text.ContainerRoot" parent="">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.Text" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Message.Text.Field.Text.ContainerRoot</item>
+        <item name="usedesk_chat_message_text_field_text_text">@style/Usedesk.Chat.Message.Text.Field.Text.Text</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.CheckBox.Text" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.CheckBox.Image" parent="">
+        <item name="android:layout_width">28dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.CheckBox.ContainerRoot" parent="">
+        <item name="android:layout_marginStart">-4dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.CheckBox" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Message.Text.Field.CheckBox.ContainerRoot</item>
+        <item name="usedesk_chat_message_text_field_checkbox_image">@style/Usedesk.Chat.Message.Text.Field.CheckBox.Image</item>
+        <item name="usedesk_chat_message_text_field_checkbox_text">@style/Usedesk.Chat.Message.Text.Field.CheckBox.Text</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List.Container1" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List.Container2" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/usedesk_message_field_simple</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List.Container3" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List.Image" parent="">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="srcCompat">@drawable/usedesk_ic_arrow_bottom</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List.Text" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/usedesk_black_2</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/sf_ui_display_regular</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List.ContainerRoot" parent="">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Field.List" parent="">
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Message.Text.Field.List.ContainerRoot</item>
+        <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Field.List.Container1</item>
+        <item name="usedesk_common_container_2">@style/Usedesk.Chat.Message.Text.Field.List.Container2</item>
+        <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Text.Field.List.Container3</item>
+        <item name="usedesk_chat_message_text_field_list_text">@style/Usedesk.Chat.Message.Text.Field.List.Text</item>
+        <item name="usedesk_chat_message_text_field_list_image">@style/Usedesk.Chat.Message.Text.Field.List.Image</item>
+        <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
+        <item name="usedesk_text_color_2">@color/usedesk_black_3</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Agent.Container1" parent="">
@@ -870,12 +1044,12 @@
         <item name="usedesk_chat_message_date_text">@style/Usedesk.Chat.Message.Date.Text</item>
     </style>
 
-    <style name="Usedesk.Chat.Loading.Root" parent="">
+    <style name="Usedesk.Chat.Loading.ContainerRoot" parent="">
         <item name="android:padding">8dp</item>
     </style>
 
     <style name="Usedesk.Chat.Loading" parent="">
-        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Loading.Root</item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Chat.Loading.ContainerRoot</item>
         <item name="usedesk_common_progressbar">@style/Usedesk.Common.ProgressBar</item>
     </style>
 
@@ -1069,11 +1243,13 @@
     <style name="Usedesk.Chat.Message.Text.Button.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:includeFontPadding">false</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -1285,7 +1461,7 @@
         <item name="android:layout_gravity">center_horizontal|top</item>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
-        <item name="android:elevation">7dp</item>
+        <item name="elevation">7dp</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Screen.FloatingActionButton.Additional.TextAppearance</item>
         <item name="android:background">@drawable/usedesk_background_blue_round</item>

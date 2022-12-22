@@ -547,8 +547,21 @@
 
     <style name="Usedesk.Chat.Message.Text.Button" parent="">
         <item name="usedesk_common_container_root">@null</item>
+        <item name="usedesk_common_progressbar">@style/Usedesk.Chat.Message.Text.Buttom.ProgressBar</item>
         <item name="usedesk_common_container_1">@style/Usedesk.Chat.Message.Text.Item.Container1</item>
         <item name="usedesk_chat_message_text_button_text">@style/Usedesk.Chat.Message.Text.Button.Text</item>
+        <item name="usedesk_text_1">@string/usedesk_send</item>
+        <item name="usedesk_text_2">@string/usedesk_string_sent</item>
+        <item name="usedesk_text_3">@string/usedesk_string_error</item>
+        <item name="usedesk_background_color_1">@color/usedesk_black_2</item>
+        <item name="usedesk_background_color_2">@color/usedesk_green</item>
+        <item name="usedesk_background_color_3">@color/usedesk_red</item>
+    </style>
+
+    <style name="Usedesk.Chat.Message.Text.Buttom.ProgressBar" parent="Usedesk.Common.ProgressBar">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Text" parent="">
@@ -1086,11 +1099,12 @@
     <style name="Usedesk.Chat.Message.Text.Button.Text" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:layout_marginRight">10dp</item>
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>

@@ -900,10 +900,13 @@ internal class MessagesAdapter(
         private val binding: MessageTextClientBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content, true) {
 
+        init {
+            binding.content.rvItems.visibility = View.GONE
+        }
+
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
             bindClient(chatItem, binding.client)
-            binding.content.pbLoading.visibility = View.GONE
         }
     }
 
@@ -983,7 +986,6 @@ internal class MessagesAdapter(
 
         private val itemsAdapter = MessageFormsAdapter(
             binding.content.rvItems,
-            binding.content.pbLoading,
             viewModel,
             lifecycleScope
         )
@@ -998,10 +1000,7 @@ internal class MessagesAdapter(
             bindAgent(chatItem, binding.agent)
 
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
-            itemsAdapter.update(
-                messageAgentText.id,
-                messageAgentText.buttons
-            )
+            itemsAdapter.update(messageAgentText)
 
             binding.content.rootView.layoutParams.apply {
                 width = when {
@@ -1220,7 +1219,6 @@ internal class MessagesAdapter(
         UsedeskBinding(rootView, defaultStyleId) {
         val tvTime: TextView = rootView.findViewById(R.id.tv_time)
         val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
         val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
         val lContent: ViewGroup = rootView.findViewById(R.id.l_content)

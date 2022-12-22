@@ -31,17 +31,21 @@ internal class CheckBoxViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                val newCheckbox =
-                    form.fields.firstOrNull { it.id == item.fieldId } as Field.CheckBox
-                val newFormState = form.state
-                if (checkbox != newCheckbox || formState != newFormState) {
-                    checkbox = newCheckbox
-                    formState = newFormState
-                    update(
-                        messageId,
-                        newCheckbox,
-                        newFormState
-                    )
+                try {
+                    val newCheckbox =
+                        form.fields.firstOrNull { it.id == item.fieldId } as Field.CheckBox
+                    val newFormState = form.state
+                    if (checkbox != newCheckbox || formState != newFormState) {
+                        checkbox = newCheckbox
+                        formState = newFormState
+                        update(
+                            messageId,
+                            newCheckbox,
+                            newFormState
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }.launchIn(viewHolderScope)
@@ -65,20 +69,28 @@ internal class CheckBoxViewHolder(
                 else -> R.drawable.usedesk_ic_form_unchecked
             }
         )
-        val enabled = state == UsedeskForm.State.LOADED
-        binding.ivChecked.isClickable = enabled
-        binding.ivChecked.isFocusable = enabled
-        binding.ivChecked.setOnClickListener {
-            val newCheckbox = checkBox.copy(
-                checked = !checkBox.checked,
-                hasError = false
-            )
-            onEvent(
-                Event.FormChanged(
-                    messageId,
-                    newCheckbox
-                )
-            )
+        binding.ivChecked.run {
+            val enabled = when (state) {
+                UsedeskForm.State.SENDING_FAILED,
+                UsedeskForm.State.LOADED -> true
+                else -> false
+            }
+            isClickable = enabled
+            isFocusable = enabled
+            if (enabled) {
+                setOnClickListener {
+                    val newCheckbox = checkBox.copy(
+                        checked = !checkBox.checked,
+                        hasError = false
+                    )
+                    onEvent(
+                        Event.FormChanged(
+                            messageId,
+                            newCheckbox
+                        )
+                    )
+                }
+            }
         }
     }
 }

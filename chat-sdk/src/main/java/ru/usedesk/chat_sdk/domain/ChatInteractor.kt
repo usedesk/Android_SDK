@@ -493,6 +493,7 @@ internal class ChatInteractor @Inject constructor(
         setModel {
             val form = formMap[messageId]
             when (form?.state) {
+                UsedeskForm.State.LOADING_FAILED,
                 UsedeskForm.State.NOT_LOADED -> copy(
                     formMap = formMap.toMutableMap().apply {
                         put(
@@ -521,24 +522,18 @@ internal class ChatInteractor @Inject constructor(
                 clientToken,
                 form
             )
-            when (response) {
-                is LoadFormResponse.Done -> setModel {
-                    copy(
-                        formMap = formMap.toMutableMap().apply {
-                            put(
-                                form.id,
-                                response.form
-                            )
-                        }
-                    )
-                }
-                is LoadFormResponse.Error -> {
-                    delay(REPEAT_DELAY)
-                    launchLoadForm(
-                        clientToken,
-                        form
-                    )
-                }
+            setModel {
+                copy(
+                    formMap = formMap.toMutableMap().apply {
+                        put(
+                            form.id,
+                            when (response) {
+                                is LoadFormResponse.Done -> response.form
+                                is LoadFormResponse.Error -> form.copy(state = UsedeskForm.State.LOADING_FAILED)
+                            }
+                        )
+                    }
+                )
             }
         }
     }
@@ -595,7 +590,7 @@ internal class ChatInteractor @Inject constructor(
             )
             val newForm = when (response) {
                 is SendFormResponse.Done -> response.form
-                is SendFormResponse.Error -> form.copy(state = UsedeskForm.State.LOADED)
+                is SendFormResponse.Error -> form.copy(state = UsedeskForm.State.SENDING_FAILED)
             }
             setModel {
                 copy(

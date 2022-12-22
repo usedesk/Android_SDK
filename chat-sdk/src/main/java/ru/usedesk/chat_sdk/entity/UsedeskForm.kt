@@ -8,6 +8,7 @@ data class UsedeskForm(
     enum class State {
         NOT_LOADED,
         LOADING,
+        LOADING_FAILED,
         LOADED,
         SENDING,
         SENDING_FAILED,

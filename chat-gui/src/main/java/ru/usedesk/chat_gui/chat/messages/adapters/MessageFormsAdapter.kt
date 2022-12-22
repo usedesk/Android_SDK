@@ -7,7 +7,9 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
@@ -17,16 +19,15 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.*
 import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
 import ru.usedesk.chat_sdk.entity.UsedeskForm
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
-import ru.usedesk.common_gui.visibleGone
 
 //TODO: вытащить вьюхолдеры во вне
 internal class MessageFormsAdapter(
     private val recyclerView: RecyclerView,
-    private val pbLoading: ProgressBar, //TODO:button
     private val viewModel: MessagesViewModel,
     private val lifecycleScope: CoroutineScope
 ) : RecyclerView.Adapter<BaseViewHolder>() {
@@ -36,41 +37,40 @@ internal class MessageFormsAdapter(
     private var items = listOf<Item>()
     private var buttons = listOf<Button>()
     private var form: UsedeskForm? = null
-    private val applyTitle = "АПЛАЙ" //TODO
 
     init {
+        recyclerView.layoutManager = object : LinearLayoutManager(recyclerView.context) {
+            override fun canScrollVertically() = false
+        }
         recyclerView.adapter = this
     }
 
-    sealed interface Item {
-        data class ItemButton(val button: Button) : Item
-        data class ItemText(val fieldId: String) : Item
-        data class ItemCheckBox(val fieldId: String) : Item
-        data class ItemList(val fieldId: String) : Item
-    }
-
-    private fun getItems(
+    private fun getItems( //TODO: а если формы нет, кнопки же не отобразятся?
         buttons: List<Button>,
-        form: UsedeskForm
-    ) = buttons.map { ItemButton(it) } + when (form.state) {
-        UsedeskForm.State.NOT_LOADED,
-        UsedeskForm.State.LOADING -> listOf()
-        else -> form.fields.map { field ->
-            when (field) {
-                is Field.CheckBox -> ItemCheckBox(field.id)
-                is Field.List -> ItemList(field.id)
-                is Field.Text -> ItemText(field.id)
+        form: UsedeskForm?
+    ) = buttons.map { ItemButton(it) } + when (form) {
+        null -> listOf()
+        else -> when (form.state) {
+            UsedeskForm.State.NOT_LOADED,
+            UsedeskForm.State.LOADING_FAILED,
+            UsedeskForm.State.LOADING -> listOf()
+            else -> form.fields.map { field ->
+                when (field) {
+                    is Field.CheckBox -> ItemCheckBox(field.id)
+                    is Field.List -> ItemList(field.id)
+                    is Field.Text -> ItemText(field.id)
+                }
             }
-        }
+        } + listOf(ItemButton(null))
     }
 
-    private fun onUpdate(form: UsedeskForm) {
+    private fun onUpdate(form: UsedeskForm?) {
         val oldForm = this.form
-        when (oldForm?.id) {
-            form.id -> if (oldForm.state != form.state) {
-                val oldItems = items
-                this.form = form
-                items = getItems(buttons, form)
+        this.form = form
+        val oldItems = items
+        items = getItems(buttons, form)
+        when {
+            form != null && oldForm?.id == form.id -> if (oldForm.state != form.state) {
                 DiffUtil.calculateDiff(
                     object : DiffUtil.Callback() {
                         override fun getOldListSize() = oldItems.size
@@ -98,50 +98,26 @@ internal class MessageFormsAdapter(
                     }
                 ).dispatchUpdatesTo(this)
             }
-            else -> {
-                this.form = form
-                items = getItems(buttons, form)
-                notifyDataSetChanged()
-            }
+            else -> notifyDataSetChanged()
         }
-        recyclerView.visibility = visibleGone(
-            when (form.state) {
-                UsedeskForm.State.NOT_LOADED,
-                UsedeskForm.State.LOADING -> false
-                else -> true
-            }
-        )
-        /*
-            val loading = state == UsedeskForm.State.SENDING
-            isEnabled = !loading
-            isClickable = !loading
-            isFocusable = !loading
-            text = applyTitle
-            setOnClickListener { onEvent(Event.FormApplyClick(messageId)) }
-            binding.pbLoading.visibility = visibleInvisible(loading)
-         */
-        pbLoading.visibility = visibleGone(form.state == UsedeskForm.State.LOADING)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun update(
-        formId: Long,
-        buttons: List<Button>
-    ) {
-        if (messageId != formId) {
-            this.messageId = formId
+    fun update(messageAgentText: UsedeskMessageAgentText) {
+        if (messageId != messageAgentText.id) {
+            this.messageId = messageAgentText.id
             adapterScope.cancel()
-            if (formId != 0L) {
+            this.form = null
+            this.buttons = messageAgentText.buttons
+            if (messageAgentText.hasForm) {
                 adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
-                this.form = null
-                this.buttons = buttons
                 viewModel.modelFlow.onEach { model ->
-                    val form = model.formMap[formId]
-                    if (form != null && form != this.form) {
+                    val form = model.formMap[messageAgentText.id]
+                    if (form != this.form) {
                         onUpdate(form)
                     }
                 }.launchIn(adapterScope)
-            }
+            } else onUpdate(null)
         }
     }
 
@@ -207,8 +183,16 @@ internal class MessageFormsAdapter(
 
     override fun getItemCount() = items.size
 
+    sealed interface Item {
+        data class ItemButton(val button: Button?) : Item
+        data class ItemText(val fieldId: String) : Item
+        data class ItemCheckBox(val fieldId: String) : Item
+        data class ItemList(val fieldId: String) : Item
+    }
+
     internal class ButtonBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
+        val lBtn: CardView = rootView.findViewById(R.id.l_btn)
         val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
     }
@@ -221,7 +205,6 @@ internal class MessageFormsAdapter(
     internal class CheckBoxBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvText: TextView = rootView.findViewById(R.id.tv_text)
-        val lClickable: View = rootView.findViewById(R.id.l_clickable)
         val ivChecked: ImageView = rootView.findViewById(R.id.iv_checked)
     }
 

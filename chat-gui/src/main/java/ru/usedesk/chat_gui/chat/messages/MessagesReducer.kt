@@ -32,18 +32,16 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
         Event.SendDraft -> sendDraft()
     }
 
-    private fun State.formApplyClick(event: Event.FormApplyClick) = copy(
-        formMap = formMap.toMutableMap().apply {
-            val form = formMap[event.messageId]
-            if (form?.state == UsedeskForm.State.LOADED) {
-                put(
-                    form.id,
-                    form.copy(state = UsedeskForm.State.SENDING)
-                )
-                usedeskChat.send(form)
-            }
+    private fun State.formApplyClick(event: Event.FormApplyClick): State {
+        val form = formMap[event.messageId]
+        when (form?.state) {
+            UsedeskForm.State.LOADED,
+            UsedeskForm.State.SENDING_FAILED -> usedeskChat.send(form)
+            UsedeskForm.State.LOADING_FAILED -> usedeskChat.loadForm(form.id)
+            else -> {}
         }
-    )
+        return this
+    }
 
     private fun State.formListClicked(event: Event.FormListClicked) = copy(
         formSelector = FormSelector(
@@ -89,9 +87,14 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
             null -> this
             else -> {
                 val lists = form.fields.filterIsInstance<Field.List>()
-                val newFields = when (event.field) {
-                    is Field.List -> lists.makeNewLists(event.field)
-                    else -> mapOf(event.field.id to event.field)
+                val newField = when (event.field) {
+                    is Field.CheckBox -> event.field.copy(hasError = false)
+                    is Field.List -> event.field.copy(hasError = false)
+                    is Field.Text -> event.field.copy(hasError = false)
+                }
+                val newFields = when (newField) {
+                    is Field.List -> lists.makeNewLists(newField)
+                    else -> mapOf(newField.id to newField)
                 }
                 val newForm = form.copy(
                     fields = form.fields.map { field -> newFields[field.id] ?: field }
@@ -101,7 +104,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                     formMap = formMap.toMutableMap().apply {
                         put(event.messageId, newForm)
                     },
-                    formSelector = null
+                    formSelector = null,
                 )
             }
         }

@@ -140,15 +140,11 @@ internal class FormRepository @Inject constructor(
                     val text = field.text
                     val isValid = when (field.type) {
                         Field.Text.Type.EMAIL -> when {
-                            field.required -> UsedeskValidatorUtil.isValidEmailNecessary(
-                                text
-                            )
+                            field.required -> UsedeskValidatorUtil.isValidEmailNecessary(text)
                             else -> UsedeskValidatorUtil.isValidEmail(text)
                         }
                         Field.Text.Type.PHONE -> when {
-                            field.required -> UsedeskValidatorUtil.isValidPhoneNecessary(
-                                text
-                            )
+                            field.required -> UsedeskValidatorUtil.isValidPhoneNecessary(text)
                             else -> UsedeskValidatorUtil.isValidPhone(text)
                         }
                         else -> !field.required || text.any { it.isLetter() }

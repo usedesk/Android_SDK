@@ -32,20 +32,24 @@ internal class ItemListViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                val newList = form.fields.first { it.id == item.fieldId } as Field.List
-                val newParentList =
-                    form.fields.firstOrNull { it.id == newList.parentId } as? Field.List
-                val newFormState = form.state
-                if (list != newList || parentList != newParentList || formState != newFormState) {
-                    list = newList
-                    formState = newFormState
-                    parentList = newParentList
-                    update(
-                        messageId,
-                        newList,
-                        newParentList,
-                        newFormState
-                    )
+                try {
+                    val newList = form.fields.first { it.id == item.fieldId } as Field.List
+                    val newParentList =
+                        form.fields.firstOrNull { it.id == newList.parentId } as? Field.List
+                    val newFormState = form.state
+                    if (list != newList || parentList != newParentList || formState != newFormState) {
+                        list = newList
+                        formState = newFormState
+                        parentList = newParentList
+                        update(
+                            messageId,
+                            newList,
+                            newParentList,
+                            newFormState
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }.launchIn(viewHolderScope)
@@ -80,12 +84,19 @@ internal class ItemListViewHolder(
                 else -> R.drawable.usedesk_message_field_simple
             }
         )
-        val enabled = (parentList == null || parentList.selected != null)
-                && formState == UsedeskForm.State.LOADED
-        binding.lClickable.setOnClickListener {
-            onEvent(Event.FormListClicked(messageId, list))
+        binding.lClickable.run {
+            val enabled = when (formState) {
+                UsedeskForm.State.SENDING_FAILED,
+                UsedeskForm.State.LOADED -> (parentList == null || parentList.selected != null)
+                else -> false
+            }
+            isClickable = enabled
+            isFocusable = enabled
+            if (enabled) {
+                setOnClickListener {
+                    onEvent(Event.FormListClicked(messageId, list))
+                }
+            }
         }
-        binding.lClickable.isClickable = enabled
-        binding.lClickable.isFocusable = enabled
     }
 }

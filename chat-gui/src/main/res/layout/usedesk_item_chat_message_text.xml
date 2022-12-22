@@ -36,13 +36,6 @@
             style="?attr/usedesk_common_container_6"
             tools:itemCount="4"
             tools:listitem="@layout/usedesk_chat_message_item_button" />
-
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="6dp" />
     </LinearLayout>
 
     <TextView

@@ -2,7 +2,6 @@ package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
 import android.text.Html
 import android.text.InputType
-import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -29,20 +28,6 @@ internal class TextViewHolder(
         }
     }
 
-    private fun EditText.postScrollTo(scrollAgain: Boolean) {
-        binding.rootView.postDelayed({
-            if (isFocused) {
-                val start = selectionStart
-                val end = selectionEnd
-                text = text
-                setSelection(start, end)
-                if (scrollAgain) {
-                    postScrollTo(false)
-                }
-            }
-        }, 500)
-    }
-
     override fun bind(
         messageId: Long,
         item: Item,
@@ -55,16 +40,20 @@ internal class TextViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                val newText = form.fields.first { it.id == item.fieldId } as Field.Text
-                val newFormState = form.state
-                if (formState != newFormState) {
-                    text = newText
-                    formState = newFormState
-                    update(
-                        messageId,
-                        newText,
-                        newFormState
-                    )
+                try {
+                    val newText = form.fields.first { it.id == item.fieldId } as Field.Text
+                    val newFormState = form.state
+                    if (formState != newFormState || text?.hasError != newText.hasError) {
+                        text = newText
+                        formState = newFormState
+                        update(
+                            messageId,
+                            newText,
+                            newFormState
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }.launchIn(viewHolderScope)
@@ -77,7 +66,11 @@ internal class TextViewHolder(
     ) {
         binding.etText.run {
             clearFocus()
-            isEnabled = formState == UsedeskForm.State.LOADED
+            isEnabled = when (formState) {
+                UsedeskForm.State.SENDING_FAILED,
+                UsedeskForm.State.LOADED -> true
+                else -> false
+            }
             hint = Html.fromHtml(
                 text.name + when {
                     text.required -> REQUIRED_POSTFIX_HTML
@@ -86,11 +79,6 @@ internal class TextViewHolder(
             )
             onTextChangedListener = {}
             setText(text.text)
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    postScrollTo(true)
-                }
-            }
             setBackgroundResource(
                 when {
                     text.hasError -> R.drawable.usedesk_message_field_error

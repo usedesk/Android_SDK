@@ -31,7 +31,6 @@ internal class CheckBoxViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                try {
                     val newCheckbox =
                         form.fields.firstOrNull { it.id == item.fieldId } as Field.CheckBox
                     val newFormState = form.state
@@ -44,9 +43,6 @@ internal class CheckBoxViewHolder(
                             newFormState
                         )
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
             }
         }.launchIn(viewHolderScope)
     }

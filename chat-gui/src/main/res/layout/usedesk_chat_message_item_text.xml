@@ -4,23 +4,9 @@
     style="?attr/usedesk_common_container_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:theme="@style/Usedesk.Chat.Message.Text.Text">
+    tools:theme="@style/Usedesk.Chat.Message.Text.Field.Text">
 
-    <FrameLayout
-        style="?attr/usedesk_common_container_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/et_text"
-            android:background="@drawable/usedesk_message_field_selector"
-            android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/usedesk_black_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColorHint="@color/usedesk_gray_cold_2"
-            android:includeFontPadding="false"
-            android:textSize="15sp" />
-    </FrameLayout>
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/et_text"
+        style="?attr/usedesk_chat_message_text_field_text_text" />
 </FrameLayout>

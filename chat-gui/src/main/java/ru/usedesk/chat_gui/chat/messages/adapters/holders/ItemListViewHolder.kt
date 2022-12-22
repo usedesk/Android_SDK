@@ -19,6 +19,9 @@ internal class ItemListViewHolder(
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
+    private val textColorEmpty = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
+    private val textColorContent = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
+
     override fun bind(
         messageId: Long,
         item: Item,
@@ -32,24 +35,20 @@ internal class ItemListViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                try {
-                    val newList = form.fields.first { it.id == item.fieldId } as Field.List
-                    val newParentList =
-                        form.fields.firstOrNull { it.id == newList.parentId } as? Field.List
-                    val newFormState = form.state
-                    if (list != newList || parentList != newParentList || formState != newFormState) {
-                        list = newList
-                        formState = newFormState
-                        parentList = newParentList
-                        update(
-                            messageId,
-                            newList,
-                            newParentList,
-                            newFormState
-                        )
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                val newList = form.fields.first { it.id == item.fieldId } as Field.List
+                val newParentList =
+                    form.fields.firstOrNull { it.id == newList.parentId } as? Field.List
+                val newFormState = form.state
+                if (list != newList || parentList != newParentList || formState != newFormState) {
+                    list = newList
+                    formState = newFormState
+                    parentList = newParentList
+                    update(
+                        messageId,
+                        newList,
+                        newParentList,
+                        newFormState
+                    )
                 }
             }
         }.launchIn(viewHolderScope)
@@ -70,11 +69,11 @@ internal class ItemListViewHolder(
                             else -> ""
                         }
                     )
-                    setTextColor(binding.rootView.resources.getColor(R.color.usedesk_gray_2)) //TODO: styleValues
+                    setTextColor(textColorEmpty)
                 }
                 else -> {
                     text = selected.name
-                    setTextColor(binding.rootView.resources.getColor(R.color.usedesk_black_3)) //TODO: styleValues
+                    setTextColor(textColorContent)
                 }
             }
         }

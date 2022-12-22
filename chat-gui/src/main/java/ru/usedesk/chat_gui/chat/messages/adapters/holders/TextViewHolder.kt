@@ -40,20 +40,16 @@ internal class TextViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                try {
-                    val newText = form.fields.first { it.id == item.fieldId } as Field.Text
-                    val newFormState = form.state
-                    if (formState != newFormState || text?.hasError != newText.hasError) {
-                        text = newText
-                        formState = newFormState
-                        update(
-                            messageId,
-                            newText,
-                            newFormState
-                        )
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                val newText = form.fields.first { it.id == item.fieldId } as Field.Text
+                val newFormState = form.state
+                if (formState != newFormState || text?.hasError != newText.hasError) {
+                    text = newText
+                    formState = newFormState
+                    update(
+                        messageId,
+                        newText,
+                        newFormState
+                    )
                 }
             }
         }.launchIn(viewHolderScope)

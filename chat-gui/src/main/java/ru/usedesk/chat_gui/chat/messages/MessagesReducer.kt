@@ -214,7 +214,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
 
     private fun State.chatModel(event: Event.ChatModel): State = when {
         event.model.messages == messages &&
-                event.model.formMap == formMap && //TODO: придумать как обновлять формы при обновлении их в модели
+                event.model.formMap == formMap &&
                 event.model.previousPageIsAvailable == hasPreviousMessages -> this
         else -> {
             val newChatItems = event.model.messages.convert(
@@ -298,7 +298,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                             item.isLastOfGroup,
                             showName = false,
                             showAvatar = previous?.isAgentsTheSame(item.message) != true,
-                            form = null //TODO:точно???
+                            form = null
                         )
                         when (next?.isAgentsTheSame(item.message)) {
                             true -> sequenceOf(newItem)

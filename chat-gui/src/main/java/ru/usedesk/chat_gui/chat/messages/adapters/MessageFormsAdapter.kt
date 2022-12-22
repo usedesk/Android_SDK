@@ -45,7 +45,7 @@ internal class MessageFormsAdapter(
         recyclerView.adapter = this
     }
 
-    private fun getItems( //TODO: а если формы нет, кнопки же не отобразятся?
+    private fun getItems(
         buttons: List<Button>,
         form: UsedeskForm?
     ) = buttons.map { ItemButton(it) } + when (form) {
@@ -135,7 +135,7 @@ internal class MessageFormsAdapter(
             inflateItem(
                 parent,
                 R.layout.usedesk_chat_message_item_text,
-                R.style.Usedesk_Chat_Message_Text_Button,
+                R.style.Usedesk_Chat_Message_Text_Field_Text,
                 ::TextBinding
             ),
             viewModel::onEvent
@@ -144,7 +144,7 @@ internal class MessageFormsAdapter(
             inflateItem(
                 parent,
                 R.layout.usedesk_chat_message_item_checkbox,
-                R.style.Usedesk_Chat_Message_Text_Button,
+                R.style.Usedesk_Chat_Message_Text_Field_CheckBox,
                 ::CheckBoxBinding
             ),
             viewModel::onEvent
@@ -153,7 +153,7 @@ internal class MessageFormsAdapter(
             inflateItem(
                 parent,
                 R.layout.usedesk_chat_message_item_itemlist,
-                R.style.Usedesk_Chat_Message_Text_ItemList,
+                R.style.Usedesk_Chat_Message_Text_Field_List,
                 ::ItemListBinding
             ),
             viewModel::onEvent

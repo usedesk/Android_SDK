@@ -15,7 +15,7 @@ internal class FormSelectorDialog private constructor(
 ) : UsedeskBottomSheetDialog(screen.requireContext(), dialogStyle) {
 
     private val binding: Binding
-    private val notSelectedTitle = "NE VIBRANO" //TODO
+    private val notSelectedTitle: String
 
     init {
         val container = screen.view as ViewGroup
@@ -27,6 +27,8 @@ internal class FormSelectorDialog private constructor(
             dialogStyle,
             ::Binding
         )
+
+        notSelectedTitle = binding.styleValues.getString(R.attr.usedesk_text_1)
 
         binding.npPicker.wrapSelectorWheel = false
 
@@ -74,7 +76,7 @@ internal class FormSelectorDialog private constructor(
     companion object {
         fun create(screen: UsedeskFragment) = FormSelectorDialog(
             screen,
-            UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Attachment_Dialog)
+            UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_FormSelector_Dialog)
         )
     }
 

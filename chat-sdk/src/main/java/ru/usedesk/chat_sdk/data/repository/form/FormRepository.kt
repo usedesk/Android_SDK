@@ -147,7 +147,7 @@ internal class FormRepository @Inject constructor(
                             field.required -> UsedeskValidatorUtil.isValidPhoneNecessary(text)
                             else -> UsedeskValidatorUtil.isValidPhone(text)
                         }
-                        else -> !field.required || text.any { it.isLetter() }
+                        else -> !field.required || text.any { it.isLetterOrDigit() }
                     }
                     field.copy(hasError = !isValid)
                 }

@@ -555,6 +555,7 @@ internal class ChatInteractor @Inject constructor(
         setModel {
             when (formMap[form.id]?.state) {
                 UsedeskForm.State.NOT_LOADED,
+                UsedeskForm.State.LOADING_FAILED,
                 UsedeskForm.State.SENDING -> this
                 else -> {
                     val validatedForm = formRepository.validateForm(form)

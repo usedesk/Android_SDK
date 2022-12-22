@@ -61,7 +61,6 @@ internal class TextViewHolder(
         formState: UsedeskForm.State
     ) {
         binding.etText.run {
-            clearFocus()
             isEnabled = when (formState) {
                 UsedeskForm.State.SENDING_FAILED,
                 UsedeskForm.State.LOADED -> true
@@ -71,14 +70,6 @@ internal class TextViewHolder(
                 text.name + when {
                     text.required -> REQUIRED_POSTFIX_HTML
                     else -> ""
-                }
-            )
-            onTextChangedListener = {}
-            setText(text.text)
-            setBackgroundResource(
-                when {
-                    text.hasError -> R.drawable.usedesk_message_field_error
-                    else -> R.drawable.usedesk_message_field_selector
                 }
             )
             inputType = InputType.TYPE_CLASS_TEXT or when (text.type) {
@@ -91,6 +82,16 @@ internal class TextViewHolder(
                 Field.Text.Type.POSITION -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
                 Field.Text.Type.NONE -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             }
+            if ((this.text?.toString() ?: "") != text.text) {
+                onTextChangedListener = {}
+                setText(text.text)
+            }
+            setBackgroundResource(
+                when {
+                    text.hasError -> R.drawable.usedesk_message_field_error
+                    else -> R.drawable.usedesk_message_field_selector
+                }
+            )
             onTextChangedListener = {
                 onEvent(
                     Event.FormChanged(

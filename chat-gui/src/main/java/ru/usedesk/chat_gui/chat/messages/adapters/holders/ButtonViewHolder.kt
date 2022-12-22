@@ -57,7 +57,7 @@ internal class ButtonViewHolder(
                 }.launchIn(viewHolderScope)
             }
             else -> {
-                binding.lBtn.setBackgroundColor(backgroundDefault)
+                binding.lBtn.setCardBackgroundColor(backgroundDefault)
                 binding.pbLoading.visibility = View.GONE
                 binding.tvTitle.run {
                     text = item.button.name

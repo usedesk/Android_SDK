@@ -228,8 +228,9 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                 chatItems = newChatItems,
                 formMap = event.model.formMap.map {
                     val stateForm = formMap[it.key]
-                    it.key to when (stateForm?.state) {
-                        it.value.state -> stateForm
+                    it.key to when {
+                        stateForm?.state == it.value.state
+                                && it.value.fields.all { field -> !field.hasError } -> stateForm
                         else -> it.value
                     }
                 }.toMap(),

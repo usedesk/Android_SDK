@@ -81,19 +81,20 @@ internal class FormRepository @Inject constructor(
         return when (response?.fields) {
             null -> LoadFormResponse.Error(response?.code)
             else -> {
-                val fieldMap = form.fields.associateBy(Field::id)
-                val loadedFields = form.fields.mapNotNull {
-                    when (it) {
-                        is Field.Text -> listOf(it)
+                val loadedFields = form.fields.flatMap { field ->
+                    when (field) {
+                        is Field.Text -> listOf(field)
                         else -> {
-                            val field = response.fields[it.id]
-                            when (field?.get("list")) {
-                                null -> field?.convert(it)
-                                else -> field.convertToList(fieldMap)
+                            val rawField = response.fields[field.id]
+                            when (val list = rawField?.get("list")) {
+                                null, is JsonNull -> listOfNotNull(rawField?.convertToList(field.required))
+                                else -> list.asJsonObject.entrySet().mapNotNull {
+                                    (it.value as JsonObject).convertToList(field.required)
+                                }
                             }
                         }
                     }
-                }.flatten()
+                }
                 val loadedForm = form.copy(
                     fields = loadedFields,
                     state = UsedeskForm.State.LOADED
@@ -256,34 +257,20 @@ internal class FormRepository @Inject constructor(
             else -> listOf()
         }
 
-    private fun JsonObject.convertToList(lists: Map<String, Field>): List<Field.List>? =
-        valueOrNull {
-            when (val list = getAsJsonObject("list")) {
-                null -> {
-                    val fieldLoaded =
-                        gson.fromJson(this, LoadForm.Response.FieldLoadedList::class.java)
-                    when {
-                        fieldLoaded.children.isEmpty() -> null
-                        else -> listOfNotNull(
-                            (lists[fieldLoaded.id] as? Field.List)?.copy(
-                                items = fieldLoaded.children.map {
-                                    Field.List.Item(
-                                        it.id,
-                                        it.value,
-                                        it.parentOptionId?.toList() ?: listOf()
-                                    )
-                                },
-                                parentId = getOrNull("parent_field_id")?.asString
-                            )
-                        )
-                    }
-                }
-                else -> {
-                    list.entrySet().mapNotNull {
-                        (it.value as JsonObject).convertToList(lists)
-                    }.flatten()
-                }
-            }
-        }
-
+    private fun JsonObject.convertToList(required: Boolean): Field.List? = valueOrNull {
+        val fieldLoaded = gson.fromJson(this, LoadForm.Response.FieldLoadedList::class.java)
+        Field.List(
+            fieldLoaded.id,
+            fieldLoaded.name,
+            required = required,
+            items = fieldLoaded.children.map {
+                Field.List.Item(
+                    it.id,
+                    it.value,
+                    it.parentOptionId?.toList() ?: listOf()
+                )
+            },
+            parentId = getOrNull("parent_field_id")?.asString
+        )
+    }
 }

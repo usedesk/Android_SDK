@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.*
 import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
 import ru.usedesk.chat_sdk.entity.UsedeskForm
@@ -27,8 +26,9 @@ import ru.usedesk.common_gui.visibleGone
 //TODO: вытащить вьюхолдеры во вне
 internal class MessageFormsAdapter(
     private val recyclerView: RecyclerView,
-    private val pbLoading: ProgressBar,
-    private val onEvent: (Event) -> Unit
+    private val pbLoading: ProgressBar, //TODO:button
+    private val viewModel: MessagesViewModel,
+    private val lifecycleScope: CoroutineScope
 ) : RecyclerView.Adapter<BaseViewHolder>() {
 
     private var adapterScope = CoroutineScope(Dispatchers.Main)
@@ -36,16 +36,17 @@ internal class MessageFormsAdapter(
     private var items = listOf<Item>()
     private var buttons = listOf<Button>()
     private var form: UsedeskForm? = null
+    private val applyTitle = "АПЛАЙ" //TODO
 
     init {
         recyclerView.adapter = this
     }
 
     sealed interface Item {
-        data class ItemButton(val button: Button?) : Item
-        data class ItemText(val text: Field.Text) : Item
-        data class ItemCheckBox(val checkBox: Field.CheckBox) : Item
-        data class ItemList(val list: Field.List) : Item
+        data class ItemButton(val button: Button) : Item
+        data class ItemText(val fieldId: String) : Item
+        data class ItemCheckBox(val fieldId: String) : Item
+        data class ItemList(val fieldId: String) : Item
     }
 
     private fun getItems(
@@ -54,27 +55,23 @@ internal class MessageFormsAdapter(
     ) = buttons.map { ItemButton(it) } + when (form.state) {
         UsedeskForm.State.NOT_LOADED,
         UsedeskForm.State.LOADING -> listOf()
-        else -> form.fields.map {
-            when (it) {
-                is Field.CheckBox -> ItemCheckBox(it)
-                is Field.List -> ItemList(it)
-                is Field.Text -> ItemText(it)
+        else -> form.fields.map { field ->
+            when (field) {
+                is Field.CheckBox -> ItemCheckBox(field.id)
+                is Field.List -> ItemList(field.id)
+                is Field.Text -> ItemText(field.id)
             }
-        } + when (form.state) {
-            UsedeskForm.State.LOADED,
-            UsedeskForm.State.SENDING -> listOf(ItemButton(null))
-            else -> listOf()
         }
     }
 
     private fun onUpdate(form: UsedeskForm) {
-        if (this.form != form) {
-            val oldForm = this.form
-            val oldItems = items
-            this.form = form
-            items = getItems(buttons, form)
-            when {
-                oldForm?.id == form.id && oldForm.state == form.state -> DiffUtil.calculateDiff(
+        val oldForm = this.form
+        when (oldForm?.id) {
+            form.id -> if (oldForm.state != form.state) {
+                val oldItems = items
+                this.form = form
+                items = getItems(buttons, form)
+                DiffUtil.calculateDiff(
                     object : DiffUtil.Callback() {
                         override fun getOldListSize() = oldItems.size
 
@@ -88,57 +85,63 @@ internal class MessageFormsAdapter(
                             val newItem = items[newItemPosition]
                             return when (oldItem) {
                                 is ItemButton -> newItem is ItemButton && oldItem == newItem
-                                is ItemCheckBox -> newItem is ItemCheckBox && oldItem.checkBox.id == newItem.checkBox.id
-                                is ItemList -> newItem is ItemList && oldItem.list.id == newItem.list.id
-                                is ItemText -> newItem is ItemText && oldItem.text.id == newItem.text.id
+                                is ItemCheckBox -> newItem is ItemCheckBox && oldItem.fieldId == newItem.fieldId
+                                is ItemList -> newItem is ItemList && oldItem.fieldId == newItem.fieldId
+                                is ItemText -> newItem is ItemText && oldItem.fieldId == newItem.fieldId
                             }
                         }
 
                         override fun areContentsTheSame(
                             oldItemPosition: Int,
                             newItemPosition: Int
-                        ): Boolean {
-                            val oldItem = oldItems[oldItemPosition]
-                            val newItem = items[newItemPosition]
-                            return when (oldItem) {
-                                is ItemButton -> newItem is ItemButton
-                                is ItemCheckBox -> newItem is ItemCheckBox
-                                        && oldItem.checkBox.hasError == newItem.checkBox.hasError
-                                is ItemList -> newItem is ItemList
-                                        && oldItem.list.selected == newItem.list.selected
-                                        && oldItem.list.hasError == newItem.list.hasError
-                                is ItemText -> newItem is ItemText
-                                        && oldItem.text.hasError == newItem.text.hasError
-                            }
-                        }
+                        ): Boolean = true
                     }
                 ).dispatchUpdatesTo(this)
-                else -> notifyDataSetChanged()
             }
-            recyclerView.visibility = visibleGone(items.isNotEmpty())
-            pbLoading.visibility = visibleGone(form.state == UsedeskForm.State.LOADING)
+            else -> {
+                this.form = form
+                items = getItems(buttons, form)
+                notifyDataSetChanged()
+            }
         }
+        recyclerView.visibility = visibleGone(
+            when (form.state) {
+                UsedeskForm.State.NOT_LOADED,
+                UsedeskForm.State.LOADING -> false
+                else -> true
+            }
+        )
+        /*
+            val loading = state == UsedeskForm.State.SENDING
+            isEnabled = !loading
+            isClickable = !loading
+            isFocusable = !loading
+            text = applyTitle
+            setOnClickListener { onEvent(Event.FormApplyClick(messageId)) }
+            binding.pbLoading.visibility = visibleInvisible(loading)
+         */
+        pbLoading.visibility = visibleGone(form.state == UsedeskForm.State.LOADING)
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun update(
-        messageId: Long,
-        viewModel: MessagesViewModel,
-        lifecycleScope: CoroutineScope,
+        formId: Long,
         buttons: List<Button>
     ) {
-        if (this.messageId != messageId) {
-            this.messageId = messageId
+        if (messageId != formId) {
+            this.messageId = formId
             adapterScope.cancel()
-            adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
-            this.form = UsedeskForm()
-            this.buttons = buttons
-            viewModel.modelFlow.onEach { model ->
-                val form = model.formMap[messageId]
-                if (form != null && form != this.form) {
-                    onUpdate(form)
-                }
-            }.launchIn(adapterScope)
+            if (formId != 0L) {
+                adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
+                this.form = null
+                this.buttons = buttons
+                viewModel.modelFlow.onEach { model ->
+                    val form = model.formMap[formId]
+                    if (form != null && form != this.form) {
+                        onUpdate(form)
+                    }
+                }.launchIn(adapterScope)
+            }
         }
     }
 
@@ -150,7 +153,7 @@ internal class MessageFormsAdapter(
                 R.style.Usedesk_Chat_Message_Text_Button,
                 ::ButtonBinding
             ),
-            onEvent
+            viewModel::onEvent
         )
         R.layout.usedesk_chat_message_item_text -> TextViewHolder(
             inflateItem(
@@ -159,7 +162,7 @@ internal class MessageFormsAdapter(
                 R.style.Usedesk_Chat_Message_Text_Button,
                 ::TextBinding
             ),
-            onEvent
+            viewModel::onEvent
         )
         R.layout.usedesk_chat_message_item_checkbox -> CheckBoxViewHolder(
             inflateItem(
@@ -168,7 +171,7 @@ internal class MessageFormsAdapter(
                 R.style.Usedesk_Chat_Message_Text_Button,
                 ::CheckBoxBinding
             ),
-            onEvent
+            viewModel::onEvent
         )
         R.layout.usedesk_chat_message_item_itemlist -> ItemListViewHolder(
             inflateItem(
@@ -177,7 +180,7 @@ internal class MessageFormsAdapter(
                 R.style.Usedesk_Chat_Message_Text_ItemList,
                 ::ItemListBinding
             ),
-            onEvent
+            viewModel::onEvent
         )
         else -> throw RuntimeException("Unknown view type: $viewType")
     }
@@ -197,7 +200,8 @@ internal class MessageFormsAdapter(
         holder.bind(
             messageId,
             item,
-            form?.state ?: UsedeskForm.State.LOADING
+            adapterScope,
+            viewModel.modelFlow
         )
     }
 

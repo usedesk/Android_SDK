@@ -1,9 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.form
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
+import com.google.gson.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
@@ -47,7 +44,7 @@ internal class FormRepository @Inject constructor(
             it.id to when (it) {
                 is Field.CheckBox -> it.checked.toString()
                 is Field.List -> it.selected?.id?.toString()
-                is Field.Text -> it.text
+                is Field.Text -> it.text.trim()
             }
         }
         val rawFields = dbGson.toJson(fieldMap)
@@ -237,8 +234,13 @@ internal class FormRepository @Inject constructor(
         }
     }
 
-    private fun JsonObject.convert(field: Field): List<Field> =
-        when (get("ticket_field_type_id")?.asInt) {
+    private fun JsonObject.getOrNull(key: String) = when (val value = get(key)) {
+        is JsonNull -> null
+        else -> value
+    }
+
+    private fun JsonObject.convert(field: Field): List<Field> = //TODO: конвертер бы сюда
+        when (getOrNull("ticket_field_type_id")?.asInt) {
             3 -> listOf(
                 Field.CheckBox(
                     field.id,
@@ -246,7 +248,15 @@ internal class FormRepository @Inject constructor(
                     field.required
                 )
             )
-            1 -> listOf(field)
+            2 -> listOf(field)
+            1 -> listOf(
+                Field.Text(
+                    id = field.id,
+                    name = field.name,
+                    required = field.required,
+                    type = Field.Text.Type.NONE
+                )
+            )
             else -> listOf()
         }
 
@@ -263,9 +273,10 @@ internal class FormRepository @Inject constructor(
                                     Field.List.Item(
                                         it.id,
                                         it.value,
-                                        it.parentFieldId
+                                        it.parentOptionId?.toList() ?: listOf()
                                     )
-                                }
+                                },
+                                parentId = getOrNull("parent_field_id")?.asString
                             )
                         )
                     }
@@ -285,7 +296,7 @@ internal class FormRepository @Inject constructor(
         class Children(
             val id: Long,
             val value: String,
-            val parentFieldId: Long?
+            val parentOptionId: Array<Long>?
         )
     }
 }

@@ -118,12 +118,12 @@ internal class MessagesPage : UsedeskFragment() {
                     null -> formSelectorDialog?.dismiss()
                     else -> formSelectorDialog?.run {
                         update(
-                            new.formSelector.second,
+                            new.formSelector,
                             onSelected = { selected ->
                                 viewModel.onEvent(
                                     MessagesViewModel.Event.FormChanged(
-                                        new.formSelector.first,
-                                        new.formSelector.second.copy(selected = selected)
+                                        new.formSelector.formId,
+                                        new.formSelector.list.copy(selected = selected)
                                     )
                                 )
                             }

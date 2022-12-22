@@ -15,6 +15,7 @@ internal class FormSelectorDialog private constructor(
 ) : UsedeskBottomSheetDialog(screen.requireContext(), dialogStyle) {
 
     private val binding: Binding
+    private val notSelectedTitle = "NE VIBRANO" //TODO
 
     init {
         val container = screen.view as ViewGroup
@@ -37,10 +38,13 @@ internal class FormSelectorDialog private constructor(
     }
 
     fun update(
-        list: UsedeskMessageAgentText.Field.List,
+        formSelector: MessagesViewModel.FormSelector,
         onSelected: (UsedeskMessageAgentText.Field.List.Item?) -> Unit
     ) {
-        val values = (listOf("NE VIBRANO") + list.items.map { it.name }).toTypedArray()
+        val availableItems = formSelector.list.items.filter {
+            it.parentItemsId.isEmpty() || formSelector.parentSelectedId in it.parentItemsId
+        }
+        val values = (listOf(notSelectedTitle) + availableItems.map { it.name }).toTypedArray()
 
         binding.npPicker.apply {
             minValue = 0
@@ -48,11 +52,11 @@ internal class FormSelectorDialog private constructor(
             value = 0
             displayedValues = values
             maxValue = values.size - 1
-            value = list.items.indexOfFirst { it.id == list.selected?.id } + 1
+            value = availableItems.indexOfFirst { it.id == formSelector.list.selected?.id } + 1
         }
 
         setOnDismissListener {
-            onSelected(list.selected)
+            onSelected(formSelector.list.selected)
         }
 
         binding.tvDone.setOnClickListener {
@@ -61,7 +65,7 @@ internal class FormSelectorDialog private constructor(
             onSelected(
                 when (val index = binding.npPicker.value) {
                     0 -> null
-                    else -> list.items[index - 1]
+                    else -> availableItems[index - 1]
                 }
             )
         }

@@ -36,6 +36,7 @@ data class UsedeskMessageAgentText(
             val text: String = ""
         ) : Field {
             enum class Type {
+                NONE,
                 EMAIL,
                 PHONE,
                 NAME,
@@ -64,7 +65,7 @@ data class UsedeskMessageAgentText(
             data class Item(
                 val id: Long,
                 val name: String,
-                val parentValueId: Long?
+                val parentItemsId: kotlin.collections.List<Long>
             )
         }
     }

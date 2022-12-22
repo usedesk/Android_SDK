@@ -984,7 +984,8 @@ internal class MessagesAdapter(
         private val itemsAdapter = MessageFormsAdapter(
             binding.content.rvItems,
             binding.content.pbLoading,
-            onEvent = viewModel::onEvent
+            viewModel,
+            lifecycleScope
         )
 
         private val goodAtStart = binding.styleValues
@@ -999,8 +1000,6 @@ internal class MessagesAdapter(
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
             itemsAdapter.update(
                 messageAgentText.id,
-                viewModel,
-                lifecycleScope,
                 messageAgentText.buttons
             )
 

@@ -77,7 +77,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val formMap: Map<Long, UsedeskForm> = mapOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
-        val formSelector: Pair<Long, Field.List>? = null,
+        val formSelector: FormSelector? = null,
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
@@ -89,6 +89,12 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         val goToBottom: UsedeskEvent<Unit>? = null,
         val openUrl: UsedeskEvent<String>? = null,
         val lastChatModel: IUsedeskChat.Model? = null
+    )
+
+    class FormSelector(
+        val formId: Long,
+        val list: Field.List,
+        val parentSelectedId: Long?
     )
 
     internal sealed interface ChatItem {

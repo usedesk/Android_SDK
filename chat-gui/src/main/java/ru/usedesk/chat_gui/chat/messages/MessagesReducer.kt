@@ -46,50 +46,55 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
     )
 
     private fun State.formListClicked(event: Event.FormListClicked) = copy(
-        formSelector = Pair(event.messageId, event.list)
+        formSelector = FormSelector(
+            event.messageId,
+            event.list,
+            when (event.list.parentId) {
+                null -> null
+                else -> {
+                    val form = formMap[event.messageId]
+                    form?.fields
+                        ?.filterIsInstance<Field.List>()
+                        ?.firstOrNull { it.id == event.list.parentId }
+                        ?.selected?.id
+                }
+            }
+        )
     )
 
-    private fun List<Field.List>.getChilds(list: Field.List): List<String> {
-        val tree = mutableListOf<Field.List>()
-        var child: Field.List? = list
-        while (child != null) {
-            child = firstOrNull { (it as? Field.List)?.parentId == child?.id }
-            if (child != null) {
-                tree.add(child)
+    private fun List<Field.List>.makeNewLists(list: Field.List) =
+        mutableMapOf(list.id to list).apply {
+            var parent: Field.List? = list
+            while (parent != null) {
+                val child = firstOrNull { (it as? Field.List)?.parentId == parent?.id }
+                val childSelected = child?.selected
+                val parentSelected = parent.selected
+                parent = child?.copy(
+                    selected = when {
+                        parentSelected != null &&
+                                childSelected != null &&
+                                (childSelected.parentItemsId.isEmpty() ||
+                                        parentSelected.id in childSelected.parentItemsId) -> childSelected
+                        else -> null
+                    }
+                )
+                if (parent != null) {
+                    put(parent.id, parent)
+                }
             }
         }
-        return tree.map { it.id }
-    }
 
     private fun State.formChanged(event: Event.FormChanged): State =
         when (val form = formMap[event.messageId]) {
             null -> this
             else -> {
                 val lists = form.fields.filterIsInstance<Field.List>()
-                val treeIds = when (event.field) {
-                    is Field.List -> lists.getChilds(event.field)
-                    else -> listOf(event.field.id)
+                val newFields = when (event.field) {
+                    is Field.List -> lists.makeNewLists(event.field)
+                    else -> mapOf(event.field.id to event.field)
                 }
                 val newForm = form.copy(
-                    fields = form.fields.map { field ->
-                        when (field.id) {
-                            event.field.id -> event.field
-                            in treeIds -> {
-                                when {
-                                    event.field is Field.List &&
-                                            field is Field.List -> {
-                                        val parentList = lists.first { it.id == field.parentId }
-                                        when (field.selected?.parentValueId) {
-                                            parentList.selected?.id -> field
-                                            else -> field.copy(selected = null)
-                                        }
-                                    }
-                                    else -> field
-                                }
-                            }
-                            else -> field
-                        }
-                    }
+                    fields = form.fields.map { field -> newFields[field.id] ?: field }
                 )
                 usedeskChat.saveForm(newForm)
                 copy(

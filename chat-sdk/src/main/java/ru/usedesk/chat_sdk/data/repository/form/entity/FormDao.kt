@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.data.repository.form.db
+package ru.usedesk.chat_sdk.data.repository.form.entity
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -1,4 +1,4 @@
-package ru.usedesk.chat_sdk.data.repository.api.entity
+package ru.usedesk.chat_sdk.data.repository.form.entity
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject

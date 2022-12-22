@@ -4,11 +4,11 @@ import com.google.gson.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
-import ru.usedesk.chat_sdk.data.repository.api.entity.LoadForm
-import ru.usedesk.chat_sdk.data.repository.api.entity.SaveForm
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
-import ru.usedesk.chat_sdk.data.repository.form.db.DbForm
+import ru.usedesk.chat_sdk.data.repository.form.entity.DbForm
+import ru.usedesk.chat_sdk.data.repository.form.entity.LoadForm
+import ru.usedesk.chat_sdk.data.repository.form.entity.SaveForm
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
@@ -260,7 +260,8 @@ internal class FormRepository @Inject constructor(
         valueOrNull {
             when (val list = getAsJsonObject("list")) {
                 null -> {
-                    val fieldLoaded = gson.fromJson(this, FieldLoadedList::class.java)
+                    val fieldLoaded =
+                        gson.fromJson(this, LoadForm.Response.FieldLoadedList::class.java)
                     when {
                         fieldLoaded.children.isEmpty() -> null
                         else -> listOfNotNull(
@@ -285,14 +286,4 @@ internal class FormRepository @Inject constructor(
             }
         }
 
-    class FieldLoadedList(
-        val id: String,
-        val children: Array<Children>
-    ) {
-        class Children(
-            val id: Long,
-            val value: String,
-            val parentOptionId: Array<Long>?
-        )
-    }
 }

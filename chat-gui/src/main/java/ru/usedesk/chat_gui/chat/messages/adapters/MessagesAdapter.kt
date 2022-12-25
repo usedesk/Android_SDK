@@ -612,7 +612,7 @@ internal class MessagesAdapter(
 
             binding.tvText.run {
                 text = Html.fromHtml(messageText.convertedText + " ") //TODO: temp fix
-                visibility = View.VISIBLE
+                visibility = visibleGone(messageText.convertedText.isNotEmpty())
             }
         }
     }

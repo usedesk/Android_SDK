@@ -21,6 +21,8 @@ internal class ItemListViewHolder(
 
     private val textColorEmpty = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
     private val textColorContent = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
+    private val backgroundSimple = binding.styleValues.getId(R.attr.usedesk_drawable_1)
+    private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
 
     override fun bind(
         messageId: Long,
@@ -79,8 +81,8 @@ internal class ItemListViewHolder(
         }
         binding.lFrame.setBackgroundResource(
             when {
-                list.hasError -> R.drawable.usedesk_message_field_error
-                else -> R.drawable.usedesk_message_field_simple
+                list.hasError -> backgroundError
+                else -> backgroundSimple
             }
         )
         binding.lClickable.run {

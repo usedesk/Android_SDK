@@ -51,6 +51,7 @@
 
     <attr name="usedesk_drawable_1" format="reference" />
     <attr name="usedesk_drawable_2" format="reference" />
+    <attr name="usedesk_drawable_3" format="reference" />
 
     <attr name="usedesk_animation_in" format="reference" />
     <attr name="usedesk_animation_out" format="reference" />

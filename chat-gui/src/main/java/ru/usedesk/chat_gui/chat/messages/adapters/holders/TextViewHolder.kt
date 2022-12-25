@@ -22,6 +22,9 @@ internal class TextViewHolder(
 
     private var onTextChangedListener: (String) -> Unit = {}
 
+    private val backgroundSelector = binding.styleValues.getId(R.attr.usedesk_drawable_1)
+    private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
+
     init {
         binding.etText.addTextChangedListener {
             onTextChangedListener(it?.toString() ?: "")
@@ -88,8 +91,8 @@ internal class TextViewHolder(
             }
             setBackgroundResource(
                 when {
-                    text.hasError -> R.drawable.usedesk_message_field_error
-                    else -> R.drawable.usedesk_message_field_selector
+                    text.hasError -> backgroundError
+                    else -> backgroundSelector
                 }
             )
             onTextChangedListener = {

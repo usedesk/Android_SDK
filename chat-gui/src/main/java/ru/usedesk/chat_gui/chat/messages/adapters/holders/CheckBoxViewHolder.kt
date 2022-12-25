@@ -19,6 +19,10 @@ internal class CheckBoxViewHolder(
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
+    private val uncheckedDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_1)
+    private val checkedDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_2)
+    private val uncheckedErrorDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_3)
+
     override fun bind(
         messageId: Long,
         item: Item,
@@ -31,18 +35,18 @@ internal class CheckBoxViewHolder(
         stateFlow.onEach { state ->
             val form = state.formMap[messageId]
             if (form != null) {
-                    val newCheckbox =
-                        form.fields.firstOrNull { it.id == item.fieldId } as Field.CheckBox
-                    val newFormState = form.state
-                    if (checkbox != newCheckbox || formState != newFormState) {
-                        checkbox = newCheckbox
-                        formState = newFormState
-                        update(
-                            messageId,
-                            newCheckbox,
-                            newFormState
-                        )
-                    }
+                val newCheckbox =
+                    form.fields.firstOrNull { it.id == item.fieldId } as Field.CheckBox
+                val newFormState = form.state
+                if (checkbox != newCheckbox || formState != newFormState) {
+                    checkbox = newCheckbox
+                    formState = newFormState
+                    update(
+                        messageId,
+                        newCheckbox,
+                        newFormState
+                    )
+                }
             }
         }.launchIn(viewHolderScope)
     }
@@ -60,9 +64,9 @@ internal class CheckBoxViewHolder(
         )
         binding.ivChecked.setImageResource(
             when {
-                checkBox.checked -> R.drawable.usedesk_ic_form_checked
-                checkBox.hasError -> R.drawable.usedesk_ic_form_unchecked_error
-                else -> R.drawable.usedesk_ic_form_unchecked
+                checkBox.checked -> checkedDrawable
+                checkBox.hasError -> uncheckedErrorDrawable
+                else -> uncheckedDrawable
             }
         )
         binding.ivChecked.run {

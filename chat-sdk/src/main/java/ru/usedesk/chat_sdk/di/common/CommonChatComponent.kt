@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.di.UsedeskCommonModule
 
@@ -54,4 +55,5 @@ internal interface CommonChatDeps {
     val apiRepository: IApiRepository
     val userInfoRepository: IUserInfoRepository
     val chatDatabase: ChatDatabase
+    val okHttpClientFactory: IUsedeskOkHttpClientFactory
 }

@@ -10,14 +10,14 @@ import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
 import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.net.HttpURLConnection
 
 internal class SocketConnection(
     private val gson: Gson,
     url: String,
-    usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory,
+    usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory,
     private val initChatRequest: SocketRequest.Init,
     private val eventListener: SocketApi.EventListener
 ) {
@@ -48,7 +48,7 @@ internal class SocketConnection(
                 this@SocketConnection.disconnect()
             }
 
-            connect()
+            open()
         }
     }
 

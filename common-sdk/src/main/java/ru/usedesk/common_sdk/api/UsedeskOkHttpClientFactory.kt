@@ -16,10 +16,10 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
-class UsedeskOkHttpClientFactory @Inject constructor(
+internal class UsedeskOkHttpClientFactory @Inject constructor(
     private val appContext: Context
-) {
-    fun createInstance(): OkHttpClient = OkHttpClient.Builder().apply {
+) : IUsedeskOkHttpClientFactory {
+    override fun createInstance(): OkHttpClient = OkHttpClient.Builder().apply {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 ProviderInstaller.installIfNeeded(appContext)
@@ -27,42 +27,40 @@ class UsedeskOkHttpClientFactory @Inject constructor(
                 e.printStackTrace()
             }
             try {
-                applyProtocol(this, TlsVersion.TLS_1_2.javaName())
+                applyProtocol(TlsVersion.TLS_1_2.javaName())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }.build()
 
-    private fun applyProtocol(builder: OkHttpClient.Builder, protocolName: String) {
-        builder.apply {
-            val allTrustManager = object : X509TrustManager {
-                override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+    private fun OkHttpClient.Builder.applyProtocol(protocolName: String) {
+        val allTrustManager = object : X509TrustManager {
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
 
-                @SuppressLint("TrustAllX509TrustManager")
-                override fun checkClientTrusted(
-                    chain: Array<X509Certificate?>?,
-                    authType: String?
-                ) {
-                }
-
-                @SuppressLint("TrustAllX509TrustManager")
-                override fun checkServerTrusted(
-                    chain: Array<out X509Certificate?>?,
-                    authType: String?
-                ) {
-                }
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkClientTrusted(
+                chain: Array<X509Certificate?>?,
+                authType: String?
+            ) {
             }
 
-            val sslContext = SSLContext.getInstance(protocolName).apply {
-                init(null, arrayOf(allTrustManager), SecureRandom())
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkServerTrusted(
+                chain: Array<out X509Certificate?>?,
+                authType: String?
+            ) {
             }
-
-            val sslSocketFactory = ProtocolSocketFactory(sslContext.socketFactory, protocolName)
-
-            sslSocketFactory(sslSocketFactory, allTrustManager)
-            hostnameVerifier { _, _ -> true }
         }
+
+        val sslContext = SSLContext.getInstance(protocolName).apply {
+            init(null, arrayOf(allTrustManager), SecureRandom())
+        }
+
+        val sslSocketFactory = ProtocolSocketFactory(sslContext.socketFactory, protocolName)
+
+        sslSocketFactory(sslSocketFactory, allTrustManager)
+        hostnameVerifier { _, _ -> true }
     }
 
     internal class ProtocolSocketFactory constructor(

@@ -95,11 +95,7 @@ internal interface IApiRepository {
     }
 
     sealed interface LoadPreviousMessageResponse {
-        class Done(
-            val messages: List<UsedeskMessage>,
-            val forms: List<UsedeskForm>
-        ) : LoadPreviousMessageResponse
-
+        class Done(val messages: List<UsedeskMessage>) : LoadPreviousMessageResponse
         class Error(val code: Int?) : LoadPreviousMessageResponse
     }
 
@@ -115,8 +111,8 @@ internal interface IApiRepository {
         fun onFeedback()
         fun onException(exception: Exception)
         fun onChatInited(chatInited: ChatInited)
-        fun onMessagesOldReceived(messages: List<UsedeskMessage>, forms: List<UsedeskForm>)
-        fun onMessagesNewReceived(messages: List<UsedeskMessage>, forms: List<UsedeskForm>)
+        fun onMessagesOldReceived(messages: List<UsedeskMessage>)
+        fun onMessagesNewReceived(messages: List<UsedeskMessage>)
         fun onMessageUpdated(message: UsedeskMessage)
         fun onOfflineForm(offlineFormSettings: UsedeskOfflineFormSettings, chatInited: ChatInited)
         fun onSetEmailSuccess()

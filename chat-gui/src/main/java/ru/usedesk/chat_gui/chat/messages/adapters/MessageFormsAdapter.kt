@@ -19,9 +19,9 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.*
 import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
 import ru.usedesk.chat_sdk.entity.UsedeskForm
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 
@@ -109,7 +109,7 @@ internal class MessageFormsAdapter(
             adapterScope.cancel()
             this.form = null
             this.buttons = messageAgentText.buttons
-            if (messageAgentText.hasForm) {
+            if (messageAgentText.fieldsInfo.isNotEmpty()) {
                 adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
                 viewModel.modelFlow.onEach { model ->
                     val form = model.formMap[messageAgentText.id]

@@ -12,7 +12,7 @@ import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.ItemCheckBox
 import ru.usedesk.chat_sdk.entity.UsedeskForm
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 
 internal class CheckBoxViewHolder(
     private val binding: MessageFormsAdapter.CheckBoxBinding,

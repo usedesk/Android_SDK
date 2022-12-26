@@ -2,6 +2,7 @@ package ru.usedesk.chat_sdk.data.repository.form
 
 import androidx.annotation.CheckResult
 import ru.usedesk.chat_sdk.entity.UsedeskForm
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 
 internal interface IFormRepository {
     suspend fun saveForm(form: UsedeskForm)
@@ -12,7 +13,8 @@ internal interface IFormRepository {
     suspend fun loadForm(
         urlChatApi: String,
         clientToken: String,
-        form: UsedeskForm
+        formId: Long,
+        fieldsInfo: List<UsedeskMessageAgentText.FieldInfo>
     ): LoadFormResponse
 
     @CheckResult

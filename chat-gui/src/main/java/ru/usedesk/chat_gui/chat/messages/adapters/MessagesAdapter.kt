@@ -1005,7 +1005,7 @@ internal class MessagesAdapter(
             binding.content.rootView.layoutParams.apply {
                 width = when {
                     messageAgentText.buttons.isEmpty()
-                            && !messageAgentText.hasForm
+                            && messageAgentText.fieldsInfo.isEmpty()
                             && !messageAgentText.feedbackNeeded
                             && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT

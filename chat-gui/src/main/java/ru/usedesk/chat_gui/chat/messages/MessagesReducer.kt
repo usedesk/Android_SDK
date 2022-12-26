@@ -3,7 +3,7 @@ package ru.usedesk.chat_gui.chat.messages
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
@@ -184,7 +184,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
             .map { chatItems.getOrNull(it) }
         agentMessages.forEach {
             val message = (it as? ChatItem.Message.Agent)?.message
-            if (message is UsedeskMessageAgentText && message.hasForm) {
+            if (message is UsedeskMessageAgentText && message.fieldsInfo.isNotEmpty()) {
                 val form = formMap[message.id]
                 if (form == null || form.state == UsedeskForm.State.NOT_LOADED) {
                     usedeskChat.loadForm(message.id)

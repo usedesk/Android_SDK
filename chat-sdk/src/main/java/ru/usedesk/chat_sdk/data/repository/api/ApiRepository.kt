@@ -72,13 +72,13 @@ internal class ApiRepository @Inject constructor(
         }
 
         override fun onNew(messageResponse: SocketResponse.AddMessage) {
-            val result = messageResponseConverter.convert(messageResponse.message)
-            val updatedMessages = result?.messages
-                ?.filter { it is UsedeskMessageOwner.Client && it.id != it.localId }
-                ?: listOf()
-            val newMessages = result?.messages?.filter { it !in updatedMessages } ?: listOf()
+            val messages = messageResponseConverter.convert(messageResponse.message)
+            val updatedMessages = messages.filter {
+                it is UsedeskMessageOwner.Client && it.id != it.localId
+            }
+            val newMessages = messages.filter { it !in updatedMessages }
             if (newMessages.isNotEmpty()) {
-                eventListener.onMessagesNewReceived(newMessages, result?.forms ?: listOf())
+                eventListener.onMessagesNewReceived(newMessages)
             }
             updatedMessages.forEach { eventListener.onMessageUpdated(it) }
         }
@@ -284,11 +284,9 @@ internal class ApiRepository @Inject constructor(
         return when (response?.items) {
             null -> LoadPreviousMessageResponse.Error(response?.code)
             else -> {
-                val results = response.items.mapNotNull(messageResponseConverter::convert)
-                val messages = results.flatMap { it.messages ?: listOf() }
-                val forms = results.flatMap { it.forms }
-                eventListener.onMessagesOldReceived(messages, forms)
-                LoadPreviousMessageResponse.Done(messages, forms)
+                val messages = response.items.flatMap(messageResponseConverter::convert)
+                eventListener.onMessagesOldReceived(messages)
+                LoadPreviousMessageResponse.Done(messages)
             }
         }
     }

@@ -90,25 +90,17 @@ internal class ChatInteractor @Inject constructor(
             this@ChatInteractor.onChatInited(chatInited)
         }
 
-        override fun onMessagesOldReceived(
-            messages: List<UsedeskMessage>,
-            forms: List<UsedeskForm>
-        ) {
+        override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
             this@ChatInteractor.onMessagesNew(
                 old = messages,
-                isInited = false,
-                forms = forms
+                isInited = false
             )
         }
 
-        override fun onMessagesNewReceived(
-            messages: List<UsedeskMessage>,
-            forms: List<UsedeskForm>
-        ) {
+        override fun onMessagesNewReceived(messages: List<UsedeskMessage>) {
             this@ChatInteractor.onMessagesNew(
                 new = messages,
-                isInited = false,
-                forms = forms
+                isInited = false
             )
         }
 
@@ -288,15 +280,11 @@ internal class ChatInteractor @Inject constructor(
     private fun onMessagesNew(
         old: List<UsedeskMessage> = listOf(),
         new: List<UsedeskMessage> = listOf(),
-        forms: List<UsedeskForm> = listOf(),
         isInited: Boolean
     ) {
         setModel {
             copy(
                 messages = old + messages + new,
-                formMap = formMap.toMutableMap().apply {
-                    forms.forEach { put(it.id, it) }
-                },
                 inited = isInited
             )
         }
@@ -328,7 +316,7 @@ internal class ChatInteractor @Inject constructor(
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message)
-            eventListener.onMessagesNewReceived(listOf(sendingMessage), listOf())
+            eventListener.onMessagesNewReceived(listOf(sendingMessage))
 
             runBlocking {
                 eventMutex.withLock {
@@ -369,7 +357,7 @@ internal class ChatInteractor @Inject constructor(
         ioScope.launch {
             val sendingMessages = usedeskFileInfoList.map(this@ChatInteractor::createSendingMessage)
 
-            eventListener.onMessagesNewReceived(sendingMessages, listOf())
+            eventListener.onMessagesNewReceived(sendingMessages)
 
             eventMutex.withLock {
                 sendingMessages.forEach(::sendFileAsync)
@@ -491,42 +479,51 @@ internal class ChatInteractor @Inject constructor(
 
     override fun loadForm(messageId: Long) {
         setModel {
-            val form = formMap[messageId]
-            when (form?.state) {
+            val form = formMap[messageId] ?: UsedeskForm(messageId)
+            val message = when (form.state) {
                 UsedeskForm.State.LOADING_FAILED,
-                UsedeskForm.State.NOT_LOADED -> copy(
-                    formMap = formMap.toMutableMap().apply {
-                        put(
-                            messageId,
-                            form.copy(state = UsedeskForm.State.LOADING).apply {
-                                launchLoadForm(
-                                    clientToken,
-                                    form
-                                )
-                            }
-                        )
-                    }
-                )
-                else -> this
+                UsedeskForm.State.NOT_LOADED -> messages.asSequence()
+                    .filterIsInstance<UsedeskMessageAgentText>()
+                    .firstOrNull { it.id == messageId }
+                else -> null
             }
+            val newForm = when (message) {
+                null -> form
+                else -> form.copy(state = UsedeskForm.State.LOADING).apply {
+                    launchLoadForm(
+                        clientToken,
+                        message
+                    )
+                }
+            }
+            copy(
+                formMap = formMap.toMutableMap().apply {
+                    put(
+                        messageId,
+                        newForm
+                    )
+                }
+            )
         }
     }
 
     private fun launchLoadForm(
         clientToken: String,
-        form: UsedeskForm
+        message: UsedeskMessageAgentText
     ) {
         ioScope.launch {
             val response = formRepository.loadForm(
                 initConfiguration.urlChatApi,
                 clientToken,
-                form
+                message.id,
+                message.fieldsInfo
             )
             setModel {
+                val form = formMap[message.id] ?: UsedeskForm(message.id)
                 copy(
                     formMap = formMap.toMutableMap().apply {
                         put(
-                            form.id,
+                            message.id,
                             when (response) {
                                 is LoadFormResponse.Done -> response.form
                                 is LoadFormResponse.Error -> form.copy(state = UsedeskForm.State.LOADING_FAILED)
@@ -553,7 +550,8 @@ internal class ChatInteractor @Inject constructor(
 
     override fun send(form: UsedeskForm) {
         setModel {
-            when (formMap[form.id]?.state) {
+            val fform = formMap[form.id]
+            when (fform?.state) {
                 UsedeskForm.State.NOT_LOADED,
                 UsedeskForm.State.LOADING_FAILED,
                 UsedeskForm.State.SENDING -> this
@@ -571,7 +569,10 @@ internal class ChatInteractor @Inject constructor(
                                     else -> UsedeskForm.State.SENDING
                                 }
                             )
-                            put(form.id, newForm)
+                            put(
+                                form.id,
+                                newForm
+                            ) //TODO: тут newForm обновлятся, а вот визуально ничего не происходит
                         }
                     )
                 }
@@ -802,12 +803,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun onChatInited(chatInited: ChatInited) {
-        val model = setModel {
-            copy(
-                clientToken = chatInited.token,
-                formMap = chatInited.forms.associateBy { it.id }
-            )
-        }
+        val model = setModel { copy(clientToken = chatInited.token) }
         userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
 
         if (chatInited.status in ACTIVE_STATUSES) {

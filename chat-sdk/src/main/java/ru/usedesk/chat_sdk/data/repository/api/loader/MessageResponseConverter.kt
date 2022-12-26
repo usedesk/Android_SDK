@@ -4,7 +4,6 @@ import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import java.util.regex.Pattern
@@ -49,9 +48,8 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         text
     }
 
-    override fun convert(from: AddMessage.Message?): IMessageResponseConverter.Result {
+    override fun convert(from: AddMessage.Message?): List<UsedeskMessage> {
         val messages = mutableListOf<UsedeskMessage?>()
-        var usedeskForm: UsedeskForm? = null
         valueOrNull {
             val fromClient = when (from!!.type) {
                 AddMessage.TYPE_CLIENT_TO_OPERATOR,
@@ -197,11 +195,16 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                         .joinToString(separator = "", transform = MessageObject.Text::text)
                 )
 
-                val fields = objects.filterIsInstance<MessageObject.Field>()
-                    .map(MessageObject.Field::field)
+                val fieldsInfo = objects.filterIsInstance<MessageObject.FieldInfo>()
+                    .map(MessageObject.FieldInfo::fieldInfo)
+
+                val buttons = objects.filterIsInstance<MessageObject.Button>()
+                    .map(MessageObject.Button::button)
 
                 val textMessage = when {
-                    convertedText.isEmpty() && fields.isEmpty() -> null
+                    convertedText.isEmpty()
+                            && fieldsInfo.isEmpty()
+                            && buttons.isEmpty() -> null
                     fromClient -> UsedeskMessageClientText(
                         id,
                         messageDate,
@@ -211,19 +214,6 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                         localId
                     )
                     else -> {
-                        val buttons = objects.filterIsInstance<MessageObject.Button>()
-                            .map(MessageObject.Button::button)
-                        val formState = when {
-                            fields.all { it !is Field.List } -> UsedeskForm.State.LOADED
-                            else -> UsedeskForm.State.NOT_LOADED
-                        }
-
-                        usedeskForm = UsedeskForm(
-                            id,
-                            fields,
-                            formState
-                        )
-
                         UsedeskMessageAgentText(
                             id,
                             messageDate,
@@ -234,17 +224,14 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                             feedbackNeeded,
                             feedback,
                             buttons,
-                            hasForm = fields.isNotEmpty()
+                            fieldsInfo = fieldsInfo
                         )
                     }
                 }
                 messages.add(0, textMessage)
             }
         }
-        return IMessageResponseConverter.Result(
-            messages.filterNotNull(),
-            listOfNotNull(usedeskForm)
-        )
+        return messages.filterNotNull()
     }
 
     private fun String.convertMarkdownText() = StringBuilder().also { builder ->
@@ -348,7 +335,7 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
     sealed interface MessageObject {
         class Text(val text: String) : MessageObject
         class Button(val button: UsedeskMessageAgentText.Button) : MessageObject
-        class Field(val field: UsedeskMessageAgentText.Field) : MessageObject
+        class FieldInfo(val fieldInfo: UsedeskMessageAgentText.FieldInfo) : MessageObject
         class Image(val file: UsedeskFile) : MessageObject
     }
 
@@ -431,31 +418,14 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
         return when (parts.size) {
             2, 3 -> valueOrNull {
                 val associate = parts[1]
-                val textType = when (associate) {
-                    "email" -> Field.Text.Type.EMAIL
-                    "phone" -> Field.Text.Type.PHONE
-                    "name" -> Field.Text.Type.NAME
-                    "note" -> Field.Text.Type.NOTE
-                    "position" -> Field.Text.Type.POSITION
-                    else -> null
-                }
                 val required = parts.getOrNull(2) == "true"
                 listOf(
-                    MessageObject.Field(
-                        when (textType) {
-                            null -> Field.List(
-                                associate,
-                                parts[0],
-                                required
-                            )
-                            else -> Field.Text(
-                                associate,
-                                parts[0],
-                                required,
-                                hasError = false,
-                                type = textType
-                            )
-                        }
+                    MessageObject.FieldInfo(
+                        UsedeskMessageAgentText.FieldInfo(
+                            associate,
+                            parts[0],
+                            required
+                        )
                     )
                 )
             }

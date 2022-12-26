@@ -11,14 +11,11 @@ internal class InitChatResponseConverter @Inject constructor(
 ) : IInitChatResponseConverter {
 
     override fun convert(from: SocketResponse.Inited): ChatInited {
-        val messagesResult = convert(from.setup?.messages ?: listOf())
-        val messages = messagesResult.flatMap { it?.messages ?: listOf() }
-        val forms = messagesResult.flatMap { it?.forms ?: listOf() }
+        val messages = convert(from.setup?.messages ?: listOf()).flatten()
         return ChatInited(
             from.token!!,
             true,
             messages,
-            forms,
             convert(from.setup?.callbackSettings, from.setup!!.noOperators),
             from.setup.ticket?.statusId
         )

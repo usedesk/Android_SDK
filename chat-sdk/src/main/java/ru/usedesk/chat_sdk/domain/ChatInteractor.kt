@@ -627,28 +627,31 @@ internal class ChatInteractor @Inject constructor(
         offlineForm: UsedeskOfflineForm,
         onResult: (SendOfflineFormResult) -> Unit
     ) {
-        val result = when {
-            offlineFormToChat -> offlineForm.run {
-                val fields = offlineForm.fields
-                    .map(UsedeskOfflineForm.Field::value)
-                    .filter(String::isNotEmpty)
-                val strings = listOf(clientName, clientEmail, topic) + fields + offlineForm.message
-                initClientOfflineForm = strings.joinToString(separator = "\n")
-                chatInited?.let(this@ChatInteractor::onChatInited)
-                SendOfflineFormResult.Done
-            }
-            else -> {
-                val response = apiRepository.sendOfflineForm(
-                    initConfiguration,
-                    offlineForm
-                )
-                when (response) {
-                    SendOfflineFormResponse.Done -> SendOfflineFormResult.Done
-                    is SendOfflineFormResponse.Error -> SendOfflineFormResult.Error
+        ioScope.launch {
+            val result = when {
+                offlineFormToChat -> offlineForm.run {
+                    val fields = offlineForm.fields
+                        .map(UsedeskOfflineForm.Field::value)
+                        .filter(String::isNotEmpty)
+                    val strings =
+                        listOf(clientName, clientEmail, topic) + fields + offlineForm.message
+                    initClientOfflineForm = strings.joinToString(separator = "\n")
+                    chatInited?.let(this@ChatInteractor::onChatInited)
+                    SendOfflineFormResult.Done
+                }
+                else -> {
+                    val response = apiRepository.sendOfflineForm(
+                        initConfiguration,
+                        offlineForm
+                    )
+                    when (response) {
+                        SendOfflineFormResponse.Done -> SendOfflineFormResult.Done
+                        is SendOfflineFormResponse.Error -> SendOfflineFormResult.Error
+                    }
                 }
             }
+            onResult(result)
         }
-        onResult(result)
     }
 
     override fun sendAgain(messageId: Long) {

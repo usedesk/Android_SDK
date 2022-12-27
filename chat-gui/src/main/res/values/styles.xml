@@ -726,7 +726,8 @@
         <item name="usedesk_chat_message_text_field_list_text">@style/Usedesk.Chat.Message.Text.Field.List.Text</item>
         <item name="usedesk_chat_message_text_field_list_image">@style/Usedesk.Chat.Message.Text.Field.List.Image</item>
         <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
-        <item name="usedesk_text_color_2">@color/usedesk_black_3</item>
+        <item name="usedesk_text_color_2">@color/usedesk_gray_cold_2</item>
+        <item name="usedesk_text_color_3">@color/usedesk_black_3</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_message_field_simple</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_message_field_error</item>
     </style>

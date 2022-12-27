@@ -19,8 +19,9 @@ internal class ItemListViewHolder(
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
-    private val textColorEmpty = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
-    private val textColorContent = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
+    private val textColorDisable = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
+    private val textColorEnable = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
+    private val textColorContent = binding.styleValues.getColor(R.attr.usedesk_text_color_3)
     private val backgroundSimple = binding.styleValues.getId(R.attr.usedesk_drawable_1)
     private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
 
@@ -62,6 +63,11 @@ internal class ItemListViewHolder(
         parentList: Field.List?,
         formState: UsedeskForm.State
     ) {
+        val enabled = when (formState) {
+            UsedeskForm.State.SENDING_FAILED,
+            UsedeskForm.State.LOADED -> (parentList == null || parentList.selected != null)
+            else -> false
+        }
         binding.tvText.apply {
             when (val selected = list.selected) {
                 null -> {
@@ -71,7 +77,12 @@ internal class ItemListViewHolder(
                             else -> ""
                         }
                     )
-                    setTextColor(textColorEmpty)
+                    setTextColor(
+                        when {
+                            enabled -> textColorEnable
+                            else -> textColorDisable
+                        }
+                    )
                 }
                 else -> {
                     text = selected.name
@@ -86,11 +97,6 @@ internal class ItemListViewHolder(
             }
         )
         binding.lClickable.run {
-            val enabled = when (formState) {
-                UsedeskForm.State.SENDING_FAILED,
-                UsedeskForm.State.LOADED -> (parentList == null || parentList.selected != null)
-                else -> false
-            }
             isClickable = enabled
             isFocusable = enabled
             if (enabled) {

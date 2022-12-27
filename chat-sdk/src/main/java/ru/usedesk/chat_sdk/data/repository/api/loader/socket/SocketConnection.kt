@@ -37,9 +37,12 @@ internal class SocketConnection(
                 eventListener.onConnected()
                 sendRequest(initChatRequest)
             }
+            val connectTimeStamp = System.currentTimeMillis()
             on(Socket.EVENT_CONNECT_ERROR) {
                 (it.getOrNull(0) as? Throwable)?.printStackTrace()
-                this@SocketConnection.disconnect()
+                if (System.currentTimeMillis() - connectTimeStamp > CONNECTION_TIMEOUT_MILLIS) {
+                    this@SocketConnection.disconnect()
+                }
             }
             on(EVENT_SERVER_ACTION) {
                 onResponse(it[0].toString())
@@ -133,5 +136,6 @@ internal class SocketConnection(
 
     companion object {
         private const val EVENT_SERVER_ACTION = "dispatch"
+        private const val CONNECTION_TIMEOUT_MILLIS = 30000
     }
 }

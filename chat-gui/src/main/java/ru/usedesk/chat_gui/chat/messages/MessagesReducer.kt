@@ -84,7 +84,9 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
 
     private fun State.formChanged(event: Event.FormChanged): State =
         when (val form = formMap[event.messageId]) {
-            null -> this
+            null -> {
+                this
+            }
             else -> {
                 val lists = form.fields.filterIsInstance<Field.List>()
                 val newField = when (event.field) {
@@ -97,14 +99,18 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                     else -> mapOf(newField.id to newField)
                 }
                 val newForm = form.copy(
-                    fields = form.fields.map { field -> newFields[field.id] ?: field }
+                    fields = form.fields.map { field -> newFields[field.id] ?: field },
+                    state = when (form.state) {
+                        UsedeskForm.State.SENDING_FAILED -> UsedeskForm.State.LOADED
+                        else -> form.state
+                    }
                 )
                 usedeskChat.saveForm(newForm)
                 copy(
                     formMap = formMap.toMutableMap().apply {
                         put(event.messageId, newForm)
                     },
-                    formSelector = null,
+                    formSelector = null
                 )
             }
         }

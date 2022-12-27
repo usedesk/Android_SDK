@@ -38,44 +38,20 @@ internal class TextViewHolder(
         stateFlow: StateFlow<MessagesViewModel.State>
     ) {
         item as Item.ItemText
-        var text: Field.Text? = null
+        var fieldText: Field.Text = stateFlow.value.formMap[messageId]
+            ?.fields
+            ?.firstOrNull { it.id == item.fieldId } as? Field.Text
+            ?: Field.Text(item.fieldId, "", false, type = Field.Text.Type.NONE)
         var formState: UsedeskForm.State? = null
-        stateFlow.onEach { state ->
-            val form = state.formMap[messageId]
-            if (form != null) {
-                val newText = form.fields.first { it.id == item.fieldId } as Field.Text
-                val newFormState = form.state
-                if (formState != newFormState || text?.hasError != newText.hasError) {
-                    text = newText
-                    formState = newFormState
-                    update(
-                        messageId,
-                        newText,
-                        newFormState
-                    )
-                }
-            }
-        }.launchIn(viewHolderScope)
-    }
 
-    private fun update(
-        messageId: Long,
-        text: Field.Text,
-        formState: UsedeskForm.State
-    ) {
         binding.etText.run {
-            isEnabled = when (formState) {
-                UsedeskForm.State.SENDING_FAILED,
-                UsedeskForm.State.LOADED -> true
-                else -> false
-            }
             hint = Html.fromHtml(
-                text.name + when {
-                    text.required -> REQUIRED_POSTFIX_HTML
+                fieldText.name + when {
+                    fieldText.required -> REQUIRED_POSTFIX_HTML
                     else -> ""
                 }
             )
-            inputType = InputType.TYPE_CLASS_TEXT or when (text.type) {
+            inputType = InputType.TYPE_CLASS_TEXT or when (fieldText.type) {
                 Field.Text.Type.EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
                 Field.Text.Type.PHONE -> InputType.TYPE_CLASS_PHONE
                 Field.Text.Type.NAME -> InputType.TYPE_TEXT_VARIATION_PERSON_NAME or
@@ -85,13 +61,13 @@ internal class TextViewHolder(
                 Field.Text.Type.POSITION -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
                 Field.Text.Type.NONE -> InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             }
-            if ((this.text?.toString() ?: "") != text.text) {
+            if ((text?.toString() ?: "") != fieldText.text) {
                 onTextChangedListener = {}
-                setText(text.text)
+                setText(fieldText.text)
             }
             setBackgroundResource(
                 when {
-                    text.hasError -> backgroundError
+                    fieldText.hasError -> backgroundError
                     else -> backgroundSelector
                 }
             )
@@ -99,10 +75,48 @@ internal class TextViewHolder(
                 onEvent(
                     Event.FormChanged(
                         messageId,
-                        text.copy(text = it)
+                        fieldText.copy(text = it)
                     )
                 )
             }
+        }
+
+        stateFlow.onEach { state ->
+            val form = state.formMap[messageId]
+            if (form != null) {
+                val newText = form.fields.first { it.id == item.fieldId } as Field.Text
+                val newFormState = form.state
+                if (formState != newFormState || fieldText.hasError != newText.hasError) {
+                    fieldText = newText
+                    formState = newFormState
+                    update(
+                        newText,
+                        newFormState
+                    )
+                }
+            }
+        }.launchIn(viewHolderScope)
+    }
+
+    private fun update(
+        fieldText: Field.Text,
+        formState: UsedeskForm.State
+    ) {
+        binding.etText.run {
+            isEnabled = when (formState) {
+                UsedeskForm.State.SENDING_FAILED,
+                UsedeskForm.State.LOADED -> true
+                else -> {
+                    clearFocus()
+                    false
+                }
+            }
+            setBackgroundResource(
+                when {
+                    fieldText.hasError -> backgroundError
+                    else -> backgroundSelector
+                }
+            )
         }
     }
 }

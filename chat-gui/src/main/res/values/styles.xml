@@ -599,7 +599,7 @@
         <item name="usedesk_text_2">@string/usedesk_string_sent</item>
         <item name="usedesk_text_3">@string/usedesk_string_error</item>
         <item name="usedesk_background_color_1">@color/usedesk_black_2</item>
-        <item name="usedesk_background_color_2">@color/usedesk_green</item>
+        <item name="usedesk_background_color_2">@color/usedesk_gray_2</item>
         <item name="usedesk_background_color_3">@color/usedesk_red</item>
     </style>
 

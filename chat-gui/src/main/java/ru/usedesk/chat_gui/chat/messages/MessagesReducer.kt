@@ -195,7 +195,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
             .firstOrNull { it is ChatItem.Message.Agent }
         val newAgentIndexShowed = when (agentMessageShowed) {
             null -> this.agentMessageShowed
-            else -> min(this.agentMessageShowed, agentMessages.indexOf(agentMessageShowed))
+            else -> min(this.agentMessageShowed, chatItems.indexOf(agentMessageShowed))
         }
         return copy(
             fabToBottom = event.messagesRange.first > 0,

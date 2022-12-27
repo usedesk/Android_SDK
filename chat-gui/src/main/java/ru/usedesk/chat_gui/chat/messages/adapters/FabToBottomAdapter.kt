@@ -83,7 +83,7 @@ internal class FabToBottomAdapter(
                 }
             }
             if (old?.goToBottom != new.goToBottom) {
-                new.goToBottom?.process { onClickListener() }
+                new.goToBottom?.use { onClickListener() }
             }
         }
     }

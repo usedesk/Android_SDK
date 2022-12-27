@@ -7,9 +7,9 @@ class UsedeskSingleLifeEvent<DATA>(
 ) : UsedeskEvent<DATA>(data) {
     private val processed = AtomicBoolean(false)
 
-    override fun process(onProcess: (DATA) -> Unit) {
+    override fun use(onProcess: (DATA) -> Unit) {
         if (!processed.getAndSet(true)) {
-            super.process(onProcess)
+            super.use(onProcess)
         }
     }
 }

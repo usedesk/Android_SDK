@@ -73,43 +73,43 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 [**UsedeskChatConfiguration**](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/UsedeskChatConfiguration.kt) - конфигурация чата:
 
-| Переменная | Тип | Описание |
-|----------------|------|-------------|
-| urlChat \* | String | Адрес сервера Чата. Стандартное значение `https://pubsubsec.usedesk.ru` |
-| urlChatApi \* | String | Адрес для API запросов Чата. Стандартное значение `https://secure.usedesk.ru/` |
-| companyId \* | String | Идентификатор компании |
-| channelId \* | String | Идентификатор канала |
-| messagesPageSize | Int | Количество сообщений, загружаемых при инициализации. Стандартное значение `20` |
-| clientToken | String? | Токен, позволяющий однозначно идентифицировать клиента в системе. Указав `null` библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName` в конфигурации. Указав `""` сохранённый токен использоваться не будет |
-| clientEmail | String? | Почта клиента |
-| clientName | String? | Имя клиента |
-| clientNote | String? | Заметка о клиенте |
-| clientPhoneNumber | Long? | Телефонный номер клиента |
-| clientAdditionalId | String? | Дополнительный идентификатор клиента |
-| clientInitMessage | String? | Сообщение, автоматически отправляемое от клиента при открытии чата |
-| clientAvatar | String? | Путь до файла с изображением. Если задан, то sdk отправит аватарку единовременно |
-| additionalFields | Map<Long, String> | Коллекция дополнительных полей, где key - Id поля, value - значение поля. Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст. |
-| additionalNestedFields | List<Map<Long, String>> | Список коллекций вложенных списков, где каждый элемент списка - это коллекия значений одного вложенного списка, где key - Id поля, value - значение поля с текстом, точно совпадающим с текстом значения списка. |
+| Переменная             | Тип                     | Описание                                                                                                                                                                                                                                                                                                                  |
+|------------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| urlChat \*             | String                  | Адрес сервера Чата. Стандартное значение `https://pubsubsec.usedesk.ru`                                                                                                                                                                                                                                                   |
+| urlChatApi \*          | String                  | Адрес для API запросов Чата. Стандартное значение `https://secure.usedesk.ru/`                                                                                                                                                                                                                                            |
+| companyId \*           | String                  | Идентификатор компании                                                                                                                                                                                                                                                                                                    |
+| channelId \*           | String                  | Идентификатор канала                                                                                                                                                                                                                                                                                                      |
+| messagesPageSize       | Int                     | Количество сообщений, загружаемых при инициализации. Стандартное значение `20`                                                                                                                                                                                                                                            |
+| clientToken            | String?                 | Токен, позволяющий однозначно идентифицировать клиента в системе. Указав `null` библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName` в конфигурации. Указав `""` сохранённый токен использоваться не будет |
+| clientEmail            | String?                 | Почта клиента                                                                                                                                                                                                                                                                                                             |
+| clientName             | String?                 | Имя клиента                                                                                                                                                                                                                                                                                                               |
+| clientNote             | String?                 | Заметка о клиенте                                                                                                                                                                                                                                                                                                         |
+| clientPhoneNumber      | Long?                   | Телефонный номер клиента                                                                                                                                                                                                                                                                                                  |
+| clientAdditionalId     | String?                 | Дополнительный идентификатор клиента                                                                                                                                                                                                                                                                                      |
+| clientInitMessage      | String?                 | Сообщение, автоматически отправляемое от клиента при открытии чата                                                                                                                                                                                                                                                        |
+| clientAvatar           | String?                 | Путь до файла с изображением. Если задан, то sdk отправит аватарку единовременно                                                                                                                                                                                                                                          |
+| additionalFields       | Map<Long, String>       | Коллекция дополнительных полей, где key - Id поля, value - значение поля. Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст.                                                                                |
+| additionalNestedFields | List<Map<Long, String>> | Список коллекций вложенных списков, где каждый элемент списка - это коллекия значений одного вложенного списка, где key - Id поля, value - значение поля с текстом, точно совпадающим с текстом значения списка.                                                                                                          |
 
 \* - обязательный параметр
 
 Для включения локальных уведомлений нужно создать 2 собственных класса:
 - Сервис, унаследованный от [UsedeskSimpleNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskSimpleNotificationsService.kt) (обычный сервис) или [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt) (foreground сервис). Где можно переопределить некоторые методы:
 
-| Метод | Тип возвращаемого значения | Описание события |
-|---------|------------------------------------|-----------------------|
-| getContentPendingIntent | PendingIntent? | Действие при нажатии на уведомление |
-| getDeletePendingIntent | PendingIntent? | Действие при удалении уведомления |
-| getClosePendingIntent | PendingIntent? | Действие при закрытии foreground уведомления |
-| getChannelId | String | Номер канала уведомления |
-| getChannelTitle | String | Названия канала уведомления |
-| createNotification | Notification? | Создание уведомления |
+| Метод                   | Тип возвращаемого значения | Описание события                             |
+|-------------------------|----------------------------|----------------------------------------------|
+| getContentPendingIntent | PendingIntent?             | Действие при нажатии на уведомление          |
+| getDeletePendingIntent  | PendingIntent?             | Действие при удалении уведомления            |
+| getClosePendingIntent   | PendingIntent?             | Действие при закрытии foreground уведомления |
+| getChannelId            | String                     | Номер канала уведомления                     |
+| getChannelTitle         | String                     | Названия канала уведомления                  |
+| createNotification      | Notification?              | Создание уведомления                         |
 
 - Фабрику, унаследованную от [UsedeskNotificationsServiceFactory](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/UsedeskNotificationsServiceFactory.kt) для переопределения метода:
 
-| Метод | Тип возвращаемого значения | Описание события |
-|---------|------------------------------------|-----------------------|
-| getServiceClass | Class<?> | Класс сервиса |
+| Метод           | Тип возвращаемого значения | Описание события |
+|-----------------|----------------------------|------------------|
+| getServiceClass | Class<?>                   | Класс сервиса    |
 
 После чего указать SDK использовать фабрику:
 
@@ -144,15 +144,15 @@ navController.navigate(
 
 Методы `newInstance` и `createBundle` принимают следующие аргументы:
 
-| Аргумент                        | Тип                       |                                                              |
-| ------------------------------- | ------------------------- | ------------------------------------------------------------ |
-| chatConfiguration               | UsedeskChatConfiguration  | `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`. |
-| customAgentName                 | String?                   | Если задан, то все имена агентов в чате будут заменены на значение параметра. |
-| rejectedFileExtensions          | Collection<String>?       | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
-| messagesDateFormat              | String?                   | Если задан, то меняет формат одображения даты группы сообщений |
-| messageTimeFormat               | String?                   | Если задан, то меняет формат одображения времени сообщений |
-| adaptiveTextMessageTimePadding  | Boolean                   | При значении `true` сдвигает текст сообщений относительно времени |
-| groupAgentMessages              | Boolean                   | При значении `true` группирует сообщения от одного агента |
+| Аргумент                       | Тип                      |                                                                                                            |
+|--------------------------------|--------------------------|------------------------------------------------------------------------------------------------------------|
+| chatConfiguration              | UsedeskChatConfiguration | `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`.             |
+| customAgentName                | String?                  | Если задан, то все имена агентов в чате будут заменены на значение параметра.                              |
+| rejectedFileExtensions         | Collection<String>?      | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае). |
+| messagesDateFormat             | String?                  | Если задан, то меняет формат одображения даты группы сообщений                                             |
+| messageTimeFormat              | String?                  | Если задан, то меняет формат одображения времени сообщений                                                 |
+| adaptiveTextMessageTimePadding | Boolean                  | При значении `true` сдвигает текст сообщений относительно времени                                          |
+| groupAgentMessages             | Boolean                  | При значении `true` группирует сообщения от одного агента                                                  |
 
 Для полноценной работы фрагмента необходимо:
 
@@ -167,9 +167,6 @@ override fun onBackPressed() {
     }
 }
 ```
-
-- Для привязки жизненного цикла ViewModel к родителю необходимо реализовать
-  интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
 
 - Реализовать
   интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt)
@@ -191,6 +188,9 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 - Реализовать
   интерфейс [IUsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnDownloadListener.kt)
   родителем, переопределив метод `onDownload`.
+
+- Для привязки жизненного цикла ViewModel к родителю необходимо реализовать
+  интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
 
 - Для получения токена клиента реализовать
   интерфейс [IUsedeskOnClientTokenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnClientTokenListener.kt)
@@ -224,11 +224,13 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 
 ### Использование без GUI
 
-Для работы с чатом необходимо задать конфигурацию и проинициализировать чат:
+Для работы с чатом без GUI необходимо задать конфигурацию и проинициализировать чат:
 
 ```
-UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...)
+UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...))
 val usedeskChat = UsedeskChatSdk.init(requireContext())
+//или
+val usedeskChat = UsedeskChatSdk.init(requireContext(), UsedeskChatConfiguration(...))
 ```
 
 После инициализации можно получить экземпляр `IUsedeskChat` вызвав:
@@ -262,29 +264,10 @@ UsedeskChatSdk.release(false)
 
 [IUsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListener.kt) - интерфейс для прослушивания событий чата:
 
-| Метод | Параметры | Описание события |
-|---------|---------------|-----------------------|
-| onConnectionState | UsedeskConnectionState | Состояние подключения к серверу |
-| onMessageReceived | UsedeskMessage | Каждое сообщение |
-| onNewMessageReceived | UsedeskMessage | Каждое новое сообщение |
-| onMessagesReceived | List&lt;UsedeskMessage&gt; | Список сообщений из чата при каждом изменении |
-| onMessageUpdated | UsedeskMessage | Обновление полученного ранее сообщения |
-| onFeedbackReceived | - | Отзыв доставлен |
-| onOfflineFormExpected | UUsedeskOfflineFormSettings| Ожидается Форма Обратной Связи |
-| onException | UsedeskException | Возникшее исключение |
-
-[IUsedeskActionListenerRx](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListenerRx.kt) - класс для прослушивания событий чата:
-
-| Метод | Параметры | Описание события |
-|---------|---------------|-----------------------|
-| onConnectionStateObservable | Observable&lt;UsedeskConnectionState&gt; | Состояние подключения к серверу |
-| onMessageObservable | Observable&lt;UsedeskMessage&gt; | Каждое сообщение |
-| onNewMessageObservable | Observable&lt;UsedeskMessage&gt; | Каждое новое сообщение |
-| onMessagesObservable | Observable&lt;List&lt;UsedeskMessage&gt;&gt; | Список сообщений из чата на момент подключения |
-| onMessageUpdateObservable | Observable&lt;UsedeskMessage&gt; | Обновление полученного ранее сообщения |
-| onFeedbackObservable | Observable&lt;UsedeskEvent&lt;Any?&gt;&gt; | Отзыв доставлен |
-| onOfflineFormExpectedObservable | Observable&lt;UsedeskOfflineFormSettings&gt; | Ожидается Форма Обратной Связи |
-| onExceptionObservable | Observable&lt;Exception&gt; | Возникшее исключение |
+| Метод       | Описание события                                      |
+|-------------|-------------------------------------------------------|
+| onModel     | Модель чата, новые, обновлённые и удалённые сообщения |
+| onException | Возникшее исключение                                  |
 
 Запуск сервиса уведомлений:
 
@@ -321,13 +304,13 @@ UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
 
 [UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/entity/UsedeskKnowledgeBaseConfiguration.kt) - конфигурация Базы Знаний:
 
-| Переменная | Тип | Описание |
-|----------------|------|-------------|
-| urlApi \*| String | Адрес api сервера. Стандартное значение `https://api.usedesk.ru/` |
-| accountId \*| String | Идентификатор Базы Знаний в системе |
-| token \*| String | Токен доступа к API |
-| clientEmail | String? | Email клиента |
-| clientName | String? | Имя клиента |
+| Переменная   | Тип     | Описание                                                          |
+|--------------|---------|-------------------------------------------------------------------|
+| urlApi \*    | String  | Адрес api сервера. Стандартное значение `https://api.usedesk.ru/` |
+| accountId \* | String  | Идентификатор Базы Знаний в системе                               |
+| token \*     | String  | Токен доступа к API                                               |
+| clientEmail  | String? | Email клиента                                                     |
+| clientName   | String? | Имя клиента                                                       |
 
 \* - обязательный параметр
 
@@ -436,7 +419,7 @@ SDK поддерживает следующие языки:
 , который находится в корне проекта, и добавить во все файлы strings.xml вашего проекта. После чего
 можно подставить свои значения строковых ресурсов.
 **Важно!** В случае изменения ссылок на строковые ресурсы при кастомизации приложения изменение
-строковых ресурсов таким способом может не привеcти к желаемому результату.
+строковых ресурсов таким способом может не привести к желаемому результату.
 
 <a name="last_versions"></a>
 

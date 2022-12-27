@@ -30,27 +30,27 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         ) {
             doMain {
                 if (model.offlineFormSettings != offlineFormSettings) {
-                    model.offlineFormSettings?.apply {
-                        setModel {
-                            val subjectField = OfflineFormList(
-                                TOPIC_KEY,
-                                topicsTitle,
-                                topicsRequired,
-                                topics,
-                                -1
+                    model.offlineFormSettings?.run {
+                        val subjectField = OfflineFormList(
+                            TOPIC_KEY,
+                            topicsTitle,
+                            topicsRequired,
+                            topics,
+                            -1
+                        )
+                        val additionalFields = fields.map { customField ->
+                            OfflineFormText(
+                                customField.key,
+                                customField.placeholder,
+                                customField.required,
+                                ""
                             )
-                            val additionalFields = fields.map { customField ->
-                                OfflineFormText(
-                                    customField.key,
-                                    customField.placeholder,
-                                    customField.required,
-                                    ""
-                                )
-                            }
-                            val customFields = listOf(subjectField) + additionalFields
+                        }
+                        val customFields = listOf(subjectField) + additionalFields
+                        setModel {
                             copy(
                                 greetings = callbackGreeting,
-                                workType = workType,
+                                workType = this@run.workType,
                                 customFields = customFields
                             ).updateAllFields()
                         }

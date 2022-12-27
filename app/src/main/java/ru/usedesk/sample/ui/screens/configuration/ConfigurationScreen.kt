@@ -55,7 +55,7 @@ class ConfigurationScreen : UsedeskFragment() {
             }
             if (old?.clientToken != new.clientToken) {
                 showInstead(binding.pbCreateChat, binding.btnCreateChat, new.clientToken.loading)
-                new.clientToken.completed?.process {
+                new.clientToken.completed?.use {
                     binding.etClientToken.setText(it)
                     Toast.makeText(
                         requireContext(),
@@ -63,7 +63,7 @@ class ConfigurationScreen : UsedeskFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                new.clientToken.error?.process {
+                new.clientToken.error?.use {
                     Toast.makeText(
                         requireContext(),
                         "Failed:$it",

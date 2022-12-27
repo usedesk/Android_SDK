@@ -78,7 +78,7 @@ internal class OfflineFormPage : UsedeskFragment() {
                 binding.tvOfflineText.text = new.greetings
             }
             if (old?.goExit != new.goExit) {
-                new.goExit?.process { goToChat ->
+                new.goExit?.use { goToChat ->
                     if (goToChat) {
                         findNavController().navigateSafe(
                             R.id.dest_offlineFormPage,

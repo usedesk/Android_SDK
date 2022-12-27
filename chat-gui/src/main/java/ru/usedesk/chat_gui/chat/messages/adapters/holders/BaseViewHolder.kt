@@ -8,7 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter
 
 internal sealed class BaseViewHolder(rootView: View) :
     RecyclerView.ViewHolder(rootView) {
@@ -16,7 +16,7 @@ internal sealed class BaseViewHolder(rootView: View) :
 
     open fun bind(
         messageId: Long,
-        item: MessageFormsAdapter.Item,
+        item: MessageFormAdapter.Item,
         scope: CoroutineScope,
         stateFlow: StateFlow<MessagesViewModel.State>
     ) {

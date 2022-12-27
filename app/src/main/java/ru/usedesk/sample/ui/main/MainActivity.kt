@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(),
                 new.error?.onError()
             }
             if (old?.goSdk != new.goSdk) {
-                new.goSdk?.process {
+                new.goSdk?.use {
                     navController.apply {
                         if (new.configuration.withKb) {
                             val kbConfiguration = new.configuration.toKbConfiguration()
@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this, "$description:\n${name}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun UsedeskEvent<String>.onError() = process { text: String? ->
+    private fun UsedeskEvent<String>.onError() = use { text: String? ->
         Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
     }
 

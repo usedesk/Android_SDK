@@ -3,7 +3,7 @@ package ru.usedesk.chat_gui.chat.messages
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
@@ -84,7 +84,9 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
 
     private fun State.formChanged(event: Event.FormChanged): State =
         when (val form = formMap[event.messageId]) {
-            null -> this
+            null -> {
+                this
+            }
             else -> {
                 val lists = form.fields.filterIsInstance<Field.List>()
                 val newField = when (event.field) {
@@ -97,14 +99,18 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                     else -> mapOf(newField.id to newField)
                 }
                 val newForm = form.copy(
-                    fields = form.fields.map { field -> newFields[field.id] ?: field }
+                    fields = form.fields.map { field -> newFields[field.id] ?: field },
+                    state = when (form.state) {
+                        UsedeskForm.State.SENDING_FAILED -> UsedeskForm.State.LOADED
+                        else -> form.state
+                    }
                 )
                 usedeskChat.saveForm(newForm)
                 copy(
                     formMap = formMap.toMutableMap().apply {
                         put(event.messageId, newForm)
                     },
-                    formSelector = null,
+                    formSelector = null
                 )
             }
         }
@@ -184,7 +190,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
             .map { chatItems.getOrNull(it) }
         agentMessages.forEach {
             val message = (it as? ChatItem.Message.Agent)?.message
-            if (message is UsedeskMessageAgentText && message.hasForm) {
+            if (message is UsedeskMessageAgentText && message.fieldsInfo.isNotEmpty()) {
                 val form = formMap[message.id]
                 if (form == null || form.state == UsedeskForm.State.NOT_LOADED) {
                     usedeskChat.loadForm(message.id)
@@ -195,7 +201,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
             .firstOrNull { it is ChatItem.Message.Agent }
         val newAgentIndexShowed = when (agentMessageShowed) {
             null -> this.agentMessageShowed
-            else -> min(this.agentMessageShowed, agentMessages.indexOf(agentMessageShowed))
+            else -> min(this.agentMessageShowed, chatItems.indexOf(agentMessageShowed))
         }
         return copy(
             fabToBottom = event.messagesRange.first > 0,
@@ -263,15 +269,13 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                             message,
                             lastOfGroup,
                             showName = true,
-                            showAvatar = true,
-                            form = formMap[message.id]
+                            showAvatar = true
                         )
                         else -> ChatItem.Message.Agent(
                             message,
                             lastOfGroup,
                             showName = true,
-                            showAvatar = true,
-                            form = null
+                            showAvatar = true
                         )
                     }
                 }.asSequence() + ChatItem.ChatDate(
@@ -298,8 +302,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                             item.message,
                             item.isLastOfGroup,
                             showName = false,
-                            showAvatar = previous?.isAgentsTheSame(item.message) != true,
-                            form = null
+                            showAvatar = previous?.isAgentsTheSame(item.message) != true
                         )
                         when (next?.isAgentsTheSame(item.message)) {
                             true -> sequenceOf(newItem)

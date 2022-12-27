@@ -139,7 +139,7 @@ internal class MessagesPage : UsedeskFragment() {
                 }
             }
             if (old?.openUrl != new.openUrl) {
-                new.openUrl?.process {
+                new.openUrl?.use {
                     findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
                 }
             }

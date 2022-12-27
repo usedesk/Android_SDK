@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.form
 
+import androidx.core.text.isDigitsOnly
 import com.google.gson.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -11,7 +12,8 @@ import ru.usedesk.chat_sdk.data.repository.form.entity.LoadForm
 import ru.usedesk.chat_sdk.data.repository.form.entity.SaveForm
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskForm
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
@@ -59,46 +61,71 @@ internal class FormRepository @Inject constructor(
     private suspend fun getDbForm(formId: Long) =
         mutex.withLock { valueOrNull { formDao.get(formId) } }
 
+    private fun UsedeskMessageAgentText.FieldInfo.toFieldText() = Field.Text(
+        id,
+        name,
+        required,
+        type = when (id) {
+            "email" -> Field.Text.Type.EMAIL
+            "phone" -> Field.Text.Type.PHONE
+            "name" -> Field.Text.Type.NAME
+            "note" -> Field.Text.Type.NOTE
+            "position" -> Field.Text.Type.POSITION
+            else -> Field.Text.Type.NONE
+        }
+    )
+
     override suspend fun loadForm(
         urlChatApi: String,
         clientToken: String,
-        form: UsedeskForm
+        formId: Long,
+        fieldsInfo: List<UsedeskMessageAgentText.FieldInfo>
     ): LoadFormResponse {
-        val listsId = form.fields
+        val ids = fieldsInfo
             .asSequence()
-            .filter { it !is Field.Text }
+            .filter { it.id.isDigitsOnly() }
             .joinToString(",") { it.id }
-        val request = LoadForm.Request(
-            clientToken,
-            listsId
-        )
-        val response = doRequestJson(
-            urlChatApi,
-            request,
-            LoadForm.Response::class.java,
-            FormApi::loadForm
-        )
+        val response = when (ids) {
+            "" -> LoadForm.Response(status = 1, fields = mapOf())
+            else -> {
+                val request = LoadForm.Request(
+                    clientToken,
+                    ids
+                )
+                doRequestJson(
+                    urlChatApi,
+                    request,
+                    LoadForm.Response::class.java,
+                    FormApi::loadForm
+                )
+            }
+        }
         return when (response?.fields) {
             null -> LoadFormResponse.Error(response?.code)
             else -> {
-                val fieldMap = form.fields.associateBy(Field::id)
-                val loadedFields = form.fields.mapNotNull {
-                    when (it) {
-                        is Field.Text -> listOf(it)
-                        else -> {
-                            val field = response.fields[it.id]
-                            when (field?.get("list")) {
-                                null -> field?.convert(it)
-                                else -> field.convertToList(fieldMap)
+                val loadedFields = fieldsInfo.flatMap { fieldInfo ->
+                    when {
+                        fieldInfo.id.isDigitsOnly() -> {
+                            val rawField = response.fields[fieldInfo.id]
+                            when (val list = rawField?.get("list")) {
+                                null, is JsonNull -> listOfNotNull(rawField?.convertToList(fieldInfo.required))
+                                else -> list.asJsonObject.entrySet().mapNotNull {
+                                    val listField =
+                                        (it.value as JsonObject).convertToList(fieldInfo.required)
+                                    val listInfo = fieldsInfo.firstOrNull { it.id == listField?.id }
+                                    listField?.copy(name = listInfo?.name ?: listField.name)
+                                }
                             }
                         }
+                        else -> listOf(fieldInfo.toFieldText())
                     }
-                }.flatten()
-                val loadedForm = form.copy(
+                }
+                val loadedForm = UsedeskForm(
+                    id = formId,
                     fields = loadedFields,
                     state = UsedeskForm.State.LOADED
                 )
-                val savedForm = when (val dbForm = getDbForm(form.id)) {
+                val savedForm = when (val dbForm = getDbForm(formId)) {
                     null -> loadedForm
                     else -> {
                         val savedFields = dbGson.fromJson(dbForm.fields, JsonObject::class.java)
@@ -256,34 +283,20 @@ internal class FormRepository @Inject constructor(
             else -> listOf()
         }
 
-    private fun JsonObject.convertToList(lists: Map<String, Field>): List<Field.List>? =
-        valueOrNull {
-            when (val list = getAsJsonObject("list")) {
-                null -> {
-                    val fieldLoaded =
-                        gson.fromJson(this, LoadForm.Response.FieldLoadedList::class.java)
-                    when {
-                        fieldLoaded.children.isEmpty() -> null
-                        else -> listOfNotNull(
-                            (lists[fieldLoaded.id] as? Field.List)?.copy(
-                                items = fieldLoaded.children.map {
-                                    Field.List.Item(
-                                        it.id,
-                                        it.value,
-                                        it.parentOptionId?.toList() ?: listOf()
-                                    )
-                                },
-                                parentId = getOrNull("parent_field_id")?.asString
-                            )
-                        )
-                    }
-                }
-                else -> {
-                    list.entrySet().mapNotNull {
-                        (it.value as JsonObject).convertToList(lists)
-                    }.flatten()
-                }
-            }
-        }
-
+    private fun JsonObject.convertToList(required: Boolean): Field.List? = valueOrNull {
+        val fieldLoaded = gson.fromJson(this, LoadForm.Response.FieldLoadedList::class.java)
+        Field.List(
+            fieldLoaded.id,
+            fieldLoaded.name,
+            required = required,
+            items = fieldLoaded.children.map {
+                Field.List.Item(
+                    it.id,
+                    it.value,
+                    it.parentOptionId?.toList() ?: listOf()
+                )
+            },
+            parentId = getOrNull("parent_field_id")?.asString
+        )
+    }
 }

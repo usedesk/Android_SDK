@@ -43,7 +43,7 @@ internal class LoadingPage : UsedeskFragment() {
             if (old?.state != new.state) {
                 loadingAdapter.update(new.state)
             }
-            new.goNext?.process { page ->
+            new.goNext?.use { page ->
                 findNavController().navigateSafe(
                     R.id.dest_loadingPage,
                     when (page) {

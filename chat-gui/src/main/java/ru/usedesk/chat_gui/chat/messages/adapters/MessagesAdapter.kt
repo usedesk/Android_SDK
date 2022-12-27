@@ -235,8 +235,6 @@ internal class MessagesAdapter(
                                 (old as? ChatItem.Message.Agent)?.showAvatar -> false
                         (new as? ChatItem.Message.Agent)?.showName !=
                                 (old as? ChatItem.Message.Agent)?.showName -> false
-                        (new as? ChatItem.Message.Agent)?.form?.state !=
-                                (new as? ChatItem.Message.Agent)?.form?.state -> false
                         else -> true
                     }
                 }
@@ -612,7 +610,7 @@ internal class MessagesAdapter(
 
             binding.tvText.run {
                 text = Html.fromHtml(messageText.convertedText + " ") //TODO: temp fix
-                visibility = View.VISIBLE
+                visibility = visibleGone(messageText.convertedText.isNotEmpty())
             }
         }
     }
@@ -984,7 +982,7 @@ internal class MessagesAdapter(
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
 
-        private val itemsAdapter = MessageFormsAdapter(
+        private val formAdapter = MessageFormAdapter(
             binding.content.rvItems,
             viewModel,
             lifecycleScope
@@ -1000,12 +998,12 @@ internal class MessagesAdapter(
             bindAgent(chatItem, binding.agent)
 
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
-            itemsAdapter.update(messageAgentText)
+            formAdapter.update(messageAgentText)
 
             binding.content.rootView.layoutParams.apply {
                 width = when {
                     messageAgentText.buttons.isEmpty()
-                            && !messageAgentText.hasForm
+                            && messageAgentText.fieldsInfo.isEmpty()
                             && !messageAgentText.feedbackNeeded
                             && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT

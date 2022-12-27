@@ -6,7 +6,7 @@ import android.widget.NumberPicker
 import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.usedesk.chat_gui.R
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.common_gui.*
 
 internal class FormSelectorDialog private constructor(
@@ -41,7 +41,7 @@ internal class FormSelectorDialog private constructor(
 
     fun update(
         formSelector: MessagesViewModel.FormSelector,
-        onSelected: (UsedeskMessageAgentText.Field.List.Item?) -> Unit
+        onSelected: (UsedeskForm.Field.List.Item?) -> Unit
     ) {
         val availableItems = formSelector.list.items.filter {
             it.parentItemsId.isEmpty() || formSelector.parentSelectedId in it.parentItemsId

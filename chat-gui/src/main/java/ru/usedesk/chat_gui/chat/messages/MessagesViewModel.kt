@@ -3,8 +3,8 @@ package ru.usedesk.chat_gui.chat.messages
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
@@ -111,8 +111,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
                 override val message: UsedeskMessage,
                 override val isLastOfGroup: Boolean,
                 val showName: Boolean,
-                val showAvatar: Boolean,
-                val form: UsedeskForm?
+                val showAvatar: Boolean
             ) : Message
         }
 

@@ -124,7 +124,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 toolbarAdapter.updateTitle(styleValues, navController.currentDestination)
             }
             if (old?.goLoading != new.goLoading) {
-                new.goLoading.process {
+                new.goLoading.use {
                     while (navController.popBackStack()) continue
                     navController.navigate(R.id.dest_loadingPage)
                 }

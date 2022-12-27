@@ -10,14 +10,14 @@ import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
 import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.net.HttpURLConnection
 
 internal class SocketConnection(
     private val gson: Gson,
     url: String,
-    usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory,
+    usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory,
     private val initChatRequest: SocketRequest.Init,
     private val eventListener: SocketApi.EventListener
 ) {
@@ -37,9 +37,12 @@ internal class SocketConnection(
                 eventListener.onConnected()
                 sendRequest(initChatRequest)
             }
+            val connectTimeStamp = System.currentTimeMillis()
             on(Socket.EVENT_CONNECT_ERROR) {
                 (it.getOrNull(0) as? Throwable)?.printStackTrace()
-                this@SocketConnection.disconnect()
+                if (System.currentTimeMillis() - connectTimeStamp > CONNECTION_TIMEOUT_MILLIS) {
+                    this@SocketConnection.disconnect()
+                }
             }
             on(EVENT_SERVER_ACTION) {
                 onResponse(it[0].toString())
@@ -48,7 +51,7 @@ internal class SocketConnection(
                 this@SocketConnection.disconnect()
             }
 
-            connect()
+            open()
         }
     }
 
@@ -133,5 +136,6 @@ internal class SocketConnection(
 
     companion object {
         private const val EVENT_SERVER_ACTION = "dispatch"
+        private const val CONNECTION_TIMEOUT_MILLIS = 30000
     }
 }

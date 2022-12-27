@@ -16,6 +16,7 @@ internal interface LoadForm {
 
         class FieldLoadedList(
             val id: String,
+            val name: String,
             val children: Array<Children>
         ) {
             class Children(

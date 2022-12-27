@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.onEach
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.ButtonBinding
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.ItemButton
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.ButtonBinding
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemButton
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible

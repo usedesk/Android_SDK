@@ -8,19 +8,21 @@ import kotlinx.coroutines.flow.onEach
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.ItemList
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemList
 import ru.usedesk.chat_sdk.entity.UsedeskForm
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Field
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 
 internal class ItemListViewHolder(
-    private val binding: MessageFormsAdapter.ItemListBinding,
+    private val binding: MessageFormAdapter.ItemListBinding,
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
     private val textColorEmpty = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
     private val textColorContent = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
+    private val backgroundSimple = binding.styleValues.getId(R.attr.usedesk_drawable_1)
+    private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
 
     override fun bind(
         messageId: Long,
@@ -79,8 +81,8 @@ internal class ItemListViewHolder(
         }
         binding.lFrame.setBackgroundResource(
             when {
-                list.hasError -> R.drawable.usedesk_message_field_error
-                else -> R.drawable.usedesk_message_field_simple
+                list.hasError -> backgroundError
+                else -> backgroundSimple
             }
         )
         binding.lClickable.run {

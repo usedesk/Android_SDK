@@ -13,7 +13,7 @@ import ru.usedesk.chat_sdk.data.repository.form.entity.SaveForm
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.FieldInfo
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
@@ -61,7 +61,7 @@ internal class FormRepository @Inject constructor(
     private suspend fun getDbForm(formId: Long) =
         mutex.withLock { valueOrNull { formDao.get(formId) } }
 
-    private fun UsedeskMessageAgentText.FieldInfo.toFieldText() = Field.Text(
+    private fun FieldInfo.toFieldText() = Field.Text(
         id,
         name,
         required,
@@ -79,7 +79,7 @@ internal class FormRepository @Inject constructor(
         urlChatApi: String,
         clientToken: String,
         formId: Long,
-        fieldsInfo: List<UsedeskMessageAgentText.FieldInfo>
+        fieldsInfo: List<FieldInfo>
     ): LoadFormResponse {
         val ids = fieldsInfo
             .asSequence()
@@ -108,12 +108,13 @@ internal class FormRepository @Inject constructor(
                         fieldInfo.id.isDigitsOnly() -> {
                             val rawField = response.fields[fieldInfo.id]
                             when (val list = rawField?.get("list")) {
-                                null, is JsonNull -> listOfNotNull(rawField?.convertToList(fieldInfo.required))
-                                else -> list.asJsonObject.entrySet().mapNotNull {
-                                    val listField =
-                                        (it.value as JsonObject).convertToList(fieldInfo.required)
-                                    val listInfo = fieldsInfo.firstOrNull { it.id == listField?.id }
-                                    listField?.copy(name = listInfo?.name ?: listField.name)
+                                null, is JsonNull -> listOfNotNull(rawField?.convert(fieldInfo))
+                                else -> list.asJsonObject.entrySet().mapNotNull { rawList ->
+                                    val listInfo = fieldsInfo.firstOrNull { it.id == rawList.key }
+                                    (rawList.value as JsonObject).convertToList(
+                                        listInfo?.name,
+                                        fieldInfo.required
+                                    )
                                 }
                             }
                         }
@@ -262,32 +263,31 @@ internal class FormRepository @Inject constructor(
         else -> value
     }
 
-    private fun JsonObject.convert(field: Field): List<Field> = //TODO: конвертер бы сюда
+    private fun JsonObject.convert(fieldInfo: FieldInfo): Field? = //TODO: конвертер бы сюда
         when (getOrNull("ticket_field_type_id")?.asInt) {
-            3 -> listOf(
-                Field.CheckBox(
-                    field.id,
-                    field.name,
-                    field.required
-                )
+            3 -> Field.CheckBox(
+                fieldInfo.id,
+                fieldInfo.name,
+                fieldInfo.required
             )
-            2 -> listOf(field)
-            1 -> listOf(
-                Field.Text(
-                    id = field.id,
-                    name = field.name,
-                    required = field.required,
-                    type = Field.Text.Type.NONE
-                )
+            2 -> convertToList(fieldInfo.name, fieldInfo.required)
+            1 -> Field.Text(
+                id = fieldInfo.id,
+                name = fieldInfo.name,
+                required = fieldInfo.required,
+                type = Field.Text.Type.NONE
             )
-            else -> listOf()
+            else -> null
         }
 
-    private fun JsonObject.convertToList(required: Boolean): Field.List? = valueOrNull {
+    private fun JsonObject.convertToList(
+        name: String?,
+        required: Boolean
+    ): Field.List? = valueOrNull {
         val fieldLoaded = gson.fromJson(this, LoadForm.Response.FieldLoadedList::class.java)
         Field.List(
             fieldLoaded.id,
-            fieldLoaded.name,
+            name ?: fieldLoaded.name,
             required = required,
             items = fieldLoaded.children.map {
                 Field.List.Item(

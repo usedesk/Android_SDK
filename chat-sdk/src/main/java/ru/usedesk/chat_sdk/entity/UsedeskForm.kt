@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.entity
 
 data class UsedeskForm(
-    val id: Long = 0,
+    val id: Long,
     val fields: List<Field> = listOf(),
     val state: State = State.NOT_LOADED
 ) {

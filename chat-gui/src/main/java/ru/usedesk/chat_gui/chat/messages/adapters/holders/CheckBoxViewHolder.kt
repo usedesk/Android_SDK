@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.onEach
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.ItemCheckBox
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemCheckBox
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 
 internal class CheckBoxViewHolder(
-    private val binding: MessageFormsAdapter.CheckBoxBinding,
+    private val binding: MessageFormAdapter.CheckBoxBinding,
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 

@@ -121,6 +121,7 @@ internal class FormRepository @Inject constructor(
                     }
                 }
                 val loadedForm = UsedeskForm(
+                    id = formId,
                     fields = loadedFields,
                     state = UsedeskForm.State.LOADED
                 )

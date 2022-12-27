@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormsAdapter.Item.*
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.*
 import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
@@ -26,7 +26,7 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 
 //TODO: вытащить вьюхолдеры во вне
-internal class MessageFormsAdapter(
+internal class MessageFormAdapter(
     private val recyclerView: RecyclerView,
     private val viewModel: MessagesViewModel,
     private val lifecycleScope: CoroutineScope
@@ -109,6 +109,7 @@ internal class MessageFormsAdapter(
             adapterScope.cancel()
             this.form = null
             this.buttons = messageAgentText.buttons
+            onUpdate(null)
             if (messageAgentText.fieldsInfo.isNotEmpty()) {
                 adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
                 viewModel.modelFlow.onEach { model ->
@@ -117,7 +118,7 @@ internal class MessageFormsAdapter(
                         onUpdate(form)
                     }
                 }.launchIn(adapterScope)
-            } else onUpdate(null)
+            }
         }
     }
 

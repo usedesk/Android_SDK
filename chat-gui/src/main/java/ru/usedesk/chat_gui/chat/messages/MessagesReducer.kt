@@ -263,15 +263,13 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                             message,
                             lastOfGroup,
                             showName = true,
-                            showAvatar = true,
-                            form = formMap[message.id]
+                            showAvatar = true
                         )
                         else -> ChatItem.Message.Agent(
                             message,
                             lastOfGroup,
                             showName = true,
-                            showAvatar = true,
-                            form = null
+                            showAvatar = true
                         )
                     }
                 }.asSequence() + ChatItem.ChatDate(
@@ -298,8 +296,7 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                             item.message,
                             item.isLastOfGroup,
                             showName = false,
-                            showAvatar = previous?.isAgentsTheSame(item.message) != true,
-                            form = null
+                            showAvatar = previous?.isAgentsTheSame(item.message) != true
                         )
                         when (next?.isAgentsTheSame(item.message)) {
                             true -> sequenceOf(newItem)

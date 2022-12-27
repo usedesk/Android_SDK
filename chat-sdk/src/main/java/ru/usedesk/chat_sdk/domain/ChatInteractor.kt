@@ -572,7 +572,7 @@ internal class ChatInteractor @Inject constructor(
                             put(
                                 form.id,
                                 newForm
-                            ) //TODO: тут newForm обновлятся, а вот визуально ничего не происходит
+                            )
                         }
                     )
                 }

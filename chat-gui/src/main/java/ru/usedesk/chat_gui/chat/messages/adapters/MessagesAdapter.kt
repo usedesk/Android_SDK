@@ -235,8 +235,6 @@ internal class MessagesAdapter(
                                 (old as? ChatItem.Message.Agent)?.showAvatar -> false
                         (new as? ChatItem.Message.Agent)?.showName !=
                                 (old as? ChatItem.Message.Agent)?.showName -> false
-                        (new as? ChatItem.Message.Agent)?.form?.state !=
-                                (new as? ChatItem.Message.Agent)?.form?.state -> false
                         else -> true
                     }
                 }
@@ -984,7 +982,7 @@ internal class MessagesAdapter(
             .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
             .getString(R.attr.usedesk_text_1)
 
-        private val itemsAdapter = MessageFormsAdapter(
+        private val formAdapter = MessageFormAdapter(
             binding.content.rvItems,
             viewModel,
             lifecycleScope
@@ -1000,7 +998,7 @@ internal class MessagesAdapter(
             bindAgent(chatItem, binding.agent)
 
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
-            itemsAdapter.update(messageAgentText)
+            formAdapter.update(messageAgentText)
 
             binding.content.rootView.layoutParams.apply {
                 width = when {

@@ -111,8 +111,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
                 override val message: UsedeskMessage,
                 override val isLastOfGroup: Boolean,
                 val showName: Boolean,
-                val showAvatar: Boolean,
-                val form: UsedeskForm?
+                val showAvatar: Boolean
             ) : Message
         }
 

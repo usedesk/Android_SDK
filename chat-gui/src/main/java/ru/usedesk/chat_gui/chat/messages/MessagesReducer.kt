@@ -224,7 +224,6 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                 event.model.previousPageIsAvailable == hasPreviousMessages -> this
         else -> {
             val newChatItems = event.model.messages.convert(
-                formMap,
                 event.model.previousPageIsAvailable,
                 groupAgentMessages
             )
@@ -236,7 +235,9 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
                     val stateForm = formMap[it.key]
                     it.key to when {
                         stateForm?.state == it.value.state
-                                && it.value.fields.all { field -> !field.hasError } -> stateForm
+                                && it.value.fields.all { field ->
+                            field.hasError == stateForm.fields.firstOrNull { it.id == field.id }?.hasError
+                        } -> stateForm
                         else -> it.value
                     }
                 }.toMap(),
@@ -251,7 +252,6 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
     )
 
     private fun List<UsedeskMessage>.convert(
-        formMap: Map<Long, UsedeskForm>,
         hasPreviousMessages: Boolean,
         groupAgentMessages: Boolean
     ): List<ChatItem> {

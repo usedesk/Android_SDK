@@ -156,13 +156,16 @@ internal class FormRepository @Inject constructor(
         }
     }
 
-    override fun validateForm(form: UsedeskForm): UsedeskForm = form.copy(
-        fields = form.fields.map { field ->
+    override fun validateForm(form: UsedeskForm): UsedeskForm {
+        val newFields = form.fields.map { field ->
             when (field) {
                 is Field.CheckBox -> field.copy(hasError = field.required && !field.checked)
                 is Field.List -> {
-                    val isValid = !field.required || field.selected != null
-                    field.copy(hasError = !isValid)
+                    val parentField =
+                        form.fields.firstOrNull { it.id == field.parentId } as? Field.List
+                    val hasError = (field.required || parentField?.selected != null)
+                            && field.selected == null
+                    field.copy(hasError = hasError)
                 }
                 is Field.Text -> {
                     val text = field.text
@@ -181,7 +184,21 @@ internal class FormRepository @Inject constructor(
                 }
             }
         }
-    )
+        return form.copy(
+            fields = newFields.map { field ->
+                when (field) {
+                    is Field.List -> {
+                        val parentField =
+                            newFields.firstOrNull { it.id == field.parentId } as? Field.List
+                        field.copy(
+                            hasError = field.hasError || parentField?.hasError == true
+                        )
+                    }
+                    else -> field
+                }
+            }
+        )
+    }
 
     override suspend fun sendForm(
         urlChatApi: String,

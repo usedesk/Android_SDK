@@ -550,14 +550,20 @@ internal class ChatInteractor @Inject constructor(
 
     override fun send(form: UsedeskForm) {
         setModel {
-            val fform = formMap[form.id]
-            when (fform?.state) {
+            when (formMap[form.id]?.state) {
                 UsedeskForm.State.NOT_LOADED,
                 UsedeskForm.State.LOADING_FAILED,
                 UsedeskForm.State.SENDING -> this
                 else -> {
                     val validatedForm = formRepository.validateForm(form)
                     val hasError = validatedForm.fields.any { it.hasError }
+                            || validatedForm.fields.all {
+                        when (it) {
+                            is UsedeskForm.Field.CheckBox -> !it.checked
+                            is UsedeskForm.Field.List -> it.selected == null
+                            is UsedeskForm.Field.Text -> it.text.isEmpty()
+                        }
+                    }
                     if (!hasError) {
                         launchSendForm(clientToken, validatedForm)
                     }

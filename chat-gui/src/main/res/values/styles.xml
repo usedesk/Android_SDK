@@ -615,7 +615,6 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:padding">10dp</item>
         <item name="android:singleLine">true</item>
-        <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textColorHint">@color/usedesk_gray_cold_2</item>
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/sf_ui_display_regular</item>
@@ -631,6 +630,8 @@
         <item name="usedesk_chat_message_text_field_text_text">@style/Usedesk.Chat.Message.Text.Field.Text.Text</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_message_field_selector</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_message_field_error</item>
+        <item name="usedesk_text_color_1">@color/usedesk_black_2</item>
+        <item name="usedesk_text_color_2">@color/usedesk_gray_cold_2</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Field.CheckBox.Text" parent="">
@@ -665,9 +666,12 @@
         <item name="usedesk_common_container_root">@style/Usedesk.Chat.Message.Text.Field.CheckBox.ContainerRoot</item>
         <item name="usedesk_chat_message_text_field_checkbox_image">@style/Usedesk.Chat.Message.Text.Field.CheckBox.Image</item>
         <item name="usedesk_chat_message_text_field_checkbox_text">@style/Usedesk.Chat.Message.Text.Field.CheckBox.Text</item>
-        <item name="usedesk_drawable_1">@drawable/usedesk_ic_form_unchecked</item>
-        <item name="usedesk_drawable_2">@drawable/usedesk_ic_form_checked</item>
-        <item name="usedesk_drawable_3">@drawable/usedesk_ic_form_unchecked_error</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_form_checked</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_form_unchecked</item>
+        <item name="usedesk_drawable_3">@drawable/usedesk_ic_form_checked_disabled</item>
+        <item name="usedesk_drawable_4">@drawable/usedesk_ic_form_unchecked_error</item>
+        <item name="usedesk_text_color_1">@color/usedesk_black_2</item>
+        <item name="usedesk_text_color_2">@color/usedesk_gray_cold_2</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Field.List.Container1" parent="">
@@ -725,9 +729,8 @@
         <item name="usedesk_common_container_3">@style/Usedesk.Chat.Message.Text.Field.List.Container3</item>
         <item name="usedesk_chat_message_text_field_list_text">@style/Usedesk.Chat.Message.Text.Field.List.Text</item>
         <item name="usedesk_chat_message_text_field_list_image">@style/Usedesk.Chat.Message.Text.Field.List.Image</item>
-        <item name="usedesk_text_color_1">@color/usedesk_gray_2</item>
+        <item name="usedesk_text_color_1">@color/usedesk_black_2</item>
         <item name="usedesk_text_color_2">@color/usedesk_gray_cold_2</item>
-        <item name="usedesk_text_color_3">@color/usedesk_black_3</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_message_field_simple</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_message_field_error</item>
     </style>

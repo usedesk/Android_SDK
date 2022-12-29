@@ -19,9 +19,12 @@ internal class CheckBoxViewHolder(
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
-    private val uncheckedDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_1)
-    private val checkedDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_2)
-    private val uncheckedErrorDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_3)
+    private val checkedDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_1)
+    private val uncheckedDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_2)
+    private val checkedDisabledDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_3)
+    private val uncheckedErrorDrawable = binding.styleValues.getId(R.attr.usedesk_drawable_4)
+    private val textColorEnabled = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
+    private val textColorDisabled = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
 
     override fun bind(
         messageId: Long,
@@ -56,25 +59,34 @@ internal class CheckBoxViewHolder(
         checkBox: Field.CheckBox,
         state: UsedeskForm.State
     ) {
-        binding.tvText.text = Html.fromHtml(
-            checkBox.name + when {
-                checkBox.required -> REQUIRED_POSTFIX_HTML
-                else -> ""
-            }
-        )
+        val enabled = when (state) {
+            UsedeskForm.State.SENDING_FAILED,
+            UsedeskForm.State.LOADED -> true
+            else -> false
+        }
+        binding.tvText.run {
+            text = Html.fromHtml(
+                checkBox.name + when {
+                    checkBox.required -> REQUIRED_POSTFIX_HTML
+                    else -> ""
+                }
+            )
+            setTextColor(
+                when {
+                    enabled -> textColorEnabled
+                    else -> textColorDisabled
+                }
+            )
+        }
         binding.ivChecked.setImageResource(
             when {
-                checkBox.checked -> checkedDrawable
+                checkBox.checked && enabled -> checkedDrawable
+                checkBox.checked && !enabled -> checkedDisabledDrawable
                 checkBox.hasError -> uncheckedErrorDrawable
                 else -> uncheckedDrawable
             }
         )
         binding.ivChecked.run {
-            val enabled = when (state) {
-                UsedeskForm.State.SENDING_FAILED,
-                UsedeskForm.State.LOADED -> true
-                else -> false
-            }
             isClickable = enabled
             isFocusable = enabled
             if (enabled) {

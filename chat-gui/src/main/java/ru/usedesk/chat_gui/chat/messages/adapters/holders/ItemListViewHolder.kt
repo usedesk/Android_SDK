@@ -19,9 +19,8 @@ internal class ItemListViewHolder(
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
-    private val textColorDisable = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
-    private val textColorEnable = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
-    private val textColorContent = binding.styleValues.getColor(R.attr.usedesk_text_color_3)
+    private val textColorEnabled = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
+    private val textColorDisabled = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
     private val backgroundSimple = binding.styleValues.getId(R.attr.usedesk_drawable_1)
     private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
 
@@ -69,26 +68,21 @@ internal class ItemListViewHolder(
             else -> false
         }
         binding.tvText.apply {
-            when (val selected = list.selected) {
-                null -> {
-                    text = Html.fromHtml(
-                        list.name + when {
-                            list.required -> REQUIRED_POSTFIX_HTML
-                            else -> ""
-                        }
-                    )
-                    setTextColor(
-                        when {
-                            enabled -> textColorEnable
-                            else -> textColorDisable
-                        }
-                    )
-                }
-                else -> {
-                    text = selected.name
-                    setTextColor(textColorContent)
-                }
+            text = when (val selected = list.selected) {
+                null -> Html.fromHtml(
+                    list.name + when {
+                        list.required -> REQUIRED_POSTFIX_HTML
+                        else -> ""
+                    }
+                )
+                else -> selected.name
             }
+            setTextColor(
+                when {
+                    enabled -> textColorEnabled
+                    else -> textColorDisabled
+                }
+            )
         }
         binding.lFrame.setBackgroundResource(
             when {

@@ -6,10 +6,10 @@
     android:viewportHeight="16">
 
     <path
-        android:fillColor="#3D79F2"
+        android:fillColor="#989FB3"
         android:pathData="M 4 1 L 12 1 Q 15 1 15 4 L 15 12 Q 15 15 12 15 L 4 15 Q 1 15 1 12 L 1 4 Q 1 1 4 1 Z"
         android:strokeWidth="2"
-        android:strokeColor="#3D79F2" />
+        android:strokeColor="#989FB3" />
     <path
         android:pathData="M5 9L7 11L12 6"
         android:strokeWidth="2"

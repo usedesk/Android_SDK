@@ -24,6 +24,8 @@ internal class TextViewHolder(
 
     private val backgroundSelector = binding.styleValues.getId(R.attr.usedesk_drawable_1)
     private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
+    private val textColorEnabled = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
+    private val textColorDisabled = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
 
     init {
         binding.etText.addTextChangedListener {
@@ -105,8 +107,12 @@ internal class TextViewHolder(
         binding.etText.run {
             isEnabled = when (formState) {
                 UsedeskForm.State.SENDING_FAILED,
-                UsedeskForm.State.LOADED -> true
+                UsedeskForm.State.LOADED -> {
+                    setTextColor(textColorEnabled)
+                    true
+                }
                 else -> {
+                    setTextColor(textColorDisabled)
                     clearFocus()
                     false
                 }

@@ -205,59 +205,65 @@ internal class FormRepository @Inject constructor(
         clientToken: String,
         form: UsedeskForm
     ): SendFormResponse {
-        val request = SaveForm.Request(
-            clientToken,
-            form.fields.mapNotNull { field ->
-                val value = when (field) {
-                    is Field.CheckBox -> JsonPrimitive(field.checked.toString())
-                    is Field.List -> {
-                        when (field.parentId) {
-                            null -> {
-                                val lists = form.fields.filterIsInstance<Field.List>()
-                                val tree = mutableListOf(field)
-                                var lastChild: Field.List? = field
-                                while (lastChild != null) {
-                                    lastChild = lists.firstOrNull { list ->
-                                        list.parentId == lastChild?.id
-                                    }
-                                    if (lastChild != null) {
-                                        tree.add(lastChild)
-                                    }
+        val newFields = form.fields.filter { field ->
+            when (field) {
+                is Field.List -> field.selected != null
+                else -> true
+            }
+        }.mapNotNull { field ->
+            val value = when (field) {
+                is Field.CheckBox -> JsonPrimitive(field.checked.toString())
+                is Field.List -> {
+                    when (field.parentId) {
+                        null -> {
+                            val lists = form.fields.filterIsInstance<Field.List>()
+                            val tree = mutableListOf(field)
+                            var lastChild: Field.List? = field
+                            while (lastChild != null) {
+                                lastChild = lists.firstOrNull { list ->
+                                    list.parentId == lastChild?.id
                                 }
-                                when (tree.size) {
-                                    1 -> when (val selectedId = field.selected?.id?.toString()) {
-                                        null -> null
-                                        else -> JsonPrimitive(selectedId)
-                                    }
-                                    else -> JsonArray().apply {
-                                        tree.forEach { list ->
-                                            add(JsonObject().apply {
-                                                add("id", JsonPrimitive(list.id))
-                                                add(
-                                                    "value",
-                                                    JsonPrimitive(
-                                                        list.selected?.id?.toString() ?: ""
-                                                    )
+                                if (lastChild != null) {
+                                    tree.add(lastChild)
+                                }
+                            }
+                            when (tree.size) {
+                                1 -> when (val selectedId = field.selected?.id?.toString()) {
+                                    null -> null
+                                    else -> JsonPrimitive(selectedId)
+                                }
+                                else -> JsonArray().apply {
+                                    tree.forEach { list ->
+                                        add(JsonObject().apply {
+                                            add("id", JsonPrimitive(list.id))
+                                            add(
+                                                "value",
+                                                JsonPrimitive(
+                                                    list.selected?.id?.toString() ?: ""
                                                 )
-                                            })
-                                        }
+                                            )
+                                        })
                                     }
                                 }
                             }
-                            else -> null
                         }
+                        else -> null
                     }
-                    is Field.Text -> JsonPrimitive(field.text)
                 }
-                when (value) {
-                    null -> null
-                    else -> SaveForm.Request.Field(
-                        field.id,
-                        field.required,
-                        value
-                    )
-                }
+                is Field.Text -> JsonPrimitive(field.text)
             }
+            when (value) {
+                null -> null
+                else -> SaveForm.Request.Field(
+                    field.id,
+                    field.required,
+                    value
+                )
+            }
+        }
+        val request = SaveForm.Request(
+            clientToken,
+            newFields
         )
         val response = doRequestJson(
             urlChatApi,

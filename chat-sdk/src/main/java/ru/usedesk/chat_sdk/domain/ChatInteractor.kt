@@ -226,12 +226,7 @@ internal class ChatInteractor @Inject constructor(
                 UsedeskConnectionState.DISCONNECTED -> {
                     reconnectJob?.cancel()
                     launchConnect()
-                    copy(
-                        clientToken = initConfiguration.clientToken
-                            ?: userInfoRepository.getConfiguration()?.clientToken
-                            ?: clientToken,
-                        connectionState = UsedeskConnectionState.RECONNECTING
-                    )
+                    copy(connectionState = UsedeskConnectionState.RECONNECTING)
                 }
                 else -> this
             }

@@ -55,7 +55,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         }
     }.rootView
 
-    fun dismissAttachmentDialog() {
+    fun dismissAnyDialog() {
         navHostFragment
             .childFragmentManager
             .fragments

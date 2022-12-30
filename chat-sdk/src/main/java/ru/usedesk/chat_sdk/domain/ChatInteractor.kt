@@ -91,17 +91,11 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(
-                old = messages,
-                isInited = false
-            )
+            this@ChatInteractor.onMessagesNew(old = messages)
         }
 
         override fun onMessagesNewReceived(messages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(
-                new = messages,
-                isInited = false
-            )
+            this@ChatInteractor.onMessagesNew(new = messages)
         }
 
         override fun onMessageUpdated(message: UsedeskMessage) {
@@ -274,14 +268,10 @@ internal class ChatInteractor @Inject constructor(
 
     private fun onMessagesNew(
         old: List<UsedeskMessage> = listOf(),
-        new: List<UsedeskMessage> = listOf(),
-        isInited: Boolean
+        new: List<UsedeskMessage> = listOf()
     ) {
         setModel {
-            copy(
-                messages = old + messages + new,
-                inited = isInited
-            )
+            copy(messages = old + messages + new)
         }
     }
 
@@ -804,7 +794,12 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun onChatInited(chatInited: ChatInited) {
-        val model = setModel { copy(clientToken = chatInited.token) }
+        val model = setModel {
+            copy(
+                clientToken = chatInited.token,
+                inited = true
+            )
+        }
         userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
 
         if (chatInited.status in ACTIVE_STATUSES) {
@@ -817,10 +812,7 @@ internal class ChatInteractor @Inject constructor(
             .mapNotNull { it as? UsedeskMessage }
         val filteredNotSentMessages = notSentMessages.filter { it.id !in ids }
         val needToResendMessages = model.messages.isNotEmpty()
-        onMessagesNew(
-            new = filteredMessages + filteredNotSentMessages,
-            isInited = true
-        )
+        onMessagesNew(new = filteredMessages + filteredNotSentMessages)
 
         when {
             chatInited.waitingEmail -> model.clientToken.let {

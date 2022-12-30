@@ -46,9 +46,7 @@ internal class AttachmentDialog private constructor(
     }
 
     companion object {
-        fun create(
-            screen: UsedeskFragment
-        ) = AttachmentDialog(
+        fun create(screen: UsedeskFragment) = AttachmentDialog(
             screen,
             UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Attachment_Dialog)
         )

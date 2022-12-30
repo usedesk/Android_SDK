@@ -37,8 +37,8 @@ internal class MessagesPage : UsedeskFragment() {
     private lateinit var binding: Binding
 
     private var messagesAdapter: MessagesAdapter? = null
-
     private var attachmentDialog: AttachmentDialog? = null
+    private var formSelectorDialog: FormSelectorDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,8 +54,9 @@ internal class MessagesPage : UsedeskFragment() {
         binding = it
     }.rootView
 
-    fun dismissAttachmentDialog() {
+    fun dismissAnyDialog() {
         attachmentDialog?.dismiss()
+        formSelectorDialog?.dismiss()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,9 +82,11 @@ internal class MessagesPage : UsedeskFragment() {
 
         attachmentDialog = AttachmentDialog.create(this).apply {
             setOnDismissListener {
-                viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(false))
+                viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(false))
             }
         }
+
+        formSelectorDialog = FormSelectorDialog.create(this)
 
         registerFiles { uris ->
             val files = uris.map {
@@ -110,11 +113,34 @@ internal class MessagesPage : UsedeskFragment() {
         }
 
         viewModel.modelFlow.onEachWithOld { old, new ->
+            if (old?.formSelector != new.formSelector) {
+                when (new.formSelector) {
+                    null -> formSelectorDialog?.dismiss()
+                    else -> formSelectorDialog?.run {
+                        update(
+                            new.formSelector,
+                            onSelected = { selected ->
+                                viewModel.onEvent(
+                                    MessagesViewModel.Event.FormChanged(
+                                        new.formSelector.formId,
+                                        new.formSelector.list.copy(selected = selected)
+                                    )
+                                )
+                            }
+                        )
+                        show()
+                    }
+                }
+            }
             if (old?.attachmentPanelVisible != new.attachmentPanelVisible) {
-                if (new.attachmentPanelVisible) {
-                    attachmentDialog?.show()
-                } else {
-                    attachmentDialog?.dismiss()
+                when {
+                    new.attachmentPanelVisible -> attachmentDialog?.show()
+                    else -> attachmentDialog?.dismiss()
+                }
+            }
+            if (old?.openUrl != new.openUrl) {
+                new.openUrl?.use {
+                    findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
                 }
             }
         }
@@ -141,7 +167,7 @@ internal class MessagesPage : UsedeskFragment() {
             )
             Toast.makeText(requireContext(), toastText, Toast.LENGTH_SHORT).show()
         }
-        viewModel.onIntent(MessagesViewModel.Intent.AttachFiles(filteredFiles))
+        viewModel.onEvent(MessagesViewModel.Event.AttachFiles(filteredFiles))
     }
 
     override fun onDestroyView() {
@@ -154,6 +180,12 @@ internal class MessagesPage : UsedeskFragment() {
             dismiss()
         }
         attachmentDialog = null
+
+        formSelectorDialog?.run {
+            setOnDismissListener(null)
+            dismiss()
+        }
+        formSelectorDialog = null
     }
 
     private fun init(
@@ -165,7 +197,7 @@ internal class MessagesPage : UsedeskFragment() {
         adaptiveTextMessageTimePadding: Boolean,
         groupAgentMessages: Boolean
     ) {
-        viewModel.onIntent(MessagesViewModel.Intent.Init(groupAgentMessages))
+        viewModel.onEvent(MessagesViewModel.Event.Init(groupAgentMessages))
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
@@ -174,7 +206,7 @@ internal class MessagesPage : UsedeskFragment() {
             lifecycleScope
         ) {
             findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
-                ?: viewModel.onIntent(MessagesViewModel.Intent.ShowAttachmentPanel(true))
+                ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
         }
 
         val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter
@@ -188,7 +220,6 @@ internal class MessagesPage : UsedeskFragment() {
             rejectedFileExtensions,
             mediaPlayerAdapter,
             { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
-            { findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it) },
             { findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name) },
             messagesDateFormat,
             messageTimeFormat,

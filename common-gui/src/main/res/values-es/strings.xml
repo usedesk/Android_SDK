@@ -3,12 +3,18 @@
     <string name="usedesk_settings">@string/usedesk_string_settings</string>
     <string name="usedesk_need_permission">@string/usedesk_string_need_permission</string>
     <string name="usedesk_send">@string/usedesk_string_send</string>
+    <string name="usedesk_sent">@string/usedesk_string_sent</string>
+    <string name="usedesk_error">@string/usedesk_string_error</string>
+    <string name="usedesk_done">@string/usedesk_string_done</string>
     <string name="usedesk_no_internet_title">@string/usedesk_string_no_internet_title</string>
     <string name="usedesk_no_internet_text">@string/usedesk_string_no_internet_text</string>
 
     <string name="usedesk_string_settings">Austes</string>
     <string name="usedesk_string_need_permission">Permiso requerido</string>
     <string name="usedesk_string_send">Enviar</string>
+    <string name="usedesk_string_sent">Enviado</string>
+    <string name="usedesk_string_error">Error</string>
+    <string name="usedesk_string_done">Hecho</string>
     <string name="usedesk_string_no_internet_title">Sin conexión al internet</string>
     <string name="usedesk_string_no_internet_text">Intente apagar el modo avión, encienda Wi-FI o Internet móvil y verifique la intensidad de la señal de la red</string>
 </resources>

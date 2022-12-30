@@ -55,7 +55,7 @@ class ConfigurationScreen : UsedeskFragment() {
             }
             if (old?.clientToken != new.clientToken) {
                 showInstead(binding.pbCreateChat, binding.btnCreateChat, new.clientToken.loading)
-                new.clientToken.completed?.process {
+                new.clientToken.completed?.use {
                     binding.etClientToken.setText(it)
                     Toast.makeText(
                         requireContext(),
@@ -63,7 +63,7 @@ class ConfigurationScreen : UsedeskFragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                new.clientToken.error?.process {
+                new.clientToken.error?.use {
                     Toast.makeText(
                         requireContext(),
                         "Failed:$it",
@@ -81,9 +81,14 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.btnCreateChat.setOnClickListener {
             val configuration = getConfiguration()
             if (viewModel.onCreateChat(configuration)) {
-                UsedeskChatSdk.setConfiguration(configuration.toChatConfiguration())
-                UsedeskChatSdk.init(requireContext())
-                viewModel.createChat(configuration.token)
+                val preparation = UsedeskChatSdk.initPreparation(
+                    requireContext(),
+                    configuration.toChatConfiguration()
+                )
+                viewModel.createChat(
+                    preparation,
+                    configuration.token
+                )
             }
         }
         binding.tvServiceType.setOnClickListener {

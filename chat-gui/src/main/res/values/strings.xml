@@ -42,7 +42,7 @@
     <string name="usedesk_string_send_again">Resend</string>
     <string name="usedesk_string_delete_message">Delete message</string>
     <string name="usedesk_string_download">Download</string>
-    <string name="usedesk_string_file_size_exceeds">File size exceeds %dMb:</string>
-    <string name="usedesk_string_files_size_exceeds">Files size exceeds %dMb:</string>
+    <string name="usedesk_string_file_size_exceeds">File size exceeds %dMB:</string>
+    <string name="usedesk_string_files_size_exceeds">Files size exceeds %dMB:</string>
     <string name="usedesk_string_not_selected">Not selected</string>
 </resources>

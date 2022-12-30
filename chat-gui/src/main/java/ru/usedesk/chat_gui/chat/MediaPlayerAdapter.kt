@@ -29,17 +29,13 @@ internal class MediaPlayerAdapter(
         fragment.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Video
-    ) { rootView, _ ->
-        rootView as PlayerView
-    }
+    ) { rootView, _ -> rootView as PlayerView }
 
     private val pvAudioExoPlayer = inflateItem(
         fragment.view as ViewGroup,
         R.layout.usedesk_view_player,
         R.style.Usedesk_Chat_Player_Audio
-    ) { rootView, _ ->
-        rootView as PlayerView
-    }
+    ) { rootView, _ -> rootView as PlayerView }
 
     private var restored = playerViewModel.modelFlow.value.key.isNotEmpty()
 
@@ -118,6 +114,7 @@ internal class MediaPlayerAdapter(
                             }
                             changeFullscreen(false)
                         }
+                        else -> {}
                     }
                 } //Фулскрин обрабатываем только если не был обновлён videoKey
                 else if (restored || old?.fullscreen != new.fullscreen) {
@@ -161,10 +158,9 @@ internal class MediaPlayerAdapter(
     private fun postControllerBarHeight(visible: Boolean) {
         pvVideoExoPlayer.post {
             currentMinimizeView?.onControlsHeightChanged?.invoke(
-                if (visible) {
-                    videoBinding.lBottomBar?.height ?: 0
-                } else {
-                    0
+                when {
+                    visible -> videoBinding.lBottomBar?.height ?: 0
+                    else -> 0
                 }
             )
         }
@@ -201,6 +197,7 @@ internal class MediaPlayerAdapter(
                 fullscreenListener?.onFullscreenChanged(fullscreen)
                 pvAudioExoPlayer.showController()
             }
+            else -> {}
         }
     }
 
@@ -239,12 +236,8 @@ internal class MediaPlayerAdapter(
         currentMinimizeView = MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
 
         when (playerType) {
-            PlayerType.VIDEO -> {
-                playerViewModel.videoApply(mediaKey, mediaName)
-            }
-            PlayerType.AUDIO -> {
-                playerViewModel.audioApply(mediaKey, mediaName)
-            }
+            PlayerType.VIDEO -> playerViewModel.videoApply(mediaKey, mediaName)
+            PlayerType.AUDIO -> playerViewModel.audioApply(mediaKey, mediaName)
         }
     }
 
@@ -292,21 +285,22 @@ internal class MediaPlayerAdapter(
         onControlsHeightChanged: ((Int) -> Unit) = {}
     ): Boolean {
         val model = playerViewModel.modelFlow.value
-        return if (model.key == mediaKey) {
-            //Сохраним данные для плеера
-            currentMinimizeView = MinimizeView(
-                lMinimized,
-                onCancel,
-                onControlsHeightChanged
-            )
+        return when (model.key) {
+            mediaKey -> {
+                //Сохраним данные для плеера
+                currentMinimizeView = MinimizeView(
+                    lMinimized,
+                    onCancel,
+                    onControlsHeightChanged
+                )
 
-            changeFullscreen(model.fullscreen)
+                changeFullscreen(model.fullscreen)
 
-            postControllerBarHeight(pvVideoExoPlayer.isControllerVisible)
-            playIfLastPlaying()
-            true
-        } else {
-            false
+                postControllerBarHeight(pvVideoExoPlayer.isControllerVisible)
+                playIfLastPlaying()
+                true
+            }
+            else -> false
         }
     }
 

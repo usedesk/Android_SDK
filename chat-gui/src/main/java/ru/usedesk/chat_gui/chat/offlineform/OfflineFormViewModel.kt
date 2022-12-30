@@ -4,7 +4,10 @@ import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormItem
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
@@ -18,30 +21,41 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     private val configuration = UsedeskChatSdk.requireConfiguration()
 
     private val actionListener: IUsedeskActionListener = object : IUsedeskActionListener {
-        override fun onOfflineFormExpected(offlineFormSettings: UsedeskOfflineFormSettings) {
+        private var offlineFormSettings: UsedeskOfflineFormSettings? = null
+        override fun onModel(
+            model: IUsedeskChat.Model,
+            newMessages: List<UsedeskMessage>,
+            updatedMessages: List<UsedeskMessage>,
+            removedMessages: List<UsedeskMessage>
+        ) {
             doMain {
-                setModel {
-                    val subjectField = OfflineFormList(
-                        TOPIC_KEY,
-                        offlineFormSettings.topicsTitle,
-                        offlineFormSettings.topicsRequired,
-                        offlineFormSettings.topics,
-                        -1
-                    )
-                    val additionalFields = offlineFormSettings.fields.map { customField ->
-                        OfflineFormText(
-                            customField.key,
-                            customField.placeholder,
-                            customField.required,
-                            ""
+                if (model.offlineFormSettings != offlineFormSettings) {
+                    model.offlineFormSettings?.run {
+                        val subjectField = OfflineFormList(
+                            TOPIC_KEY,
+                            topicsTitle,
+                            topicsRequired,
+                            topics,
+                            -1
                         )
+                        val additionalFields = fields.map { customField ->
+                            OfflineFormText(
+                                customField.key,
+                                customField.placeholder,
+                                customField.required,
+                                ""
+                            )
+                        }
+                        val customFields = listOf(subjectField) + additionalFields
+                        setModel {
+                            copy(
+                                greetings = callbackGreeting,
+                                workType = this@run.workType,
+                                customFields = customFields
+                            ).updateAllFields()
+                        }
                     }
-                    val customFields = listOf(subjectField) + additionalFields
-                    copy(
-                        greetings = offlineFormSettings.callbackGreeting,
-                        workType = offlineFormSettings.workType,
-                        customFields = customFields
-                    ).updateAllFields()
+                    offlineFormSettings = model.offlineFormSettings
                 }
             }
         }
@@ -101,19 +115,19 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                 message
             )
             copy(offlineFormState = OfflineFormState.SENDING).apply {
-                doIo {
-                    try {
-                        UsedeskChatSdk.requireInstance().send(offlineForm)
-                        setModel {
-                            copy(
+                UsedeskChatSdk.requireInstance().send(offlineForm) { result ->
+                    setModel {
+                        when (result) {
+                            SendOfflineFormResult.Done -> copy(
                                 offlineFormState = OfflineFormState.SENT_SUCCESSFULLY,
                                 goExit = UsedeskSingleLifeEvent(
                                     workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
                                 )
                             )
+                            is SendOfflineFormResult.Error -> copy(
+                                offlineFormState = OfflineFormState.FAILED_TO_SEND
+                            )
                         }
-                    } catch (e: Exception) {
-                        setModel { copy(offlineFormState = OfflineFormState.FAILED_TO_SEND) }
                     }
                 }
             }

@@ -1,14 +1,15 @@
 package ru.usedesk.common_sdk.entity
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 class UsedeskSingleLifeEvent<DATA>(
     data: DATA
 ) : UsedeskEvent<DATA>(data) {
-    private var processed = false
+    private val processed = AtomicBoolean(false)
 
-    override fun process(onProcess: (DATA) -> Unit) {
-        if (!processed) {
-            processed = true
-            super.process(onProcess)
+    override fun use(onProcess: (DATA) -> Unit) {
+        if (!processed.getAndSet(true)) {
+            super.use(onProcess)
         }
     }
 }

@@ -1,8 +1,8 @@
 package ru.usedesk.knowledgebase_sdk.domain
 
 import io.reactivex.schedulers.Schedulers
-import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeCompletableIo
-import ru.usedesk.common_sdk.utils.UsedeskRxUtil.safeSingleIo
+import ru.usedesk.knowledgebase_sdk.RxUtil.safeCompletableIo
+import ru.usedesk.knowledgebase_sdk.RxUtil.safeSingleIo
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.SearchQueryRequest
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent

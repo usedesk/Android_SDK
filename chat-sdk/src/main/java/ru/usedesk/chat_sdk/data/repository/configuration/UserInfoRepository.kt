@@ -46,7 +46,4 @@ internal class UserInfoRepository @Inject constructor(
             }
         }
     }
-
-    private fun UsedeskChatConfiguration.userKey() =
-        "${companyId}_${channelId}_${clientEmail}_${clientPhoneNumber}_${clientName}"
 }

@@ -10,6 +10,8 @@ import dagger.Module
 import dagger.Provides
 import ru.usedesk.common_sdk.api.ApiFactory
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.MultipartConverter
 
@@ -30,8 +32,11 @@ internal class UsedeskCommonModuleProvides {
 @Module
 internal interface UsedeskCommonModuleBinds {
     @Binds
-    fun dateConverter(converter: MultipartConverter): IUsedeskMultipartConverter
+    fun multipartConverter(converter: MultipartConverter): IUsedeskMultipartConverter
 
     @Binds
     fun apiFactory(factory: ApiFactory): IUsedeskApiFactory
+
+    @Binds
+    fun okHttpClientFactory(factory: UsedeskOkHttpClientFactory): IUsedeskOkHttpClientFactory
 }

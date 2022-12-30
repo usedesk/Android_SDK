@@ -55,13 +55,13 @@ class UsedeskChatScreen : UsedeskFragment() {
         }
     }.rootView
 
-    fun dismissAttachmentDialog() {
+    fun dismissAnyDialog() {
         navHostFragment
             .childFragmentManager
             .fragments
             .filterIsInstance<MessagesPage>()
             .firstOrNull()
-            ?.dismissAttachmentDialog()
+            ?.dismissAnyDialog()
     }
 
     internal fun getBundleArgs(
@@ -100,14 +100,15 @@ class UsedeskChatScreen : UsedeskFragment() {
     }
 
     private fun Binding.init(chatConfiguration: UsedeskChatConfiguration) {
-        UsedeskChatSdk.setConfiguration(chatConfiguration)
+        val usedeskChat = UsedeskChatSdk.init(
+            requireContext(),
+            chatConfiguration
+        )
+        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         val toolbarAdapter = UsedeskToolbarAdapter(toolbar).apply {
             setBackButton(requireActivity()::onBackPressed)
         }
-
-        val usedeskChat = UsedeskChatSdk.init(requireContext())
-        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             toolbarAdapter.updateTitle(styleValues, destination)
@@ -123,7 +124,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 toolbarAdapter.updateTitle(styleValues, navController.currentDestination)
             }
             if (old?.goLoading != new.goLoading) {
-                new.goLoading.process {
+                new.goLoading.use {
                     while (navController.popBackStack()) continue
                     navController.navigate(R.id.dest_loadingPage)
                 }

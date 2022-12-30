@@ -7,7 +7,7 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 @Parcelize
 data class UsedeskChatConfiguration @JvmOverloads constructor(
     val urlChat: String = "https://pubsubsec.usedesk.ru",
-    val urlChatApi: String = "https://secure.usedesk.ru/",
+    val urlChatApi: String = "https://secure.usedesk.ru",
     val companyId: String,
     val channelId: String,
     val messagesPageSize: Int = 20,
@@ -31,8 +31,11 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         validChannelId = channelId.isNotEmptyNumber(),
         validClientToken = clientToken.isValidClientToken(),
         validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
-        validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber)
+        validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber?.toString())
     )
+
+    internal fun userKey() =
+        "${companyId}_${channelId}_${clientEmail}_${clientPhoneNumber}_${clientName}"
 
     private fun String.isNotEmptyNumber(): Boolean = isNotEmpty() && all(Char::isDigit)
 

@@ -1,29 +1,24 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONException
 import org.json.JSONObject
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity._extra.BaseResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.error.ErrorResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.feedback.FeedbackResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.initchat.InitChatResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.message.MessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.setemail.SetClientResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
 import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.net.HttpURLConnection
 
 internal class SocketConnection(
     private val gson: Gson,
     url: String,
-    usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory,
-    private val initChatRequest: InitChatRequest,
+    usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory,
+    private val initChatRequest: SocketRequest.Init,
     private val eventListener: SocketApi.EventListener
 ) {
     private val socket: Socket
@@ -42,9 +37,12 @@ internal class SocketConnection(
                 eventListener.onConnected()
                 sendRequest(initChatRequest)
             }
+            val connectTimeStamp = System.currentTimeMillis()
             on(Socket.EVENT_CONNECT_ERROR) {
                 (it.getOrNull(0) as? Throwable)?.printStackTrace()
-                this@SocketConnection.disconnect()
+                if (System.currentTimeMillis() - connectTimeStamp > CONNECTION_TIMEOUT_MILLIS) {
+                    this@SocketConnection.disconnect()
+                }
             }
             on(EVENT_SERVER_ACTION) {
                 onResponse(it[0].toString())
@@ -53,23 +51,23 @@ internal class SocketConnection(
                 this@SocketConnection.disconnect()
             }
 
-            connect()
+            open()
         }
     }
 
     private fun parse(rawResponse: String) = try {
-        val baseResponse = gson.fromJson(rawResponse, BaseResponse::class.java)
-        val responseClass = when (baseResponse.type) {
-            InitChatResponse.TYPE -> InitChatResponse::class.java
-            ErrorResponse.TYPE -> ErrorResponse::class.java
-            MessageResponse.TYPE -> MessageResponse::class.java
-            FeedbackResponse.TYPE -> FeedbackResponse::class.java
-            SetClientResponse.TYPE -> SetClientResponse::class.java
-            else -> throw RuntimeException("Could not find response class by type")
+        val jsonObject = gson.fromJson(rawResponse, JsonObject::class.java)
+        val responseClass = when (val type = jsonObject.get("type").asString) {
+            "@@chat/current/INITED" -> Inited::class.java
+            "@@chat/current/ADD_MESSAGE" -> AddMessage::class.java
+            "@@chat/current/CALLBACK_ANSWER" -> FeedbackResponse::class.java
+            "@@chat/current/SET" -> SetClient::class.java
+            "@@redbone/ERROR" -> ErrorResponse::class.java
+            else -> throw RuntimeException("""Could not find response class by type: "$type"""")
         }
-        gson.fromJson(rawResponse, responseClass)
+        gson.fromJson(jsonObject, responseClass)
     } catch (e: Exception) {
-        UsedeskLog.onLog("Socket: Failed to parse the response", rawResponse)
+        UsedeskLog.onLog("SOCKET") { "Failed to parse the response: $rawResponse" }
         throw UsedeskSocketException(
             UsedeskSocketException.Error.JSON_ERROR,
             e.message
@@ -78,7 +76,7 @@ internal class SocketConnection(
 
     private fun onResponse(rawResponse: String) {
         try {
-            UsedeskLog.onLog("Socket.rawResponse", rawResponse)
+            UsedeskLog.onLog("Socket.rawResponse") { rawResponse }
             when (val response = parse(rawResponse)) {
                 is ErrorResponse -> {
                     val usedeskSocketException = when (response.code) {
@@ -101,21 +99,21 @@ internal class SocketConnection(
                     }
                     eventListener.onException(usedeskSocketException)
                 }
-                is InitChatResponse -> eventListener.onInited(response)
-                is SetClientResponse -> eventListener.onSetEmailSuccess()
-                is MessageResponse -> eventListener.onNew(response)
-                is FeedbackResponse -> eventListener.onFeedback()
+                is Inited -> eventListener.onInited(response)
+                is SetClient -> eventListener.onSetEmailSuccess()
+                is AddMessage -> eventListener.onNew(response)
+                is FeedbackResponse -> eventListener.onFeedback() //TODO: бессмысленный вызов, нужны какие-то идентификаторы какой вообще фидбек получен
             }
         } catch (e: Exception) {
             eventListener.onException(e)
         }
     }
 
-    fun sendRequest(baseRequest: BaseRequest) {
+    fun sendRequest(socketRequest: SocketRequest) {
         try {
-            val rawRequest = gson.toJson(baseRequest)
+            val rawRequest = gson.toJson(socketRequest)
             val jsonRequest = JSONObject(rawRequest)
-            UsedeskLog.onLog("Socket.sendRequest", gson.toJson(rawRequest))
+            UsedeskLog.onLog("Socket.sendRequest") { gson.toJson(rawRequest) }
             socket.emit(EVENT_SERVER_ACTION, jsonRequest)
         } catch (e: JSONException) {
             throw UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message)
@@ -138,5 +136,6 @@ internal class SocketConnection(
 
     companion object {
         private const val EVENT_SERVER_ACTION = "dispatch"
+        private const val CONNECTION_TIMEOUT_MILLIS = 30000
     }
 }

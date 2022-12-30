@@ -1,28 +1,38 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk
+import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
 
-internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Model()) {
+internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(State()) {
 
     private val actionListener: IUsedeskActionListener
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 
-    private val messagesReducer = MessagesReducer(usedeskChat, this)
+    private val messagesReducer = MessagesReducer(usedeskChat)
 
-    fun onIntent(intent: Intent) {
-        setModel { messagesReducer.reduceModel(this, intent) }
+    fun onEvent(event: Event) {
+        setModel { messagesReducer.reduceModel(this, event) }
     }
 
     init {
-        onIntent(Intent.MessageDraft(usedeskChat.getMessageDraft()))
+        onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
         actionListener = object : IUsedeskActionListener {
-            override fun onMessagesReceived(messages: List<UsedeskMessage>) {
-                doMain { onIntent(Intent.Messages(messages)) }
+            override fun onModel(
+                model: IUsedeskChat.Model,
+                newMessages: List<UsedeskMessage>,
+                updatedMessages: List<UsedeskMessage>,
+                removedMessages: List<UsedeskMessage>
+            ) {
+                doMain {
+                    onEvent(Event.ChatModel(model))
+                }
             }
         }
         usedeskChat.addActionListener(actionListener)
@@ -36,60 +46,73 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.Model>(Mod
         UsedeskChatSdk.release(false)
     }
 
-    sealed interface Intent {
-        class Init(val groupAgentMessages: Boolean) : Intent
-        class Messages(val messages: List<UsedeskMessage>) : Intent
-        class MessageDraft(val messageDraft: UsedeskMessageDraft) : Intent
-        class MessagesShowed(val messagesRange: IntRange) : Intent
-        class MessageChanged(val message: String) : Intent
-        class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Intent
+    sealed interface Event {
+        class Init(val groupAgentMessages: Boolean) : Event
+        class ChatModel(val model: IUsedeskChat.Model) : Event
+        class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
+        class MessagesShowed(val messagesRange: IntRange) : Event
+        class MessageChanged(val message: String) : Event
+
+        //class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Event
         class SendFeedback(
             val message: UsedeskMessageAgentText,
             val feedback: UsedeskFeedback
-        ) : Intent
+        ) : Event
 
-        class AttachFiles(val files: Set<UsedeskFileInfo>) : Intent
-        class DetachFile(val file: UsedeskFileInfo) : Intent
-        class ButtonSend(val message: String) : Intent
-        class SendAgain(val id: Long) : Intent
-        class RemoveMessage(val id: Long) : Intent
-        class ShowToBottomButton(val show: Boolean) : Intent
-        class ShowAttachmentPanel(val show: Boolean) : Intent
-        object SendDraft : Intent
+        class AttachFiles(val files: Set<UsedeskFileInfo>) : Event
+        class DetachFile(val file: UsedeskFileInfo) : Event
+        class SendAgain(val id: Long) : Event
+        class RemoveMessage(val id: Long) : Event
+        class ShowToBottomButton(val show: Boolean) : Event
+        class ShowAttachmentPanel(val show: Boolean) : Event
+        object SendDraft : Event
+        class MessageButtonClick(val button: Button) : Event
+        class FormApplyClick(val messageId: Long) : Event
+        class FormChanged(val messageId: Long, val field: Field) : Event
+        class FormListClicked(val messageId: Long, val list: Field.List) : Event
     }
 
-    data class Model(
+    data class State(
         val messages: List<UsedeskMessage> = listOf(),
-        val agentItems: List<ChatItem.Message.Agent> = listOf(),
+        val formMap: Map<Long, UsedeskForm> = mapOf(),
+        val agentMessages: List<ChatItem.Message.Agent> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
+        val formSelector: FormSelector? = null,
         val fabToBottom: Boolean = false,
         val chatItems: List<ChatItem> = listOf(),
         val messagesScroll: Long = 0L,
         val attachmentPanelVisible: Boolean = false,
-        val agentIndexShowed: Int = 0,
+        val agentMessageShowed: Int = 0,
         val hasPreviousMessages: Boolean = true,
         val groupAgentMessages: Boolean = false,
         val previousLoading: Boolean = false,
-        val goToBottom: UsedeskEvent<Unit>? = null
+        val goToBottom: UsedeskEvent<Unit>? = null,
+        val openUrl: UsedeskEvent<String>? = null,
+        val lastChatModel: IUsedeskChat.Model? = null
+    )
+
+    class FormSelector(
+        val formId: Long,
+        val list: Field.List,
+        val parentSelectedId: Long?
     )
 
     internal sealed interface ChatItem {
-
-        sealed class Message(
-            val message: UsedeskMessage,
+        sealed interface Message : ChatItem {
+            val message: UsedeskMessage
             val isLastOfGroup: Boolean
-        ) : ChatItem {
-            class Client(
-                message: UsedeskMessage,
-                isLastOfGroup: Boolean
-            ) : Message(message, isLastOfGroup)
 
-            class Agent(
-                message: UsedeskMessage,
-                isLastOfGroup: Boolean,
+            data class Client(
+                override val message: UsedeskMessage,
+                override val isLastOfGroup: Boolean
+            ) : Message
+
+            data class Agent(
+                override val message: UsedeskMessage,
+                override val isLastOfGroup: Boolean,
                 val showName: Boolean,
                 val showAvatar: Boolean
-            ) : Message(message, isLastOfGroup)
+            ) : Message
         }
 
         class MessageAgentName(

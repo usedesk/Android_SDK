@@ -2,179 +2,254 @@ package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.UsedeskMessage
-import ru.usedesk.chat_sdk.entity.UsedeskMessageAgent
-import ru.usedesk.chat_sdk.entity.UsedeskMessageClient
-import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
 import kotlin.math.min
 
-internal class MessagesReducer(
-    private val usedeskChat: IUsedeskChat,
-    private val viewModel: MessagesViewModel
-) {
+internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
 
-    fun reduceModel(model: Model, intent: Intent): Model = model.reduce(intent)
+    fun reduceModel(state: State, event: Event): State = state.reduce(event)
 
-    private fun Model.reduce(intent: Intent) = when (intent) {
-        is Intent.Init -> init(intent)
-        is Intent.Messages -> messages(intent)
-        is Intent.MessageDraft -> messageDraft(intent)
-        is Intent.MessagesShowed -> messagesShowed(intent)
-        is Intent.PreviousMessagesResult -> previousMessagesResult(intent)
-        is Intent.MessageChanged -> messageChanged(intent)
-        is Intent.SendFeedback -> sendFeedback(intent)
-        is Intent.AttachFiles -> attachFiles(intent)
-        is Intent.DetachFile -> detachFile(intent)
-        is Intent.ButtonSend -> buttonSend(intent)
-        is Intent.SendAgain -> sendAgain(intent)
-        is Intent.RemoveMessage -> removeMessage(intent)
-        is Intent.ShowToBottomButton -> showToBottomButton(intent)
-        is Intent.ShowAttachmentPanel -> showAttachmentPanel(intent)
-        Intent.SendDraft -> sendDraft()
+    private fun State.reduce(event: Event) = when (event) {
+        is Event.Init -> init(event)
+        is Event.ChatModel -> chatModel(event)
+        is Event.MessageDraft -> messageDraft(event)
+        is Event.MessagesShowed -> messagesShowed(event)
+        is Event.MessageChanged -> messageChanged(event)
+        is Event.SendFeedback -> sendFeedback(event)
+        is Event.AttachFiles -> attachFiles(event)
+        is Event.DetachFile -> detachFile(event)
+        is Event.MessageButtonClick -> messageButtonClick(event)
+        is Event.SendAgain -> sendAgain(event)
+        is Event.RemoveMessage -> removeMessage(event)
+        is Event.ShowToBottomButton -> showToBottomButton(event)
+        is Event.ShowAttachmentPanel -> showAttachmentPanel(event)
+        is Event.FormChanged -> formChanged(event)
+        is Event.FormApplyClick -> formApplyClick(event)
+        is Event.FormListClicked -> formListClicked(event)
+        Event.SendDraft -> sendDraft()
     }
 
-    private fun Model.showToBottomButton(intent: Intent.ShowToBottomButton) =
-        copy(fabToBottom = intent.show)
-
-    private fun Model.showAttachmentPanel(intent: Intent.ShowAttachmentPanel) =
-        copy(attachmentPanelVisible = intent.show)
-
-    private fun Model.removeMessage(intent: Intent.RemoveMessage) = this.apply {
-        viewModel.doIo { usedeskChat.removeMessage(intent.id) }
+    private fun State.formApplyClick(event: Event.FormApplyClick): State {
+        val form = formMap[event.messageId]
+        when (form?.state) {
+            UsedeskForm.State.LOADED,
+            UsedeskForm.State.SENDING_FAILED -> usedeskChat.send(form)
+            UsedeskForm.State.LOADING_FAILED -> usedeskChat.loadForm(form.id)
+            else -> {}
+        }
+        return this
     }
 
-    private fun Model.sendAgain(intent: Intent.SendAgain) = this.apply {
-        viewModel.doIo { usedeskChat.sendAgain(intent.id) }
+    private fun State.formListClicked(event: Event.FormListClicked) = copy(
+        formSelector = FormSelector(
+            event.messageId,
+            event.list,
+            when (event.list.parentId) {
+                null -> null
+                else -> {
+                    val form = formMap[event.messageId]
+                    form?.fields
+                        ?.filterIsInstance<Field.List>()
+                        ?.firstOrNull { it.id == event.list.parentId }
+                        ?.selected?.id
+                }
+            }
+        )
+    )
+
+    private fun List<Field.List>.makeNewLists(list: Field.List) =
+        mutableMapOf(list.id to list).apply {
+            var parent: Field.List? = list
+            while (parent != null) {
+                val child = firstOrNull { (it as? Field.List)?.parentId == parent?.id }
+                val childSelected = child?.selected
+                val parentSelected = parent.selected
+                parent = child?.copy(
+                    selected = when {
+                        parentSelected != null &&
+                                childSelected != null &&
+                                (childSelected.parentItemsId.isEmpty() ||
+                                        parentSelected.id in childSelected.parentItemsId) -> childSelected
+                        else -> null
+                    }
+                )
+                if (parent != null) {
+                    put(parent.id, parent)
+                }
+            }
+        }
+
+    private fun State.formChanged(event: Event.FormChanged): State =
+        when (val form = formMap[event.messageId]) {
+            null -> {
+                this
+            }
+            else -> {
+                val lists = form.fields.filterIsInstance<Field.List>()
+                val newField = when (event.field) {
+                    is Field.CheckBox -> event.field.copy(hasError = false)
+                    is Field.List -> event.field.copy(hasError = false)
+                    is Field.Text -> event.field.copy(hasError = false)
+                }
+                val newFields = when (newField) {
+                    is Field.List -> lists.makeNewLists(newField)
+                    else -> mapOf(newField.id to newField)
+                }
+                val newForm = form.copy(
+                    fields = form.fields.map { field -> newFields[field.id] ?: field },
+                    state = when (form.state) {
+                        UsedeskForm.State.SENDING_FAILED -> UsedeskForm.State.LOADED
+                        else -> form.state
+                    }
+                )
+                usedeskChat.saveForm(newForm)
+                copy(
+                    formMap = formMap.toMutableMap().apply {
+                        put(event.messageId, newForm)
+                    },
+                    formSelector = null
+                )
+            }
+        }
+
+    private fun State.showToBottomButton(event: Event.ShowToBottomButton) =
+        copy(fabToBottom = event.show)
+
+    private fun State.showAttachmentPanel(event: Event.ShowAttachmentPanel) =
+        copy(attachmentPanelVisible = event.show)
+
+    private fun State.removeMessage(event: Event.RemoveMessage) = apply {
+        usedeskChat.removeMessage(event.id)
     }
 
-    private fun Model.sendDraft() = copy(
+    private fun State.sendAgain(event: Event.SendAgain) = apply {
+        usedeskChat.sendAgain(event.id)
+    }
+
+    private fun State.sendDraft() = copy(
         messageDraft = UsedeskMessageDraft(),
         goToBottom = UsedeskSingleLifeEvent(Unit)
     ).apply {
-        viewModel.doIo { usedeskChat.sendMessageDraft() }
+        usedeskChat.sendMessageDraft()
     }
 
-    private fun Model.buttonSend(intent: Intent.ButtonSend) = copy(
-        goToBottom = UsedeskSingleLifeEvent(Unit)
-    ).apply {
-        viewModel.doIo { usedeskChat.send(intent.message) }
+    private fun State.messageButtonClick(event: Event.MessageButtonClick) = when {
+        event.button.url.isNotEmpty() -> copy(openUrl = UsedeskSingleLifeEvent(event.button.url))
+        else -> copy(goToBottom = UsedeskSingleLifeEvent(Unit)).apply {
+            usedeskChat.send(event.button.name)
+        }
     }
 
-    private fun Model.attachFiles(intent: Intent.AttachFiles) = copy(
+    private fun State.attachFiles(event: Event.AttachFiles) = copy(
         messageDraft = messageDraft.copy(
-            files = (messageDraft.files + intent.files).toSet().toList()
+            files = (messageDraft.files + event.files).toSet().toList()
         ),
         attachmentPanelVisible = false
     ).apply {
-        viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
+        usedeskChat.setMessageDraft(messageDraft)
     }
 
-
-    private fun Model.detachFile(intent: Intent.DetachFile) = copy(
-        messageDraft = messageDraft.copy(files = messageDraft.files - intent.file)
+    private fun State.detachFile(event: Event.DetachFile) = copy(
+        messageDraft = messageDraft.copy(files = messageDraft.files - event.file)
     ).apply {
-        viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
+        usedeskChat.setMessageDraft(messageDraft)
     }
 
-    private fun Model.sendFeedback(intent: Intent.SendFeedback) = this.apply {
-        viewModel.doIo {
-            usedeskChat.send(
-                intent.message,
-                intent.feedback
-            )
-        }
+    private fun State.sendFeedback(event: Event.SendFeedback) = apply {
+        usedeskChat.send(
+            event.message,
+            event.feedback
+        )
     }
 
-    private fun Model.messageChanged(intent: Intent.MessageChanged): Model = when (intent.message) {
+    private fun State.messageChanged(event: Event.MessageChanged): State = when (event.message) {
         messageDraft.text -> this
-        else -> copy(messageDraft = messageDraft.copy(text = intent.message)).apply {
-            viewModel.doIo { usedeskChat.setMessageDraft(messageDraft) }
+        else -> copy(messageDraft = messageDraft.copy(text = event.message)).apply {
+            usedeskChat.setMessageDraft(messageDraft)
         }
     }
 
-    private fun Model.init(intent: Intent.Init) =
-        copy(groupAgentMessages = intent.groupAgentMessages)
+    private fun State.init(event: Event.Init) =
+        copy(groupAgentMessages = event.groupAgentMessages)
 
-    private fun Model.previousMessagesResult(intent: Intent.PreviousMessagesResult) = copy(
-        hasPreviousMessages = intent.hasPreviousMessages,
-        previousLoading = false,
-        chatItems = when (this.hasPreviousMessages) {
-            intent.hasPreviousMessages -> chatItems
-            else -> messages.convert(
-                intent.hasPreviousMessages,
-                groupAgentMessages
-            )
-        }
-    )
 
-    private fun Model.messagesShowed(intent: Intent.MessagesShowed): Model {
+    private fun State.messagesShowed(event: Event.MessagesShowed): State {
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
-            i <= intent.messagesRange.last && chatItems[i] is ChatItem.Message
+            i <= event.messagesRange.last && chatItems[i] is ChatItem.Message
         }
-        var previousLoading = this.previousLoading
         if (lastMessageIndex + ITEMS_UNTIL_LAST >= chatItems.size &&
             !previousLoading
             && hasPreviousMessages
         ) {
-            previousLoading = true
-            ioIntent {
-                val hasPreviousMessages = try {
-                    usedeskChat.loadPreviousMessagesPage()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    true
+            usedeskChat.loadPreviousMessagesPage()
+        }
+        val agentMessages = event.messagesRange
+            .map { chatItems.getOrNull(it) }
+        agentMessages.forEach {
+            val message = (it as? ChatItem.Message.Agent)?.message
+            if (message is UsedeskMessageAgentText && message.fieldsInfo.isNotEmpty()) {
+                val form = formMap[message.id]
+                if (form == null || form.state == UsedeskForm.State.NOT_LOADED) {
+                    usedeskChat.loadForm(message.id)
                 }
-                Intent.PreviousMessagesResult(hasPreviousMessages)
             }
         }
-        val curAgentItemShowed = intent.messagesRange
-            .asSequence()
-            .map(chatItems::getOrNull)
+        val agentMessageShowed = agentMessages
             .firstOrNull { it is ChatItem.Message.Agent }
-        val newAgentIndexShowed = when (curAgentItemShowed) {
-            null -> agentIndexShowed
-            else -> min(agentIndexShowed, agentItems.indexOf(curAgentItemShowed))
+        val newAgentIndexShowed = when (agentMessageShowed) {
+            null -> this.agentMessageShowed
+            else -> min(this.agentMessageShowed, chatItems.indexOf(agentMessageShowed))
         }
         return copy(
-            previousLoading = previousLoading,
-            fabToBottom = intent.messagesRange.first > 0,
-            chatItems = when (this.previousLoading) {
-                previousLoading -> chatItems
-                else -> messages.convert(
-                    hasPreviousMessages,
-                    groupAgentMessages
-                )
-            },
-            agentIndexShowed = newAgentIndexShowed
+            fabToBottom = event.messagesRange.first > 0,
+            agentMessageShowed = newAgentIndexShowed
         )
     }
 
-    private fun Model.messageDraft(intent: Intent.MessageDraft) = copy(
-        messageDraft = intent.messageDraft
-    )
+    private fun State.messageDraft(event: Event.MessageDraft) =
+        copy(messageDraft = event.messageDraft)
 
-    private fun Model.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
-        when (val lastMessage = agentItems.getOrNull(agentIndexShowed)) {
+    private fun State.getNewAgentIndexShowed(newAgentItems: List<ChatItem.Message.Agent>): Int =
+        when (val lastMessage = agentMessages.getOrNull(agentMessageShowed)) {
             null -> 0
             else -> newAgentItems.indexOfFirst { it.message.id == lastMessage.message.id }
         }
 
-    private fun Model.messages(intent: Intent.Messages): Model {
-        val newChatItems = intent.messages.convert(
-            hasPreviousMessages,
-            groupAgentMessages
-        )
-        val newAgentItems = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
-        val newAgentMessageShowed = getNewAgentIndexShowed(newAgentItems)
-        return copy(
-            messages = intent.messages,
-            agentItems = newAgentItems,
-            chatItems = newChatItems,
-            agentIndexShowed = newAgentMessageShowed
-        )
-    }
+    private fun State.chatModel(event: Event.ChatModel): State = when {
+        event.model.messages == messages &&
+                event.model.formMap == formMap &&
+                event.model.previousPageIsAvailable == hasPreviousMessages -> this
+        else -> {
+            val newChatItems = event.model.messages.convert(
+                event.model.previousPageIsAvailable,
+                groupAgentMessages
+            )
+            val newAgentMessages = newChatItems.filterIsInstance<ChatItem.Message.Agent>()
+            copy(
+                agentMessages = newAgentMessages,
+                chatItems = newChatItems,
+                formMap = event.model.formMap.map {
+                    val stateForm = formMap[it.key]
+                    it.key to when {
+                        stateForm?.state == it.value.state
+                                && it.value.fields.all { field ->
+                            field.hasError == stateForm.fields.firstOrNull { it.id == field.id }?.hasError
+                        } -> stateForm
+                        else -> it.value
+                    }
+                }.toMap(),
+                agentMessageShowed = getNewAgentIndexShowed(newAgentMessages)
+            )
+        }
+    }.copy(
+        lastChatModel = event.model,
+        messages = event.model.messages,
+        previousLoading = event.model.previousPageIsLoading,
+        hasPreviousMessages = event.model.previousPageIsAvailable
+    )
 
     private fun List<UsedeskMessage>.convert(
         hasPreviousMessages: Boolean,
@@ -186,7 +261,16 @@ internal class MessagesReducer(
                 it.value.mapIndexed { i, message ->
                     val lastOfGroup = i == 0
                     when (message) {
-                        is UsedeskMessageClient -> ChatItem.Message.Client(message, lastOfGroup)
+                        is UsedeskMessageOwner.Client -> ChatItem.Message.Client(
+                            message,
+                            lastOfGroup
+                        )
+                        is UsedeskMessageAgentText -> ChatItem.Message.Agent(
+                            message,
+                            lastOfGroup,
+                            showName = true,
+                            showAvatar = true
+                        )
                         else -> ChatItem.Message.Agent(
                             message,
                             lastOfGroup,
@@ -207,13 +291,13 @@ internal class MessagesReducer(
             groupAgentMessages -> newMessages.flatMapIndexed { index, item ->
                 when (item) {
                     is ChatItem.Message.Agent -> {
-                        item.message as UsedeskMessageAgent
+                        item.message as UsedeskMessageOwner.Agent
                         val previous = (newMessages.getOrNull(index - 1)
                                 as? ChatItem.Message.Agent)?.message
-                                as? UsedeskMessageAgent
+                                as? UsedeskMessageOwner.Agent
                         val next = (newMessages.getOrNull(index + 1)
                                 as? ChatItem.Message.Agent)?.message
-                                as? UsedeskMessageAgent
+                                as? UsedeskMessageOwner.Agent
                         val newItem = ChatItem.Message.Agent(
                             item.message,
                             item.isLastOfGroup,
@@ -247,15 +331,15 @@ internal class MessagesReducer(
         }
     }
 
-    private fun UsedeskMessageAgent.isAgentsTheSame(other: UsedeskMessageAgent): Boolean =
+    private fun UsedeskMessageOwner.Agent.isAgentsTheSame(other: UsedeskMessageOwner.Agent): Boolean =
         avatar == other.avatar && name == other.name
 
-    private fun ioIntent(getIntent: suspend () -> Intent) {
+    /*private fun ioEvent(getEvent: suspend () -> Event) {
         viewModel.doIo {
-            val intent = getIntent()
-            viewModel.doMain { viewModel.onIntent(intent) }
+            val intent = getEvent()
+            viewModel.doMain { viewModel.onEvent(intent) }
         }
-    }
+    }*/
 
     companion object {
         private const val ITEMS_UNTIL_LAST = 5

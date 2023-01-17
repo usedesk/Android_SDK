@@ -15,29 +15,29 @@ internal class FileLoader @Inject constructor(
     private val contentResolver = appContext.contentResolver
     private val cacheDir = appContext.cacheDir
 
-    override fun toCache(inputUri: Uri): Uri {
-        return if (inputUri.toString().startsWith("file://" + cacheDir.absolutePath)) {
-            inputUri
-        } else {
-            var outputUri: Uri? = null
-            contentResolver.openInputStream(inputUri).use { inputStream ->
-                if (inputStream == null) {
-                    throw UsedeskDataNotFoundException("Can't read file: $inputUri")
+    override suspend fun toCache(inputUri: Uri) =
+        when {
+            inputUri.toString().startsWith("file://" + cacheDir.absolutePath) -> inputUri
+            else -> {
+                var outputUri: Uri? = null
+                contentResolver.openInputStream(inputUri).use { inputStream ->
+                    if (inputStream == null) {
+                        throw UsedeskDataNotFoundException("Can't read file: $inputUri")
+                    }
+
+                    val fileName = contentResolver.getFileName(inputUri)
+                    val name = "${System.currentTimeMillis()}${fileName.hashCode()}"
+                    val newFileName = fileName.replaceBeforeLast(
+                        '.',
+                        name,
+                        missingDelimiterValue = name
+                    )
+                    val outputFile = File(cacheDir, newFileName)
+                    FileOutputStream(outputFile).use(inputStream::copyTo)
+
+                    outputUri = Uri.fromFile(outputFile)
                 }
-
-                val fileName = contentResolver.getFileName(inputUri)
-                val name = "${System.currentTimeMillis()}${fileName.hashCode()}"
-                val newFileName = fileName.replaceBeforeLast(
-                    '.',
-                    name,
-                    missingDelimiterValue = name
-                )
-                val outputFile = File(cacheDir, newFileName)
-                FileOutputStream(outputFile).use(inputStream::copyTo)
-
-                outputUri = Uri.fromFile(outputFile)
+                outputUri ?: throw RuntimeException("Something wrong with caching file")
             }
-            outputUri ?: throw RuntimeException("Something wrong with caching file")
         }
-    }
 }

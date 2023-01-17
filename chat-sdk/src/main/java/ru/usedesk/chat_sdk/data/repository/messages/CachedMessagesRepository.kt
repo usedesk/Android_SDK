@@ -50,23 +50,23 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
 
-    override fun getNotSentMessages(): List<UsedeskMessageOwner.Client> {
+    override suspend fun getNotSentMessages(): List<UsedeskMessageOwner.Client> {
         val userKey = requireUserKey()
         return messagesRepository.getNotSentMessages(userKey)
     }
 
-    override fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
+    override suspend fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val userKey = requireUserKey()
         messagesRepository.addNotSentMessage(userKey, notSentMessage)
     }
 
-    override fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
+    override suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val requireUserKey = requireUserKey()
         messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage)
         messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
-    override fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
+    override suspend fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val userKey = requireUserKey()
         messagesRepository.removeNotSentMessage(userKey, notSentMessage)
     }
@@ -159,7 +159,7 @@ internal class CachedMessagesRepository @Inject constructor(
         messagesRepository.getDraft(userKey)
     }
 
-    override fun getNextLocalId(): Long {
+    override suspend fun getNextLocalId(): Long {
         val userKey = requireUserKey()
         return messagesRepository.getNextLocalId(userKey)
     }

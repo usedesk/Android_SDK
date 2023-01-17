@@ -13,8 +13,7 @@ import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.di.IRelease
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.*
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
@@ -87,7 +86,9 @@ internal class ChatInteractor @Inject constructor(
 
         override fun onChatInited(chatInited: ChatInited) {
             this@ChatInteractor.chatInited = chatInited
-            this@ChatInteractor.onChatInited(chatInited)
+            ioScope.launch {
+                this@ChatInteractor.onChatInited(chatInited)
+            }
         }
 
         override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
@@ -297,10 +298,22 @@ internal class ChatInteractor @Inject constructor(
 
     override fun isNoListeners(): Boolean = actionListeners.isNoListeners()
 
-    override fun send(textMessage: String) {
+    override fun send(
+        textMessage: String,
+        localId: Long?
+    ) {
+        ioScope.launch {
+            doSend(textMessage, localId)
+        }
+    }
+
+    private suspend fun doSend(
+        textMessage: String,
+        localId: Long?
+    ) {
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
-            val sendingMessage = createSendingMessage(message)
+            val sendingMessage = createSendingMessage(message, getNextLocalId(localId))
             eventListener.onMessagesNewReceived(listOf(sendingMessage))
 
             runBlocking {
@@ -338,14 +351,64 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun send(usedeskFileInfoList: List<UsedeskFileInfo>) {
+    override fun send(fileInfo: UsedeskFileInfo, localId: Long?) {
         ioScope.launch {
-            val sendingMessages = usedeskFileInfoList.map(this@ChatInteractor::createSendingMessage)
+            doSend(fileInfo, localId)
+        }
+    }
 
-            eventListener.onMessagesNewReceived(sendingMessages)
+    private val fileUploadProgressListeners =
+        mutableMapOf<Long, MutableSet<IFileUploadProgressListener>>()
+    private val fileUploadProgressMutex = Mutex()
+
+    override fun addFileUploadProgressListener(
+        localMessageId: Long,
+        listener: IFileUploadProgressListener
+    ) {
+        runBlocking {
+            fileUploadProgressMutex.withLock {
+                fileUploadProgressListeners.getOrPut(localMessageId) { mutableSetOf() }.run {
+                    add(listener)
+                }
+            }
+        }
+    }
+
+    override fun removeFileUploadProgressListener(
+        localMessageId: Long,
+        listener: IFileUploadProgressListener
+    ) {
+        runBlocking {
+            fileUploadProgressMutex.withLock {
+                fileUploadProgressListeners[localMessageId]?.run {
+                    remove(listener)
+                }
+            }
+        }
+    }
+
+    override fun send(fileInfoList: Collection<UsedeskFileInfo>) {
+        ioScope.launch {
+            fileInfoList.forEach { fileInfo ->
+                doSend(fileInfo, null)
+            }
+        }
+    }
+
+    private fun doSend(
+        fileInfo: UsedeskFileInfo,
+        localId: Long?
+    ) {
+        ioScope.launch {
+            val sendingMessage = createSendingMessage(
+                fileInfo,
+                getNextLocalId(localId)
+            )
+
+            eventListener.onMessagesNewReceived(listOf(sendingMessage))
 
             eventMutex.withLock {
-                sendingMessages.forEach(::sendFileAsync)
+                sendFileAsync(sendingMessage)
             }
         }
     }
@@ -370,6 +433,21 @@ internal class ChatInteractor @Inject constructor(
                 eventListener.onMessageUpdated(cachedNotSentMessage)
                 firstMessageLock?.withLock {}
                 val model = modelLocked()
+                val progressFlow = MutableStateFlow(0L to 0L)
+                val progressJob = CoroutineScope(Dispatchers.IO).launch {
+                    progressFlow.collect { progress ->
+                        if (progress.second != 0L) {
+                            fileUploadProgressMutex.withLock {
+                                fileUploadProgressListeners[fileMessage.localId]?.forEach {
+                                    it.onProgress(progress.first, progress.second)
+                                }
+                            }
+                            if (progress.first == progress.second) {
+                                cancel()
+                            }
+                        }
+                    }
+                }
                 val response = apiRepository.sendFile(
                     initConfiguration,
                     model.clientToken,
@@ -378,7 +456,8 @@ internal class ChatInteractor @Inject constructor(
                         cachedNotSentMessage.file.type,
                         cachedNotSentMessage.file.name
                     ),
-                    cachedNotSentMessage.localId
+                    cachedNotSentMessage.localId,
+                    progressFlow
                 )
                 when (response) {
                     is SendFileResponse.Done -> {
@@ -388,6 +467,7 @@ internal class ChatInteractor @Inject constructor(
                         sendAdditionalFieldsIfNeededAsync()
                     }
                     is SendFileResponse.Error -> {
+                        progressJob.cancel()
                         when (fileMessage) {
                             is UsedeskMessageClientFile -> fileMessage.copy(
                                 status = UsedeskMessageOwner.Client.Status.SEND_FAILED
@@ -447,7 +527,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    private fun sendText(cachedMessage: UsedeskMessageClientText) {
+    private suspend fun sendText(cachedMessage: UsedeskMessageClientText) {
         cachedMessagesRepository.addNotSentMessage(cachedMessage)
         lockFirstMessage()
         when (apiRepository.sendText(cachedMessage)) {
@@ -571,6 +651,13 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
+    /*override fun addFileProgressListener(
+        localMessageId: Long,
+        onProgress: (Int) -> Unit
+    ) {
+
+    }*/
+
     private fun launchSendForm(
         clientToken: String,
         form: UsedeskForm
@@ -628,7 +715,7 @@ internal class ChatInteractor @Inject constructor(
                     val strings =
                         listOf(clientName, clientEmail, topic) + fields + offlineForm.message
                     initClientOfflineForm = strings.joinToString(separator = "\n")
-                    chatInited?.let(this@ChatInteractor::onChatInited)
+                    chatInited?.let { onChatInited(it) }
                     SendOfflineFormResult.Done
                 }
                 else -> {
@@ -684,12 +771,14 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun removeMessage(messageId: Long) {
-        cachedMessagesRepository.getNotSentMessages()
-            .firstOrNull { it.localId == messageId }
-            ?.let {
-                cachedMessagesRepository.removeNotSentMessage(it)
-                onMessageRemove(it as UsedeskMessage)
-            }
+        ioScope.launch {
+            cachedMessagesRepository.getNotSentMessages()
+                .firstOrNull { it.localId == messageId }
+                ?.let {
+                    cachedMessagesRepository.removeNotSentMessage(it)
+                    onMessageRemove(it as UsedeskMessage)
+                }
+        }
     }
 
     override fun setMessageDraft(messageDraft: UsedeskMessageDraft) {
@@ -701,27 +790,37 @@ internal class ChatInteractor @Inject constructor(
     override fun getMessageDraft() = runBlocking { cachedMessagesRepository.getMessageDraft() }
 
     override fun sendMessageDraft() {
-        val messageDraft = runBlocking {
-            cachedMessagesRepository.setMessageDraft(
+        ioScope.launch {
+            val messageDraft = cachedMessagesRepository.setMessageDraft(
                 UsedeskMessageDraft(),
                 false
             )
-        }
 
-        send(messageDraft.text)
-        send(messageDraft.files)
+            doSend(messageDraft.text, null)
+            messageDraft.files.forEach { file ->
+                doSend(file, null)
+            }
+        }
     }
 
-    private fun createSendingMessage(text: String) = UsedeskMessageClientText(
-        cachedMessagesRepository.getNextLocalId(),
+    private suspend fun getNextLocalId(localId: Long?) =
+        localId ?: cachedMessagesRepository.getNextLocalId()
+
+    private fun createSendingMessage(
+        text: String,
+        localId: Long
+    ) = UsedeskMessageClientText(
+        localId,
         Calendar.getInstance(),
         text,
         apiRepository.convertText(text),
         UsedeskMessageOwner.Client.Status.SENDING
     )
 
-    private fun createSendingMessage(fileInfo: UsedeskFileInfo): UsedeskMessage.File {
-        val localId = cachedMessagesRepository.getNextLocalId()
+    private fun createSendingMessage(
+        fileInfo: UsedeskFileInfo,
+        localId: Long
+    ): UsedeskMessage.File {
         val calendar = Calendar.getInstance()
         val file = UsedeskFile.create(
             fileInfo.uri.toString(),
@@ -793,7 +892,7 @@ internal class ChatInteractor @Inject constructor(
         disconnect()
     }
 
-    private fun onChatInited(chatInited: ChatInited) {
+    private suspend fun onChatInited(chatInited: ChatInited) {
         val model = setModel {
             copy(
                 clientToken = chatInited.token,

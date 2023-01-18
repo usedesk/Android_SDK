@@ -605,13 +605,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_url_api"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_url_api"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/url_kb_api"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -619,13 +619,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_account_id"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_account_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/account_id_hint"
                         android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>

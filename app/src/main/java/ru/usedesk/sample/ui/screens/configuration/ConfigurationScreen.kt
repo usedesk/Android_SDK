@@ -9,7 +9,6 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -91,23 +90,8 @@ class ConfigurationScreen : UsedeskFragment() {
                 )
             }
         }
-        binding.tvServiceType.setOnClickListener {
-            PopupMenu(requireContext(), binding.tvServiceType).apply {
-                inflate(R.menu.usedesk_service_menu)
-                setOnMenuItemClickListener {
-                    updateServiceValue(
-                        when (it.itemId) {
-                            R.id.service_none -> null
-                            R.id.service_simple -> false
-                            R.id.service_foreground -> true
-                            else -> return@setOnMenuItemClickListener false
-                        }
-                    )
-                    stopService(requireContext())
-                    true
-                }
-                show()
-            }
+        binding.switchService.setOnCheckedChangeListener { _, _ ->
+            stopService(requireContext())
         }
         binding.switchMaterialComponents.setOnCheckedChangeListener { _, _ ->
             if (viewModel.isMaterialComponentsSwitched(getConfiguration())) {
@@ -143,16 +127,6 @@ class ConfigurationScreen : UsedeskFragment() {
             }
         }
         return binding.root
-    }
-
-    private fun updateServiceValue(foregroundService: Boolean?) {
-        binding.tvServiceType.text = getString(R.string.service_type_title) + ": " + getString(
-            when (foregroundService) {
-                true -> R.string.service_type_foreground
-                false -> R.string.service_type_simple
-                null -> R.string.service_type_none
-            }
-        )
     }
 
     override fun onPause() {
@@ -206,11 +180,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etCustomAgentName.text.toString(),
             binding.etCustomDateFormat.text.toString(),
             binding.etCustomTimeFormat.text.toString(),
-            when {
-                binding.tvServiceType.text.contains(getString(R.string.service_type_foreground)) -> true
-                binding.tvServiceType.text.contains(getString(R.string.service_type_simple)) -> false
-                else -> null
-            },
+            binding.switchService.isChecked,
             binding.switchCacheFiles.isChecked,
             binding.switchGroupAgentMessages.isChecked,
             binding.adaptiveTimePadding.isChecked,
@@ -241,7 +211,7 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etCustomAgentName.setText(customAgentName)
         binding.etCustomDateFormat.setText(messagesDateFormat)
         binding.etCustomTimeFormat.setText(messageTimeFormat)
-        updateServiceValue(foregroundService)
+        binding.switchService.isChecked = foregroundService
         binding.switchCacheFiles.isChecked = cacheFiles
         binding.switchGroupAgentMessages.isChecked = groupAgentMessages
         binding.adaptiveTimePadding.isChecked = adaptiveTimePadding

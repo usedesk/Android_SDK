@@ -2,9 +2,9 @@
     <string name="app_name">UseDesk SDK</string>
 
     <string name="title">Configuration</string>
-    <string name="url_chat_hint">Chat Url</string>
-    <string name="url_chat_api">Chat API Url</string>
-    <string name="url_kb_api">KB API Url</string>
+    <string name="url_chat_hint">Chat URL</string>
+    <string name="url_chat_api">Chat API URL</string>
+    <string name="url_kb_api">KB API URL</string>
     <string name="company_id_hint">Company ID</string>
     <string name="channel_id_hint">Channel ID</string>
     <string name="account_id_hint">KB ID</string>
@@ -21,11 +21,10 @@
     <string name="custom_time_format">Custom Time Format</string>
     <string name="messages_page_size">Messages Page Size</string>
     <string name="client_avatar">Client Avatar:</string>
-    <string name="service_type_title">Service Type</string>
+    <string name="service_title">Foreground Service</string>
     <string name="service_type_none">No Service</string>
-    <string name="service_type_simple">Simple Service</string>
     <string name="service_type_foreground">Foreground Service</string>
-    <string name="foreground_cache_files_hint">Cache Message Files</string>
+    <string name="cache_files_hint">Cache Message Files</string>
     <string name="material_components_theme_hint">Material Components Theme</string>
     <string name="adaptive_time_padding">Adaptive Time Padding</string>
     <string name="group_agent_messages_hint">Group Agent Messages</string>

@@ -3,6 +3,7 @@ package ru.usedesk.common_sdk.api
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
+import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -63,10 +64,12 @@ abstract class UsedeskApiRepository<API>(
         urlApi: String,
         request: REQUEST,
         responseClass: Class<RESPONSE>,
-        apiMethod: API.(parts: List<MultipartBody.Part>) -> Call<ResponseBody>
+        apiMethod: API.(parts: List<MultipartBody.Part>) -> Call<ResponseBody>,
+        progressFlow: MutableStateFlow<Pair<Long, Long>>? = null
     ): RESPONSE? {
         UsedeskLog.onLog("multipartBody") { gson.toJson(request.parts) }
-        val multipartParts = request.parts.mapNotNull(multipartConverter::convert)
+        val multipartParts =
+            request.parts.mapNotNull { multipartConverter.convert(it, progressFlow) }
         return executeSafe(
             urlApi,
             responseClass

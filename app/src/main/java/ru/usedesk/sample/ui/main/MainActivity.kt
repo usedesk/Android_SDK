@@ -43,7 +43,6 @@ import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.service.CustomForegroundNotificationsService
-import ru.usedesk.sample.service.CustomSimpleNotificationsService
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdkListener
 import java.io.File
 import java.io.FileOutputStream
@@ -231,10 +230,9 @@ class MainActivity : AppCompatActivity(),
 
     private fun initUsedeskService(configuration: Configuration) {
         setNotificationsServiceFactory(
-            when (configuration.foregroundService) {
-                true -> CustomForegroundNotificationsService.Factory()
-                false -> CustomSimpleNotificationsService.Factory()
-                else -> null
+            when {
+                configuration.foregroundService -> null
+                else -> CustomForegroundNotificationsService.Factory()
             }
         )
     }

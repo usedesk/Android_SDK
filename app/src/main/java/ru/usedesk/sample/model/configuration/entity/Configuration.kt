@@ -24,7 +24,7 @@ data class Configuration(
     val customAgentName: String = "",
     val messagesDateFormat: String = "",
     val messageTimeFormat: String = "",
-    val foregroundService: Boolean? = null,
+    val foregroundService: Boolean = false,
     val cacheFiles: Boolean = true,
     val groupAgentMessages: Boolean = true,
     val adaptiveTimePadding: Boolean = true,

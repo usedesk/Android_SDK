@@ -10,9 +10,27 @@ interface IUsedeskChat {
 
     fun isNoListeners(): Boolean
 
-    fun send(textMessage: String)
+    fun send(
+        textMessage: String,
+        localId: Long? = null
+    )
 
-    fun send(usedeskFileInfoList: List<UsedeskFileInfo>)
+    fun send(
+        fileInfo: UsedeskFileInfo,
+        localId: Long? = null
+    )
+
+    fun addFileUploadProgressListener(
+        localMessageId: Long,
+        listener: IFileUploadProgressListener
+    )
+
+    fun removeFileUploadProgressListener(
+        localMessageId: Long,
+        listener: IFileUploadProgressListener
+    )
+
+    fun send(fileInfoList: Collection<UsedeskFileInfo>)
 
     fun send(
         agentMessage: UsedeskMessageAgentText,
@@ -41,6 +59,10 @@ interface IUsedeskChat {
     fun saveForm(form: UsedeskForm)
 
     fun send(form: UsedeskForm)
+
+    interface IFileUploadProgressListener {
+        fun onProgress(sent: Long, total: Long)
+    }
 
     sealed interface SendOfflineFormResult {
         object Done : SendOfflineFormResult

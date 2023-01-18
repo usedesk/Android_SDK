@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import androidx.annotation.CheckResult
+import kotlinx.coroutines.flow.MutableStateFlow
 import ru.usedesk.chat_sdk.entity.*
 
 internal interface IApiRepository {
@@ -34,11 +35,12 @@ internal interface IApiRepository {
     fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse
 
     @CheckResult
-    fun sendFile(
+    suspend fun sendFile(
         configuration: UsedeskChatConfiguration,
         token: String,
         fileInfo: UsedeskFileInfo,
-        messageId: Long
+        messageId: Long,
+        progressFlow: MutableStateFlow<Pair<Long, Long>>
     ): SendFileResponse
 
     @CheckResult

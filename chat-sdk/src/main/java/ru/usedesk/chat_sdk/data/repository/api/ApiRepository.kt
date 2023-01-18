@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
@@ -172,11 +173,12 @@ internal class ApiRepository @Inject constructor(
         )
     )
 
-    override fun sendFile(
+    override suspend fun sendFile(
         configuration: UsedeskChatConfiguration,
         token: String,
         fileInfo: UsedeskFileInfo,
-        messageId: Long
+        messageId: Long,
+        progressFlow: MutableStateFlow<Pair<Long, Long>>
     ): SendFileResponse = when {
         isConnected() -> {
             val request = SendFile.Request(
@@ -189,7 +191,8 @@ internal class ApiRepository @Inject constructor(
                 configuration.urlChatApi,
                 request,
                 SendFile.Response::class.java,
-                RetrofitApi::postFile
+                RetrofitApi::postFile,
+                progressFlow
             )
             when (response?.status) {
                 200 -> SendFileResponse.Done

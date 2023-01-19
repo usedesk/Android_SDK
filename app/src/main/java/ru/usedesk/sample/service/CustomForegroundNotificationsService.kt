@@ -2,6 +2,7 @@ package ru.usedesk.sample.service
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.os.Build
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 import ru.usedesk.chat_sdk.service.notifications.view.UsedeskForegroundNotificationsService
 import ru.usedesk.sample.ui.main.MainActivity
@@ -17,7 +18,10 @@ class CustomForegroundNotificationsService : UsedeskForegroundNotificationsServi
         Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         },
-        0
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> PendingIntent.FLAG_IMMUTABLE
+            else -> 0
+        }
     )
 
     class Factory : UsedeskNotificationsServiceFactory() {

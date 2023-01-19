@@ -7,13 +7,13 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 
 internal interface ICachedMessagesRepository {
 
-    fun getNotSentMessages(): List<UsedeskMessageOwner.Client>
+    suspend fun getNotSentMessages(): List<UsedeskMessageOwner.Client>
 
-    fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
+    suspend fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
-    fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
+    suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
-    fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
+    suspend fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
     suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
 
@@ -29,5 +29,5 @@ internal interface ICachedMessagesRepository {
 
     suspend fun getMessageDraft(): UsedeskMessageDraft
 
-    fun getNextLocalId(): Long
+    suspend fun getNextLocalId(): Long
 }

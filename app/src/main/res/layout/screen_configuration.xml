@@ -324,15 +324,13 @@
                         app:srcCompat="@drawable/add_avatar" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <TextView
-                    android:id="@+id/tv_service_type"
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_service"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:checked="true"
                     android:padding="14dp"
-                    android:text="@string/service_type_title"
-                    android:textColor="@color/usedesk_black_2"
+                    android:text="@string/service_title"
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -341,7 +339,7 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:padding="14dp"
-                    android:text="@string/foreground_cache_files_hint"
+                    android:text="@string/cache_files_hint"
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -605,13 +603,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_url_api"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_url_api"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/url_kb_api"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -619,13 +617,13 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_account_id"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_account_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/configuration_usedesk_margin"
                         android:hint="@string/account_id_hint"
                         android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>

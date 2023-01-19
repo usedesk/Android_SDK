@@ -1,4 +1,4 @@
-# Android Usedesk SDK (v4.0.0)
+# Android Usedesk SDK (v4.0.1)
 
 ### !Важно! C версии 3.10.5 изменены методы работы с библиотекой. О всех особенностях обновления со старых версий [читайте тут.](https://github.com/usedesk/Android_SDK/releases)
 
@@ -94,7 +94,9 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 \* - обязательный параметр
 
 Для включения локальных уведомлений нужно создать 2 собственных класса:
-- Сервис, унаследованный от [UsedeskSimpleNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskSimpleNotificationsService.kt) (обычный сервис) или [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt) (foreground сервис). Где можно переопределить некоторые методы:
+- Сервис, унаследованный
+  от [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt)
+  . Где можно переопределить некоторые методы:
 
 | Метод                   | Тип возвращаемого значения | Описание события                             |
 |-------------------------|----------------------------|----------------------------------------------|

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.media.MediaMetadataRetriever
@@ -30,6 +31,7 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
@@ -794,16 +796,29 @@ internal class MessagesAdapter(
                     MediaMetadataRetriever.OPTION_CLOSEST_SYNC
                 )
                 if (preview != null) {
-                    binding.ivPreview.post {
-                        if (binding.lVideo.visibility != View.VISIBLE) {
-                            changeElements(
-                                showStub = false,
-                                showPreview = true,
-                                showPlay = true
-                            )
-                            setImage()
-                            binding.ivPreview.setImageBitmap(preview)
-                        }
+                    val previewFile = File(
+                        binding.rootView.context.cacheDir,
+                        "${usedeskFile.content.hashCode()}.jpg"
+                    )
+                    previewFile.outputStream().use { out ->
+                        preview.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                    }
+                    binding.rootView.post {
+                        setImage(
+                            binding.ivPreview,
+                            previewFile.absolutePath,
+                            0,
+                            onSuccess = {
+                                if (binding.lVideo.visibility != View.VISIBLE) {
+                                    changeElements(
+                                        showStub = false,
+                                        showPreview = true,
+                                        showPlay = true,
+                                        showVideo = true
+                                    )
+                                }
+                            }
+                        )
                     }
                 }
             }

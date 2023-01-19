@@ -11,15 +11,15 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
 fun setImage(
-    imageImageView: ImageView,
+    ivTarget: ImageView,
     pictureUrl: String,
     errorResId: Int,
     onError: () -> Unit = {},
     onSuccess: () -> Unit = {}
 ) {
-    imageImageView.setImageResource(errorResId)
+    ivTarget.setImageResource(errorResId)
     if (!TextUtils.isEmpty(pictureUrl)) {
-        Glide.with(imageImageView.context)
+        Glide.with(ivTarget.context)
             .load(pictureUrl)
             .error(errorResId)
             .listener(
@@ -28,7 +28,7 @@ fun setImage(
                     onSuccess = onSuccess
                 )
             )
-            .into(imageImageView)
+            .into(ivTarget)
     }
 }
 

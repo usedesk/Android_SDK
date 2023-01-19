@@ -2,6 +2,7 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.text.Html
 import android.text.Spannable
@@ -18,6 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.makeramen.roundedimageview.RoundedImageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
@@ -745,6 +749,7 @@ internal class MessagesAdapter(
                 showPlay = true,
             )
 
+            showPreview()
             val doOnCancelPlay = this::showPreview
 
             val doOnControlsVisibilityChanged: ((Int) -> Unit) = { height ->
@@ -779,20 +784,29 @@ internal class MessagesAdapter(
         private fun showPreview() {
             changeElements(
                 showStub = true,
-                showPlay = true,
+                showPlay = true
             )
-            /*//TODO: Не раскомменчивать до весны
-            GlideUtil.showThumbnail(binding.ivPreview,
-                usedeskFile.content,
-                onSuccess = {
-                    if (binding.pvVideo.visibility != View.VISIBLE) {
-                        changeElements(
-                            showPreview = true,
-                            showPlay = true
-                        )
+            CoroutineScope(Dispatchers.IO).launch {
+                val media = MediaMetadataRetriever()
+                media.setDataSource(usedeskFile.content)
+                val preview = media.getFrameAtTime(
+                    3,
+                    MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                )
+                if (preview != null) {
+                    binding.ivPreview.post {
+                        if (binding.lVideo.visibility != View.VISIBLE) {
+                            changeElements(
+                                showStub = false,
+                                showPreview = true,
+                                showPlay = true
+                            )
+                            setImage()
+                            binding.ivPreview.setImageBitmap(preview)
+                        }
                     }
                 }
-            )*/
+            }
         }
 
         private fun changeElements(

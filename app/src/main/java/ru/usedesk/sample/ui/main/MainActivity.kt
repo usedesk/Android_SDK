@@ -231,8 +231,8 @@ class MainActivity : AppCompatActivity(),
     private fun initUsedeskService(configuration: Configuration) {
         setNotificationsServiceFactory(
             when {
-                configuration.foregroundService -> null
-                else -> CustomForegroundNotificationsService.Factory()
+                configuration.foregroundService -> CustomForegroundNotificationsService.Factory()
+                else -> null
             }
         )
     }

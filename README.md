@@ -45,13 +45,13 @@ allprojects {
 
 ```
 //sdk чата
-implementation "com.github.Usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
+implementation "com.github.usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
 //графический интерфейс чата
-implementation "com.github.Usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
+implementation "com.github.usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
 //sdk базы знаний
-implementation "com.github.Usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
+implementation "com.github.usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
 //графический интерфейс базы знаний
-implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
+implementation "com.github.usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
 ```
 
 Добавьте в файл Manifest:

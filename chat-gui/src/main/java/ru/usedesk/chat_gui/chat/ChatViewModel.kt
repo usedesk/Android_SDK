@@ -7,9 +7,11 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import javax.inject.Inject
 
-internal class ChatViewModel : UsedeskViewModel<ChatViewModel.Model>(Model()) {
-    private val usedeskChat = UsedeskChatSdk.requireInstance()
+internal class ChatViewModel @Inject constructor(
+    private val usedeskChat: IUsedeskChat
+) : UsedeskViewModel<ChatViewModel.Model>(Model()) {
 
     private val actionListener = object : IUsedeskActionListener {
         override fun onModel(

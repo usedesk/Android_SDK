@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnChatInitedListener
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
@@ -19,7 +20,8 @@ import ru.usedesk.common_gui.*
 class UsedeskChatScreen : UsedeskFragment() {
 
     private val viewModel: ChatViewModel by viewModels(
-        ownerProducer = { findChatViewModelStoreOwner() ?: this }
+        ownerProducer = { findChatViewModelStoreOwner() ?: this },
+        factoryProducer = { ChatUiComponent.open(requireContext()).viewModelFactory }
     )
     private val playerViewModel: PlayerViewModel by viewModels(
         ownerProducer = { findChatViewModelStoreOwner() ?: this }
@@ -163,8 +165,13 @@ class UsedeskChatScreen : UsedeskFragment() {
         UsedeskChatSdk.startService(requireContext())
     }
 
-    override fun onBackPressed() =
-        mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
+    override fun onBackPressed(): Boolean {
+        val handled = mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
+        if (!handled) {
+            ChatUiComponent.close()
+        }
+        return handled
+    }
 
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.*
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
+import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagePanelAdapter
 import ru.usedesk.chat_gui.chat.messages.adapters.MessagesAdapter
@@ -31,7 +32,8 @@ import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileSize
 internal class MessagesPage : UsedeskFragment() {
 
     private val viewModel: MessagesViewModel by viewModels(
-        ownerProducer = this@MessagesPage::requireChatViewModelStoreOwner
+        ownerProducer = this@MessagesPage::requireChatViewModelStoreOwner,
+        factoryProducer = { ChatUiComponent.open(requireContext()).viewModelFactory }
     )
 
     private lateinit var binding: Binding

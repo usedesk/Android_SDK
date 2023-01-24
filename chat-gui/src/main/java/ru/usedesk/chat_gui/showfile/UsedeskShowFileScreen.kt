@@ -79,12 +79,13 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                         binding.ivImage.setOnClickListener {
                             viewModel.onImageClick()
                         }
-                        showImage(binding.ivImage,
+                        binding.ivImage.showImage(
                             new.file.content,
                             vLoading = binding.pbLoading,
                             vError = binding.ivError,
                             onSuccess = { viewModel.onLoaded(true) },
-                            onError = { viewModel.onLoaded(false) })
+                            onError = { viewModel.onLoaded(false) }
+                        )
                     } else {
                         showInstead(binding.lImage, binding.lFile, false)
 

@@ -6,7 +6,6 @@ import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 internal class MessageResponseConverter @Inject constructor() : IMessageResponseConverter {
@@ -14,11 +13,10 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
     private val emailRegex = Patterns.EMAIL_ADDRESS.toRegex()
     private val phoneRegex = Patterns.PHONE.toRegex()
     private val urlRegex = Patterns.WEB_URL.toRegex()
-    private val mdUrlRegex = """\[[^\[\]\(\)]+\]\(${urlRegex.pattern}/?\)""".toRegex()
-    private val badTagRegex1 =
-        Pattern.compile("""<((${urlRegex.pattern})|(${emailRegex.pattern}))/>""")
-    private val badTagRegex2 =
-        Pattern.compile("""<((${urlRegex.pattern})|(${emailRegex.pattern}))>""")
+    private val mdUrlRegex = """\[[^\[\]\(\)]*\]\(${urlRegex.pattern}/?\)""".toRegex()
+    private val badEmailRegex = """\[[^\[\]\(\)]*\]\(mailto:${emailRegex.pattern}/?\)""".toRegex()
+    private val badTagRegex1 = """<((${urlRegex.pattern})|(${emailRegex.pattern}))/>""".toRegex()
+    private val badTagRegex2 = """<((${urlRegex.pattern})|(${emailRegex.pattern}))>""".toRegex()
     private val nextLineRegex = """\n{2,}""".toRegex()
     private val objectRegex = """\{\{$OBJECT_ANY\}\}""".toRegex()
     private val buttonRegex = """\{\{button:($OBJECT_PART){2}$OBJECT_ANY\}\}""".toRegex()
@@ -35,8 +33,8 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
             .split('\n')
             .joinToString("\n") { line ->
                 line.trim('\r', ' ', '\u200B')
-                    .replace(badTagRegex1.toRegex()) { it.value.drop(1).dropLast(2) }
-                    .replace(badTagRegex2.toRegex()) { it.value.drop(1).dropLast(1) }
+                    .replace(badTagRegex1) { it.value.drop(1).dropLast(2) }
+                    .replace(badTagRegex2) { it.value.drop(1).dropLast(1) }
                     .convertMarkdownUrls()
                     .convertMarkdownText()
             }
@@ -286,39 +284,43 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
             .toList()
     }
 
-    private fun String.convertMarkdownUrls(): String {
-        val withMdUrlsRanges = mdUrlRegex.findAll(this, listOf(this.indices))
+    private fun String.convertMarkdownUrls(): String = StringBuilder().also { builder ->
+        var parsedRanges = listOf<IntRange>()
 
-        val noMdUrlsRanges = getExcludeRanges(withMdUrlsRanges)
+        val mdUrlsRanges = mdUrlRegex.findAll(this, getExcludeRanges(parsedRanges))
+        parsedRanges = parsedRanges + mdUrlsRanges
 
-        val emails = emailRegex.findAll(this, noMdUrlsRanges)
+        val badEmailsRanges = badEmailRegex.findAll(this, getExcludeRanges(parsedRanges))
+        parsedRanges = parsedRanges + badEmailsRanges
 
-        val withEmailsRanges = withMdUrlsRanges + emails
-        val noEmailsRanges = getExcludeRanges(withEmailsRanges)
+        val emails = emailRegex.findAll(this, getExcludeRanges(parsedRanges))
+        parsedRanges = parsedRanges + emails
 
-        val urls = urlRegex.findAll(this, noEmailsRanges)
+        val urls = urlRegex.findAll(this, getExcludeRanges(parsedRanges))
+        parsedRanges = parsedRanges + urls
 
-        val withUrlsRanges = withEmailsRanges + urls
-        val noUrlsRanges = getExcludeRanges(withUrlsRanges)
+        val phones = phoneRegex.findAll(this, getExcludeRanges(parsedRanges))
+        parsedRanges = parsedRanges + phones
 
-        val phones = phoneRegex.findAll(this, noUrlsRanges)
-
-        val withPhonesRanges = withUrlsRanges + phones
-        val noPhones = getExcludeRanges(withPhonesRanges)
-
-        val builder = StringBuilder()
-
-        (withPhonesRanges + noPhones).toSet()
+        val notParsed = getExcludeRanges(parsedRanges)
+        (parsedRanges + notParsed).toSet()
             .sortedBy(IntRange::first)
             .forEach {
-                val part = this.substring(it)
+                val part = substring(it)
                 builder.append(when (it) {
-                    in withMdUrlsRanges -> {
+                    in mdUrlsRanges -> {
                         val parts = part.trim('[', ')')
                             .split("](")
                         val url = parts[1]
                         val title = parts[0].ifEmpty { url }
                         makeHtmlUrl(url, title)
+                    }
+                    in badEmailsRanges -> {
+                        val parts = part.trim('[', ')')
+                            .split("](")
+                        val url = parts[1].drop(7)
+                        val title = parts[0].ifEmpty { url }
+                        makeHtmlUrl("mailto:$url", title)
                     }
                     in urls -> makeHtmlUrl(part)
                     in emails -> makeHtmlUrl("mailto:$part", part)
@@ -326,9 +328,7 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
                     else -> part
                 })
             }
-
-        return builder.toString()
-    }
+    }.toString()
 
     private fun makeHtmlUrl(url: String, title: String = url) = "<a href=\"$url\">$title</a>"
 

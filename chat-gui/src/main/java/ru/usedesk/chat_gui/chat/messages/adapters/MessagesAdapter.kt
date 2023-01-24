@@ -1,9 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
-import android.graphics.Bitmap
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.text.Html
 import android.text.Spannable
@@ -22,7 +20,8 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
@@ -31,7 +30,7 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
-import java.io.File
+import ru.usedesk.common_sdk.UsedeskLog
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
@@ -516,7 +515,7 @@ internal class MessagesAdapter(
                     else -> {
                         visibleState = View.VISIBLE
                         invisibleState = View.INVISIBLE
-                        setImage(agentBinding.ivAvatar, messageAgent.avatar, avatarImageId)
+                        agentBinding.ivAvatar.showImage(messageAgent.avatar, avatarImageId)
                     }
                 }
             }
@@ -676,8 +675,7 @@ internal class MessagesAdapter(
 
             when (oldItem?.isIdEquals(chatItem)) {
                 null -> {
-                    showImage(
-                        binding.ivPreview,
+                    binding.ivPreview.showImage(
                         messageFile.file.content,
                         vError = binding.ivError,
                         onSuccess = {
@@ -696,12 +694,11 @@ internal class MessagesAdapter(
                     )
                 }
                 else -> {
-                    clearImage(binding.ivPreview)
-
+                    binding.ivPreview.clearImage()
                     binding.ivPreview.setOnClickListener(null)
                     binding.ivError.setOnClickListener(null)
 
-                    showImage(binding.ivPreview,
+                    binding.ivPreview.showImage(
                         messageFile.file.content,
                         loadingImageId,
                         binding.pbLoading,
@@ -731,6 +728,8 @@ internal class MessagesAdapter(
 
         private val defaultTimeBottomPadding = binding.tvTime.marginBottom
 
+        private var thumbnailScope = CoroutineScope(Dispatchers.Main)
+
         init {
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -744,14 +743,13 @@ internal class MessagesAdapter(
         }
 
         private fun bindVideo(messageFile: UsedeskMessage.File) {
+            thumbnailScope.cancel()
+            thumbnailScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
             this.usedeskFile = messageFile.file
 
-            changeElements(
-                showStub = true,
-                showPlay = true,
-            )
+            changeElements(showStub = true)
 
-            showPreview()
+            UsedeskLog.onLog("messageFileId") { messageFile.id.toString() }
             val doOnCancelPlay = this::showPreview
 
             val doOnControlsVisibilityChanged: ((Int) -> Unit) = { height ->
@@ -769,7 +767,7 @@ internal class MessagesAdapter(
                     doOnCancelPlay,
                     doOnControlsVisibilityChanged
                 )
-                changeElements(showVideo = true)
+                changeElements()
             }
 
             if (mediaPlayerAdapter.reattachPlayer(
@@ -779,61 +777,48 @@ internal class MessagesAdapter(
                     doOnControlsVisibilityChanged
                 )
             ) {
-                changeElements(showVideo = true)
+                changeElements()
             }
-        }
 
-        private fun showPreview() {
-            changeElements(
-                showStub = true,
-                showPlay = true
-            )
-            CoroutineScope(Dispatchers.IO).launch {
-                val media = MediaMetadataRetriever()
-                media.setDataSource(usedeskFile.content)
-                val preview = media.getFrameAtTime(
-                    3,
-                    MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                )
-                if (preview != null) {
-                    val previewFile = File(
-                        binding.rootView.context.cacheDir,
-                        "${usedeskFile.content.hashCode()}.jpg"
-                    )
-                    previewFile.outputStream().use { out ->
-                        preview.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                    }
-                    binding.rootView.post {
-                        setImage(
-                            binding.ivPreview,
-                            previewFile.absolutePath,
-                            0,
+            binding.ivPreview.setImageDrawable(null)
+            val localId = (messageFile as? UsedeskMessageOwner.Client)?.localId ?: messageFile.id
+            val scope = thumbnailScope
+            viewModel.modelFlow.onEachWithOld(scope) { old, new ->
+                if (old?.thumbnailMap != new.thumbnailMap) {
+                    val oldThumbnail = old?.thumbnailMap?.get(localId)
+                    val newThumbnail = new.thumbnailMap[localId]
+                    if (oldThumbnail != newThumbnail && newThumbnail != null) {
+                        binding.ivPreview.showImage(newThumbnail.toString(),
                             onSuccess = {
-                                if (binding.lVideo.visibility != View.VISIBLE) {
+                                if (binding.ivPlay.visibility == View.VISIBLE) {
                                     changeElements(
                                         showStub = false,
-                                        showPreview = true,
-                                        showPlay = true,
-                                        showVideo = true
+                                        showPreview = true
                                     )
                                 }
                             }
                         )
+                        scope.cancel()
                     }
                 }
             }
         }
 
+        private fun showPreview() {
+            val showPreview = binding.ivPreview.drawable != null
+            changeElements(
+                showStub = !showPreview,
+                showPreview = showPreview
+            )
+        }
+
         private fun changeElements(
             showStub: Boolean = false,
-            showPreview: Boolean = false,
-            showPlay: Boolean = false,
-            showVideo: Boolean = false
+            showPreview: Boolean = false
         ) {
             binding.lStub.visibility = visibleInvisible(showStub)
             binding.ivPreview.visibility = visibleInvisible(showPreview)
-            binding.ivPlay.visibility = visibleInvisible(showPlay)
-            binding.lVideo.visibility = visibleInvisible(showVideo)
+            binding.ivPlay.visibility = visibleInvisible(showStub || showPreview)
         }
 
         override fun bind(chatItem: ChatItem) {

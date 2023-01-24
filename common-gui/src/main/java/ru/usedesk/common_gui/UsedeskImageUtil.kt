@@ -1,8 +1,8 @@
 package ru.usedesk.common_gui
 
-import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -10,30 +10,34 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
-fun setImage(
-    ivTarget: ImageView,
-    pictureUrl: String,
-    errorResId: Int,
+
+fun ImageView.showImage(
+    url: String,
+    @DrawableRes errorResId: Int = 0,
     onError: () -> Unit = {},
     onSuccess: () -> Unit = {}
 ) {
-    ivTarget.setImageResource(errorResId)
-    if (!TextUtils.isEmpty(pictureUrl)) {
-        Glide.with(ivTarget.context)
-            .load(pictureUrl)
-            .error(errorResId)
-            .listener(
-                AppRequestListener(
-                    onError = onError,
-                    onSuccess = onSuccess
-                )
+    if (url.isNotEmpty()) {
+        val base = Glide.with(this)
+            .load(url)
+
+        when (errorResId) {
+            0 -> base
+            else -> base.error(errorResId)
+        }.listener(
+            AppRequestListener(
+                onError = onError,
+                onSuccess = onSuccess
             )
-            .into(ivTarget)
+        ).into(this)
+    } else {
+        if (errorResId != 0) {
+            setImageResource(errorResId)
+        }
     }
 }
 
-fun showImage(
-    ivTarget: ImageView,
+fun ImageView.showImage(
     url: String,
     loadingId: Int = 0,
     vLoading: View? = null,
@@ -45,7 +49,7 @@ fun showImage(
 ) {
     showImageStatus(vLoading, true, vError, false)
 
-    var glide = Glide.with(ivTarget.context)
+    var glide = Glide.with(context)
         .load(url)
         .listener(AppRequestListener(vLoading, vError, onSuccess, onError))
 
@@ -55,21 +59,20 @@ fun showImage(
         else -> glide.diskCacheStrategy(DiskCacheStrategy.ALL)
     }
 
-    glide = when (ivTarget.scaleType) {
+    glide = when (scaleType) {
         ImageView.ScaleType.FIT_CENTER -> glide.fitCenter()
         else -> glide.centerCrop()
     }
 
     when {
         loadingId != 0 -> glide.placeholder(loadingId)
-        oldPlaceholder -> glide.placeholder(ivTarget.drawable)
+        oldPlaceholder -> glide.placeholder(drawable)
         else -> glide
-    }.into(ivTarget)
+    }.into(this)
 }
 
-fun clearImage(ivTarget: ImageView) {
-    Glide.with(ivTarget.context)
-        .clear(ivTarget)
+fun ImageView.clearImage() {
+    Glide.with(context).clear(this)
 }
 
 private fun showImageStatus(
@@ -83,14 +86,6 @@ private fun showImageStatus(
     }
     if (vError != null) {
         vError.visibility = visibleGone(errorShow)
-    }
-}
-
-private fun onAction(action: () -> Unit) {
-    try {
-        action()
-    } catch (ignored: Exception) {
-
     }
 }
 
@@ -122,5 +117,13 @@ internal class AppRequestListener<T>(
         showImageStatus(vLoading, false, vError, false)
         onAction(onSuccess)
         return false
+    }
+
+    private fun onAction(action: () -> Unit) {
+        try {
+            action()
+        } catch (ignored: Exception) {
+
+        }
     }
 }

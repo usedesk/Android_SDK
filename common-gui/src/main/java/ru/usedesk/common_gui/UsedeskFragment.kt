@@ -12,9 +12,9 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -229,12 +229,12 @@ abstract class UsedeskFragment : Fragment() {
 }
 
 fun <T> Flow<T>.onEachWithOld(
-    lifecycleCoroutineScope: LifecycleCoroutineScope,
+    scope: CoroutineScope,
     action: suspend (old: T?, new: T) -> Unit
 ) {
     var oldValue: T? = null
     onEach { new ->
         action(oldValue, new)
         oldValue = new
-    }.launchIn(lifecycleCoroutineScope)
+    }.launchIn(scope)
 }

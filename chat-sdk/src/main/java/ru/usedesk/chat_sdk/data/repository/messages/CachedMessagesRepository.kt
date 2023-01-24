@@ -41,9 +41,9 @@ internal class CachedMessagesRepository @Inject constructor(
                             }
                         )
                     )
-                    deferredCachedUriMap.putAll(messageDraft.files.map {
-                        it.uri to CompletableDeferred(it.uri)
-                    })
+                    val cachedFiles = messageDraft.files
+                        .map { it.uri to CompletableDeferred(it.uri) }
+                    deferredCachedUriMap.putAll(cachedFiles)
                 }
             }
         }

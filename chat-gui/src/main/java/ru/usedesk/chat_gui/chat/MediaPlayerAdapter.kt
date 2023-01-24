@@ -72,10 +72,9 @@ internal class MediaPlayerAdapter(
             videoBinding.controls.startAnimation(
                 AnimationUtils.loadAnimation(
                     fragment.requireContext(),
-                    if (visible) {
-                        R.anim.usedesk_fade_in
-                    } else {
-                        R.anim.usedesk_fade_out
+                    when {
+                        visible -> R.anim.usedesk_fade_in
+                        else -> R.anim.usedesk_fade_out
                     }
                 )
             )
@@ -146,9 +145,7 @@ internal class MediaPlayerAdapter(
 
             override fun onResume(owner: LifecycleOwner) {
                 val model = playerViewModel.modelFlow.value
-                if (model.fullscreen &&
-                    (model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER)
-                ) {
+                if (model.fullscreen && model.mode == PlayerViewModel.Mode.VIDEO_EXO_PLAYER) {
                     fullscreenListener?.onFullscreenChanged(true)
                 }
             }

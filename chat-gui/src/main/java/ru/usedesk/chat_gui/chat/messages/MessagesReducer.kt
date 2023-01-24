@@ -1,14 +1,19 @@
 package ru.usedesk.chat_gui.chat.messages
 
+import ru.usedesk.chat_gui.chat.data.thumbnail.IThumbnailRepository
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.min
 
-internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
+internal class MessagesReducer @Inject constructor(
+    private val thumbnailRepository: IThumbnailRepository,
+    private val usedeskChat: IUsedeskChat
+) {
 
     fun reduceModel(state: State, event: Event): State = state.reduce(event)
 
@@ -29,8 +34,13 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
         is Event.FormChanged -> formChanged(event)
         is Event.FormApplyClick -> formApplyClick(event)
         is Event.FormListClicked -> formListClicked(event)
+        is Event.ThumbnailMap -> thumbnailMap(event)
         Event.SendDraft -> sendDraft()
     }
+
+    private fun State.thumbnailMap(event: Event.ThumbnailMap): State = copy(
+        thumbnailMap = event.map
+    )
 
     private fun State.formApplyClick(event: Event.FormApplyClick): State {
         val form = formMap[event.messageId]
@@ -175,8 +185,14 @@ internal class MessagesReducer(private val usedeskChat: IUsedeskChat) {
     private fun State.init(event: Event.Init) =
         copy(groupAgentMessages = event.groupAgentMessages)
 
-
     private fun State.messagesShowed(event: Event.MessagesShowed): State {
+        event.messagesRange.forEach { index ->
+            val chatItem = chatItems.getOrNull(index)
+            val message = (chatItem as? ChatItem.Message)?.message as? UsedeskMessage.File
+            if (message != null) {
+                thumbnailRepository.loadThumbnail(message)
+            }
+        }
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
             i <= event.messagesRange.last && chatItems[i] is ChatItem.Message
         }

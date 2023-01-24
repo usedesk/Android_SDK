@@ -41,14 +41,12 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
         }
     }
 
-    fun onBackPressed(): Boolean {
-        val modelValue = modelFlow.value
-        return if (modelValue.fullscreen || modelValue.fullscreen) {
+    fun onBackPressed() = when {
+        modelFlow.value.fullscreen -> {
             setModel { copy(fullscreen = false) }
             true
-        } else {
-            false
         }
+        else -> false
     }
 
     fun reset() {
@@ -66,6 +64,7 @@ internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()
         super.onCleared()
 
         exoPlayer?.release()
+        exoPlayer = null
     }
 
     data class Model(

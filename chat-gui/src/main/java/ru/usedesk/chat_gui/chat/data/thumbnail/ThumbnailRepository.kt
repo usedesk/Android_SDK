@@ -15,17 +15,15 @@ import java.io.File
 import javax.inject.Inject
 
 internal class ThumbnailRepository @Inject constructor(
-    private val appContext: Context
+    appContext: Context
 ) : IThumbnailRepository {
-    override val thumbnailMapFlow = MutableStateFlow<Map<Long, Uri>>(mapOf())
+    private val cacheDir = appContext.cacheDir
+
     private val handledSet = mutableSetOf<Long>()
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val mutex = Mutex()
-    private val cacheDir = appContext.cacheDir
 
-    init {
-        println()
-    }
+    override val thumbnailMapFlow = MutableStateFlow<Map<Long, Uri>>(mapOf())
 
     override fun loadThumbnail(message: UsedeskMessage.File) {
         if (message.file.isVideo()) {
@@ -35,7 +33,7 @@ internal class ThumbnailRepository @Inject constructor(
                     val localId = (message as? UsedeskMessageOwner.Client)?.localId ?: id
                     if (!handledSet.contains(localId) || !handledSet.contains(id)) {
                         handledSet.add(id)
-                        launchLoadPreview(id, localId, message.file.content.toUri())
+                        launchLoadThumbnail(id, localId, message.file.content.toUri())
                     }
                 }
             }
@@ -44,12 +42,11 @@ internal class ThumbnailRepository @Inject constructor(
 
     private fun Long.toFile() = File(cacheDir, "thumbnail_${toString().replace('-', '_')}.jpg")
 
-    private fun launchLoadPreview(id: Long, localId: Long, videoUri: Uri) {
+    private fun launchLoadThumbnail(id: Long, localId: Long, videoUri: Uri) {
         ioScope.launch {
             val thumbnailFile = localId.toFile()
-            var thumbnailUri: Uri? = null
-            if (thumbnailFile.exists()) {
-                thumbnailUri = when (localId) {
+            val thumbnailUri = if (thumbnailFile.exists()) {
+                when (localId) {
                     id -> thumbnailFile.toUri()
                     else -> {
                         val newThumbnailFile = id.toFile()
@@ -59,11 +56,15 @@ internal class ThumbnailRepository @Inject constructor(
                 }
             } else {
                 val media = MediaMetadataRetriever()
-                while (true) {
-                    try {
-                        media.setDataSource(videoUri.toString())
-                        val thumbnailBitmap = media.getFrameAtTime(0)
-                        if (thumbnailBitmap != null) {
+                try {
+                    val path = videoUri.toString()
+                    when (videoUri.scheme) {
+                        "file" -> media.setDataSource(path)
+                        else -> media.setDataSource(path, mapOf())
+                    }
+                    when (val thumbnailBitmap = media.getFrameAtTime(0)) {
+                        null -> null
+                        else -> {
                             thumbnailFile.outputStream().use { out ->
                                 thumbnailBitmap.compress(
                                     Bitmap.CompressFormat.JPEG,
@@ -71,22 +72,25 @@ internal class ThumbnailRepository @Inject constructor(
                                     out
                                 )
                             }
-                            thumbnailUri = thumbnailFile.toUri()
+                            thumbnailFile.toUri()
                         }
-                        break
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        delay(5000)
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                } finally {
+                    media.release()
                 }
-                media.release()
             }
-            if (thumbnailUri != null) {
-                mutex.withLock {
-                    val map = thumbnailMapFlow.value.toMutableMap().apply {
+            if (thumbnailUri == null) {
+                delay(5000)
+            }
+            mutex.withLock {
+                when (thumbnailUri) {
+                    null -> handledSet.remove(id)
+                    else -> thumbnailMapFlow.value = thumbnailMapFlow.value.toMutableMap().apply {
                         set(localId, thumbnailUri)
                     }
-                    thumbnailMapFlow.value = map
                 }
             }
         }

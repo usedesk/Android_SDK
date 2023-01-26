@@ -29,6 +29,8 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
             .replace("""<em data-verified="redactor" data-redactor-tag="em">""", "<i>")
             .replace("</em>", "</i>")
             .replace("</p>", "")
+            .replace("<br/>", "\n")
+            .replace("<br>", "\n")
             .removePrefix("<p>")
             .split('\n')
             .joinToString("\n") { line ->

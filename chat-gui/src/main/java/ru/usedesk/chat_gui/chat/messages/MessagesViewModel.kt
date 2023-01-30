@@ -1,5 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages
 
+import android.net.Uri
+import ru.usedesk.chat_gui.chat.data.thumbnail.IThumbnailRepository
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -8,13 +10,26 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
+import javax.inject.Inject
 
-internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(State()) {
+internal class MessagesViewModel @Inject constructor(
+    private val thumbnailRepository: IThumbnailRepository,
+    private val usedeskChat: IUsedeskChat,
+    private val messagesReducer: MessagesReducer
+) : UsedeskViewModel<MessagesViewModel.State>(State()) {
 
-    private val actionListener: IUsedeskActionListener
-    private val usedeskChat = UsedeskChatSdk.requireInstance()
-
-    private val messagesReducer = MessagesReducer(usedeskChat)
+    private val actionListener: IUsedeskActionListener = object : IUsedeskActionListener {
+        override fun onModel(
+            model: IUsedeskChat.Model,
+            newMessages: List<UsedeskMessage>,
+            updatedMessages: List<UsedeskMessage>,
+            removedMessages: List<UsedeskMessage>
+        ) {
+            doMain {
+                onEvent(Event.ChatModel(model))
+            }
+        }
+    }
 
     fun onEvent(event: Event) {
         setModel { messagesReducer.reduceModel(this, event) }
@@ -23,16 +38,9 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
     init {
         onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
-        actionListener = object : IUsedeskActionListener {
-            override fun onModel(
-                model: IUsedeskChat.Model,
-                newMessages: List<UsedeskMessage>,
-                updatedMessages: List<UsedeskMessage>,
-                removedMessages: List<UsedeskMessage>
-            ) {
-                doMain {
-                    onEvent(Event.ChatModel(model))
-                }
+        doMain {
+            thumbnailRepository.thumbnailMapFlow.collect { thumbNailMap ->
+                onEvent(Event.ThumbnailMap(thumbNailMap))
             }
         }
         usedeskChat.addActionListener(actionListener)
@@ -52,6 +60,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
         class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
         class MessagesShowed(val messagesRange: IntRange) : Event
         class MessageChanged(val message: String) : Event
+        class ThumbnailMap(val map: Map<Long, Uri>) : Event
 
         //class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Event
         class SendFeedback(
@@ -75,6 +84,7 @@ internal class MessagesViewModel : UsedeskViewModel<MessagesViewModel.State>(Sta
     data class State(
         val messages: List<UsedeskMessage> = listOf(),
         val formMap: Map<Long, UsedeskForm> = mapOf(),
+        val thumbnailMap: Map<Long, Uri> = mapOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val formSelector: FormSelector? = null,

@@ -350,13 +350,6 @@ internal class MessagesReducer @Inject constructor(
     private fun UsedeskMessageOwner.Agent.isAgentsTheSame(other: UsedeskMessageOwner.Agent): Boolean =
         avatar == other.avatar && name == other.name
 
-    /*private fun ioEvent(getEvent: suspend () -> Event) {
-        viewModel.doIo {
-            val intent = getEvent()
-            viewModel.doMain { viewModel.onEvent(intent) }
-        }
-    }*/
-
     companion object {
         private const val ITEMS_UNTIL_LAST = 5
     }

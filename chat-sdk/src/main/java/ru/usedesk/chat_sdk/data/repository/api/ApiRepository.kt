@@ -24,6 +24,7 @@ import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
 import java.io.ByteArrayOutputStream
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.min
@@ -233,8 +234,11 @@ internal class ApiRepository @Inject constructor(
 
     private fun String.toFileBytes() = try {
         val uri = Uri.parse(this)
-        val originalBitmap = contentResolver.openInputStream(uri)
-            .use(BitmapFactory::decodeStream)
+        val input = when {
+            (uri.scheme ?: "").startsWith("http") -> URL(this).openStream()
+            else -> contentResolver.openInputStream(uri)
+        }
+        val originalBitmap = input.use(BitmapFactory::decodeStream)
         val side = min(originalBitmap.width, originalBitmap.height)
         val outputStream = ByteArrayOutputStream()
 

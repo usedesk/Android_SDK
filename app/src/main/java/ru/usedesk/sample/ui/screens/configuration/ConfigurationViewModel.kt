@@ -1,8 +1,5 @@
 package ru.usedesk.sample.ui.screens.configuration
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
@@ -17,9 +14,6 @@ import ru.usedesk.sample.ui.screens.configuration.ConfigurationViewModel.Model
 
 class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     private val configurationRepository = ServiceLocator.instance.configurationRepository
-
-    private val mainScope = CoroutineScope(Dispatchers.Main)
-    private val ioScope = CoroutineScope(Dispatchers.IO)
 
     data class Model(
         val configuration: Configuration = Configuration(),
@@ -139,13 +133,6 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
                 }
             }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-        mainScope.cancel()
-        ioScope.cancel()
     }
 
     data class ClientToken(

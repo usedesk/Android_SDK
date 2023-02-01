@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.loading
 
+import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
@@ -20,7 +21,7 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
         ) {
-            doMain {
+            mainScope.launch {
                 setModel {
                     copy(
                         state = when (model.connectionState) {

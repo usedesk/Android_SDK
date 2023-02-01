@@ -34,10 +34,9 @@ internal class CachedMessagesRepository @Inject constructor(
                     messagesRepository.setDraft(
                         userKey,
                         messageDraft.copy(
-                            files = if (configuration.cacheMessagesWithFile) {
-                                messageDraft.files
-                            } else {
-                                listOf()
+                            files = when {
+                                configuration.cacheMessagesWithFile -> messageDraft.files
+                                else -> listOf()
                             }
                         )
                     )

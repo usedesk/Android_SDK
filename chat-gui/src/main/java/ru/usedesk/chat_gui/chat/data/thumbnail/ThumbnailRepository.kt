@@ -40,16 +40,22 @@ internal class ThumbnailRepository @Inject constructor(
         }
     }
 
-    private fun Long.toFile() = File(cacheDir, "thumbnail_${toString().replace('-', '_')}.jpg")
+    private fun Long.toFile(withTimeStamp: Boolean): File {
+        val timeStamp = when {
+            withTimeStamp -> System.currentTimeMillis().toString()
+            else -> ""
+        }
+        return File(cacheDir, "thumbnail_$timeStamp${toString().replace('-', '_')}.jpg")
+    }
 
     private fun launchLoadThumbnail(id: Long, localId: Long, videoUri: Uri) {
         ioScope.launch {
-            val thumbnailFile = localId.toFile()
+            val thumbnailFile = localId.toFile(true)
             val thumbnailUri = if (thumbnailFile.exists()) {
                 when (localId) {
                     id -> thumbnailFile.toUri()
                     else -> {
-                        val newThumbnailFile = id.toFile()
+                        val newThumbnailFile = id.toFile(false)
                         thumbnailFile.renameTo(newThumbnailFile)
                         newThumbnailFile.toUri()
                     }

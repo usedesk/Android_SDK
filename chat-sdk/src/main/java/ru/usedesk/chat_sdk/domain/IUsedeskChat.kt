@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.domain
 
+import android.net.Uri
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 
@@ -78,6 +79,7 @@ interface IUsedeskChat {
         val previousPageIsLoading: Boolean = false,
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
-        val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null
+        val feedbackEvent: UsedeskSingleLifeEvent<Unit>? = null,
+        val thumbnailMap: Map<Long, Uri> = mapOf()
     )
 }

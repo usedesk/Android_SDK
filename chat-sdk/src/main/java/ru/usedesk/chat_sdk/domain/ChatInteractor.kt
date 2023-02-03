@@ -53,6 +53,7 @@ internal class ChatInteractor @Inject constructor(
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
     private var additionalFieldsNeeded: Boolean = true
+    private var previousMessagesLoadingJob: Job? = null
 
     private sealed interface Send {
         val localId: Long?
@@ -85,11 +86,15 @@ internal class ChatInteractor @Inject constructor(
         override fun onDisconnected() {
             runBlocking {
                 reconnectJob?.cancel()
+                previousMessagesLoadingJob?.cancel()
                 reconnectJob = ioScope.launch {
                     delay(REPEAT_DELAY)
                     connect()
                 }
-                setModel { copy(connectionState = UsedeskConnectionState.DISCONNECTED) }
+                setModel {
+                    previousMessagesLoadingJob = null
+                    copy(connectionState = UsedeskConnectionState.DISCONNECTED)
+                }
             }
         }
 
@@ -305,13 +310,6 @@ internal class ChatInteractor @Inject constructor(
             }
         }
         setModel { copy(messages = old + messages + new) }
-    }
-
-    private fun disconnect() {
-        reconnectJob?.cancel()
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            apiRepository.disconnect()
-        }
     }
 
     override fun addActionListener(listener: IUsedeskActionListener) {
@@ -834,6 +832,32 @@ internal class ChatInteractor @Inject constructor(
         UsedeskMessageOwner.Client.Status.SENDING
     )
 
+    private fun launchPreviousMessagesLoading(
+        oldestMessageId: Long,
+        clientToken: String,
+    ) = ioScope.launch {
+        while (true) {
+            val response = apiRepository.loadPreviousMessages(
+                initConfiguration,
+                clientToken,
+                oldestMessageId
+            )
+            when (response) {
+                is LoadPreviousMessageResponse.Done -> {
+                    setModel {
+                        previousMessagesLoadingJob = null
+                        copy(
+                            previousPageIsLoading = false,
+                            previousPageIsAvailable = response.messages.isNotEmpty()
+                        )
+                    }
+                    break
+                }
+                is LoadPreviousMessageResponse.Error -> delay(5000)
+            }
+        }
+    }
+
     override fun loadPreviousMessagesPage() {
         setModel {
             when (val oldestMessageId = messages.firstOrNull()?.id) {
@@ -841,21 +865,11 @@ internal class ChatInteractor @Inject constructor(
                 else -> copy(
                     previousPageIsLoading = when {
                         !previousPageIsLoading && previousPageIsAvailable -> {
-                            ioScope.launch {
-                                val response = apiRepository.loadPreviousMessages(
-                                    initConfiguration,
-                                    clientToken,
-                                    oldestMessageId
-                                )
-                                setModel {
-                                    copy(
-                                        previousPageIsLoading = false,
-                                        previousPageIsAvailable =
-                                        response !is LoadPreviousMessageResponse.Done ||
-                                                response.messages.isNotEmpty()
-                                    )
-                                }
-                            }
+                            previousMessagesLoadingJob?.cancel()
+                            previousMessagesLoadingJob = launchPreviousMessagesLoading(
+                                oldestMessageId,
+                                clientToken
+                            )
                             true
                         }
                         else -> previousPageIsLoading
@@ -867,7 +881,9 @@ internal class ChatInteractor @Inject constructor(
 
     override fun release() {
         ioScope.cancel()
-        disconnect()
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            apiRepository.disconnect()
+        }
     }
 
     private fun Mutex.unlockSafe(owner: Any? = null) {

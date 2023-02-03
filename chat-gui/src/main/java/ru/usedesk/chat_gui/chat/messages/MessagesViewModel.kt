@@ -2,7 +2,6 @@ package ru.usedesk.chat_gui.chat.messages
 
 import android.net.Uri
 import kotlinx.coroutines.launch
-import ru.usedesk.chat_gui.chat.data.thumbnail.IThumbnailRepository
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -14,7 +13,6 @@ import java.util.*
 import javax.inject.Inject
 
 internal class MessagesViewModel @Inject constructor(
-    private val thumbnailRepository: IThumbnailRepository,
     private val usedeskChat: IUsedeskChat,
     private val messagesReducer: MessagesReducer
 ) : UsedeskViewModel<MessagesViewModel.State>(State()) {
@@ -35,11 +33,6 @@ internal class MessagesViewModel @Inject constructor(
     init {
         onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
-        mainScope.launch {
-            thumbnailRepository.thumbnailMapFlow.collect { thumbNailMap ->
-                onEvent(Event.ThumbnailMap(thumbNailMap))
-            }
-        }
         usedeskChat.addActionListener(actionListener)
     }
 
@@ -61,7 +54,6 @@ internal class MessagesViewModel @Inject constructor(
         class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
         class MessagesShowed(val messagesRange: IntRange) : Event
         class MessageChanged(val message: String) : Event
-        class ThumbnailMap(val map: Map<Long, Uri>) : Event
 
         class SendFeedback(
             val message: UsedeskMessageAgentText,

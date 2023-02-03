@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.data.thumbnail
+package ru.usedesk.chat_sdk.data.repository.thumbnail
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.common_sdk.UsedeskLog
 import java.io.File
 import javax.inject.Inject
 
@@ -40,16 +41,19 @@ internal class ThumbnailRepository @Inject constructor(
         }
     }
 
-    private fun Long.toFile() = File(cacheDir, "thumbnail_${toString().replace('-', '_')}.jpg")
+    private fun Long.toFile(): File =
+        File(cacheDir, "thumbnail_${toString().replace('-', '_')}.jpg")
 
     private fun launchLoadThumbnail(id: Long, localId: Long, videoUri: Uri) {
         ioScope.launch {
             val thumbnailFile = localId.toFile()
             val thumbnailUri = if (thumbnailFile.exists()) {
+                UsedeskLog.onLog("exist") { thumbnailFile.toString() }
                 when (localId) {
                     id -> thumbnailFile.toUri()
                     else -> {
                         val newThumbnailFile = id.toFile()
+                        UsedeskLog.onLog("renamed") { "$thumbnailFile to $newThumbnailFile" }
                         thumbnailFile.renameTo(newThumbnailFile)
                         newThumbnailFile.toUri()
                     }
@@ -89,7 +93,12 @@ internal class ThumbnailRepository @Inject constructor(
                 when (thumbnailUri) {
                     null -> handledSet.remove(id)
                     else -> thumbnailMapFlow.value = thumbnailMapFlow.value.toMutableMap().apply {
+                        UsedeskLog.onLog(localId.toString()) { thumbnailUri.toString() }
+                        UsedeskLog.onLog(id.toString()) { thumbnailUri.toString() }
                         set(localId, thumbnailUri)
+                        if (localId != id) {
+                            set(id, thumbnailUri)
+                        }
                     }
                 }
             }

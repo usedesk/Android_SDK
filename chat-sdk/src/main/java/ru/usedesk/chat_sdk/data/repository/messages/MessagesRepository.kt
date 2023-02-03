@@ -8,15 +8,12 @@ import com.google.gson.Gson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.entity.*
-import java.io.File
 import java.util.*
 
 internal class MessagesRepository(
     private val appContext: Context,
     private val gson: Gson,
-    private val fileLoader: IFileLoader,
     private val configuration: UsedeskChatConfiguration,
     private val messageResponseConverter: MessageResponseConverter
 ) : IUsedeskMessagesRepository {
@@ -26,7 +23,6 @@ internal class MessagesRepository(
     private val notSentMessages = hashMapOf<Long, NotSentMessage>()
     private var messageDraft = UsedeskMessageDraft()
     private var mutex = Mutex()
-    private var lastLocalId: Long = 0L
 
     private fun getSharedPreferences(userKey: String) = appContext.getSharedPreferences(
         PREF_NAME + userKey,
@@ -105,17 +101,12 @@ internal class MessagesRepository(
         messageDraft
     }
 
-    override suspend fun addFileToCache(uri: Uri) = fileLoader.toCache(uri)
-
-    override suspend fun removeFileFromCache(uri: Uri) {
-        File(uri.toString()).delete()
-    }
-
-    override suspend fun getNextLocalId(userKey: String) = mutex.withLock {
-        getSharedPreferences(userKey).run {
-            initIfNeeded()
+    override suspend fun getNextLocalId() = mutex.withLock {
+        var lastLocalId = -10000L
+        getSharedPreferences("").run {
             edit {
-                putLong(LOCAL_ID_KEY, --lastLocalId)
+                lastLocalId = getLong(LOCAL_ID_KEY, lastLocalId) - 1
+                putLong(LOCAL_ID_KEY, lastLocalId)
             }
         }
 
@@ -125,8 +116,6 @@ internal class MessagesRepository(
     private fun SharedPreferences.initIfNeeded() {
         if (!inited) {
             inited = true
-
-            lastLocalId = getLong(LOCAL_ID_KEY, 0L)
 
             val notSentMessagesJson = getString(NOT_SENT_MESSAGES_KEY, null)
 

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.offlineform
 
+import kotlinx.coroutines.launch
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormItem
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
 import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormText
@@ -21,41 +22,47 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     private val configuration = UsedeskChatSdk.requireConfiguration()
 
     private val actionListener: IUsedeskActionListener = object : IUsedeskActionListener {
-        private var offlineFormSettings: UsedeskOfflineFormSettings? = null
         override fun onModel(
             model: IUsedeskChat.Model,
             newMessages: List<UsedeskMessage>,
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
         ) {
-            doMain {
-                if (model.offlineFormSettings != offlineFormSettings) {
-                    model.offlineFormSettings?.run {
-                        val subjectField = OfflineFormList(
-                            TOPIC_KEY,
-                            topicsTitle,
-                            topicsRequired,
-                            topics,
-                            -1
-                        )
-                        val additionalFields = fields.map { customField ->
-                            OfflineFormText(
-                                customField.key,
-                                customField.placeholder,
-                                customField.required,
-                                ""
-                            )
+            mainScope.launch {
+                setModel {
+                    when (model.offlineFormSettings) {
+                        offlineFormSettings -> this
+                        else -> {
+                            val newModel = copy(offlineFormSettings = model.offlineFormSettings)
+                            when (val offlineFormSettings = model.offlineFormSettings) {
+                                null -> newModel
+                                else -> {
+                                    val subjectField = OfflineFormList(
+                                        TOPIC_KEY,
+                                        offlineFormSettings.topicsTitle,
+                                        offlineFormSettings.topicsRequired,
+                                        offlineFormSettings.topics,
+                                        -1
+                                    )
+                                    val additionalFields =
+                                        offlineFormSettings.fields.map { customField ->
+                                            OfflineFormText(
+                                                customField.key,
+                                                customField.placeholder,
+                                                customField.required,
+                                                ""
+                                            )
+                                        }
+                                    val customFields = listOf(subjectField) + additionalFields
+                                    newModel.copy(
+                                        greetings = offlineFormSettings.callbackGreeting,
+                                        workType = offlineFormSettings.workType,
+                                        customFields = customFields
+                                    )
+                                }
+                            }
                         }
-                        val customFields = listOf(subjectField) + additionalFields
-                        setModel {
-                            copy(
-                                greetings = callbackGreeting,
-                                workType = this@run.workType,
-                                customFields = customFields
-                            ).updateAllFields()
-                        }
-                    }
-                    offlineFormSettings = model.offlineFormSettings
+                    }.updateAllFields()
                 }
             }
         }
@@ -223,7 +230,8 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         val customFields: List<OfflineFormItem> = listOf(),
         val allFields: List<OfflineFormItem> = listOf(),
         val sendEnabled: Boolean = false,
-        val goExit: UsedeskSingleLifeEvent<Boolean>? = null
+        val goExit: UsedeskSingleLifeEvent<Boolean>? = null,
+        val offlineFormSettings: UsedeskOfflineFormSettings? = null
     )
 
     companion object {

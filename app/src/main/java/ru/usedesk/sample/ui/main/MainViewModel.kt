@@ -1,7 +1,5 @@
 package ru.usedesk.sample.ui.main
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.common_gui.UsedeskViewModel
@@ -15,8 +13,6 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
     private val configurationRepository = ServiceLocator.instance.configurationRepository
 
     private var downloadFile: DownloadFile? = null
-
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     init {
         mainScope.launch {

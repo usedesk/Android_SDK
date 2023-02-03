@@ -30,7 +30,6 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.common_gui.*
-import ru.usedesk.common_sdk.UsedeskLog
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
@@ -749,7 +748,6 @@ internal class MessagesAdapter(
 
             changeElements(showStub = true)
 
-            UsedeskLog.onLog("messageFileId") { messageFile.id.toString() }
             val doOnCancelPlay = this::showPreview
 
             val doOnControlsVisibilityChanged: ((Int) -> Unit) = { height ->
@@ -788,7 +786,8 @@ internal class MessagesAdapter(
                     val oldThumbnail = old?.thumbnailMap?.get(localId)
                     val newThumbnail = new.thumbnailMap[localId]
                     if (oldThumbnail != newThumbnail && newThumbnail != null) {
-                        binding.ivPreview.showImage(newThumbnail.toString(),
+                        binding.ivPreview.showImage(
+                            newThumbnail.toString(),
                             onSuccess = {
                                 if (binding.ivPlay.visibility == View.VISIBLE) {
                                     changeElements(

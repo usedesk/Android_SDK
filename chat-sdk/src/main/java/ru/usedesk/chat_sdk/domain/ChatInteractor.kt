@@ -1,7 +1,11 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
+import androidx.core.net.toUri
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -48,7 +52,47 @@ internal class ChatInteractor @Inject constructor(
 
     private var additionalFieldsNeeded: Boolean = true
 
+    private sealed interface Send {
+        val localId: Long?
+
+        class Text(
+            val text: String,
+            override val localId: Long?
+        ) : Send
+
+        class File(
+            val file: UsedeskFileInfo,
+            override val localId: Long?
+        ) : Send
+    }
+
+    private val sendQueueFlow = QueueFlow<Send>(ioScope)
+    private val sendTextQueueFlow = QueueFlow<UsedeskMessageClientText>(ioScope)
+    private val sendFileQueueFlow = QueueFlow<UsedeskMessage.File>(ioScope)
+
     var oldModel: Model? = null
+
+    init {
+        ioScope.launch {
+            sendQueueFlow.collect {
+                when (it) {
+                    is Send.File -> prepareToSend(it.file, it.localId)
+                    is Send.Text -> prepareToSend(it.text, it.localId)
+                }
+            }
+        }
+        ioScope.launch {
+            sendTextQueueFlow.collect {
+                doSendText(it)
+            }
+        }
+
+        ioScope.launch {
+            sendFileQueueFlow.collect {
+                doSendFile(it)
+            }
+        }
+    }
 
     private val eventListener = object : IApiRepository.EventListener {
         override fun onConnected() {
@@ -202,8 +246,10 @@ internal class ChatInteractor @Inject constructor(
 
     private fun launchConnect() {
         ioScope.launch {
-            unlockFirstMessage()
-            resetFirstMessageLock()
+            firstMessageMutex.withLock {
+                firstMessageLock?.unlockSafe()
+                firstMessageLock = Mutex()
+            }
 
             val model = modelLocked()
             apiRepository.connect(
@@ -236,7 +282,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    private fun modelLocked(onModel: suspend Model.() -> Unit = {}): Model = runBlocking {
+    private fun modelLocked(onModel: Model.() -> Unit = {}): Model = runBlocking {
         eventMutex.withLock {
             modelFlow.value.apply {
                 onModel()
@@ -302,12 +348,12 @@ internal class ChatInteractor @Inject constructor(
         textMessage: String,
         localId: Long?
     ) {
-        ioScope.launch {
-            doSend(textMessage, localId)
+        runBlocking {
+            sendQueueFlow.emit(Send.Text(textMessage, localId))
         }
     }
 
-    private suspend fun doSend(
+    private suspend fun prepareToSend(
         textMessage: String,
         localId: Long?
     ) {
@@ -315,12 +361,7 @@ internal class ChatInteractor @Inject constructor(
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message, getNextLocalId(localId))
             eventListener.onMessagesNewReceived(listOf(sendingMessage))
-
-            runBlocking {
-                eventMutex.withLock {
-                    ioScope.launch { sendText(sendingMessage) }
-                }
-            }
+            sendText(sendingMessage)
         }
     }
 
@@ -351,9 +392,12 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun send(fileInfo: UsedeskFileInfo, localId: Long?) {
-        ioScope.launch {
-            doSend(fileInfo, localId)
+    override fun send(
+        fileInfo: UsedeskFileInfo,
+        localId: Long?
+    ) {
+        runBlocking {
+            sendQueueFlow.emit(Send.File(fileInfo, localId))
         }
     }
 
@@ -388,158 +432,153 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun send(fileInfoList: Collection<UsedeskFileInfo>) {
-        ioScope.launch {
-            fileInfoList.forEach { fileInfo ->
-                doSend(fileInfo, null)
-            }
-        }
+        fileInfoList.forEach { send(it) }
     }
 
-    private fun doSend(
+    private suspend fun prepareToSend(
         fileInfo: UsedeskFileInfo,
         localId: Long?
     ) {
-        ioScope.launch {
-            val sendingMessage = createSendingMessage(
-                fileInfo,
-                getNextLocalId(localId)
-            )
+        val sendingMessage = createSendingMessage(
+            fileInfo,
+            getNextLocalId(localId)
+        )
 
-            eventListener.onMessagesNewReceived(listOf(sendingMessage))
+        eventListener.onMessagesNewReceived(listOf(sendingMessage))
+        cachedMessagesRepository.addNotSentMessage(sendingMessage as UsedeskMessageOwner.Client)
 
-            eventMutex.withLock {
-                sendFileAsync(sendingMessage)
-            }
+        eventMutex.withLock {
+            sendFileQueueFlow.emit(sendingMessage)
         }
     }
 
-    private fun sendFileAsync(fileMessage: UsedeskMessage.File) {
-        ioScope.launch {
-            cachedMessagesRepository.addNotSentMessage(fileMessage as UsedeskMessageOwner.Client)
+    private suspend fun sendFileAgain(fileMessage: UsedeskMessage.File) {
+        fileMessage as UsedeskMessageOwner.Client
+        val uri = Uri.parse(fileMessage.file.content)
+        val deferredCachedUri = cachedMessagesRepository.getCachedFileAsync(uri)
+        val cachedUri = deferredCachedUri.await()
+        val newFile = fileMessage.file.copy(content = cachedUri.toString())
 
-            val uri = Uri.parse(fileMessage.file.content)
-            val deferredCachedUri = cachedMessagesRepository.getCachedFileAsync(uri)
-            val cachedUri = deferredCachedUri.await()
-            val newFile = fileMessage.file.copy(content = cachedUri.toString())
+        when (fileMessage) {
+            is UsedeskMessageClientAudio -> fileMessage.copy(file = newFile)
+            is UsedeskMessageClientVideo -> fileMessage.copy(file = newFile)
+            is UsedeskMessageClientImage -> fileMessage.copy(file = newFile)
+            is UsedeskMessageClientFile -> fileMessage.copy(file = newFile)
+            else -> null
+        }?.let { cachedNotSentMessage ->
+            cachedMessagesRepository.updateNotSentMessage(cachedNotSentMessage)
+            eventListener.onMessageUpdated(cachedNotSentMessage)
+            sendFileQueueFlow.emit(cachedNotSentMessage)
+        }
+    }
 
-            when (fileMessage) {
-                is UsedeskMessageClientAudio -> fileMessage.copy(file = newFile)
-                is UsedeskMessageClientVideo -> fileMessage.copy(file = newFile)
-                is UsedeskMessageClientImage -> fileMessage.copy(file = newFile)
-                is UsedeskMessageClientFile -> fileMessage.copy(file = newFile)
-                else -> null
-            }?.let { cachedNotSentMessage ->
-                cachedMessagesRepository.updateNotSentMessage(cachedNotSentMessage)
-                eventListener.onMessageUpdated(cachedNotSentMessage)
-                firstMessageLock?.withLock {}
-                val model = modelLocked()
-                val progressFlow = MutableStateFlow(0L to 0L)
-                val progressJob = CoroutineScope(Dispatchers.IO).launch {
-                    progressFlow.collect { progress ->
-                        if (progress.second != 0L) {
-                            fileUploadProgressMutex.withLock {
-                                fileUploadProgressListeners[fileMessage.localId]?.forEach {
-                                    it.onProgress(progress.first, progress.second)
-                                }
+    private suspend fun doSendFile(fileMessage: UsedeskMessage.File) {
+        fileMessage as UsedeskMessageOwner.Client
+        withFirstMessageLock {
+            val model = modelLocked()
+            val progressFlow = MutableStateFlow(0L to 0L)
+            val progressJob = CoroutineScope(ioScope.coroutineContext + Job()).launch {
+                progressFlow.collect { progress ->
+                    if (progress.second != 0L) {
+                        fileUploadProgressMutex.withLock {
+                            fileUploadProgressListeners[fileMessage.localId]?.forEach {
+                                it.onProgress(progress.first, progress.second)
                             }
-                            if (progress.first == progress.second) {
-                                cancel()
-                            }
+                        }
+                        if (progress.first == progress.second) {
+                            cancel()
                         }
                     }
                 }
-                val response = apiRepository.sendFile(
-                    initConfiguration,
-                    model.clientToken,
-                    UsedeskFileInfo(
-                        cachedUri,
-                        cachedNotSentMessage.file.type,
-                        cachedNotSentMessage.file.name
-                    ),
-                    cachedNotSentMessage.localId,
-                    progressFlow
-                )
-                when (response) {
-                    is SendFileResponse.Done -> {
-                        unlockFirstMessage()
-                        cachedMessagesRepository.removeNotSentMessage(cachedNotSentMessage)
-                        cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
-                        sendAdditionalFieldsIfNeededAsync()
-                    }
-                    is SendFileResponse.Error -> {
-                        progressJob.cancel()
-                        when (fileMessage) {
-                            is UsedeskMessageClientFile -> fileMessage.copy(
-                                status = UsedeskMessageOwner.Client.Status.SEND_FAILED
-                            )
-                            is UsedeskMessageClientImage -> fileMessage.copy(
-                                status = UsedeskMessageOwner.Client.Status.SEND_FAILED
-                            )
-                            is UsedeskMessageClientVideo -> fileMessage.copy(
-                                status = UsedeskMessageOwner.Client.Status.SEND_FAILED
-                            )
-                            is UsedeskMessageClientAudio -> fileMessage.copy(
-                                status = UsedeskMessageOwner.Client.Status.SEND_FAILED
-                            )
-                            else -> null
-                        }?.let(this@ChatInteractor::onMessageUpdate)
-                    }
+            }
+            val response = apiRepository.sendFile(
+                initConfiguration,
+                model.clientToken,
+                UsedeskFileInfo(
+                    fileMessage.file.content.toUri(),
+                    fileMessage.file.type,
+                    fileMessage.file.name
+                ),
+                fileMessage.localId,
+                progressFlow
+            )
+            when (response) {
+                is SendFileResponse.Done -> {
+                    cachedMessagesRepository.removeNotSentMessage(fileMessage)
+                    cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
+                    sendAdditionalFieldsIfNeededAsync()
+                    true
+                }
+                is SendFileResponse.Error -> {
+                    progressJob.cancel()
+                    when (fileMessage) {
+                        is UsedeskMessageClientFile -> fileMessage.copy(
+                            status = UsedeskMessageOwner.Client.Status.SEND_FAILED
+                        )
+                        is UsedeskMessageClientImage -> fileMessage.copy(
+                            status = UsedeskMessageOwner.Client.Status.SEND_FAILED
+                        )
+                        is UsedeskMessageClientVideo -> fileMessage.copy(
+                            status = UsedeskMessageOwner.Client.Status.SEND_FAILED
+                        )
+                        is UsedeskMessageClientAudio -> fileMessage.copy(
+                            status = UsedeskMessageOwner.Client.Status.SEND_FAILED
+                        )
+                        else -> null
+                    }?.let(this@ChatInteractor::onMessageUpdate)
+                    false
                 }
             }
         }
     }
 
-    private fun resetFirstMessageLock() {
-        runBlocking {
-            firstMessageMutex.withLock {
-                firstMessageLock = Mutex()
-            }
-        }
-    }
-
-    private fun lockFirstMessage() {
-        runBlocking {
-            firstMessageMutex.withLock {
-                val lock = firstMessageLock
-                when (lock?.isLocked) {
-                    true -> lock
-                    false -> {
-                        lock.lock(this@ChatInteractor)
-                        null
-                    }
-                    else -> null
+    private suspend fun withFirstMessageLock(task: suspend () -> Boolean) {
+        firstMessageMutex.withLock {
+            val lock = firstMessageLock
+            when (lock?.isLocked) {
+                true -> lock
+                false -> {
+                    lock.lock(this@ChatInteractor)
+                    null
                 }
-            }?.withLock { }
-        }
-    }
-
-    private fun unlockFirstMessage() {
-        runBlocking {
-            firstMessageMutex.withLock {
-                firstMessageLock?.apply {
+                else -> null
+            }
+        }?.withLock { }
+        val success = task()
+        firstMessageMutex.withLock {
+            firstMessageLock?.apply {
+                if (success) {
                     if (isLocked) {
                         delay(1000)
-                        unlock(this@ChatInteractor)
                     }
                     firstMessageLock = null
                 }
+                unlockSafe(this@ChatInteractor)
             }
         }
     }
 
     private suspend fun sendText(cachedMessage: UsedeskMessageClientText) {
         cachedMessagesRepository.addNotSentMessage(cachedMessage)
-        lockFirstMessage()
-        when (apiRepository.sendText(cachedMessage)) {
-            is SocketSendResponse.Done -> {
-                cachedMessagesRepository.removeNotSentMessage(cachedMessage)
-                sendAdditionalFieldsIfNeededAsync()
+        sendTextQueueFlow.emit(cachedMessage)
+    }
+
+    private suspend fun doSendText(textMessage: UsedeskMessageClientText) {
+        withFirstMessageLock {
+            when (apiRepository.sendText(textMessage)) {
+                is SocketSendResponse.Done -> {
+                    cachedMessagesRepository.removeNotSentMessage(textMessage)
+                    sendAdditionalFieldsIfNeededAsync()
+                    true
+                }
+                is SocketSendResponse.Error -> {
+                    onMessageUpdate(
+                        textMessage.copy(status = UsedeskMessageOwner.Client.Status.SEND_FAILED)
+                    )
+                    false
+                }
             }
-            is SocketSendResponse.Error -> onMessageUpdate(
-                cachedMessage.copy(status = UsedeskMessageOwner.Client.Status.SEND_FAILED)
-            )
         }
-        unlockFirstMessage()
     }
 
     override fun loadForm(messageId: Long) {
@@ -734,36 +773,35 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun sendAgain(messageId: Long) {
-        modelLocked {
-            val message = messages.firstOrNull { it.id == messageId }
+        ioScope.launch {
+            val model = modelLocked()
+            val message = model.messages.firstOrNull { it.id == messageId }
             if (message is UsedeskMessageOwner.Client
                 && message.status == UsedeskMessageOwner.Client.Status.SEND_FAILED
             ) {
-                ioScope.launch {
-                    when (message) {
-                        is UsedeskMessageClientText -> message.copy(
-                            status = UsedeskMessageOwner.Client.Status.SENDING
-                        )
-                        is UsedeskMessageClientImage -> message.copy(
-                            status = UsedeskMessageOwner.Client.Status.SENDING
-                        )
-                        is UsedeskMessageClientVideo -> message.copy(
-                            status = UsedeskMessageOwner.Client.Status.SENDING
-                        )
-                        is UsedeskMessageClientAudio -> message.copy(
-                            status = UsedeskMessageOwner.Client.Status.SENDING
-                        )
-                        is UsedeskMessageClientFile -> message.copy(
-                            status = UsedeskMessageOwner.Client.Status.SENDING
-                        )
-                        else -> null
-                    }?.let { sendingMessage ->
-                        onMessageUpdate(sendingMessage)
-                        when (sendingMessage) {
-                            is UsedeskMessage.File -> sendFileAsync(sendingMessage)
-                            is UsedeskMessageClientText -> sendText(sendingMessage)
-                            else -> {}
-                        }
+                when (message) {
+                    is UsedeskMessageClientText -> message.copy(
+                        status = UsedeskMessageOwner.Client.Status.SENDING
+                    )
+                    is UsedeskMessageClientImage -> message.copy(
+                        status = UsedeskMessageOwner.Client.Status.SENDING
+                    )
+                    is UsedeskMessageClientVideo -> message.copy(
+                        status = UsedeskMessageOwner.Client.Status.SENDING
+                    )
+                    is UsedeskMessageClientAudio -> message.copy(
+                        status = UsedeskMessageOwner.Client.Status.SENDING
+                    )
+                    is UsedeskMessageClientFile -> message.copy(
+                        status = UsedeskMessageOwner.Client.Status.SENDING
+                    )
+                    else -> null
+                }?.let { sendingMessage ->
+                    onMessageUpdate(sendingMessage)
+                    when (sendingMessage) {
+                        is UsedeskMessage.File -> sendFileAgain(sendingMessage)
+                        is UsedeskMessageClientText -> sendText(sendingMessage)
+                        else -> {}
                     }
                 }
             }
@@ -790,16 +828,19 @@ internal class ChatInteractor @Inject constructor(
     override fun getMessageDraft() = runBlocking { cachedMessagesRepository.getMessageDraft() }
 
     override fun sendMessageDraft() {
+        val messageDraft = runBlocking {
+            cachedMessagesRepository.getMessageDraft()
+        }
         ioScope.launch {
-            val messageDraft = cachedMessagesRepository.setMessageDraft(
+            cachedMessagesRepository.setMessageDraft(
                 UsedeskMessageDraft(),
                 false
             )
+        }
 
-            doSend(messageDraft.text, null)
-            messageDraft.files.forEach { file ->
-                doSend(file, null)
-            }
+        send(messageDraft.text, null)
+        messageDraft.files.forEach { file ->
+            send(file, null)
         }
     }
 
@@ -892,6 +933,12 @@ internal class ChatInteractor @Inject constructor(
         disconnect()
     }
 
+    private fun Mutex.unlockSafe(owner: Any? = null) {
+        if (isLocked) {
+            unlock(owner)
+        }
+    }
+
     private suspend fun onChatInited(chatInited: ChatInited) {
         val model = setModel {
             copy(
@@ -902,7 +949,9 @@ internal class ChatInteractor @Inject constructor(
         userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
 
         if (chatInited.status in ACTIVE_STATUSES) {
-            unlockFirstMessage()
+            firstMessageMutex.withLock {
+                firstMessageLock?.unlockSafe()
+            }
         }
 
         val ids = model.messages.map(UsedeskMessage::id)
@@ -976,6 +1025,38 @@ internal class ChatInteractor @Inject constructor(
 
         override fun onException(usedeskException: Exception) {
             listeners.forEach { it.onException(usedeskException) }
+        }
+    }
+
+    class QueueFlow<T>(private val scope: CoroutineScope) : Flow<T>, FlowCollector<T> {
+        private val emitQueue = mutableListOf<T>()
+        private val flow = MutableSharedFlow<T>()
+        private val mutex = Mutex()
+        private var emitJob: Job? = null
+
+        override suspend fun collect(collector: FlowCollector<T>) {
+            flow.collect(collector)
+        }
+
+        override suspend fun emit(value: T) {
+            mutex.withLock {
+                emitQueue.add(value)
+                emitJob = emitJob ?: launchEmit()
+            }
+        }
+
+        private fun launchEmit() = scope.launch {
+            while (true) {
+                when (val emitValue = mutex.withLock { emitQueue.removeFirstOrNull() }) {
+                    null -> mutex.withLock {
+                        if (emitQueue.isEmpty()) {
+                            emitJob = null
+                        }
+                        emitJob
+                    } ?: break
+                    else -> flow.emit(emitValue)
+                }
+            }
         }
     }
 

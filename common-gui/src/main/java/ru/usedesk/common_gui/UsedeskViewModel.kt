@@ -9,41 +9,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.updateAndGet
 
 open class UsedeskViewModel<MODEL>(
     defaultModel: MODEL
 ) : ViewModel() {
-    val modelFlow = MutableStateFlow(defaultModel)
+    private val _modelFlow = MutableStateFlow(defaultModel)
+    val modelFlow: StateFlow<MODEL> = _modelFlow
     private val mainThread = AndroidSchedulers.mainThread()
-
-    private val mutex = Mutex()
 
     private val disposables = mutableListOf<Disposable>()
     private var inited = false
 
-    private val jobs = mutableListOf<Job>()
-    private val jobMutex = Mutex()
-
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val mainScope = CoroutineScope(Dispatchers.Main)
-
-    private fun doSuspend(scope: CoroutineScope, onDo: suspend () -> Unit) = runBlocking {
-        jobMutex.withLock {
-            scope.launch {
-                try {
-                    onDo()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }.also(jobs::add)
-        }
-    }
-
-    fun doMain(onDo: suspend () -> Unit) = doSuspend(mainScope, onDo)
-
-    fun doIo(onDo: suspend () -> Unit) = doSuspend(ioScope, onDo)
+    protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    protected val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     protected fun doInit(init: () -> Unit) {
         if (!inited) {
@@ -52,15 +32,7 @@ open class UsedeskViewModel<MODEL>(
         }
     }
 
-    protected fun setModel(onUpdate: MODEL.() -> MODEL) = runBlocking {
-        mutex.withLock {
-            val model = modelFlow.value
-            val newModel = onUpdate(model)
-            if (model != newModel) {
-                modelFlow.value = newModel
-            }
-        }
-    }
+    protected fun setModel(onUpdate: MODEL.() -> MODEL) = _modelFlow.updateAndGet { it.onUpdate() }
 
     @Deprecated("Migrate to coroutines")
     private fun addDisposable(disposable: Disposable) {
@@ -108,6 +80,7 @@ open class UsedeskViewModel<MODEL>(
 
         disposables.forEach(Disposable::dispose)
 
-        jobs.forEach(Job::cancel)
+        ioScope.cancel()
+        mainScope.cancel()
     }
 }

@@ -16,6 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskTextChangeListener
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.R
@@ -71,6 +72,9 @@ class ConfigurationScreen : UsedeskFragment() {
                 }
             }
         }
+        binding.etAvatar.addTextChangedListener(UsedeskTextChangeListener {
+            viewModel.setAvatar(it)
+        })
         binding.btnGoToSdk.setOnClickListener {
             val configuration = getConfiguration()
             if (viewModel.onGoSdkClick(configuration)) {
@@ -122,7 +126,7 @@ class ConfigurationScreen : UsedeskFragment() {
         registerFiles {
             it.firstOrNull()?.let { uri ->
                 val url = uri.toString()
-                binding.ivAvatar.tag = url
+                binding.etAvatar.setText(url)
                 viewModel.setAvatar(url)
             }
         }
@@ -176,7 +180,7 @@ class ConfigurationScreen : UsedeskFragment() {
             binding.etClientPhoneNumber.text.toString().toLongOrNull(),
             binding.etClientAdditionalId.text.toString(),
             binding.etClientInitMessage.text.toString(),
-            binding.ivAvatar.tag as? String,
+            binding.etAvatar.text.toString(),
             binding.etCustomAgentName.text.toString(),
             binding.etCustomDateFormat.text.toString(),
             binding.etCustomTimeFormat.text.toString(),

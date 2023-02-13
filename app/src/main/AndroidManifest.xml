@@ -16,7 +16,6 @@
         <service
             android:name=".service.CustomForegroundNotificationsService"
             android:enabled="true" />
-        <!--android:process=":usedeskMessageReceiver" />-->
 
         <activity
             android:name=".ui.main.MainActivity"

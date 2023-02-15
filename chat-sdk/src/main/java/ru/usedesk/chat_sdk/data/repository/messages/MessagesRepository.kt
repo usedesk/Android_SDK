@@ -51,13 +51,13 @@ internal class MessagesRepository(
 
     override suspend fun removeNotSentMessage(
         userKey: String,
-        clientMessage: UsedeskMessageOwner.Client
+        localId: Long
     ) {
         mutex.withLock {
             getSharedPreferences(userKey).run {
                 initIfNeeded()
 
-                notSentMessages.remove(clientMessage.localId)
+                notSentMessages.remove(localId)
 
                 edit {
                     putString(NOT_SENT_MESSAGES_KEY, gson.toJson(notSentMessages.values))

@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.entity.*
 import java.util.*
 import javax.inject.Inject
 
+//TODO: разобрать вложенность репозиториев
 internal class CachedMessagesRepository @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
@@ -102,13 +103,13 @@ internal class CachedMessagesRepository @Inject constructor(
 
     override suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val requireUserKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage.localId)
         messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
-    override suspend fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
+    override suspend fun removeNotSentMessage(localId: Long) {
         val userKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(userKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(userKey, localId)
     }
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> = mutex.withLock {
@@ -130,7 +131,7 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     private suspend fun removeDeferredCache(uri: Uri) {
-        deferredCachedUriMap.remove(uri)?.apply {
+        deferredCachedUriMap.remove(uri)?.run {
             cancel()
             if (isCompleted) {
                 val cachedUri = await()

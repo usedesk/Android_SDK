@@ -198,23 +198,16 @@ internal class ChatInteractor @Inject constructor(
             else -> {
                 val newMessages = mutableListOf<UsedeskMessage>()
                 val updatedMessages = mutableListOf<UsedeskMessage>()
-                val removedMessages = mutableListOf<UsedeskMessage>()
                 messages.forEach { message ->
-                    val oldMessage = oldModel?.messages?.firstOrNull { it.id == message.id }
+                    val oldMessage = oldModel?.messages?.firstOrNull { message.isIdEquals(it) }
                     when {
-                        oldMessage == null -> {
-                            if (!inited) {
-                                newMessages.add(message)
-                            }
-                        }
+                        oldMessage == null -> newMessages.add(message)
                         oldMessage != message -> updatedMessages.add(message)
                     }
                 }
-                oldModel?.messages?.forEach { oldMessage ->
-                    if (messages.all { message -> message.id != oldMessage.id }) {
-                        removedMessages.add(oldMessage)
-                    }
-                }
+                val removedMessages = oldModel?.messages
+                    ?.filter { oldMessage -> messages.all { !oldMessage.isIdEquals(it) } }
+                    ?: listOf()
                 listener.onModel(
                     this,
                     newMessages,
@@ -224,6 +217,10 @@ internal class ChatInteractor @Inject constructor(
             }
         }
     }
+
+    private fun UsedeskMessage.isIdEquals(other: UsedeskMessage) = id == other.id ||
+            this is UsedeskMessageOwner.Client && other is UsedeskMessageOwner.Client
+            && localId == other.localId
 
     private fun sendInitMessage() {
         val initMessage = initClientOfflineForm ?: initClientMessage
@@ -339,7 +336,7 @@ internal class ChatInteractor @Inject constructor(
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
             val sendingMessage = createSendingMessage(message, getNextLocalId(localId))
-            eventListener.onMessagesNewReceived(listOf(sendingMessage))
+            onMessagesNew(new = listOf(sendingMessage))
             sendText(sendingMessage)
         }
     }
@@ -478,7 +475,7 @@ internal class ChatInteractor @Inject constructor(
             )
             when (response) {
                 is SendFileResponse.Done -> {
-                    cachedMessagesRepository.removeNotSentMessage(fileMessage)
+                    cachedMessagesRepository.removeNotSentMessage(fileMessage.localId)
                     cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
                     sendAdditionalFieldsIfNeededAsync()
                     true
@@ -541,7 +538,7 @@ internal class ChatInteractor @Inject constructor(
         withFirstMessageLock {
             when (apiRepository.sendText(textMessage)) {
                 is SocketSendResponse.Done -> {
-                    cachedMessagesRepository.removeNotSentMessage(textMessage)
+                    cachedMessagesRepository.removeNotSentMessage(textMessage.localId)
                     sendAdditionalFieldsIfNeededAsync()
                     true
                 }
@@ -787,7 +784,7 @@ internal class ChatInteractor @Inject constructor(
             cachedMessagesRepository.getNotSentMessages()
                 .firstOrNull { it.localId == messageId }
                 ?.let {
-                    cachedMessagesRepository.removeNotSentMessage(it)
+                    cachedMessagesRepository.removeNotSentMessage(it.localId)
                     onMessageRemove(it as UsedeskMessage)
                 }
         }

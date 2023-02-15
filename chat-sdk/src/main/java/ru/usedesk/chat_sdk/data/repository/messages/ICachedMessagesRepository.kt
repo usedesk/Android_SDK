@@ -15,7 +15,7 @@ internal interface ICachedMessagesRepository {
 
     suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
-    suspend fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
+    suspend fun removeNotSentMessage(localId: Long)
 
     suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
 

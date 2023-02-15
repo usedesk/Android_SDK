@@ -232,41 +232,44 @@ internal class ApiRepository @Inject constructor(
         else -> SetClientResponse.Error()
     }
 
-    private fun String.toFileBytes() = try {
-        val uri = Uri.parse(this)
-        val input = when {
-            (uri.scheme ?: "").startsWith("http") -> URL(this).openStream()
-            else -> contentResolver.openInputStream(uri)
+    private fun String.toFileBytes() = when (this) {
+        "" -> null
+        else -> try {
+            val uri = Uri.parse(this)
+            val input = when {
+                (uri.scheme ?: "").startsWith("http") -> URL(this).openStream()
+                else -> contentResolver.openInputStream(uri)
+            }
+            val originalBitmap = input.use(BitmapFactory::decodeStream)
+            val side = min(originalBitmap.width, originalBitmap.height)
+            val outputStream = ByteArrayOutputStream()
+
+            val quadBitmap = Bitmap.createBitmap(
+                originalBitmap,
+                (originalBitmap.width - side) / 2,
+                (originalBitmap.height - side) / 2,
+                side,
+                side
+            )
+            originalBitmap.recycle()
+            val avatarBitmap = quadBitmap.scale(
+                AVATAR_SIZE,
+                AVATAR_SIZE
+            )
+            quadBitmap.recycle()
+            avatarBitmap.compress(
+                Bitmap.CompressFormat.JPEG,
+                100,
+                outputStream
+            )
+            val byteArray = outputStream.toByteArray()
+            avatarBitmap.recycle()
+
+            FileBytes(byteArray, this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        val originalBitmap = input.use(BitmapFactory::decodeStream)
-        val side = min(originalBitmap.width, originalBitmap.height)
-        val outputStream = ByteArrayOutputStream()
-
-        val quadBitmap = Bitmap.createBitmap(
-            originalBitmap,
-            (originalBitmap.width - side) / 2,
-            (originalBitmap.height - side) / 2,
-            side,
-            side
-        )
-        originalBitmap.recycle()
-        val avatarBitmap = quadBitmap.scale(
-            AVATAR_SIZE,
-            AVATAR_SIZE
-        )
-        quadBitmap.recycle()
-        avatarBitmap.compress(
-            Bitmap.CompressFormat.JPEG,
-            100,
-            outputStream
-        )
-        val byteArray = outputStream.toByteArray()
-        avatarBitmap.recycle()
-
-        FileBytes(byteArray, this)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
     }
 
     override fun loadPreviousMessages(

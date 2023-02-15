@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.entity.*
 import java.util.*
 import javax.inject.Inject
 
+//TODO: разобрать вложенность репозиториев
 internal class CachedMessagesRepository @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
@@ -130,7 +131,7 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     private suspend fun removeDeferredCache(uri: Uri) {
-        deferredCachedUriMap.remove(uri)?.apply {
+        deferredCachedUriMap.remove(uri)?.run {
             cancel()
             if (isCompleted) {
                 val cachedUri = await()

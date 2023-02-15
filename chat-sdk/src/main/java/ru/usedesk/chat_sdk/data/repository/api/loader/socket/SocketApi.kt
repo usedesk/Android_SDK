@@ -56,7 +56,7 @@ internal class SocketApi @Inject constructor(
                 }
             }
         }?.sendRequest(socketRequest)
-            ?: throw UsedeskSocketException()
+            ?: throw RuntimeException()
         SocketSendResponse.Done
     } catch (e: Exception) {
         SocketSendResponse.Error

@@ -475,7 +475,7 @@ internal class ChatInteractor @Inject constructor(
             )
             when (response) {
                 is SendFileResponse.Done -> {
-                    cachedMessagesRepository.removeNotSentMessage(fileMessage)
+                    cachedMessagesRepository.removeNotSentMessage(fileMessage.localId)
                     cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
                     sendAdditionalFieldsIfNeededAsync()
                     true
@@ -538,7 +538,7 @@ internal class ChatInteractor @Inject constructor(
         withFirstMessageLock {
             when (apiRepository.sendText(textMessage)) {
                 is SocketSendResponse.Done -> {
-                    cachedMessagesRepository.removeNotSentMessage(textMessage)
+                    cachedMessagesRepository.removeNotSentMessage(textMessage.localId)
                     sendAdditionalFieldsIfNeededAsync()
                     true
                 }
@@ -784,7 +784,7 @@ internal class ChatInteractor @Inject constructor(
             cachedMessagesRepository.getNotSentMessages()
                 .firstOrNull { it.localId == messageId }
                 ?.let {
-                    cachedMessagesRepository.removeNotSentMessage(it)
+                    cachedMessagesRepository.removeNotSentMessage(it.localId)
                     onMessageRemove(it as UsedeskMessage)
                 }
         }

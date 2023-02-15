@@ -6,7 +6,7 @@ import ru.usedesk.chat_sdk.entity.*
 
 internal interface IApiRepository {
     @CheckResult
-    fun connect(
+    suspend fun connect(
         url: String,
         token: String?,
         configuration: UsedeskChatConfiguration,
@@ -14,25 +14,25 @@ internal interface IApiRepository {
     ): SocketSendResponse
 
     @CheckResult
-    fun sendInit(
+    suspend fun sendInit(
         configuration: UsedeskChatConfiguration,
         token: String?
     ): SocketSendResponse
 
     @CheckResult
-    fun sendOfflineForm(
+    suspend fun sendOfflineForm(
         configuration: UsedeskChatConfiguration,
         offlineForm: UsedeskOfflineForm
     ): SendOfflineFormResponse
 
     @CheckResult
-    fun sendFeedback(
+    suspend fun sendFeedback(
         messageId: Long,
         feedback: UsedeskFeedback
     ): SocketSendResponse
 
     @CheckResult
-    fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse
+    suspend fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse
 
     @CheckResult
     suspend fun sendFile(
@@ -44,10 +44,10 @@ internal interface IApiRepository {
     ): SendFileResponse
 
     @CheckResult
-    fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse
+    suspend fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse
 
     @CheckResult
-    fun sendFields(
+    suspend fun sendFields(
         token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,
@@ -55,7 +55,7 @@ internal interface IApiRepository {
     ): SendAdditionalFieldsResponse
 
     @CheckResult
-    fun loadPreviousMessages(
+    suspend fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
         token: String,
         messageId: Long
@@ -66,7 +66,7 @@ internal interface IApiRepository {
     fun convertText(text: String): String
 
     @CheckResult
-    fun initChat(
+    suspend fun initChat(
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): InitChatResponse

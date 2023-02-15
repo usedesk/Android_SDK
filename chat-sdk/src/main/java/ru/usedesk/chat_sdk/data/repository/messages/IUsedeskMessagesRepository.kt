@@ -11,7 +11,7 @@ interface IUsedeskMessagesRepository {
 
     suspend fun removeNotSentMessage(
         userKey: String,
-        clientMessage: UsedeskMessageOwner.Client
+        localId: Long
     )
 
     suspend fun getNotSentMessages(userKey: String): List<UsedeskMessageOwner.Client>

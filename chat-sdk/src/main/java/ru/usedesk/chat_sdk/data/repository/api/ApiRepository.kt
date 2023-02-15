@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.scale
 import com.google.gson.Gson
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
@@ -45,11 +47,23 @@ internal class ApiRepository @Inject constructor(
 ), IApiRepository {
 
     private lateinit var eventListener: EventListener
+    private val requestDeferredMap = mutableMapOf<Long, CompletableDeferred<SocketSendResponse>>()
+    private val mutex = Mutex()
 
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() = eventListener.onConnected()
 
-        override fun onDisconnected() = eventListener.onDisconnected()
+        override fun onDisconnected() {
+            runBlocking {
+                mutex.withLock {
+                    requestDeferredMap.run {
+                        values.forEach { it.complete(SocketSendResponse.Error) }
+                        clear()
+                    }
+                }
+            }
+            eventListener.onDisconnected()
+        }
 
         override fun onTokenError() = eventListener.onTokenError()
 
@@ -78,6 +92,12 @@ internal class ApiRepository @Inject constructor(
             val updatedMessages = messages.filter {
                 it is UsedeskMessageOwner.Client && it.id != it.localId
             }
+            messages.asSequence()
+                .filterIsInstance<UsedeskMessageOwner.Client>()
+                .mapNotNull { requestDeferredMap[it.localId] }
+                .firstOrNull()
+                ?.complete(SocketSendResponse.Done)
+
             val newMessages = messages.filter { it !in updatedMessages }
             if (newMessages.isNotEmpty()) {
                 eventListener.onMessagesNewReceived(newMessages)
@@ -92,7 +112,7 @@ internal class ApiRepository @Inject constructor(
 
     private fun isConnected() = socketApi.isConnected()
 
-    override fun initChat(
+    override suspend fun initChat(
         configuration: UsedeskChatConfiguration,
         apiToken: String
     ): InitChatResponse {
@@ -119,7 +139,7 @@ internal class ApiRepository @Inject constructor(
         }
     }
 
-    override fun connect(
+    override suspend fun connect(
         url: String,
         token: String?,
         configuration: UsedeskChatConfiguration,
@@ -137,10 +157,13 @@ internal class ApiRepository @Inject constructor(
         SocketSendResponse.Error
     }
 
-    override fun sendInit(
+    override suspend fun sendInit(
         configuration: UsedeskChatConfiguration,
         token: String?
-    ) = socketApi.sendRequest(configuration.toInitChatRequest(token))
+    ): SocketSendResponse {
+        val result = socketApi.sendRequest(configuration.toInitChatRequest(token))
+        return result //TODO:
+    }
 
     private fun UsedeskChatConfiguration.toInitChatRequest(token: String?) = SocketRequest.Init(
         token,
@@ -154,25 +177,44 @@ internal class ApiRepository @Inject constructor(
 
     override fun convertText(text: String) = messageResponseConverter.convertText(text)
 
-    override fun sendFeedback(
+    override suspend fun sendFeedback(
         messageId: Long,
         feedback: UsedeskFeedback
-    ) = socketApi.sendRequest(
-        SocketRequest.Feedback(
-            messageId,
-            when (feedback) {
-                UsedeskFeedback.LIKE -> "LIKE"
-                UsedeskFeedback.DISLIKE -> "DISLIKE"
-            }
+    ): SocketSendResponse {
+        val result = socketApi.sendRequest(
+            SocketRequest.Feedback(
+                messageId,
+                when (feedback) {
+                    UsedeskFeedback.LIKE -> "LIKE"
+                    UsedeskFeedback.DISLIKE -> "DISLIKE"
+                }
+            )
         )
-    )
+        return result //TODO:
+    }
 
-    override fun sendText(messageText: UsedeskMessage.Text) = socketApi.sendRequest(
-        SocketRequest.SendMessage(
-            messageText.text,
-            messageText.id
+    override suspend fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse {
+        messageText as UsedeskMessageOwner.Client
+        val deferred = mutex.withLock {
+            CompletableDeferred<SocketSendResponse>().also {
+                requestDeferredMap.put(messageText.localId, it)?.complete(SocketSendResponse.Error)
+            }
+        }
+        val result = socketApi.sendRequest(
+            SocketRequest.SendMessage(
+                messageText.text,
+                messageText.id
+            )
         )
-    )
+        return when (result) {
+            is SocketSendResponse.Done -> deferred.await()
+            is SocketSendResponse.Error -> SocketSendResponse.Error
+        }.apply {
+            mutex.withLock {
+                requestDeferredMap.remove(messageText.localId)
+            }
+        }
+    }
 
     override suspend fun sendFile(
         configuration: UsedeskChatConfiguration,
@@ -203,34 +245,35 @@ internal class ApiRepository @Inject constructor(
         else -> SendFileResponse.Error()
     }
 
-    override fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse = when {
-        isConnected() -> {
-            val request = SetClient.Request(
-                configuration.clientToken,
-                configuration.companyId,
-                configuration.clientEmail?.getCorrectStringValue(),
-                configuration.clientName?.getCorrectStringValue(),
-                configuration.clientNote,
-                configuration.clientPhoneNumber,
-                configuration.clientAdditionalId,
-                configuration.clientAvatar?.toFileBytes()
-            )
-            val response = doRequestMultipart(
-                configuration.urlChatApi,
-                request,
-                SetClient.Response::class.java,
-                RetrofitApi::setClient
-            )
-            when (response?.clientId) {
-                null -> SetClientResponse.Error(response?.code)
-                else -> {
-                    socketEventListener.onSetEmailSuccess()
-                    SetClientResponse.Done
+    override suspend fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse =
+        when {
+            isConnected() -> {
+                val request = SetClient.Request(
+                    configuration.clientToken,
+                    configuration.companyId,
+                    configuration.clientEmail?.getCorrectStringValue(),
+                    configuration.clientName?.getCorrectStringValue(),
+                    configuration.clientNote,
+                    configuration.clientPhoneNumber,
+                    configuration.clientAdditionalId,
+                    configuration.clientAvatar?.toFileBytes()
+                )
+                val response = doRequestMultipart(
+                    configuration.urlChatApi,
+                    request,
+                    SetClient.Response::class.java,
+                    RetrofitApi::setClient
+                )
+                when (response?.clientId) {
+                    null -> SetClientResponse.Error(response?.code)
+                    else -> {
+                        socketEventListener.onSetEmailSuccess()
+                        SetClientResponse.Done
+                    }
                 }
             }
+            else -> SetClientResponse.Error()
         }
-        else -> SetClientResponse.Error()
-    }
 
     private fun String.toFileBytes() = when (this) {
         "" -> null
@@ -272,7 +315,7 @@ internal class ApiRepository @Inject constructor(
         }
     }
 
-    override fun loadPreviousMessages(
+    override suspend fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
         token: String,
         messageId: Long
@@ -301,7 +344,7 @@ internal class ApiRepository @Inject constructor(
         }
     }
 
-    override fun sendOfflineForm(
+    override suspend fun sendOfflineForm(
         configuration: UsedeskChatConfiguration,
         offlineForm: UsedeskOfflineForm
     ): SendOfflineFormResponse {
@@ -329,7 +372,7 @@ internal class ApiRepository @Inject constructor(
 
     private fun UsedeskChatConfiguration.companyAndChannel() = "${companyId}_$channelId"
 
-    override fun sendFields(
+    override suspend fun sendFields(
         token: String,
         configuration: UsedeskChatConfiguration,
         additionalFields: Map<Long, String>,

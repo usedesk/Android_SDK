@@ -103,13 +103,13 @@ internal class CachedMessagesRepository @Inject constructor(
 
     override suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val requireUserKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage.localId)
         messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
-    override suspend fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
+    override suspend fun removeNotSentMessage(localId: Long) {
         val userKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(userKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(userKey, localId)
     }
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> = mutex.withLock {

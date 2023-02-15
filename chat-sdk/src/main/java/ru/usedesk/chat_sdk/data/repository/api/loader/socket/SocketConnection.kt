@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
-import org.json.JSONException
 import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
@@ -110,14 +109,10 @@ internal class SocketConnection(
     }
 
     fun sendRequest(socketRequest: SocketRequest) {
-        try {
-            val rawRequest = gson.toJson(socketRequest)
-            val jsonRequest = JSONObject(rawRequest)
-            UsedeskLog.onLog("Socket.sendRequest") { gson.toJson(rawRequest) }
-            socket.emit(EVENT_SERVER_ACTION, jsonRequest)
-        } catch (e: JSONException) {
-            throw UsedeskSocketException(UsedeskSocketException.Error.JSON_ERROR, e.message)
-        }
+        val rawRequest = gson.toJson(socketRequest)
+        val jsonRequest = JSONObject(rawRequest)
+        UsedeskLog.onLog("Socket.sendRequest") { gson.toJson(rawRequest) }
+        socket.emit(EVENT_SERVER_ACTION, jsonRequest)
     }
 
     fun isConnected() = socket.connected()

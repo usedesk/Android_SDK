@@ -1,7 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import android.net.Uri
-import ru.usedesk.chat_gui.chat.data.thumbnail.IThumbnailRepository
+import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -13,7 +13,6 @@ import java.util.*
 import javax.inject.Inject
 
 internal class MessagesViewModel @Inject constructor(
-    private val thumbnailRepository: IThumbnailRepository,
     private val usedeskChat: IUsedeskChat,
     private val messagesReducer: MessagesReducer
 ) : UsedeskViewModel<MessagesViewModel.State>(State()) {
@@ -25,25 +24,20 @@ internal class MessagesViewModel @Inject constructor(
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
         ) {
-            doMain {
+            mainScope.launch {
                 onEvent(Event.ChatModel(model))
             }
         }
     }
 
-    fun onEvent(event: Event) {
-        setModel { messagesReducer.reduceModel(this, event) }
-    }
-
     init {
         onEvent(Event.MessageDraft(usedeskChat.getMessageDraft()))
 
-        doMain {
-            thumbnailRepository.thumbnailMapFlow.collect { thumbNailMap ->
-                onEvent(Event.ThumbnailMap(thumbNailMap))
-            }
-        }
         usedeskChat.addActionListener(actionListener)
+    }
+
+    fun onEvent(event: Event) {
+        setModel { messagesReducer.reduceModel(this, event) }
     }
 
     override fun onCleared() {
@@ -60,9 +54,7 @@ internal class MessagesViewModel @Inject constructor(
         class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
         class MessagesShowed(val messagesRange: IntRange) : Event
         class MessageChanged(val message: String) : Event
-        class ThumbnailMap(val map: Map<Long, Uri>) : Event
 
-        //class PreviousMessagesResult(val hasPreviousMessages: Boolean) : Event
         class SendFeedback(
             val message: UsedeskMessageAgentText,
             val feedback: UsedeskFeedback

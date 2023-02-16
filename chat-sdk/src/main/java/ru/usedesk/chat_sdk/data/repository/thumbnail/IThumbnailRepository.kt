@@ -1,4 +1,4 @@
-package ru.usedesk.chat_gui.chat.data.thumbnail
+package ru.usedesk.chat_sdk.data.repository.thumbnail
 
 import android.net.Uri
 import kotlinx.coroutines.flow.StateFlow

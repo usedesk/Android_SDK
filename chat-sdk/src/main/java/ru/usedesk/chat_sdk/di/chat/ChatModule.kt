@@ -14,6 +14,8 @@ import ru.usedesk.chat_sdk.data.repository.messages.CachedMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository
+import ru.usedesk.chat_sdk.data.repository.thumbnail.IThumbnailRepository
+import ru.usedesk.chat_sdk.data.repository.thumbnail.ThumbnailRepository
 import ru.usedesk.chat_sdk.di.UsedeskCustom
 import ru.usedesk.chat_sdk.domain.ChatInteractor
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
@@ -36,7 +38,6 @@ internal class ChatModuleProvides {
     ): IUsedeskMessagesRepository = customMessagesRepository.customInstance ?: MessagesRepository(
         appContext,
         gson,
-        fileLoader,
         chatConfiguration,
         messageResponseConverter
     )
@@ -44,6 +45,9 @@ internal class ChatModuleProvides {
 
 @Module
 internal interface ChatModuleBinds {
+    @[Binds ChatScope]
+    fun thumbnailRepository(repository: ThumbnailRepository): IThumbnailRepository
+
     @[Binds ChatScope]
     fun chatInteractor(interactor: ChatInteractor): IUsedeskChat
 

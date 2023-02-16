@@ -4,17 +4,18 @@ import android.net.Uri
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
-import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.chat_sdk.entity.*
+import java.util.*
 import javax.inject.Inject
 
+//TODO: разобрать вложенность репозиториев
 internal class CachedMessagesRepository @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
-    private val userInfoRepository: IUserInfoRepository
+    private val userInfoRepository: IUserInfoRepository,
+    private val fileLoader: IFileLoader
 ) : ICachedMessagesRepository {
 
     private var draftJob: Job? = null
@@ -34,10 +35,9 @@ internal class CachedMessagesRepository @Inject constructor(
                     messagesRepository.setDraft(
                         userKey,
                         messageDraft.copy(
-                            files = if (configuration.cacheMessagesWithFile) {
-                                messageDraft.files
-                            } else {
-                                listOf()
+                            files = when {
+                                configuration.cacheMessagesWithFile -> messageDraft.files
+                                else -> listOf()
                             }
                         )
                     )
@@ -49,6 +49,47 @@ internal class CachedMessagesRepository @Inject constructor(
         }
     }
 
+    override suspend fun createSendingMessage(
+        fileInfo: UsedeskFileInfo,
+        localId: Long
+    ): UsedeskMessage.File {
+        val calendar = Calendar.getInstance()
+        val cachedUri = getCachedFileAsync(fileInfo.uri).await()
+        val file = UsedeskFile.create(
+            cachedUri.toString(),
+            fileInfo.type,
+            "",
+            fileInfo.name
+        )
+        return when {
+            fileInfo.isImage() -> UsedeskMessageClientImage(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageOwner.Client.Status.SENDING
+            )
+            fileInfo.isVideo() -> UsedeskMessageClientVideo(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageOwner.Client.Status.SENDING
+            )
+            fileInfo.isAudio() -> UsedeskMessageClientAudio(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageOwner.Client.Status.SENDING
+            )
+            else -> UsedeskMessageClientFile(
+                localId,
+                calendar,
+                file,
+                UsedeskMessageOwner.Client.Status.SENDING
+            )
+        }.also {
+            addNotSentMessage(it)
+        }
+    }
 
     override suspend fun getNotSentMessages(): List<UsedeskMessageOwner.Client> {
         val userKey = requireUserKey()
@@ -62,25 +103,24 @@ internal class CachedMessagesRepository @Inject constructor(
 
     override suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
         val requireUserKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage.localId)
         messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
-    override suspend fun removeNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
+    override suspend fun removeNotSentMessage(localId: Long) {
         val userKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(userKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(userKey, localId)
     }
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> = mutex.withLock {
         getCachedFileInnerAsync(uri)
     }
 
-    private fun getCachedFileInnerAsync(uri: Uri): Deferred<Uri> = deferredCachedUriMap[uri]
-        ?: CoroutineScope(Dispatchers.IO).async {
-            messagesRepository.addFileToCache(uri)
-        }.also {
-            deferredCachedUriMap[uri] = it
+    private fun getCachedFileInnerAsync(uri: Uri) = deferredCachedUriMap.getOrPut(uri) {
+        CoroutineScope(Dispatchers.IO).async {
+            fileLoader.save(uri)
         }
+    }
 
     override suspend fun removeFileFromCache(uri: Uri) {
         if (configuration.cacheMessagesWithFile) {
@@ -91,12 +131,12 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     private suspend fun removeDeferredCache(uri: Uri) {
-        val removedDeferred = deferredCachedUriMap.remove(uri)?.apply {
+        deferredCachedUriMap.remove(uri)?.run {
             cancel()
-        }
-        if (removedDeferred?.isCompleted == true) {
-            val cachedUri = removedDeferred.await()
-            messagesRepository.removeFileFromCache(cachedUri)
+            if (isCompleted) {
+                val cachedUri = await()
+                fileLoader.remove(cachedUri)
+            }
         }
     }
 
@@ -159,10 +199,7 @@ internal class CachedMessagesRepository @Inject constructor(
         messagesRepository.getDraft(userKey)
     }
 
-    override suspend fun getNextLocalId(): Long {
-        val userKey = requireUserKey()
-        return messagesRepository.getNextLocalId(userKey)
-    }
+    override suspend fun getNextLocalId() = messagesRepository.getNextLocalId()
 
     private fun findUserKey(): String? {
         val config = userInfoRepository.getConfiguration()

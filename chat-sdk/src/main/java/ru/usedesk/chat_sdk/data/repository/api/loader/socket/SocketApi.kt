@@ -1,7 +1,6 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
 import com.google.gson.Gson
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SocketSendResponse
@@ -20,45 +19,42 @@ internal class SocketApi @Inject constructor(
 
     fun isConnected() = socketConnection?.isConnected() == true
 
-    fun connect(
+    suspend fun connect(
         url: String,
         initChatRequest: SocketRequest.Init,
         eventListener: EventListener
     ) {
-        runBlocking {
-            mutex.withLock {
-                try {
-                    if (!isConnected()) {
-                        socketConnection = SocketConnection(
-                            gson,
-                            url,
-                            usedeskOkHttpClientFactory,
-                            initChatRequest,
-                            eventListener
-                        )
-                    }
-                } catch (e: Exception) {
-                    throw UsedeskSocketException(
-                        UsedeskSocketException.Error.SOCKET_INIT_ERROR,
-                        e.message
+        mutex.withLock {
+            try {
+                if (!isConnected()) {
+                    socketConnection = SocketConnection(
+                        gson,
+                        url,
+                        usedeskOkHttpClientFactory,
+                        initChatRequest,
+                        eventListener
                     )
                 }
+            } catch (e: Exception) {
+                throw UsedeskSocketException(
+                    UsedeskSocketException.Error.SOCKET_INIT_ERROR,
+                    e.message
+                )
             }
         }
     }
 
-    fun sendRequest(socketRequest: SocketRequest): SocketSendResponse = try {
-        runBlocking {
-            mutex.withLock {
-                when (socketConnection?.isConnected()) {
-                    true -> socketConnection
-                    else -> null
-                }
+    suspend fun sendRequest(socketRequest: SocketRequest): SocketSendResponse = try {
+        val connection = mutex.withLock {
+            when (socketConnection?.isConnected()) {
+                true -> socketConnection
+                else -> null
             }
-        }?.sendRequest(socketRequest)
-            ?: throw UsedeskSocketException()
+        }
+        connection?.sendRequest(socketRequest) ?: throw RuntimeException("No connection")
         SocketSendResponse.Done
     } catch (e: Exception) {
+        e.printStackTrace()
         SocketSendResponse.Error
     }
 

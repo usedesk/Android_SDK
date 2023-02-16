@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-import ru.usedesk.chat_gui.chat.data.thumbnail.IThumbnailRepository
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.*
@@ -11,7 +10,6 @@ import javax.inject.Inject
 import kotlin.math.min
 
 internal class MessagesReducer @Inject constructor(
-    private val thumbnailRepository: IThumbnailRepository,
     private val usedeskChat: IUsedeskChat
 ) {
 
@@ -34,13 +32,8 @@ internal class MessagesReducer @Inject constructor(
         is Event.FormChanged -> formChanged(event)
         is Event.FormApplyClick -> formApplyClick(event)
         is Event.FormListClicked -> formListClicked(event)
-        is Event.ThumbnailMap -> thumbnailMap(event)
         Event.SendDraft -> sendDraft()
     }
-
-    private fun State.thumbnailMap(event: Event.ThumbnailMap): State = copy(
-        thumbnailMap = event.map
-    )
 
     private fun State.formApplyClick(event: Event.FormApplyClick): State {
         val form = formMap[event.messageId]
@@ -186,13 +179,6 @@ internal class MessagesReducer @Inject constructor(
         copy(groupAgentMessages = event.groupAgentMessages)
 
     private fun State.messagesShowed(event: Event.MessagesShowed): State {
-        event.messagesRange.forEach { index ->
-            val chatItem = chatItems.getOrNull(index)
-            val message = (chatItem as? ChatItem.Message)?.message as? UsedeskMessage.File
-            if (message != null) {
-                thumbnailRepository.loadThumbnail(message)
-            }
-        }
         val lastMessageIndex = chatItems.indices.indexOfLast { i ->
             i <= event.messagesRange.last && chatItems[i] is ChatItem.Message
         }
@@ -237,7 +223,8 @@ internal class MessagesReducer @Inject constructor(
     private fun State.chatModel(event: Event.ChatModel): State = when {
         event.model.messages == messages &&
                 event.model.formMap == formMap &&
-                event.model.previousPageIsAvailable == hasPreviousMessages -> this
+                event.model.previousPageIsAvailable == hasPreviousMessages &&
+                event.model.thumbnailMap == thumbnailMap -> this
         else -> {
             val newChatItems = event.model.messages.convert(
                 event.model.previousPageIsAvailable,
@@ -257,7 +244,8 @@ internal class MessagesReducer @Inject constructor(
                         else -> it.value
                     }
                 }.toMap(),
-                agentMessageShowed = getNewAgentIndexShowed(newAgentMessages)
+                agentMessageShowed = getNewAgentIndexShowed(newAgentMessages),
+                thumbnailMap = event.model.thumbnailMap
             )
         }
     }.copy(
@@ -349,13 +337,6 @@ internal class MessagesReducer @Inject constructor(
 
     private fun UsedeskMessageOwner.Agent.isAgentsTheSame(other: UsedeskMessageOwner.Agent): Boolean =
         avatar == other.avatar && name == other.name
-
-    /*private fun ioEvent(getEvent: suspend () -> Event) {
-        viewModel.doIo {
-            val intent = getEvent()
-            viewModel.doMain { viewModel.onEvent(intent) }
-        }
-    }*/
 
     companion object {
         private const val ITEMS_UNTIL_LAST = 5

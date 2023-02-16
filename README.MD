@@ -2,7 +2,7 @@
 
 ## This manual in other languages
 
-Also available in [Russian](readme_ru.md)
+Also available in [Russian](README_RU.md)
 
 ## Demo app
 

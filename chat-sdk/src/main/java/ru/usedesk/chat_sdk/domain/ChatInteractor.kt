@@ -186,8 +186,9 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun Model.onModelUpdated(oldModel: Model?, listener: IUsedeskActionListener) {
-        when (oldModel?.messages) {
-            messages -> {
+        val oldMessages = oldModel?.messages
+        when {
+            oldMessages == messages || oldModel?.inited != true -> {
                 listener.onModel(
                     this,
                     listOf(),
@@ -198,14 +199,17 @@ internal class ChatInteractor @Inject constructor(
             else -> {
                 val newMessages = mutableListOf<UsedeskMessage>()
                 val updatedMessages = mutableListOf<UsedeskMessage>()
+                val oldestMessageId = oldMessages?.firstOrNull()?.id ?: 0
                 messages.forEach { message ->
-                    val oldMessage = oldModel?.messages?.firstOrNull { message.isIdEquals(it) }
-                    when {
-                        oldMessage == null -> newMessages.add(message)
-                        oldMessage != message -> updatedMessages.add(message)
+                    if (message.id < 0 || message.id >= oldestMessageId) {
+                        val oldMessage = oldMessages?.firstOrNull { message.isIdEquals(it) }
+                        when {
+                            oldMessage == null -> newMessages.add(message)
+                            oldMessage != message -> updatedMessages.add(message)
+                        }
                     }
                 }
-                val removedMessages = oldModel?.messages
+                val removedMessages = oldMessages
                     ?.filter { oldMessage -> messages.all { !oldMessage.isIdEquals(it) } }
                     ?: listOf()
                 listener.onModel(
@@ -269,9 +273,7 @@ internal class ChatInteractor @Inject constructor(
 
     private fun modelLocked(onModel: Model.() -> Unit = {}): Model = runBlocking {
         eventMutex.withLock {
-            modelFlow.value.apply {
-                onModel()
-            }
+            modelFlow.value.apply { onModel() }
         }
     }
 
@@ -306,7 +308,12 @@ internal class ChatInteractor @Inject constructor(
                 thumbnailRepository.loadThumbnail(it)
             }
         }
-        setModel { copy(messages = old + messages + new) }
+        setModel {
+            copy(
+                messages = old + messages + new,
+                inited = true
+            )
+        }
     }
 
     override fun addActionListener(listener: IUsedeskActionListener) {
@@ -890,12 +897,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private suspend fun onChatInited(chatInited: ChatInited) {
-        val model = setModel {
-            copy(
-                clientToken = chatInited.token,
-                inited = true
-            )
-        }
+        val model = setModel { copy(clientToken = chatInited.token) }
         userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
 
         if (chatInited.status in ACTIVE_STATUSES) {

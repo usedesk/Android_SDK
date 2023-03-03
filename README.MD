@@ -401,4 +401,4 @@ In the case of changing string resource references when customizing an applicati
 
 ## Documentation
 
-Methods to work with the SDK, element customization, and bugs are described in our documentation: [http://sdk.usedocs.ru](http://sdk.usedocs.ru/)
+Methods to work with the SDK, element customization, and bugs are described in our documentation: [https://sdk.usedocs.com](https://sdk.usedocs.com/)

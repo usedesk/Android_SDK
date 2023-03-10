@@ -106,7 +106,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             requireContext(),
             chatConfiguration
         )
-        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
+        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: вызывается 1 раз?
 
         val toolbarAdapter = UsedeskToolbarAdapter(toolbar).apply {
             setBackButton(requireActivity()::onBackPressed)

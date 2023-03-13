@@ -1,6 +1,5 @@
 buildscript {
     ext {
-        kotlinVersion = "1.6.10"
         kotlinCoroutinesCoreVersion = "1.6.0"
         kotlinCoroutinesAndroidVersion = "1.6.4"
         activityVersion = "1.5.1"//API31
@@ -29,8 +28,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21"
+        classpath "com.android.tools.build:gradle:7.4.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:1.5.31"
     }
 }
 

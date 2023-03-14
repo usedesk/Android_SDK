@@ -1,10 +1,13 @@
 package ru.usedesk.common_sdk.entity
 
-open class UsedeskEvent<DATA>(
-    open val data: DATA
-) {
+import java.util.concurrent.atomic.AtomicBoolean
 
-    open fun use(onProcess: (DATA) -> Unit) {
-        onProcess(data)
+class UsedeskEvent<DATA>(val data: DATA) {
+    private val processed = AtomicBoolean(false)
+
+    fun use(onProcess: (DATA) -> Unit) {
+        if (!processed.getAndSet(true)) {
+            onProcess(data)
+        }
     }
 }

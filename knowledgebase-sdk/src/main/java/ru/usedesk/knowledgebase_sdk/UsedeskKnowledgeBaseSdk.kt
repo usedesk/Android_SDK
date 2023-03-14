@@ -19,10 +19,17 @@ object UsedeskKnowledgeBaseSdk {
         ?: throw RuntimeException("Must call UsedeskKnowledgeBaseSdk.setConfiguration(...) before")
 
     @JvmStatic
-    fun init(context: Context): IUsedeskKnowledgeBase =
-        (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
+    fun init(
+        context: Context,
+        configuration: UsedeskKnowledgeBaseConfiguration? = null
+    ): IUsedeskKnowledgeBase {
+        if (configuration != null) {
+            setConfiguration(configuration)
+        }
+        return (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
             injectBox = it
         }).knowledgeBaseInteractor
+    }
 
     @JvmStatic
     fun getInstance(): IUsedeskKnowledgeBase? = injectBox?.knowledgeBaseInteractor

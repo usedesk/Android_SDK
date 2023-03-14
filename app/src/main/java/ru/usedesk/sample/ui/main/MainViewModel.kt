@@ -4,7 +4,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
 import ru.usedesk.sample.ServiceLocator
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.ui.main.MainViewModel.Model
@@ -28,11 +27,11 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
             when {
                 usedeskChatConfiguration.validate().isAllValid() -> copy(
                     configuration = configuration,
-                    goSdk = UsedeskSingleLifeEvent(configuration.withKb)
+                    goSdk = UsedeskEvent(configuration.withKb)
                 )
                 else -> copy(
                     configuration = configuration,
-                    error = UsedeskSingleLifeEvent("Invalid configuration")
+                    error = UsedeskEvent("Invalid configuration")
                 )
             }
         }

@@ -21,7 +21,7 @@ import ru.usedesk.chat_sdk.di.IRelease
 import ru.usedesk.chat_sdk.domain.IUsedeskChat.*
 import ru.usedesk.chat_sdk.entity.*
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.*
 import javax.inject.Inject
 
@@ -108,7 +108,7 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onFeedback() {
-            setModel { copy(feedbackEvent = UsedeskSingleLifeEvent(Unit)) }
+            setModel { copy(feedbackEvent = UsedeskEvent(Unit)) }
         }
 
         override fun onException(exception: Exception) {

@@ -13,7 +13,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Model>(Model()) {
@@ -127,7 +127,7 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                         when (result) {
                             SendOfflineFormResult.Done -> copy(
                                 offlineFormState = OfflineFormState.SENT_SUCCESSFULLY,
-                                goExit = UsedeskSingleLifeEvent(
+                                goExit = UsedeskEvent(
                                     workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
                                 )
                             )
@@ -230,7 +230,7 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         val customFields: List<OfflineFormItem> = listOf(),
         val allFields: List<OfflineFormItem> = listOf(),
         val sendEnabled: Boolean = false,
-        val goExit: UsedeskSingleLifeEvent<Boolean>? = null,
+        val goExit: UsedeskEvent<Boolean>? = null,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null
     )
 

@@ -5,7 +5,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import ru.usedesk.sample.ServiceLocator
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -117,11 +117,11 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
                                 clientToken = when (result) {
                                     is IUsedeskPreparation.CreateChatResult.Done -> clientToken.copy(
                                         loading = false,
-                                        completed = UsedeskSingleLifeEvent(result.clientToken)
+                                        completed = UsedeskEvent(result.clientToken)
                                     )
                                     IUsedeskPreparation.CreateChatResult.Error -> clientToken.copy(
                                         loading = false,
-                                        error = UsedeskSingleLifeEvent(Unit)
+                                        error = UsedeskEvent(Unit)
                                     )
                                 }
                             )
@@ -137,7 +137,7 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
 
     data class ClientToken(
         val loading: Boolean = false,
-        val completed: UsedeskSingleLifeEvent<String?>? = null,
-        val error: UsedeskSingleLifeEvent<Unit>? = null
+        val completed: UsedeskEvent<String?>? = null,
+        val error: UsedeskEvent<Unit>? = null
     )
 }

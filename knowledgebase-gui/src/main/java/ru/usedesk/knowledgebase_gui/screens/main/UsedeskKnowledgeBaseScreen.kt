@@ -2,184 +2,430 @@ package ru.usedesk.knowledgebase_gui.screens.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import androidx.core.view.marginBottom
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updateMargins
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
-import ru.usedesk.knowledgebase_gui.screens.ToolbarSearchAdapter
+import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
+import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
+import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel.Event
+import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
     private val viewModel: KnowledgeBaseViewModel by viewModels()
 
-    private lateinit var binding: Binding
-    private lateinit var toolbarDefaultAdapter: UsedeskToolbarAdapter
-    private lateinit var toolbarSearchAdapter: ToolbarSearchAdapter
-    private lateinit var navController: NavController
-
-    private var fabDefaultBottomMargin = 0
-
-    internal var withArticleRating = true
-        private set
-
-    private var fabAnimation: FabAnimation? = null
-
-    private lateinit var sectionsTitle: String
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        binding = inflateItem(
-            inflater,
-            container,
-            R.layout.usedesk_screen_knowledge_base,
-            R.style.Usedesk_KnowledgeBase_Screen,
-            ::Binding
-        )
+    ) = (inflater.inflate(
+        R.layout.usedesk_compose_screen,
+        container,
+        false
+    ) as ComposeView).apply {
+        val configuration =
+            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)
+        UsedeskKnowledgeBaseSdk.init(requireContext(), configuration)
+        setContent {
+            val state by viewModel.modelFlow.collectAsState()
+            ScreenRoot(state, viewModel::onEvent)
+        }
+    }
 
-        sectionsTitle = binding.styleValues
-            .getStyleValues(R.attr.usedesk_common_toolbar)
-            .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
-            .getString(R.attr.usedesk_text_1)
-
-        fabDefaultBottomMargin = binding.styleValues.getStyleValues(
-            R.attr.usedesk_knowledgebase_screen_support_button
-        ).getFloat(android.R.attr.layout_marginBottom).toInt()
-
-        navController = (childFragmentManager.findFragmentById(R.id.page_container)
-                as NavHostFragment).navController
-
-        withArticleRating = argsGetBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
-        val withSupportButton = argsGetBoolean(WITH_SUPPORT_BUTTON_KEY, true)
-
-        binding.fabSupport.run {
-            visibility = visibleGone(withSupportButton)
-            setOnClickListener {
-                findParent<IUsedeskOnSupportClickListener>()?.onSupportClick()
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ScreenRoot(
+        state: State,
+        onEvent: (Event) -> Unit
+    ) {
+        val sectionsTitle = stringResource(R.string.usedesk_knowledgebase)
+        val title = remember(state.currentScreen) {
+            when (state.currentScreen) {
+                else -> sectionsTitle
             }
         }
 
-        toolbarDefaultAdapter = UsedeskToolbarAdapter(binding.toolbar).apply {
-            setBackButton(requireActivity()::onBackPressed)
+        val scrollBehavior = rememberToolbarScrollBehavior()
 
-            setActionButton {
-                navController.apply {
-                    if (currentDestination?.id != R.id.dest_articlesSearchPage) {
-                        navigate(R.id.dest_articlesSearchPage)
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    CustomToolbar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(colorResource(R.color.usedesk_white_2)),
+                        title = title,
+                        scrollBehavior = scrollBehavior,
+                        onBackPressed = requireActivity()::onBackPressed
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(colorResource(R.color.usedesk_white_2))
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp
+                            )
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(colorResource(R.color.usedesk_gray_12))
+                            .padding(
+                                start = 8.dp,
+                                end = 8.dp,
+                                top = 6.dp,
+                                bottom = 6.dp
+                            )
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .padding(end = 2.dp)
+                                .align(Alignment.CenterVertically),
+                            painter = painterResource(R.drawable.usedesk_ic_search),
+                            tint = Color.Unspecified,
+                            contentDescription = null
+                        )
+                        BasicTextField(
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically),
+                            value = state.searchText,
+                            onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } },
+                            textStyle = TextStyle()
+                        )
                     }
                 }
-            }
-        }
-
-        toolbarSearchAdapter = ToolbarSearchAdapter(
-            binding.toolbarSearch, { query ->
-                if (query.isNotEmpty()) {
-                    viewModel.onSearchQuery(query)
-                }
             },
-            this@UsedeskKnowledgeBaseScreen::onBackPressed
+            content = {
+                Content(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                        .background(colorResource(R.color.usedesk_white_2))
+                )
+            }
         )
+    }
 
-        hideKeyboard(binding.rootView)
+    @Composable
+    private fun Content(
+        state: State,
+        onEvent: (Event) -> Unit,
+        modifier: Modifier
+    ) {
+        //val navController = rememberNavController()
 
-        navController.addOnDestinationChangedListener { _, destination, args ->
-            when (destination.id) {
-                R.id.dest_sectionsPage,
-                R.id.dest_categoriesPage,
-                R.id.dest_articlesPage,
-                R.id.dest_articlePage -> {
-                    toolbarDefaultAdapter.show()
-                    toolbarSearchAdapter.hide()
-                    toolbarDefaultAdapter.setTitle(
-                        args?.getString(COMMON_TITLE_KEY)
-                            ?: sectionsTitle
+        Box(modifier = modifier) {
+            when (state.currentScreen) {
+                State.Screen.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+                is State.Screen.Sections -> {
+                    ContentSections(
+                        screen = state.currentScreen,
+                        onEvent = onEvent
                     )
                 }
-                R.id.dest_articlesSearchPage -> {
-                    toolbarDefaultAdapter.hide()
-                    toolbarSearchAdapter.show()
+                is State.Screen.Categories -> {
+                    ContentCategories(
+                        screen = state.currentScreen,
+                        onEvent = onEvent
+                    )
+                }
+                is State.Screen.Articles -> {
+                    ContentArticles(
+                        screen = state.currentScreen,
+                        onEvent = onEvent
+                    )
+                }
+                is State.Screen.Article -> {
+                    ContentArticle(
+                        screen = state.currentScreen,
+                        onEvent = onEvent
+                    )
                 }
             }
-            onSupportButtonBottomMargin(0)
         }
-
-        return binding.rootView
+        /*NavHost(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = colorResource(R.color.usedesk_white_2)),
+            navController = navController,
+            startDestination = State.Screen.Sections::javaClass.name
+        ) {
+            composable(State.Screen.Sections::javaClass.name) {
+                ScreenSections(
+                    state = state,
+                    onEvent = onEvent
+                )
+                /*
+                { sectionId ->
+                        navController.navigate(
+                            route = State.Screen.Categories::javaClass.name
+                        ) {
+                            arguments = Bundle().apply {
+                                putLong(SECTION_ID_KEY, sectionId)
+                            }
+                        }
+                    }
+                 */
+            }
+            composable(State.Screen.Categories::javaClass.name) {
+                val sectionId = remember { it.arguments?.getLong(SECTION_ID_KEY) ?: 0L }
+                ScreenCategories(
+                    sectionId = sectionId,
+                    state = state,
+                    onEvent = onEvent
+                )
+                /*
+                { categoryId ->
+                        navController.navigate(
+                            route = State.Screen.Articles::javaClass.name
+                        ) {
+                            arguments = Bundle().apply {
+                                putLong(CATEGORY_ID_KEY, categoryId)
+                            }
+                        }
+                    }
+                 */
+            }
+            composable(State.Screen.Articles::javaClass.name) {
+                val categoryId = remember { it.arguments?.getLong(CATEGORY_ID_KEY) ?: 0L }
+                ScreenArticles(
+                    categoryId = categoryId,
+                    state = state,
+                    onEvent = onEvent
+                )
+                /*{ articleId ->
+                    navController.navigate(
+                        route = State.Screen.Article::javaClass.name
+                    ) {
+                        arguments = Bundle().apply {
+                            putLong(ARTICLE_ID_KEY, articleId)
+                        }
+                    }
+                }*/
+            }
+        }*/
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        viewModel.init {
-            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)
-                ?.let(UsedeskKnowledgeBaseSdk::setConfiguration)
-            UsedeskKnowledgeBaseSdk.init(requireContext())
-        }
+    @Composable
+    private fun LazyColumnCard(content: LazyListScope.() -> Unit) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(colorResource(R.color.usedesk_white_1)),
+            content = content
+        )
     }
 
-    internal fun onTitle(title: String) {
-        toolbarDefaultAdapter.setTitle(title)
-    }
-
-    internal fun onSupportButtonBottomMargin(bottomMargin: Int) {
-        val newBottomMargin = fabDefaultBottomMargin + bottomMargin
-        if (fabAnimation?.newBottomMargin != newBottomMargin) {
-            binding.fabSupport.clearAnimation()
-            fabAnimation = FabAnimation(
-                binding.fabSupport,
-                newBottomMargin
-            )
-            binding.fabSupport.startAnimation(fabAnimation)
-        }
-    }
-
-    override fun onBackPressed(): Boolean {
-        return navController.popBackStack()
-    }
-
-    class FabAnimation(
-        val view: View,
-        val newBottomMargin: Int
-    ) : Animation() {
-        private val oldBottomMargin = view.marginBottom
-
-        init {
-            duration = 300
-        }
-
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            val dif = newBottomMargin - oldBottomMargin
-            val currentMargin = oldBottomMargin + (dif * interpolatedTime).toInt()
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                updateMargins(bottom = currentMargin)
+    @Composable
+    private fun ContentSections(
+        screen: State.Screen.Sections,
+        onEvent: (Event) -> Unit
+    ) {
+        LazyColumnCard {
+            items(
+                items = screen.sections,
+                key = UsedeskSection::id
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = colorResource(R.color.usedesk_white_1))
+                        .clickableItem(
+                            onClick = { onEvent(Event.SectionClicked(it)) } //TODO: try remember
+                        )
+                        .padding(
+                            start = 10.dp,
+                            end = 10.dp,
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(color = colorResource(R.color.usedesk_gray_cold_1))
+                    ) {
+                        BasicText(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            text = remember(it.title) {
+                                it.title
+                                    .firstOrNull(Char::isLetterOrDigit)
+                                    ?.uppercase()
+                                    ?: ""
+                            },
+                            style = TextStyle(
+                                fontSize = 17.sp,
+                                color = colorResource(R.color.usedesk_black_2)
+                            )
+                        )
+                    }
+                    BasicText(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(
+                                start = 10.dp,
+                                end = 10.dp
+                            )
+                            .weight(weight = 1f, fill = true),
+                        style = TextStyle(
+                            fontSize = 17.sp,
+                            textAlign = TextAlign.Start,
+                            color = colorResource(R.color.usedesk_black_2)
+                        ),
+                        text = it.title
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(24.dp),
+                        painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                        tint = Color.Unspecified,
+                        contentDescription = null
+                    )
+                }
             }
         }
     }
 
-    internal class Binding(rootView: View, defaultStyleId: Int) :
-        UsedeskBinding(rootView, defaultStyleId) {
-        val toolbar =
-            UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
-        val toolbarSearch =
-            ToolbarSearchAdapter.Binding(rootView.findViewById(R.id.toolbar_search), defaultStyleId)
-        val fabSupport = rootView.findViewById<FloatingActionButton>(R.id.fab_support)
+    @Composable
+    private fun ContentCategories(
+        screen: State.Screen.Categories,
+        onEvent: (Event) -> Unit
+    ) {
+        LazyColumnCard {
+            items(
+                items = screen.section.categories,
+                key = UsedeskCategory::id
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = colorResource(R.color.usedesk_white_1))
+                        .clickableItem(
+                            onClick = { onEvent(Event.CategoryClicked(it)) } //TODO: try remember
+                        )
+                        .padding(
+                            start = 10.dp,
+                            end = 10.dp,
+                            top = 8.dp,
+                            bottom = 8.dp
+                        )
+                ) {
+                    BasicText(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(
+                                start = 10.dp,
+                                end = 10.dp
+                            )
+                            .weight(weight = 1f, fill = true),
+                        style = TextStyle(
+                            fontSize = 17.sp,
+                            textAlign = TextAlign.Start,
+                            color = colorResource(R.color.usedesk_black_2)
+                        ),
+                        text = it.title
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(24.dp),
+                        painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                        tint = Color.Unspecified,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
     }
 
+    @Composable
+    private fun ContentArticles(
+        screen: State.Screen.Articles,
+        onEvent: (Event) -> Unit
+    ) {
+        LazyColumnCard {
+            items(
+                items = screen.category.articles,
+                key = UsedeskArticleInfo::id
+            ) {
+                BasicText(text = "Articles:${it.title}")
+            }
+        }
+    }
+
+    @Composable
+    private fun ContentArticle(
+        screen: State.Screen.Article,
+        onEvent: (Event) -> Unit
+    ) {
+        LazyColumnCard { //TODO: тут поиск не нужен
+            items(100) {
+                BasicText(text = "Article:${screen.article.title}")
+            }
+        }
+    }
+
+    override fun onBackPressed(): Boolean = viewModel.onBackPressed()
+
     companion object {
-        internal const val COMMON_TITLE_KEY = "commonTitleKey"
+        private const val SECTION_ID_KEY = "sectionsIdKey"
+        private const val CATEGORY_ID_KEY = "categoryIdKey"
+        private const val ARTICLE_ID_KEY = "articleIdKey"
+
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
         private const val KNOWLEDGE_BASE_CONFIGURATION = "knowledgeBaseConfiguration"
@@ -189,7 +435,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         fun newInstance(
             withSupportButton: Boolean = true,
             withArticleRating: Boolean = true,
-            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
+            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration
         ): UsedeskKnowledgeBaseScreen = UsedeskKnowledgeBaseScreen().apply {
             arguments = createBundle(
                 withSupportButton,
@@ -200,16 +446,14 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
         @JvmStatic
         @JvmOverloads
-        fun createBundle(
+        fun createBundle( //TODO
             withSupportButton: Boolean = true,
             withArticleRating: Boolean = true,
-            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration? = null
+            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration
         ): Bundle = Bundle().apply {
             putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
             putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
-            knowledgeBaseConfiguration?.let {
-                putParcelable(KNOWLEDGE_BASE_CONFIGURATION, it)
-            }
+            putParcelable(KNOWLEDGE_BASE_CONFIGURATION, knowledgeBaseConfiguration)
         }
     }
 }

@@ -13,9 +13,7 @@ class CustomToolbarScrollBehavior(
     val state: CustomToolbarScrollState,
     val flingAnimationSpec: DecayAnimationSpec<Float>?,
 ) {
-
     val nestedScrollConnection = object : NestedScrollConnection {
-
         override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
             // Don't intercept if scrolling down.
             if (available.y > 0f) return Offset.Zero
@@ -66,22 +64,18 @@ class CustomToolbarScrollBehavior(
             // Note that we don't check for 0f due to float precision with the collapsedFraction
             // calculation.
             if (state.collapsedFraction > 0.01f && state.collapsedFraction < 1f) {
-                result += flingToolbar(
-                    state = state,
+                result += state.flingToolbar(
                     initialVelocity = available.y,
                     flingAnimationSpec = flingAnimationSpec
                 )
-                snapToolbar(state)
+                state.snapToolbar()
             }
             return result
         }
-
     }
-
 }
 
-private suspend fun flingToolbar(
-    state: CustomToolbarScrollState,
+private suspend fun CustomToolbarScrollState.flingToolbar(
     initialVelocity: Float,
     flingAnimationSpec: DecayAnimationSpec<Float>?,
 ): Velocity {
@@ -95,9 +89,9 @@ private suspend fun flingToolbar(
             initialVelocity = initialVelocity,
         ).animateDecay(flingAnimationSpec) {
             val delta = value - lastValue
-            val initialHeightOffset = state.heightOffset
-            state.heightOffset = initialHeightOffset + delta
-            val consumed = abs(initialHeightOffset - state.heightOffset)
+            val initialHeightOffset = heightOffset
+            heightOffset = initialHeightOffset + delta
+            val consumed = abs(initialHeightOffset - heightOffset)
             lastValue = value
             remainingVelocity = this.velocity
             // avoid rounding errors and stop if anything is unconsumed
@@ -109,19 +103,17 @@ private suspend fun flingToolbar(
     return Velocity(0f, remainingVelocity)
 }
 
-private suspend fun snapToolbar(state: CustomToolbarScrollState) {
+suspend fun CustomToolbarScrollState.snapToolbar() {
     // In case the app bar motion was stopped in a state where it's partially visible, snap it to
     // the nearest state.
-    if (state.heightOffset < 0 &&
-        state.heightOffset > state.heightOffsetLimit
+    if (heightOffset < 0 &&
+        heightOffset > heightOffsetLimit
     ) {
-        AnimationState(
-            initialValue = state.heightOffset
-        ).animateTo(
-            targetValue = if (state.collapsedFraction < 0.5f) 0f else state.heightOffsetLimit,
+        AnimationState(initialValue = heightOffset).animateTo(
+            targetValue = if (collapsedFraction < 0.5f) 0f else heightOffsetLimit,
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
         ) {
-            state.heightOffset = value
+            heightOffset = value
         }
     }
 }

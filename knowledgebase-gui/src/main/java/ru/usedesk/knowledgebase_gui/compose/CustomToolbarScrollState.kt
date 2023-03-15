@@ -73,10 +73,9 @@ class CustomToolbarScrollState(
      * as [heightOffset] / [heightOffsetLimit]).
      */
     val collapsedFraction: Float
-        get() = if (heightOffsetLimit != 0f) {
-            heightOffset / heightOffsetLimit
-        } else {
-            0f
+        get() = when (heightOffsetLimit) {
+            0f -> 0f
+            else -> heightOffset / heightOffsetLimit
         }
 
     private var _heightOffset = mutableStateOf(initialHeightOffset)

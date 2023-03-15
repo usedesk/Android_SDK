@@ -1,11 +1,13 @@
 package ru.usedesk.knowledgebase_gui.compose
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,8 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 @Composable
@@ -29,6 +31,7 @@ fun CustomToolbar(
     onBackPressed: () -> Unit
 ) {
     val collapsedFraction = scrollBehavior.state.collapsedFraction
+    UsedeskLog.onLog("collapsedFraction") { collapsedFraction.toString() }
 
     val textStyle = MaterialTheme.typography.headlineLarge
 
@@ -36,8 +39,9 @@ fun CustomToolbar(
         CollapsedTitleLineHeight.value / textStyle.lineHeight.value
 
     val collapsingTitleScale = lerp(1f, fullyCollapsedTitleScale, collapsedFraction)
+    UsedeskLog.onLog("collapsingTitleScale") { collapsingTitleScale.toString() }
 
-    Surface(modifier = modifier) {
+    Surface(modifier = modifier.animateContentSize()) {
         Layout(
             content = {
                 Text(
@@ -84,50 +88,32 @@ fun CustomToolbar(
                     )
                 }
             },
-            modifier = modifier.then(Modifier.heightIn(min = MinCollapsedHeight))
-        ) { measurables, constraints ->
-            val horizontalPaddingPx = HorizontalPadding.toPx()
-            val expandedTitleBottomPaddingPx = ExpandedTitleBottomPadding.toPx()
+            modifier = modifier.then(Modifier.heightIn(min = MinCollapsedHeight)),
+            measurePolicy = { measurables, constraints ->
+                val horizontalPaddingPx = HorizontalPadding.toPx()
+                val expandedTitleBottomPaddingPx = ExpandedTitleBottomPadding.toPx()
 
+                // Measuring widgets inside toolbar:
 
-            // Measuring widgets inside toolbar:
+                val navigationIconPlaceable = measurables.first { it.layoutId == NavigationIconId }
+                    .measure(constraints.copy(minWidth = 0))
 
-            val navigationIconPlaceable =
-                measurables.firstOrNull { it.layoutId == NavigationIconId }
-                    ?.measure(constraints.copy(minWidth = 0))
-
-            val actionsPlaceable = measurables.firstOrNull { it.layoutId == ActionsId }
-                ?.measure(constraints.copy(minWidth = 0))
-
-            val expandedTitlePlaceable = measurables.firstOrNull { it.layoutId == ExpandedTitleId }
-                ?.measure(
-                    constraints.copy(
-                        maxWidth = (constraints.maxWidth - 2 * horizontalPaddingPx).roundToInt(),
-                        minWidth = 0,
-                        minHeight = 0
+                val expandedTitlePlaceable = measurables.first { it.layoutId == ExpandedTitleId }
+                    .measure(
+                        constraints.copy(
+                            maxWidth = (constraints.maxWidth - 2 * horizontalPaddingPx).roundToInt(),
+                            minWidth = 0,
+                            minHeight = 0
+                        )
                     )
-                )
 
-            val additionalContentPlaceable =
-                measurables.firstOrNull { it.layoutId == AdditionalContentId }
-                    ?.measure(constraints)
+                val navigationIconOffset = navigationIconPlaceable.width + horizontalPaddingPx * 2
 
-            val navigationIconOffset = when (navigationIconPlaceable) {
-                null -> horizontalPaddingPx
-                else -> navigationIconPlaceable.width + horizontalPaddingPx * 2
-            }
+                val collapsedTitleMaxWidthPx =
+                    (constraints.maxWidth - navigationIconOffset - horizontalPaddingPx) / fullyCollapsedTitleScale
 
-            val actionsOffset = when (actionsPlaceable) {
-                null -> horizontalPaddingPx
-                else -> actionsPlaceable.width + horizontalPaddingPx * 2
-            }
-
-            val collapsedTitleMaxWidthPx =
-                (constraints.maxWidth - navigationIconOffset - actionsOffset) / fullyCollapsedTitleScale
-
-            val collapsedTitlePlaceable =
-                measurables.firstOrNull { it.layoutId == CollapsedTitleId }
-                    ?.measure(
+                val collapsedTitlePlaceable = measurables.first { it.layoutId == CollapsedTitleId }
+                    .measure(
                         constraints.copy(
                             maxWidth = collapsedTitleMaxWidthPx.roundToInt(),
                             minWidth = 0,
@@ -135,44 +121,28 @@ fun CustomToolbar(
                         )
                     )
 
-            val centralContentPlaceable =
-                measurables.firstOrNull { it.layoutId == CentralContentId }
-                    ?.measure(
-                        constraints.copy(
-                            minWidth = 0,
-                            maxWidth = (constraints.maxWidth - navigationIconOffset - actionsOffset).roundToInt()
-                        )
-                    )
+                val collapsedHeightPx = MinCollapsedHeight.toPx()
 
-            val collapsedHeightPx = when {
-                centralContentPlaceable != null ->
-                    max(MinCollapsedHeight.toPx(), centralContentPlaceable.height.toFloat())
-                else -> MinCollapsedHeight.toPx()
-            }
+                var layoutHeightPx = collapsedHeightPx
 
-            var layoutHeightPx = collapsedHeightPx
+                // Calculating coordinates of widgets inside toolbar:
 
-            // Calculating coordinates of widgets inside toolbar:
+                // Current coordinates of navigation icon
+                val navigationIconX = horizontalPaddingPx.roundToInt()
+                val navigationIconY =
+                    ((collapsedHeightPx - navigationIconPlaceable.height) / 2).roundToInt()
 
-            // Current coordinates of navigation icon
-            val navigationIconX = horizontalPaddingPx.roundToInt()
-            val navigationIconY =
-                ((collapsedHeightPx - (navigationIconPlaceable?.height ?: 0)) / 2).roundToInt()
+                // Current coordinates of title
+                var collapsingTitleY = 0
+                var collapsingTitleX = 0
 
-            // Current coordinates of actions
-            val actionsX = (constraints.maxWidth - (actionsPlaceable?.width
-                ?: 0) - horizontalPaddingPx).roundToInt()
-            val actionsY = ((collapsedHeightPx - (actionsPlaceable?.height ?: 0)) / 2).roundToInt()
-
-            // Current coordinates of title
-            var collapsingTitleY = 0
-            var collapsingTitleX = 0
-
-            if (expandedTitlePlaceable != null && collapsedTitlePlaceable != null) {
                 // Measuring toolbar collapsing distance
                 val heightOffsetLimitPx =
                     expandedTitlePlaceable.height + expandedTitleBottomPaddingPx
-                scrollBehavior.state.heightOffsetLimit = -heightOffsetLimitPx
+                if (scrollBehavior.state.heightOffsetLimit != -heightOffsetLimitPx) {
+                    scrollBehavior.state.heightOffsetLimit = -heightOffsetLimitPx
+                    scrollBehavior.state.heightOffset = collapsedFraction * (-heightOffsetLimitPx)
+                }
 
                 // Toolbar height at fully expanded state
                 val fullyExpandedHeightPx = MinCollapsedHeight.toPx() + heightOffsetLimitPx
@@ -191,57 +161,44 @@ fun CustomToolbar(
                 layoutHeightPx = lerp(fullyExpandedHeightPx, collapsedHeightPx, collapsedFraction)
 
                 // Current coordinates of collapsing title
-                collapsingTitleX =
-                    lerp(fullyExpandedTitleX, fullyCollapsedTitleX, collapsedFraction).roundToInt()
-                collapsingTitleY =
-                    lerp(fullyExpandedTitleY, fullyCollapsedTitleY, collapsedFraction).roundToInt()
-            } else {
-                scrollBehavior.state.heightOffsetLimit = -1f
-            }
+                collapsingTitleX = lerp(
+                    fullyExpandedTitleX,
+                    fullyCollapsedTitleX,
+                    collapsedFraction
+                ).roundToInt()
+                collapsingTitleY = lerp(
+                    fullyExpandedTitleY,
+                    fullyCollapsedTitleY,
+                    collapsedFraction
+                ).roundToInt()
 
-            val toolbarHeightPx =
-                layoutHeightPx.roundToInt() + (additionalContentPlaceable?.height ?: 0)
+                val toolbarHeightPx = layoutHeightPx.roundToInt()
 
 
-            // Placing toolbar widgets:
+                // Placing toolbar widgets:
 
-            layout(constraints.maxWidth, toolbarHeightPx) {
-                navigationIconPlaceable?.placeRelative(
-                    x = navigationIconX,
-                    y = navigationIconY
-                )
-                actionsPlaceable?.placeRelative(
-                    x = actionsX,
-                    y = actionsY
-                )
-                centralContentPlaceable?.placeRelative(
-                    x = navigationIconOffset.roundToInt(),
-                    y = ((collapsedHeightPx - centralContentPlaceable.height) / 2).roundToInt()
-                )
-                if (expandedTitlePlaceable?.width == collapsedTitlePlaceable?.width) {
-                    expandedTitlePlaceable?.placeRelative(
-                        x = collapsingTitleX,
-                        y = collapsingTitleY,
+                layout(constraints.maxWidth, toolbarHeightPx) {
+                    navigationIconPlaceable.placeRelative(
+                        x = navigationIconX,
+                        y = navigationIconY
                     )
-                } else {
-                    expandedTitlePlaceable?.placeRelativeWithLayer(
+                    expandedTitlePlaceable.placeRelativeWithLayer(
                         x = collapsingTitleX,
                         y = collapsingTitleY,
                         layerBlock = { alpha = 1f - collapsedFraction }
                     )
-                    collapsedTitlePlaceable?.placeRelativeWithLayer(
+                    collapsedTitlePlaceable.placeRelativeWithLayer(
                         x = collapsingTitleX,
                         y = collapsingTitleY,
                         layerBlock = { alpha = collapsedFraction }
                     )
                 }
-                additionalContentPlaceable?.placeRelative(
-                    x = 0,
-                    y = layoutHeightPx.roundToInt()
-                )
             }
-        }
+        )
+    }
 
+    LaunchedEffect(title) {
+        scrollBehavior.state.snapToolbar()
     }
 }
 
@@ -256,6 +213,3 @@ private val CollapsedTitleLineHeight = 28.sp
 private const val ExpandedTitleId = "expandedTitle"
 private const val CollapsedTitleId = "collapsedTitle"
 private const val NavigationIconId = "navigationIcon"
-private const val ActionsId = "actions"
-private const val CentralContentId = "centralContent"
-private const val AdditionalContentId = "additionalContent"

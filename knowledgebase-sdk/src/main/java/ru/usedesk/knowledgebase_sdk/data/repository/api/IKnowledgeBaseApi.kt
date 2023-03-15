@@ -1,17 +1,18 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api
 
+import androidx.annotation.CheckResult
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.SearchQueryRequest
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal interface IKnowledgeBaseApi {
-    fun getSections(): List<UsedeskSection>
+    @CheckResult
+    suspend fun getSections(): GetSectionsResponse
 
-    fun getCategories(sectionId: Long): List<UsedeskCategory>
-
-    fun getArticles(categoryId: Long): List<UsedeskArticleInfo>
+    sealed interface GetSectionsResponse {
+        data class Done(val sections: List<UsedeskSection>) : GetSectionsResponse
+        data class Error(val code: Int? = null) : GetSectionsResponse
+    }
 
     fun getArticle(articleId: Long): UsedeskArticleContent
 

@@ -1,53 +1,68 @@
 package ru.usedesk.knowledgebase_sdk.domain
 
-import io.reactivex.schedulers.Schedulers
-import ru.usedesk.knowledgebase_sdk.RxUtil.safeCompletableIo
-import ru.usedesk.knowledgebase_sdk.RxUtil.safeSingleIo
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi
-import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.SearchQueryRequest
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetSectionsResponse
+import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.Model
 import javax.inject.Inject
 
 internal class KnowledgeBaseInteractor @Inject constructor(
     private val knowledgeApiRepository: IKnowledgeBaseApi
 ) : IUsedeskKnowledgeBase {
 
-    private val ioScheduler = Schedulers.io()
+    override val modelFlow = MutableStateFlow(Model())
 
-    override fun getSectionsRx() = safeSingleIo(ioScheduler, this::getSections)
+    private val mutex = Mutex()
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private var loadSectionsJob: Job? = null
 
-    override fun getArticleRx(articleId: Long) = safeSingleIo(ioScheduler) { getArticle(articleId) }
-
-    override fun getCategoriesRx(sectionId: Long) =
-        safeSingleIo(ioScheduler) { getCategories(sectionId) }
-
-    override fun getArticlesRx(categoryId: Long) =
-        safeSingleIo(ioScheduler) { getArticles(categoryId) }
-
-    override fun getArticlesRx(searchQuery: String) =
-        safeSingleIo(ioScheduler) { getArticles(searchQuery) }
-
-    override fun addViewsRx(articleId: Long) =
-        safeCompletableIo(ioScheduler) { addViews(articleId) }
-
-    override fun sendRatingRx(articleId: Long, good: Boolean) =
-        safeCompletableIo(ioScheduler) { sendRating(articleId, good) }
-
-    override fun sendRatingRx(articleId: Long, message: String) =
-        safeCompletableIo(ioScheduler) { sendRating(articleId, message) }
-
-    override fun getCategories(sectionId: Long) = knowledgeApiRepository.getCategories(sectionId)
-
-    override fun getSections() = knowledgeApiRepository.getSections()
-
-    override fun getArticle(articleId: Long) = knowledgeApiRepository.getArticle(articleId)
-
-    override fun getArticles(searchQuery: String): List<UsedeskArticleContent> {
-        val query = SearchQueryRequest(searchQuery)
-        return knowledgeApiRepository.getArticles(query)
+    init {
+        runBlocking {
+            mutex.withLock {
+                launchSectionsJob()
+            }
+        }
     }
 
-    override fun getArticles(categoryId: Long) = knowledgeApiRepository.getArticles(categoryId)
+    private fun launchSectionsJob() {
+        loadSectionsJob?.cancel()
+        loadSectionsJob = ioScope.launch {
+            val response = knowledgeApiRepository.getSections()
+            mutex.withLock {
+                updateModelLocked {
+                    when (response) {
+                        is GetSectionsResponse.Done -> copy(
+                            state = Model.State.LOADED,
+                            sections = response.sections
+                        )
+                        is GetSectionsResponse.Error -> copy(
+                            state = Model.State.FAILED
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateModelLocked(update: Model.() -> Model) = modelFlow.value.update()
+        .also { modelFlow.value = it }
+
+    override fun loadSections(reload: Boolean) {
+        runBlocking {
+            mutex.withLock {
+                val model = modelFlow.value
+                if (model.sections == null || reload) {
+                    updateModelLocked { copy(state = Model.State.LOADING) }
+                    launchSectionsJob()
+                }
+            }
+        }
+    }
+
+    override fun getArticle(articleId: Long) = knowledgeApiRepository.getArticle(articleId)
 
     override fun addViews(articleId: Long) {
         knowledgeApiRepository.addViews(articleId)

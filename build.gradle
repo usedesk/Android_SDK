@@ -9,8 +9,6 @@ buildscript {
         materialVersion = "1.8.0"
         daggerVersion = "2.42"
         navVersion = "2.5.3"
-        rxJavaVersion = "2.2.20"
-        rxAndroidVersion = "2.1.1"
         gsonVersion = "2.9.0"
         retrofitVersion = "2.9.0"
         lifecycleCommonVersion = "2.4.1"

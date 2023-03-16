@@ -108,6 +108,7 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
         val currentScreen: Screen = Screen.Loading(),
         val searchText: TextFieldValue = TextFieldValue()
     ) {
+
         sealed interface Screen {
             val previousScreen: Screen?
 
@@ -137,6 +138,31 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
                 val article: UsedeskArticleInfo,
                 val articleContent: UsedeskArticleContent? = null
             ) : Screen
+
+            enum class Transition {
+                NONE,
+                REPLACE,
+                FORWARD,
+                BACKWARD
+            }
+
+            fun transition(previous: Screen?) = when (previous) {
+                null -> Transition.NONE
+                else -> transitionMap[Pair(previous.javaClass, javaClass)] ?: Transition.REPLACE
+            }
+
+            companion object {
+                val transitionMap = listOf(
+                    Sections::class.java to Categories::class.java,
+                    Categories::class.java to Articles::class.java,
+                    Articles::class.java to Article::class.java
+                ).flatMap {
+                    listOf(
+                        Pair(it.first, it.second) to Transition.FORWARD,
+                        Pair(it.second, it.first) to Transition.BACKWARD
+                    )
+                }.toMap()
+            }
         }
     }
 

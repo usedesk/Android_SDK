@@ -3,20 +3,22 @@ package ru.usedesk.knowledgebase_gui.screens.main
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
@@ -108,112 +110,75 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         )
     }
 
+    @OptIn(ExperimentalAnimationApi::class)
     @Composable
     private fun Content(
         state: State,
         onEvent: (Event) -> Unit,
         modifier: Modifier
     ) {
-        //val navController = rememberNavController()
-
+        val forwardTransitionSpec = remember {
+            slideInHorizontally(
+                spring(
+                    stiffness = Spring.StiffnessLow,
+                    visibilityThreshold = IntOffset.VisibilityThreshold
+                )
+            ) { it } with slideOutHorizontally(
+                spring(
+                    stiffness = Spring.StiffnessLow,
+                    visibilityThreshold = IntOffset.VisibilityThreshold
+                )
+            ) { -it }
+        }
+        val backwardTransitionSpec = slideInHorizontally(
+            spring(
+                stiffness = Spring.StiffnessLow,
+                visibilityThreshold = IntOffset.VisibilityThreshold
+            )
+        ) { -it } with slideOutHorizontally(
+            spring(
+                stiffness = Spring.StiffnessLow,
+                visibilityThreshold = IntOffset.VisibilityThreshold
+            )
+        ) { it }
+        val replaceTransitionSpec = fadeIn() with fadeOut()
+        val noneTransitionSpec = EnterTransition.None with ExitTransition.None
         Box(modifier = modifier) {
-            when (state.currentScreen) {
-                is State.Screen.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize()) { //TODO
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .align(Alignment.Center)
-                        )
+            AnimatedContent(
+                targetState = state.currentScreen,
+                transitionSpec = {
+                    when (targetState.transition(initialState)) {
+                        State.Screen.Transition.FORWARD -> forwardTransitionSpec
+                        State.Screen.Transition.BACKWARD -> backwardTransitionSpec
+                        State.Screen.Transition.REPLACE -> replaceTransitionSpec
+                        else -> noneTransitionSpec
                     }
                 }
-                is State.Screen.Sections -> {
-                    ContentSections(
-                        screen = state.currentScreen,
+            ) { currentScreen ->
+                when (currentScreen) {
+                    is State.Screen.Loading -> ContentLoading(
+                        screen = currentScreen,
                         onEvent = onEvent
                     )
-                }
-                is State.Screen.Categories -> {
-                    ContentCategories(
-                        screen = state.currentScreen,
+                    is State.Screen.Sections -> ContentSections(
+                        screen = currentScreen,
                         onEvent = onEvent
                     )
-                }
-                is State.Screen.Articles -> {
-                    ContentArticles(
-                        screen = state.currentScreen,
+                    is State.Screen.Categories -> ContentCategories(
+                        screen = currentScreen,
                         onEvent = onEvent
                     )
-                }
-                is State.Screen.Article -> {
-                    ContentArticle(
-                        screen = state.currentScreen,
+                    is State.Screen.Articles -> ContentArticles(
+                        screen = currentScreen,
+                        onEvent = onEvent
+                    )
+                    is State.Screen.Article -> ContentArticle(
+                        screen = currentScreen,
                         onEvent = onEvent
                     )
                 }
             }
         }
-        /*NavHost(
-            modifier = modifier
-                .fillMaxSize()
-                .background(color = colorResource(R.color.usedesk_white_2)),
-            navController = navController,
-            startDestination = State.Screen.Sections::javaClass.name
-        ) {
-            composable(State.Screen.Sections::javaClass.name) {
-                ScreenSections(
-                    state = state,
-                    onEvent = onEvent
-                )
-                /*
-                { sectionId ->
-                        navController.navigate(
-                            route = State.Screen.Categories::javaClass.name
-                        ) {
-                            arguments = Bundle().apply {
-                                putLong(SECTION_ID_KEY, sectionId)
-                            }
-                        }
-                    }
-                 */
-            }
-            composable(State.Screen.Categories::javaClass.name) {
-                val sectionId = remember { it.arguments?.getLong(SECTION_ID_KEY) ?: 0L }
-                ScreenCategories(
-                    sectionId = sectionId,
-                    state = state,
-                    onEvent = onEvent
-                )
-                /*
-                { categoryId ->
-                        navController.navigate(
-                            route = State.Screen.Articles::javaClass.name
-                        ) {
-                            arguments = Bundle().apply {
-                                putLong(CATEGORY_ID_KEY, categoryId)
-                            }
-                        }
-                    }
-                 */
-            }
-            composable(State.Screen.Articles::javaClass.name) {
-                val categoryId = remember { it.arguments?.getLong(CATEGORY_ID_KEY) ?: 0L }
-                ScreenArticles(
-                    categoryId = categoryId,
-                    state = state,
-                    onEvent = onEvent
-                )
-                /*{ articleId ->
-                    navController.navigate(
-                        route = State.Screen.Article::javaClass.name
-                    ) {
-                        arguments = Bundle().apply {
-                            putLong(ARTICLE_ID_KEY, articleId)
-                        }
-                    }
-                }*/
-            }
-        }*/
     }
 
     @Composable
@@ -231,10 +196,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     override fun onBackPressed(): Boolean = viewModel.onBackPressed()
 
     companion object {
-        private const val SECTION_ID_KEY = "sectionsIdKey"
-        private const val CATEGORY_ID_KEY = "categoryIdKey"
-        private const val ARTICLE_ID_KEY = "articleIdKey"
-
         private const val WITH_SUPPORT_BUTTON_KEY = "withSupportButtonKey"
         private const val WITH_ARTICLE_RATING_KEY = "withArticleRatingKey"
         private const val KNOWLEDGE_BASE_CONFIGURATION = "knowledgeBaseConfiguration"

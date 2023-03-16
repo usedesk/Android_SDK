@@ -1,8 +1,6 @@
 package ru.usedesk.common_gui
 
 import androidx.lifecycle.ViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,9 +14,7 @@ open class UsedeskViewModel<MODEL>(
 ) : ViewModel() {
     private val _modelFlow = MutableStateFlow(defaultModel)
     val modelFlow: StateFlow<MODEL> = _modelFlow
-    private val mainThread = AndroidSchedulers.mainThread()
 
-    private val disposables = mutableListOf<Disposable>()
     private var inited = false
 
     protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -35,8 +31,6 @@ open class UsedeskViewModel<MODEL>(
 
     override fun onCleared() {
         super.onCleared()
-
-        disposables.forEach(Disposable::dispose)
 
         ioScope.cancel()
         mainScope.cancel()

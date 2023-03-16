@@ -22,37 +22,97 @@ internal class KnowledgeBaseApi @Inject constructor(
     ApiRetrofit::class.java
 ), IKnowledgeBaseApi {
 
-    private fun Array<SectionResponse?>.convert() = mapNotNull { sectionResponse ->
+    private fun Array<CategoryResponse?>.convert() = mapNotNull { categoryResponse ->
         valueOrNull {
-            val categories = sectionResponse!!.categories?.mapNotNull { categoryResponse ->
+            val categoryId = categoryResponse!!.id!!
+            val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
                 valueOrNull {
-                    val categoryId = categoryResponse!!.id!!
-                    val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
-                        valueOrNull {
-                            UsedeskArticleInfo(
-                                articleResponse!!.id!!,
-                                articleResponse.title ?: "",
-                                categoryId,
-                                articleResponse.views ?: 0
-                            )
-                        }
-                    } ?: listOf()
-                    UsedeskCategory(
+                    UsedeskArticleInfo(
+                        articleResponse!!.id!!,
+                        articleResponse.title ?: "",
                         categoryId,
-                        categoryResponse.title ?: "",
-                        categoryResponse.description ?: "",
-                        articles
+                        articleResponse.views ?: 0
                     )
                 }
             } ?: listOf()
-            UsedeskSection(
-                sectionResponse.id!!,
-                sectionResponse.title ?: "",
-                sectionResponse.image,
-                categories
+            listOf(
+                UsedeskCategory(
+                    categoryId,
+                    categoryResponse.title ?: "",
+                    categoryResponse.description ?: "",
+                    articles
+                ),
+                UsedeskCategory(
+                    categoryId + 10000L,
+                    categoryResponse.title ?: "",
+                    categoryResponse.description ?: "",
+                    articles
+                ),
+                UsedeskCategory(
+                    categoryId + 1000000L,
+                    categoryResponse.title ?: "",
+                    categoryResponse.description ?: "",
+                    articles
+                ),
+                UsedeskCategory(
+                    categoryId + 100000000L,
+                    categoryResponse.title ?: "",
+                    categoryResponse.description ?: "",
+                    articles
+                ),
+                UsedeskCategory(
+                    categoryId + 10000000000L,
+                    categoryResponse.title ?: "",
+                    categoryResponse.description ?: "",
+                    articles
+                )
             )
         }
-    }
+    }.flatten()
+
+    private fun Array<SectionResponse?>.convert() = mapNotNull { sectionResponse ->
+        valueOrNull {
+            val categories = sectionResponse!!.categories?.convert() ?: listOf()
+            listOf(
+                UsedeskSection(
+                    sectionResponse.id!!,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                ),
+                UsedeskSection(
+                    sectionResponse.id!! + 10000L,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                ),
+                UsedeskSection(
+                    sectionResponse.id!! + 100000000L,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                ),
+                UsedeskSection(
+                    sectionResponse.id!! + 10000000000L,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                ),
+                UsedeskSection(
+                    sectionResponse.id!! + 1000000000000L,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                ),
+                UsedeskSection(
+                    sectionResponse.id!! + 100000000000000L,
+                    sectionResponse.title ?: "",
+                    sectionResponse.image,
+                    categories
+                )
+            )
+        }
+    }.flatten()
 
     override suspend fun getSections(): GetSectionsResponse {
         val request = LoadSections.Request(

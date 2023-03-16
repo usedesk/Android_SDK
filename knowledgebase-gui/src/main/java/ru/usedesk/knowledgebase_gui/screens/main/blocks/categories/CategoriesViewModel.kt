@@ -2,13 +2,14 @@ package ru.usedesk.knowledgebase_gui.screens.main.blocks.categories
 
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui.screens.main.blocks.categories.CategoriesViewModel.State
-import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesViewModel(
-    private val knowledgeBase: IUsedeskKnowledgeBase,
     private val sectionId: Long
 ) : UsedeskViewModel<State>(State()) {
+
+    private val knowledgeBase = UsedeskKnowledgeBaseSdk.requireInstance()
 
     init {
         knowledgeBase.modelFlow.launchCollect { model ->

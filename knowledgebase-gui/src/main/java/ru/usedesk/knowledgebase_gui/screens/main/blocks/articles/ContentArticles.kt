@@ -45,12 +45,7 @@ internal fun ContentArticles(
     categoryId: Long,
     onArticleClick: (UsedeskArticleInfo) -> Unit
 ) {
-    val viewModel: ArticlesViewModel = composeViewModel { usedeskKb ->
-        ArticlesViewModel(
-            usedeskKb,
-            categoryId
-        )
-    }
+    val viewModel: ArticlesViewModel = composeViewModel { ArticlesViewModel(categoryId) }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumnCard {
         items(

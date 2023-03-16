@@ -45,12 +45,7 @@ internal fun ContentCategories(
     sectionId: Long,
     onCategoryClick: (UsedeskCategory) -> Unit
 ) {
-    val viewModel: CategoriesViewModel = composeViewModel { usedeskKb ->
-        CategoriesViewModel(
-            usedeskKb,
-            sectionId
-        )
-    }
+    val viewModel: CategoriesViewModel = composeViewModel { CategoriesViewModel(sectionId) }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumnCard {
         items(

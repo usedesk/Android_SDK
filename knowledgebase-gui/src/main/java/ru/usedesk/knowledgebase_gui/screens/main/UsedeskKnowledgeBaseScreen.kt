@@ -9,7 +9,6 @@ import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -17,10 +16,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
-import ru.usedesk.knowledgebase_gui.compose.composeViewModel
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
 import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
@@ -31,6 +30,8 @@ import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
+
+    private val viewModel: RootViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,22 +54,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun ScreenRoot() {
-        val viewModel: RootViewModel = composeViewModel { usedeskKb ->
-            RootViewModel(usedeskKb)
-        }
         val state by viewModel.modelFlow.collectAsState()
         val onEvent = viewModel::onEvent
-        val sectionsTitle = stringResource(R.string.usedesk_knowledgebase)
-        val title = sectionsTitle/*when (state.page) {
-            is State.Page.Loading,
-            is State.Page.Sections -> stringResource(R.string.usedesk_knowledgebase)
-            is State.Page.Categories -> state.page.section.title
-            is State.Page.Articles -> state.page.category.title
-            is State.Page.Article -> state.page.article.title
-        }*/ //TODO: как это вообще делать?
+        val title = state.screen.title ?: stringResource(R.string.usedesk_knowledgebase)
 
         val scrollBehavior = rememberToolbarScrollBehavior()
 
@@ -78,18 +68,14 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 .background(colorResource(R.color.usedesk_white_2))
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
-            Column(
+            CustomToolbar(
                 modifier = Modifier
                     .fillMaxWidth()
-            ) {
-                CustomToolbar(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    title = title,
-                    scrollBehavior = scrollBehavior,
-                    onBackPressed = requireActivity()::onBackPressed
-                )
-            }
+                    .background(colorResource(R.color.usedesk_white_2)),
+                title = title,
+                scrollBehavior = scrollBehavior,
+                onBackPressed = requireActivity()::onBackPressed
+            )
             Content(
                 state = state,
                 onEvent = onEvent
@@ -131,7 +117,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         val noneTransitionSpec = EnterTransition.None with ExitTransition.None
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),
-            targetState = state.screen,
+            targetState = state.screen, //TODO: из-за того, что screen меняется внутри, это вызывает постоянные перерисовки, из-за чего внутренний AnimatedContent думает, что он только что создался
             transitionSpec = {
                 when (targetState.transition(initialState)) {
                     State.Transition.FORWARD -> forwardTransitionSpec
@@ -156,6 +142,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             }
         }
     }
+
+    override fun onBackPressed() = viewModel.onBackPressed()
 
     companion object {
         private const val WITH_SUPPORT_BUTTON_KEY = "a"

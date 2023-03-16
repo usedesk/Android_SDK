@@ -45,9 +45,7 @@ private fun Preview() {
 internal fun ContentSections(
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
-    val viewModel: SectionsViewModel = composeViewModel { usedeskKb ->
-        SectionsViewModel(usedeskKb)
-    }
+    val viewModel: SectionsViewModel = composeViewModel { SectionsViewModel() }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumnCard {
         items(

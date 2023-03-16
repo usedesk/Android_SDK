@@ -34,7 +34,9 @@ internal interface ChatUiComponent {
             ?: DaggerChatUiComponent.factory().create(
                 appContext,
                 UsedeskChatSdk.requireInstance()
-            )
+            ).also {
+                chatUiComponent = it
+            }
 
         fun require(): ChatUiComponent = chatUiComponent
             ?: throw RuntimeException("ChatUiComponent is not initialized")

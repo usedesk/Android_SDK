@@ -21,5 +21,4 @@ internal interface ChatUiModuleBinds {
 
     @[Binds IntoMap ViewModelKey(ChatViewModel::class)]
     fun chatViewModel(viewModel: ChatViewModel): ViewModel
-
 }

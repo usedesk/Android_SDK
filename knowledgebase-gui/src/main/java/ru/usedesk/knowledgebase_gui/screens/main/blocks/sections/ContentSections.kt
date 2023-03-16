@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.compose
+package ru.usedesk.knowledgebase_gui.screens.main.blocks.sections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,9 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.compose.LazyColumnCard
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel.Event
-import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel.State
+import ru.usedesk.knowledgebase_gui.compose.composeViewModel
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
@@ -34,24 +36,22 @@ private fun Preview() {
             .background(colorResource(R.color.usedesk_white_2))
     ) {
         ContentSections(
-            screen = State.Screen.Sections(
-                (1L..100L).map {
-                    UsedeskSection(it, "Title_$it", null, listOf())
-                }
-            ),
-            onEvent = {}
+            onSectionClicked = {}
         )
     }
 }
 
 @Composable
 internal fun ContentSections(
-    screen: State.Screen.Sections,
-    onEvent: (Event) -> Unit
+    onSectionClicked: (UsedeskSection) -> Unit
 ) {
+    val viewModel: SectionsViewModel = composeViewModel { usedeskKb ->
+        SectionsViewModel(usedeskKb)
+    }
+    val state by viewModel.modelFlow.collectAsState()
     LazyColumnCard {
         items(
-            items = screen.sections,
+            items = state.sections,
             key = UsedeskSection::id
         ) {
             Row(
@@ -59,7 +59,7 @@ internal fun ContentSections(
                     .fillMaxWidth()
                     .background(color = colorResource(R.color.usedesk_white_1))
                     .clickableItem(
-                        onClick = remember { { onEvent(Event.SectionClicked(it)) } }
+                        onClick = remember { { onSectionClicked(it) } }
                     )
                     .padding(
                         start = 10.dp,

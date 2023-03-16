@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.compose
+package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,9 +21,13 @@ internal fun LazyColumnCard(content: LazyListScope.() -> Unit) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                )
                 .clip(RoundedCornerShape(10.dp))
-                .background(colorResource(R.color.usedesk_white_1)),
+                .background(color = colorResource(R.color.usedesk_white_1)),
             content = content
         )
     }

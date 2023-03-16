@@ -9,7 +9,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
 import kotlin.math.abs
 
-class CustomToolbarScrollBehavior(
+internal class CustomToolbarScrollBehavior(
     val state: CustomToolbarScrollState,
     val flingAnimationSpec: DecayAnimationSpec<Float>?,
 ) {
@@ -103,7 +103,7 @@ private suspend fun CustomToolbarScrollState.flingToolbar(
     return Velocity(0f, remainingVelocity)
 }
 
-suspend fun CustomToolbarScrollState.snapToolbar() {
+internal suspend fun CustomToolbarScrollState.snapToolbar() {
     // In case the app bar motion was stopped in a state where it's partially visible, snap it to
     // the nearest state.
     if (heightOffset < 0 &&
@@ -119,7 +119,7 @@ suspend fun CustomToolbarScrollState.snapToolbar() {
 }
 
 @Composable
-fun rememberToolbarScrollBehavior() = CustomToolbarScrollBehavior(
+internal fun rememberToolbarScrollBehavior() = CustomToolbarScrollBehavior(
     state = rememberToolbarScrollState(
         initialHeightOffsetLimit = -Float.MAX_VALUE
     ),

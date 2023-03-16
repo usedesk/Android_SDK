@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.compose
+package ru.usedesk.knowledgebase_gui.screens.main.loading
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel.Event
-import ru.usedesk.knowledgebase_gui.screens.main.KnowledgeBaseViewModel.State
+import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.Event
+import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
 
 @Composable
 internal fun ContentLoading(

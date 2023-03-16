@@ -16,7 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
  * @param initialContentOffset the initial value for [CustomToolbarScrollState.contentOffset]
  */
 @Stable
-class CustomToolbarScrollState(
+internal class CustomToolbarScrollState(
     initialHeightOffsetLimit: Float,
     initialHeightOffset: Float,
     initialContentOffset: Float,

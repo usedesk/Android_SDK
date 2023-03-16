@@ -34,10 +34,21 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             mutex.withLock {
                 updateModelLocked {
                     when (response) {
-                        is GetSectionsResponse.Done -> copy(
-                            state = Model.State.LOADED,
-                            sections = response.sections
-                        )
+                        is GetSectionsResponse.Done -> {
+                            val categories = response.sections
+                                .flatMap { it.categories }
+                            copy(
+                                state = Model.State.LOADED,
+                                sections = response.sections,
+                                sectionsMap = response.sections
+                                    .associateBy { it.id },
+                                categoriesMap = categories
+                                    .associateBy { it.id },
+                                articlesMap = categories
+                                    .flatMap { it.articles }
+                                    .associateBy { it.id }
+                            )
+                        }
                         is GetSectionsResponse.Error -> copy(
                             state = Model.State.FAILED
                         )

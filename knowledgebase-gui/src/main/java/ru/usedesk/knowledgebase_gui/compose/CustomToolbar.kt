@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.compose
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
@@ -7,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,19 +19,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import kotlin.math.roundToInt
 
 @Composable
-fun CustomToolbar(
+internal fun CustomToolbar(
     modifier: Modifier = Modifier,
     title: String,
     scrollBehavior: CustomToolbarScrollBehavior,
     onBackPressed: () -> Unit
 ) {
     val collapsedFraction = scrollBehavior.state.collapsedFraction
-    UsedeskLog.onLog("collapsedFraction") { collapsedFraction.toString() }
 
     val textStyle = MaterialTheme.typography.headlineLarge
 
@@ -39,37 +37,45 @@ fun CustomToolbar(
         CollapsedTitleLineHeight.value / textStyle.lineHeight.value
 
     val collapsingTitleScale = lerp(1f, fullyCollapsedTitleScale, collapsedFraction)
-    UsedeskLog.onLog("collapsingTitleScale") { collapsingTitleScale.toString() }
 
     Surface(modifier = modifier.animateContentSize()) {
         Layout(
             content = {
-                Text(
-                    modifier = Modifier
-                        .layoutId(ExpandedTitleId)
-                        .wrapContentHeight(align = Alignment.Top)
-                        .graphicsLayer(
-                            scaleX = collapsingTitleScale,
-                            scaleY = collapsingTitleScale,
-                            transformOrigin = TransformOrigin(0f, 0f)
-                        ),
-                    text = title,
-                    style = textStyle
-                )
-                Text(
-                    modifier = Modifier
-                        .layoutId(CollapsedTitleId)
-                        .wrapContentHeight(align = Alignment.Top)
-                        .graphicsLayer(
-                            scaleX = collapsingTitleScale,
-                            scaleY = collapsingTitleScale,
-                            transformOrigin = TransformOrigin(0f, 0f)
-                        ),
-                    text = title,
-                    style = textStyle,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Crossfade(
+                    modifier = Modifier.layoutId(ExpandedTitleId),
+                    targetState = title
+                ) { title ->
+                    Text(
+                        modifier = Modifier
+                            .layoutId(ExpandedTitleId)
+                            .wrapContentHeight(align = Alignment.Top)
+                            .graphicsLayer(
+                                scaleX = collapsingTitleScale,
+                                scaleY = collapsingTitleScale,
+                                transformOrigin = TransformOrigin(0f, 0f)
+                            ),
+                        text = title,
+                        style = textStyle
+                    )
+                }
+                Crossfade(
+                    modifier = Modifier.layoutId(CollapsedTitleId),
+                    targetState = title
+                ) { title ->
+                    Text(
+                        modifier = Modifier
+                            .wrapContentHeight(align = Alignment.Top)
+                            .graphicsLayer(
+                                scaleX = collapsingTitleScale,
+                                scaleY = collapsingTitleScale,
+                                transformOrigin = TransformOrigin(0f, 0f)
+                            ),
+                        text = title,
+                        style = textStyle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Box(
                     modifier = Modifier
@@ -197,9 +203,9 @@ fun CustomToolbar(
         )
     }
 
-    LaunchedEffect(title) {
+    /*LaunchedEffect(title) {//TODO: проверить, может он нужен
         scrollBehavior.state.snapToolbar()
-    }
+    }*/
 }
 
 

@@ -3,21 +3,17 @@ package ru.usedesk.knowledgebase_gui.screens.main
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.State>(State()) {
-
-    private val knowledgeBase = UsedeskKnowledgeBaseSdk.requireInstance() //TODO:inject
+internal class RootViewModel(
+    private val knowledgeBase: IUsedeskKnowledgeBase
+) : UsedeskViewModel<State>(State()) {
 
     init {
-        mainScope.launch {
-            knowledgeBase.modelFlow.collect { model -> onEvent(Event.KnowledgeBaseModel(model)) }
-        }
+        knowledgeBase.modelFlow.launchCollect { onEvent(Event.KnowledgeBaseModel(it)) }
     }
 
     fun ioEvent(io: () -> Event) {
@@ -34,58 +30,37 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
             when (event) {
                 is Event.KnowledgeBaseModel -> knowledgeBaseModel(event)
                 is Event.SearchTextChanged -> searchTextChanged(event)
-                is Event.SectionClicked -> sectionClicked(event)
-                is Event.CategoryClicked -> categoryClicked(event)
                 is Event.ArticleClicked -> articleClicked(event)
             }
         }
     }
 
-    private fun State.knowledgeBaseModel(event: Event.KnowledgeBaseModel): State =
-        when (currentScreen) {
-            is State.Screen.Loading -> when (val sections = event.model.sections) {
-                null -> copy(currentScreen = currentScreen.copy(loading = true))
-                else -> copy(
-                    currentScreen = State.Screen.Sections(sections)
-                )
+    private fun State.knowledgeBaseModel(event: Event.KnowledgeBaseModel): State {
+        val sections = event.model.sections
+        return when (screen) {
+            is State.Screen.Loading -> when (sections) {
+                null -> copy(screen = screen.copy(loading = true))
+                else -> copy(screen = State.Screen.Blocks)
             }
-            is State.Screen.Sections -> copy(
-                currentScreen = currentScreen.copy(
-                    sections = event.model.sections ?: currentScreen.sections
-                )
-            )
             else -> this
         }
+    }
 
     private fun State.searchTextChanged(event: Event.SearchTextChanged): State = copy(
         searchText = event.textFieldValue
     )
 
     private fun State.articleClicked(event: Event.ArticleClicked): State = copy(
-        currentScreen = State.Screen.Article(
-            currentScreen,
-            event.article
-        )
-    )
-
-    private fun State.categoryClicked(event: Event.CategoryClicked): State = copy(
-        currentScreen = State.Screen.Articles(
-            currentScreen,
-            event.category
-        )
-    )
-
-    private fun State.sectionClicked(event: Event.SectionClicked): State = copy(
-        currentScreen = State.Screen.Categories(
-            currentScreen,
-            event.section
+        screen = State.Screen.Article(
+            previousScreen = screen,
+            event.article.id
         )
     )
 
     private fun State.backPressed(): State? =
-        when (val previousScreen = currentScreen.previousScreen) {
+        when (val previousScreen = screen.previousScreen) {
             null -> null
-            else -> copy(currentScreen = previousScreen)
+            else -> copy(screen = previousScreen)
         }
 
     fun onBackPressed(): Boolean {
@@ -105,7 +80,7 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
     }
 
     data class State(
-        val currentScreen: Screen = Screen.Loading(),
+        val screen: Screen = Screen.Loading(),
         val searchText: TextFieldValue = TextFieldValue()
     ) {
 
@@ -119,43 +94,32 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
                 override val previousScreen = null
             }
 
-            data class Sections(val sections: List<UsedeskSection>) : Screen {
+            object Blocks : Screen {
                 override val previousScreen = null
             }
 
-            data class Categories(
-                override val previousScreen: Screen,
-                val section: UsedeskSection
-            ) : Screen
-
-            data class Articles(
-                override val previousScreen: Screen,
-                val category: UsedeskCategory
-            ) : Screen
-
             data class Article(
                 override val previousScreen: Screen,
-                val article: UsedeskArticleInfo,
-                val articleContent: UsedeskArticleContent? = null
+                val articleId: Long
             ) : Screen
+
 
             enum class Transition {
                 NONE,
-                REPLACE,
+                STAY,
                 FORWARD,
                 BACKWARD
             }
 
             fun transition(previous: Screen?) = when (previous) {
                 null -> Transition.NONE
-                else -> transitionMap[Pair(previous.javaClass, javaClass)] ?: Transition.REPLACE
+                else -> transitionMap[Pair(previous.javaClass, javaClass)]
+                    ?: Transition.STAY
             }
 
             companion object {
                 val transitionMap = listOf(
-                    Sections::class.java to Categories::class.java,
-                    Categories::class.java to Articles::class.java,
-                    Articles::class.java to Article::class.java
+                    Blocks::class.java to Article::class.java
                 ).flatMap {
                     listOf(
                         Pair(it.first, it.second) to Transition.FORWARD,
@@ -169,8 +133,6 @@ internal class KnowledgeBaseViewModel : UsedeskViewModel<KnowledgeBaseViewModel.
     sealed interface Event {
         data class KnowledgeBaseModel(val model: IUsedeskKnowledgeBase.Model) : Event
         data class SearchTextChanged(val textFieldValue: TextFieldValue) : Event
-        data class SectionClicked(val section: UsedeskSection) : Event
-        data class CategoryClicked(val category: UsedeskCategory) : Event
         data class ArticleClicked(val article: UsedeskArticleInfo) : Event
     }
 }

@@ -3,6 +3,8 @@ package ru.usedesk.knowledgebase_sdk.domain
 import kotlinx.coroutines.flow.StateFlow
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 interface IUsedeskKnowledgeBase {
@@ -24,7 +26,10 @@ interface IUsedeskKnowledgeBase {
 
     data class Model(
         val state: State = State.LOADING,
-        val sections: List<UsedeskSection>? = null
+        val sections: List<UsedeskSection>? = null,
+        val sectionsMap: Map<Long, UsedeskSection>? = null,
+        val categoriesMap: Map<Long, UsedeskCategory>? = null,
+        val articlesMap: Map<Long, UsedeskArticleInfo>? = null
     ) {
         enum class State {
             LOADING,

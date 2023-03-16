@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
 
-var knowledgeBaseTheme: KnowledgeBaseTheme = KnowledgeBaseTheme()
+var knowledgeBaseTheme: KnowledgeBaseTheme = KnowledgeBaseTheme() //TODO
 
 data class KnowledgeBaseTheme(
     val textStyles: TextStyles = TextStyles()
@@ -24,7 +24,7 @@ data class KnowledgeBaseTheme(
     open class TextStyles {
         @Composable
         fun screenTitle() = TextStyle(
-            fontFamily = FontFamily.Serif, //TODO
+            fontFamily = FontFamily.Serif,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
             color = colorResource(R.color.usedesk_black_2)
@@ -33,7 +33,7 @@ data class KnowledgeBaseTheme(
 }
 
 @Composable
-fun Modifier.clickableItem(
+internal fun Modifier.clickableItem(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) = focusable(true)
@@ -45,7 +45,7 @@ fun Modifier.clickableItem(
     )
 
 @Composable
-fun Modifier.clickableArea(
+internal fun Modifier.clickableArea(
     enabled: Boolean = true,
     radius: Dp = 30.dp,
     onClick: () -> Unit

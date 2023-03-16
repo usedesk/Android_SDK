@@ -4,9 +4,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State.Transition.Companion.getTransitionMap
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class RootViewModel(
     private val knowledgeBase: IUsedeskKnowledgeBase
@@ -30,6 +33,8 @@ internal class RootViewModel(
             when (event) {
                 is Event.KnowledgeBaseModel -> knowledgeBaseModel(event)
                 is Event.SearchTextChanged -> searchTextChanged(event)
+                is Event.SectionClicked -> sectionClicked(event)
+                is Event.CategoryClicked -> categoryClicked(event)
                 is Event.ArticleClicked -> articleClicked(event)
             }
         }
@@ -40,15 +45,43 @@ internal class RootViewModel(
         return when (screen) {
             is State.Screen.Loading -> when (sections) {
                 null -> copy(screen = screen.copy(loading = true))
-                else -> copy(screen = State.Screen.Blocks)
+                else -> copy(screen = State.Screen.Blocks())
             }
             else -> this
         }
     }
 
-    private fun State.searchTextChanged(event: Event.SearchTextChanged): State = copy(
-        searchText = event.textFieldValue
-    )
+    private fun State.searchTextChanged(event: Event.SearchTextChanged): State = when (screen) {
+        is State.Screen.Blocks -> copy(
+            screen = screen.copy(searchText = event.value)
+        )
+        else -> this
+    }
+
+    private fun State.sectionClicked(event: Event.SectionClicked): State = when (screen) {
+        is State.Screen.Blocks -> copy(
+            screen = screen.copy(
+                block = State.Screen.Blocks.Block.Categories(
+                    previousBlock = screen.block,
+                    sectionId = event.section.id
+                )
+            )
+        )
+        else -> this
+    }
+
+
+    private fun State.categoryClicked(event: Event.CategoryClicked): State = when (screen) {
+        is State.Screen.Blocks -> copy(
+            screen = screen.copy(
+                block = State.Screen.Blocks.Block.Articles(
+                    previousBlock = screen.block,
+                    categoryId = event.category.id
+                )
+            )
+        )
+        else -> this
+    }
 
     private fun State.articleClicked(event: Event.ArticleClicked): State = copy(
         screen = State.Screen.Article(
@@ -80,9 +113,24 @@ internal class RootViewModel(
     }
 
     data class State(
-        val screen: Screen = Screen.Loading(),
-        val searchText: TextFieldValue = TextFieldValue()
+        val screen: Screen = Screen.Loading()
     ) {
+
+        enum class Transition {
+            NONE,
+            STAY,
+            FORWARD,
+            BACKWARD;
+
+            companion object {
+                fun <T> getTransitionMap(vararg pairs: Pair<T, T>) = pairs.flatMap {
+                    listOf(
+                        Pair(it.first, it.second) to FORWARD,
+                        Pair(it.second, it.first) to BACKWARD
+                    )
+                }.toMap()
+            }
+        }
 
         sealed interface Screen {
             val previousScreen: Screen?
@@ -94,8 +142,42 @@ internal class RootViewModel(
                 override val previousScreen = null
             }
 
-            object Blocks : Screen {
+            data class Blocks(
+                val block: Block = Block.Sections,
+                val searchText: TextFieldValue = TextFieldValue()
+            ) : Screen {
                 override val previousScreen = null
+
+                sealed interface Block {
+                    val previousBlock: Block?
+
+                    object Sections : Block {
+                        override val previousBlock = null
+                    }
+
+                    data class Categories(
+                        override val previousBlock: Block,
+                        val sectionId: Long
+                    ) : Block
+
+                    data class Articles(
+                        override val previousBlock: Block,
+                        val categoryId: Long
+                    ) : Block
+
+                    fun transition(previous: Block?) = when (previous) {
+                        null -> Transition.NONE
+                        else -> transitionMap[Pair(previous.javaClass, javaClass)]
+                            ?: Transition.STAY
+                    }
+
+                    companion object {
+                        val transitionMap = getTransitionMap(
+                            Sections::class.java to Categories::class.java,
+                            Categories::class.java to Articles::class.java
+                        )
+                    }
+                }
             }
 
             data class Article(
@@ -104,13 +186,6 @@ internal class RootViewModel(
             ) : Screen
 
 
-            enum class Transition {
-                NONE,
-                STAY,
-                FORWARD,
-                BACKWARD
-            }
-
             fun transition(previous: Screen?) = when (previous) {
                 null -> Transition.NONE
                 else -> transitionMap[Pair(previous.javaClass, javaClass)]
@@ -118,21 +193,18 @@ internal class RootViewModel(
             }
 
             companion object {
-                val transitionMap = listOf(
+                val transitionMap = getTransitionMap(
                     Blocks::class.java to Article::class.java
-                ).flatMap {
-                    listOf(
-                        Pair(it.first, it.second) to Transition.FORWARD,
-                        Pair(it.second, it.first) to Transition.BACKWARD
-                    )
-                }.toMap()
+                )
             }
         }
     }
 
     sealed interface Event {
         data class KnowledgeBaseModel(val model: IUsedeskKnowledgeBase.Model) : Event
-        data class SearchTextChanged(val textFieldValue: TextFieldValue) : Event
+        data class SearchTextChanged(val value: TextFieldValue) : Event
+        data class SectionClicked(val section: UsedeskSection) : Event
+        data class CategoryClicked(val category: UsedeskCategory) : Event
         data class ArticleClicked(val article: UsedeskArticleInfo) : Event
     }
 }

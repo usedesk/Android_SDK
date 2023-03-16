@@ -9,23 +9,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import ru.usedesk.knowledgebase_gui.compose.SearchBar
-import ru.usedesk.knowledgebase_gui.compose.composeViewModel
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.BlocksViewModel.State
+import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.Event
+import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screens.main.blocks.articles.ContentArticles
 import ru.usedesk.knowledgebase_gui.screens.main.blocks.categories.ContentCategories
 import ru.usedesk.knowledgebase_gui.screens.main.blocks.sections.ContentSections
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ContentBlocks(
-    onArticleClick: (UsedeskArticleInfo) -> Unit
+    screen: State.Screen.Blocks,
+    onEvent: (Event) -> Unit
 ) {
-    val viewModel: BlocksViewModel = composeViewModel { usedeskKb ->
-        BlocksViewModel(usedeskKb)
-    }
-    val state by viewModel.modelFlow.collectAsState()
-
     val forwardTransitionSpec = remember {
         slideInHorizontally(
             spring(
@@ -55,29 +50,31 @@ internal fun ContentBlocks(
 
     Column(modifier = Modifier) {
         SearchBar(
-            value = state.searchText,
-            onValueChange = viewModel::onSearchValue
+            value = screen.searchText,
+            onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } }
         )
         AnimatedContent(
-            targetState = state.page,
+            targetState = screen.block,
             transitionSpec = {
                 when (targetState.transition(initialState)) {
-                    State.Page.Transition.FORWARD -> forwardTransitionSpec
-                    State.Page.Transition.BACKWARD -> backwardTransitionSpec
-                    State.Page.Transition.STAY -> replaceTransitionSpec
+                    State.Transition.FORWARD -> forwardTransitionSpec
+                    State.Transition.BACKWARD -> backwardTransitionSpec
+                    State.Transition.STAY -> replaceTransitionSpec
                     else -> noneTransitionSpec
                 }
             }
-        ) { currentScreen ->
-            when (currentScreen) {
-                is State.Page.Sections -> ContentSections(viewModel::onSectionClick)
-                is State.Page.Categories -> ContentCategories(
-                    currentScreen.sectionId,
-                    viewModel::onCategoryClick
+        ) { block ->
+            when (block) {
+                State.Screen.Blocks.Block.Sections -> ContentSections(
+                    onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                 )
-                is State.Page.Articles -> ContentArticles(
-                    currentScreen.categoryId,
-                    onArticleClick
+                is State.Screen.Blocks.Block.Categories -> ContentCategories(
+                    sectionId = block.sectionId,
+                    onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
+                )
+                is State.Screen.Blocks.Block.Articles -> ContentArticles(
+                    categoryId = block.categoryId,
+                    onArticleClick = remember { { onEvent(Event.ArticleClicked(it)) } }
                 )
             }
         }

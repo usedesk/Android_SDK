@@ -134,9 +134,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             targetState = state.screen,
             transitionSpec = {
                 when (targetState.transition(initialState)) {
-                    State.Screen.Transition.FORWARD -> forwardTransitionSpec
-                    State.Screen.Transition.BACKWARD -> backwardTransitionSpec
-                    State.Screen.Transition.STAY -> replaceTransitionSpec
+                    State.Transition.FORWARD -> forwardTransitionSpec
+                    State.Transition.BACKWARD -> backwardTransitionSpec
+                    State.Transition.STAY -> replaceTransitionSpec
                     else -> noneTransitionSpec
                 }
             }) { screen ->
@@ -145,8 +145,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     screen = screen,
                     onEvent = onEvent
                 )
-                State.Screen.Blocks -> ContentBlocks(
-                    onArticleClick = remember { { onEvent(Event.ArticleClicked(it)) } }
+                is State.Screen.Blocks -> ContentBlocks(
+                    screen = screen,
+                    onEvent = onEvent
                 )
                 is State.Screen.Loading -> ContentLoading(
                     screen = screen,

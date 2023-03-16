@@ -165,13 +165,8 @@ class UsedeskChatScreen : UsedeskFragment() {
         UsedeskChatSdk.startService(requireContext())
     }
 
-    override fun onBackPressed(): Boolean {
-        val handled = mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
-        if (!handled) {
-            ChatUiComponent.close()
-        }
-        return handled
-    }
+    override fun onBackPressed(): Boolean =
+        mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
 
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"

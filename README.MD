@@ -2,7 +2,7 @@
 
 ## This manual in other languages
 
-Also available in [Russian](readme_ru.md)
+Also available in [Russian](README_RU.md)
 
 ## Demo app
 
@@ -28,7 +28,7 @@ At the moment, the minimum version of the OS that is supported by the SDK — **
 
 Add a line to `build.gradle` of your project:
 
-```kotlin
+```
 allprojects {
     repositories {
         ...
@@ -39,7 +39,7 @@ allprojects {
 
 Add to the dependencies `build.gradle` of your module following lines:
 
-```kotlin
+```
 //Chat SDK
 implementation "com.github.usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
 //Chat GUI
@@ -52,7 +52,7 @@ implementation "com.github.usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 Add to Manifest file:
 
-```kotlin
+```
 <uses - permission android : name ="android.permission.INTERNET" / >
 
 <!--To attach a photo from a camera to chat-- >
@@ -70,23 +70,23 @@ Chat configuration is set in the file [**UsedeskChatConfiguration**](https://git
 
 Where * — required parameter
 
-| **Parameter**             | **Type**                     | **Description**                                                                                                                                                                                                                                                                                                                  |
-|------------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **urlChat***             | String                  | **Server URL for SDK chats**<br/>By default: `pubsubsec.usedesk.ru`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com |
-| **urlChatApi***          | String                  | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com|
-| **companyId***           | String                  | **Company ID in Usedesk**<br/>[How to find a company ID](https://en.usedocs.com/article/6396)                                                                                                                                                                                                                                                                                                  |
-| **channelId***           | String                  | **ID of the chat channel through which messages from the application will be placed at Usedesk**<br/>[How to create and set up a channel](https://en.usedocs.com/article/16616) |
-| **messagesPageSize**       | Int                     | **Number of loaded messages when starting the chat**<br/>When client open a chat, a specified number of messages are loaded. As client scrolls chat, 20 more messages are loaded|
+| **Parameter**              | **Type**                | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|----------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **urlChat***               | String                  | **Server URL for SDK chats**<br/>By default: `pubsubsec.usedesk.ru`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com                                                                                                                                                                                                                                                                                                                                                             |
+| **urlChatApi***            | String                  | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com                                                                                                                                                                                                                                                                                                                                                       |
+| **companyId***             | String                  | **Company ID in Usedesk**<br/>[How to find a company ID](https://en.usedocs.com/article/6396)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **channelId***             | String                  | **ID of the chat channel through which messages from the application will be placed at Usedesk**<br/>[How to create and set up a channel](https://en.usedocs.com/article/16616)                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **messagesPageSize**       | Int                     | **Number of loaded messages when starting the chat**<br/>When client open a chat, a specified number of messages are loaded. As client scrolls chat, 20 more messages are loaded                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **clientToken**            | String?                 | **A unique token that uniquely identifies the user and his conversation**<br/>The token is provided in the callback after the initialization of the chat and is linked to the mail-phone-user name.<br/>To identify different users on the same device, you must store and pass the received token to the initialization method<br/>By specifying `null` the library itself will use the saved token on the device used earlier with the same `clientEmail`, `clientPhoneNumber`, `clientName` fields in the configuration.<br/>By specifying `""` the saved token will not be used |
-| **clientEmail**            | String?                 | **Client Email**                                                                                                                                                                                                                                                                                                             |
-| **clientName**             | String?                 | **Client name**                                                                                                                                                                                                                                                                                                               |
-| **clientNote**             | String?                 | **Text of note**                                                                                                                                                                                                                                                                                                         |
-| **clientPhoneNumber**      | Long?                   | **Client Phone**                                                                                                                                                                                                                                                                                                  |
-| **clientAdditionalId**     | String?                 | **Additional customer ID**                                                                                                                                                                                                                                                                                      |
-| **clientInitMessage**      | String?                 | **Automatic message**<br/>Sent immediately after initialization on behalf of the client                                                                                                                                                                                                                                                        |
-| **clientAvatar**           | String?                 | **Customer avatar image**<br/>Path to the image file. <br/>If set, then sdk will send the avatar at a time                                                                                                                                                                                                                                          |
-| **additionalFields**       | Map<Long, String>       | **Collection of additional request fields**<br/>Where `key` is the field ID, `value` is the field value. <br/>Field values depend on the type, for checkboxes - `"true"` / `"false"`, for list boxes - text that exactly matches the text of the list value, for text - any text.                                                                                |
-| **additionalNestedFields** | List<Map<Long, String>> | **List of collections of nested lists**<br/>Each list item is a collection of values of one nested list, where `key` is the field ID, `value` is the field value with text that exactly matches the text of the list value.                                                                                                          |
+| **clientEmail**            | String?                 | **Client Email**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **clientName**             | String?                 | **Client name**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **clientNote**             | String?                 | **Text of note**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **clientPhoneNumber**      | Long?                   | **Client Phone**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **clientAdditionalId**     | String?                 | **Additional customer ID**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **clientInitMessage**      | String?                 | **Automatic message**<br/>Sent immediately after initialization on behalf of the client                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **clientAvatar**           | String?                 | **Customer avatar image**<br/>Path to the image file. <br/>If set, then sdk will send the avatar at a time                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **additionalFields**       | Map<Long, String>       | **Collection of additional request fields**<br/>Where `key` is the field ID, `value` is the field value. <br/>Field values depend on the type, for checkboxes - `"true"` / `"false"`, for list boxes - text that exactly matches the text of the list value, for text - any text.                                                                                                                                                                                                                                                                                                   |
+| **additionalNestedFields** | List<Map<Long, String>> | **List of collections of nested lists**<br/>Each list item is a collection of values of one nested list, where `key` is the field ID, `value` is the field value with text that exactly matches the text of the list value.                                                                                                                                                                                                                                                                                                                                                         |
 
 ### Local notification service configuration
 
@@ -96,20 +96,20 @@ To enable the local notification service, you need to create 2 own classes:
 
 1) Service inherited from [UsedeskForegroundNotificationsService](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/view/UsedeskForegroundNotificationsService.kt), where you can override the following methods:
 
-| **Method**                   | **Returning type** | **Event description**                             |
-|-------------------------|----------------------------|----------------------------------------------|
-| **getContentPendingIntent** | PendingIntent?             | **Action on click on a notification**          |
-| **getDeletePendingIntent**  | PendingIntent?             | **Action on removing a notification**            |
-| **getClosePendingIntent**   | PendingIntent?             | **Action on closing a foreground notification** |
-| **getChannelId**            | String                     | **Notification channel number**                     |
-| **getChannelTitle**         | String                     | **Notification channel name**                  |
-| **createNotification**      | Notification?              | **Creating a notification**                         |
+| **Method**                  | **Returning type** | **Event description**                           |
+|-----------------------------|--------------------|-------------------------------------------------|
+| **getContentPendingIntent** | PendingIntent?     | **Action on click on a notification**           |
+| **getDeletePendingIntent**  | PendingIntent?     | **Action on removing a notification**           |
+| **getClosePendingIntent**   | PendingIntent?     | **Action on closing a foreground notification** |
+| **getChannelId**            | String             | **Notification channel number**                 |
+| **getChannelTitle**         | String             | **Notification channel name**                   |
+| **createNotification**      | Notification?      | **Creating a notification**                     |
 
 2) Factory inherited from [UsedeskNotificationsServiceFactory](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/service/notifications/UsedeskNotificationsServiceFactory.kt) to override the method:
 
-| **Method**           | **Returning type** | **Event description** |
-|-----------------|----------------------------|------------------|
-| **getServiceClass** | Class \<?>                   | **Class of service**|
+| **Method**          | **Returning type** | **Event description** |
+|---------------------|--------------------|-----------------------|
+| **getServiceClass** | Class \<?>         | **Class of service**  |
 
 After creating classes, you can use the factory in the SDK:
 
@@ -125,9 +125,8 @@ To run the SDK with a ready-made chat user interface (GUI), use [UsedeskChatScre
 supportFragmentManager.beginTransaction()
     .replace(
         R.id.container,
-        UsedeskChatScreen.newInstance(chatConfiguration, ...
-    )
-).commit()
+        UsedeskChatScreen.newInstance(chatConfiguration)
+    ).commit()
 ```
 
 To use with Jetpack Navigation, you can use the `createBundle` method, for example:
@@ -135,21 +134,20 @@ To use with Jetpack Navigation, you can use the `createBundle` method, for examp
 ```kotlin
 navController.navigate(
     R.id.action_configurationScreen_to_usedeskChatScreen,
-    UsedeskChatScreen.createBundle(chatConfiguration, ...
-)
+    UsedeskChatScreen.createBundle(chatConfiguration)
 )
 ```
 
 The `newInstance` and `createBundle` methods take the following arguments:
 
-| **Argument**                       | **Type**                      | **Description**|
-|--------------------------------|--------------------------|------------------------------------------------------------------------------------------------------------|
-| **chatConfiguration**              | UsedeskChatConfiguration | `UsedeskChatScreen` assumes the responsibility of calling the `UsedeskChatSdk.setConfiguration` method|
-| **customAgentName**                | String?                  | If set, all agent names in the chat will be replaced by the value of the parameter|
-| **rejectedFileExtensions**         | Collection\<String>?      | List of file extensions marked as dangerous (the `onFileClick` method of the parent is called anyway)|
-| **messagesDateFormat**             | String?                  | If set, changes the format of the message group date display                                             |
+| **Argument**                       | **Type**                 | **Description**                                                                                        |
+|------------------------------------|--------------------------|--------------------------------------------------------------------------------------------------------|
+| **chatConfiguration**              | UsedeskChatConfiguration | `UsedeskChatScreen` assumes the responsibility of calling the `UsedeskChatSdk.setConfiguration` method |
+| **customAgentName**                | String?                  | If set, all agent names in the chat will be replaced by the value of the parameter                     |
+| **rejectedFileExtensions**         | Collection\<String>?     | List of file extensions marked as dangerous (the `onFileClick` method of the parent is called anyway)  |
+| **messagesDateFormat**             | String?                  | If set, changes the format of the message group date display                                           |
 | **messageTimeFormat**              | String?                  | If set, changes the format of the message time display                                                 |
-| **adaptiveTextMessageTimePadding** | Boolean                  | If `true` is set, shifts the text of messages relative to the time                                          |
+| **adaptiveTextMessageTimePadding** | Boolean                  | If `true` is set, shifts the text of messages relative to the time                                     |
 | **groupAgentMessages**             | Boolean                  | If `true` is set, groups messages from the same agent                                                  |
 
 For the fragment to work fully it is necessary to:
@@ -194,7 +192,7 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 
 7) To correctly work with a camera photo attachment, you need to add the following lines to the `AndroidManifest.xml` file:
 
-``` kotlin
+```
 <provider
     android:name="androidx.core.content.FileProvider"
     android:authorities="${applicationId}.provider"
@@ -215,10 +213,10 @@ To work with chat without GUI you need to perform the following steps:
 1) Set the configuration and initialize chat:
 
 ```kotlin
-UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration(...))
+UsedeskChatSdk.setConfiguration(UsedeskChatConfiguration())
 val usedeskChat = UsedeskChatSdk.init(requireContext())
 //or
-val usedeskChat = UsedeskChatSdk.init(requireContext(), UsedeskChatConfiguration(...))
+val usedeskChat = UsedeskChatSdk.init(requireContext(), UsedeskChatConfiguration())
 ```
 
 2) Get an instance of `IUsedeskChat` after initialization. To do this, call:
@@ -230,7 +228,7 @@ val usedeskChat = UsedeskChatSdk.requireInstance()
 3) Add an event listener:
 
 ```kotlin
-val listener = object : IUsedeskActionListener {... }
+val listener = object : IUsedeskActionListener {}
 usedeskChat.addListener(listener)
 ```
 
@@ -252,10 +250,10 @@ Attempting to retrieve an instance without initializing or after release will ra
 
 5) Use interface to listen to chat events [IUsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListener.kt):
 
-| **Method**       | **Event description**                                      |
-|-------------|-------------------------------------------------------|
+| **Method**      | **Event description**                             |
+|-----------------|---------------------------------------------------|
 | **onModel**     | **Chat model, new, updated and deleted messages** |
-| **onException** | **The exception that has risen**                                  |
+| **onException** | **The exception that has risen**                  |
 
 ### Starting and stopping the local notification service
 
@@ -287,20 +285,20 @@ To log server response processing errors, you can use the class `UsedeskLog`:
 To work with the Knowledge Base SDK, you need to set the configuration:
 
 ```kotlin
-UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration(...))
+UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
 ```
 
 The configuration of the Knowledge Base is set in the file [UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/entity/UsedeskKnowledgeBaseConfiguration.kt):
 
 Where * — required parameter
 
-| **Parameter**   | **Type**     | **Description**                                                          |
-|--------------|---------|-------------------------------------------------------------------|
-| **urlApi***    | String  | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com|
-| **accountId*** | String  | **Knowledge Base ID**<br/>[How to create a Knowledge Base](https://en.usedocs.com/article/7182)|
-| **token***     | String  | **Usedesk API Token**<br/>[How to get API Token](https://en.usedocs.com/article/10169)|
-| **clientEmail**  | String? | **Client email**                                                     |
-| **clientName**   | String? | **Client name**                                                       |
+| **Parameter**   | **Type** | **Description**                                                                                                                                                                                                               |
+|-----------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **urlApi***     | String   | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com |
+| **accountId***  | String   | **Knowledge Base ID**<br/>[How to create a Knowledge Base](https://en.usedocs.com/article/7182)                                                                                                                               |
+| **token***      | String   | **Usedesk API Token**<br/>[How to get API Token](https://en.usedocs.com/article/10169)                                                                                                                                        |
+| **clientEmail** | String?  | **Client email**                                                                                                                                                                                                              |
+| **clientName**  | String?  | **Client name**                                                                                                                                                                                                               |
 
 ### Using with the GUI
 
@@ -374,7 +372,7 @@ val usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
 
 2) Get a class object at any place:
 
-```
+```kotlin
 val usedeskKnowledgeBase = UsedeskKnowledgeBase.requireInstance()
 ```
 
@@ -401,4 +399,4 @@ In the case of changing string resource references when customizing an applicati
 
 ## Documentation
 
-Methods to work with the SDK, element customization, and bugs are described in our documentation: [http://sdk.usedocs.ru](http://sdk.usedocs.ru/)
+Methods to work with the SDK, element customization, and bugs are described in our documentation: [https://sdk.usedocs.com](https://sdk.usedocs.com/)

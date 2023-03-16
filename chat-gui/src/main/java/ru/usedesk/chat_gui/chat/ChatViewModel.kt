@@ -1,6 +1,7 @@
 package ru.usedesk.chat_gui.chat
 
 import kotlinx.coroutines.launch
+import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
@@ -44,6 +45,8 @@ internal class ChatViewModel @Inject constructor(
         usedeskChat.removeActionListener(actionListener)
 
         UsedeskChatSdk.release(false)
+
+        ChatUiComponent.close()
     }
 
     data class Model(

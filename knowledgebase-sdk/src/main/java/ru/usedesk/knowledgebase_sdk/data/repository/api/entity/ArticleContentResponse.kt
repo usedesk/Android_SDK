@@ -1,8 +1,18 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
-internal class ArticleContentResponse {
-    var id: Long? = null
-    var title: String? = null
-    var text: String? = null
-    var categoryId: String? = null
+import ru.usedesk.common_sdk.api.entity.UsedeskApiError
+
+internal interface GetArticleContent {
+    class Request(
+        val accountId: String,
+        val articleId: Long,
+        val token: String
+    )
+
+    class Response(
+        val id: Long? = null,
+        val title: String? = null,
+        val text: String? = null,
+        val categoryId: String? = null
+    ) : UsedeskApiError()
 }

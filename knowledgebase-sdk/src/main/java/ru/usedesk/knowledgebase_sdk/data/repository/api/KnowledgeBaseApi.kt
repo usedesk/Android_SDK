@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskHttpException
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetArticleResponse
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetSectionsResponse
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
 import ru.usedesk.knowledgebase_sdk.entity.*
@@ -132,21 +132,27 @@ internal class KnowledgeBaseApi @Inject constructor(
         }
     }
 
-    override fun getArticle(articleId: Long): UsedeskArticleContent {
-        val articleContentResponse = doRequest(
+    override suspend fun getArticle(articleId: Long): GetArticleResponse {
+        val request = GetArticleContent.Request(
+            configuration.accountId,
+            articleId,
+            configuration.token
+        )
+        val response = doRequestJson(
             configuration.urlApi,
-            ArticleContentResponse::class.java
+            request,
+            GetArticleContent.Response::class.java
         ) {
-            getArticleContent(configuration.accountId, articleId, configuration.token)
-        }
-        return valueOrNull {
-            UsedeskArticleContent(
-                articleContentResponse.id!!,
-                articleContentResponse.title ?: "",
-                articleContentResponse.text ?: "",
-                articleContentResponse.categoryId?.toLongOrNull()!!
+            getArticleContent(
+                it.accountId,
+                it.articleId,
+                it.token
             )
-        } ?: throw UsedeskHttpException(message = "Wrong response")
+        }
+        return when (val articleContent = response?.convert()) {
+            null -> GetArticleResponse.Error(response?.code)
+            else -> GetArticleResponse.Done(articleContent)
+        }
     }
 
     override fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent> {
@@ -169,16 +175,17 @@ internal class KnowledgeBaseApi @Inject constructor(
             )
         }
 
-        return (articlesSearchResponse.articles ?: arrayOf()).mapNotNull {
-            valueOrNull {
-                UsedeskArticleContent(
-                    it!!.id!!,
-                    it.title ?: "",
-                    it.text ?: "",
-                    it.categoryId?.toLongOrNull()!!
-                )
-            }
-        }
+        return (articlesSearchResponse.articles ?: arrayOf())
+            .mapNotNull { it?.convert() }
+    }
+
+    private fun GetArticleContent.Response.convert() = valueOrNull {
+        UsedeskArticleContent(
+            id!!,
+            title ?: "",
+            text ?: "",
+            categoryId?.toLongOrNull()!!
+        )
     }
 
     override fun addViews(articleId: Long) {

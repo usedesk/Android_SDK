@@ -19,16 +19,18 @@ import ru.usedesk.knowledgebase_gui.R
 internal fun LazyColumnCard(content: LazyListScope.() -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp,
-                )
-                .clip(RoundedCornerShape(10.dp))
-                .background(color = colorResource(R.color.usedesk_white_1)),
+            modifier = Modifier.card(),
             content = content
         )
     }
 }
+
+@Composable
+internal fun Modifier.card() = fillMaxWidth()
+    .padding(
+        start = 16.dp,
+        end = 16.dp,
+        bottom = 16.dp,
+    )
+    .clip(RoundedCornerShape(10.dp))
+    .background(color = colorResource(R.color.usedesk_white_1))

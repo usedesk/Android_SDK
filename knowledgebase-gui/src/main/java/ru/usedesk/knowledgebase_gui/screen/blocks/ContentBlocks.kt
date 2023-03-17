@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.blocks
+package ru.usedesk.knowledgebase_gui.screen.blocks
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
@@ -9,11 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import ru.usedesk.knowledgebase_gui.compose.SearchBar
-import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.Event
-import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.articles.ContentArticles
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.categories.ContentCategories
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.sections.ContentSections
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ContentArticles
+import ru.usedesk.knowledgebase_gui.screen.blocks.categories.ContentCategories
+import ru.usedesk.knowledgebase_gui.screen.blocks.sections.ContentSections
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

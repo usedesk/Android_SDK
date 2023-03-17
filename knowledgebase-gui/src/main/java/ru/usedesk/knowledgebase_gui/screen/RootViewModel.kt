@@ -1,9 +1,9 @@
-package ru.usedesk.knowledgebase_gui.screens.main
+package ru.usedesk.knowledgebase_gui.screen
 
 import androidx.compose.ui.text.input.TextFieldValue
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
-import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo

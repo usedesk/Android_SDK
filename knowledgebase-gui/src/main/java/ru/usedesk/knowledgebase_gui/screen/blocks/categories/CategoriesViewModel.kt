@@ -1,7 +1,7 @@
-package ru.usedesk.knowledgebase_gui.screens.main.blocks.categories
+package ru.usedesk.knowledgebase_gui.screen.blocks.categories
 
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.categories.CategoriesViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.blocks.categories.CategoriesViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 

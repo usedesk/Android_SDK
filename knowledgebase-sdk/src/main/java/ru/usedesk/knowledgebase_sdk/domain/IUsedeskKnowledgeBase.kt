@@ -1,7 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.domain
 
 import kotlinx.coroutines.flow.StateFlow
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskException
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
@@ -12,16 +11,20 @@ interface IUsedeskKnowledgeBase {
 
     fun loadSections(reload: Boolean = false)
 
-    @Throws(UsedeskException::class)
-    fun getArticle(articleId: Long): UsedeskArticleContent
+    fun getArticle(
+        articleId: Long,
+        onResult: (result: GetArticleResult) -> Unit
+    )
 
-    @Throws(UsedeskException::class)
+    sealed interface GetArticleResult {
+        data class Done(val articleContent: UsedeskArticleContent) : GetArticleResult
+        data class Error(val code: Int? = null) : GetArticleResult
+    }
+
     fun addViews(articleId: Long)
 
-    @Throws(UsedeskException::class)
     fun sendRating(articleId: Long, good: Boolean)
 
-    @Throws(UsedeskException::class)
     fun sendRating(articleId: Long, message: String)
 
     data class Model(

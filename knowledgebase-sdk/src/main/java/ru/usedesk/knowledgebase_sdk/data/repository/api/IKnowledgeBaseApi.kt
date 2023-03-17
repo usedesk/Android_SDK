@@ -14,7 +14,13 @@ internal interface IKnowledgeBaseApi {
         data class Error(val code: Int? = null) : GetSectionsResponse
     }
 
-    fun getArticle(articleId: Long): UsedeskArticleContent
+    @CheckResult
+    suspend fun getArticle(articleId: Long): GetArticleResponse
+
+    sealed interface GetArticleResponse {
+        data class Done(val articleContent: UsedeskArticleContent) : GetArticleResponse
+        data class Error(val code: Int? = null) : GetArticleResponse
+    }
 
     fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent>
 

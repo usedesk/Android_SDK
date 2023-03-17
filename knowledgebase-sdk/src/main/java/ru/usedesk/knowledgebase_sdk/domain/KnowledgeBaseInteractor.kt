@@ -5,8 +5,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetArticleResponse
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetSectionsResponse
+import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.GetArticleResult
 import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.Model
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 import javax.inject.Inject
 
 internal class KnowledgeBaseInteractor @Inject constructor(
@@ -36,17 +41,17 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                     when (response) {
                         is GetSectionsResponse.Done -> {
                             val categories = response.sections
-                                .flatMap { it.categories }
+                                .flatMap(UsedeskSection::categories)
                             copy(
                                 state = Model.State.LOADED,
                                 sections = response.sections,
                                 sectionsMap = response.sections
-                                    .associateBy { it.id },
+                                    .associateBy(UsedeskSection::id),
                                 categoriesMap = categories
-                                    .associateBy { it.id },
+                                    .associateBy(UsedeskCategory::id),
                                 articlesMap = categories
-                                    .flatMap { it.articles }
-                                    .associateBy { it.id }
+                                    .flatMap(UsedeskCategory::articles)
+                                    .associateBy(UsedeskArticleInfo::id)
                             )
                         }
                         is GetSectionsResponse.Error -> copy(
@@ -73,7 +78,20 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         }
     }
 
-    override fun getArticle(articleId: Long) = knowledgeApiRepository.getArticle(articleId)
+    override fun getArticle(
+        articleId: Long,
+        onResult: (result: GetArticleResult) -> Unit
+    ) {
+        ioScope.launch {
+            val response = knowledgeApiRepository.getArticle(articleId)
+            onResult(
+                when (response) {
+                    is GetArticleResponse.Done -> GetArticleResult.Done(response.articleContent)
+                    is GetArticleResponse.Error -> GetArticleResult.Error(response.code)
+                }
+            )
+        }
+    }
 
     override fun addViews(articleId: Long) {
         knowledgeApiRepository.addViews(articleId)

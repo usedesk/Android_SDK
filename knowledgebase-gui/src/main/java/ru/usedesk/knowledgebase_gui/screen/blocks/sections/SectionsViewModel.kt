@@ -1,7 +1,7 @@
-package ru.usedesk.knowledgebase_gui.screens.main.blocks.sections
+package ru.usedesk.knowledgebase_gui.screen.blocks.sections
 
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.sections.SectionsViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.blocks.sections.SectionsViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 

@@ -1,8 +1,9 @@
-package ru.usedesk.knowledgebase_gui.screens.main.blocks.categories
+package ru.usedesk.knowledgebase_gui.screen.blocks.sections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -23,7 +25,7 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.LazyColumnCard
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.composeViewModel
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
 @Composable
@@ -33,43 +35,67 @@ private fun Preview() {
             .fillMaxSize()
             .background(colorResource(R.color.usedesk_white_2))
     ) {
-        ContentCategories(
-            1L,
-            onCategoryClick = {}
+        ContentSections(
+            onSectionClicked = {}
         )
     }
 }
 
 @Composable
-internal fun ContentCategories(
-    sectionId: Long,
-    onCategoryClick: (UsedeskCategory) -> Unit
+internal fun ContentSections(
+    onSectionClicked: (UsedeskSection) -> Unit
 ) {
-    val viewModel: CategoriesViewModel = composeViewModel { CategoriesViewModel(sectionId) }
+    val viewModel = composeViewModel { SectionsViewModel() }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumnCard {
         items(
-            items = state.categories,
-            key = UsedeskCategory::id
+            items = state.sections,
+            key = UsedeskSection::id
         ) {
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(color = colorResource(R.color.usedesk_white_1))
                     .clickableItem(
-                        onClick = remember { { onCategoryClick(it) } }
+                        onClick = remember { { onSectionClicked(it) } }
                     )
                     .padding(
-                        start = 20.dp,
+                        start = 10.dp,
                         end = 10.dp,
                         top = 8.dp,
                         bottom = 8.dp
                     )
             ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(color = colorResource(R.color.usedesk_gray_cold_1))
+                ) {
+                    BasicText(
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                        text = remember(it.title) {
+                            it.title
+                                .firstOrNull(Char::isLetterOrDigit)
+                                ?.uppercase()
+                                ?: ""
+                        },
+                        style = TextStyle(
+                            fontSize = 17.sp,
+                            color = colorResource(R.color.usedesk_black_2)
+                        )
+                    )
+                }
                 BasicText(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 10.dp),
+                        .align(Alignment.CenterVertically)
+                        .padding(
+                            start = 10.dp,
+                            end = 10.dp
+                        )
+                        .weight(weight = 1f, fill = true),
                     style = TextStyle(
                         fontSize = 17.sp,
                         textAlign = TextAlign.Start,
@@ -77,31 +103,14 @@ internal fun ContentCategories(
                     ),
                     text = it.title
                 )
-                Row(
+                Icon(
                     modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    BasicText(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(end = 10.dp)
-                            .weight(weight = 1f, fill = true),
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Start,
-                            color = colorResource(R.color.usedesk_gray_cold_2)
-                        ),
-                        text = it.description
-                    )
-                    Icon(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .size(24.dp),
-                        painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
-                        tint = Color.Unspecified,
-                        contentDescription = null
-                    )
-                }
+                        .align(Alignment.CenterVertically)
+                        .size(24.dp),
+                    painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
             }
         }
     }

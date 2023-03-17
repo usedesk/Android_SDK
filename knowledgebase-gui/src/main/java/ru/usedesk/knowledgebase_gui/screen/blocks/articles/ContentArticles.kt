@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main.blocks.articles
+package ru.usedesk.knowledgebase_gui.screen.blocks.articles
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -45,7 +45,7 @@ internal fun ContentArticles(
     categoryId: Long,
     onArticleClick: (UsedeskArticleInfo) -> Unit
 ) {
-    val viewModel: ArticlesViewModel = composeViewModel { ArticlesViewModel(categoryId) }
+    val viewModel = composeViewModel(categoryId.toString()) { ArticlesViewModel(categoryId) }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumnCard {
         items(

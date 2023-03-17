@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screens.main
+package ru.usedesk.knowledgebase_gui.screen
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,11 +21,11 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
-import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.Event
-import ru.usedesk.knowledgebase_gui.screens.main.RootViewModel.State
-import ru.usedesk.knowledgebase_gui.screens.main.article.ContentArticle
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.ContentBlocks
-import ru.usedesk.knowledgebase_gui.screens.main.loading.ContentLoading
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.article.ContentArticle
+import ru.usedesk.knowledgebase_gui.screen.blocks.ContentBlocks
+import ru.usedesk.knowledgebase_gui.screen.loading.ContentLoading
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
@@ -131,8 +131,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             }) { screen ->
             when (screen) {
                 is State.Screen.Article -> ContentArticle(
-                    screen = screen,
-                    onEvent = onEvent
+                    articleId = screen.articleId,
+                    onEvent = onEvent,
+                    onWebUrl = remember {
+                        { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) == true }
+                    }
                 )
                 is State.Screen.Blocks -> ContentBlocks(
                     state = state.blocksState,

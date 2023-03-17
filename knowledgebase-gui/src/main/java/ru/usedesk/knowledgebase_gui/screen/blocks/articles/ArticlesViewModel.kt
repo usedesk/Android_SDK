@@ -1,7 +1,7 @@
-package ru.usedesk.knowledgebase_gui.screens.main.blocks.articles
+package ru.usedesk.knowledgebase_gui.screen.blocks.articles
 
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.knowledgebase_gui.screens.main.blocks.articles.ArticlesViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ArticlesViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 

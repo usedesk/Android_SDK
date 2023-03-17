@@ -37,11 +37,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = (inflater.inflate(
-        R.layout.usedesk_compose_screen,
-        container,
-        false
-    ) as ComposeView).apply {
+    ) = ComposeView(requireContext()).apply {
         val configuration =
             argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)
                 ?: throw RuntimeException("UsedeskKnowledgeBaseConfiguration not found. Call the newInstance or createBundle method and put the configuration inside")
@@ -58,7 +54,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     private fun ScreenRoot() {
         val state by viewModel.modelFlow.collectAsState()
         val onEvent = viewModel::onEvent
-        val title = state.screen.title ?: stringResource(R.string.usedesk_knowledgebase)
+        val title = when (val screen = state.screen) {
+            is State.Screen.Loading -> null
+            State.Screen.Blocks -> state.blocksState.block.title
+            is State.Screen.Article -> screen.title
+        } ?: stringResource(R.string.usedesk_knowledgebase)
 
         val scrollBehavior = rememberToolbarScrollBehavior()
 
@@ -113,16 +113,19 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 visibilityThreshold = IntOffset.VisibilityThreshold
             )
         ) { it }
-        val replaceTransitionSpec = fadeIn() with fadeOut()
         val noneTransitionSpec = EnterTransition.None with ExitTransition.None
+        /*
+        TODO: из-за того, что screen меняется внутри, это вызывает постоянные перерисовки, из-за чего внутренний AnimatedContent думает, что он только что создался
+        TODO: А если targetState не синхронизирован с content, тогда обе страницы во время анимации становятся одинаковыми
+        */
+
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),
-            targetState = state.screen, //TODO: из-за того, что screen меняется внутри, это вызывает постоянные перерисовки, из-за чего внутренний AnimatedContent думает, что он только что создался
+            targetState = state.screen,
             transitionSpec = {
                 when (targetState.transition(initialState)) {
                     State.Transition.FORWARD -> forwardTransitionSpec
                     State.Transition.BACKWARD -> backwardTransitionSpec
-                    State.Transition.STAY -> replaceTransitionSpec
                     else -> noneTransitionSpec
                 }
             }) { screen ->
@@ -132,7 +135,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     onEvent = onEvent
                 )
                 is State.Screen.Blocks -> ContentBlocks(
-                    screen = screen,
+                    state = state.blocksState,
                     onEvent = onEvent
                 )
                 is State.Screen.Loading -> ContentLoading(

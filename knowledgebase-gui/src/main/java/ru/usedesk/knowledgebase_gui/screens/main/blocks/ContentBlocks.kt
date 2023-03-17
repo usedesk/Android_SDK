@@ -18,7 +18,7 @@ import ru.usedesk.knowledgebase_gui.screens.main.blocks.sections.ContentSections
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ContentBlocks(
-    screen: State.Screen.Blocks,
+    state: State.BlocksState,
     onEvent: (Event) -> Unit
 ) {
     val forwardTransitionSpec = remember {
@@ -50,11 +50,11 @@ internal fun ContentBlocks(
 
     Column(modifier = Modifier) {
         SearchBar(
-            value = screen.searchText,
+            value = state.searchText,
             onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } }
         )
         AnimatedContent(
-            targetState = screen.block,
+            targetState = state.block,
             transitionSpec = {
                 when (targetState.transition(initialState)) {
                     State.Transition.FORWARD -> forwardTransitionSpec
@@ -65,14 +65,14 @@ internal fun ContentBlocks(
             }
         ) { block ->
             when (block) {
-                State.Screen.Blocks.Block.Sections -> ContentSections(
+                State.BlocksState.Block.Sections -> ContentSections(
                     onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                 )
-                is State.Screen.Blocks.Block.Categories -> ContentCategories(
+                is State.BlocksState.Block.Categories -> ContentCategories(
                     sectionId = block.sectionId,
                     onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                 )
-                is State.Screen.Blocks.Block.Articles -> ContentArticles(
+                is State.BlocksState.Block.Articles -> ContentArticles(
                     categoryId = block.categoryId,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it)) } }
                 )

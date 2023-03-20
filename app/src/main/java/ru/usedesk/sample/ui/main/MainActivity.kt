@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.DownloadManager
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -16,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -38,6 +40,7 @@ import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
@@ -47,13 +50,15 @@ import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdk
 import java.io.File
 import java.io.FileOutputStream
 
+
 class MainActivity : AppCompatActivity(),
     IOnGoToSdkListener,
     IUsedeskOnSupportClickListener,
     IUsedeskOnFileClickListener,
     IUsedeskOnClientTokenListener,
     IUsedeskOnDownloadListener,
-    IUsedeskOnFullscreenListener {
+    IUsedeskOnFullscreenListener,
+    IUsedeskOnWebUrlListener {
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -212,6 +217,12 @@ class MainActivity : AppCompatActivity(),
                 fileToast(R.string.download_failed, downloadFile.name)
             }
         }
+    }
+
+    override fun onWebUrl(url: String): Boolean {
+        val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+        startActivity(browserIntent)
+        return true
     }
 
     override fun onDownload(url: String, name: String) {

@@ -35,6 +35,7 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
                 is Event.SectionClicked -> sectionClicked(event)
                 is Event.CategoryClicked -> categoryClicked(event)
                 is Event.ArticleClicked -> articleClicked(event)
+                is Event.ArticleRatingClicked -> articleRatingClicked(event)
             }
         }
     }
@@ -102,6 +103,8 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
             articleId = event.article.id
         )
     )
+
+    private fun State.articleRatingClicked(event: Event.ArticleRatingClicked): State = this //TODO:
 
     override fun onCleared() {
         super.onCleared()
@@ -211,6 +214,7 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         data class SearchTextChanged(val value: TextFieldValue) : Event
         data class SectionClicked(val section: UsedeskSection) : Event
         data class CategoryClicked(val category: UsedeskCategory) : Event
+        data class ArticleRatingClicked(val good: Boolean) : Event
         data class ArticleClicked(val article: UsedeskArticleInfo) : Event
     }
 }

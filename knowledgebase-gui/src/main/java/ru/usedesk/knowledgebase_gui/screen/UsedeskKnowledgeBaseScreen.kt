@@ -131,10 +131,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             when (screen) {
                 is State.Screen.Article -> ContentArticle(
                     articleId = screen.articleId,
-                    onEvent = onEvent,
                     onWebUrl = remember {
                         { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) == true }
-                    }
+                    },
+                    onReviewClick = remember { { onEvent(Event.ArticleRatingClicked(it)) } }
                 )
                 is State.Screen.Blocks -> ContentBlocks(
                     state = state.blocksState,

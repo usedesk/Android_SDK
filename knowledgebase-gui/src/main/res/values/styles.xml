@@ -666,13 +666,13 @@
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Yes.Text" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
         <item name="android:textColor">@color/usedesk_green</item>
-        <item name="usedesk_text_1">@string/usedesk_yes</item>
+        <item name="usedesk_text_1">@string/usedesk_rating_yes</item>
         <item name="usedesk_text_2">@string/usedesk_send</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.No.Text" parent="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Button">
         <item name="android:textColor">@color/usedesk_red</item>
-        <item name="usedesk_text_1">@string/usedesk_no</item>
+        <item name="usedesk_text_1">@string/usedesk_rating_no</item>
     </style>
 
     <style name="Usedesk.KnowledgeBase.Article.Content.Page.Rating.Message.Edit.Text.TextAppearance" parent="">

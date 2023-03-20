@@ -6,8 +6,8 @@
     <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
     <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
     <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
-    <string name="usedesk_yes">@string/usedesk_string_yes</string>
-    <string name="usedesk_no">@string/usedesk_string_no</string>
+    <string name="usedesk_rating_yes">@string/usedesk_string_rating_yes</string>
+    <string name="usedesk_rating_no">@string/usedesk_string_rating_no</string>
 
     <string name="usedesk_string_knowledgebase">Knowledge Base</string>
     <string name="usedesk_string_cancel">Cancel</string>
@@ -15,6 +15,6 @@
     <string name="usedesk_string_rating_question">Was this article helpful?</string>
     <string name="usedesk_string_rating_whats_wrong">Let us know how we could do better?</string>
     <string name="usedesk_string_rating_thanks">Thanks for review!</string>
-    <string name="usedesk_string_yes">Yes</string>
-    <string name="usedesk_string_no">No</string>
+    <string name="usedesk_string_rating_yes">Yes</string>
+    <string name="usedesk_string_rating_no">No</string>
 </resources>

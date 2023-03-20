@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
@@ -78,6 +79,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             )
             Content(
                 state = state,
+                nestedScrollConnection = scrollBehavior.nestedScrollConnection,
                 onEvent = onEvent
             )
         }
@@ -87,6 +89,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     @Composable
     private fun Content(
         state: State,
+        nestedScrollConnection: NestedScrollConnection,
         onEvent: (Event) -> Unit
     ) {
         val forwardTransitionSpec = remember {
@@ -114,10 +117,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             )
         ) { it }
         val noneTransitionSpec = EnterTransition.None with ExitTransition.None
-        /*
-        TODO: из-за того, что screen меняется внутри, это вызывает постоянные перерисовки, из-за чего внутренний AnimatedContent думает, что он только что создался
-        TODO: А если targetState не синхронизирован с content, тогда обе страницы во время анимации становятся одинаковыми
-        */
 
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),

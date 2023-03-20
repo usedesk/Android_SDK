@@ -2,6 +2,7 @@ package ru.usedesk.knowledgebase_gui.screen.blocks.sections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
@@ -22,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui.compose.LazyColumnCard
+import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.composeViewModel
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
@@ -47,7 +48,13 @@ internal fun ContentSections(
 ) {
     val viewModel = composeViewModel { SectionsViewModel() }
     val state by viewModel.modelFlow.collectAsState()
-    LazyColumnCard {
+    LazyColumn(
+        modifier = Modifier
+            .padding(
+                start = 16.dp,
+                end = 16.dp
+            )
+    ) {
         items(
             items = state.sections,
             key = UsedeskSection::id
@@ -55,7 +62,10 @@ internal fun ContentSections(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = colorResource(R.color.usedesk_white_1))
+                    .cardItem(
+                        isTop = it == state.sections.firstOrNull(),
+                        isBottom = it == state.sections.lastOrNull()
+                    )
                     .clickableItem(
                         onClick = remember { { onSectionClicked(it) } }
                     )

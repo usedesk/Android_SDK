@@ -45,8 +45,7 @@ internal fun ContentBlocks(
             visibilityThreshold = IntOffset.VisibilityThreshold
         )
     ) { it }
-    val replaceTransitionSpec = fadeIn() with fadeOut()
-    val noneTransitionSpec = EnterTransition.None with ExitTransition.None
+    val noneTransitionSpec = fadeIn() with fadeOut()
 
     Column(modifier = Modifier) {
         SearchBar(
@@ -59,7 +58,6 @@ internal fun ContentBlocks(
                 when (targetState.transition(initialState)) {
                     State.Transition.FORWARD -> forwardTransitionSpec
                     State.Transition.BACKWARD -> backwardTransitionSpec
-                    State.Transition.STAY -> replaceTransitionSpec
                     else -> noneTransitionSpec
                 }
             }

@@ -4,9 +4,11 @@ import android.graphics.Color
 import android.os.Build
 import android.view.MotionEvent
 import android.view.View
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.LinearLayout
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,15 +18,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -48,91 +48,81 @@ internal fun ContentArticle(
 ) {
     val viewModel = composeViewModel(articleId.toString()) { ArticleViewModel(articleId) }
     val state by viewModel.modelFlow.collectAsState()
-    Box(modifier = Modifier) {
-        when (val content = state.content) {
-            is State.Content.Loading -> Loading()
-            is State.Content.Article -> WebView(
-                content = content,
-                onWebUrl = onWebUrl,
-                onReviewGoodClick = remember { { onReviewClick(true) } },
-                onReviewBadClick = remember { { onReviewClick(false) } }
-            )
-        }
-    }
-}
-
-@Composable
-private fun Loading() { //TODO: можно взять ту же, что и в загрузке БЗ
-    Box(modifier = Modifier.fillMaxSize()) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .size(44.dp)
-                .align(Alignment.Center)
-        )
-    }
+    WebView(
+        content = state.content,
+        onWebUrl = onWebUrl,
+        onReviewGoodClick = remember { { onReviewClick(true) } },
+        onReviewBadClick = remember { { onReviewClick(false) } }
+    )
 }
 
 @Composable
 private fun WebView(
-    content: State.Content.Article,
+    content: State.Content,
     onWebUrl: (String) -> Boolean,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
-    AndroidView(
-        modifier = Modifier
-            .clipToBounds()
-            .verticalScroll(scrollState)
-            .card()
-            .padding(
-                start = 8.dp,
-                end = 16.dp,
-                top = 8.dp,
-                bottom = 8.dp
-            ),
-        factory = {
-            LinearLayout(it).apply {
-                orientation = LinearLayout.VERTICAL
-                val composeView = ComposeView(it).apply {
-                    tag = "composeView"
-                    visibility = View.GONE
-                    setContent {
-                        ArticleRating(
-                            onReviewGoodClick = onReviewGoodClick,
-                            onReviewBadClick = onReviewBadClick
-                        )
-                    }
+    val context = LocalContext.current
+    val progressView = remember(context) {
+        ComposeView(context).apply {
+            tag = "progressView"
+            setContent {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp)
+                            .size(24.dp)
+                    )
                 }
-                val webView = WebView(it).apply {
-                    tag = "webView"
-                    isVerticalScrollBarEnabled = false
-                    isHorizontalScrollBarEnabled = false
-                    setOnTouchListener { view, event ->
-                        event.action == MotionEvent.ACTION_MOVE
-                    }
-                    webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(
-                            view: WebView,
-                            url: String
-                        ) = onWebUrl(url)
-
-                        override fun onPageCommitVisible(view: WebView?, url: String?) {
-                            super.onPageCommitVisible(view, url)
-
-                            composeView.visibility = View.VISIBLE
-                        }
-
-
-                    }
-                    setBackgroundColor(Color.TRANSPARENT)
-                }
-                addView(webView)
-                addView(composeView)
             }
-        },
-        update = {
-            val webView = it.findViewWithTag<WebView>("webView")
+        }
+    }
+    val ratingView = remember(context) {
+        ComposeView(context).apply {
+            tag = "ratingView"
+            visibility = View.GONE
+            setContent {
+                ArticleRating(
+                    onReviewGoodClick = onReviewGoodClick,
+                    onReviewBadClick = onReviewBadClick
+                )
+            }
+        }
+    }
+    val webView = remember(context) {
+        WebView(context).apply {
+            tag = "webView"
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
+            setOnTouchListener { view, event ->
+                event.action == MotionEvent.ACTION_MOVE
+            }
+            settings.apply {
+                setRenderPriority(WebSettings.RenderPriority.HIGH)
+                loadWithOverviewMode = true
+                cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+                domStorageEnabled = true
+            }
+            webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView,
+                    url: String
+                ) = onWebUrl(url)
+
+                override fun onPageCommitVisible(view: WebView, url: String?) {
+                    super.onPageCommitVisible(view, url)
+
+                    progressView.visibility = View.GONE
+                    ratingView.visibility = View.VISIBLE
+                }
+            }
+            setBackgroundColor(Color.TRANSPARENT)
+        }
+    }
+    LaunchedEffect(content) {
+        if (content is State.Content.Article) {
             when {
                 Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
                     content.articleContent.text,
@@ -144,6 +134,27 @@ private fun WebView(
                     "text/html",
                     null
                 )
+            }
+        }
+    }
+    AndroidView(
+        modifier = Modifier
+            .animateContentSize()
+            .clipToBounds()
+            .verticalScroll(rememberScrollState())
+            .card()
+            .padding(
+                start = 8.dp,
+                end = 16.dp,
+                top = 8.dp,
+                bottom = 8.dp
+            ),
+        factory = { context ->
+            LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                addView(progressView)
+                addView(webView)
+                addView(ratingView)
             }
         }
     )

@@ -116,7 +116,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 visibilityThreshold = IntOffset.VisibilityThreshold
             )
         ) { it }
-        val noneTransitionSpec = EnterTransition.None with ExitTransition.None
+        val noneTransitionSpec = fadeIn() with fadeOut()
 
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),

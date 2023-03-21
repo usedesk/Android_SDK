@@ -194,7 +194,6 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
 
         enum class Transition {
             NONE,
-            STAY,
             FORWARD,
             BACKWARD;
 

@@ -63,15 +63,16 @@ internal fun ContentBlocks(
             }
         ) { block ->
             when (block) {
-                State.BlocksState.Block.Sections -> ContentSections(
+                is State.BlocksState.Block.Sections -> ContentSections(
+                    block = block,
                     onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                 )
                 is State.BlocksState.Block.Categories -> ContentCategories(
-                    sectionId = block.sectionId,
+                    block = block,
                     onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                 )
                 is State.BlocksState.Block.Articles -> ContentArticles(
-                    categoryId = block.categoryId,
+                    block = block,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it)) } }
                 )
             }

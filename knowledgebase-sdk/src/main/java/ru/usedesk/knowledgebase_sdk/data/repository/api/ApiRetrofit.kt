@@ -3,7 +3,7 @@ package ru.usedesk.knowledgebase_sdk.data.repository.api
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
-import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CreateTicketRequest
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CreateTicket
 
 internal interface ApiRetrofit {
     @GET("support/{account_id}/list")
@@ -51,5 +51,5 @@ internal interface ApiRetrofit {
     ): Call<ResponseBody>
 
     @POST("create/ticket")
-    fun createTicket(@Body request: CreateTicketRequest): Call<ResponseBody>
+    fun createTicket(@Body request: CreateTicket.Request): Call<ResponseBody>
 }

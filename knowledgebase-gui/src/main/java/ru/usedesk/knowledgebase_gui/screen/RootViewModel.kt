@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.text.input.TextFieldValue
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
@@ -104,7 +105,9 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         )
     )
 
-    private fun State.articleRatingClicked(event: Event.ArticleRatingClicked): State = this //TODO:
+    private fun State.articleRatingClicked(event: Event.ArticleRatingClicked): State = copy(
+        screen = State.Screen.Review(screen, event.articleId)
+    )
 
     override fun onCleared() {
         super.onCleared()
@@ -138,6 +141,11 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
                 val articleId: Long
             ) : Screen
 
+            data class Review(
+                override val previousScreen: Screen,
+                val articleId: Long
+            ) : Screen
+
 
             fun transition(previous: Screen?) = when (previous) {
                 null -> Transition.NONE
@@ -147,35 +155,42 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
 
             companion object {
                 val transitionMap = Transition.getTransitionMap(
-                    Blocks::class.java to Article::class.java
+                    Blocks::class.java to Article::class.java,
+                    Article::class.java to Review::class.java
                 )
             }
         }
 
         data class BlocksState(
-            val block: Block = Block.Sections,
+            val block: Block = Block.Sections(),
             val searchText: TextFieldValue = TextFieldValue()
         ) {
             sealed interface Block {
                 val previousBlock: Block?
                 val title: String?
 
-                object Sections : Block {
+                class Sections : Block {
                     override val previousBlock = null
                     override val title = null
+
+                    val lazyListState = LazyListState()
                 }
 
                 data class Categories(
                     override val previousBlock: Block,
                     override val title: String,
                     val sectionId: Long
-                ) : Block
+                ) : Block {
+                    val lazyListState = LazyListState()
+                }
 
                 data class Articles(
                     override val previousBlock: Block,
                     override val title: String,
                     val categoryId: Long
-                ) : Block
+                ) : Block {
+                    val lazyListState = LazyListState()
+                }
 
                 fun transition(previous: Block?) = when (previous) {
                     null -> Transition.NONE
@@ -213,7 +228,11 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         data class SearchTextChanged(val value: TextFieldValue) : Event
         data class SectionClicked(val section: UsedeskSection) : Event
         data class CategoryClicked(val category: UsedeskCategory) : Event
-        data class ArticleRatingClicked(val good: Boolean) : Event
+        data class ArticleRatingClicked(
+            val articleId: Long,
+            val good: Boolean
+        ) : Event
+
         data class ArticleClicked(val article: UsedeskArticleInfo) : Event
     }
 }

@@ -31,8 +31,14 @@ internal interface IKnowledgeBaseApi {
         good: Boolean
     )
 
-    fun sendRating(
+    @CheckResult
+    fun sendReview(
         articleId: Long,
         message: String
-    )
+    ): SendReviewResponse
+
+    sealed interface SendReviewResponse {
+        object Done : SendReviewResponse
+        class Error(val code: Int?) : SendReviewResponse
+    }
 }

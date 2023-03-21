@@ -5,10 +5,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetArticleResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetSectionsResponse
-import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.GetArticleResult
-import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.Model
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.*
+import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.*
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
@@ -104,10 +102,22 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         )
     }
 
-    override fun sendRating(articleId: Long, message: String) {
-        knowledgeApiRepository.sendRating(
-            articleId,
-            message
-        )
+    override fun sendReview(
+        articleId: Long,
+        message: String,
+        onResult: (result: SendReviewResult) -> Unit
+    ) {
+        ioScope.launch {
+            val response = knowledgeApiRepository.sendReview(
+                articleId,
+                message
+            )
+            onResult(
+                when (response) {
+                    SendReviewResponse.Done -> SendReviewResult.Done
+                    is SendReviewResponse.Error -> SendReviewResult.Error(response.code)
+                }
+            )
+        }
     }
 }

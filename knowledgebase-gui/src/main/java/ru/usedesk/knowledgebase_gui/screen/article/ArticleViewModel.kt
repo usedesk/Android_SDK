@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen.article
 
+import androidx.compose.foundation.ScrollState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
@@ -40,8 +41,10 @@ internal class ArticleViewModel(
     }
 
     data class State(
-        val content: Content = Content.Loading(),
+        val content: Content = Content.Loading()
     ) {
+        val scrollState = ScrollState(0) //TODO:
+
         sealed interface Content {
             data class Loading(
                 val loading: Boolean = true,

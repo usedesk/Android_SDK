@@ -219,10 +219,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onWebUrl(url: String): Boolean {
+    override fun onWebUrl(url: String) {
         val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
         startActivity(browserIntent)
-        return true
     }
 
     override fun onDownload(url: String, name: String) {

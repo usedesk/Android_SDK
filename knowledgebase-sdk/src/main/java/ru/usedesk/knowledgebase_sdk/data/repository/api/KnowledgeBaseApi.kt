@@ -4,8 +4,7 @@ import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetArticleResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.GetSectionsResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.*
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
 import ru.usedesk.knowledgebase_sdk.entity.*
 import javax.inject.Inject
@@ -219,23 +218,27 @@ internal class KnowledgeBaseApi @Inject constructor(
         }
     }
 
-    override fun sendRating(
+    override fun sendReview(
         articleId: Long,
         message: String
-    ) {
-        doRequest(
+    ): SendReviewResponse {
+        val request = CreateTicket.Request(
+            configuration.token,
+            configuration.clientEmail,
+            configuration.clientName,
+            message,
+            articleId
+        )
+        val response = doRequestJson(
             configuration.urlApi,
-            CreateTicketResponse::class.java
+            request,
+            CreateTicket.Response::class.java
         ) {
-            createTicket(
-                CreateTicketRequest(
-                    configuration.token,
-                    configuration.clientEmail,
-                    configuration.clientName,
-                    message,
-                    articleId
-                )
-            )
+            createTicket(request)
+        }
+        return when (response?.status) {
+            "success" -> SendReviewResponse.Done
+            else -> SendReviewResponse.Error(response?.code)
         }
     }
 }

@@ -7,7 +7,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
-import ru.usedesk.common_sdk.UsedeskLog
 import kotlin.math.abs
 
 internal class CustomToolbarScrollBehavior(
@@ -36,7 +35,6 @@ internal class CustomToolbarScrollBehavior(
         ): Offset {
             state.contentOffset += consumed.y
 
-            UsedeskLog.onLog("onPostScroll") { "consumed:$consumed available:$available" }
             if (available.y < 0f || consumed.y < 0f) {
                 // When scrolling up, just update the state's height offset.
                 val oldHeightOffset = state.heightOffset

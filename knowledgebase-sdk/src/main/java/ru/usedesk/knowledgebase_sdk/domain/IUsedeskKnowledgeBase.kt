@@ -25,7 +25,16 @@ interface IUsedeskKnowledgeBase {
 
     fun sendRating(articleId: Long, good: Boolean)
 
-    fun sendRating(articleId: Long, message: String)
+    fun sendReview(
+        articleId: Long,
+        message: String,
+        onResult: (result: SendReviewResult) -> Unit
+    )
+
+    sealed interface SendReviewResult {
+        object Done : SendReviewResult
+        data class Error(val code: Int? = null) : SendReviewResult
+    }
 
     data class Model(
         val state: State = State.LOADING,

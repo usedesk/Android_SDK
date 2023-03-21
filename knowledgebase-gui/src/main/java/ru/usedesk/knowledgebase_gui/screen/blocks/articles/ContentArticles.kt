@@ -24,6 +24,7 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.composeViewModel
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 @Preview
@@ -35,7 +36,11 @@ private fun Preview() {
             .background(colorResource(R.color.usedesk_white_2))
     ) {
         ContentArticles(
-            1L,
+            block = BlocksState.Block.Articles(
+                BlocksState.Block.Sections(),
+                "Title",
+                1L
+            ),
             onArticleClick = {}
         )
     }
@@ -43,17 +48,19 @@ private fun Preview() {
 
 @Composable
 internal fun ContentArticles(
-    categoryId: Long,
+    block: BlocksState.Block.Articles,
     onArticleClick: (UsedeskArticleInfo) -> Unit
 ) {
-    val viewModel = composeViewModel(categoryId.toString()) { ArticlesViewModel(categoryId) }
+    val viewModel =
+        composeViewModel(block.categoryId.toString()) { ArticlesViewModel(block.categoryId) }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumn(
         modifier = Modifier
             .padding(
                 start = 16.dp,
                 end = 16.dp
-            )
+            ),
+        state = block.lazyListState
     ) {
         items(
             items = state.articles,

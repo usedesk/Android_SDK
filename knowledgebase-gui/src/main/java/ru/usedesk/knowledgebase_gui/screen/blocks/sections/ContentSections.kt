@@ -26,6 +26,7 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.composeViewModel
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
@@ -37,6 +38,7 @@ private fun Preview() {
             .background(colorResource(R.color.usedesk_white_2))
     ) {
         ContentSections(
+            block = BlocksState.Block.Sections(),
             onSectionClicked = {}
         )
     }
@@ -44,6 +46,7 @@ private fun Preview() {
 
 @Composable
 internal fun ContentSections(
+    block: BlocksState.Block.Sections,
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
     val viewModel = composeViewModel { SectionsViewModel() }
@@ -53,7 +56,8 @@ internal fun ContentSections(
             .padding(
                 start = 16.dp,
                 end = 16.dp
-            )
+            ),
+        state = block.lazyListState
     ) {
         items(
             items = state.sections,

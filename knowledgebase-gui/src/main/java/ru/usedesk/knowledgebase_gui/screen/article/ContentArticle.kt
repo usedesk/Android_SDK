@@ -11,7 +11,6 @@ import android.widget.LinearLayout
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
@@ -43,23 +42,25 @@ import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
 @Composable
 internal fun ContentArticle(
     articleId: Long,
-    onWebUrl: (String) -> Boolean,
+    onWebUrl: (String) -> Unit,
     onReviewClick: (good: Boolean) -> Unit
 ) {
     val viewModel = composeViewModel(articleId.toString()) { ArticleViewModel(articleId) }
     val state by viewModel.modelFlow.collectAsState()
-    WebView(
-        content = state.content,
-        onWebUrl = onWebUrl,
-        onReviewGoodClick = remember { { onReviewClick(true) } },
-        onReviewBadClick = remember { { onReviewClick(false) } }
-    )
+    Box(modifier = Modifier.fillMaxWidth()) {
+        WebView(
+            state = state,
+            onWebUrl = onWebUrl,
+            onReviewGoodClick = remember { { onReviewClick(true) } },
+            onReviewBadClick = remember { { onReviewClick(false) } }
+        )
+    }
 }
 
 @Composable
 private fun WebView(
-    content: State.Content,
-    onWebUrl: (String) -> Boolean,
+    state: State,
+    onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
@@ -109,7 +110,10 @@ private fun WebView(
                 override fun shouldOverrideUrlLoading(
                     view: WebView,
                     url: String
-                ) = onWebUrl(url)
+                ): Boolean {
+                    onWebUrl(url)
+                    return true
+                }
 
                 override fun onPageCommitVisible(view: WebView, url: String?) {
                     super.onPageCommitVisible(view, url)
@@ -121,16 +125,16 @@ private fun WebView(
             setBackgroundColor(Color.TRANSPARENT)
         }
     }
-    LaunchedEffect(content) {
-        if (content is State.Content.Article) {
+    LaunchedEffect(state.content) {
+        if (state.content is State.Content.Article) {
             when {
                 Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                    content.articleContent.text,
+                    state.content.articleContent.text,
                     "text/html; charset=utf-8",
                     "UTF-8"
                 )
                 else -> webView.loadData(
-                    content.articleContent.text,
+                    state.content.articleContent.text,
                     "text/html",
                     null
                 )
@@ -141,7 +145,7 @@ private fun WebView(
         modifier = Modifier
             .animateContentSize()
             .clipToBounds()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(state.scrollState)
             .card()
             .padding(
                 start = 8.dp,

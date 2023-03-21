@@ -11,7 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
@@ -27,6 +26,7 @@ import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screen.article.ContentArticle
 import ru.usedesk.knowledgebase_gui.screen.blocks.ContentBlocks
 import ru.usedesk.knowledgebase_gui.screen.loading.ContentLoading
+import ru.usedesk.knowledgebase_gui.screen.review.ContentReview
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
@@ -59,6 +59,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             is State.Screen.Loading -> null
             State.Screen.Blocks -> state.blocksState.block.title
             is State.Screen.Article -> screen.title
+            is State.Screen.Review -> stringResource(R.string.usedesk_string_rating_whats_wrong) //TODO
         } ?: stringResource(R.string.usedesk_knowledgebase)
 
         val scrollBehavior = rememberToolbarScrollBehavior()
@@ -79,7 +80,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             )
             Content(
                 state = state,
-                nestedScrollConnection = scrollBehavior.nestedScrollConnection,
                 onEvent = onEvent
             )
         }
@@ -89,7 +89,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     @Composable
     private fun Content(
         state: State,
-        nestedScrollConnection: NestedScrollConnection,
         onEvent: (Event) -> Unit
     ) {
         val forwardTransitionSpec = remember {
@@ -129,20 +128,31 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 }
             }) { screen ->
             when (screen) {
-                is State.Screen.Article -> ContentArticle(
-                    articleId = screen.articleId,
-                    onWebUrl = remember {
-                        { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) == true }
-                    },
-                    onReviewClick = remember { { onEvent(Event.ArticleRatingClicked(it)) } }
+                is State.Screen.Loading -> ContentLoading(
+                    screen = screen,
+                    onEvent = onEvent
                 )
                 is State.Screen.Blocks -> ContentBlocks(
                     state = state.blocksState,
                     onEvent = onEvent
                 )
-                is State.Screen.Loading -> ContentLoading(
-                    screen = screen,
-                    onEvent = onEvent
+                is State.Screen.Article -> ContentArticle(
+                    articleId = screen.articleId,
+                    onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
+                    onReviewClick = remember {
+                        {
+                            onEvent(
+                                Event.ArticleRatingClicked(
+                                    screen.articleId,
+                                    it
+                                )
+                            )
+                        }
+                    }
+                )
+                is State.Screen.Review -> ContentReview(
+                    articleId = screen.articleId,
+                    onReviewSent = viewModel::onBackPressed
                 )
             }
         }

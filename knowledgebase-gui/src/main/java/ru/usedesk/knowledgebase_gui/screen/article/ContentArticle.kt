@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
@@ -34,18 +35,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.card
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.composeViewModel
 import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
 
+internal const val ARTICLE_KEY = "article"
+
 @Composable
 internal fun ContentArticle(
+    viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     onWebUrl: (String) -> Unit,
     onReviewClick: (good: Boolean) -> Unit
 ) {
-    val viewModel = composeViewModel(articleId.toString()) { ArticleViewModel(articleId) }
+    val viewModel = composeViewModel(
+        key = remember(articleId) { articleId.toString() },
+        viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
+    ) { ArticleViewModel(articleId) }
     val state by viewModel.modelFlow.collectAsState()
     Box(modifier = Modifier.fillMaxWidth()) {
         WebView(
@@ -65,9 +73,13 @@ private fun WebView(
     onReviewBadClick: () -> Unit
 ) {
     val context = LocalContext.current
+    val articleShowed = remember { mutableStateOf(false) }
+    val scrollState = when {
+        articleShowed.value -> state.scrollState
+        else -> rememberScrollState()
+    }
     val progressView = remember(context) {
         ComposeView(context).apply {
-            tag = "progressView"
             setContent {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     CircularProgressIndicator(
@@ -82,7 +94,6 @@ private fun WebView(
     }
     val ratingView = remember(context) {
         ComposeView(context).apply {
-            tag = "ratingView"
             visibility = View.GONE
             setContent {
                 ArticleRating(
@@ -94,7 +105,6 @@ private fun WebView(
     }
     val webView = remember(context) {
         WebView(context).apply {
-            tag = "webView"
             isVerticalScrollBarEnabled = false
             isHorizontalScrollBarEnabled = false
             setOnTouchListener { view, event ->
@@ -120,6 +130,8 @@ private fun WebView(
 
                     progressView.visibility = View.GONE
                     ratingView.visibility = View.VISIBLE
+
+                    articleShowed.value = true
                 }
             }
             setBackgroundColor(Color.TRANSPARENT)
@@ -145,7 +157,7 @@ private fun WebView(
         modifier = Modifier
             .animateContentSize()
             .clipToBounds()
-            .verticalScroll(state.scrollState)
+            .verticalScroll(scrollState)
             .card()
             .padding(
                 start = 8.dp,

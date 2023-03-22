@@ -20,13 +20,16 @@ import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
+import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.article.ARTICLE_KEY
 import ru.usedesk.knowledgebase_gui.screen.article.ContentArticle
 import ru.usedesk.knowledgebase_gui.screen.blocks.ContentBlocks
 import ru.usedesk.knowledgebase_gui.screen.loading.ContentLoading
 import ru.usedesk.knowledgebase_gui.screen.review.ContentReview
+import ru.usedesk.knowledgebase_gui.screen.review.REVIEW_KEY
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
@@ -117,6 +120,12 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         ) { it }
         val noneTransitionSpec = fadeIn() with fadeOut()
 
+        val viewModelStoreFactory = remember { ViewModelStoreFactory() }
+        DisposableEffect(Unit) {
+            onDispose {
+                viewModelStoreFactory.clearAll()
+            }
+        }
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),
             targetState = state.screen,
@@ -132,25 +141,38 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     screen = screen,
                     onEvent = onEvent
                 )
-                is State.Screen.Blocks -> ContentBlocks(
-                    state = state.blocksState,
-                    onEvent = onEvent
-                )
-                is State.Screen.Article -> ContentArticle(
-                    articleId = screen.articleId,
-                    onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
-                    onReviewClick = remember {
-                        {
-                            onEvent(
-                                Event.ArticleRatingClicked(
-                                    screen.articleId,
-                                    it
-                                )
-                            )
-                        }
+                is State.Screen.Blocks -> {
+                    LaunchedEffect(Unit) {
+                        viewModelStoreFactory.clear(ARTICLE_KEY)
                     }
-                )
+                    ContentBlocks(
+                        viewModelStoreFactory = viewModelStoreFactory,
+                        state = state.blocksState,
+                        onEvent = onEvent
+                    )
+                }
+                is State.Screen.Article -> {
+                    LaunchedEffect(Unit) {
+                        viewModelStoreFactory.clear(REVIEW_KEY)
+                    }
+                    ContentArticle(
+                        viewModelStoreFactory = viewModelStoreFactory,
+                        articleId = screen.articleId,
+                        onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
+                        onReviewClick = remember {
+                            {
+                                onEvent(
+                                    Event.ArticleRatingClicked(
+                                        screen.articleId,
+                                        it
+                                    )
+                                )
+                            }
+                        }
+                    )
+                }
                 is State.Screen.Review -> ContentReview(
+                    viewModelStoreFactory = viewModelStoreFactory,
                     articleId = screen.articleId,
                     onReviewSent = viewModel::onBackPressed
                 )

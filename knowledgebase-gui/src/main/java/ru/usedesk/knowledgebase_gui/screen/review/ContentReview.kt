@@ -29,11 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.composeViewModel
 import ru.usedesk.knowledgebase_gui.compose.flexMeasurePolicy
 
-val problems = //TODO
+private val problems = //TODO
     listOf(
         "123123123123123",
         "456456",
@@ -44,12 +45,18 @@ val problems = //TODO
         "333"
     )
 
+internal const val REVIEW_KEY = "review"
+
 @Composable
 internal fun ContentReview(
+    viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     onReviewSent: () -> Unit
 ) {
-    val viewModel = composeViewModel(articleId.toString()) { ReviewViewModel(articleId) }
+    val viewModel = composeViewModel(
+        key = remember(articleId) { articleId.toString() },
+        viewModelStoreOwner = remember { { viewModelStoreFactory.get(REVIEW_KEY) } }
+    ) { ReviewViewModel(articleId) }
     val state by viewModel.modelFlow.collectAsState()
     state.done?.use { onReviewSent() }
     Box(modifier = Modifier.clipToBounds()) {

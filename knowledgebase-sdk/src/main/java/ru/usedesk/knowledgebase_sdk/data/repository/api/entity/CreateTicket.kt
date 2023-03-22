@@ -14,7 +14,7 @@ internal interface CreateTicket {
     ) {
         private val subject = "Отзыв о статье" //TODO:
         private val tag = "БЗ" //TODO:
-        private val message = "ID: $articleId\n$message\n"
+        private val message = "ID: $articleId\n$message"
     }
 
     class Response(

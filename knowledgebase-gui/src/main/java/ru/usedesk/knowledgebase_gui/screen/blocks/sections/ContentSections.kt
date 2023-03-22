@@ -22,6 +22,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
@@ -38,6 +40,7 @@ private fun Preview() {
             .background(colorResource(R.color.usedesk_white_2))
     ) {
         ContentSections(
+            viewModelStoreOwner = remember { { ViewModelStore() } },
             block = BlocksState.Block.Sections(),
             onSectionClicked = {}
         )
@@ -46,10 +49,13 @@ private fun Preview() {
 
 @Composable
 internal fun ContentSections(
+    viewModelStoreOwner: ViewModelStoreOwner,
     block: BlocksState.Block.Sections,
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
-    val viewModel = composeViewModel { SectionsViewModel() }
+    val viewModel = composeViewModel(
+        viewModelStoreOwner = viewModelStoreOwner
+    ) { SectionsViewModel() }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumn(
         modifier = Modifier

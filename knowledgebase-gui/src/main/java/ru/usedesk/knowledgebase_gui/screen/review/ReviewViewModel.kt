@@ -36,7 +36,7 @@ internal class ReviewViewModel(
             .asSequence()
             .map(String::trim)
             .filter(String::isNotEmpty)
-            .joinToString(".\n")
+            .joinToString(". ")
         knowledgeBase.sendReview(
             articleId,
             review,

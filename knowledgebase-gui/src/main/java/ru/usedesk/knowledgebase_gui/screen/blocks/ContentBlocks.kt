@@ -9,15 +9,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import ru.usedesk.knowledgebase_gui.compose.SearchBar
+import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ContentArticles
 import ru.usedesk.knowledgebase_gui.screen.blocks.categories.ContentCategories
 import ru.usedesk.knowledgebase_gui.screen.blocks.sections.ContentSections
 
+internal const val SECTIONS_KEY = "sections"
+internal const val CATEGORIES_KEY = "categories"
+internal const val ARTICLES_KEY = "articles"
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ContentBlocks(
+    viewModelStoreFactory: ViewModelStoreFactory,
     state: State.BlocksState,
     onEvent: (Event) -> Unit
 ) {
@@ -63,15 +69,29 @@ internal fun ContentBlocks(
             }
         ) { block ->
             when (block) {
-                is State.BlocksState.Block.Sections -> ContentSections(
-                    block = block,
-                    onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
-                )
-                is State.BlocksState.Block.Categories -> ContentCategories(
-                    block = block,
-                    onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
-                )
+                is State.BlocksState.Block.Sections -> {
+                    LaunchedEffect(Unit) {
+                        viewModelStoreFactory.clear(CATEGORIES_KEY)
+                    }
+                    ContentSections(
+                        viewModelStoreOwner = remember { { viewModelStoreFactory.get(SECTIONS_KEY) } },
+                        block = block,
+                        onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
+                    )
+                }
+                is State.BlocksState.Block.Categories -> {
+                    LaunchedEffect(Unit) {
+                        viewModelStoreFactory.clear(ARTICLES_KEY)
+                    }
+                    ContentCategories(
+                        viewModelStoreOwner =
+                        remember { { viewModelStoreFactory.get(CATEGORIES_KEY) } },
+                        block = block,
+                        onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
+                    )
+                }
                 is State.BlocksState.Block.Articles -> ContentArticles(
+                    viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
                     block = block,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it)) } }
                 )

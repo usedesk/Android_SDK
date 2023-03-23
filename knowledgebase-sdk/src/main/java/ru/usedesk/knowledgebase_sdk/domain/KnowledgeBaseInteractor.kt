@@ -95,27 +95,41 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         knowledgeApiRepository.addViews(articleId)
     }
 
-    override fun sendRating(articleId: Long, good: Boolean) {
-        knowledgeApiRepository.sendRating(
-            articleId,
-            good
-        )
+    override fun sendRating(
+        articleId: Long,
+        good: Boolean,
+        onResult: (result: SendResult) -> Unit
+    ) {
+        ioScope.launch {
+            delay(10000) //TODO
+            val response = knowledgeApiRepository.sendRating(
+                articleId,
+                good
+            )
+            onResult(
+                when (response) {
+                    SendResponse.Done -> SendResult.Done
+                    is SendResponse.Error -> SendResult.Error(response.code)
+                }
+            )
+        }
     }
 
     override fun sendReview(
         articleId: Long,
         message: String,
-        onResult: (result: SendReviewResult) -> Unit
+        onResult: (result: SendResult) -> Unit
     ) {
         ioScope.launch {
+            delay(10000) //TODO
             val response = knowledgeApiRepository.sendReview(
                 articleId,
                 message
             )
             onResult(
                 when (response) {
-                    SendReviewResponse.Done -> SendReviewResult.Done
-                    is SendReviewResponse.Error -> SendReviewResult.Error(response.code)
+                    SendResponse.Done -> SendResult.Done
+                    is SendResponse.Error -> SendResult.Error(response.code)
                 }
             )
         }

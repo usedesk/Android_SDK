@@ -204,24 +204,35 @@ internal class KnowledgeBaseApi @Inject constructor(
     override fun sendRating(
         articleId: Long,
         good: Boolean
-    ) {
-        doRequest(
+    ): SendResponse {
+        val request = AddRating.Request(
+            configuration.accountId,
+            articleId,
+            if (good) 1 else 0,
+            if (good) 0 else 1
+        )
+        val response = doRequestJson(
             configuration.urlApi,
-            ChangeRatingResponse::class.java
+            request,
+            AddRating.Response::class.java
         ) {
             changeRating(
-                configuration.accountId,
-                articleId,
-                if (good) 1 else 0,
-                if (good) 0 else 1
+                accountId = request.accountId,
+                articleId = request.articleId,
+                positive = request.positive,
+                negative = request.negative
             )
+        }
+        return when (response?.rating) {
+            null -> SendResponse.Error(response?.code)
+            else -> SendResponse.Done
         }
     }
 
     override fun sendReview(
         articleId: Long,
         message: String
-    ): SendReviewResponse {
+    ): SendResponse {
         val request = CreateTicket.Request(
             configuration.token,
             configuration.clientEmail,
@@ -237,8 +248,8 @@ internal class KnowledgeBaseApi @Inject constructor(
             createTicket(request)
         }
         return when (response?.status) {
-            "success" -> SendReviewResponse.Done
-            else -> SendReviewResponse.Error(response?.code)
+            "success" -> SendResponse.Done
+            else -> SendResponse.Error(response?.code)
         }
     }
 }

@@ -36,7 +36,7 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
                 is Event.SectionClicked -> sectionClicked(event)
                 is Event.CategoryClicked -> categoryClicked(event)
                 is Event.ArticleClicked -> articleClicked(event)
-                is Event.ArticleRatingClicked -> articleRatingClicked(event)
+                is Event.GoReview -> articleRatingClicked(event)
             }
         }
     }
@@ -105,7 +105,7 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         )
     )
 
-    private fun State.articleRatingClicked(event: Event.ArticleRatingClicked): State = copy(
+    private fun State.articleRatingClicked(event: Event.GoReview): State = copy(
         screen = State.Screen.Review(screen, event.articleId)
     )
 
@@ -228,10 +228,7 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         data class SearchTextChanged(val value: TextFieldValue) : Event
         data class SectionClicked(val section: UsedeskSection) : Event
         data class CategoryClicked(val category: UsedeskCategory) : Event
-        data class ArticleRatingClicked(
-            val articleId: Long,
-            val good: Boolean
-        ) : Event
+        data class GoReview(val articleId: Long) : Event
 
         data class ArticleClicked(val article: UsedeskArticleInfo) : Event
     }

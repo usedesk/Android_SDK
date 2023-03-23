@@ -26,19 +26,20 @@ internal interface IKnowledgeBaseApi {
 
     fun addViews(articleId: Long)
 
+    @CheckResult
     fun sendRating(
         articleId: Long,
         good: Boolean
-    )
+    ): SendResponse
 
     @CheckResult
     fun sendReview(
         articleId: Long,
         message: String
-    ): SendReviewResponse
+    ): SendResponse
 
-    sealed interface SendReviewResponse {
-        object Done : SendReviewResponse
-        class Error(val code: Int?) : SendReviewResponse
+    sealed interface SendResponse {
+        object Done : SendResponse
+        class Error(val code: Int?) : SendResponse
     }
 }

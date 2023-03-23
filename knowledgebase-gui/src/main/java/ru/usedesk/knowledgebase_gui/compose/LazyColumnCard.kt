@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.R
@@ -32,10 +33,6 @@ internal fun Modifier.cardItem(
 
 @Composable
 internal fun Modifier.card() = fillMaxWidth()
-    .padding(
-        start = 16.dp,
-        end = 16.dp,
-        bottom = 16.dp,
-    )
     .clip(RoundedCornerShape(10.dp))
+    .shadow(4.dp)
     .background(color = colorResource(R.color.usedesk_white_1))

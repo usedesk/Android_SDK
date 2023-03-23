@@ -23,17 +23,21 @@ interface IUsedeskKnowledgeBase {
 
     fun addViews(articleId: Long)
 
-    fun sendRating(articleId: Long, good: Boolean)
+    fun sendRating(
+        articleId: Long,
+        good: Boolean,
+        onResult: (result: SendResult) -> Unit
+    )
 
     fun sendReview(
         articleId: Long,
         message: String,
-        onResult: (result: SendReviewResult) -> Unit
+        onResult: (result: SendResult) -> Unit
     )
 
-    sealed interface SendReviewResult {
-        object Done : SendReviewResult
-        data class Error(val code: Int? = null) : SendReviewResult
+    sealed interface SendResult {
+        object Done : SendResult
+        data class Error(val code: Int? = null) : SendResult
     }
 
     data class Model(

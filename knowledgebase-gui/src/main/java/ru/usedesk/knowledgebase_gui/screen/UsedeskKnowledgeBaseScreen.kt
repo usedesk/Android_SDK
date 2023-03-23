@@ -49,6 +49,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             requireContext(),
             configuration
         )
+
         setContent {
             ScreenRoot()
         }
@@ -158,23 +159,18 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     ContentArticle(
                         viewModelStoreFactory = viewModelStoreFactory,
                         articleId = screen.articleId,
-                        onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
-                        onReviewClick = remember {
-                            {
-                                onEvent(
-                                    Event.ArticleRatingClicked(
-                                        screen.articleId,
-                                        it
-                                    )
-                                )
-                            }
+                        onWebUrl = remember {
+                            { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) }
+                        },
+                        onReview = remember {
+                            { onEvent(Event.GoReview(screen.articleId)) }
                         }
                     )
                 }
                 is State.Screen.Review -> ContentReview(
                     viewModelStoreFactory = viewModelStoreFactory,
                     articleId = screen.articleId,
-                    onReviewSent = viewModel::onBackPressed
+                    goBack = viewModel::onBackPressed
                 )
             }
         }

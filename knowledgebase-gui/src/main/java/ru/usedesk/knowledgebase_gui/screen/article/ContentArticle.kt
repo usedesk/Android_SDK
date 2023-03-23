@@ -8,6 +8,9 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.LinearLayout
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -48,26 +51,29 @@ internal fun ContentArticle(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     onWebUrl: (String) -> Unit,
-    onReviewClick: (good: Boolean) -> Unit
+    onReview: () -> Unit
 ) {
     val viewModel = composeViewModel(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
     ) { ArticleViewModel(articleId) }
     val state by viewModel.modelFlow.collectAsState()
+    state.goReview?.use { onReview() }
     Box(modifier = Modifier.fillMaxWidth()) {
-        WebView(
+        ArticleBlock(
             state = state,
+            viewModel = viewModel,
             onWebUrl = onWebUrl,
-            onReviewGoodClick = remember { { onReviewClick(true) } },
-            onReviewBadClick = remember { { onReviewClick(false) } }
+            onReviewGoodClick = remember { { viewModel.onRating(true) } },
+            onReviewBadClick = remember { { viewModel.onRating(false) } }
         )
     }
 }
 
 @Composable
-private fun WebView(
+private fun ArticleBlock(
     state: State,
+    viewModel: ArticleViewModel,
     onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
@@ -75,7 +81,7 @@ private fun WebView(
     val context = LocalContext.current
     val articleShowed = remember { mutableStateOf(false) }
     val scrollState = when {
-        articleShowed.value -> state.scrollState
+        articleShowed.value -> viewModel.scrollState
         else -> rememberScrollState()
     }
     val progressView = remember(context) {
@@ -96,7 +102,9 @@ private fun WebView(
         ComposeView(context).apply {
             visibility = View.GONE
             setContent {
+                val state by viewModel.modelFlow.collectAsState()
                 ArticleRating(
+                    state = state,
                     onReviewGoodClick = onReviewGoodClick,
                     onReviewBadClick = onReviewBadClick
                 )
@@ -158,6 +166,11 @@ private fun WebView(
             .animateContentSize()
             .clipToBounds()
             .verticalScroll(scrollState)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp,
+            )
             .card()
             .padding(
                 start = 8.dp,
@@ -177,7 +190,86 @@ private fun WebView(
 }
 
 @Composable
+private fun ArticleRatingButton(
+    modifier: Modifier = Modifier,
+    @DrawableRes iconId: Int,
+    @ColorRes colorId: Int,
+    @StringRes textId: Int,
+    loading: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(
+                color = colorResource(colorId)
+                    .copy(alpha = 0.25f)
+            )
+            .clickableItem(onClick = onClick)
+            .padding(
+                top = 8.dp,
+                bottom = 8.dp,
+                start = 10.dp,
+                end = 10.dp
+            )
+    ) {
+        when {
+            loading -> CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(16.dp)
+            )
+            else -> Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(16.dp),
+                painter = painterResource(iconId),
+                contentDescription = null
+            )
+        }
+        BasicText(
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .align(Alignment.CenterVertically),
+            text = stringResource(textId),
+            style = TextStyle(
+                fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = colorResource(colorId)
+            )
+        )
+    }
+}
+
+@Composable
+private fun ArticleRatingButtons(
+    ratingState: State.RatingState,
+    onReviewGoodClick: () -> Unit,
+    onReviewBadClick: () -> Unit
+) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        ArticleRatingButton(
+            iconId = R.drawable.usedesk_ic_rating_good,
+            colorId = R.color.usedesk_green,
+            textId = R.string.usedesk_rating_yes,
+            loading = ratingState == State.RatingState.GOOD_SENDING,
+            onClick = onReviewGoodClick
+        )
+        ArticleRatingButton(
+            modifier = Modifier.padding(start = 10.dp),
+            iconId = R.drawable.usedesk_ic_rating_bad,
+            colorId = R.color.usedesk_red,
+            textId = R.string.usedesk_rating_no,
+            loading = ratingState == State.RatingState.BAD_SENDING,
+            onClick = onReviewBadClick
+        )
+    }
+}
+
+@Composable
 private fun ArticleRating(
+    state: State,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
@@ -208,78 +300,15 @@ private fun ArticleRating(
                 color = colorResource(R.color.usedesk_gray_cold_2)
             )
         )
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(
-                        color = colorResource(R.color.usedesk_green)
-                            .copy(alpha = 0.25f)
-                    )
-                    .clickableItem(onClick = onReviewGoodClick)
-                    .padding(
-                        top = 8.dp,
-                        bottom = 8.dp,
-                        start = 10.dp,
-                        end = 10.dp
-                    )
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = 10.dp)
-                        .size(16.dp),
-                    painter = painterResource(R.drawable.usedesk_ic_rating_good),
-                    contentDescription = null
-                )
-                BasicText(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
-                    text = stringResource(R.string.usedesk_rating_yes),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = colorResource(R.color.usedesk_green)
-                    )
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(start = 10.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(
-                        color = colorResource(R.color.usedesk_red)
-                            .copy(alpha = 0.25f)
-                    )
-                    .clickableItem(onClick = onReviewBadClick)
-                    .padding(
-                        top = 8.dp,
-                        bottom = 8.dp,
-                        start = 10.dp,
-                        end = 10.dp
-                    )
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(end = 10.dp)
-                        .size(16.dp),
-                    painter = painterResource(R.drawable.usedesk_ic_rating_bad),
-                    contentDescription = null
-                )
-                BasicText(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
-                    text = stringResource(R.string.usedesk_rating_no),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.sp,
-                        color = colorResource(R.color.usedesk_red)
-                    )
-                )
-            }
+        when (state.ratingState) {
+            State.RatingState.NEED,
+            State.RatingState.GOOD_SENDING,
+            State.RatingState.BAD_SENDING -> ArticleRatingButtons(
+                ratingState = state.ratingState,
+                onReviewGoodClick,
+                onReviewBadClick
+            )
+            State.RatingState.RATED -> BasicText(text = "Posebo za ocenku")
         }
     }
 }

@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.composeViewModel
+import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
@@ -55,10 +55,10 @@ internal fun ContentCategories(
     block: BlocksState.Block.Categories,
     onCategoryClick: (UsedeskCategory) -> Unit
 ) {
-    val viewModel = composeViewModel(
+    val viewModel = kbUiViewModel(
         key = block.sectionId.toString(),
         viewModelStoreOwner = viewModelStoreOwner
-    ) { CategoriesViewModel(block.sectionId) }
+    ) { kbUiComponent -> CategoriesViewModel(kbUiComponent.interactor, block.sectionId) }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumn(
         modifier = Modifier

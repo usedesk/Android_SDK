@@ -52,13 +52,13 @@ internal fun ContentReview(
     articleId: Long,
     goBack: () -> Unit
 ) {
-    val viewModel = composeViewModel(
+    val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(REVIEW_KEY) } }
-    ) { ReviewViewModel(articleId) }
+    ) { kbUiComponent -> ReviewViewModel(kbUiComponent.interactor, articleId) }
     val state by viewModel.modelFlow.collectAsState()
 
-    state.done?.use { goBack() }
+    state.goBack?.use { goBack() }
 
     val focusManager = LocalFocusManager.current
     state.clearFocus?.use { focusManager.clearFocus() }

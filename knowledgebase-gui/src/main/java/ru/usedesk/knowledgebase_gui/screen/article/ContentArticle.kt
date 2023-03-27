@@ -38,11 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.card
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.composeViewModel
+import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal const val ARTICLE_KEY = "article"
 
@@ -53,10 +56,10 @@ internal fun ContentArticle(
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
-    val viewModel = composeViewModel(
+    val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
-    ) { ArticleViewModel(articleId) }
+    ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -145,16 +148,16 @@ private fun ArticleBlock(
             setBackgroundColor(Color.TRANSPARENT)
         }
     }
-    LaunchedEffect(state.content) {
-        if (state.content is State.Content.Article) {
+    LaunchedEffect(state.loadingState) {
+        if (state.loadingState is LoadingState.Loaded<UsedeskArticleContent>) {
             when {
                 Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                    state.content.articleContent.text,
+                    state.loadingState.data.text,
                     "text/html; charset=utf-8",
                     "UTF-8"
                 )
                 else -> webView.loadData(
-                    state.content.articleContent.text,
+                    state.loadingState.data.text,
                     "text/html",
                     null
                 )
@@ -244,7 +247,7 @@ private fun ArticleRatingButton(
 
 @Composable
 private fun ArticleRatingButtons(
-    ratingState: State.RatingState,
+    ratingState: RatingState,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
@@ -253,7 +256,7 @@ private fun ArticleRatingButtons(
             iconId = R.drawable.usedesk_ic_rating_good,
             colorId = R.color.usedesk_green,
             textId = R.string.usedesk_rating_yes,
-            loading = ratingState == State.RatingState.GOOD_SENDING,
+            loading = (ratingState as? RatingState.Sending)?.good == true,
             onClick = onReviewGoodClick
         )
         ArticleRatingButton(
@@ -261,7 +264,7 @@ private fun ArticleRatingButtons(
             iconId = R.drawable.usedesk_ic_rating_bad,
             colorId = R.color.usedesk_red,
             textId = R.string.usedesk_rating_no,
-            loading = ratingState == State.RatingState.BAD_SENDING,
+            loading = (ratingState as? RatingState.Sending)?.good == false,
             onClick = onReviewBadClick
         )
     }
@@ -301,14 +304,13 @@ private fun ArticleRating(
             )
         )
         when (state.ratingState) {
-            State.RatingState.NEED,
-            State.RatingState.GOOD_SENDING,
-            State.RatingState.BAD_SENDING -> ArticleRatingButtons(
+            is RatingState.Required,
+            is RatingState.Sending -> ArticleRatingButtons(
                 ratingState = state.ratingState,
                 onReviewGoodClick,
                 onReviewBadClick
             )
-            State.RatingState.RATED -> BasicText(text = "Posebo za ocenku")
+            is RatingState.Sent -> BasicText(text = "Posebo za ocenku") //TODO
         }
     }
 }

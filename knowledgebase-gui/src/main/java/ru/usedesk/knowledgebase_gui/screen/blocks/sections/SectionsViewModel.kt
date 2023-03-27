@@ -1,17 +1,25 @@
 package ru.usedesk.knowledgebase_gui.screen.blocks.sections
 
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.blocks.sections.SectionsViewModel.State
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-internal class SectionsViewModel : UsedeskViewModel<State>(State()) {
-
-    private val knowledgeBase = UsedeskKnowledgeBaseSdk.requireInstance()
+internal class SectionsViewModel(
+    private val kbInteractor: IKnowledgeBaseInteractor
+) : UsedeskViewModel<State>(State()) {
 
     init {
-        knowledgeBase.modelFlow.launchCollect { model ->
-            setModel { copy(sections = model.sections ?: sections) }
+        kbInteractor.sectionsModelFlow.launchCollect { sectionsModel ->
+            setModel {
+                copy(
+                    sections = (sectionsModel.loadingState as? LoadingState.Loaded)
+                        ?.data
+                        ?.sections
+                        ?: listOf()
+                )
+            }
         }
     }
 

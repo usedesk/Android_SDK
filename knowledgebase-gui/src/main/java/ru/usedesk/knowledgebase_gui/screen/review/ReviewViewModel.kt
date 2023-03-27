@@ -3,15 +3,46 @@ package ru.usedesk.knowledgebase_gui.screen.review
 import androidx.compose.ui.text.input.TextFieldValue
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.knowledgebase_gui._entity.ReviewState
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.review.ReviewViewModel.State
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
-import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase.SendResult
 
 internal class ReviewViewModel(
+    private val kbInteractor: IKnowledgeBaseInteractor,
     private val articleId: Long
 ) : UsedeskViewModel<State>(State()) {
 
-    private val knowledgeBase = UsedeskKnowledgeBaseSdk.requireInstance()
+    init {
+        var lastReviewState: ReviewState? = null
+        kbInteractor.articleModelFlow.launchCollect { articleModel ->
+            setModel {
+                when (articleModel.reviewState) {
+                    ReviewState.Required -> copy(
+                        buttonLoading = false,
+                        error = null,
+                        goBackExpected = false
+                    )
+                    ReviewState.Sending -> copy(
+                        buttonLoading = true
+                    )
+                    is ReviewState.Failed -> copy(
+                        buttonLoading = false,
+                        goBackExpected = false,
+                        error = when (lastReviewState) {
+                            articleModel.reviewState -> null
+                            else -> UsedeskEvent(articleModel.reviewState.code)
+                        }
+                    )
+                    ReviewState.Sent -> copy(
+                        buttonLoading = false,
+                        goBackExpected = false,
+                        goBack = if (goBackExpected) UsedeskEvent(Unit) else null
+                    )
+                }.updateButtonShowed()
+            }
+            lastReviewState = articleModel.reviewState
+        }
+    }
 
     fun reviewValueChanged(reviewValue: TextFieldValue) {
         setModel { copy(reviewValue = reviewValue).updateButtonShowed() }
@@ -35,8 +66,8 @@ internal class ReviewViewModel(
     fun sendClicked() {
         val state = setModel {
             copy(
-                buttonLoading = true,
-                clearFocus = UsedeskEvent(Unit)
+                clearFocus = UsedeskEvent(Unit),
+                goBackExpected = true
             ).updateButtonShowed()
         }
         val review = (state.selectedReplies + modelFlow.value.reviewValue.text)
@@ -44,24 +75,9 @@ internal class ReviewViewModel(
             .map(String::trim)
             .filter(String::isNotEmpty)
             .joinToString(". ")
-        knowledgeBase.sendReview(
+        kbInteractor.sendReview(
             articleId,
-            review,
-            onResult = { result ->
-                setModel {
-                    when (result) {
-                        SendResult.Done -> copy(
-                            buttonLoading = false,
-                            done = UsedeskEvent(Unit)
-                        )
-                        is SendResult.Error -> copy(
-                            buttonLoading = false,
-                            error = UsedeskEvent(result.code)
-                        )
-                    }.updateButtonShowed()
-
-                }
-            }
+            review
         )
     }
 
@@ -72,8 +88,9 @@ internal class ReviewViewModel(
     )
 
     data class State(
-        val done: UsedeskEvent<Unit>? = null,
+        val goBack: UsedeskEvent<Unit>? = null,
         val error: UsedeskEvent<Int?>? = null,
+        val goBackExpected: Boolean = false,
         val clearFocus: UsedeskEvent<Unit>? = null,
         val selectedReplies: List<String> = listOf(),
         val reviewValue: TextFieldValue = TextFieldValue(),

@@ -1,8 +1,9 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskArticleContent(
+data class UsedeskArticleContent(
     val id: Long,
     val title: String,
-    val text: String,
-    val categoryId: Long
+    val categoryId: Long,
+    val viewsCount: Long,
+    val text: String
 )

@@ -18,7 +18,7 @@ import ru.usedesk.knowledgebase_gui.R
 
 var knowledgeBaseTheme: KnowledgeBaseTheme = KnowledgeBaseTheme() //TODO
 
-data class KnowledgeBaseTheme(
+data class KnowledgeBaseTheme( //TODO:
     val textStyles: TextStyles = TextStyles()
 ) {
     open class TextStyles {

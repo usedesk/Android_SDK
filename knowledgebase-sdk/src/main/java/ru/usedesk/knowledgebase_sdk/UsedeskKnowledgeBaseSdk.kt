@@ -1,13 +1,16 @@
 package ru.usedesk.knowledgebase_sdk
 
 import android.content.Context
-import ru.usedesk.knowledgebase_sdk.di.InjectBoxUsedesk
-import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.di.KbComponent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 object UsedeskKnowledgeBaseSdk {
-    private var injectBox: InjectBoxUsedesk? = null
     private var configuration: UsedeskKnowledgeBaseConfiguration? = null
+    private val mutex = Mutex()
 
     @JvmStatic
     fun setConfiguration(knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration) {
@@ -21,18 +24,20 @@ object UsedeskKnowledgeBaseSdk {
     @JvmStatic
     fun init(
         context: Context,
-        configuration: UsedeskKnowledgeBaseConfiguration? = null
-    ): IUsedeskKnowledgeBase {
-        if (configuration != null) {
+        configuration: UsedeskKnowledgeBaseConfiguration = requireConfiguration()
+    ): IUsedeskKnowledgeBase = runBlocking {
+        mutex.withLock {
             setConfiguration(configuration)
+
+            KbComponent.open(
+                context,
+                configuration
+            ).usedeskKb
         }
-        return (injectBox ?: InjectBoxUsedesk(context, requireConfiguration()).also {
-            injectBox = it
-        }).knowledgeBaseInteractor
     }
 
     @JvmStatic
-    fun getInstance(): IUsedeskKnowledgeBase? = injectBox?.knowledgeBaseInteractor
+    fun getInstance(): IUsedeskKnowledgeBase? = KbComponent.kbComponent?.usedeskKb
 
     @JvmStatic
     fun requireInstance(): IUsedeskKnowledgeBase = getInstance()
@@ -40,9 +45,10 @@ object UsedeskKnowledgeBaseSdk {
 
     @JvmStatic
     fun release() {
-        injectBox?.also {
-            it.release()
-            injectBox = null
+        runBlocking {
+            mutex.withLock {
+                KbComponent.close()
+            }
         }
     }
 }

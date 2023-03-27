@@ -19,7 +19,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
@@ -30,26 +32,24 @@ import ru.usedesk.knowledgebase_gui.screen.blocks.ContentBlocks
 import ru.usedesk.knowledgebase_gui.screen.loading.ContentLoading
 import ru.usedesk.knowledgebase_gui.screen.review.ContentReview
 import ru.usedesk.knowledgebase_gui.screen.review.REVIEW_KEY
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
-
-    private val viewModel: RootViewModel by viewModels()
+    private val viewModel: RootViewModel by viewModels(
+        factoryProducer = {
+            val configuration =
+                argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)
+                    ?: throw RuntimeException("UsedeskKnowledgeBaseConfiguration not found. Call the newInstance or createBundle method and put the configuration inside")
+            KbUiComponent.open(requireContext(), configuration)
+            KbUiViewModelFactory { RootViewModel(it.interactor) }
+        }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = ComposeView(requireContext()).apply {
-        val configuration =
-            argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KNOWLEDGE_BASE_CONFIGURATION)
-                ?: throw RuntimeException("UsedeskKnowledgeBaseConfiguration not found. Call the newInstance or createBundle method and put the configuration inside")
-        UsedeskKnowledgeBaseSdk.init(
-            requireContext(),
-            configuration
-        )
-
         setContent {
             ScreenRoot()
         }

@@ -14,11 +14,13 @@ import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ContentArticles
 import ru.usedesk.knowledgebase_gui.screen.blocks.categories.ContentCategories
+import ru.usedesk.knowledgebase_gui.screen.blocks.search.ContentSearch
 import ru.usedesk.knowledgebase_gui.screen.blocks.sections.ContentSections
 
 internal const val SECTIONS_KEY = "sections"
 internal const val CATEGORIES_KEY = "categories"
 internal const val ARTICLES_KEY = "articles"
+internal const val SEARCH_KEY = "search"
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -93,7 +95,12 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Articles -> ContentArticles(
                     viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
                     block = block,
-                    onArticleClick = remember { { onEvent(Event.ArticleClicked(it)) } }
+                    onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }
+                )
+                is State.BlocksState.Block.Search -> ContentSearch(
+                    viewModelStoreOwner = remember { { viewModelStoreFactory.get(SEARCH_KEY) } },
+                    block = block,
+                    onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }
                 )
             }
         }

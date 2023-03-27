@@ -4,34 +4,26 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.text.input.TextFieldValue
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.knowledgebase_gui._di.KbUiComponent
+import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
-import ru.usedesk.knowledgebase_sdk.domain.IUsedeskKnowledgeBase
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-internal class RootViewModel : UsedeskViewModel<State>(State()) {
-
-    private val knowledgeBase = UsedeskKnowledgeBaseSdk.requireInstance()
+internal class RootViewModel(
+    private val kbInteractor: IKnowledgeBaseInteractor
+) : UsedeskViewModel<State>(State()) {
 
     init {
-        knowledgeBase.modelFlow.launchCollect { onEvent(Event.KnowledgeBaseModel(it)) }
+        kbInteractor.sectionsModelFlow.launchCollect { onEvent(Event.KbSectionsModel(it)) }
     }
-
-    /*fun ioEvent(io: () -> Event) {//TODO: можно сделать через action
-        ioScope.launch {
-            val event = io()
-            mainScope.launch {
-                onEvent(event)
-            }
-        }
-    }*/
 
     fun onEvent(event: Event) {
         setModel {
             when (event) {
-                is Event.KnowledgeBaseModel -> knowledgeBaseModel(event)
+                is Event.KbSectionsModel -> kbSectionsModel(event)
                 is Event.SearchTextChanged -> searchTextChanged(event)
                 is Event.SectionClicked -> sectionClicked(event)
                 is Event.CategoryClicked -> categoryClicked(event)
@@ -44,7 +36,13 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
     private fun State.backPressed() = when (screen) {
         is State.Screen.Blocks -> when (val previousBlock = blocksState.block.previousBlock) {
             null -> null
-            else -> copy(blocksState = blocksState.copy(block = previousBlock))
+            else -> copy(
+                blocksState = blocksState.copy(
+                    block = previousBlock,
+                    searchText = TextFieldValue(),
+                    clearFocus = UsedeskEvent(Unit)
+                )
+            )
         }
         else -> null
     } ?: when (val previousScreen = screen.previousScreen) {
@@ -60,15 +58,13 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         return handled
     }
 
-    private fun State.knowledgeBaseModel(event: Event.KnowledgeBaseModel): State {
-        val sections = event.model.sections
-        return when (screen) {
-            is State.Screen.Loading -> when (sections) {
-                null -> copy(screen = screen.copy(loading = true))
-                else -> copy(screen = State.Screen.Blocks)
-            }
-            else -> this
+    private fun State.kbSectionsModel(event: Event.KbSectionsModel): State = when (screen) {
+        is State.Screen.Loading -> when (event.sectionsModel.loadingState) {
+            is LoadingState.Loading -> copy(screen = screen.copy(loading = true, error = false))
+            is LoadingState.Failed -> copy(screen = screen.copy(loading = false, error = true))
+            is LoadingState.Loaded -> copy(screen = State.Screen.Blocks)
         }
+        else -> this
     }
 
 
@@ -86,7 +82,6 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
         )
     )
 
-
     private fun State.categoryClicked(event: Event.CategoryClicked): State = copy(
         blocksState = blocksState.copy(
             block = State.BlocksState.Block.Articles(
@@ -100,8 +95,8 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
     private fun State.articleClicked(event: Event.ArticleClicked): State = copy(
         screen = State.Screen.Article(
             previousScreen = screen,
-            title = event.article.title,
-            articleId = event.article.id
+            title = event.articleTitle,
+            articleId = event.articleId
         )
     )
 
@@ -112,12 +107,11 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
     override fun onCleared() {
         super.onCleared()
 
-        UsedeskKnowledgeBaseSdk.release()
+        KbUiComponent.close()
     }
 
     data class State(
         val screen: Screen = Screen.Loading(),
-        val goBack: UsedeskEvent<Unit>? = null,
         val blocksState: BlocksState = BlocksState()
     ) {
 
@@ -163,7 +157,8 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
 
         data class BlocksState(
             val block: Block = Block.Sections(),
-            val searchText: TextFieldValue = TextFieldValue()
+            val searchText: TextFieldValue = TextFieldValue(),
+            val clearFocus: UsedeskEvent<Unit>? = null
         ) {
             sealed interface Block {
                 val previousBlock: Block?
@@ -189,6 +184,14 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
                     override val title: String,
                     val categoryId: Long
                 ) : Block {
+                    val lazyListState = LazyListState()
+                }
+
+                data class Search(
+                    override val previousBlock: Block
+                ) : Block {
+                    override val title: String = ""
+
                     val lazyListState = LazyListState()
                 }
 
@@ -224,12 +227,15 @@ internal class RootViewModel : UsedeskViewModel<State>(State()) {
     }
 
     sealed interface Event {
-        data class KnowledgeBaseModel(val model: IUsedeskKnowledgeBase.Model) : Event
+        data class KbSectionsModel(val sectionsModel: SectionsModel) : Event
         data class SearchTextChanged(val value: TextFieldValue) : Event
         data class SectionClicked(val section: UsedeskSection) : Event
         data class CategoryClicked(val category: UsedeskCategory) : Event
         data class GoReview(val articleId: Long) : Event
 
-        data class ArticleClicked(val article: UsedeskArticleInfo) : Event
+        data class ArticleClicked(
+            val articleId: Long,
+            val articleTitle: String
+        ) : Event
     }
 }

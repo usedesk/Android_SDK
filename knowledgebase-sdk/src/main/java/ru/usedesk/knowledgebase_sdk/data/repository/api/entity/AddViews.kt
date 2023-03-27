@@ -2,18 +2,17 @@ package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
-internal interface GetArticleContent {
+internal interface AddViews {
     class Request(
+        val token: String,
         val accountId: String,
-        val articleId: Long,
-        val token: String
-    )
+        val articleId: Long
+    ) {
+        val count: Int = 1
+    }
 
     class Response(
-        val id: Long? = null,
-        val title: String? = null,
-        val text: String? = null,
-        val categoryId: String? = null,
+        val res: Long? = null,
         val views: Long? = null
     ) : UsedeskApiError()
 }

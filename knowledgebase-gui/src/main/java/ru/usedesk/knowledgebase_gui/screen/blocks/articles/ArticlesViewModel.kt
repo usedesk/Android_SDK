@@ -1,21 +1,24 @@
 package ru.usedesk.knowledgebase_gui.screen.blocks.articles
 
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ArticlesViewModel.State
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 internal class ArticlesViewModel(
+    private val kbInteractor: IKnowledgeBaseInteractor,
     private val categoryId: Long
 ) : UsedeskViewModel<State>(State()) {
 
-    private val knowledgeBase = UsedeskKnowledgeBaseSdk.requireInstance()
-
     init {
-        knowledgeBase.modelFlow.launchCollect { model ->
+        kbInteractor.sectionsModelFlow.launchCollect { sectionsModel ->
             setModel {
                 copy(
-                    articles = model.categoriesMap
+                    articles = (sectionsModel.loadingState as? LoadingState.Loaded<SectionsModel.Data>)
+                        ?.data
+                        ?.categoriesMap
                         ?.get(categoryId)
                         ?.articles
                         ?: articles

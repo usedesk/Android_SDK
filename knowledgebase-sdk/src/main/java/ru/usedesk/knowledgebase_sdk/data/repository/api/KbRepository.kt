@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IKnowledgeBaseApi.*
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.*
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
 import ru.usedesk.knowledgebase_sdk.entity.*
 import javax.inject.Inject
 
-internal class KnowledgeBaseApi @Inject constructor(
+internal class KbRepository @Inject constructor(
     private val configuration: UsedeskKnowledgeBaseConfiguration,
     multipartConverter: IUsedeskMultipartConverter,
     apiFactory: IUsedeskApiFactory,
@@ -19,7 +19,7 @@ internal class KnowledgeBaseApi @Inject constructor(
     multipartConverter,
     gson,
     ApiRetrofit::class.java
-), IKnowledgeBaseApi {
+), IUsedeskKnowledgeBase {
 
     private fun Array<CategoryResponse?>.convert() = mapNotNull { categoryResponse ->
         valueOrNull {
@@ -113,7 +113,7 @@ internal class KnowledgeBaseApi @Inject constructor(
         }
     }.flatten()
 
-    override suspend fun getSections(): GetSectionsResponse {
+    override fun getSections(): GetSectionsResponse {
         val request = LoadSections.Request(
             configuration.token,
             configuration.accountId
@@ -131,7 +131,7 @@ internal class KnowledgeBaseApi @Inject constructor(
         }
     }
 
-    override suspend fun getArticle(articleId: Long): GetArticleResponse {
+    override fun getArticle(articleId: Long): GetArticleResponse {
         val request = GetArticleContent.Request(
             configuration.accountId,
             articleId,
@@ -154,50 +154,67 @@ internal class KnowledgeBaseApi @Inject constructor(
         }
     }
 
-    override fun getArticles(searchQueryRequest: SearchQueryRequest): List<UsedeskArticleContent> {
-        val articlesSearchResponse = doRequest(
+    override fun getArticles(query: String): GetArticlesResponse {
+        val request = GetArticles.Request(
+            query = query
+        )
+        val response = doRequestJson(
             configuration.urlApi,
-            ArticlesSearchResponse::class.java
-        ) {
+            request,
+            GetArticles.Response::class.java
+        ) { request ->
             getArticles(
                 configuration.accountId,
                 configuration.token,
-                searchQueryRequest.query,
-                searchQueryRequest.count,
-                searchQueryRequest.sectionIds?.joinToString(","),
-                searchQueryRequest.categoryIds?.joinToString(","),
-                searchQueryRequest.articleIds?.joinToString(","),
-                searchQueryRequest.page,
-                searchQueryRequest.type?.name?.lowercase(),
-                searchQueryRequest.sort?.name?.lowercase(),
-                searchQueryRequest.order?.name?.lowercase()
+                request.query,
+                request.count,
+                request.sectionIds?.joinToString(","),
+                request.categoryIds?.joinToString(","),
+                request.articleIds?.joinToString(","),
+                request.page,
+                request.type?.name?.lowercase(),
+                request.sort?.name?.lowercase(),
+                request.order?.name?.lowercase()
             )
         }
 
-        return (articlesSearchResponse.articles ?: arrayOf())
-            .mapNotNull { it?.convert() }
+        return when (response?.articles) {
+            null -> GetArticlesResponse.Error(response?.code)
+            else -> GetArticlesResponse.Done(response.articles.mapNotNull { it?.convert() })
+        }
     }
 
     private fun GetArticleContent.Response.convert() = valueOrNull {
         UsedeskArticleContent(
             id!!,
             title ?: "",
-            text ?: "",
-            categoryId?.toLongOrNull()!!
+            categoryId?.toLongOrNull()!!,
+            views ?: 0,
+            text ?: ""
         )
     }
 
-    override fun addViews(articleId: Long) {
-        doRequest(
+    override fun addViews(articleId: Long): AddViewsResponse {
+        val request = AddViews.Request(
+            configuration.token,
+            configuration.accountId,
+            articleId
+        )
+        val response = doRequestJson(
             configuration.urlApi,
-            AddViewsResponse::class.java
-        ) {
+            request,
+            AddViews.Response::class.java
+        ) { request ->
             addViews(
-                configuration.accountId,
-                articleId,
-                configuration.token,
-                1
+                request.accountId,
+                request.articleId,
+                request.token,
+                request.count
             )
+        }
+        return when (response?.views) {
+            null -> AddViewsResponse.Error(response?.code)
+            else -> AddViewsResponse.Done(response.views)
         }
     }
 

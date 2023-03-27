@@ -1,10 +1,9 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks.sections
+package ru.usedesk.knowledgebase_gui.screen.blocks.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -13,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -29,7 +27,7 @@ import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 @Preview
 @Composable
@@ -39,23 +37,26 @@ private fun Preview() {
             .fillMaxSize()
             .background(colorResource(R.color.usedesk_white_2))
     ) {
-        ContentSections(
+        ContentSearch(
             viewModelStoreOwner = remember { { ViewModelStore() } },
-            block = BlocksState.Block.Sections(),
-            onSectionClicked = {}
+            block = BlocksState.Block.Search(
+                BlocksState.Block.Sections()
+            ),
+            onArticleClick = {}
         )
     }
 }
 
 @Composable
-internal fun ContentSections(
+internal fun ContentSearch(
     viewModelStoreOwner: ViewModelStoreOwner,
-    block: BlocksState.Block.Sections,
-    onSectionClicked: (UsedeskSection) -> Unit
+    block: BlocksState.Block.Search,
+    onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
-    val viewModel = kbUiViewModel(
-        viewModelStoreOwner = viewModelStoreOwner
-    ) { kbUiComponent -> SectionsViewModel(kbUiComponent.interactor) }
+    val viewModel =
+        kbUiViewModel(
+            viewModelStoreOwner = viewModelStoreOwner
+        ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumn(
         modifier = Modifier
@@ -66,55 +67,30 @@ internal fun ContentSections(
         state = block.lazyListState
     ) {
         items(
-            items = state.sections,
-            key = UsedeskSection::id
+            items = state.articles,
+            key = UsedeskArticleContent::id
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .cardItem(
-                        isTop = it == state.sections.firstOrNull(),
-                        isBottom = it == state.sections.lastOrNull()
+                        isTop = it == state.articles.firstOrNull(),
+                        isBottom = it == state.articles.lastOrNull()
                     )
                     .clickableItem(
-                        onClick = remember { { onSectionClicked(it) } }
+                        onClick = remember { { onArticleClick(it) } }
                     )
                     .padding(
-                        start = 10.dp,
+                        start = 20.dp,
                         end = 10.dp,
                         top = 8.dp,
                         bottom = 8.dp
                     )
             ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(color = colorResource(R.color.usedesk_gray_cold_1))
-                ) {
-                    BasicText(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        text = remember(it.title) {
-                            it.title
-                                .firstOrNull(Char::isLetterOrDigit)
-                                ?.uppercase()
-                                ?: ""
-                        },
-                        style = TextStyle(
-                            fontSize = 17.sp,
-                            color = colorResource(R.color.usedesk_black_2)
-                        )
-                    )
-                }
                 BasicText(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(
-                            start = 10.dp,
-                            end = 10.dp
-                        )
+                        .padding(end = 10.dp)
                         .weight(weight = 1f, fill = true),
                     style = TextStyle(
                         fontSize = 17.sp,
@@ -126,6 +102,10 @@ internal fun ContentSections(
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
+                        .padding(
+                            top = 16.dp,
+                            bottom = 16.dp
+                        )
                         .size(24.dp),
                     painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
                     tint = Color.Unspecified,

@@ -5,18 +5,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 
 @Composable
-internal inline fun <reified T : ViewModel> composeViewModel(
+internal inline fun <reified T : ViewModel> kbUiViewModel(
     key: String? = null,
     viewModelStoreOwner: ViewModelStoreOwner,
-    crossinline viewModelInstanceCreator: () -> T
+    crossinline createInstance: (KbUiComponent) -> T
 ): T = viewModel(
     modelClass = T::class.java,
     key = key,
     viewModelStoreOwner = viewModelStoreOwner,
-    factory = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            viewModelInstanceCreator() as T
-    }
+    factory = KbUiViewModelFactory { createInstance(it) }
 )
+
+internal class KbUiViewModelFactory<T : ViewModel>(
+    private val createInstance: (KbUiComponent) -> T
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        createInstance(KbUiComponent.require()) as T
+}

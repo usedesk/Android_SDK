@@ -202,10 +202,6 @@ internal fun CustomToolbar(
             }
         )
     }
-
-    /*LaunchedEffect(title) {//TODO: проверить, может он нужен
-        scrollBehavior.state.snapToolbar()
-    }*/
 }
 
 

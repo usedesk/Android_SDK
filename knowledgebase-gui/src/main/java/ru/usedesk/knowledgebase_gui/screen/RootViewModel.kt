@@ -23,14 +23,18 @@ internal class RootViewModel(
     fun onEvent(event: Event) {
         setModel {
             when (event) {
+                is Event.TryAgain -> tryAgain()
                 is Event.KbSectionsModel -> kbSectionsModel(event)
                 is Event.SearchTextChanged -> searchTextChanged(event)
+                is Event.SearchClicked -> searchClicked()
+                is Event.SearchClearClicked -> searchClearClicked()
+                is Event.SearchCancelClicked -> searchCancelClicked()
                 is Event.SectionClicked -> sectionClicked(event)
                 is Event.CategoryClicked -> categoryClicked(event)
                 is Event.ArticleClicked -> articleClicked(event)
                 is Event.GoReview -> articleRatingClicked(event)
             }
-        }
+        }.useAction()
     }
 
     private fun State.backPressed() = when (screen) {
@@ -53,16 +57,50 @@ internal class RootViewModel(
     fun onBackPressed(): Boolean {
         var handled = false
         setModel {
-            backPressed()?.also { handled = true } ?: this
+            backPressed()
+                ?.copy(clearFocus = UsedeskEvent(Unit))
+                ?.also { handled = true }
+                ?: this
         }
         return handled
     }
 
+    private fun State.tryAgain(): State = copy(
+        action = UsedeskEvent {
+            kbInteractor.loadSections(true)
+        }
+    )
+
+    private fun State.searchClicked(): State = copy(
+        blocksState = blocksState.copy(
+            block = when (blocksState.block) {
+                is State.BlocksState.Block.Search -> blocksState.block
+                else -> State.BlocksState.Block.Search(blocksState.block)
+            }
+        ),
+        clearFocus = UsedeskEvent(Unit),
+        action = UsedeskEvent {
+            kbInteractor.loadArticles(blocksState.searchText.text)
+        }
+    )
+
+    private fun State.searchClearClicked(): State = copy(
+        blocksState = blocksState.copy(searchText = TextFieldValue())
+    )
+
+
+    private fun State.searchCancelClicked(): State = copy(
+        blocksState = blocksState.copy(
+            searchText = TextFieldValue(),
+            block = blocksState.block.previousBlock ?: State.BlocksState.Block.Sections()
+        ),
+        clearFocus = UsedeskEvent(Unit)
+    )
+
     private fun State.kbSectionsModel(event: Event.KbSectionsModel): State = when (screen) {
         is State.Screen.Loading -> when (event.sectionsModel.loadingState) {
-            is LoadingState.Loading -> copy(screen = screen.copy(loading = true, error = false))
-            is LoadingState.Failed -> copy(screen = screen.copy(loading = false, error = true))
             is LoadingState.Loaded -> copy(screen = State.Screen.Blocks)
+            else -> this
         }
         else -> this
     }
@@ -111,17 +149,18 @@ internal class RootViewModel(
     }
 
     data class State(
-        val screen: Screen = Screen.Loading(),
-        val blocksState: BlocksState = BlocksState()
+        val screen: Screen = Screen.Loading,
+        val blocksState: BlocksState = BlocksState(),
+        val clearFocus: UsedeskEvent<Unit>? = null,
+        private val action: UsedeskEvent<() -> Unit>? = null
     ) {
+
+        fun useAction() = action?.use { it() }
 
         sealed interface Screen {
             val previousScreen: Screen?
 
-            data class Loading(
-                val loading: Boolean = true,
-                val error: Boolean = false
-            ) : Screen {
+            object Loading : Screen {
                 override val previousScreen = null
             }
 
@@ -227,8 +266,12 @@ internal class RootViewModel(
     }
 
     sealed interface Event {
+        object TryAgain : Event
         data class KbSectionsModel(val sectionsModel: SectionsModel) : Event
         data class SearchTextChanged(val value: TextFieldValue) : Event
+        object SearchClicked : Event
+        object SearchCancelClicked : Event
+        object SearchClearClicked : Event
         data class SectionClicked(val section: UsedeskSection) : Event
         data class CategoryClicked(val category: UsedeskCategory) : Event
         data class GoReview(val articleId: Long) : Event

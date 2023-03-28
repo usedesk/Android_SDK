@@ -95,7 +95,7 @@ private fun ArticleBlock(
                         modifier = Modifier
                             .align(Alignment.Center)
                             .padding(16.dp)
-                            .size(24.dp)
+                            .size(32.dp)
                     )
                 }
             }

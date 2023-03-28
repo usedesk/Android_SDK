@@ -70,6 +70,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     private fun launchArticlesJob(query: String) {
         loadArticlesJob?.cancel()
         loadArticlesJob = ioScope.launch {
+            delay(10000) //TODO
             val response = knowledgeRepository.getArticles(query)
             articlesModelFlow.updateWithLock {
                 when (response) {

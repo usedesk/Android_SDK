@@ -13,9 +13,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui.R
@@ -30,6 +32,7 @@ import ru.usedesk.knowledgebase_gui.screen.article.ARTICLE_KEY
 import ru.usedesk.knowledgebase_gui.screen.article.ContentArticle
 import ru.usedesk.knowledgebase_gui.screen.blocks.ContentBlocks
 import ru.usedesk.knowledgebase_gui.screen.loading.ContentLoading
+import ru.usedesk.knowledgebase_gui.screen.loading.LOADING_KEY
 import ru.usedesk.knowledgebase_gui.screen.review.ContentReview
 import ru.usedesk.knowledgebase_gui.screen.review.REVIEW_KEY
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
@@ -58,6 +61,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     @Composable
     private fun ScreenRoot() {
         val state by viewModel.modelFlow.collectAsState()
+
+        val focusManager = LocalFocusManager.current
+        state.clearFocus?.use { focusManager.clearFocus() }
+
         val onEvent = viewModel::onEvent
         val title = when (val screen = state.screen) {
             is State.Screen.Loading -> null
@@ -74,14 +81,26 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 .background(colorResource(R.color.usedesk_white_2))
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
-            CustomToolbar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(colorResource(R.color.usedesk_white_2)),
-                title = title,
-                scrollBehavior = scrollBehavior,
-                onBackPressed = requireActivity()::onBackPressed
-            )
+            Crossfade(
+                modifier = Modifier.animateContentSize(),
+                targetState = state.blocksState.block !is State.BlocksState.Block.Search
+            ) { visibleToolbar ->
+                when {
+                    visibleToolbar -> CustomToolbar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(colorResource(R.color.usedesk_white_2)),
+                        title = title,
+                        scrollBehavior = scrollBehavior,
+                        onBackPressed = requireActivity()::onBackPressed
+                    )
+                    else -> Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(16.dp)
+                    )
+                }
+            }
             Content(
                 state = state,
                 onEvent = onEvent
@@ -139,11 +158,12 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             }) { screen ->
             when (screen) {
                 is State.Screen.Loading -> ContentLoading(
-                    screen = screen,
-                    onEvent = onEvent
+                    viewModelStoreFactory = viewModelStoreFactory,
+                    tryAgain = remember { { onEvent(Event.TryAgain) } }
                 )
                 is State.Screen.Blocks -> {
                     LaunchedEffect(Unit) {
+                        viewModelStoreFactory.clear(LOADING_KEY)
                         viewModelStoreFactory.clear(ARTICLE_KEY)
                     }
                     ContentBlocks(

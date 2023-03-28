@@ -1,7 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen.blocks.search
 
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State
@@ -17,14 +16,14 @@ internal class SearchViewModel(
             setModel {
                 when (articlesModel.loadingState) {
                     is LoadingState.Failed -> copy(
+                        empty = false,
                         loading = false,
-                        error = when (lastLoadingState) {
-                            articlesModel.loadingState -> null
-                            else -> UsedeskEvent(Unit)
-                        }
+                        error = lastLoadingState != articlesModel.loadingState
                     )
                     is LoadingState.Loaded -> copy(
+                        empty = articlesModel.loadingState.data.isEmpty(),
                         loading = false,
+                        error = false,
                         articles = articlesModel.loadingState.data
                     )
                     is LoadingState.Loading -> copy(
@@ -36,13 +35,17 @@ internal class SearchViewModel(
         }
     }
 
-    fun onQuery(query: String) {
-        kbInteractor.loadArticles(query)
+    fun tryAgain() {
+        kbInteractor.loadArticles(
+            query = kbInteractor.articlesModelFlow.value.query,
+            reload = true
+        )
     }
 
     data class State(
         val articles: List<UsedeskArticleContent> = listOf(),
+        val empty: Boolean = false,
         val loading: Boolean = true,
-        val error: UsedeskEvent<Unit>? = null
+        val error: Boolean = false
     )
 }

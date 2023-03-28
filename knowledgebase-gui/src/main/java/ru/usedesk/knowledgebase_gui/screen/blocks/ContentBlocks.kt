@@ -58,7 +58,13 @@ internal fun ContentBlocks(
     Column(modifier = Modifier) {
         SearchBar(
             value = state.searchText,
-            onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } }
+            onClearClick = remember { { onEvent(Event.SearchClearClicked) } },
+            onCancelClick = when (state.block) {
+                is State.BlocksState.Block.Search -> remember { { onEvent(Event.SearchCancelClicked) } }
+                else -> null
+            },
+            onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } },
+            onSearch = remember { { onEvent(Event.SearchClicked) } }
         )
         AnimatedContent(
             targetState = state.block,

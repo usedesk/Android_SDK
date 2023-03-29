@@ -13,12 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.ScreenNotLoaded
 
 internal const val LOADING_KEY = "article"
 
 @Composable
 internal fun ContentLoading(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreFactory: ViewModelStoreFactory,
     tryAgain: () -> Unit
 ) {
@@ -28,6 +30,7 @@ internal fun ContentLoading(
     val state by viewModel.modelFlow.collectAsState()
     when {
         state.error -> ScreenNotLoaded(
+            customization = customization,
             loading = state.loading,
             tryAgain = tryAgain
         )

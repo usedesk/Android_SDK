@@ -13,7 +13,7 @@ internal class CategoriesViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        kbInteractor.sectionsModelFlow.launchCollect { sectionsModel ->
+        kbInteractor.loadSections().launchCollect { sectionsModel ->
             setModel {
                 copy(
                     categories = (sectionsModel.loadingState as? LoadingState.Loaded<SectionsModel.Data>)

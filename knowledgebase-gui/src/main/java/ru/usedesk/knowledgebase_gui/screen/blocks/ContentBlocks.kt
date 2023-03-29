@@ -12,6 +12,7 @@ import ru.usedesk.knowledgebase_gui.compose.SearchBar
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ContentArticles
 import ru.usedesk.knowledgebase_gui.screen.blocks.categories.ContentCategories
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.ContentSearch
@@ -25,6 +26,7 @@ internal const val SEARCH_KEY = "search"
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ContentBlocks(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreFactory: ViewModelStoreFactory,
     state: State.BlocksState,
     onEvent: (Event) -> Unit
@@ -57,6 +59,7 @@ internal fun ContentBlocks(
 
     Column(modifier = Modifier) {
         SearchBar(
+            customization = customization,
             value = state.searchText,
             onClearClick = remember { { onEvent(Event.SearchClearClicked) } },
             onCancelClick = when (state.block) {
@@ -82,7 +85,10 @@ internal fun ContentBlocks(
                         viewModelStoreFactory.clear(CATEGORIES_KEY)
                     }
                     ContentSections(
-                        viewModelStoreOwner = remember { { viewModelStoreFactory.get(SECTIONS_KEY) } },
+                        customization = customization,
+                        viewModelStoreOwner = remember {
+                            { viewModelStoreFactory.get(SECTIONS_KEY) }
+                        },
                         block = block,
                         onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                     )
@@ -92,18 +98,22 @@ internal fun ContentBlocks(
                         viewModelStoreFactory.clear(ARTICLES_KEY)
                     }
                     ContentCategories(
-                        viewModelStoreOwner =
-                        remember { { viewModelStoreFactory.get(CATEGORIES_KEY) } },
+                        customization = customization,
+                        viewModelStoreOwner = remember {
+                            { viewModelStoreFactory.get(CATEGORIES_KEY) }
+                        },
                         block = block,
                         onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                     )
                 }
                 is State.BlocksState.Block.Articles -> ContentArticles(
+                    customization = customization,
                     viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
                     block = block,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }
                 )
                 is State.BlocksState.Block.Search -> ContentSearch(
+                    customization = customization,
                     viewModelStoreOwner = remember { { viewModelStoreFactory.get(SEARCH_KEY) } },
                     block = block,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }

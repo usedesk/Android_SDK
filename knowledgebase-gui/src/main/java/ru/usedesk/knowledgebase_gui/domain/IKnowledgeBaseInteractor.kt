@@ -10,18 +10,15 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal interface IKnowledgeBaseInteractor {
-    val sectionsModelFlow: StateFlow<SectionsModel>
-    val articlesModelFlow: StateFlow<ArticlesModel>
-    val articleModelFlow: StateFlow<ArticleModel>
-
-    fun loadSections(reload: Boolean = false)
+    fun loadSections(): StateFlow<SectionsModel>
 
     fun loadArticles(
-        query: String,
+        query: String? = null,
+        nextPage: Boolean = false,
         reload: Boolean = false
-    )
+    ): StateFlow<ArticlesModel>
 
-    fun loadArticle(articleId: Long)
+    fun loadArticle(articleId: Long): StateFlow<ArticleModel>
 
     fun addViews(articleId: Long)
 
@@ -37,18 +34,20 @@ internal interface IKnowledgeBaseInteractor {
 
     data class ArticleModel(
         val articleId: Long = 0L,
-        val loadingState: LoadingState<UsedeskArticleContent> = LoadingState.Loading(),
+        val loadingState: LoadingState<UsedeskArticleContent> = LoadingState.Loading(loading = false),
         val ratingState: RatingState = RatingState.Required,
         val reviewState: ReviewState = ReviewState.Required
     )
 
     data class ArticlesModel(
         val query: String = "",
-        val loadingState: LoadingState<List<UsedeskArticleContent>> = LoadingState.Loading()
+        val loadingState: LoadingState<List<UsedeskArticleContent>> = LoadingState.Loading(loading = false),
+        val page: Long = 0,
+        val hasNextPage: Boolean = true
     )
 
     data class SectionsModel(
-        val loadingState: LoadingState<Data> = LoadingState.Loading()
+        val loadingState: LoadingState<Data> = LoadingState.Loading(loading = false)
     ) {
         data class Data(
             val sections: List<UsedeskSection>

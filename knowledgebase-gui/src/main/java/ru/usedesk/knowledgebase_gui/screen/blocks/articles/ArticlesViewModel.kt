@@ -13,7 +13,7 @@ internal class ArticlesViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        kbInteractor.sectionsModelFlow.launchCollect { sectionsModel ->
+        kbInteractor.loadSections().launchCollect { sectionsModel ->
             setModel {
                 copy(
                     articles = (sectionsModel.loadingState as? LoadingState.Loaded<SectionsModel.Data>)

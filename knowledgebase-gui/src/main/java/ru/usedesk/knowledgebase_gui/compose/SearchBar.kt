@@ -1,6 +1,8 @@
 package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -29,10 +32,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun SearchBar(
+    customization: UsedeskKnowledgeBaseCustomization,
     value: TextFieldValue,
     onClearClick: () -> Unit,
     onCancelClick: (() -> Unit)?,
@@ -52,9 +57,9 @@ internal fun SearchBar(
                     bottom = 16.dp
                 )
                 .clip(RoundedCornerShape(10.dp))
-                .background(colorResource(R.color.usedesk_gray_12))
+                .background(colorResource(customization.colorIdGray1))
                 .padding(
-                    start = 8.dp,
+                    start = 6.dp,
                     end = 8.dp,
                     top = 6.dp,
                     bottom = 6.dp
@@ -63,29 +68,23 @@ internal fun SearchBar(
         ) {
             Icon(
                 modifier = Modifier
-                    .padding(end = 2.dp)
+                    .padding(end = 4.dp)
                     .size(20.dp),
                 painter = painterResource(R.drawable.usedesk_ic_search),
                 tint = Color.Unspecified,
                 contentDescription = null
             )
-            BasicTextField(
-                modifier = Modifier
-                    .weight(weight = 1f, fill = true),
+            ComposeTextField(
+                modifier = Modifier.weight(weight = 1f, fill = true),
+                fieldModifier = Modifier.fillMaxWidth(),
                 value = value,
-                onValueChange = onValueChange,
-                textStyle = TextStyle(
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 17.sp,
-                    color = colorResource(R.color.usedesk_black_3)
-                ),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction = ImeAction.Search
-                ),
-                keyboardActions = KeyboardActions(onSearch = remember { { onSearch() } })
+                placeholder = stringResource(customization.textIdSearchPlaceholder),
+                textStyle = customization.textStyleSearch(),
+                fieldTextColor = colorResource(customization.colorIdBlack2),
+                placeholderTextColor = colorResource(customization.colorIdGray3),
+                imeAction = ImeAction.Search,
+                keyboardActions = KeyboardActions(onSearch = remember { { onSearch() } }),
+                onValueChange = onValueChange
             )
             AnimatedVisibility(
                 value.text.isNotEmpty(),
@@ -118,16 +117,60 @@ internal fun SearchBar(
                             end = 16.dp
                         )
                         .clickableArea(onClick = it),
-                    text = stringResource(R.string.usedesk_cancel),
+                    text = stringResource(customization.textIdSearchCancel),
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,
                         fontWeight = FontWeight.Normal,
                         fontSize = 17.sp,
-                        color = colorResource(R.color.usedesk_blue),
+                        color = colorResource(customization.colorIdBlue),
                         textAlign = TextAlign.Center
                     )
                 )
             }
+        }
+    }
+}
+
+@Composable
+internal fun ComposeTextField(
+    modifier: Modifier = Modifier,
+    fieldModifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    value: TextFieldValue,
+    placeholder: String,
+    textStyle: TextStyle,
+    fieldTextColor: Color,
+    placeholderTextColor: Color,
+    imeAction: ImeAction = ImeAction.Done,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    onValueChange: (TextFieldValue) -> Unit,
+    onFocusChanged: (Boolean) -> Unit = remember { {} }
+) {
+    Box(modifier = modifier) {
+        BasicTextField(
+            modifier = fieldModifier.onFocusChanged(remember { { onFocusChanged(it.isFocused) } }),
+            value = value,
+            onValueChange = onValueChange,
+            enabled = enabled,
+            textStyle = textStyle.copy(color = fieldTextColor),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Sentences,
+                imeAction = imeAction
+            ),
+            keyboardActions = keyboardActions
+        )
+
+        AnimatedVisibility(
+            modifier = Modifier,
+            visible = value.text.isEmpty(),
+            enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)) + slideInHorizontally { it / 10 },
+            exit = fadeOut(spring(stiffness = Spring.StiffnessMedium)) + slideOutHorizontally { it / 10 }
+        ) {
+            BasicText(
+                modifier = fieldModifier,
+                text = placeholder,
+                style = textStyle.copy(color = placeholderTextColor)
+            )
         }
     }
 }

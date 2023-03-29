@@ -154,9 +154,13 @@ internal class KbRepository @Inject constructor(
         }
     }
 
-    override fun getArticles(query: String): GetArticlesResponse {
+    override fun getArticles(
+        query: String,
+        page: Long
+    ): GetArticlesResponse {
         val request = GetArticles.Request(
-            query = query
+            query = query,
+            page = page
         )
         val response = doRequestJson(
             configuration.urlApi,

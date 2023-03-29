@@ -17,11 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.R
@@ -29,17 +26,20 @@ import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
 @Composable
 private fun Preview() {
+    val customization = UsedeskKnowledgeBaseCustomization()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.usedesk_white_2))
+            .background(colorResource(customization.colorIdWhite2))
     ) {
         ContentSections(
+            customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             block = BlocksState.Block.Sections(),
             onSectionClicked = {}
@@ -49,6 +49,7 @@ private fun Preview() {
 
 @Composable
 internal fun ContentSections(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
     block: BlocksState.Block.Sections,
     onSectionClicked: (UsedeskSection) -> Unit
@@ -73,6 +74,7 @@ internal fun ContentSections(
                 modifier = Modifier
                     .fillMaxWidth()
                     .cardItem(
+                        customization = customization,
                         isTop = it == state.sections.firstOrNull(),
                         isBottom = it == state.sections.lastOrNull()
                     )
@@ -91,7 +93,7 @@ internal fun ContentSections(
                         .align(Alignment.CenterVertically)
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(color = colorResource(R.color.usedesk_gray_cold_1))
+                        .background(color = colorResource(customization.colorIdGrayCold1))
                 ) {
                     BasicText(
                         modifier = Modifier
@@ -102,10 +104,7 @@ internal fun ContentSections(
                                 ?.uppercase()
                                 ?: ""
                         },
-                        style = TextStyle(
-                            fontSize = 17.sp,
-                            color = colorResource(R.color.usedesk_black_2)
-                        )
+                        style = customization.textStyleSectionTitleItem()
                     )
                 }
                 BasicText(
@@ -116,11 +115,7 @@ internal fun ContentSections(
                             end = 10.dp
                         )
                         .weight(weight = 1f, fill = true),
-                    style = TextStyle(
-                        fontSize = 17.sp,
-                        textAlign = TextAlign.Start,
-                        color = colorResource(R.color.usedesk_black_2)
-                    ),
+                    style = customization.textStyleSectionTextItem(),
                     text = it.title
                 )
                 Icon(

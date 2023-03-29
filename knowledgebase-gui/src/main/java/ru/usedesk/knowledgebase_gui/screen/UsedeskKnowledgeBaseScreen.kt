@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
@@ -54,12 +53,13 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         savedInstanceState: Bundle?
     ) = ComposeView(requireContext()).apply {
         setContent {
-            ScreenRoot()
+            val customization = remember { UsedeskKnowledgeBaseCustomization.provider() }
+            ScreenRoot(customization)
         }
     }
 
     @Composable
-    private fun ScreenRoot() {
+    private fun ScreenRoot(customization: UsedeskKnowledgeBaseCustomization) {
         val state by viewModel.modelFlow.collectAsState()
 
         val focusManager = LocalFocusManager.current
@@ -70,15 +70,15 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             is State.Screen.Loading -> null
             State.Screen.Blocks -> state.blocksState.block.title
             is State.Screen.Article -> screen.title
-            is State.Screen.Review -> stringResource(R.string.usedesk_string_rating_whats_wrong) //TODO
-        } ?: stringResource(R.string.usedesk_knowledgebase)
+            is State.Screen.Review -> stringResource(customization.textIdArticleReviewTitle)
+        } ?: stringResource(customization.textIdSectionsTitle)
 
         val scrollBehavior = rememberToolbarScrollBehavior()
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorResource(R.color.usedesk_white_2))
+                .background(colorResource(customization.colorIdWhite2))
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             Crossfade(
@@ -89,7 +89,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     visibleToolbar -> CustomToolbar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(colorResource(R.color.usedesk_white_2)),
+                            .background(colorResource(customization.colorIdWhite2)),
                         title = title,
                         scrollBehavior = scrollBehavior,
                         onBackPressed = requireActivity()::onBackPressed
@@ -102,6 +102,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 }
             }
             Content(
+                customization = customization,
                 state = state,
                 onEvent = onEvent
             )
@@ -111,6 +112,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     private fun Content(
+        customization: UsedeskKnowledgeBaseCustomization,
         state: State,
         onEvent: (Event) -> Unit
     ) {
@@ -158,6 +160,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             }) { screen ->
             when (screen) {
                 is State.Screen.Loading -> ContentLoading(
+                    customization = customization,
                     viewModelStoreFactory = viewModelStoreFactory,
                     tryAgain = remember { { onEvent(Event.TryAgain) } }
                 )
@@ -167,6 +170,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         viewModelStoreFactory.clear(ARTICLE_KEY)
                     }
                     ContentBlocks(
+                        customization = customization,
                         viewModelStoreFactory = viewModelStoreFactory,
                         state = state.blocksState,
                         onEvent = onEvent
@@ -177,6 +181,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         viewModelStoreFactory.clear(REVIEW_KEY)
                     }
                     ContentArticle(
+                        customization = customization,
                         viewModelStoreFactory = viewModelStoreFactory,
                         articleId = screen.articleId,
                         onWebUrl = remember {
@@ -188,6 +193,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     )
                 }
                 is State.Screen.Review -> ContentReview(
+                    customization = customization,
                     viewModelStoreFactory = viewModelStoreFactory,
                     articleId = screen.articleId,
                     goBack = viewModel::onBackPressed

@@ -14,7 +14,7 @@ internal class ReviewViewModel(
 
     init {
         var lastReviewState: ReviewState? = null
-        kbInteractor.articleModelFlow.launchCollect { articleModel ->
+        kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
             setModel {
                 when (articleModel.reviewState) {
                     ReviewState.Required -> copy(

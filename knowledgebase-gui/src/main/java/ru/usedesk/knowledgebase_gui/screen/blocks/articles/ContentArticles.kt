@@ -27,17 +27,20 @@ import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 @Preview
 @Composable
 private fun Preview() {
+    val customization = UsedeskKnowledgeBaseCustomization()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.usedesk_white_2))
+            .background(colorResource(customization.colorIdWhite2))
     ) {
         ContentArticles(
+            customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             block = BlocksState.Block.Articles(
                 BlocksState.Block.Sections(),
@@ -51,6 +54,7 @@ private fun Preview() {
 
 @Composable
 internal fun ContentArticles(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
     block: BlocksState.Block.Articles,
     onArticleClick: (UsedeskArticleInfo) -> Unit
@@ -77,6 +81,7 @@ internal fun ContentArticles(
                 modifier = Modifier
                     .fillMaxWidth()
                     .cardItem(
+                        customization = customization,
                         isTop = it == state.articles.firstOrNull(),
                         isBottom = it == state.articles.lastOrNull()
                     )
@@ -98,7 +103,7 @@ internal fun ContentArticles(
                     style = TextStyle(
                         fontSize = 17.sp,
                         textAlign = TextAlign.Start,
-                        color = colorResource(R.color.usedesk_black_2)
+                        color = colorResource(customization.colorIdBlack2)
                     ),
                     text = it.title
                 )

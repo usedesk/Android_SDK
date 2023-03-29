@@ -22,7 +22,10 @@ interface IUsedeskKnowledgeBase {
     }
 
     @CheckResult
-    fun getArticles(query: String): GetArticlesResponse
+    fun getArticles(
+        query: String,
+        page: Long
+    ): GetArticlesResponse
 
     sealed interface GetArticlesResponse {
         class Done(val articles: List<UsedeskArticleContent>) : GetArticlesResponse

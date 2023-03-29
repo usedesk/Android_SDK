@@ -17,7 +17,7 @@ internal class RootViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        kbInteractor.sectionsModelFlow.launchCollect { onEvent(Event.KbSectionsModel(it)) }
+        kbInteractor.loadSections().launchCollect { onEvent(Event.KbSectionsModel(it)) }
     }
 
     fun onEvent(event: Event) {
@@ -67,7 +67,7 @@ internal class RootViewModel(
 
     private fun State.tryAgain(): State = copy(
         action = UsedeskEvent {
-            kbInteractor.loadSections(true)
+            kbInteractor.loadSections()
         }
     )
 
@@ -80,7 +80,11 @@ internal class RootViewModel(
         ),
         clearFocus = UsedeskEvent(Unit),
         action = UsedeskEvent {
-            kbInteractor.loadArticles(blocksState.searchText.text)
+            kbInteractor.loadArticles(
+                blocksState.searchText.text,
+                nextPage = false,
+                reload = true
+            )
         }
     )
 

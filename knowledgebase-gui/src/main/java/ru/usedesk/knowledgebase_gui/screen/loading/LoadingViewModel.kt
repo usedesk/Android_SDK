@@ -10,15 +10,12 @@ internal class LoadingViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        kbInteractor.sectionsModelFlow.launchCollect { sectionsModel ->
+        kbInteractor.loadSections().launchCollect { sectionsModel ->
             setModel {
                 when (sectionsModel.loadingState) {
                     is LoadingState.Loading -> copy(
-                        loading = true
-                    )
-                    is LoadingState.Failed -> copy(
-                        error = true,
-                        loading = false
+                        loading = sectionsModel.loadingState.loading,
+                        error = sectionsModel.loadingState.error
                     )
                     is LoadingState.Loaded -> this
                 }

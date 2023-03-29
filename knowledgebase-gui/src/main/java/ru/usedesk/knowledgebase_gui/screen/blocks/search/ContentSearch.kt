@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,17 +41,20 @@ import ru.usedesk.knowledgebase_gui.compose.clickableArea
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 @Preview
 @Composable
 private fun Preview() {
+    val customization = UsedeskKnowledgeBaseCustomization()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.usedesk_white_2))
+            .background(colorResource(customization.colorIdWhite2))
     ) {
         ContentSearch(
+            customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             block = BlocksState.Block.Search(
                 BlocksState.Block.Sections()
@@ -62,6 +66,7 @@ private fun Preview() {
 
 @Composable
 internal fun ScreenNotLoaded(
+    customization: UsedeskKnowledgeBaseCustomization,
     loading: Boolean,
     tryAgain: () -> Unit
 ) {
@@ -97,12 +102,12 @@ internal fun ScreenNotLoaded(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                text = "Ne udalos' zagruzit'", //TODO
+                text = stringResource(customization.textIdSearchLoadError),
                 style = TextStyle(
                     fontFamily = FontFamily.Serif,
                     fontWeight = FontWeight.Medium,
                     fontSize = 17.sp,
-                    color = colorResource(R.color.usedesk_black_2),
+                    color = colorResource(customization.colorIdBlack2),
                     textAlign = TextAlign.Center
                 )
             )
@@ -118,7 +123,7 @@ internal fun ScreenNotLoaded(
                             modifier = Modifier
                                 .size(24.dp)
                                 .align(Alignment.Center),
-                            color = colorResource(R.color.usedesk_red),
+                            color = colorResource(customization.colorIdRed),
                             strokeWidth = 3.dp
                         )
                     }
@@ -130,12 +135,12 @@ internal fun ScreenNotLoaded(
                                 onClick = tryAgain
                             )
                             .align(Alignment.CenterHorizontally),
-                        text = "Трай агаин", //TODO
+                        text = stringResource(customization.textIdSearchTryAgain),
                         style = TextStyle(
                             fontFamily = FontFamily.Serif,
                             fontWeight = FontWeight.Medium,
                             fontSize = 17.sp,
-                            color = colorResource(R.color.usedesk_blue),
+                            color = colorResource(customization.colorIdBlue),
                             textAlign = TextAlign.Center
                         )
                     )
@@ -147,6 +152,7 @@ internal fun ScreenNotLoaded(
 
 @Composable
 internal fun ContentSearch(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
     block: BlocksState.Block.Search,
     onArticleClick: (UsedeskArticleContent) -> Unit
@@ -158,6 +164,7 @@ internal fun ContentSearch(
     Crossfade(targetState = state.error) { error ->
         when {
             error -> ScreenNotLoaded(
+                customization,
                 state.loading,
                 viewModel::tryAgain
             )
@@ -174,10 +181,13 @@ internal fun ContentSearch(
                         items = state.articles,
                         key = UsedeskArticleContent::id
                     ) {
+                        val index = remember(it, state.articles) { state.articles.indexOf(it) }
+                        viewModel.itemShowed(index)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .cardItem(
+                                    customization = customization,
                                     isTop = it == state.articles.firstOrNull(),
                                     isBottom = it == state.articles.lastOrNull()
                                 )
@@ -199,7 +209,7 @@ internal fun ContentSearch(
                                 style = TextStyle(
                                     fontSize = 17.sp,
                                     textAlign = TextAlign.Start,
-                                    color = colorResource(R.color.usedesk_black_2)
+                                    color = colorResource(customization.colorIdBlack2)
                                 ),
                                 text = it.title
                             )
@@ -226,7 +236,7 @@ internal fun ContentSearch(
                 ) {
                     BasicText(
                         modifier = Modifier.padding(16.dp),
-                        text = "Nichego ne naideno" //TODO
+                        text = stringResource(customization.textIdSearchIsEmpty)
                     )
                 }
 
@@ -242,7 +252,7 @@ internal fun ContentSearch(
                                 .padding(16.dp),
                             shape = CircleShape,
                             elevation = CardDefaults.cardElevation(4.dp),
-                            colors = CardDefaults.cardColors(colorResource(R.color.usedesk_white_1))
+                            colors = CardDefaults.cardColors(colorResource(customization.colorIdWhite1))
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier

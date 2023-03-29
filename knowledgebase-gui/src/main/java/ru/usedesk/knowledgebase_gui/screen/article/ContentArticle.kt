@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -44,13 +45,16 @@ import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.card
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.blocks.search.ScreenNotLoaded
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal const val ARTICLE_KEY = "article"
 
 @Composable
 internal fun ContentArticle(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     onWebUrl: (String) -> Unit,
@@ -64,6 +68,7 @@ internal fun ContentArticle(
     state.goReview?.use { onReview() }
     Box(modifier = Modifier.fillMaxWidth()) {
         ArticleBlock(
+            customization = customization,
             state = state,
             viewModel = viewModel,
             onWebUrl = onWebUrl,
@@ -75,121 +80,136 @@ internal fun ContentArticle(
 
 @Composable
 private fun ArticleBlock(
+    customization: UsedeskKnowledgeBaseCustomization,
     state: State,
     viewModel: ArticleViewModel,
     onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    val articleShowed = remember { mutableStateOf(false) }
-    val scrollState = when {
-        articleShowed.value -> viewModel.scrollState
-        else -> rememberScrollState()
-    }
-    val progressView = remember(context) {
-        ComposeView(context).apply {
-            setContent {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
-                            .size(32.dp)
-                    )
-                }
-            }
-        }
-    }
-    val ratingView = remember(context) {
-        ComposeView(context).apply {
-            visibility = View.GONE
-            setContent {
-                val state by viewModel.modelFlow.collectAsState()
-                ArticleRating(
-                    state = state,
-                    onReviewGoodClick = onReviewGoodClick,
-                    onReviewBadClick = onReviewBadClick
-                )
-            }
-        }
-    }
-    val webView = remember(context) {
-        WebView(context).apply {
-            isVerticalScrollBarEnabled = false
-            isHorizontalScrollBarEnabled = false
-            setOnTouchListener { view, event ->
-                event.action == MotionEvent.ACTION_MOVE
-            }
-            settings.apply {
-                setRenderPriority(WebSettings.RenderPriority.HIGH)
-                loadWithOverviewMode = true
-                cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-                domStorageEnabled = true
-            }
-            webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(
-                    view: WebView,
-                    url: String
-                ): Boolean {
-                    onWebUrl(url)
-                    return true
-                }
-
-                override fun onPageCommitVisible(view: WebView, url: String?) {
-                    super.onPageCommitVisible(view, url)
-
-                    progressView.visibility = View.GONE
-                    ratingView.visibility = View.VISIBLE
-
-                    articleShowed.value = true
-                }
-            }
-            setBackgroundColor(Color.TRANSPARENT)
-        }
-    }
-    LaunchedEffect(state.loadingState) {
-        if (state.loadingState is LoadingState.Loaded<UsedeskArticleContent>) {
-            when {
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                    state.loadingState.data.text,
-                    "text/html; charset=utf-8",
-                    "UTF-8"
-                )
-                else -> webView.loadData(
-                    state.loadingState.data.text,
-                    "text/html",
-                    null
-                )
-            }
-        }
-    }
-    AndroidView(
-        modifier = Modifier
-            .animateContentSize()
-            .clipToBounds()
-            .verticalScroll(scrollState)
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp,
+    Crossfade(
+        targetState = state.loadingState is LoadingState.Loading && state.loadingState.error
+    ) { errorScreen ->
+        when {
+            errorScreen -> ScreenNotLoaded(
+                customization = customization,
+                loading = false,
+                tryAgain = viewModel::tryAgain
             )
-            .card()
-            .padding(
-                start = 8.dp,
-                end = 16.dp,
-                top = 8.dp,
-                bottom = 8.dp
-            ),
-        factory = { context ->
-            LinearLayout(context).apply {
-                orientation = LinearLayout.VERTICAL
-                addView(progressView)
-                addView(webView)
-                addView(ratingView)
+            else -> {
+                val context = LocalContext.current
+                val articleShowed = remember { mutableStateOf(false) }
+                val scrollState = when {
+                    articleShowed.value -> viewModel.scrollState
+                    else -> rememberScrollState()
+                }
+                val progressView = remember(context) {
+                    ComposeView(context).apply {
+                        setContent {
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(16.dp)
+                                        .size(32.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                val ratingView = remember(context) {
+                    ComposeView(context).apply {
+                        visibility = View.GONE
+                        setContent {
+                            val state by viewModel.modelFlow.collectAsState()
+                            ArticleRating(
+                                customization = customization,
+                                state = state,
+                                onReviewGoodClick = onReviewGoodClick,
+                                onReviewBadClick = onReviewBadClick
+                            )
+                        }
+                    }
+                }
+                val webView = remember(context) {
+                    WebView(context).apply {
+                        isVerticalScrollBarEnabled = false
+                        isHorizontalScrollBarEnabled = false
+                        setOnTouchListener { view, event ->
+                            event.action == MotionEvent.ACTION_MOVE
+                        }
+                        settings.apply {
+                            setRenderPriority(WebSettings.RenderPriority.HIGH)
+                            loadWithOverviewMode = true
+                            cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+                            domStorageEnabled = true
+                        }
+                        webViewClient = object : WebViewClient() {
+                            override fun shouldOverrideUrlLoading(
+                                view: WebView,
+                                url: String
+                            ): Boolean {
+                                onWebUrl(url)
+                                return true
+                            }
+
+                            override fun onPageCommitVisible(view: WebView, url: String?) {
+                                super.onPageCommitVisible(view, url)
+
+                                progressView.visibility = View.GONE
+                                ratingView.visibility = View.VISIBLE
+
+                                articleShowed.value = true
+                            }
+                        }
+                        setBackgroundColor(Color.TRANSPARENT)
+                    }
+                }
+                LaunchedEffect(state.loadingState) {
+                    if (state.loadingState is LoadingState.Loaded<UsedeskArticleContent>) {
+                        when {
+                            Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
+                                state.loadingState.data.text,
+                                "text/html; charset=utf-8",
+                                "UTF-8"
+                            )
+                            else -> webView.loadData(
+                                state.loadingState.data.text,
+                                "text/html",
+                                null
+                            )
+                        }
+                    }
+                }
+                AndroidView(
+                    modifier = Modifier
+                        .animateContentSize()
+                        .clipToBounds()
+                        .verticalScroll(scrollState)
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 16.dp,
+                        )
+                        .card(customization)
+                        .padding(
+                            start = 8.dp,
+                            end = 16.dp,
+                            top = 8.dp,
+                            bottom = 8.dp
+                        ),
+                    factory = { context ->
+                        LinearLayout(context).apply {
+                            orientation = LinearLayout.VERTICAL
+                            addView(progressView)
+                            addView(webView)
+                            addView(ratingView)
+                        }
+                    }
+                )
             }
         }
-    )
+    }
 }
 
 @Composable
@@ -247,6 +267,7 @@ private fun ArticleRatingButton(
 
 @Composable
 private fun ArticleRatingButtons(
+    customization: UsedeskKnowledgeBaseCustomization,
     ratingState: RatingState,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
@@ -254,16 +275,16 @@ private fun ArticleRatingButtons(
     Row(modifier = Modifier.fillMaxWidth()) {
         ArticleRatingButton(
             iconId = R.drawable.usedesk_ic_rating_good,
-            colorId = R.color.usedesk_green,
-            textId = R.string.usedesk_rating_yes,
+            colorId = customization.colorIdGreen,
+            textId = customization.textIdArticleReviewYes,
             loading = (ratingState as? RatingState.Sending)?.good == true,
             onClick = onReviewGoodClick
         )
         ArticleRatingButton(
             modifier = Modifier.padding(start = 10.dp),
             iconId = R.drawable.usedesk_ic_rating_bad,
-            colorId = R.color.usedesk_red,
-            textId = R.string.usedesk_rating_no,
+            colorId = customization.colorIdRed,
+            textId = customization.textIdArticleReviewNo,
             loading = (ratingState as? RatingState.Sending)?.good == false,
             onClick = onReviewBadClick
         )
@@ -272,6 +293,7 @@ private fun ArticleRatingButtons(
 
 @Composable
 private fun ArticleRating(
+    customization: UsedeskKnowledgeBaseCustomization,
     state: State,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
@@ -285,7 +307,7 @@ private fun ArticleRating(
     ) {
         Divider(
             modifier = Modifier.fillMaxWidth(),
-            color = colorResource(R.color.usedesk_gray_2),
+            color = colorResource(customization.colorIdGray2),
             thickness = 0.5.dp
         )
         BasicText(
@@ -295,22 +317,23 @@ private fun ArticleRating(
                     bottom = 8.dp,
                     top = 16.dp
                 ),
-            text = stringResource(R.string.usedesk_string_rating_question),
+            text = stringResource(customization.textIdArticleRating),
             style = TextStyle(
                 fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
-                color = colorResource(R.color.usedesk_gray_cold_2)
+                color = colorResource(customization.colorIdGrayCold2)
             )
         )
         when (state.ratingState) {
             is RatingState.Required,
             is RatingState.Sending -> ArticleRatingButtons(
+                customization = customization,
                 ratingState = state.ratingState,
-                onReviewGoodClick,
-                onReviewBadClick
+                onReviewGoodClick = onReviewGoodClick,
+                onReviewBadClick = onReviewBadClick
             )
-            is RatingState.Sent -> BasicText(text = "Posebo za ocenku") //TODO
+            is RatingState.Sent -> BasicText(text = stringResource(customization.textIdArticleRatingThanks))
         }
     }
 }

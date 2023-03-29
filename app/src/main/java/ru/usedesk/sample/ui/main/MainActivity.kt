@@ -73,13 +73,11 @@ class MainActivity : AppCompatActivity(),
         when {
             materialComponents -> mapOf(
                 R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item to R.style.KnowledgeBase_Article_Content_Page_Item_MaterialComponents
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents
             )
             else -> listOf(
                 R.style.Usedesk_Chat_Screen_Messages_Page,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page
             ).associateWith { it }
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)

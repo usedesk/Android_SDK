@@ -11,14 +11,13 @@ internal class SearchViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        var lastLoadingState: LoadingState<List<UsedeskArticleContent>>? = null
-        kbInteractor.articlesModelFlow.launchCollect { articlesModel ->
+        kbInteractor.loadArticles().launchCollect { articlesModel ->
             setModel {
                 when (articlesModel.loadingState) {
-                    is LoadingState.Failed -> copy(
-                        empty = false,
-                        loading = false,
-                        error = lastLoadingState != articlesModel.loadingState
+                    is LoadingState.Loading -> copy(
+                        loading = articlesModel.loadingState.loading,
+                        error = articlesModel.loadingState.error,
+                        empty = if (articlesModel.loadingState.error) false else empty
                     )
                     is LoadingState.Loaded -> copy(
                         empty = articlesModel.loadingState.data.isEmpty(),
@@ -26,20 +25,16 @@ internal class SearchViewModel(
                         error = false,
                         articles = articlesModel.loadingState.data
                     )
-                    is LoadingState.Loading -> copy(
-                        loading = true
-                    )
                 }
             }
-            lastLoadingState = articlesModel.loadingState
         }
     }
 
     fun tryAgain() {
-        kbInteractor.loadArticles(
-            query = kbInteractor.articlesModelFlow.value.query,
-            reload = true
-        )
+        kbInteractor.loadArticles(reload = true)
+    }
+
+    fun itemShowed(itemIndex: Int) {
     }
 
     data class State(

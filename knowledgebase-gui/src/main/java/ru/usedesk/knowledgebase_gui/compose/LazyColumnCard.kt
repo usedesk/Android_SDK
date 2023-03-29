@@ -10,10 +10,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
 @Composable
 internal fun Modifier.cardItem(
+    customization: UsedeskKnowledgeBaseCustomization,
     isTop: Boolean,
     isBottom: Boolean
 ): Modifier {
@@ -28,11 +29,13 @@ internal fun Modifier.cardItem(
             )
         )
         else -> modifier
-    }.background(color = colorResource(R.color.usedesk_white_1))
+    }.background(color = colorResource(customization.colorIdWhite1))
 }
 
 @Composable
-internal fun Modifier.card() = fillMaxWidth()
+internal fun Modifier.card(
+    customization: UsedeskKnowledgeBaseCustomization
+) = fillMaxWidth()
     .clip(RoundedCornerShape(10.dp))
     .shadow(4.dp)
-    .background(color = colorResource(R.color.usedesk_white_1))
+    .background(color = colorResource(customization.colorIdWhite1))

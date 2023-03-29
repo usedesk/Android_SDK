@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
-    <string name="usedesk_cancel">@string/usedesk_string_cancel</string>
-    <string name="usedesk_articles_not_found">@string/usedesk_string_articles_not_found</string>
-    <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
-    <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
-    <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
-    <string name="usedesk_rating_yes">@string/usedesk_string_rating_yes</string>
-    <string name="usedesk_rating_no">@string/usedesk_string_rating_no</string>
+    <string name="usedesk_sections_title" translatable="false">@string/usedesk_string_sections_title</string>
+    <string name="usedesk_article_review_title" translatable="false">@string/usedesk_string_article_review_title</string>
+    <string name="usedesk_cancel" translatable="false">@string/usedesk_string_cancel</string>
+    <string name="usedesk_enter_your_query" translatable="false">@string/usedesk_string_enter_your_query</string>
+    <string name="usedesk_search_fail" translatable="false">@string/usedesk_string_search_fail</string>
+    <string name="usedesk_rating_question" translatable="false">@string/usedesk_string_rating_question</string>
+    <string name="usedesk_rating_thanks" translatable="false">@string/usedesk_string_rating_thanks</string>
+    <string name="usedesk_article_review_placeholder" translatable="false">@string/usedesk_string_article_review_placeholder</string>
+    <string name="usedesk_sections_load_error" translatable="false">@string/usedesk_string_sections_load_error</string>
+    <string name="usedesk_try_again" translatable="false">@string/usedesk_string_try_again</string>
+    <string name="usedesk_rating_yes" translatable="false">@string/usedesk_string_rating_yes</string>
+    <string name="usedesk_rating_no" translatable="false">@string/usedesk_string_rating_no</string>
+    <string-array name="usedesk_article_review_tags" translatable="false">
+        <item>@string/usedesk_string_not_find_answer</item>
+        <item>@string/usedesk_string_no_pics</item>
+        <item>@string/usedesk_string_wont_work</item>
+        <item>@string/usedesk_string_font_too_small</item>
+        <item>@string/usedesk_string_hard_to_find</item>
+    </string-array>
 
-    <string name="usedesk_string_knowledgebase">Knowledge Base</string>
+    <string name="usedesk_string_sections_title">Knowledge Base</string>
     <string name="usedesk_string_cancel">Cancel</string>
-    <string name="usedesk_string_articles_not_found">No articles found</string>
+    <string name="usedesk_string_enter_your_query">Enter your query</string>
+    <string name="usedesk_string_search_fail">Nothing found</string>
     <string name="usedesk_string_rating_question">Was this article helpful?</string>
-    <string name="usedesk_string_rating_whats_wrong">Let us know how we could do better?</string>
+    <string name="usedesk_string_article_review_title">What\'s goes wrong?</string>
     <string name="usedesk_string_rating_thanks">Thanks for review!</string>
-    <string name="usedesk_string_rating_yes">Yes</string>
-    <string name="usedesk_string_rating_no">No</string>
+    <string name="usedesk_string_article_review_placeholder">Your comment</string>
+    <string name="usedesk_string_sections_load_error">Failed to load</string>
+    <string name="usedesk_string_try_again">Try again</string>
+    <string name="usedesk_string_rating_yes">Yes, it was</string>
+    <string name="usedesk_string_rating_no">No, it wasn\'t</string>
+    <string name="usedesk_string_not_find_answer">I didn\'t find the answer</string>
+    <string name="usedesk_string_no_pics">No pics</string>
+    <string name="usedesk_string_wont_work">It won\'t work</string>
+    <string name="usedesk_string_font_too_small">The font size is too small</string>
+    <string name="usedesk_string_hard_to_find">It\'s challenging to find what I looked for</string>
 </resources>

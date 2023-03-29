@@ -1,28 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_offline_form_send_successed">@string/usedesk_string_offline_form_send_successed</string>
-    <string name="usedesk_offline_form_send_failed">@string/usedesk_string_offline_form_send_failed</string>
-    <string name="usedesk_name">@string/usedesk_string_name</string>
-    <string name="usedesk_email">@string/usedesk_string_email</string>
-    <string name="usedesk_message">@string/usedesk_string_message</string>
-    <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
-    <string name="usedesk_today">@string/usedesk_string_today</string>
-    <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
-    <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
-    <string name="usedesk_download_failed">@string/usedesk_string_download_failed</string>
-    <string name="usedesk_chat">@string/usedesk_string_chat</string>
-    <string name="usedesk_feedback_thanks">@string/usedesk_string_feedback_thanks</string>
-    <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
-    <string name="usedesk_download">@string/usedesk_string_download</string>
-    <string name="usedesk_camera">@string/usedesk_string_camera</string>
-    <string name="usedesk_storage">@string/usedesk_string_storage</string>
-    <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
-    <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
-    <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
-    <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
-    <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
-    <string name="usedesk_not_selected">@string/usedesk_string_not_selected</string>
-
     <string name="usedesk_string_offline_form_send_successed">Sua mensagem foi enviada.\nNós responderemos  dentro de um dia útil.</string>
     <string name="usedesk_string_offline_form_send_failed">Falha ao enviar o seu pedido. Por favor, tente novamente.</string>
     <string name="usedesk_string_name">Nome</string>

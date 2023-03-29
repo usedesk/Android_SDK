@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
-    <string name="usedesk_cancel">@string/usedesk_string_cancel</string>
-    <string name="usedesk_articles_not_found">@string/usedesk_string_articles_not_found</string>
-    <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
-    <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
-    <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
-    <string name="usedesk_rating_yes">@string/usedesk_string_rating_yes</string>
-    <string name="usedesk_rating_no">@string/usedesk_string_rating_no</string>
-
-    <string name="usedesk_string_knowledgebase">Base de Conhecimento</string>
+    <string name="usedesk_string_sections_title">Base de Conhecimento</string>
     <string name="usedesk_string_cancel">Cancelar</string>
-    <string name="usedesk_string_articles_not_found">Nenhum artigo encontrado</string>
+    <string name="usedesk_string_enter_your_query">Digite sua consulta</string>
+    <string name="usedesk_string_search_fail">Nada encontrado</string>
     <string name="usedesk_string_rating_question">Esse artigo foi útil?</string>
-    <string name="usedesk_string_rating_whats_wrong">Conte para nós o que podemos fazer para melhorar?</string>
+    <string name="usedesk_string_article_review_title">O que há de errado?</string>
     <string name="usedesk_string_rating_thanks">Obrigado por nos avaliar!</string>
-    <string name="usedesk_string_rating_yes">Sim</string>
-    <string name="usedesk_string_rating_no">Não</string>
+    <string name="usedesk_string_article_review_placeholder">Seu comentário</string>
+    <string name="usedesk_string_sections_load_error">Falha ao carregar</string>
+    <string name="usedesk_string_try_again">Tente novamente</string>
+    <string name="usedesk_string_rating_yes">Sim, foi</string>
+    <string name="usedesk_string_rating_no">Não, não foi</string>
+    <string name="usedesk_string_not_find_answer">Não encontrei a resposta</string>
+    <string name="usedesk_string_no_pics">Sem fotos</string>
+    <string name="usedesk_string_wont_work">Não funcionará</string>
+    <string name="usedesk_string_font_too_small">O tamanho da fonte é muito pequeno</string>
+    <string name="usedesk_string_hard_to_find">É um desafio encontrar o que estava  procurando</string>
 </resources>

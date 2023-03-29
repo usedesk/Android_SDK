@@ -16,14 +16,10 @@ internal class ArticleViewModel(
     val scrollState = ScrollState(0)
 
     init {
-        kbInteractor.articleModelFlow.launchCollect { articleModel ->
+        kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
             setModel {
                 copy(
-                    loadingState = when (loadingState) {
-                        is LoadingState.Loading,
-                        is LoadingState.Failed -> articleModel.loadingState
-                        is LoadingState.Loaded -> loadingState
-                    },
+                    loadingState = articleModel.loadingState,
                     ratingState = articleModel.ratingState,
                     reviewExpected = when (articleModel.ratingState) {
                         RatingState.Required,
@@ -58,7 +54,6 @@ internal class ArticleViewModel(
         val loadingState: LoadingState<UsedeskArticleContent> = LoadingState.Loading(),
         val ratingState: RatingState = RatingState.Required,
         val reviewExpected: Boolean = false,
-        val goReview: UsedeskEvent<Unit>? = null,
-        val error: UsedeskEvent<Int?>? = null
+        val goReview: UsedeskEvent<Unit>? = null
     )
 }

@@ -1,7 +1,5 @@
 package ru.usedesk.sample.ui.main
 
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.ServiceLocator
@@ -14,10 +12,8 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
     private var downloadFile: DownloadFile? = null
 
     init {
-        mainScope.launch {
-            configurationRepository.getConfigurationFlow().collect {
-                setModel { copy(configuration = it) }
-            }
+        configurationRepository.configurationFlow.launchCollect {
+            setModel { copy(configuration = it) }
         }
     }
 
@@ -49,15 +45,10 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     fun onClientToken(clientToken: String) {
-        val newConfiguration = configurationRepository.getConfigurationFlow().value
+        val newConfiguration = configurationRepository.configurationFlow.value
             .copy(clientToken = clientToken)
 
         configurationRepository.setConfiguration(newConfiguration)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        mainScope.cancel()
     }
 
     data class Model(

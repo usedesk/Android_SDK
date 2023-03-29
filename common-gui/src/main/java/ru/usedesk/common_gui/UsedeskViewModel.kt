@@ -13,7 +13,6 @@ open class UsedeskViewModel<MODEL>(
     private val _modelFlow = MutableStateFlow(defaultModel)
     val modelFlow: StateFlow<MODEL> = _modelFlow
 
-    protected val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     protected val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     init {
@@ -31,7 +30,6 @@ open class UsedeskViewModel<MODEL>(
         UsedeskLog.onLog("UsedeskViewModel.onCleared") { this.javaClass.name }
         super.onCleared()
 
-        ioScope.cancel()
         mainScope.cancel()
     }
 }

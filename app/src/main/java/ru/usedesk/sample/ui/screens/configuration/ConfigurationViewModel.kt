@@ -1,6 +1,5 @@
 package ru.usedesk.sample.ui.screens.configuration
 
-import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
@@ -23,10 +22,8 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     )
 
     init {
-        mainScope.launch {
-            configurationRepository.getConfigurationFlow().collect {
-                setModel { copy(configuration = it) }
-            }
+        configurationRepository.configurationFlow.launchCollect {
+            setModel { copy(configuration = it) }
         }
     }
 

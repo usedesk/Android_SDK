@@ -11,7 +11,7 @@ internal class SectionsViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        kbInteractor.sectionsModelFlow.launchCollect { sectionsModel ->
+        kbInteractor.loadSections().launchCollect { sectionsModel ->
             setModel {
                 copy(
                     sections = (sectionsModel.loadingState as? LoadingState.Loaded)

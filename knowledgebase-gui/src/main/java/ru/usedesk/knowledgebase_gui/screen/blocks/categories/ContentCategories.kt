@@ -27,17 +27,20 @@ import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 @Preview
 @Composable
 private fun Preview() {
+    val customization = UsedeskKnowledgeBaseCustomization()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.usedesk_white_2))
+            .background(colorResource(customization.colorIdWhite2))
     ) {
         ContentCategories(
+            customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             block = BlocksState.Block.Categories(
                 BlocksState.Block.Sections(),
@@ -51,6 +54,7 @@ private fun Preview() {
 
 @Composable
 internal fun ContentCategories(
+    customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
     block: BlocksState.Block.Categories,
     onCategoryClick: (UsedeskCategory) -> Unit
@@ -76,6 +80,7 @@ internal fun ContentCategories(
                 modifier = Modifier
                     .fillMaxWidth()
                     .cardItem(
+                        customization = customization,
                         isTop = it == state.categories.firstOrNull(),
                         isBottom = it == state.categories.lastOrNull()
                     )
@@ -96,7 +101,7 @@ internal fun ContentCategories(
                     style = TextStyle(
                         fontSize = 17.sp,
                         textAlign = TextAlign.Start,
-                        color = colorResource(R.color.usedesk_black_2)
+                        color = colorResource(customization.colorIdBlack2)
                     ),
                     text = it.title
                 )
@@ -112,7 +117,7 @@ internal fun ContentCategories(
                         style = TextStyle(
                             fontSize = 12.sp,
                             textAlign = TextAlign.Start,
-                            color = colorResource(R.color.usedesk_gray_cold_2)
+                            color = colorResource(customization.colorIdGrayCold2)
                         ),
                         text = it.description
                     )

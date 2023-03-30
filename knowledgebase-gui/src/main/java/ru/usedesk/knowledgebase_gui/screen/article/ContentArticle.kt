@@ -3,7 +3,6 @@ package ru.usedesk.knowledgebase_gui.screen.article
 import android.graphics.Color
 import android.os.Build
 import android.view.MotionEvent
-import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -11,8 +10,7 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -39,16 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
-import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
-import ru.usedesk.knowledgebase_gui.compose.card
-import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
-import ru.usedesk.knowledgebase_gui.screen.blocks.search.ScreenNotLoaded
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal const val ARTICLE_KEY = "article"
 
@@ -87,128 +80,120 @@ private fun ArticleBlock(
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
-    Crossfade(
-        targetState = state.loadingState is LoadingState.Loading && state.loadingState.error
-    ) { errorScreen ->
-        when {
-            errorScreen -> ScreenNotLoaded(
-                customization = customization,
-                loading = false,
-                tryAgain = viewModel::tryAgain
-            )
-            else -> {
-                val context = LocalContext.current
-                val articleShowed = remember { mutableStateOf(false) }
-                val scrollState = when {
-                    articleShowed.value -> viewModel.scrollState
-                    else -> rememberScrollState()
-                }
-                val progressView = remember(context) {
-                    ComposeView(context).apply {
-                        setContent {
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .padding(16.dp)
-                                        .size(32.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Crossfade(targetState = state.contentState) { contentState ->
+            when (contentState) {
+                is ContentState.Empty -> Box(modifier = Modifier.fillMaxSize())
+                is ContentState.Error -> ScreenNotLoaded(
+                    customization = customization,
+                    tryAgain = if (!state.loading) viewModel::tryAgain else null
+                )
+                else -> {
+                    val context = LocalContext.current
+                    val scrollState = when {
+                        state.articleShowed -> viewModel.scrollState
+                        else -> rememberScrollState()
+                    }
+                    val ratingView = remember(context) {
+                        ComposeView(context).apply {
+                            setContent {
+                                val state by viewModel.modelFlow.collectAsState()
+                                AnimatedVisibility(
+                                    visible = state.articleShowed,
+                                    enter = fadeIn(),
+                                    exit = fadeOut()
+                                ) {
+                                    ArticleRating(
+                                        customization = customization,
+                                        state = state,
+                                        onReviewGoodClick = onReviewGoodClick,
+                                        onReviewBadClick = onReviewBadClick
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    val webView = remember(context) {
+                        WebView(context).apply {
+                            isVerticalScrollBarEnabled = false
+                            isHorizontalScrollBarEnabled = false
+                            setOnTouchListener { view, event ->
+                                event.action == MotionEvent.ACTION_MOVE
+                            }
+                            settings.apply {
+                                setRenderPriority(WebSettings.RenderPriority.HIGH)
+                                loadWithOverviewMode = true
+                                cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+                                domStorageEnabled = true
+                            }
+                            webViewClient = object : WebViewClient() {
+                                override fun shouldOverrideUrlLoading(
+                                    view: WebView,
+                                    url: String
+                                ): Boolean {
+                                    onWebUrl(url)
+                                    return true
+                                }
+
+                                override fun onPageCommitVisible(view: WebView, url: String?) {
+                                    super.onPageCommitVisible(view, url)
+
+                                    viewModel.articleShowed()
+                                }
+                            }
+                            setBackgroundColor(Color.TRANSPARENT)
+                        }
+                    }
+                    LaunchedEffect(state.contentState) {
+                        if (state.contentState is ContentState.Loaded) {
+                            when {
+                                Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
+                                    state.contentState.content.text,
+                                    "text/html; charset=utf-8",
+                                    "UTF-8"
+                                )
+                                else -> webView.loadData(
+                                    state.contentState.content.text,
+                                    "text/html",
+                                    null
                                 )
                             }
                         }
                     }
-                }
-                val ratingView = remember(context) {
-                    ComposeView(context).apply {
-                        visibility = View.GONE
-                        setContent {
-                            val state by viewModel.modelFlow.collectAsState()
-                            ArticleRating(
-                                customization = customization,
-                                state = state,
-                                onReviewGoodClick = onReviewGoodClick,
-                                onReviewBadClick = onReviewBadClick
+                    AndroidView(
+                        modifier = Modifier
+                            .animateContentSize()
+                            .clipToBounds()
+                            .verticalScroll(scrollState)
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                bottom = 16.dp,
                             )
-                        }
-                    }
-                }
-                val webView = remember(context) {
-                    WebView(context).apply {
-                        isVerticalScrollBarEnabled = false
-                        isHorizontalScrollBarEnabled = false
-                        setOnTouchListener { view, event ->
-                            event.action == MotionEvent.ACTION_MOVE
-                        }
-                        settings.apply {
-                            setRenderPriority(WebSettings.RenderPriority.HIGH)
-                            loadWithOverviewMode = true
-                            cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-                            domStorageEnabled = true
-                        }
-                        webViewClient = object : WebViewClient() {
-                            override fun shouldOverrideUrlLoading(
-                                view: WebView,
-                                url: String
-                            ): Boolean {
-                                onWebUrl(url)
-                                return true
-                            }
+                            .card(customization)
+                            .padding(
+                                start = 8.dp,
+                                end = 16.dp,
+                                top = 8.dp,
+                                bottom = 8.dp
+                            ),
+                        factory = { context ->
+                            LinearLayout(context).apply {
+                                orientation = LinearLayout.VERTICAL
 
-                            override fun onPageCommitVisible(view: WebView, url: String?) {
-                                super.onPageCommitVisible(view, url)
-
-                                progressView.visibility = View.GONE
-                                ratingView.visibility = View.VISIBLE
-
-                                articleShowed.value = true
+                                addView(webView)
+                                addView(ratingView)
                             }
                         }
-                        setBackgroundColor(Color.TRANSPARENT)
-                    }
+                    )
                 }
-                LaunchedEffect(state.loadingState) {
-                    if (state.loadingState is LoadingState.Loaded<UsedeskArticleContent>) {
-                        when {
-                            Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                                state.loadingState.data.text,
-                                "text/html; charset=utf-8",
-                                "UTF-8"
-                            )
-                            else -> webView.loadData(
-                                state.loadingState.data.text,
-                                "text/html",
-                                null
-                            )
-                        }
-                    }
-                }
-                AndroidView(
-                    modifier = Modifier
-                        .animateContentSize()
-                        .clipToBounds()
-                        .verticalScroll(scrollState)
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            bottom = 16.dp,
-                        )
-                        .card(customization)
-                        .padding(
-                            start = 8.dp,
-                            end = 16.dp,
-                            top = 8.dp,
-                            bottom = 8.dp
-                        ),
-                    factory = { context ->
-                        LinearLayout(context).apply {
-                            orientation = LinearLayout.VERTICAL
-                            addView(progressView)
-                            addView(webView)
-                            addView(ratingView)
-                        }
-                    }
-                )
             }
         }
+        CardCircleProgress(
+            customization = customization,
+            modifier = Modifier.align(Alignment.TopCenter),
+            visible = state.loading
+        )
     }
 }
 

@@ -116,7 +116,7 @@ internal fun SearchBar(
                             bottom = 22.dp,
                             end = 16.dp
                         )
-                        .clickableArea(onClick = it),
+                        .clickableText(onClick = it),
                     text = stringResource(customization.textIdSearchCancel),
                     style = TextStyle(
                         fontFamily = FontFamily.Serif,

@@ -46,6 +46,7 @@ internal interface ApiRetrofit {
     fun changeRating(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Path(value = "article_id", encoded = true) articleId: Long,
+        @Query("api_token") token: String,
         @Query("count_positive") positive: Int,
         @Query("count_negative") negative: Int
     ): Call<ResponseBody>

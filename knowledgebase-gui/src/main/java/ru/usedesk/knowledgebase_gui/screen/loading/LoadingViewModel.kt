@@ -1,8 +1,10 @@
 package ru.usedesk.knowledgebase_gui.screen.loading
 
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.loading.LoadingViewModel.State
 
 internal class LoadingViewModel(
@@ -10,21 +12,21 @@ internal class LoadingViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        kbInteractor.loadSections().launchCollect { sectionsModel ->
+        kbInteractor.loadSections(true).launchCollect { sectionsModel ->
             setModel {
-                when (sectionsModel.loadingState) {
-                    is LoadingState.Loading -> copy(
-                        loading = sectionsModel.loadingState.loading,
-                        error = sectionsModel.loadingState.error
-                    )
-                    is LoadingState.Loaded -> this
-                }
+                copy(
+                    contentState = contentState.update(
+                        loadingState = sectionsModel.loadingState,
+                        convert = { this }
+                    ),
+                    loading = sectionsModel.loadingState !is LoadingState.Error
+                )
             }
         }
     }
 
     data class State(
-        val error: Boolean = false,
+        val contentState: ContentState<SectionsModel.Data> = ContentState.Empty(),
         val loading: Boolean = true
     )
 }

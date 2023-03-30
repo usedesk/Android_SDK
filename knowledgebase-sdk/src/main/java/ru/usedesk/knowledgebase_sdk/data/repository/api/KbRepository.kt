@@ -227,6 +227,7 @@ internal class KbRepository @Inject constructor(
         good: Boolean
     ): SendResponse {
         val request = AddRating.Request(
+            configuration.token,
             configuration.accountId,
             articleId,
             if (good) 1 else 0,
@@ -240,6 +241,7 @@ internal class KbRepository @Inject constructor(
             changeRating(
                 accountId = request.accountId,
                 articleId = request.articleId,
+                token = request.apiToken,
                 positive = request.positive,
                 negative = request.negative
             )

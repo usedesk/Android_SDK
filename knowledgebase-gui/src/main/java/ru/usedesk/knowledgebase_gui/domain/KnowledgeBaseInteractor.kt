@@ -11,6 +11,7 @@ import ru.usedesk.knowledgebase_gui._entity.ReviewState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.*
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.*
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import javax.inject.Inject
 
 internal class KnowledgeBaseInteractor @Inject constructor(
@@ -30,62 +31,70 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     private var loadArticlesJob: Job? = null
     private var loadArticleJob: Job? = null
 
-    private fun launchSectionsJob() {
-        loadSectionsJob?.cancel()
-        loadSectionsJob = ioScope.launch {
-            val response = knowledgeRepository.getSections()
-            sectionsModelFlow.updateWithLock {
-                when (response) {
-                    is GetSectionsResponse.Done -> SectionsModel(
-                        loadingState = LoadingState.Loaded(SectionsModel.Data(response.sections))
-                    )
-                    is GetSectionsResponse.Error -> copy(
-                        loadingState = LoadingState.Loading(
-                            loading = false,
-                            error = true
-                        )
-                    )
-                }
-            }
-        }
-    }
-
     private fun <T> MutableStateFlow<T>.update(onUpdate: T.() -> T) =
         onUpdate(value).also { value = it }
 
     private suspend fun <T> MutableStateFlow<T>.updateWithLock(onUpdate: T.() -> T) =
         mutex.withLock { update(onUpdate) }
 
-    override fun loadSections(): StateFlow<SectionsModel> = runBlocking {
+    private fun launchSectionsJob() {
+        loadSectionsJob?.cancel()
+        loadSectionsJob = ioScope.launch {
+            val response = responseWithDelay(GetSectionsResponse.Error::class.java) {
+                knowledgeRepository.getSections()
+            }
+            sectionsModelFlow.updateWithLock {
+                when (response) {
+                    is GetSectionsResponse.Done -> SectionsModel(
+                        loadingState = LoadingState.Loaded(SectionsModel.Data(response.sections))
+                    )
+                    is GetSectionsResponse.Error -> copy(
+                        loadingState = LoadingState.Error(code = response.code)
+                    )
+                }
+            }
+        }
+    }
+
+    override fun loadSections(reload: Boolean): StateFlow<SectionsModel> = runBlocking {
         sectionsModelFlow.updateWithLock {
-            if ((loadingState as? LoadingState.Loading)?.loading == false) {
+            if (reload || loadingState is LoadingState.Error) {
                 launchSectionsJob()
-                copy(
-                    loadingState = when (loadingState) {
-                        is LoadingState.Loading -> loadingState.copy(loading = true)
-                        else -> LoadingState.Loading()
-                    }
-                )
+                copy(loadingState = LoadingState.Loading())
             } else this
         }
         sectionsModelFlow
     }
 
-    private fun launchArticlesJob(query: String, page: Long) {
+    private fun launchArticlesJob(
+        query: String,
+        previous: List<UsedeskArticleContent>?,
+        page: Long
+    ) {
         loadArticlesJob?.cancel()
         loadArticlesJob = ioScope.launch {
-            val response = knowledgeRepository.getArticles(query, page)
+            val response = responseWithDelay(GetArticlesResponse.Error::class.java) {
+                knowledgeRepository.getArticles(query, page)
+            }
             articlesModelFlow.updateWithLock {
                 when (response) {
-                    is GetArticlesResponse.Done -> ArticlesModel(
-                        query = query,
-                        loadingState = LoadingState.Loaded(response.articles),
-                        hasNextPage = response.articles.isNotEmpty()
-                    )
+                    is GetArticlesResponse.Done -> {
+                        val newArticles = (previous ?: listOf()) + response.articles
+                        val articlesMap = newArticles.associateBy(UsedeskArticleContent::id)
+                        copy(
+                            query = query,
+                            loadingState = LoadingState.Loaded(
+                                newArticles
+                                    .toSet()
+                                    .filter { it.id in articlesMap }
+                            ),
+                            hasNextPage = response.articles.isNotEmpty()
+                        )
+                    }
                     is GetArticlesResponse.Error -> copy(
-                        loadingState = LoadingState.Loading(
-                            loading = false,
-                            error = true
+                        loadingState = LoadingState.Error(
+                            data = previous,
+                            code = response.code
                         )
                     )
                 }
@@ -94,27 +103,34 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     }
 
     override fun loadArticles(
-        query: String?,
+        newQuery: String?,
         nextPage: Boolean,
         reload: Boolean
     ): StateFlow<ArticlesModel> = runBlocking {
         articlesModelFlow.updateWithLock {
-            val query = query ?: this.query
-            val newLoad =
-                reload || this.query != query || (loadingState as? LoadingState.Loading)?.loading == false
-            if (reload || nextPage && hasNextPage) {
-                val page = when {
+            val query = newQuery ?: this.query
+            val newLoad = reload || this.query != query
+            if (newLoad ||
+                nextPage && hasNextPage && loadingState !is LoadingState.Loading ||
+                loadingState is LoadingState.Error
+            ) {
+                val newPage = when {
                     newLoad -> 1
                     else -> page + 1
                 }
-                launchArticlesJob(query, page)
-                copy(
-                    loadingState = when (loadingState) {
-                        is LoadingState.Loading -> loadingState.copy(loading = true)
-                        else -> LoadingState.Loading()
-                    },
+                val previous = when {
+                    newLoad -> null
+                    else -> loadingState.data
+                }
+                launchArticlesJob(
                     query = query,
-                    page = page,
+                    previous = previous,
+                    page = newPage
+                )
+                copy(
+                    loadingState = LoadingState.Loading(loadingState.data),
+                    query = query,
+                    page = newPage,
                     hasNextPage = true
                 )
             } else this
@@ -125,7 +141,9 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     private fun launchArticleJob(articleId: Long) {
         loadArticleJob?.cancel()
         loadArticleJob = ioScope.launch {
-            val response = knowledgeRepository.getArticle(articleId)
+            val response = responseWithDelay(GetArticleResponse.Error::class.java) {
+                knowledgeRepository.getArticle(articleId)
+            }
             articleModelFlow.updateWithLock {
                 when (response) {
                     is GetArticleResponse.Done -> ArticleModel(
@@ -135,10 +153,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                             ?: RatingState.Required
                     )
                     is GetArticleResponse.Error -> copy(
-                        loadingState = LoadingState.Loading(
-                            loading = false,
-                            error = true
-                        )
+                        loadingState = LoadingState.Error(code = response.code)
                     )
                 }
             }
@@ -147,9 +162,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
 
     override fun loadArticle(articleId: Long): StateFlow<ArticleModel> = runBlocking {
         articleModelFlow.updateWithLock {
-            if (this.articleId != articleId ||
-                (loadingState as? LoadingState.Loading)?.loading != true
-            ) {
+            if (this.articleId != articleId || loadingState is LoadingState.Error) {
                 launchArticleJob(articleId)
                 ArticleModel(articleId)
             } else this
@@ -168,10 +181,12 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         good: Boolean
     ) {
         ioScope.launch {
-            val response = knowledgeRepository.sendRating(
-                articleId,
-                good
-            )
+            val response = responseWithDelay(SendResponse.Error::class.java) {
+                knowledgeRepository.sendRating(
+                    articleId,
+                    good
+                )
+            }
             articleModelFlow.updateWithLock {
                 val ratingState = when (response) {
                     SendResponse.Done -> RatingState.Sent(good)
@@ -209,10 +224,12 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         message: String
     ) {
         ioScope.launch {
-            val response = knowledgeRepository.sendReview(
-                articleId,
-                message
-            )
+            val response = responseWithDelay(SendResponse.Error::class.java) {
+                knowledgeRepository.sendReview(
+                    articleId,
+                    message
+                )
+            }
             articleModelFlow.updateWithLock {
                 copy(
                     reviewState = when (response) {
@@ -220,6 +237,18 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                         is SendResponse.Error -> ReviewState.Failed(response.code)
                     }
                 )
+            }
+        }
+    }
+
+    private suspend fun <RESPONSE : Any> responseWithDelay(
+        errorClass: Class<out RESPONSE>,
+        getResponse: () -> RESPONSE
+    ): RESPONSE {
+        val delayJob = ioScope.async { delay(1000) }
+        return getResponse().also { response ->
+            if (response::class.java == errorClass) {
+                delayJob.await()
             }
         }
     }

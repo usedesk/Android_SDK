@@ -83,6 +83,7 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Sections -> {
                     LaunchedEffect(Unit) {
                         viewModelStoreFactory.clear(CATEGORIES_KEY)
+                        viewModelStoreFactory.clear(SEARCH_KEY)
                     }
                     ContentSections(
                         customization = customization,
@@ -96,6 +97,7 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Categories -> {
                     LaunchedEffect(Unit) {
                         viewModelStoreFactory.clear(ARTICLES_KEY)
+                        viewModelStoreFactory.clear(SEARCH_KEY)
                     }
                     ContentCategories(
                         customization = customization,
@@ -106,12 +108,19 @@ internal fun ContentBlocks(
                         onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                     )
                 }
-                is State.BlocksState.Block.Articles -> ContentArticles(
-                    customization = customization,
-                    viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
-                    block = block,
-                    onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }
-                )
+                is State.BlocksState.Block.Articles -> {
+                    LaunchedEffect(Unit) {
+                        viewModelStoreFactory.clear(SEARCH_KEY)
+                    }
+                    ContentArticles(
+                        customization = customization,
+                        viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
+                        block = block,
+                        onArticleClick = remember {
+                            { onEvent(Event.ArticleClicked(it.id, it.title)) }
+                        }
+                    )
+                }
                 is State.BlocksState.Block.Search -> ContentSearch(
                     customization = customization,
                     viewModelStoreOwner = remember { { viewModelStoreFactory.get(SEARCH_KEY) } },

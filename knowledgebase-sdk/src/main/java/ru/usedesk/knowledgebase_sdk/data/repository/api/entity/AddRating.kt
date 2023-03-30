@@ -4,6 +4,7 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface AddRating {
     class Request(
+        val apiToken: String,
         val accountId: String,
         val articleId: Long,
         val positive: Int,

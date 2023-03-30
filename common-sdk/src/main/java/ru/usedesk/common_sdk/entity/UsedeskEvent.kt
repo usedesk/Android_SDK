@@ -10,4 +10,10 @@ class UsedeskEvent<DATA>(val data: DATA) {
             onProcess(data)
         }
     }
+
+    suspend fun useSuspend(onProcess: suspend (DATA) -> Unit) {
+        if (!processed.getAndSet(true)) {
+            onProcess(data)
+        }
+    }
 }

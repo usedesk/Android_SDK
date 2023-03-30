@@ -37,3 +37,15 @@ internal fun Modifier.clickableArea(
         ),
         onClick = onClick
     )
+
+@Composable
+internal fun Modifier.clickableText(
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) = focusable(true)
+    .clickable(
+        enabled = enabled,
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        onClick = onClick
+    )

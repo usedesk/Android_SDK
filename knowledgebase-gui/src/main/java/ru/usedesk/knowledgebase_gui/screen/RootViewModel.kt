@@ -81,7 +81,7 @@ internal class RootViewModel(
         clearFocus = UsedeskEvent(Unit),
         action = UsedeskEvent {
             kbInteractor.loadArticles(
-                blocksState.searchText.text,
+                newQuery = blocksState.searchText.text,
                 nextPage = false,
                 reload = true
             )
@@ -89,7 +89,15 @@ internal class RootViewModel(
     )
 
     private fun State.searchClearClicked(): State = copy(
-        blocksState = blocksState.copy(searchText = TextFieldValue())
+        blocksState = blocksState.copy(searchText = TextFieldValue()),
+        clearFocus = UsedeskEvent(Unit),
+        action = UsedeskEvent {
+            kbInteractor.loadArticles(
+                newQuery = "",
+                nextPage = false,
+                reload = true
+            )
+        }
     )
 
 
@@ -234,8 +242,6 @@ internal class RootViewModel(
                     override val previousBlock: Block
                 ) : Block {
                     override val title: String = ""
-
-                    val lazyListState = LazyListState()
                 }
 
                 fun transition(previous: Block?) = when (previous) {
@@ -247,7 +253,10 @@ internal class RootViewModel(
                 companion object {
                     val transitionMap = Transition.getTransitionMap(
                         Sections::class.java to Categories::class.java,
-                        Categories::class.java to Articles::class.java
+                        Categories::class.java to Articles::class.java,
+                        Sections::class.java to Search::class.java,
+                        Categories::class.java to Search::class.java,
+                        Articles::class.java to Search::class.java
                     )
                 }
             }

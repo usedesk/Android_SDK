@@ -3,6 +3,7 @@ package ru.usedesk.knowledgebase_gui.screen.article
 import androidx.compose.foundation.ScrollState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
+import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
@@ -19,7 +20,19 @@ internal class ArticleViewModel(
         kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
             setModel {
                 copy(
-                    loadingState = articleModel.loadingState,
+                    contentState = contentState.update(
+                        loadingState = articleModel.loadingState,
+                        convert = { this }
+                    ),
+                    loading = when (articleModel.loadingState) {
+                        is LoadingState.Loading -> true
+                        is LoadingState.Loaded -> !articleShowed
+                        else -> false
+                    },
+                    articleShowed = when (articleModel.loadingState) {
+                        is LoadingState.Loaded -> articleShowed
+                        else -> false
+                    },
                     ratingState = articleModel.ratingState,
                     reviewExpected = when (articleModel.ratingState) {
                         RatingState.Required,
@@ -38,6 +51,15 @@ internal class ArticleViewModel(
         kbInteractor.loadArticle(articleId)
     }
 
+    fun articleShowed() {
+        setModel {
+            copy(
+                articleShowed = true,
+                loading = contentState !is ContentState.Loaded
+            )
+        }
+    }
+
     fun onRating(good: Boolean) {
         setModel { copy(reviewExpected = true) }
         kbInteractor.sendRating(
@@ -51,7 +73,9 @@ internal class ArticleViewModel(
     }
 
     data class State(
-        val loadingState: LoadingState<UsedeskArticleContent> = LoadingState.Loading(),
+        val contentState: ContentState<UsedeskArticleContent> = ContentState.Empty(),
+        val loading: Boolean = true,
+        val articleShowed: Boolean = false,
         val ratingState: RatingState = RatingState.Required,
         val reviewExpected: Boolean = false,
         val goReview: UsedeskEvent<Unit>? = null

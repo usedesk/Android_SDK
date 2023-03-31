@@ -14,7 +14,6 @@ internal class ArticleViewModel(
     private val kbInteractor: IKnowledgeBaseInteractor,
     private val articleId: Long
 ) : UsedeskViewModel<State>(State()) {
-    val scrollState = ScrollState(0)
 
     init {
         kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
@@ -27,10 +26,6 @@ internal class ArticleViewModel(
                     loading = when (articleModel.loadingState) {
                         is LoadingState.Loading -> true
                         is LoadingState.Loaded -> !articleShowed
-                        else -> false
-                    },
-                    articleShowed = when (articleModel.loadingState) {
-                        is LoadingState.Loaded -> articleShowed
                         else -> false
                     },
                     ratingState = articleModel.ratingState,
@@ -49,6 +44,15 @@ internal class ArticleViewModel(
             }
         }
         kbInteractor.loadArticle(articleId)
+    }
+
+    fun articleHidden() {
+        setModel {
+            copy(
+                articleShowed = false,
+                loading = true
+            )
+        }
     }
 
     fun articleShowed() {
@@ -73,6 +77,7 @@ internal class ArticleViewModel(
     }
 
     data class State(
+        val scrollState: ScrollState = ScrollState(0),
         val contentState: ContentState<UsedeskArticleContent> = ContentState.Empty(),
         val loading: Boolean = true,
         val articleShowed: Boolean = false,

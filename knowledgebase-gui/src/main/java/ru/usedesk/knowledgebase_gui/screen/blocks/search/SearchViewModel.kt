@@ -2,7 +2,6 @@ package ru.usedesk.knowledgebase_gui.screen.blocks.search
 
 import androidx.compose.foundation.lazy.LazyListState
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State
@@ -78,7 +77,6 @@ internal class SearchViewModel(
     fun lowestItemShowed() {
         setModel {
             val size = content?.size ?: 0
-            UsedeskLog.onLog("lowestItemShowed") { size.toString() }
             when {
                 size > itemShowedIndex -> copy(itemShowedIndex = size).apply {
                     kbInteractor.loadArticles(nextPage = true)

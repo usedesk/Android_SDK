@@ -92,10 +92,6 @@ private fun ArticleBlock(
                 )
                 else -> {
                     val context = LocalContext.current
-                    val scrollState = when {
-                        state.articleShowed -> viewModel.scrollState
-                        else -> rememberScrollState()
-                    }
                     val ratingView = remember(context) {
                         ComposeView(context).apply {
                             setContent {
@@ -161,6 +157,13 @@ private fun ArticleBlock(
                                 )
                             }
                         }
+                    }
+                    val scrollState = when {
+                        state.articleShowed -> state.scrollState
+                        else -> rememberScrollState()
+                    }
+                    DisposableEffect(Unit) {
+                        onDispose { viewModel.articleHidden() }
                     }
                     AndroidView(
                         modifier = Modifier

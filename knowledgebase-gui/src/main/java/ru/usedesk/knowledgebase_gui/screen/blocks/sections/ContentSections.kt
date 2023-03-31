@@ -21,11 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
-import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
@@ -41,7 +41,6 @@ private fun Preview() {
         ContentSections(
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
-            block = BlocksState.Block.Sections(),
             onSectionClicked = {}
         )
     }
@@ -51,20 +50,16 @@ private fun Preview() {
 internal fun ContentSections(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
-    block: BlocksState.Block.Sections,
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
     val viewModel = kbUiViewModel(
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> SectionsViewModel(kbUiComponent.interactor) }
+    UsedeskLog.onLog("ContentSections") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
     LazyColumn(
-        modifier = Modifier
-            .padding(
-                start = 16.dp,
-                end = 16.dp
-            ),
-        state = block.lazyListState
+        modifier = Modifier,
+        state = state.lazyListState
     ) {
         items(
             items = state.sections,
@@ -73,6 +68,10 @@ internal fun ContentSections(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp
+                    )
                     .cardItem(
                         customization = customization,
                         isTop = it == state.sections.firstOrNull(),

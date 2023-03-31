@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
-import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
@@ -42,11 +42,7 @@ private fun Preview() {
         ContentCategories(
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
-            block = BlocksState.Block.Categories(
-                BlocksState.Block.Sections(),
-                "Title",
-                1L
-            ),
+            sectionId = 1L,
             onCategoryClick = {}
         )
     }
@@ -56,21 +52,18 @@ private fun Preview() {
 internal fun ContentCategories(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
-    block: BlocksState.Block.Categories,
+    sectionId: Long,
     onCategoryClick: (UsedeskCategory) -> Unit
 ) {
     val viewModel = kbUiViewModel(
-        key = block.sectionId.toString(),
+        key = sectionId.toString(),
         viewModelStoreOwner = viewModelStoreOwner
-    ) { kbUiComponent -> CategoriesViewModel(kbUiComponent.interactor, block.sectionId) }
+    ) { kbUiComponent -> CategoriesViewModel(kbUiComponent.interactor, sectionId) }
     val state by viewModel.modelFlow.collectAsState()
+    UsedeskLog.onLog("ContentCategories") { viewModel.toString() }
     LazyColumn(
-        modifier = Modifier
-            .padding(
-                start = 16.dp,
-                end = 16.dp
-            ),
-        state = block.lazyListState
+        modifier = Modifier,
+        state = state.lazyListState
     ) {
         items(
             items = state.categories,
@@ -79,6 +72,10 @@ internal fun ContentCategories(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp
+                    )
                     .cardItem(
                         customization = customization,
                         isTop = it == state.categories.firstOrNull(),

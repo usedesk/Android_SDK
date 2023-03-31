@@ -1,44 +1,71 @@
 package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
 @Composable
 internal fun CardCircleProgress(
     customization: UsedeskKnowledgeBaseCustomization,
     modifier: Modifier,
-    visible: Boolean = true
+    loading: Boolean = true,
+    onErrorClicked: (() -> Unit)? = null
 ) {
+    val onErrorClicked = if (loading) null else onErrorClicked
     AnimatedVisibility(
         modifier = modifier,
-        visible = visible,
+        visible = loading || onErrorClicked != null,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        Card(
-            modifier = Modifier
-                .padding(16.dp),
-            shape = CircleShape,
-            elevation = CardDefaults.cardElevation(4.dp),
-            colors = CardDefaults.cardColors(colorResource(customization.colorIdWhite1))
-        ) {
-            CircularProgressIndicator(
+        Crossfade(targetState = onErrorClicked) { onErrorClicked ->
+            Surface(
+                shape = CircleShape,
                 modifier = Modifier
-                    .size(32.dp)
                     .padding(4.dp)
-            )
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = CircleShape
+                    )
+                    .size(32.dp),
+                color = when (onErrorClicked) {
+                    null -> colorResource(customization.colorIdWhite1)
+                    else -> colorResource(customization.colorIdRed)
+                }
+            ) {
+                when (onErrorClicked) {
+                    null -> CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(4.dp)
+                    )
+                    else -> BasicText(
+                        modifier = Modifier
+                            .clickableItem(onClick = onErrorClicked),
+                        text = "!",
+                        style = TextStyle(
+                            color = colorResource(customization.colorIdWhite1),
+                            fontSize = 24.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.screen
 
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.text.input.TextFieldValue
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
@@ -104,7 +103,7 @@ internal class RootViewModel(
     private fun State.searchCancelClicked(): State = copy(
         blocksState = blocksState.copy(
             searchText = TextFieldValue(),
-            block = blocksState.block.previousBlock ?: State.BlocksState.Block.Sections()
+            block = blocksState.block.previousBlock ?: State.BlocksState.Block.Sections
         ),
         clearFocus = UsedeskEvent(Unit)
     )
@@ -207,7 +206,7 @@ internal class RootViewModel(
         }
 
         data class BlocksState(
-            val block: Block = Block.Sections(),
+            val block: Block = Block.Sections,
             val searchText: TextFieldValue = TextFieldValue(),
             val clearFocus: UsedeskEvent<Unit>? = null
         ) {
@@ -215,28 +214,22 @@ internal class RootViewModel(
                 val previousBlock: Block?
                 val title: String?
 
-                class Sections : Block {
+                object Sections : Block {
                     override val previousBlock = null
                     override val title = null
-
-                    val lazyListState = LazyListState()
                 }
 
                 data class Categories(
                     override val previousBlock: Block,
                     override val title: String,
                     val sectionId: Long
-                ) : Block {
-                    val lazyListState = LazyListState()
-                }
+                ) : Block
 
                 data class Articles(
                     override val previousBlock: Block,
                     override val title: String,
                     val categoryId: Long
-                ) : Block {
-                    val lazyListState = LazyListState()
-                }
+                ) : Block
 
                 data class Search(
                     override val previousBlock: Block

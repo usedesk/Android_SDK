@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen.blocks.sections
 
+import androidx.compose.foundation.lazy.LazyListState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
@@ -24,6 +25,7 @@ internal class SectionsViewModel(
     }
 
     data class State(
+        val lazyListState: LazyListState = LazyListState(),
         val sections: List<UsedeskSection> = listOf()
     )
 }

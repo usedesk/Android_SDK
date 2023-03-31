@@ -42,7 +42,7 @@ internal interface ApiRetrofit {
         @Query("count") count: Int
     ): Call<ResponseBody>
 
-    @GET("support/{account_id}/articles/{article_id}/change-rating")
+    @POST("support/{account_id}/articles/{article_id}/change-rating")
     fun changeRating(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Path(value = "article_id", encoded = true) articleId: Long,

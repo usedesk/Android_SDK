@@ -80,7 +80,7 @@ internal fun ContentBlocks(
             }
         ) { block ->
             when (block) {
-                is State.BlocksState.Block.Sections -> {
+                State.BlocksState.Block.Sections -> {
                     LaunchedEffect(Unit) {
                         viewModelStoreFactory.clear(CATEGORIES_KEY)
                         viewModelStoreFactory.clear(SEARCH_KEY)
@@ -90,7 +90,6 @@ internal fun ContentBlocks(
                         viewModelStoreOwner = remember {
                             { viewModelStoreFactory.get(SECTIONS_KEY) }
                         },
-                        block = block,
                         onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                     )
                 }
@@ -104,7 +103,7 @@ internal fun ContentBlocks(
                         viewModelStoreOwner = remember {
                             { viewModelStoreFactory.get(CATEGORIES_KEY) }
                         },
-                        block = block,
+                        sectionId = block.sectionId,
                         onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                     )
                 }
@@ -115,7 +114,7 @@ internal fun ContentBlocks(
                     ContentArticles(
                         customization = customization,
                         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
-                        block = block,
+                        categoryId = block.categoryId,
                         onArticleClick = remember {
                             { onEvent(Event.ArticleClicked(it.id, it.title)) }
                         }
@@ -124,7 +123,6 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Search -> ContentSearch(
                     customization = customization,
                     viewModelStoreOwner = remember { { viewModelStoreFactory.get(SEARCH_KEY) } },
-                    block = block,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }
                 )
             }

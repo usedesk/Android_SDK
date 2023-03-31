@@ -7,16 +7,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.updateAndGet
 import ru.usedesk.common_sdk.UsedeskLog
 
-open class UsedeskViewModel<MODEL>(
-    defaultModel: MODEL
-) : ViewModel() {
+open class UsedeskViewModel<MODEL>(defaultModel: MODEL) : ViewModel() {
     private val _modelFlow = MutableStateFlow(defaultModel)
     val modelFlow: StateFlow<MODEL> = _modelFlow
 
     protected val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     init {
-        UsedeskLog.onLog("UsedeskViewModel.init") { this.javaClass.name }
+        UsedeskLog.onLog("UsedeskViewModel.init") { this.toString() }
     }
 
     protected fun <T> StateFlow<T>.launchCollect(onValue: (T) -> Unit) {
@@ -27,9 +25,9 @@ open class UsedeskViewModel<MODEL>(
     protected fun setModel(onUpdate: MODEL.() -> MODEL) = _modelFlow.updateAndGet { it.onUpdate() }
 
     override fun onCleared() {
-        UsedeskLog.onLog("UsedeskViewModel.onCleared") { this.javaClass.name }
-        super.onCleared()
-
+        UsedeskLog.onLog("UsedeskViewModel.onCleared") { this.toString() }
         mainScope.cancel()
+
+        super.onCleared()
     }
 }

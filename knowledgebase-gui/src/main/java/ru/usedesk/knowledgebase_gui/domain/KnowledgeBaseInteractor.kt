@@ -46,7 +46,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             sectionsModelFlow.updateWithLock {
                 when (response) {
                     is GetSectionsResponse.Done -> SectionsModel(
-                        loadingState = LoadingState.Loaded(SectionsModel.Data(response.sections))
+                        loadingState = LoadingState.Loaded(data = SectionsModel.Data(response.sections))
                     )
                     is GetSectionsResponse.Error -> copy(
                         loadingState = LoadingState.Error(code = response.code)
@@ -76,24 +76,29 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             val response = responseWithDelay(GetArticlesResponse.Error::class.java) {
                 knowledgeRepository.getArticles(query, page)
             }
+            delay(3000)
             articlesModelFlow.updateWithLock {
                 when (response) {
                     is GetArticlesResponse.Done -> {
                         val newArticles = (previous ?: listOf()) + response.articles
                         val articlesMap = newArticles.associateBy(UsedeskArticleContent::id)
+                        val totalArticles = newArticles
+                            .toSet()
+                            .filter { it.id in articlesMap }
                         copy(
                             query = query,
                             loadingState = LoadingState.Loaded(
-                                newArticles
-                                    .toSet()
-                                    .filter { it.id in articlesMap }
+                                page = page,
+                                data = totalArticles
                             ),
+                            articles = totalArticles,
+                            page = page,
                             hasNextPage = response.articles.isNotEmpty()
                         )
                     }
                     is GetArticlesResponse.Error -> copy(
                         loadingState = LoadingState.Error(
-                            data = previous,
+                            page = page,
                             code = response.code
                         )
                     )
@@ -120,19 +125,14 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                 }
                 val previous = when {
                     newLoad -> null
-                    else -> loadingState.data
+                    else -> articles
                 }
                 launchArticlesJob(
                     query = query,
                     previous = previous,
                     page = newPage
                 )
-                copy(
-                    loadingState = LoadingState.Loading(loadingState.data),
-                    query = query,
-                    page = newPage,
-                    hasNextPage = true
-                )
+                copy(loadingState = LoadingState.Loading(page = newPage))
             } else this
         }
         articlesModelFlow
@@ -148,7 +148,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                 when (response) {
                     is GetArticleResponse.Done -> ArticleModel(
                         articleId = articleId,
-                        loadingState = LoadingState.Loaded(response.articleContent),
+                        loadingState = LoadingState.Loaded(data = response.articleContent),
                         ratingState = ratingStateMap[articleId]
                             ?: RatingState.Required
                     )

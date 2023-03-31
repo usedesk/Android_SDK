@@ -1,14 +1,19 @@
 package ru.usedesk.knowledgebase_gui._entity
 
 internal sealed interface LoadingState<DATA> {
-    val data: DATA?
+    val page: Long
 
-    class Loading<DATA>(override val data: DATA? = null) : LoadingState<DATA>
+    class Loading<DATA>(
+        override val page: Long = 1L
+    ) : LoadingState<DATA>
 
     class Error<DATA>(
-        override val data: DATA? = null,
+        override val page: Long = 1L,
         val code: Int? = null
     ) : LoadingState<DATA>
 
-    class Loaded<DATA>(override val data: DATA) : LoadingState<DATA>
+    class Loaded<DATA>(
+        override val page: Long = 1L,
+        val data: DATA
+    ) : LoadingState<DATA>
 }

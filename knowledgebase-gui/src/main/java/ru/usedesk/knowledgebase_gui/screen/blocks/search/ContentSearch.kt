@@ -22,11 +22,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
-import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui.compose.*
-import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.blocks.SEARCH_KEY
+import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 @Preview
@@ -41,9 +42,6 @@ private fun Preview() {
         ContentSearch(
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
-            block = BlocksState.Block.Search(
-                BlocksState.Block.Sections()
-            ),
             onArticleClick = {}
         )
     }
@@ -54,96 +52,114 @@ private fun Preview() {
 internal fun ContentSearch(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
-    block: BlocksState.Block.Search,
     onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
     val viewModel = kbUiViewModel(
+        key = SEARCH_KEY,
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
+    UsedeskLog.onLog("ContentSearch") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.contentState) { contentState ->
-            when (contentState) {
-                is ContentState.Empty -> Box(modifier = Modifier.fillMaxSize())
-                is ContentState.Error -> ScreenNotLoaded(
+        Crossfade(targetState = state.reloadError) { reloadError ->
+            when {
+                reloadError -> ScreenNotLoaded(
                     customization = customization,
-                    tryAgain = if (!state.loading) viewModel::tryAgain else null
+                    tryAgain = if (!state.reloadLoading) viewModel::tryLoadAgain else null
                 )
-                is ContentState.Loaded -> Box(modifier = Modifier.fillMaxSize()) {
-                    val lowestItem = remember(contentState.content) {
-                        state.content.takeLast(5).firstOrNull()
-                    }
-                    LazyColumn(
-                        modifier = Modifier
-                            .padding(
-                                start = 16.dp,
-                                end = 16.dp
-                            ),
-                        state = viewModel.lazyListState //TODO: посмотреть ещё отображение краёв скролла, оно разное
-                    ) {
-                        items(
-                            items = state.content,
-                            key = { it.item.id }
-                        ) { item ->
-                            if (!state.loading && lowestItem == item) {
-                                viewModel.lowestItemShowed()
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .cardItem(
-                                        customization = customization,
-                                        isTop = item.first,
-                                        isBottom = item.last
-                                    )
-                                    .clickableItem(
-                                        onClick = remember { { onArticleClick(item.item) } }
-                                    )
-                                    .padding(
-                                        start = 20.dp,
-                                        end = 10.dp,
-                                        top = 8.dp,
-                                        bottom = 8.dp
-                                    )
-                                    .animateItemPlacement()
-                            ) {
-                                BasicText(
+                else -> Box(modifier = Modifier.fillMaxSize()) {
+                    val content = state.content
+                    if (content != null) {
+                        LazyColumn(
+                            modifier = Modifier,
+                            state = state.lazyListState
+                        ) {
+                            items(
+                                items = content,
+                                key = { it.item.id }
+                            ) { item ->
+                                Row(
                                     modifier = Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(end = 10.dp)
-                                        .weight(weight = 1f, fill = true),
-                                    style = TextStyle(
-                                        fontSize = 17.sp,
-                                        textAlign = TextAlign.Start,
-                                        color = colorResource(customization.colorIdBlack2)
-                                    ),
-                                    text = item.item.title
-                                )
-                                Icon(
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
+                                        .fillMaxWidth()
                                         .padding(
-                                            top = 16.dp,
-                                            bottom = 16.dp
+                                            start = 16.dp,
+                                            end = 16.dp
                                         )
-                                        .size(24.dp),
-                                    painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
-                                    tint = Color.Unspecified,
-                                    contentDescription = null
-                                )
+                                        .cardItem(
+                                            customization = customization,
+                                            isTop = item.first,
+                                            isBottom = item.last
+                                        )
+                                        .clickableItem(
+                                            onClick = remember { { onArticleClick(item.item) } }
+                                        )
+                                        .padding(
+                                            start = 20.dp,
+                                            end = 10.dp,
+                                            top = 8.dp,
+                                            bottom = 8.dp
+                                        )
+                                        .animateItemPlacement()
+                                ) {
+                                    BasicText(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .padding(end = 10.dp)
+                                            .weight(weight = 1f, fill = true),
+                                        style = TextStyle(
+                                            fontSize = 17.sp,
+                                            textAlign = TextAlign.Start,
+                                            color = colorResource(customization.colorIdBlack2)
+                                        ),
+                                        text = item.item.title
+                                    )
+                                    Icon(
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .padding(
+                                                top = 16.dp,
+                                                bottom = 16.dp
+                                            )
+                                            .size(24.dp),
+                                        painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                                        tint = Color.Unspecified,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                            item {
+                                val state by viewModel.modelFlow.collectAsState()
+                                viewModel.lowestItemShowed()
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    CardCircleProgress(
+                                        customization = customization,
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .padding(
+                                                start = 16.dp,
+                                                end = 16.dp,
+                                                bottom = 16.dp
+                                            ),
+                                        loading = state.nextPageState == NextPageState.LOADING,
+                                        onErrorClicked = when (state.nextPageState) {
+                                            NextPageState.ERROR -> viewModel::tryNextPageAgain
+                                            else -> null
+                                        }
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    AnimatedVisibility(
-                        state.content.isEmpty(),
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        BasicText(
-                            modifier = Modifier.padding(16.dp),
-                            text = stringResource(customization.textIdSearchIsEmpty)
-                        )
+                        AnimatedVisibility(
+                            content.isEmpty(),
+                            enter = fadeIn(),
+                            exit = fadeOut()
+                        ) {
+                            BasicText(
+                                modifier = Modifier.padding(16.dp),
+                                text = stringResource(customization.textIdSearchIsEmpty)
+                            )
+                        }
                     }
                 }
             }
@@ -153,8 +169,10 @@ internal fun ContentSearch(
             CardCircleProgress(
                 customization = customization,
                 modifier = Modifier
-                    .align(Alignment.Center),
-                visible = state.loading
+                    .align(Alignment.Center)
+                    .padding(16.dp),
+                loading = state.reloadLoading,
+                onErrorClicked = null
             )
         }
     }

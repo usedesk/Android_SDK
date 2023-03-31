@@ -42,6 +42,7 @@ internal interface IKnowledgeBaseInteractor {
     data class ArticlesModel(
         val query: String = "",
         val loadingState: LoadingState<List<UsedeskArticleContent>> = LoadingState.Loading(),
+        val articles: List<UsedeskArticleContent>? = null,
         val page: Long = 1,
         val hasNextPage: Boolean = true
     )

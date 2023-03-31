@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
-import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.BlocksState
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
@@ -42,11 +42,7 @@ private fun Preview() {
         ContentArticles(
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
-            block = BlocksState.Block.Articles(
-                BlocksState.Block.Sections(),
-                "Title",
-                1L
-            ),
+            categoryId = 1L,
             onArticleClick = {}
         )
     }
@@ -56,22 +52,18 @@ private fun Preview() {
 internal fun ContentArticles(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
-    block: BlocksState.Block.Articles,
+    categoryId: Long,
     onArticleClick: (UsedeskArticleInfo) -> Unit
 ) {
-    val viewModel =
-        kbUiViewModel(
-            key = block.categoryId.toString(),
-            viewModelStoreOwner = viewModelStoreOwner
-        ) { kbUiComponent -> ArticlesViewModel(kbUiComponent.interactor, block.categoryId) }
+    val viewModel = kbUiViewModel(
+        key = categoryId.toString(),
+        viewModelStoreOwner = viewModelStoreOwner
+    ) { kbUiComponent -> ArticlesViewModel(kbUiComponent.interactor, categoryId) }
     val state by viewModel.modelFlow.collectAsState()
+    UsedeskLog.onLog("ContentArticles") { viewModel.toString() }
     LazyColumn(
-        modifier = Modifier
-            .padding(
-                start = 16.dp,
-                end = 16.dp
-            ),
-        state = block.lazyListState
+        modifier = Modifier,
+        state = state.lazyListState
     ) {
         items(
             items = state.articles,
@@ -80,6 +72,10 @@ internal fun ContentArticles(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp
+                    )
                     .cardItem(
                         customization = customization,
                         isTop = it == state.articles.firstOrNull(),

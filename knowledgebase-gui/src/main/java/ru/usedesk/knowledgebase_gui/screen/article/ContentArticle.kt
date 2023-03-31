@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -57,6 +58,7 @@ internal fun ContentArticle(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
     ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
+    UsedeskLog.onLog("ContentArticle") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -191,8 +193,10 @@ private fun ArticleBlock(
         }
         CardCircleProgress(
             customization = customization,
-            modifier = Modifier.align(Alignment.TopCenter),
-            visible = state.loading
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(16.dp),
+            loading = state.loading
         )
     }
 }

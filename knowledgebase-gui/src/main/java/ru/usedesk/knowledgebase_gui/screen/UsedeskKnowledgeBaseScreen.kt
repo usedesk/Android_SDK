@@ -21,10 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
-import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
-import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
-import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
-import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
+import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screen.article.ARTICLE_KEY
@@ -82,7 +79,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             Crossfade(
-                modifier = Modifier.animateContentSize(),
+                modifier = Modifier
+                    .animateContentSize(),
                 targetState = state.blocksState.block !is State.BlocksState.Block.Search
             ) { visibleToolbar ->
                 when {
@@ -101,11 +99,22 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     )
                 }
             }
-            Content(
-                customization = customization,
-                state = state,
-                onEvent = onEvent
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Content(
+                    customization = customization,
+                    state = state,
+                    onEvent = onEvent
+                )
+                CardCircleChat(customization = customization,
+                    visible = true,
+                    onClicked = remember {
+                        { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
+                    }
+                )
+            }
         }
     }
 

@@ -7,8 +7,8 @@ internal interface AddRating {
         val apiToken: String,
         val accountId: String,
         val articleId: Long,
-        val positive: Int,
-        val negative: Int
+        val countPositive: Int,
+        val countNegative: Int
     )
 
     class Response(

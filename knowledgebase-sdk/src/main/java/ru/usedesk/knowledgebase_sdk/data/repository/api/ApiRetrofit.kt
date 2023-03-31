@@ -3,6 +3,7 @@ package ru.usedesk.knowledgebase_sdk.data.repository.api
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddRating
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CreateTicket
 
 internal interface ApiRetrofit {
@@ -46,11 +47,9 @@ internal interface ApiRetrofit {
     fun changeRating(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Path(value = "article_id", encoded = true) articleId: Long,
-        @Query("api_token") token: String,
-        @Query("count_positive") positive: Int,
-        @Query("count_negative") negative: Int
+        @Body body: AddRating.Request
     ): Call<ResponseBody>
 
     @POST("create/ticket")
-    fun createTicket(@Body request: CreateTicket.Request): Call<ResponseBody>
+    fun createTicket(@Body body: CreateTicket.Request): Call<ResponseBody>
 }

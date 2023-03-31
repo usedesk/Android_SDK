@@ -241,9 +241,7 @@ internal class KbRepository @Inject constructor(
             changeRating(
                 accountId = request.accountId,
                 articleId = request.articleId,
-                token = request.apiToken,
-                positive = request.positive,
-                negative = request.negative
+                body = request,
             )
         }
         return when (response?.rating) {

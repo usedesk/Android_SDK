@@ -19,12 +19,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 import kotlin.math.roundToInt
 
 @Composable
 internal fun CustomToolbar(
     modifier: Modifier = Modifier,
+    customization: UsedeskKnowledgeBaseCustomization,
     title: String,
     scrollBehavior: CustomToolbarScrollBehavior,
     onBackPressed: () -> Unit
@@ -88,7 +89,7 @@ internal fun CustomToolbar(
                 ) {
                     Icon(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(R.drawable.usedesk_ic_back),
+                        painter = painterResource(customization.iconIdBack),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )

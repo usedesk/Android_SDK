@@ -11,20 +11,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -99,13 +98,8 @@ internal fun ContentReview(
                 value = state.reviewValue,
                 enabled = !state.buttonLoading,
                 placeholder = stringResource(customization.textIdArticleReviewPlaceholder),
-                textStyle = TextStyle(
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 12.sp
-                ),
-                fieldTextColor = colorResource(customization.colorIdBlack2),
-                placeholderTextColor = colorResource(customization.colorIdGrayCold2),
+                textStyleText = customization.textStyleArticleReviewCommentText(),
+                textStylePlaceholder = customization.textStyleArticleReviewCommentPlaceholder(),
                 onValueChange = viewModel::reviewValueChanged,
                 onFocusChanged = viewModel::reviewFocusChanged
             )
@@ -117,8 +111,9 @@ internal fun ContentReview(
         }
         BottomButton(
             customization = customization,
-            buttonShowed = state.buttonShowed,
-            buttonLoading = state.buttonLoading,
+            showed = state.buttonShowed,
+            error = state.buttonError,
+            loading = state.buttonLoading,
             onClick = viewModel::sendClicked
         )
     }
@@ -137,7 +132,7 @@ private fun Replies(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        Layout( //TODO: проверить если ли чё там в композе 1.4 с LazyFlexRow
+        Layout(
             measurePolicy = flexMeasurePolicy(
                 verticalInterval = 10.dp,
                 horizontalInterval = 10.dp
@@ -169,17 +164,10 @@ private fun Replies(
                                     bottom = 8.dp
                                 ),
                             text = problem,
-                            style = TextStyle(
-                                fontFamily = FontFamily.Serif,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 14.sp,
-                                color = colorResource(
-                                    when {
-                                        active -> customization.colorIdWhite2
-                                        else -> customization.colorIdBlack2
-                                    }
-                                )
-                            )
+                            style = when {
+                                active -> customization.textStyleArticleReviewTag()
+                                else -> customization.textStyleArticleReviewTagSelected()
+                            }
                         )
                     }
                 }
@@ -191,46 +179,55 @@ private fun Replies(
 @Composable
 private fun BoxScope.BottomButton(
     customization: UsedeskKnowledgeBaseCustomization,
-    buttonShowed: Boolean,
-    buttonLoading: Boolean,
+    showed: Boolean,
+    error: Boolean,
+    loading: Boolean,
     onClick: () -> Unit
 ) {
     AnimatedVisibility(
         modifier = Modifier
             .fillMaxWidth()
             .align(Alignment.BottomCenter),
-        visible = buttonShowed,
+        visible = showed,
         enter = slideInVertically { it },
         exit = slideOutVertically { it }
     ) {
-        Box(
+        Crossfade(
+            targetState = remember(error, loading) { Pair(error, loading) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(color = colorResource(customization.colorIdBlack2))
                 .clickableItem(
-                    enabled = !buttonLoading,
+                    enabled = !loading,
                     onClick = onClick
                 )
                 .padding(12.dp)
         ) {
-            when {
-                buttonLoading -> CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(24.dp),
-                )
-                else -> BasicText(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(customization.textIdArticleReviewSend),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 18.sp,
-                        color = colorResource(customization.colorIdWhite2)
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                when {
+                    it.first -> Icon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        painter = painterResource(customization.iconIdReviewError),
+                        contentDescription = null,
+                        tint = Color.Unspecified
                     )
-                )
+                    it.second -> CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(24.dp),
+                        strokeWidth = customization.progressBarStrokeWidth,
+                        color = colorResource(customization.colorIdRed)
+                    )
+                    else -> BasicText(
+                        text = stringResource(customization.textIdArticleReviewSend),
+                        style = customization.textStyleArticleReviewSend()
+                    )
+                }
             }
         }
     }

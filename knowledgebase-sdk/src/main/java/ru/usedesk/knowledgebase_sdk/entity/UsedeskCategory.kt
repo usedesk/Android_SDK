@@ -1,6 +1,6 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-class UsedeskCategory(
+data class UsedeskCategory(
     val id: Long,
     val title: String,
     val description: String,

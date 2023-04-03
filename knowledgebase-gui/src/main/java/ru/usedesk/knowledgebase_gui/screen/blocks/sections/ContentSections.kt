@@ -18,13 +18,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
-import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
+import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
@@ -55,9 +53,8 @@ internal fun ContentSections(
     val viewModel = kbUiViewModel(
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> SectionsViewModel(kbUiComponent.interactor) }
-    UsedeskLog.onLog("ContentSections") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
-    state.lazyListState.attachToSupportButton(supportButtonVisible)
+    supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     LazyColumn(
         modifier = Modifier,
         state = state.lazyListState
@@ -122,7 +119,7 @@ internal fun ContentSections(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .size(24.dp),
-                    painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                    painter = painterResource(customization.iconIdListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )

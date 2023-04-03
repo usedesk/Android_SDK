@@ -15,20 +15,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
-import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
 import ru.usedesk.knowledgebase_gui.screen.blocks.SEARCH_KEY
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State.NextPageState
+import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 @Preview
@@ -61,9 +57,8 @@ internal fun ContentSearch(
         key = SEARCH_KEY,
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
-    UsedeskLog.onLog("ContentSearch") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
-    state.lazyListState.attachToSupportButton(supportButtonVisible)
+    supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(targetState = state.reloadError) { reloadError ->
             when {
@@ -91,8 +86,8 @@ internal fun ContentSearch(
                                         )
                                         .cardItem(
                                             customization = customization,
-                                            isTop = item.first,
-                                            isBottom = item.last
+                                            isTop = item == state.content?.firstOrNull(),
+                                            isBottom = item == state.content?.lastOrNull()
                                         )
                                         .clickableItem(
                                             onClick = remember { { onArticleClick(item.item) } }
@@ -105,18 +100,29 @@ internal fun ContentSearch(
                                         )
                                         .animateItemPlacement()
                                 ) {
-                                    BasicText(
+                                    Column(
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
                                             .padding(end = 10.dp)
-                                            .weight(weight = 1f, fill = true),
-                                        style = TextStyle(
-                                            fontSize = 17.sp,
-                                            textAlign = TextAlign.Start,
-                                            color = colorResource(customization.colorIdBlack2)
-                                        ),
-                                        text = item.item.title
-                                    )
+                                            .weight(weight = 1f, fill = true)
+                                    ) {
+                                        BasicText(
+                                            style = customization.textStyleSearchItemTitle(),
+                                            text = item.item.title
+                                        )
+                                        BasicText(
+                                            style = customization.textStyleSearchItemDescription(),
+                                            text = item.description,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        BasicText(
+                                            style = customization.textStyleSearchItemPath(),
+                                            text = remember(item) {
+                                                "${item.sectionName} > ${item.categoryName}"
+                                            }
+                                        )
+                                    }
                                     Icon(
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
@@ -125,14 +131,13 @@ internal fun ContentSearch(
                                                 bottom = 16.dp
                                             )
                                             .size(24.dp),
-                                        painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                                        painter = painterResource(customization.iconIdListItemArrowForward),
                                         tint = Color.Unspecified,
                                         contentDescription = null
                                     )
                                 }
                             }
-                            item {
-                                val state by viewModel.modelFlow.collectAsState()
+                            item(key = content.size) {
                                 viewModel.lowestItemShowed()
                                 Box(modifier = Modifier.fillMaxWidth()) {
                                     CardCircleProgress(
@@ -155,13 +160,14 @@ internal fun ContentSearch(
                         }
 
                         AnimatedVisibility(
-                            content.isEmpty(),
+                            visible = content.isEmpty(),
                             enter = fadeIn(),
                             exit = fadeOut()
                         ) {
                             BasicText(
                                 modifier = Modifier.padding(16.dp),
-                                text = stringResource(customization.textIdSearchIsEmpty)
+                                text = stringResource(customization.textIdSearchIsEmpty),
+                                style = customization.textStyleSearchIsEmpty()
                             )
                         }
                     }

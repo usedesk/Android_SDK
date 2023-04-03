@@ -4,8 +4,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.ArticlesModel.SearchItem
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class SearchViewModel(
     private val kbInteractor: IKnowledgeBaseInteractor
@@ -29,25 +29,20 @@ internal class SearchViewModel(
                     else if (articlesModel.hasNextPage) State.NextPageState.LOADING
                     else State.NextPageState.GONE,
                     content = when (data) {
-                        null,
-                        articles -> content
-                        else -> articlesModel.loadingState.data.toItems()
+                        null -> content
+                        else -> articlesModel.loadingState.data
                     },
                     itemShowedIndex = when (data) {
                         null,
-                        articles -> itemShowedIndex
+                        content -> itemShowedIndex
                         else -> when (articlesModel.loadingState.page) {
                             1L -> 0
                             else -> itemShowedIndex
                         }
                     },
-                    articles = when (articlesModel.loadingState) {
-                        is LoadingState.Loaded -> articlesModel.loadingState.data
-                        else -> articles
-                    },
                     lazyListState = when (data) {
                         null,
-                        articles -> lazyListState
+                        content -> lazyListState
                         else -> when (articlesModel.page) {
                             1L -> LazyListState()
                             else -> lazyListState
@@ -56,14 +51,6 @@ internal class SearchViewModel(
                 )
             }
         }
-    }
-
-    private fun List<UsedeskArticleContent>.toItems() = mapIndexed { index, item ->
-        ArticleItem(
-            item,
-            first = index == 0,
-            last = index == size - 1
-        )
     }
 
     fun tryLoadAgain() {
@@ -88,8 +75,7 @@ internal class SearchViewModel(
 
     data class State(
         val lazyListState: LazyListState = LazyListState(),
-        val content: List<ArticleItem>? = null,
-        val articles: List<UsedeskArticleContent> = listOf(),
+        val content: List<SearchItem>? = null,
         val reloadLoading: Boolean = true,
         val reloadError: Boolean = false,
         val nextPageState: NextPageState = NextPageState.LOADING,
@@ -101,10 +87,4 @@ internal class SearchViewModel(
             GONE
         }
     }
-
-    data class ArticleItem(
-        val item: UsedeskArticleContent,
-        val first: Boolean,
-        val last: Boolean
-    )
 }

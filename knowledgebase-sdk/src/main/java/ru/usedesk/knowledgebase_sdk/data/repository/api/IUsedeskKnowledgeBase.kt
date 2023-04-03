@@ -36,7 +36,7 @@ interface IUsedeskKnowledgeBase {
     fun addViews(articleId: Long): AddViewsResponse
 
     sealed interface AddViewsResponse {
-        class Done(val count: Long) : AddViewsResponse
+        class Done(val views: Long) : AddViewsResponse
         class Error(val code: Int? = null) : AddViewsResponse
     }
 
@@ -44,16 +44,25 @@ interface IUsedeskKnowledgeBase {
     fun sendRating(
         articleId: Long,
         good: Boolean
-    ): SendResponse
+    ): SendRatingResponse
 
     @CheckResult
     fun sendReview(
         articleId: Long,
         message: String
-    ): SendResponse
+    ): SendReviewResponse
 
-    sealed interface SendResponse {
-        object Done : SendResponse
-        class Error(val code: Int?) : SendResponse
+    sealed interface SendRatingResponse {
+        class Done(
+            val positive: Int,
+            val negative: Int
+        ) : SendRatingResponse
+
+        class Error(val code: Int?) : SendRatingResponse
+    }
+
+    sealed interface SendReviewResponse {
+        class Done : SendReviewResponse
+        class Error(val code: Int?) : SendReviewResponse
     }
 }

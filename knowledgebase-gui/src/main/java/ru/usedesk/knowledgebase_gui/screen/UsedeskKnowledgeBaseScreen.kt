@@ -89,6 +89,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(colorResource(customization.colorIdWhite2)),
+                        customization = customization,
                         title = title,
                         scrollBehavior = scrollBehavior,
                         onBackPressed = requireActivity()::onBackPressed
@@ -154,12 +155,6 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         ) { it }
         val noneTransitionSpec = fadeIn() with fadeOut()
 
-        val viewModelStoreFactory = remember { ViewModelStoreFactory() }
-        DisposableEffect(Unit) {
-            onDispose {
-                viewModelStoreFactory.clearAll()
-            }
-        }
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),
             targetState = state.screen,
@@ -173,17 +168,17 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             when (screen) {
                 is State.Screen.Loading -> ContentLoading(
                     customization = customization,
-                    viewModelStoreFactory = viewModelStoreFactory,
+                    viewModelStoreFactory = viewModel.viewModelStoreFactory,
                     tryAgain = remember { { onEvent(Event.TryAgain) } }
                 )
                 is State.Screen.Blocks -> {
                     LaunchedEffect(Unit) {
-                        viewModelStoreFactory.clear(LOADING_KEY)
-                        viewModelStoreFactory.clear(ARTICLE_KEY)
+                        viewModel.viewModelStoreFactory.clear(LOADING_KEY)
+                        viewModel.viewModelStoreFactory.clear(ARTICLE_KEY)
                     }
                     ContentBlocks(
                         customization = customization,
-                        viewModelStoreFactory = viewModelStoreFactory,
+                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         state = state.blocksState,
                         supportButtonVisible = supportButtonVisible,
                         onEvent = onEvent
@@ -191,23 +186,26 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 }
                 is State.Screen.Article -> {
                     LaunchedEffect(Unit) {
-                        viewModelStoreFactory.clear(REVIEW_KEY)
+                        viewModel.viewModelStoreFactory.clear(REVIEW_KEY)
                     }
                     ContentArticle(
                         customization = customization,
-                        viewModelStoreFactory = viewModelStoreFactory,
+                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         supportButtonVisible = supportButtonVisible,
                         onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
                         onReview = remember { { onEvent(Event.GoReview(screen.articleId)) } }
                     )
                 }
-                is State.Screen.Review -> ContentReview(
-                    customization = customization,
-                    viewModelStoreFactory = viewModelStoreFactory,
-                    articleId = screen.articleId,
-                    goBack = viewModel::onBackPressed
-                )
+                is State.Screen.Review -> {
+                    supportButtonVisible.value = false
+                    ContentReview(
+                        customization = customization,
+                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
+                        articleId = screen.articleId,
+                        goBack = viewModel::onBackPressed
+                    )
+                }
             }
         }
     }
@@ -248,6 +246,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 }
 
 @Composable
-internal fun LazyListState.attachToSupportButton(mutableState: MutableState<Boolean>) {
-    mutableState.value = firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
-}
+internal fun LazyListState.isSupportButtonVisible() = remember(this) {
+    derivedStateOf {
+        firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
+    }
+}.value

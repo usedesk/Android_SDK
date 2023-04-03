@@ -1,15 +1,11 @@
 package ru.usedesk.knowledgebase_gui.screen.article
 
-import android.graphics.Color
 import android.os.Build
 import android.view.MotionEvent
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.LinearLayout
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,19 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.*
@@ -59,7 +50,6 @@ internal fun ContentArticle(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
     ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
-    UsedeskLog.onLog("ContentArticle") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -148,7 +138,7 @@ private fun ArticleBlock(
                                     viewModel.articleShowed()
                                 }
                             }
-                            setBackgroundColor(Color.TRANSPARENT)
+                            //setBackgroundColor(Color.TRANSPARENT)
                         }
                     }
                     LaunchedEffect(state.contentState) {
@@ -218,20 +208,30 @@ private fun ArticleBlock(
 @Composable
 private fun ArticleRatingButton(
     modifier: Modifier = Modifier,
-    @DrawableRes iconId: Int,
-    @ColorRes colorId: Int,
-    @StringRes textId: Int,
-    loading: Boolean,
+    customization: UsedeskKnowledgeBaseCustomization,
+    ratingState: RatingState,
+    good: Boolean,
     onClick: () -> Unit
 ) {
+    val colorId = when {
+        good -> customization.colorIdGreen
+        else -> customization.colorIdRed
+    }
+    val textId = when {
+        good -> customization.textIdArticleReviewYes
+        else -> customization.textIdArticleReviewNo
+    }
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
             .background(
                 color = colorResource(colorId)
-                    .copy(alpha = 0.25f)
+                    .copy(alpha = 0.2f)
             )
-            .clickableItem(onClick = onClick)
+            .clickableItem(
+                enabled = ratingState is RatingState.Required,
+                onClick = onClick
+            )
             .padding(
                 top = 8.dp,
                 bottom = 8.dp,
@@ -239,31 +239,45 @@ private fun ArticleRatingButton(
                 end = 10.dp
             )
     ) {
-        when {
-            loading -> CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(16.dp)
-            )
-            else -> Icon(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(16.dp),
-                painter = painterResource(iconId),
-                contentDescription = null
-            )
+        val error = (ratingState as? RatingState.Required)?.error == good
+        val loading = (ratingState as? RatingState.Sending)?.good == good
+        Crossfade(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .size(16.dp),
+            targetState = remember(error, loading) { Pair(error, loading) }
+        ) {
+            when {
+                it.first -> Icon(
+                    painter = painterResource(customization.iconIdRatingError),
+                    contentDescription = null,
+                    tint = Color.Unspecified
+                )
+                it.second -> CircularProgressIndicator(
+                    strokeWidth = customization.progressBarStrokeWidth,
+                    color = colorResource(customization.colorIdRed)
+                )
+                else -> Icon(
+                    painter = painterResource(
+                        when {
+                            good -> customization.iconIdRatingGood
+                            else -> customization.iconIdRatingBad
+                        }
+                    ),
+                    contentDescription = null,
+                    tint = Color.Unspecified
+                )
+            }
         }
         BasicText(
             modifier = Modifier
                 .padding(start = 10.dp)
                 .align(Alignment.CenterVertically),
             text = stringResource(textId),
-            style = TextStyle(
-                fontFamily = FontFamily.Serif,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                color = colorResource(colorId)
-            )
+            style = when {
+                good -> customization.textStyleArticleRatingGood()
+                else -> customization.textStyleArticleRatingBad()
+            }
         )
     }
 }
@@ -277,18 +291,16 @@ private fun ArticleRatingButtons(
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         ArticleRatingButton(
-            iconId = R.drawable.usedesk_ic_rating_good,
-            colorId = customization.colorIdGreen,
-            textId = customization.textIdArticleReviewYes,
-            loading = (ratingState as? RatingState.Sending)?.good == true,
+            customization = customization,
+            ratingState = ratingState,
+            good = true,
             onClick = onReviewGoodClick
         )
         ArticleRatingButton(
             modifier = Modifier.padding(start = 10.dp),
-            iconId = R.drawable.usedesk_ic_rating_bad,
-            colorId = customization.colorIdRed,
-            textId = customization.textIdArticleReviewNo,
-            loading = (ratingState as? RatingState.Sending)?.good == false,
+            customization = customization,
+            ratingState = ratingState,
+            good = false,
             onClick = onReviewBadClick
         )
     }
@@ -321,12 +333,7 @@ private fun ArticleRating(
                     top = 16.dp
                 ),
             text = stringResource(customization.textIdArticleRating),
-            style = TextStyle(
-                fontFamily = FontFamily.Serif,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                color = colorResource(customization.colorIdGrayCold2)
-            )
+            style = customization.textStyleArticleRatingTitle()
         )
         when (state.ratingState) {
             is RatingState.Required,
@@ -336,7 +343,10 @@ private fun ArticleRating(
                 onReviewGoodClick = onReviewGoodClick,
                 onReviewBadClick = onReviewBadClick
             )
-            is RatingState.Sent -> BasicText(text = stringResource(customization.textIdArticleRatingThanks))
+            is RatingState.Sent -> BasicText(
+                text = stringResource(customization.textIdArticleRatingThanks),
+                style = customization.textStyleArticleRatingThanks()
+            )
         }
     }
 }

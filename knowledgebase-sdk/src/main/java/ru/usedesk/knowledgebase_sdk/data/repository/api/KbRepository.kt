@@ -212,8 +212,7 @@ internal class KbRepository @Inject constructor(
             addViews(
                 request.accountId,
                 request.articleId,
-                request.token,
-                request.count
+                request
             )
         }
         return when (response?.views) {
@@ -225,7 +224,7 @@ internal class KbRepository @Inject constructor(
     override fun sendRating(
         articleId: Long,
         good: Boolean
-    ): SendResponse {
+    ): SendRatingResponse {
         val request = AddRating.Request(
             configuration.token,
             configuration.accountId,
@@ -245,15 +244,18 @@ internal class KbRepository @Inject constructor(
             )
         }
         return when (response?.rating) {
-            null -> SendResponse.Error(response?.code)
-            else -> SendResponse.Done
+            null -> SendRatingResponse.Error(response?.code)
+            else -> SendRatingResponse.Done(
+                response.rating.positive ?: 0,
+                response.rating.positive ?: 0
+            )
         }
     }
 
     override fun sendReview(
         articleId: Long,
         message: String
-    ): SendResponse {
+    ): SendReviewResponse {
         val request = CreateTicket.Request(
             configuration.token,
             configuration.clientEmail,
@@ -269,8 +271,8 @@ internal class KbRepository @Inject constructor(
             createTicket(request)
         }
         return when (response?.status) {
-            "success" -> SendResponse.Done
-            else -> SendResponse.Error(response?.code)
+            "success" -> SendReviewResponse.Done()
+            else -> SendReviewResponse.Error(response?.code)
         }
     }
 }

@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
 @Composable
@@ -46,7 +45,7 @@ internal fun BoxScope.CardCircleChat(
                     .align(Alignment.Center)
                     .padding(16.dp)
                     .size(24.dp),
-                painter = painterResource(R.drawable.usedesk_ic_support),
+                painter = painterResource(customization.iconIdSupport),
                 contentDescription = null,
                 tint = Color.Unspecified
             )

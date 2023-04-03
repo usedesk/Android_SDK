@@ -20,8 +20,6 @@ internal interface IKnowledgeBaseInteractor {
 
     fun loadArticle(articleId: Long): StateFlow<ArticleModel>
 
-    fun addViews(articleId: Long)
-
     fun sendRating(
         articleId: Long,
         good: Boolean
@@ -35,20 +33,28 @@ internal interface IKnowledgeBaseInteractor {
     data class ArticleModel(
         val articleId: Long = 0L,
         val loadingState: LoadingState<UsedeskArticleContent> = LoadingState.Loading(),
-        val ratingState: RatingState = RatingState.Required,
-        val reviewState: ReviewState = ReviewState.Required
+        val ratingState: RatingState = RatingState.Required(),
+        val reviewState: ReviewState = ReviewState.Required()
     )
 
     data class ArticlesModel(
         val query: String = "",
-        val loadingState: LoadingState<List<UsedeskArticleContent>> = LoadingState.Loading(),
-        val articles: List<UsedeskArticleContent>? = null,
+        val loadingState: LoadingState<List<SearchItem>> = LoadingState.Loading(),
+        val articles: List<SearchItem>? = null,
         val page: Long = 1,
         val hasNextPage: Boolean = true
-    )
+    ) {
+        data class SearchItem(
+            val item: UsedeskArticleContent,
+            val sectionName: String,
+            val categoryName: String,
+            val description: String
+        )
+    }
 
     data class SectionsModel(
-        val loadingState: LoadingState<Data> = LoadingState.Loading()
+        val loadingState: LoadingState<Data> = LoadingState.Loading(),
+        val data: Data = Data(listOf())
     ) {
         data class Data(
             val sections: List<UsedeskSection>
@@ -61,6 +67,9 @@ internal interface IKnowledgeBaseInteractor {
             val articlesMap: Map<Long, UsedeskArticleInfo> = categoriesMap.values
                 .flatMap(UsedeskCategory::articles)
                 .associateBy(UsedeskArticleInfo::id)
+            val categoryParents: Map<Long, UsedeskSection> = sections.flatMap { section ->
+                section.categories.map { it.id to section }
+            }.toMap()
         }
     }
 }

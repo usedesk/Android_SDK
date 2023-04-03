@@ -23,15 +23,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -70,7 +65,7 @@ internal fun SearchBar(
                 modifier = Modifier
                     .padding(end = 4.dp)
                     .size(20.dp),
-                painter = painterResource(R.drawable.usedesk_ic_search),
+                painter = painterResource(customization.iconIdSearch),
                 tint = Color.Unspecified,
                 contentDescription = null
             )
@@ -79,9 +74,8 @@ internal fun SearchBar(
                 fieldModifier = Modifier.fillMaxWidth(),
                 value = value,
                 placeholder = stringResource(customization.textIdSearchPlaceholder),
-                textStyle = customization.textStyleSearch(),
-                fieldTextColor = colorResource(customization.colorIdBlack2),
-                placeholderTextColor = colorResource(customization.colorIdGray3),
+                textStyleText = customization.textStyleSearchText(),
+                textStylePlaceholder = customization.textStyleSearchPlaceholder(),
                 imeAction = ImeAction.Search,
                 keyboardActions = KeyboardActions(onSearch = remember { { onSearch() } }),
                 onValueChange = onValueChange
@@ -96,7 +90,7 @@ internal fun SearchBar(
                         .size(20.dp)
                         .clip(CircleShape)
                         .clickableItem(onClick = onClearClick),
-                    painter = painterResource(R.drawable.usedesk_ic_cancel_round),
+                    painter = painterResource(customization.iconIdSearchCancel),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )
@@ -118,13 +112,7 @@ internal fun SearchBar(
                         )
                         .clickableText(onClick = it),
                     text = stringResource(customization.textIdSearchCancel),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 17.sp,
-                        color = colorResource(customization.colorIdBlue),
-                        textAlign = TextAlign.Center
-                    )
+                    style = customization.textStyleSearchCancel()
                 )
             }
         }
@@ -138,9 +126,8 @@ internal fun ComposeTextField(
     enabled: Boolean = true,
     value: TextFieldValue,
     placeholder: String,
-    textStyle: TextStyle,
-    fieldTextColor: Color,
-    placeholderTextColor: Color,
+    textStyleText: TextStyle,
+    textStylePlaceholder: TextStyle,
     imeAction: ImeAction = ImeAction.Done,
     keyboardActions: KeyboardActions = KeyboardActions(),
     onValueChange: (TextFieldValue) -> Unit,
@@ -152,7 +139,7 @@ internal fun ComposeTextField(
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
-            textStyle = textStyle.copy(color = fieldTextColor),
+            textStyle = textStyleText,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences,
                 imeAction = imeAction
@@ -169,7 +156,7 @@ internal fun ComposeTextField(
             BasicText(
                 modifier = fieldModifier,
                 text = placeholder,
-                style = textStyle.copy(color = placeholderTextColor)
+                style = textStylePlaceholder
             )
         }
     }

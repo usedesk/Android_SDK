@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui.compose.CardCircleProgress
 import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
@@ -30,7 +29,6 @@ internal fun ContentLoading(
     val viewModel = kbUiViewModel(
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(LOADING_KEY) } }
     ) { kbUiComponent -> LoadingViewModel(kbUiComponent.interactor) }
-    UsedeskLog.onLog("ContentLoading") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(targetState = state.contentState) { contentState ->

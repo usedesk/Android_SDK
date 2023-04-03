@@ -5,6 +5,7 @@ import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
@@ -14,6 +15,8 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 internal class RootViewModel(
     private val kbInteractor: IKnowledgeBaseInteractor
 ) : UsedeskViewModel<State>(State()) {
+
+    val viewModelStoreFactory = ViewModelStoreFactory()
 
     init {
         kbInteractor.loadSections().launchCollect { onEvent(Event.KbSectionsModel(it)) }
@@ -156,6 +159,7 @@ internal class RootViewModel(
     override fun onCleared() {
         super.onCleared()
 
+        viewModelStoreFactory.clearAll()
         KbUiComponent.close()
     }
 

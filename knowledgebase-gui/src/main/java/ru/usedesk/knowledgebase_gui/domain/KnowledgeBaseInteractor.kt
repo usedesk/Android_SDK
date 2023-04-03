@@ -1,10 +1,12 @@
 package ru.usedesk.knowledgebase_gui.domain
 
+import androidx.core.text.parseAsHtml
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui._entity.ReviewState
@@ -12,6 +14,7 @@ import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.*
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.*
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 import javax.inject.Inject
 
 internal class KnowledgeBaseInteractor @Inject constructor(
@@ -43,17 +46,32 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             val response = responseWithDelay(GetSectionsResponse.Error::class.java) {
                 knowledgeRepository.getSections()
             }
+            val convertedData = (response as? GetSectionsResponse.Done)?.sections?.convert()
             sectionsModelFlow.updateWithLock {
                 when (response) {
-                    is GetSectionsResponse.Done -> SectionsModel(
-                        loadingState = LoadingState.Loaded(data = SectionsModel.Data(response.sections))
-                    )
+                    is GetSectionsResponse.Done -> {
+                        val data = SectionsModel.Data(convertedData ?: listOf())
+                        SectionsModel(
+                            loadingState = LoadingState.Loaded(data = data),
+                            data = data
+                        )
+                    }
                     is GetSectionsResponse.Error -> copy(
                         loadingState = LoadingState.Error(code = response.code)
                     )
                 }
             }
         }
+    }
+
+    private fun List<UsedeskSection>.convert() = map { section ->
+        section.copy(
+            categories = section.categories.map { category ->
+                category.copy(
+                    description = category.description.htmlToStrings().joinToString("\n")
+                )
+            }
+        )
     }
 
     override fun loadSections(reload: Boolean): StateFlow<SectionsModel> = runBlocking {
@@ -68,7 +86,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
 
     private fun launchArticlesJob(
         query: String,
-        previous: List<UsedeskArticleContent>?,
+        previous: List<ArticlesModel.SearchItem>?,
         page: Long
     ) {
         loadArticlesJob?.cancel()
@@ -76,15 +94,16 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             val response = responseWithDelay(GetArticlesResponse.Error::class.java) {
                 knowledgeRepository.getArticles(query, page)
             }
-            delay(3000)
             articlesModelFlow.updateWithLock {
                 when (response) {
                     is GetArticlesResponse.Done -> {
-                        val newArticles = (previous ?: listOf()) + response.articles
-                        val articlesMap = newArticles.associateBy(UsedeskArticleContent::id)
+                        val newArticles = (previous ?: listOf()) + response.articles.toItems(
+                            sectionsModelFlow.value.data
+                        )
+                        val articlesMap = newArticles.associateBy { it.item.id }
                         val totalArticles = newArticles
                             .toSet()
-                            .filter { it.id in articlesMap }
+                            .filter { it.item.id in articlesMap }
                         copy(
                             query = query,
                             loadingState = LoadingState.Loaded(
@@ -106,6 +125,33 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             }
         }
     }
+
+    private fun List<UsedeskArticleContent>.toItems(
+        sectionsData: SectionsModel.Data
+    ) = map { item ->
+        val category = sectionsData.categoriesMap[item.categoryId]
+        val section = sectionsData.categoryParents[item.categoryId]
+        ArticlesModel.SearchItem(
+            item = item,
+            sectionName = section?.title ?: "",
+            categoryName = category?.title ?: "",
+            description = item.text
+                .htmlToStrings()
+                .take(2)
+                .joinToString("\n")
+        )
+    }
+
+    private fun String.htmlToStrings() = parseAsHtml()
+        .toString()
+        .split('\n', '\r')
+        .asSequence()
+        .map {
+            it.replace('\t', ' ')
+                .replace("  ", "")
+                .trim()
+        }
+        .filter { it.any(Char::isLetterOrDigit) }
 
     override fun loadArticles(
         newQuery: String?,
@@ -146,16 +192,31 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             }
             articleModelFlow.updateWithLock {
                 when (response) {
-                    is GetArticleResponse.Done -> ArticleModel(
-                        articleId = articleId,
-                        loadingState = LoadingState.Loaded(data = response.articleContent),
-                        ratingState = ratingStateMap[articleId]
-                            ?: RatingState.Required
-                    )
+                    is GetArticleResponse.Done -> {
+                        launchAddViews(articleId)
+                        ArticleModel(
+                            articleId = articleId,
+                            loadingState = LoadingState.Loaded(data = response.articleContent),
+                            ratingState = ratingStateMap[articleId]
+                                ?: RatingState.Required()
+                        )
+                    }
                     is GetArticleResponse.Error -> copy(
                         loadingState = LoadingState.Error(code = response.code)
                     )
                 }
+            }
+        }
+    }
+
+    private fun launchAddViews(articleId: Long) {
+        ioScope.launch {
+            val response = knowledgeRepository.addViews(articleId)
+            when (response) {
+                is AddViewsResponse.Done -> {
+                    UsedeskLog.onLog("AddViewsResponse.Done") { response.views.toString() }
+                }
+                is AddViewsResponse.Error -> {}
             }
         }
     }
@@ -170,18 +231,12 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         articleModelFlow
     }
 
-    override fun addViews(articleId: Long) {
-        ioScope.launch {
-            knowledgeRepository.addViews(articleId)
-        }
-    }
-
     private fun launchSendingRating(
         articleId: Long,
         good: Boolean
     ) {
         ioScope.launch {
-            val response = responseWithDelay(SendResponse.Error::class.java) {
+            val response = responseWithDelay(SendRatingResponse.Error::class.java) {
                 knowledgeRepository.sendRating(
                     articleId,
                     good
@@ -189,8 +244,13 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             }
             articleModelFlow.updateWithLock {
                 val ratingState = when (response) {
-                    SendResponse.Done -> RatingState.Sent(good)
-                    is SendResponse.Error -> RatingState.Required
+                    is SendRatingResponse.Done -> {
+                        UsedeskLog.onLog("SendRatingResponse.Done") {
+                            "positive: ${response.positive} negative: ${response.negative}"
+                        }
+                        RatingState.Sent(good)
+                    }
+                    is SendRatingResponse.Error -> RatingState.Required(good)
                 }
                 ratingStateMap[articleId] = ratingState
                 when (articleId) {
@@ -207,9 +267,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     ) {
         runBlocking {
             articleModelFlow.updateWithLock {
-                if (this.articleId == articleId &&
-                    ratingState == RatingState.Required
-                ) {
+                if (this.articleId == articleId && ratingState is RatingState.Required) {
                     val ratingState = RatingState.Sending(good)
                     ratingStateMap[articleId] = ratingState
                     launchSendingRating(articleId, good)
@@ -224,7 +282,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         message: String
     ) {
         ioScope.launch {
-            val response = responseWithDelay(SendResponse.Error::class.java) {
+            val response = responseWithDelay(SendReviewResponse.Error::class.java) {
                 knowledgeRepository.sendReview(
                     articleId,
                     message
@@ -233,8 +291,8 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             articleModelFlow.updateWithLock {
                 copy(
                     reviewState = when (response) {
-                        SendResponse.Done -> ReviewState.Sent
-                        is SendResponse.Error -> ReviewState.Failed(response.code)
+                        is SendReviewResponse.Done -> ReviewState.Sent
+                        is SendReviewResponse.Error -> ReviewState.Required(true)
                     }
                 )
             }
@@ -259,9 +317,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     ) {
         runBlocking {
             articleModelFlow.updateWithLock {
-                if (this.articleId == articleId &&
-                    reviewState == ReviewState.Required
-                ) {
+                if (this.articleId == articleId && reviewState is ReviewState.Required) {
                     launchSendingReview(articleId, message)
                     copy(reviewState = ReviewState.Sending)
                 } else this

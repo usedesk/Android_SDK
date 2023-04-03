@@ -11,16 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
 @Composable
@@ -42,7 +35,7 @@ internal fun ScreenNotLoaded(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
-                painter = painterResource(R.drawable.usedesk_image_cant_load),
+                painter = painterResource(customization.imageIdCantLoad),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth
             )
@@ -54,24 +47,17 @@ internal fun ScreenNotLoaded(
                 .padding(
                     start = 24.dp,
                     end = 24.dp
-                )
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BasicText(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = 12.dp),
-                text = stringResource(customization.textIdSearchLoadError),
-                style = TextStyle(
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 17.sp,
-                    color = colorResource(customization.colorIdBlack2),
-                    textAlign = TextAlign.Center
-                )
+                text = stringResource(customization.textIdLoadError),
+                style = customization.textStyleLoadError()
             )
             AnimatedVisibility(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = 8.dp),
                 visible = tryAgain != null,
                 enter = fadeIn(),
@@ -79,17 +65,9 @@ internal fun ScreenNotLoaded(
             ) {
                 BasicText(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickableText(onClick = tryAgain ?: remember { {} })
-                        .align(Alignment.CenterHorizontally),
-                    text = stringResource(customization.textIdSearchTryAgain),
-                    style = TextStyle(
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 17.sp,
-                        color = colorResource(customization.colorIdBlue),
-                        textAlign = TextAlign.Center
-                    )
+                        .clickableText(onClick = tryAgain ?: remember { {} }),
+                    text = stringResource(customization.textIdTryAgain),
+                    style = customization.textStyleTryAgain()
                 )
             }
         }

@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_gui._entity
 
 internal sealed interface RatingState {
-    object Required : RatingState
+    class Required(val error: Boolean? = null) : RatingState
     class Sending(val good: Boolean) : RatingState
     class Sent(val good: Boolean) : RatingState
 }

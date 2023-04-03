@@ -12,20 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
-import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
+import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 @Preview
@@ -60,8 +55,7 @@ internal fun ContentArticles(
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> ArticlesViewModel(kbUiComponent.interactor, categoryId) }
     val state by viewModel.modelFlow.collectAsState()
-    UsedeskLog.onLog("ContentArticles") { viewModel.toString() }
-    state.lazyListState.attachToSupportButton(supportButtonVisible)
+    supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     LazyColumn(
         modifier = Modifier,
         state = state.lazyListState
@@ -79,8 +73,14 @@ internal fun ContentArticles(
                     )
                     .cardItem(
                         customization = customization,
-                        isTop = it == state.articles.firstOrNull(),
-                        isBottom = it == state.articles.lastOrNull()
+                        isTop = remember(
+                            it,
+                            state.articles
+                        ) { it == state.articles.firstOrNull() },
+                        isBottom = remember(
+                            it,
+                            state.articles
+                        ) { it == state.articles.lastOrNull() }
                     )
                     .clickableItem(
                         onClick = remember { { onArticleClick(it) } }
@@ -97,11 +97,7 @@ internal fun ContentArticles(
                         .align(Alignment.CenterVertically)
                         .padding(end = 10.dp)
                         .weight(weight = 1f, fill = true),
-                    style = TextStyle(
-                        fontSize = 17.sp,
-                        textAlign = TextAlign.Start,
-                        color = colorResource(customization.colorIdBlack2)
-                    ),
+                    style = customization.textStyleArticlesItemTitle(),
                     text = it.title
                 )
                 Icon(
@@ -112,7 +108,7 @@ internal fun ContentArticles(
                             bottom = 16.dp
                         )
                         .size(24.dp),
-                    painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                    painter = painterResource(customization.iconIdListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )

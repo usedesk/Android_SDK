@@ -12,20 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
-import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
+import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 @Preview
@@ -60,8 +55,7 @@ internal fun ContentCategories(
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> CategoriesViewModel(kbUiComponent.interactor, sectionId) }
     val state by viewModel.modelFlow.collectAsState()
-    UsedeskLog.onLog("ContentCategories") { viewModel.toString() }
-    state.lazyListState.attachToSupportButton(supportButtonVisible)
+    supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     LazyColumn(
         modifier = Modifier,
         state = state.lazyListState
@@ -96,11 +90,7 @@ internal fun ContentCategories(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 10.dp),
-                    style = TextStyle(
-                        fontSize = 17.sp,
-                        textAlign = TextAlign.Start,
-                        color = colorResource(customization.colorIdBlack2)
-                    ),
+                    style = customization.textStyleCategoriesTitle(),
                     text = it.title
                 )
                 Row(
@@ -112,18 +102,14 @@ internal fun ContentCategories(
                             .align(Alignment.CenterVertically)
                             .padding(end = 10.dp)
                             .weight(weight = 1f, fill = true),
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Start,
-                            color = colorResource(customization.colorIdGrayCold2)
-                        ),
+                        style = customization.textStyleCategoriesDescription(),
                         text = it.description
                     )
                     Icon(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .size(24.dp),
-                        painter = painterResource(R.drawable.usedesk_ic_arrow_forward),
+                        painter = painterResource(customization.iconIdListItemArrowForward),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )

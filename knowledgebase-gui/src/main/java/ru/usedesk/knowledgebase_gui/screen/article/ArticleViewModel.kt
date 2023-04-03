@@ -30,7 +30,7 @@ internal class ArticleViewModel(
                     },
                     ratingState = articleModel.ratingState,
                     reviewExpected = when (articleModel.ratingState) {
-                        RatingState.Required,
+                        is RatingState.Required,
                         is RatingState.Sent -> false
                         is RatingState.Sending -> reviewExpected
                     },
@@ -81,7 +81,7 @@ internal class ArticleViewModel(
         val contentState: ContentState<UsedeskArticleContent> = ContentState.Empty(),
         val loading: Boolean = true,
         val articleShowed: Boolean = false,
-        val ratingState: RatingState = RatingState.Required,
+        val ratingState: RatingState = RatingState.Required(),
         val reviewExpected: Boolean = false,
         val goReview: UsedeskEvent<Unit>? = null
     )

@@ -13,25 +13,17 @@ internal class ReviewViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     init {
-        var lastReviewState: ReviewState? = null
         kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
             setModel {
                 when (articleModel.reviewState) {
-                    ReviewState.Required -> copy(
+                    is ReviewState.Required -> copy(
                         buttonLoading = false,
-                        error = null,
+                        buttonError = articleModel.reviewState.error,
                         goBackExpected = false
                     )
                     ReviewState.Sending -> copy(
-                        buttonLoading = true
-                    )
-                    is ReviewState.Failed -> copy(
-                        buttonLoading = false,
-                        goBackExpected = false,
-                        error = when (lastReviewState) {
-                            articleModel.reviewState -> null
-                            else -> UsedeskEvent(articleModel.reviewState.code)
-                        }
+                        buttonLoading = true,
+                        buttonError = false
                     )
                     ReviewState.Sent -> copy(
                         buttonLoading = false,
@@ -40,7 +32,6 @@ internal class ReviewViewModel(
                     )
                 }.updateButtonShowed()
             }
-            lastReviewState = articleModel.reviewState
         }
     }
 
@@ -89,13 +80,13 @@ internal class ReviewViewModel(
 
     data class State(
         val goBack: UsedeskEvent<Unit>? = null,
-        val error: UsedeskEvent<Int?>? = null,
         val goBackExpected: Boolean = false,
         val clearFocus: UsedeskEvent<Unit>? = null,
         val selectedReplies: List<String> = listOf(),
         val reviewValue: TextFieldValue = TextFieldValue(),
         val reviewFocused: Boolean = false,
         val buttonShowed: Boolean = false,
-        val buttonLoading: Boolean = false
+        val buttonLoading: Boolean = false,
+        val buttonError: Boolean = false
     )
 }

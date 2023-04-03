@@ -29,6 +29,7 @@ internal fun ContentBlocks(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreFactory: ViewModelStoreFactory,
     state: State.BlocksState,
+    supportButtonVisible: MutableState<Boolean>,
     onEvent: (Event) -> Unit
 ) {
     val forwardTransitionSpec = remember {
@@ -90,6 +91,7 @@ internal fun ContentBlocks(
                         viewModelStoreOwner = remember {
                             { viewModelStoreFactory.get(SECTIONS_KEY) }
                         },
+                        supportButtonVisible = supportButtonVisible,
                         onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                     )
                 }
@@ -104,6 +106,7 @@ internal fun ContentBlocks(
                             { viewModelStoreFactory.get(CATEGORIES_KEY) }
                         },
                         sectionId = block.sectionId,
+                        supportButtonVisible = supportButtonVisible,
                         onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                     )
                 }
@@ -115,6 +118,7 @@ internal fun ContentBlocks(
                         customization = customization,
                         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
                         categoryId = block.categoryId,
+                        supportButtonVisible = supportButtonVisible,
                         onArticleClick = remember {
                             { onEvent(Event.ArticleClicked(it.id, it.title)) }
                         }
@@ -123,6 +127,7 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Search -> ContentSearch(
                     customization = customization,
                     viewModelStoreOwner = remember { { viewModelStoreFactory.get(SEARCH_KEY) } },
+                    supportButtonVisible = supportButtonVisible,
                     onArticleClick = remember { { onEvent(Event.ArticleClicked(it.id, it.title)) } }
                 )
             }

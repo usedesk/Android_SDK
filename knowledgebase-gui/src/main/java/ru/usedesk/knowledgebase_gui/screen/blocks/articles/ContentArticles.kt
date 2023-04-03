@@ -6,10 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +25,7 @@ import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 @Preview
@@ -43,6 +41,7 @@ private fun Preview() {
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             categoryId = 1L,
+            supportButtonVisible = remember { mutableStateOf(false) },
             onArticleClick = {}
         )
     }
@@ -53,6 +52,7 @@ internal fun ContentArticles(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
     categoryId: Long,
+    supportButtonVisible: MutableState<Boolean>,
     onArticleClick: (UsedeskArticleInfo) -> Unit
 ) {
     val viewModel = kbUiViewModel(
@@ -61,6 +61,7 @@ internal fun ContentArticles(
     ) { kbUiComponent -> ArticlesViewModel(kbUiComponent.interactor, categoryId) }
     val state by viewModel.modelFlow.collectAsState()
     UsedeskLog.onLog("ContentArticles") { viewModel.toString() }
+    state.lazyListState.attachToSupportButton(supportButtonVisible)
     LazyColumn(
         modifier = Modifier,
         state = state.lazyListState

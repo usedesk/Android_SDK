@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +24,7 @@ import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
@@ -41,6 +39,7 @@ private fun Preview() {
         ContentSections(
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
+            supportButtonVisible = remember { mutableStateOf(false) },
             onSectionClicked = {}
         )
     }
@@ -50,6 +49,7 @@ private fun Preview() {
 internal fun ContentSections(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
+    supportButtonVisible: MutableState<Boolean>,
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
     val viewModel = kbUiViewModel(
@@ -57,6 +57,7 @@ internal fun ContentSections(
     ) { kbUiComponent -> SectionsViewModel(kbUiComponent.interactor) }
     UsedeskLog.onLog("ContentSections") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
+    state.lazyListState.attachToSupportButton(supportButtonVisible)
     LazyColumn(
         modifier = Modifier,
         state = state.lazyListState

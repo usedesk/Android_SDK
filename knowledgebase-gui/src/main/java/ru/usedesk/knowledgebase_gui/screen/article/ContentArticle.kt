@@ -51,6 +51,7 @@ internal fun ContentArticle(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
+    supportButtonVisible: MutableState<Boolean>,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
@@ -66,6 +67,7 @@ internal fun ContentArticle(
             customization = customization,
             state = state,
             viewModel = viewModel,
+            supportButtonVisible = supportButtonVisible,
             onWebUrl = onWebUrl,
             onReviewGoodClick = remember { { viewModel.onRating(true) } },
             onReviewBadClick = remember { { viewModel.onRating(false) } }
@@ -78,6 +80,7 @@ private fun ArticleBlock(
     customization: UsedeskKnowledgeBaseCustomization,
     state: State,
     viewModel: ArticleViewModel,
+    supportButtonVisible: MutableState<Boolean>,
     onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
@@ -85,11 +88,17 @@ private fun ArticleBlock(
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(targetState = state.contentState) { contentState ->
             when (contentState) {
-                is ContentState.Empty -> Box(modifier = Modifier.fillMaxSize())
-                is ContentState.Error -> ScreenNotLoaded(
-                    customization = customization,
-                    tryAgain = if (!state.loading) viewModel::tryAgain else null
-                )
+                is ContentState.Empty -> {
+                    supportButtonVisible.value = true
+                    Box(modifier = Modifier.fillMaxSize())
+                }
+                is ContentState.Error -> {
+                    supportButtonVisible.value = true
+                    ScreenNotLoaded(
+                        customization = customization,
+                        tryAgain = if (!state.loading) viewModel::tryAgain else null
+                    )
+                }
                 else -> {
                     val context = LocalContext.current
                     val ratingView = remember(context) {
@@ -165,6 +174,8 @@ private fun ArticleBlock(
                     DisposableEffect(Unit) {
                         onDispose { viewModel.articleHidden() }
                     }
+                    supportButtonVisible.value =
+                        scrollState.value == 0 || scrollState.value < scrollState.maxValue
                     AndroidView(
                         modifier = Modifier
                             .animateContentSize()

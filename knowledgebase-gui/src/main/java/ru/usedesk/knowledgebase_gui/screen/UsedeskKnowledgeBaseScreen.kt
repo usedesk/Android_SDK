@@ -9,6 +9,7 @@ import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -78,9 +79,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 .background(colorResource(customization.colorIdWhite2))
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
+            val supportButtonVisible = remember { mutableStateOf(true) }
             Crossfade(
-                modifier = Modifier
-                    .animateContentSize(),
+                modifier = Modifier.animateContentSize(),
                 targetState = state.blocksState.block !is State.BlocksState.Block.Search
             ) { visibleToolbar ->
                 when {
@@ -106,10 +107,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 Content(
                     customization = customization,
                     state = state,
+                    supportButtonVisible = supportButtonVisible,
                     onEvent = onEvent
                 )
                 CardCircleChat(customization = customization,
-                    visible = true,
+                    visible = supportButtonVisible.value,
                     onClicked = remember {
                         { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
                     }
@@ -123,6 +125,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     private fun Content(
         customization: UsedeskKnowledgeBaseCustomization,
         state: State,
+        supportButtonVisible: MutableState<Boolean>,
         onEvent: (Event) -> Unit
     ) {
         val forwardTransitionSpec = remember {
@@ -182,6 +185,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         customization = customization,
                         viewModelStoreFactory = viewModelStoreFactory,
                         state = state.blocksState,
+                        supportButtonVisible = supportButtonVisible,
                         onEvent = onEvent
                     )
                 }
@@ -193,12 +197,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         customization = customization,
                         viewModelStoreFactory = viewModelStoreFactory,
                         articleId = screen.articleId,
-                        onWebUrl = remember {
-                            { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) }
-                        },
-                        onReview = remember {
-                            { onEvent(Event.GoReview(screen.articleId)) }
-                        }
+                        supportButtonVisible = supportButtonVisible,
+                        onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
+                        onReview = remember { { onEvent(Event.GoReview(screen.articleId)) } }
                     )
                 }
                 is State.Screen.Review -> ContentReview(
@@ -244,4 +245,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             putParcelable(KNOWLEDGE_BASE_CONFIGURATION, knowledgeBaseConfiguration)
         }
     }
+}
+
+@Composable
+internal fun LazyListState.attachToSupportButton(mutableState: MutableState<Boolean>) {
+    mutableState.value = firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
 }

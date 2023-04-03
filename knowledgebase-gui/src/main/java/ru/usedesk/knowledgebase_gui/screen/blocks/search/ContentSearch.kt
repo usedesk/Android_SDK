@@ -26,6 +26,7 @@ import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.attachToSupportButton
 import ru.usedesk.knowledgebase_gui.screen.blocks.SEARCH_KEY
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
@@ -42,6 +43,7 @@ private fun Preview() {
         ContentSearch(
             customization = customization,
             viewModelStoreOwner = remember { { ViewModelStore() } },
+            supportButtonVisible = remember { mutableStateOf(false) },
             onArticleClick = {}
         )
     }
@@ -52,6 +54,7 @@ private fun Preview() {
 internal fun ContentSearch(
     customization: UsedeskKnowledgeBaseCustomization,
     viewModelStoreOwner: ViewModelStoreOwner,
+    supportButtonVisible: MutableState<Boolean>,
     onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
     val viewModel = kbUiViewModel(
@@ -60,6 +63,7 @@ internal fun ContentSearch(
     ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
     UsedeskLog.onLog("ContentSearch") { viewModel.toString() }
     val state by viewModel.modelFlow.collectAsState()
+    state.lazyListState.attachToSupportButton(supportButtonVisible)
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(targetState = state.reloadError) { reloadError ->
             when {

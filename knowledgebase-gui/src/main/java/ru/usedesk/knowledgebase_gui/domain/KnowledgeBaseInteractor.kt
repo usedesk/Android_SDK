@@ -22,7 +22,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
 ) : IKnowledgeBaseInteractor {
 
     private val sectionsModelFlow = MutableStateFlow(SectionsModel())
-    private val articlesModelFlow = MutableStateFlow(ArticlesModel())
+    private val searchModelFlow = MutableStateFlow(ArticlesModel())
     private val articleModelFlow = MutableStateFlow(ArticleModel())
 
     private val mutex = Mutex()
@@ -94,23 +94,23 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             val response = responseWithDelay(GetArticlesResponse.Error::class.java) {
                 knowledgeRepository.getArticles(query, page)
             }
-            articlesModelFlow.updateWithLock {
+            searchModelFlow.updateWithLock {
                 when (response) {
                     is GetArticlesResponse.Done -> {
-                        val newArticles = (previous ?: listOf()) + response.articles.toItems(
+                        val newSearchItems = (previous ?: listOf()) + response.articles.toItems(
                             sectionsModelFlow.value.data
                         )
-                        val articlesMap = newArticles.associateBy { it.item.id }
-                        val totalArticles = newArticles
+                        val searchItemsMap = newSearchItems.associateBy { it.item.id }
+                        val totalSearchItems = newSearchItems
                             .toSet()
-                            .filter { it.item.id in articlesMap }
+                            .filter { it.item.id in searchItemsMap }
                         copy(
                             query = query,
                             loadingState = LoadingState.Loaded(
                                 page = page,
-                                data = totalArticles
+                                data = totalSearchItems
                             ),
-                            articles = totalArticles,
+                            searchItems = totalSearchItems,
                             page = page,
                             hasNextPage = response.articles.isNotEmpty()
                         )
@@ -158,7 +158,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         nextPage: Boolean,
         reload: Boolean
     ): StateFlow<ArticlesModel> = runBlocking {
-        articlesModelFlow.updateWithLock {
+        searchModelFlow.updateWithLock {
             val query = newQuery ?: this.query
             val newLoad = reload || this.query != query
             if (newLoad ||
@@ -171,7 +171,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                 }
                 val previous = when {
                     newLoad -> null
-                    else -> articles
+                    else -> searchItems
                 }
                 launchArticlesJob(
                     query = query,
@@ -181,7 +181,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                 copy(loadingState = LoadingState.Loading(page = newPage))
             } else this
         }
-        articlesModelFlow
+        searchModelFlow
     }
 
     private fun launchArticleJob(articleId: Long) {
@@ -197,8 +197,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                         ArticleModel(
                             articleId = articleId,
                             loadingState = LoadingState.Loaded(data = response.articleContent),
-                            ratingState = ratingStateMap[articleId]
-                                ?: RatingState.Required()
+                            ratingState = ratingStateMap[articleId] ?: RatingState.Required()
                         )
                     }
                     is GetArticleResponse.Error -> copy(
@@ -224,8 +223,19 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     override fun loadArticle(articleId: Long): StateFlow<ArticleModel> = runBlocking {
         articleModelFlow.updateWithLock {
             if (this.articleId != articleId || loadingState is LoadingState.Error) {
-                launchArticleJob(articleId)
-                ArticleModel(articleId)
+                val searchArticle = searchModelFlow.value.searchItems
+                    ?.firstOrNull { it.item.id == articleId }
+                when (searchArticle) {
+                    null -> {
+                        launchArticleJob(articleId)
+                        ArticleModel(articleId)
+                    }
+                    else -> ArticleModel(
+                        articleId = articleId,
+                        loadingState = LoadingState.Loaded(data = searchArticle.item),
+                        ratingState = ratingStateMap[articleId] ?: RatingState.Required()
+                    )
+                }
             } else this
         }
         articleModelFlow

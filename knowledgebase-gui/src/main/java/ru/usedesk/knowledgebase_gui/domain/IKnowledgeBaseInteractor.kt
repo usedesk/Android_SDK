@@ -40,7 +40,7 @@ internal interface IKnowledgeBaseInteractor {
     data class ArticlesModel(
         val query: String = "",
         val loadingState: LoadingState<List<SearchItem>> = LoadingState.Loading(),
-        val articles: List<SearchItem>? = null,
+        val searchItems: List<SearchItem>? = null,
         val page: Long = 1,
         val hasNextPage: Boolean = true
     ) {

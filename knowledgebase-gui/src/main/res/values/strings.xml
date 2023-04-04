@@ -39,6 +39,6 @@
     <string name="usedesk_string_wont_work">It won\'t work</string>
     <string name="usedesk_string_font_too_small">The font size is too small</string>
     <string name="usedesk_string_hard_to_find">It\'s challenging to find what I looked for</string>
-    <string name="usedesk_string_review_tags_prefix">What's wrong</string>
+    <string name="usedesk_string_review_tags_prefix">What\'s wrong</string>
     <string name="usedesk_string_review_comment_prefix">Сomment</string>
 </resources>

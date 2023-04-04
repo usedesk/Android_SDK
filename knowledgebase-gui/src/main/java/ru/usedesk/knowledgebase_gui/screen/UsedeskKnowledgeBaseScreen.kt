@@ -166,27 +166,38 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 }
             }) { screen ->
             when (screen) {
-                is State.Screen.Loading -> ContentLoading(
-                    customization = customization,
-                    viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                    tryAgain = remember { { onEvent(Event.TryAgain) } }
-                )
-                is State.Screen.Blocks -> {
-                    LaunchedEffect(Unit) {
-                        viewModel.viewModelStoreFactory.clear(LOADING_KEY)
-                        viewModel.viewModelStoreFactory.clear(ARTICLE_KEY)
+                is State.Screen.Loading -> {
+                    DisposableEffect(Unit) {
+                        onDispose {
+                            viewModel.viewModelStoreFactory.clear(LOADING_KEY)
+                        }
                     }
+                    ContentLoading(
+                        customization = customization,
+                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
+                        tryAgain = remember { { onEvent(Event.TryAgain) } }
+                    )
+                }
+                is State.Screen.Blocks -> {
                     ContentBlocks(
                         customization = customization,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                        state = state.blocksState,
+                        viewModel = viewModel,
                         supportButtonVisible = supportButtonVisible,
                         onEvent = onEvent
                     )
                 }
                 is State.Screen.Article -> {
-                    LaunchedEffect(Unit) {
-                        viewModel.viewModelStoreFactory.clear(REVIEW_KEY)
+                    DisposableEffect(Unit) {
+                        onDispose {
+                            when (viewModel.modelFlow.value.screen) {
+                                State.Screen.Blocks,
+                                State.Screen.Loading ->
+                                    viewModel.viewModelStoreFactory.clear(ARTICLE_KEY)
+                                is State.Screen.Article,
+                                is State.Screen.Review -> Unit
+                            }
+                        }
                     }
                     ContentArticle(
                         customization = customization,
@@ -199,6 +210,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 }
                 is State.Screen.Review -> {
                     supportButtonVisible.value = false
+                    DisposableEffect(Unit) {
+                        onDispose {
+                            viewModel.viewModelStoreFactory.clear(REVIEW_KEY)
+                        }
+                    }
                     ContentReview(
                         customization = customization,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,

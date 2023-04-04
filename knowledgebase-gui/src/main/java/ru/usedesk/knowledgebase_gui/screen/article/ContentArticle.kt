@@ -50,8 +50,10 @@ internal fun ContentArticle(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
     ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
+
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
+
     Box(modifier = Modifier.fillMaxWidth()) {
         ArticleBlock(
             customization = customization,

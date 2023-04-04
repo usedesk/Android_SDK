@@ -253,23 +253,22 @@ internal class KbRepository @Inject constructor(
     }
 
     override fun sendReview(
-        articleId: Long,
+        subject: String,
         message: String
     ): SendReviewResponse {
         val request = CreateTicket.Request(
             configuration.token,
             configuration.clientEmail,
             configuration.clientName,
-            message,
-            articleId
+            subject,
+            message
         )
         val response = doRequestJson(
             configuration.urlApi,
             request,
-            CreateTicket.Response::class.java
-        ) {
-            createTicket(request)
-        }
+            CreateTicket.Response::class.java,
+            ApiRetrofit::createTicket
+        )
         return when (response?.status) {
             "success" -> SendReviewResponse.Done()
             else -> SendReviewResponse.Error(response?.code)

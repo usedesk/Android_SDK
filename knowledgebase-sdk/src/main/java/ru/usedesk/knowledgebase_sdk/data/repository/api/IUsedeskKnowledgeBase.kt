@@ -48,7 +48,7 @@ interface IUsedeskKnowledgeBase {
 
     @CheckResult
     fun sendReview(
-        articleId: Long,
+        subject: String,
         message: String
     ): SendReviewResponse
 

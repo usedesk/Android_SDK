@@ -27,6 +27,7 @@ internal interface IKnowledgeBaseInteractor {
 
     fun sendReview(
         articleId: Long,
+        subject: String,
         message: String
     )
 

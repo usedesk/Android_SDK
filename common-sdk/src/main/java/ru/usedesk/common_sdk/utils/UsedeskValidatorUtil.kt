@@ -4,7 +4,7 @@ import android.util.Patterns
 import java.util.regex.Pattern
 
 object UsedeskValidatorUtil {
-    //Либо пустой, либо валидный
+    //Empty or valid
     private fun isValid(
         text: String?,
         pattern: Pattern?,
@@ -13,7 +13,7 @@ object UsedeskValidatorUtil {
             || (pattern?.matcher(text)?.matches() != false
             && customRule(text))
 
-    //Не пустой и валидный
+    //Not empty and valid
     private fun isValidNecessary(
         text: String?,
         pattern: Pattern?,

@@ -12,6 +12,8 @@
     <string name="usedesk_try_again" translatable="false">@string/usedesk_string_try_again</string>
     <string name="usedesk_rating_yes" translatable="false">@string/usedesk_string_rating_yes</string>
     <string name="usedesk_rating_no" translatable="false">@string/usedesk_string_rating_no</string>
+    <string name="usedesk_review_tags_prefix" translatable="false">@string/usedesk_string_review_tags_prefix</string>
+    <string name="usedesk_review_comment_prefix" translatable="false">@string/usedesk_string_review_comment_prefix</string>
     <string-array name="usedesk_article_review_tags" translatable="false">
         <item>@string/usedesk_string_not_find_answer</item>
         <item>@string/usedesk_string_no_pics</item>
@@ -37,4 +39,6 @@
     <string name="usedesk_string_wont_work">It won\'t work</string>
     <string name="usedesk_string_font_too_small">The font size is too small</string>
     <string name="usedesk_string_hard_to_find">It\'s challenging to find what I looked for</string>
+    <string name="usedesk_string_review_tags_prefix">What's wrong</string>
+    <string name="usedesk_string_review_comment_prefix">Сomment</string>
 </resources>

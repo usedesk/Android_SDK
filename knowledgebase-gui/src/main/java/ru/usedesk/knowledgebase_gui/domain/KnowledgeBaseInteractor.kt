@@ -23,7 +23,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
 
     private val sectionsModelFlow = MutableStateFlow(SectionsModel())
     private val searchModelFlow = MutableStateFlow(ArticlesModel())
-    private val articleModelFlow = MutableStateFlow(ArticleModel())
+    private val articleModelFlowMap = mutableMapOf<Long, MutableStateFlow<ArticleModel>>()
 
     private val mutex = Mutex()
     private val ioScope = CoroutineScope(Dispatchers.IO)
@@ -33,6 +33,10 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     private var loadSectionsJob: Job? = null
     private var loadArticlesJob: Job? = null
     private var loadArticleJob: Job? = null
+
+    private fun getArticleModelFlow(articleId: Long) = articleModelFlowMap.getOrPut(articleId) {
+        MutableStateFlow(ArticleModel())
+    }
 
     private fun <T> MutableStateFlow<T>.update(onUpdate: T.() -> T) =
         onUpdate(value).also { value = it }
@@ -190,7 +194,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             val response = responseWithDelay(GetArticleResponse.Error::class.java) {
                 knowledgeRepository.getArticle(articleId)
             }
-            articleModelFlow.updateWithLock {
+            getArticleModelFlow(articleId).updateWithLock {
                 when (response) {
                     is GetArticleResponse.Done -> {
                         launchAddViews(articleId)
@@ -221,24 +225,30 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     }
 
     override fun loadArticle(articleId: Long): StateFlow<ArticleModel> = runBlocking {
-        articleModelFlow.updateWithLock {
-            if (this.articleId != articleId || loadingState is LoadingState.Error) {
-                val searchArticle = searchModelFlow.value.searchItems
-                    ?.firstOrNull { it.item.id == articleId }
-                when (searchArticle) {
-                    null -> {
-                        launchArticleJob(articleId)
-                        ArticleModel(articleId)
+        getArticleModelFlow(articleId).apply {
+            updateWithLock {
+                if (this.articleId != articleId || loadingState is ru.usedesk.knowledgebase_gui._entity.LoadingState.Error) {
+                    val searchArticle = searchModelFlow.value.searchItems
+                        ?.firstOrNull { it.item.id == articleId }
+                    when (searchArticle) {
+                        null -> {
+                            launchArticleJob(articleId)
+                            ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.ArticleModel(
+                                articleId
+                            )
+                        }
+                        else -> ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.ArticleModel(
+                            articleId = articleId,
+                            loadingState = ru.usedesk.knowledgebase_gui._entity.LoadingState.Loaded(
+                                data = searchArticle.item
+                            ),
+                            ratingState = ratingStateMap[articleId]
+                                ?: ru.usedesk.knowledgebase_gui._entity.RatingState.Required()
+                        )
                     }
-                    else -> ArticleModel(
-                        articleId = articleId,
-                        loadingState = LoadingState.Loaded(data = searchArticle.item),
-                        ratingState = ratingStateMap[articleId] ?: RatingState.Required()
-                    )
-                }
-            } else this
+                } else this
+            }
         }
-        articleModelFlow
     }
 
     private fun launchSendingRating(
@@ -252,7 +262,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                     good
                 )
             }
-            articleModelFlow.updateWithLock {
+            getArticleModelFlow(articleId).updateWithLock {
                 val ratingState = when (response) {
                     is SendRatingResponse.Done -> {
                         UsedeskLog.onLog("SendRatingResponse.Done") {
@@ -276,29 +286,30 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         good: Boolean
     ) {
         runBlocking {
-            articleModelFlow.updateWithLock {
-                if (this.articleId == articleId && ratingState is RatingState.Required) {
-                    val ratingState = RatingState.Sending(good)
-                    ratingStateMap[articleId] = ratingState
-                    launchSendingRating(articleId, good)
-                    copy(ratingState = ratingState)
-                } else this
+            getArticleModelFlow(articleId).updateWithLock {
+                when (ratingState) {
+                    is RatingState.Required -> {
+                        val ratingState = RatingState.Sending(good)
+                        ratingStateMap[articleId] = ratingState
+                        launchSendingRating(articleId, good)
+                        copy(ratingState = ratingState)
+                    }
+                    else -> this
+                }
             }
         }
     }
 
     private fun launchSendingReview(
         articleId: Long,
+        subject: String,
         message: String
     ) {
         ioScope.launch {
             val response = responseWithDelay(SendReviewResponse.Error::class.java) {
-                knowledgeRepository.sendReview(
-                    articleId,
-                    message
-                )
+                knowledgeRepository.sendReview(subject, message)
             }
-            articleModelFlow.updateWithLock {
+            getArticleModelFlow(articleId).updateWithLock {
                 copy(
                     reviewState = when (response) {
                         is SendReviewResponse.Done -> ReviewState.Sent
@@ -323,14 +334,18 @@ internal class KnowledgeBaseInteractor @Inject constructor(
 
     override fun sendReview(
         articleId: Long,
+        subject: String,
         message: String
     ) {
         runBlocking {
-            articleModelFlow.updateWithLock {
-                if (this.articleId == articleId && reviewState is ReviewState.Required) {
-                    launchSendingReview(articleId, message)
-                    copy(reviewState = ReviewState.Sending)
-                } else this
+            getArticleModelFlow(articleId).updateWithLock {
+                when (reviewState) {
+                    is ReviewState.Required -> {
+                        launchSendingReview(articleId, subject, message)
+                        copy(reviewState = ReviewState.Sending)
+                    }
+                    else -> this
+                }
             }
         }
     }

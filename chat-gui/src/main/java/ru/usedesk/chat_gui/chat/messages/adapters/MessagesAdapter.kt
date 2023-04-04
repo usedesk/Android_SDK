@@ -124,14 +124,6 @@ internal class MessagesAdapter(
                 .filterIsInstance<DateViewHolder>()
                 .forEach { it.binding.rootView.visibility = View.VISIBLE }
 
-            /**
-             * notVisible - тот, что не виден полностью (или весь в зоне floating)
-             * top - тот что виден полностью, или вышел из зоны floating снизу
-             *
-             * Если есть notVisible, то дата равна ему, а если нет, то дата равна top
-             * Если дата равна notVisible, то если top в зоне floating, то дата сдвигается вверх
-             */
-
             if (firstIndex >= 0) {
                 val topIndex = layoutManager.findLastVisibleItemPosition()
                 val topDateIndex = (firstIndex..topIndex).lastOrNull { i ->

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
 
@@ -109,12 +110,14 @@ internal fun ContentReview(
                     .height(64.dp)
             )
         }
+        val tagsPrefix = stringResource(R.string.usedesk_review_tags_prefix)
+        val commentPrefix = stringResource(R.string.usedesk_review_comment_prefix)
         BottomButton(
             customization = customization,
             showed = state.buttonShowed,
             error = state.buttonError,
             loading = state.buttonLoading,
-            onClick = viewModel::sendClicked
+            onClick = remember { { viewModel.sendClicked(tagsPrefix, commentPrefix) } }
         )
     }
 }

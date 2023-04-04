@@ -22,7 +22,7 @@ object UsedeskChatSdk {
     private val mutex = Mutex()
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
-        null //TODO: вынести функционал из sdk
+        null //TODO: remove this from sdk
     private var usedeskMessagesRepository = UsedeskCustom<IUsedeskMessagesRepository>()
 
 
@@ -66,8 +66,8 @@ object UsedeskChatSdk {
         ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
 
     /**
-     * Завершает работу IUsedeskChat
-     * При force == false завершит работу только в том случае, если не осталось слушателей
+     * Release all resources of IUsedeskChat
+     * @param force If it is false, resources will be released only if no one listener exists
      */
     @JvmStatic
     @JvmOverloads

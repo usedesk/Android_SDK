@@ -101,7 +101,7 @@ internal class SocketConnection(
                 is Inited -> eventListener.onInited(response)
                 is SetClient -> eventListener.onSetEmailSuccess()
                 is AddMessage -> eventListener.onNew(response)
-                is FeedbackResponse -> eventListener.onFeedback() //TODO: бессмысленный вызов, нужны какие-то идентификаторы какой вообще фидбек получен
+                is FeedbackResponse -> eventListener.onFeedback() //TODO: Need to add some data in this respose
             }
         } catch (e: Exception) {
             eventListener.onException(e)

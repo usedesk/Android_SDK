@@ -73,7 +73,7 @@ internal class ThumbnailRepository @Inject constructor(
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    //На разных устройствах срабатывают разные методы
+                    //Different methods works on different devices
 
                     media.getFrameAtTime(0)
                 } catch (e: Exception) {

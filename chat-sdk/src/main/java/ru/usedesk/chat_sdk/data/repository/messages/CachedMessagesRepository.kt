@@ -10,7 +10,7 @@ import ru.usedesk.chat_sdk.entity.*
 import java.util.*
 import javax.inject.Inject
 
-//TODO: разобрать вложенность репозиториев
+//TODO: do something with repository hierarchy
 internal class CachedMessagesRepository @Inject constructor(
     private val configuration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,

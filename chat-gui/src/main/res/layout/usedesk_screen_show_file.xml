@@ -24,7 +24,7 @@
         <TextView
             android:id="@+id/tv_file_size"
             style="?attr/usedesk_chat_show_file_size_text"
-            tools:text="29КБ" />
+            tools:text="29KB" />
 
     </LinearLayout>
 

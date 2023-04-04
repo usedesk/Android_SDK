@@ -25,7 +25,6 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 
-//TODO: вытащить вьюхолдеры во вне
 internal class MessageFormAdapter(
     private val recyclerView: RecyclerView,
     private val viewModel: MessagesViewModel,

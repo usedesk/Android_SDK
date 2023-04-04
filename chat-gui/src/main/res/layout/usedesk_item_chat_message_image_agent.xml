@@ -20,7 +20,7 @@
             <TextView
                 android:id="@+id/tv_name"
                 style="?attr/usedesk_chat_message_name_text"
-                tools:text="Алена Ошева" />
+                tools:text="John Smith" />
 
             <include
                 android:id="@+id/content"

@@ -17,4 +17,6 @@
     <string name="usedesk_string_wont_work">No funcionará</string>
     <string name="usedesk_string_font_too_small">El tamaño de fuente es demasiado pequeño</string>
     <string name="usedesk_string_hard_to_find">Es difícil encontrar lo que buscaba</string>
+    <string name="usedesk_string_review_tags_prefix">Que sucede</string>
+    <string name="usedesk_string_review_comment_prefix">Сomentario</string>
 </resources>

@@ -9,13 +9,9 @@ internal interface CreateTicket {
         private val clientEmail: String? = null,
         @SerializedName("clientName")
         private val clientName: String? = null,
-        message: String,
-        articleId: Long
-    ) {
-        private val subject = "Отзыв о статье" //TODO:
-        private val tag = "БЗ" //TODO:
-        private val message = "ID: $articleId\n$message"
-    }
+        private val subject: String,
+        private val message: String,
+    )
 
     class Response(
         val status: String? = null,

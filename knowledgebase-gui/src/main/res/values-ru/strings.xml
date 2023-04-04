@@ -17,4 +17,6 @@
     <string name="usedesk_string_wont_work">Инструкция не работает</string>
     <string name="usedesk_string_font_too_small">Маленький шрифт</string>
     <string name="usedesk_string_hard_to_find">Трудно найти то, что я искал</string>
+    <string name="usedesk_string_review_tags_prefix">Что не так</string>
+    <string name="usedesk_string_review_comment_prefix">Комментарий</string>
 </resources>

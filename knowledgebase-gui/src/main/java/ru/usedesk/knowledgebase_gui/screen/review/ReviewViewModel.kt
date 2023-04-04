@@ -54,21 +54,31 @@ internal class ReviewViewModel(
         }
     }
 
-    fun sendClicked() {
+    fun sendClicked(
+        tagsPrefix: String,
+        commentPrefix: String
+    ) {
         val state = setModel {
             copy(
                 clearFocus = UsedeskEvent(Unit),
                 goBackExpected = true
             ).updateButtonShowed()
         }
-        val review = (state.selectedReplies + modelFlow.value.reviewValue.text)
-            .asSequence()
-            .map(String::trim)
-            .filter(String::isNotEmpty)
-            .joinToString(". ")
+
+        val subject = "ID: $articleId"
+        val message = listOfNotNull(
+            when (state.selectedReplies.size) {
+                0 -> null
+                else -> "$tagsPrefix: ${state.selectedReplies.joinToString(". ")}."
+            }, when (val comment = state.reviewValue.text) {
+                "" -> null
+                else -> "$commentPrefix: $comment"
+            }
+        ).joinToString("\n")
         kbInteractor.sendReview(
             articleId,
-            review
+            subject,
+            message
         )
     }
 

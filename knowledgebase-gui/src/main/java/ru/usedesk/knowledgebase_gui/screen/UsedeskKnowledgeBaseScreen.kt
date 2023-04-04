@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -51,13 +50,13 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         savedInstanceState: Bundle?
     ) = ComposeView(requireContext()).apply {
         setContent {
-            val customization = remember { UsedeskKnowledgeBaseCustomization.provider() }
-            ScreenRoot(customization)
+            val theme = remember { UsedeskKnowledgeBaseTheme.provider() }
+            ScreenRoot(theme)
         }
     }
 
     @Composable
-    private fun ScreenRoot(customization: UsedeskKnowledgeBaseCustomization) {
+    private fun ScreenRoot(theme: UsedeskKnowledgeBaseTheme) {
         val state by viewModel.modelFlow.collectAsState()
 
         val focusManager = LocalFocusManager.current
@@ -68,15 +67,15 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             is State.Screen.Loading -> null
             State.Screen.Blocks -> state.blocksState.block.title
             is State.Screen.Article -> screen.title
-            is State.Screen.Review -> stringResource(customization.textIdArticleReviewTitle)
-        } ?: stringResource(customization.textIdSectionsTitle)
+            is State.Screen.Review -> stringResource(theme.strings.textIdArticleReviewTitle)
+        } ?: stringResource(theme.strings.textIdSectionsTitle)
 
         val scrollBehavior = rememberToolbarScrollBehavior()
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorResource(customization.colorIdWhite2))
+                .background(theme.colors.white2)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             val supportButtonVisible = remember { mutableStateOf(true) }
@@ -86,10 +85,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
             ) { visibleToolbar ->
                 when {
                     visibleToolbar -> CustomToolbar(
+                        theme = theme,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(colorResource(customization.colorIdWhite2)),
-                        customization = customization,
+                            .background(theme.colors.white2),
                         title = title,
                         scrollBehavior = scrollBehavior,
                         onBackPressed = requireActivity()::onBackPressed
@@ -106,12 +105,12 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     .fillMaxSize()
             ) {
                 Content(
-                    customization = customization,
+                    theme = theme,
                     state = state,
                     supportButtonVisible = supportButtonVisible,
                     onEvent = onEvent
                 )
-                CardCircleChat(customization = customization,
+                CardCircleChat(theme = theme,
                     visible = supportButtonVisible.value,
                     onClicked = remember {
                         { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
@@ -124,7 +123,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     private fun Content(
-        customization: UsedeskKnowledgeBaseCustomization,
+        theme: UsedeskKnowledgeBaseTheme,
         state: State,
         supportButtonVisible: MutableState<Boolean>,
         onEvent: (Event) -> Unit
@@ -173,14 +172,14 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         }
                     }
                     ContentLoading(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         tryAgain = remember { { onEvent(Event.TryAgain) } }
                     )
                 }
                 is State.Screen.Blocks -> {
                     ContentBlocks(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         viewModel = viewModel,
                         supportButtonVisible = supportButtonVisible,
@@ -200,7 +199,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         }
                     }
                     ContentArticle(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         supportButtonVisible = supportButtonVisible,
@@ -216,7 +215,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                         }
                     }
                     ContentReview(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         goBack = viewModel::onBackPressed

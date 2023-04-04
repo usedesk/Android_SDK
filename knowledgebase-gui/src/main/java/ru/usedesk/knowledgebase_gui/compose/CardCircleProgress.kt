@@ -14,14 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
 internal fun CardCircleProgress(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     modifier: Modifier,
     loading: Boolean = true,
     onErrorClicked: (() -> Unit)? = null
@@ -44,21 +43,21 @@ internal fun CardCircleProgress(
                     )
                     .size(32.dp),
                 color = when (onErrorClicked) {
-                    null -> colorResource(customization.colorIdWhite1)
-                    else -> colorResource(customization.colorIdRed)
+                    null -> theme.colors.white1
+                    else -> theme.colors.red
                 }
             ) {
                 when (onErrorClicked) {
                     null -> CircularProgressIndicator(
                         modifier = Modifier
                             .padding(4.dp),
-                        strokeWidth = customization.progressBarStrokeWidth,
-                        color = colorResource(customization.colorIdRed)
+                        strokeWidth = theme.dimensions.progressBarStrokeWidth,
+                        color = theme.colors.red
                     )
                     else -> Icon(
                         modifier = Modifier
                             .clickableItem(onClick = onErrorClicked),
-                        painter = painterResource(customization.iconIdSearchPaginationError),
+                        painter = painterResource(theme.drawables.iconIdSearchPaginationError),
                         contentDescription = null,
                         tint = Color.Unspecified
                     )

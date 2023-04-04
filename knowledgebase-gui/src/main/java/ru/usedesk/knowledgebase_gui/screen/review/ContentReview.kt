@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -29,13 +28,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 internal const val REVIEW_KEY = "review"
 
 @Composable
 internal fun ContentReview(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     goBack: () -> Unit
@@ -73,9 +72,9 @@ internal fun ContentReview(
                 .verticalScroll(scrollState),
         ) {
             Replies(
-                customization = customization,
+                theme = theme,
                 enabled = !state.buttonLoading,
-                replies = stringArrayResource(customization.arrayIdReviewTags),
+                replies = stringArrayResource(theme.strings.arrayIdReviewTags),
                 selectedReplies = state.selectedReplies,
                 onReplySelected = viewModel::replySelected
             )
@@ -87,7 +86,7 @@ internal fun ContentReview(
                         top = 16.dp,
                         bottom = 16.dp
                     )
-                    .card(customization),
+                    .card(theme),
                 fieldModifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -98,9 +97,9 @@ internal fun ContentReview(
                     ),
                 value = state.reviewValue,
                 enabled = !state.buttonLoading,
-                placeholder = stringResource(customization.textIdArticleReviewPlaceholder),
-                textStyleText = customization.textStyleArticleReviewCommentText(),
-                textStylePlaceholder = customization.textStyleArticleReviewCommentPlaceholder(),
+                placeholder = stringResource(theme.strings.textIdArticleReviewPlaceholder),
+                textStyleText = theme.textStyles.articleReviewCommentText,
+                textStylePlaceholder = theme.textStyles.articleReviewCommentPlaceholder,
                 onValueChange = viewModel::reviewValueChanged,
                 onFocusChanged = viewModel::reviewFocusChanged
             )
@@ -113,7 +112,7 @@ internal fun ContentReview(
         val tagsPrefix = stringResource(R.string.usedesk_review_tags_prefix)
         val commentPrefix = stringResource(R.string.usedesk_review_comment_prefix)
         BottomButton(
-            customization = customization,
+            theme = theme,
             showed = state.buttonShowed,
             error = state.buttonError,
             loading = state.buttonLoading,
@@ -124,7 +123,7 @@ internal fun ContentReview(
 
 @Composable
 private fun Replies(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     enabled: Boolean,
     replies: Array<String>,
     selectedReplies: List<String>,
@@ -149,12 +148,10 @@ private fun Replies(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(
-                                    color = colorResource(
-                                        when {
-                                            active -> customization.colorIdBlack2
-                                            else -> customization.colorIdGray12
-                                        }
-                                    )
+                                    color = when {
+                                        active -> theme.colors.black2
+                                        else -> theme.colors.gray12
+                                    }
                                 )
                                 .clickableItem(
                                     enabled = enabled,
@@ -168,8 +165,8 @@ private fun Replies(
                                 ),
                             text = problem,
                             style = when {
-                                active -> customization.textStyleArticleReviewTag()
-                                else -> customization.textStyleArticleReviewTagSelected()
+                                active -> theme.textStyles.articleReviewTag
+                                else -> theme.textStyles.articleReviewTagSelected
                             }
                         )
                     }
@@ -181,7 +178,7 @@ private fun Replies(
 
 @Composable
 private fun BoxScope.BottomButton(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     showed: Boolean,
     error: Boolean,
     loading: Boolean,
@@ -201,7 +198,7 @@ private fun BoxScope.BottomButton(
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(color = colorResource(customization.colorIdBlack2))
+                .background(color = theme.colors.black2)
                 .clickableItem(
                     enabled = !loading,
                     onClick = onClick
@@ -216,19 +213,19 @@ private fun BoxScope.BottomButton(
                     it.first -> Icon(
                         modifier = Modifier
                             .size(24.dp),
-                        painter = painterResource(customization.iconIdReviewError),
+                        painter = painterResource(theme.drawables.iconIdReviewError),
                         contentDescription = null,
                         tint = Color.Unspecified
                     )
                     it.second -> CircularProgressIndicator(
                         modifier = Modifier
                             .size(24.dp),
-                        strokeWidth = customization.progressBarStrokeWidth,
-                        color = colorResource(customization.colorIdRed)
+                        strokeWidth = theme.dimensions.progressBarStrokeWidth,
+                        color = theme.colors.red
                     )
                     else -> BasicText(
-                        text = stringResource(customization.textIdArticleReviewSend),
-                        style = customization.textStyleArticleReviewSend()
+                        text = stringResource(theme.strings.textIdArticleReviewSend),
+                        style = theme.textStyles.articleReviewSend
                     )
                 }
             }

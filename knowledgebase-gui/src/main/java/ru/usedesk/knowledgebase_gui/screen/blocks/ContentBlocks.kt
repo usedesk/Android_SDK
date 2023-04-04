@@ -13,7 +13,7 @@ import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ContentArticles
 import ru.usedesk.knowledgebase_gui.screen.blocks.categories.ContentCategories
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.ContentSearch
@@ -27,7 +27,7 @@ internal const val SEARCH_KEY = "search"
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun ContentBlocks(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     viewModel: RootViewModel,
     supportButtonVisible: MutableState<Boolean>,
@@ -64,7 +64,7 @@ internal fun ContentBlocks(
 
     Column(modifier = Modifier) {
         SearchBar(
-            customization = customization,
+            theme = theme,
             value = blocksState.searchText,
             onClearClick = remember { { onEvent(Event.SearchClearClicked) } },
             onCancelClick = when (blocksState.block) {
@@ -87,7 +87,7 @@ internal fun ContentBlocks(
             when (block) {
                 State.BlocksState.Block.Sections -> {
                     ContentSections(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreOwner = remember {
                             { viewModelStoreFactory.get(SECTIONS_KEY) }
                         },
@@ -108,7 +108,7 @@ internal fun ContentBlocks(
                         }
                     }
                     ContentCategories(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreOwner = remember {
                             { viewModelStoreFactory.get(CATEGORIES_KEY) }
                         },
@@ -130,7 +130,7 @@ internal fun ContentBlocks(
                         }
                     }
                     ContentArticles(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLES_KEY) } },
                         categoryId = block.categoryId,
                         supportButtonVisible = supportButtonVisible,
@@ -152,7 +152,7 @@ internal fun ContentBlocks(
                         }
                     }
                     ContentSearch(
-                        customization = customization,
+                        theme = theme,
                         viewModelStoreOwner = remember { { viewModelStoreFactory.get(SEARCH_KEY) } },
                         supportButtonVisible = supportButtonVisible,
                         onArticleClick = remember {

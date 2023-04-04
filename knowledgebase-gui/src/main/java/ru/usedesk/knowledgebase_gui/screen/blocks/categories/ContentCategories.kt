@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,21 +18,21 @@ import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 @Preview
 @Composable
 private fun Preview() {
-    val customization = UsedeskKnowledgeBaseCustomization()
+    val theme = UsedeskKnowledgeBaseTheme()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(customization.colorIdWhite2))
+            .background(theme.colors.white2)
     ) {
         ContentCategories(
-            customization = customization,
+            theme = theme,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             sectionId = 1L,
             supportButtonVisible = remember { mutableStateOf(false) },
@@ -44,7 +43,7 @@ private fun Preview() {
 
 @Composable
 internal fun ContentCategories(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreOwner: ViewModelStoreOwner,
     sectionId: Long,
     supportButtonVisible: MutableState<Boolean>,
@@ -72,7 +71,7 @@ internal fun ContentCategories(
                         end = 16.dp
                     )
                     .cardItem(
-                        customization = customization,
+                        theme = theme,
                         isTop = it == state.categories.firstOrNull(),
                         isBottom = it == state.categories.lastOrNull()
                     )
@@ -90,7 +89,7 @@ internal fun ContentCategories(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 10.dp),
-                    style = customization.textStyleCategoriesTitle(),
+                    style = theme.textStyles.categoriesTitle,
                     text = it.title
                 )
                 Row(
@@ -102,14 +101,14 @@ internal fun ContentCategories(
                             .align(Alignment.CenterVertically)
                             .padding(end = 10.dp)
                             .weight(weight = 1f, fill = true),
-                        style = customization.textStyleCategoriesDescription(),
+                        style = theme.textStyles.categoriesDescription,
                         text = it.description
                     )
                     Icon(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .size(24.dp),
-                        painter = painterResource(customization.iconIdListItemArrowForward),
+                        painter = painterResource(theme.drawables.iconIdListItemArrowForward),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )

@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,21 +20,21 @@ import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
 @Composable
 private fun Preview() {
-    val customization = UsedeskKnowledgeBaseCustomization()
+    val theme = UsedeskKnowledgeBaseTheme()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(customization.colorIdWhite2))
+            .background(theme.colors.white2)
     ) {
         ContentSections(
-            customization = customization,
+            theme = theme,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             supportButtonVisible = remember { mutableStateOf(false) },
             onSectionClicked = {}
@@ -45,7 +44,7 @@ private fun Preview() {
 
 @Composable
 internal fun ContentSections(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreOwner: ViewModelStoreOwner,
     supportButtonVisible: MutableState<Boolean>,
     onSectionClicked: (UsedeskSection) -> Unit
@@ -71,7 +70,7 @@ internal fun ContentSections(
                         end = 16.dp
                     )
                     .cardItem(
-                        customization = customization,
+                        theme = theme,
                         isTop = it == state.sections.firstOrNull(),
                         isBottom = it == state.sections.lastOrNull()
                     )
@@ -90,7 +89,7 @@ internal fun ContentSections(
                         .align(Alignment.CenterVertically)
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(color = colorResource(customization.colorIdGrayCold1))
+                        .background(color = theme.colors.grayCold1)
                 ) {
                     BasicText(
                         modifier = Modifier
@@ -101,7 +100,7 @@ internal fun ContentSections(
                                 ?.uppercase()
                                 ?: ""
                         },
-                        style = customization.textStyleSectionTitleItem()
+                        style = theme.textStyles.sectionTitleItem
                     )
                 }
                 BasicText(
@@ -112,14 +111,14 @@ internal fun ContentSections(
                             end = 10.dp
                         )
                         .weight(weight = 1f, fill = true),
-                    style = customization.textStyleSectionTextItem(),
+                    style = theme.textStyles.sectionTextItem,
                     text = it.title
                 )
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .size(24.dp),
-                    painter = painterResource(customization.iconIdListItemArrowForward),
+                    painter = painterResource(theme.drawables.iconIdListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )

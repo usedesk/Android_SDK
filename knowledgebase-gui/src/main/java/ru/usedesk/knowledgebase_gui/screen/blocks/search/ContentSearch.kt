@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -21,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.*
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.blocks.SEARCH_KEY
 import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
@@ -30,14 +29,14 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 @Preview
 @Composable
 private fun Preview() {
-    val customization = UsedeskKnowledgeBaseCustomization()
+    val theme = UsedeskKnowledgeBaseTheme()
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(customization.colorIdWhite2))
+            .background(theme.colors.white2)
     ) {
         ContentSearch(
-            customization = customization,
+            theme = theme,
             viewModelStoreOwner = remember { { ViewModelStore() } },
             supportButtonVisible = remember { mutableStateOf(false) },
             onArticleClick = {}
@@ -48,7 +47,7 @@ private fun Preview() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun ContentSearch(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreOwner: ViewModelStoreOwner,
     supportButtonVisible: MutableState<Boolean>,
     onArticleClick: (UsedeskArticleContent) -> Unit
@@ -63,7 +62,7 @@ internal fun ContentSearch(
         Crossfade(targetState = state.reloadError) { reloadError ->
             when {
                 reloadError -> ScreenNotLoaded(
-                    customization = customization,
+                    theme = theme,
                     tryAgain = if (!state.reloadLoading) viewModel::tryLoadAgain else null
                 )
                 else -> Box(modifier = Modifier.fillMaxSize()) {
@@ -85,7 +84,7 @@ internal fun ContentSearch(
                                             end = 16.dp
                                         )
                                         .cardItem(
-                                            customization = customization,
+                                            theme = theme,
                                             isTop = item == state.content?.firstOrNull(),
                                             isBottom = item == state.content?.lastOrNull()
                                         )
@@ -107,17 +106,17 @@ internal fun ContentSearch(
                                             .weight(weight = 1f, fill = true)
                                     ) {
                                         BasicText(
-                                            style = customization.textStyleSearchItemTitle(),
+                                            style = theme.textStyles.searchItemTitle,
                                             text = item.item.title
                                         )
                                         BasicText(
-                                            style = customization.textStyleSearchItemDescription(),
+                                            style = theme.textStyles.searchItemDescription,
                                             text = item.description,
                                             maxLines = 2,
                                             overflow = TextOverflow.Ellipsis
                                         )
                                         BasicText(
-                                            style = customization.textStyleSearchItemPath(),
+                                            style = theme.textStyles.searchItemPath,
                                             text = remember(item) {
                                                 "${item.sectionName} > ${item.categoryName}"
                                             }
@@ -131,7 +130,7 @@ internal fun ContentSearch(
                                                 bottom = 16.dp
                                             )
                                             .size(24.dp),
-                                        painter = painterResource(customization.iconIdListItemArrowForward),
+                                        painter = painterResource(theme.drawables.iconIdListItemArrowForward),
                                         tint = Color.Unspecified,
                                         contentDescription = null
                                     )
@@ -141,7 +140,7 @@ internal fun ContentSearch(
                                 viewModel.lowestItemShowed()
                                 Box(modifier = Modifier.fillMaxWidth()) {
                                     CardCircleProgress(
-                                        customization = customization,
+                                        theme = theme,
                                         modifier = Modifier
                                             .align(Alignment.Center)
                                             .padding(
@@ -166,8 +165,8 @@ internal fun ContentSearch(
                         ) {
                             BasicText(
                                 modifier = Modifier.padding(16.dp),
-                                text = stringResource(customization.textIdSearchIsEmpty),
-                                style = customization.textStyleSearchIsEmpty()
+                                text = stringResource(theme.strings.textIdSearchIsEmpty),
+                                style = theme.textStyles.searchIsEmpty
                             )
                         }
                     }
@@ -177,7 +176,7 @@ internal fun ContentSearch(
 
         Box(modifier = Modifier.fillMaxWidth()) {
             CardCircleProgress(
-                customization = customization,
+                theme = theme,
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(16.dp),

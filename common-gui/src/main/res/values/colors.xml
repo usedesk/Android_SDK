@@ -6,7 +6,6 @@
     <color name="usedesk_gray_1">#EEEEEE</color>
     <color name="usedesk_gray_2">#BCBCBC</color>
     <color name="usedesk_gray_3">#828282</color>
-    <color name="usedesk_gray_12">#D5D5D5</color>
     <color name="usedesk_gray_cold_0">#D3D6E3</color>
     <color name="usedesk_gray_cold_1">#F2F4FA</color>
     <color name="usedesk_gray_cold_2">#989FB3</color>
@@ -18,5 +17,4 @@
     <color name="usedesk_green">#26BC00</color>
     <color name="usedesk_blue">#2F80ED</color>
     <color name="usedesk_blur">#80000000</color>
-    <color name="usedesk_blur_toolbar">#00FFFFFF</color>
 </resources>

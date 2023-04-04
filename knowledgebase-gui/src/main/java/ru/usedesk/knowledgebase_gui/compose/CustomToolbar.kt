@@ -4,7 +4,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,24 +17,23 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import kotlin.math.roundToInt
 
 @Composable
 internal fun CustomToolbar(
+    theme: UsedeskKnowledgeBaseTheme,
     modifier: Modifier = Modifier,
-    customization: UsedeskKnowledgeBaseCustomization,
     title: String,
     scrollBehavior: CustomToolbarScrollBehavior,
     onBackPressed: () -> Unit
 ) {
     val collapsedFraction = scrollBehavior.state.collapsedFraction
 
-    val textStyle = MaterialTheme.typography.headlineLarge
+    val textStyle = theme.textStyles.toolbarTitle
 
     val fullyCollapsedTitleScale =
-        CollapsedTitleLineHeight.value / textStyle.lineHeight.value
+        theme.dimensions.toolbarCollapsedTitleLineHeight.value / textStyle.lineHeight.value
 
     val collapsingTitleScale = lerp(1f, fullyCollapsedTitleScale, collapsedFraction)
 
@@ -89,16 +87,17 @@ internal fun CustomToolbar(
                 ) {
                     Icon(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(customization.iconIdBack),
+                        painter = painterResource(theme.drawables.iconIdBack),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )
                 }
             },
-            modifier = modifier.then(Modifier.heightIn(min = MinCollapsedHeight)),
+            modifier = modifier.then(Modifier.heightIn(min = theme.dimensions.toolbarMinCollapsedHeight)),
             measurePolicy = { measurables, constraints ->
-                val horizontalPaddingPx = HorizontalPadding.toPx()
-                val expandedTitleBottomPaddingPx = ExpandedTitleBottomPadding.toPx()
+                val horizontalPaddingPx = theme.dimensions.toolbarHorizontalPadding.toPx()
+                val expandedTitleBottomPaddingPx =
+                    theme.dimensions.toolbarExpandedTitleBottomPadding.toPx()
 
                 // Measuring widgets inside toolbar:
 
@@ -128,7 +127,7 @@ internal fun CustomToolbar(
                         )
                     )
 
-                val collapsedHeightPx = MinCollapsedHeight.toPx()
+                val collapsedHeightPx = theme.dimensions.toolbarMinCollapsedHeight.toPx()
 
                 var layoutHeightPx = collapsedHeightPx
 
@@ -152,7 +151,8 @@ internal fun CustomToolbar(
                 }
 
                 // Toolbar height at fully expanded state
-                val fullyExpandedHeightPx = MinCollapsedHeight.toPx() + heightOffsetLimitPx
+                val fullyExpandedHeightPx =
+                    theme.dimensions.toolbarMinCollapsedHeight.toPx() + heightOffsetLimitPx
 
                 // Coordinates of fully expanded title
                 val fullyExpandedTitleX = horizontalPaddingPx
@@ -162,7 +162,8 @@ internal fun CustomToolbar(
                 // Coordinates of fully collapsed title
                 val fullyCollapsedTitleX = navigationIconOffset
                 val fullyCollapsedTitleY =
-                    collapsedHeightPx / 2 - CollapsedTitleLineHeight.toPx().roundToInt() / 2
+                    collapsedHeightPx / 2 - theme.dimensions.toolbarCollapsedTitleLineHeight.toPx()
+                        .roundToInt() / 2
 
                 // Current height of toolbar
                 layoutHeightPx = lerp(fullyExpandedHeightPx, collapsedHeightPx, collapsedFraction)
@@ -207,11 +208,6 @@ internal fun CustomToolbar(
 
 
 private fun lerp(a: Float, b: Float, fraction: Float): Float = a + fraction * (b - a)
-
-private val MinCollapsedHeight = 56.dp
-private val HorizontalPadding = 16.dp
-private val ExpandedTitleBottomPadding = 8.dp
-private val CollapsedTitleLineHeight = 28.sp
 
 private const val ExpandedTitleId = "expandedTitle"
 private const val CollapsedTitleId = "collapsedTitle"

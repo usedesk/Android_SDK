@@ -16,13 +16,13 @@ import ru.usedesk.knowledgebase_gui.compose.CardCircleProgress
 import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 internal const val LOADING_KEY = "article"
 
 @Composable
 internal fun ContentLoading(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     tryAgain: () -> Unit
 ) {
@@ -36,13 +36,13 @@ internal fun ContentLoading(
                 is ContentState.Empty,
                 is ContentState.Loaded -> Box(modifier = Modifier.fillMaxSize())
                 is ContentState.Error -> ScreenNotLoaded(
-                    customization = customization,
+                    theme = theme,
                     tryAgain = if (!state.loading) tryAgain else null
                 )
             }
         }
         CardCircleProgress(
-            customization = customization,
+            theme = theme,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(16.dp),

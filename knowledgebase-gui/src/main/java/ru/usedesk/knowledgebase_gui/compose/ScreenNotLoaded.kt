@@ -14,11 +14,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
 internal fun ScreenNotLoaded(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     tryAgain: (() -> Unit)?
 ) {
     Column(
@@ -35,7 +35,7 @@ internal fun ScreenNotLoaded(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
-                painter = painterResource(customization.imageIdCantLoad),
+                painter = painterResource(theme.drawables.imageIdCantLoad),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth
             )
@@ -53,8 +53,8 @@ internal fun ScreenNotLoaded(
             BasicText(
                 modifier = Modifier
                     .padding(top = 12.dp),
-                text = stringResource(customization.textIdLoadError),
-                style = customization.textStyleLoadError()
+                text = stringResource(theme.strings.textIdLoadError),
+                style = theme.textStyles.loadError
             )
             AnimatedVisibility(
                 modifier = Modifier
@@ -66,8 +66,8 @@ internal fun ScreenNotLoaded(
                 BasicText(
                     modifier = Modifier
                         .clickableText(onClick = tryAgain ?: remember { {} }),
-                    text = stringResource(customization.textIdTryAgain),
-                    style = customization.textStyleTryAgain()
+                    text = stringResource(theme.strings.textIdTryAgain),
+                    style = theme.textStyles.tryAgain
                 )
             }
         }

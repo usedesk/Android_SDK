@@ -12,14 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
 internal fun BoxScope.CardCircleChat(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     visible: Boolean,
     onClicked: () -> Unit
 ) {
@@ -38,14 +37,14 @@ internal fun BoxScope.CardCircleChat(
                     shape = CircleShape
                 )
                 .clickableItem(onClick = onClicked),
-            color = colorResource(customization.colorIdBlack2)
+            color = theme.colors.black2
         ) {
             Icon(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(16.dp)
                     .size(24.dp),
-                painter = painterResource(customization.iconIdSupport),
+                painter = painterResource(theme.drawables.iconIdSupport),
                 contentDescription = null,
                 tint = Color.Unspecified
             )

@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,14 +31,14 @@ import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.*
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseCustomization
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
 
 internal const val ARTICLE_KEY = "article"
 
 @Composable
 internal fun ContentArticle(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     supportButtonVisible: MutableState<Boolean>,
@@ -56,7 +55,7 @@ internal fun ContentArticle(
 
     Box(modifier = Modifier.fillMaxWidth()) {
         ArticleBlock(
-            customization = customization,
+            theme = theme,
             state = state,
             viewModel = viewModel,
             supportButtonVisible = supportButtonVisible,
@@ -69,7 +68,7 @@ internal fun ContentArticle(
 
 @Composable
 private fun ArticleBlock(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     state: State,
     viewModel: ArticleViewModel,
     supportButtonVisible: MutableState<Boolean>,
@@ -87,7 +86,7 @@ private fun ArticleBlock(
                 is ContentState.Error -> {
                     supportButtonVisible.value = true
                     ScreenNotLoaded(
-                        customization = customization,
+                        theme = theme,
                         tryAgain = if (!state.loading) viewModel::tryAgain else null
                     )
                 }
@@ -103,7 +102,7 @@ private fun ArticleBlock(
                                     exit = fadeOut()
                                 ) {
                                     ArticleRating(
-                                        customization = customization,
+                                        theme = theme,
                                         state = state,
                                         onReviewGoodClick = onReviewGoodClick,
                                         onReviewBadClick = onReviewBadClick
@@ -178,7 +177,7 @@ private fun ArticleBlock(
                                 end = 16.dp,
                                 bottom = 16.dp,
                             )
-                            .card(customization)
+                            .card(theme)
                             .padding(
                                 start = 8.dp,
                                 end = 16.dp,
@@ -198,7 +197,7 @@ private fun ArticleBlock(
             }
         }
         CardCircleProgress(
-            customization = customization,
+            theme = theme,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(16.dp),
@@ -210,26 +209,25 @@ private fun ArticleBlock(
 @Composable
 private fun ArticleRatingButton(
     modifier: Modifier = Modifier,
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     ratingState: RatingState,
     good: Boolean,
     onClick: () -> Unit
 ) {
-    val colorId = when {
-        good -> customization.colorIdGreen
-        else -> customization.colorIdRed
+    val backgroundColor = remember(good) {
+        when {
+            good -> theme.colors.green
+            else -> theme.colors.red
+        }.copy(alpha = 0.2f)
     }
     val textId = when {
-        good -> customization.textIdArticleReviewYes
-        else -> customization.textIdArticleReviewNo
+        good -> theme.strings.textIdArticleReviewYes
+        else -> theme.strings.textIdArticleReviewNo
     }
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(
-                color = colorResource(colorId)
-                    .copy(alpha = 0.2f)
-            )
+            .background(color = backgroundColor)
             .clickableItem(
                 enabled = ratingState is RatingState.Required,
                 onClick = onClick
@@ -251,19 +249,19 @@ private fun ArticleRatingButton(
         ) {
             when {
                 it.first -> Icon(
-                    painter = painterResource(customization.iconIdRatingError),
+                    painter = painterResource(theme.drawables.iconIdRatingError),
                     contentDescription = null,
                     tint = Color.Unspecified
                 )
                 it.second -> CircularProgressIndicator(
-                    strokeWidth = customization.progressBarStrokeWidth,
-                    color = colorResource(customization.colorIdRed)
+                    strokeWidth = theme.dimensions.progressBarStrokeWidth,
+                    color = theme.colors.red
                 )
                 else -> Icon(
                     painter = painterResource(
                         when {
-                            good -> customization.iconIdRatingGood
-                            else -> customization.iconIdRatingBad
+                            good -> theme.drawables.iconIdRatingGood
+                            else -> theme.drawables.iconIdRatingBad
                         }
                     ),
                     contentDescription = null,
@@ -277,8 +275,8 @@ private fun ArticleRatingButton(
                 .align(Alignment.CenterVertically),
             text = stringResource(textId),
             style = when {
-                good -> customization.textStyleArticleRatingGood()
-                else -> customization.textStyleArticleRatingBad()
+                good -> theme.textStyles.articleRatingGood
+                else -> theme.textStyles.articleRatingBad
             }
         )
     }
@@ -286,21 +284,21 @@ private fun ArticleRatingButton(
 
 @Composable
 private fun ArticleRatingButtons(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     ratingState: RatingState,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         ArticleRatingButton(
-            customization = customization,
+            theme = theme,
             ratingState = ratingState,
             good = true,
             onClick = onReviewGoodClick
         )
         ArticleRatingButton(
             modifier = Modifier.padding(start = 10.dp),
-            customization = customization,
+            theme = theme,
             ratingState = ratingState,
             good = false,
             onClick = onReviewBadClick
@@ -310,7 +308,7 @@ private fun ArticleRatingButtons(
 
 @Composable
 private fun ArticleRating(
-    customization: UsedeskKnowledgeBaseCustomization,
+    theme: UsedeskKnowledgeBaseTheme,
     state: State,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
@@ -324,7 +322,7 @@ private fun ArticleRating(
     ) {
         Divider(
             modifier = Modifier.fillMaxWidth(),
-            color = colorResource(customization.colorIdGray2),
+            color = theme.colors.gray2,
             thickness = 0.5.dp
         )
         BasicText(
@@ -334,20 +332,20 @@ private fun ArticleRating(
                     bottom = 8.dp,
                     top = 16.dp
                 ),
-            text = stringResource(customization.textIdArticleRating),
-            style = customization.textStyleArticleRatingTitle()
+            text = stringResource(theme.strings.textIdArticleRating),
+            style = theme.textStyles.articleRatingTitle
         )
         when (state.ratingState) {
             is RatingState.Required,
             is RatingState.Sending -> ArticleRatingButtons(
-                customization = customization,
+                theme = theme,
                 ratingState = state.ratingState,
                 onReviewGoodClick = onReviewGoodClick,
                 onReviewBadClick = onReviewBadClick
             )
             is RatingState.Sent -> BasicText(
-                text = stringResource(customization.textIdArticleRatingThanks),
-                style = customization.textStyleArticleRatingThanks()
+                text = stringResource(theme.strings.textIdArticleRatingThanks),
+                style = theme.textStyles.articleRatingThanks
             )
         }
     }

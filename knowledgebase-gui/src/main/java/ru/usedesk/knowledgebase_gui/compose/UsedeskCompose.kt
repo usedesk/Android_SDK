@@ -3,12 +3,14 @@ package ru.usedesk.knowledgebase_gui.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
 internal fun Modifier.clickableItem(
@@ -24,8 +26,8 @@ internal fun Modifier.clickableItem(
 
 @Composable
 internal fun Modifier.clickableArea(
+    theme: UsedeskKnowledgeBaseTheme,
     enabled: Boolean = true,
-    radius: Dp = 30.dp,
     onClick: () -> Unit
 ) = focusable(true)
     .clickable(
@@ -33,7 +35,7 @@ internal fun Modifier.clickableArea(
         interactionSource = remember { MutableInteractionSource() },
         indication = rememberRipple(
             bounded = false,
-            radius = radius
+            radius = theme.dimensions.clickableRadius
         ),
         onClick = onClick
     )
@@ -49,3 +51,18 @@ internal fun Modifier.clickableText(
         indication = null,
         onClick = onClick
     )
+
+@Composable
+internal fun Modifier.padding(padding: UsedeskKnowledgeBaseTheme.Dimensions.Padding) = padding(
+    start = padding.start,
+    end = padding.end,
+    top = padding.top,
+    bottom = padding.bottom
+)
+
+@Composable
+internal fun LazyListState.isSupportButtonVisible() = remember(this) {
+    derivedStateOf {
+        firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
+    }
+}.value

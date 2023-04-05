@@ -1,9 +1,6 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun CardCircleProgress(
     theme: UsedeskKnowledgeBaseTheme,
@@ -29,35 +27,32 @@ internal fun CardCircleProgress(
     AnimatedVisibility(
         modifier = modifier,
         visible = loading || onErrorClicked != null,
-        enter = fadeIn(),
-        exit = fadeOut()
+        enter = scaleIn(),
+        exit = scaleOut()
     ) {
-        Crossfade(targetState = onErrorClicked) { onErrorClicked ->
-            Surface(
-                shape = CircleShape,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .shadow(
-                        elevation = 4.dp,
-                        shape = CircleShape
-                    )
-                    .size(32.dp),
-                color = when (onErrorClicked) {
-                    null -> theme.colors.white1
-                    else -> theme.colors.red
-                }
-            ) {
+        Surface(
+            shape = CircleShape,
+            modifier = Modifier
+                .padding(4.dp)
+                .shadow(
+                    elevation = theme.dimensions.shadowElevation,
+                    shape = CircleShape
+                )
+                .size(theme.dimensions.loadingSize),
+            color = theme.colors.progressBarBackground
+        ) {
+            Crossfade(targetState = onErrorClicked) { onErrorClicked ->
                 when (onErrorClicked) {
                     null -> CircularProgressIndicator(
                         modifier = Modifier
                             .padding(4.dp),
                         strokeWidth = theme.dimensions.progressBarStrokeWidth,
-                        color = theme.colors.red
+                        color = theme.colors.progressBarIndicator
                     )
                     else -> Icon(
                         modifier = Modifier
                             .clickableItem(onClick = onErrorClicked),
-                        painter = painterResource(theme.drawables.iconIdSearchPaginationError),
+                        painter = painterResource(theme.drawables.iconSearchPaginationError),
                         contentDescription = null,
                         tint = Color.Unspecified
                     )

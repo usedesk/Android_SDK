@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.article
+package ru.usedesk.knowledgebase_gui.screen.compose.article
 
 import android.os.Build
 import android.view.MotionEvent
@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -32,7 +33,7 @@ import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.article.ArticleViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
 
 internal const val ARTICLE_KEY = "article"
 
@@ -139,7 +140,7 @@ private fun ArticleBlock(
                                     viewModel.articleShowed()
                                 }
                             }
-                            //setBackgroundColor(Color.TRANSPARENT)
+                            setBackgroundColor(theme.colors.listItemBackground.toArgb())
                         }
                     }
                     LaunchedEffect(state.contentState) {
@@ -214,20 +215,15 @@ private fun ArticleRatingButton(
     good: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = remember(good) {
-        when {
-            good -> theme.colors.green
-            else -> theme.colors.red
-        }.copy(alpha = 0.2f)
-    }
-    val textId = when {
-        good -> theme.strings.textIdArticleReviewYes
-        else -> theme.strings.textIdArticleReviewNo
-    }
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(color = backgroundColor)
+            .background(color = remember(good) {
+                when {
+                    good -> theme.colors.articleRatingGoodBackground
+                    else -> theme.colors.articleRatingBadBackground
+                }
+            })
             .clickableItem(
                 enabled = ratingState is RatingState.Required,
                 onClick = onClick
@@ -249,19 +245,19 @@ private fun ArticleRatingButton(
         ) {
             when {
                 it.first -> Icon(
-                    painter = painterResource(theme.drawables.iconIdRatingError),
+                    painter = painterResource(theme.drawables.iconRatingError),
                     contentDescription = null,
                     tint = Color.Unspecified
                 )
                 it.second -> CircularProgressIndicator(
                     strokeWidth = theme.dimensions.progressBarStrokeWidth,
-                    color = theme.colors.red
+                    color = theme.colors.progressBarIndicator
                 )
                 else -> Icon(
                     painter = painterResource(
                         when {
-                            good -> theme.drawables.iconIdRatingGood
-                            else -> theme.drawables.iconIdRatingBad
+                            good -> theme.drawables.iconRatingGood
+                            else -> theme.drawables.iconRatingBad
                         }
                     ),
                     contentDescription = null,
@@ -273,7 +269,12 @@ private fun ArticleRatingButton(
             modifier = Modifier
                 .padding(start = 10.dp)
                 .align(Alignment.CenterVertically),
-            text = stringResource(textId),
+            text = stringResource(
+                when {
+                    good -> theme.strings.articleReviewYes
+                    else -> theme.strings.articleReviewNo
+                }
+            ),
             style = when {
                 good -> theme.textStyles.articleRatingGood
                 else -> theme.textStyles.articleRatingBad
@@ -315,24 +316,25 @@ private fun ArticleRating(
 ) {
     Column(
         modifier = Modifier.padding(
-            start = 8.dp,
             top = 8.dp,
-            bottom = 8.dp
+            bottom = 8.dp,
+            start = 8.dp,
+            end = 8.dp
         )
     ) {
         Divider(
             modifier = Modifier.fillMaxWidth(),
-            color = theme.colors.gray2,
+            color = theme.colors.articleRatingDivider,
             thickness = 0.5.dp
         )
         BasicText(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    bottom = 8.dp,
-                    top = 16.dp
+                    top = 16.dp,
+                    bottom = 8.dp
                 ),
-            text = stringResource(theme.strings.textIdArticleRating),
+            text = stringResource(theme.strings.articleRating),
             style = theme.textStyles.articleRatingTitle
         )
         when (state.ratingState) {
@@ -344,7 +346,7 @@ private fun ArticleRating(
                 onReviewBadClick = onReviewBadClick
             )
             is RatingState.Sent -> BasicText(
-                text = stringResource(theme.strings.textIdArticleRatingThanks),
+                text = stringResource(theme.strings.articleRatingThanks),
                 style = theme.textStyles.articleRatingThanks
             )
         }

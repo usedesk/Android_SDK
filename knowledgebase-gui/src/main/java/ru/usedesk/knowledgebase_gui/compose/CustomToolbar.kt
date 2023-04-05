@@ -1,7 +1,7 @@
 package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -16,29 +16,38 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
+import kotlin.math.cos
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 @Composable
 internal fun CustomToolbar(
     theme: UsedeskKnowledgeBaseTheme,
-    modifier: Modifier = Modifier,
     title: String,
     scrollBehavior: CustomToolbarScrollBehavior,
     onBackPressed: () -> Unit
 ) {
     val collapsedFraction = scrollBehavior.state.collapsedFraction
 
-    val textStyle = theme.textStyles.toolbarTitle
-
-    val fullyCollapsedTitleScale =
-        theme.dimensions.toolbarCollapsedTitleLineHeight.value / textStyle.lineHeight.value
+    val fullyCollapsedTitleScale = theme.textStyles.toolbarCollapsedTitle.fontSize.value /
+            theme.textStyles.toolbarExpandedTitle.fontSize.value
 
     val collapsingTitleScale = lerp(1f, fullyCollapsedTitleScale, collapsedFraction)
 
-    Surface(modifier = modifier.animateContentSize()) {
+    val collapsedHeight = theme.dimensions.contentPadding.top +
+            theme.dimensions.toolbarIconSize +
+            theme.dimensions.toolbarBottomPadding
+
+    Surface(
+        modifier = Modifier.padding(
+            end = theme.dimensions.contentPadding.end
+        )
+    ) {
         Layout(
+            modifier = Modifier
+                .background(color = theme.colors.rootBackground)
+                .heightIn(min = collapsedHeight),
             content = {
                 Crossfade(
                     modifier = Modifier.layoutId(ExpandedTitleId),
@@ -54,7 +63,7 @@ internal fun CustomToolbar(
                                 transformOrigin = TransformOrigin(0f, 0f)
                             ),
                         text = title,
-                        style = textStyle
+                        style = theme.textStyles.toolbarExpandedTitle
                     )
                 }
                 Crossfade(
@@ -70,7 +79,7 @@ internal fun CustomToolbar(
                                 transformOrigin = TransformOrigin(0f, 0f)
                             ),
                         text = title,
-                        style = textStyle,
+                        style = theme.textStyles.toolbarExpandedTitle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -81,42 +90,52 @@ internal fun CustomToolbar(
                         .wrapContentSize()
                         .layoutId(NavigationIconId)
                         .clickableArea(
-                            radius = 30.dp,
+                            theme = theme,
                             onClick = onBackPressed
                         )
                 ) {
                     Icon(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(theme.drawables.iconIdBack),
+                        modifier = Modifier
+                            .size(theme.dimensions.toolbarIconSize),
+                        painter = painterResource(theme.drawables.iconBack),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )
                 }
             },
-            modifier = modifier.then(Modifier.heightIn(min = theme.dimensions.toolbarMinCollapsedHeight)),
             measurePolicy = { measurables, constraints ->
-                val horizontalPaddingPx = theme.dimensions.toolbarHorizontalPadding.toPx()
-                val expandedTitleBottomPaddingPx =
-                    theme.dimensions.toolbarExpandedTitleBottomPadding.toPx()
+                val intervalX = theme.dimensions.toolbarIntervalX.toPx()
+                val intervalY = theme.dimensions.toolbarIntervalY.toPx()
+                val startPadding = theme.dimensions.contentPadding.start.toPx()
+                val endPadding = theme.dimensions.contentPadding.end.toPx()
+                val topPadding = theme.dimensions.contentPadding.top.toPx()
+                val bottomPadding = theme.dimensions.toolbarBottomPadding.toPx()
 
                 // Measuring widgets inside toolbar:
 
                 val navigationIconPlaceable = measurables.first { it.layoutId == NavigationIconId }
-                    .measure(constraints.copy(minWidth = 0))
-
-                val expandedTitlePlaceable = measurables.first { it.layoutId == ExpandedTitleId }
                     .measure(
                         constraints.copy(
-                            maxWidth = (constraints.maxWidth - 2 * horizontalPaddingPx).roundToInt(),
+                            maxWidth = (constraints.maxWidth - startPadding - endPadding).roundToInt(),
                             minWidth = 0,
                             minHeight = 0
                         )
                     )
 
-                val navigationIconOffset = navigationIconPlaceable.width + horizontalPaddingPx * 2
+                val expandedTitlePlaceable = measurables.first { it.layoutId == ExpandedTitleId }
+                    .measure(
+                        constraints.copy(
+                            maxWidth = (constraints.maxWidth - startPadding - endPadding - intervalX).roundToInt(),
+                            minWidth = 0,
+                            minHeight = 0
+                        )
+                    )
+
+                val navigationIconXOffset = navigationIconPlaceable.width + intervalX
+                val navigationIconYOffset = navigationIconPlaceable.height + intervalY
 
                 val collapsedTitleMaxWidthPx =
-                    (constraints.maxWidth - navigationIconOffset - horizontalPaddingPx) / fullyCollapsedTitleScale
+                    (constraints.maxWidth - navigationIconXOffset - startPadding - endPadding - intervalX) / fullyCollapsedTitleScale
 
                 val collapsedTitlePlaceable = measurables.first { it.layoutId == CollapsedTitleId }
                     .measure(
@@ -127,78 +146,59 @@ internal fun CustomToolbar(
                         )
                     )
 
-                val collapsedHeightPx = theme.dimensions.toolbarMinCollapsedHeight.toPx()
-
-                var layoutHeightPx = collapsedHeightPx
-
                 // Calculating coordinates of widgets inside toolbar:
 
-                // Current coordinates of navigation icon
-                val navigationIconX = horizontalPaddingPx.roundToInt()
-                val navigationIconY =
-                    ((collapsedHeightPx - navigationIconPlaceable.height) / 2).roundToInt()
-
-                // Current coordinates of title
-                var collapsingTitleY = 0
-                var collapsingTitleX = 0
-
                 // Measuring toolbar collapsing distance
-                val heightOffsetLimitPx =
-                    expandedTitlePlaceable.height + expandedTitleBottomPaddingPx
+                val heightOffsetLimitPx = expandedTitlePlaceable.height + intervalY
                 if (scrollBehavior.state.heightOffsetLimit != -heightOffsetLimitPx) {
                     scrollBehavior.state.heightOffsetLimit = -heightOffsetLimitPx
                     scrollBehavior.state.heightOffset = collapsedFraction * (-heightOffsetLimitPx)
                 }
 
-                // Toolbar height at fully expanded state
-                val fullyExpandedHeightPx =
-                    theme.dimensions.toolbarMinCollapsedHeight.toPx() + heightOffsetLimitPx
-
-                // Coordinates of fully expanded title
-                val fullyExpandedTitleX = horizontalPaddingPx
-                val fullyExpandedTitleY =
-                    fullyExpandedHeightPx - expandedTitlePlaceable.height - expandedTitleBottomPaddingPx
-
-                // Coordinates of fully collapsed title
-                val fullyCollapsedTitleX = navigationIconOffset
-                val fullyCollapsedTitleY =
-                    collapsedHeightPx / 2 - theme.dimensions.toolbarCollapsedTitleLineHeight.toPx()
-                        .roundToInt() / 2
-
-                // Current height of toolbar
-                layoutHeightPx = lerp(fullyExpandedHeightPx, collapsedHeightPx, collapsedFraction)
-
                 // Current coordinates of collapsing title
-                collapsingTitleX = lerp(
-                    fullyExpandedTitleX,
-                    fullyCollapsedTitleX,
-                    collapsedFraction
-                ).roundToInt()
-                collapsingTitleY = lerp(
-                    fullyExpandedTitleY,
-                    fullyCollapsedTitleY,
+                val titleX = lerpsin(
+                    0f,
+                    navigationIconXOffset,
                     collapsedFraction
                 ).roundToInt()
 
-                val toolbarHeightPx = layoutHeightPx.roundToInt()
+                val minTitleY =
+                    (navigationIconPlaceable.height - collapsedTitlePlaceable.height * fullyCollapsedTitleScale) / 2f
 
+                val titleY = lerp(
+                    navigationIconYOffset,
+                    minTitleY,
+                    collapsedFraction
+                ).roundToInt()
+
+                val expandedToolbarHeightPx =
+                    topPadding + navigationIconYOffset + expandedTitlePlaceable.height + bottomPadding
+
+                val toolbarHeightPx = lerp(
+                    expandedToolbarHeightPx,
+                    collapsedHeight.toPx(),
+                    collapsedFraction
+                ).roundToInt()
 
                 // Placing toolbar widgets:
-
+                val totalTitleY = (topPadding + titleY).roundToInt()
+                val totalTitleX = (startPadding + titleX).roundToInt()
                 layout(constraints.maxWidth, toolbarHeightPx) {
                     navigationIconPlaceable.placeRelative(
-                        x = navigationIconX,
-                        y = navigationIconY
+                        x = startPadding.roundToInt(),
+                        y = topPadding.roundToInt()
                     )
                     expandedTitlePlaceable.placeRelativeWithLayer(
-                        x = collapsingTitleX,
-                        y = collapsingTitleY,
-                        layerBlock = { alpha = 1f - collapsedFraction }
+                        x = totalTitleX,
+                        y = totalTitleY,
+                        layerBlock = {
+                            alpha = sin((1f - collapsedFraction) * Math.PI / 2f).toFloat()
+                        }
                     )
                     collapsedTitlePlaceable.placeRelativeWithLayer(
-                        x = collapsingTitleX,
-                        y = collapsingTitleY,
-                        layerBlock = { alpha = collapsedFraction }
+                        x = totalTitleX,
+                        y = totalTitleY,
+                        layerBlock = { alpha = sin(collapsedFraction * Math.PI / 2f).toFloat() }
                     )
                 }
             }
@@ -208,6 +208,18 @@ internal fun CustomToolbar(
 
 
 private fun lerp(a: Float, b: Float, fraction: Float): Float = a + fraction * (b - a)
+
+private fun lerpsin(a: Float, b: Float, fraction: Float): Float = lerp(
+    a,
+    b,
+    sin(fraction * Math.PI / 2f).toFloat()
+)
+
+private fun lerpcos(a: Float, b: Float, fraction: Float): Float = lerp(
+    a,
+    b,
+    cos(fraction * Math.PI / 2f).toFloat()
+)
 
 private const val ExpandedTitleId = "expandedTitle"
 private const val CollapsedTitleId = "collapsedTitle"

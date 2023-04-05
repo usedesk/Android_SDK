@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks.search
+package ru.usedesk.knowledgebase_gui.screen.compose.blocks.search
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -21,9 +21,8 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.blocks.SEARCH_KEY
-import ru.usedesk.knowledgebase_gui.screen.blocks.search.SearchViewModel.State.NextPageState
-import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.SEARCH_KEY
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 @Preview
@@ -33,7 +32,7 @@ private fun Preview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(theme.colors.white2)
+            .background(color = theme.colors.rootBackground)
     ) {
         ContentSearch(
             theme = theme,
@@ -79,10 +78,6 @@ internal fun ContentSearch(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(
-                                            start = 16.dp,
-                                            end = 16.dp
-                                        )
                                         .cardItem(
                                             theme = theme,
                                             isTop = item == state.content?.firstOrNull(),
@@ -102,14 +97,15 @@ internal fun ContentSearch(
                                     Column(
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
-                                            .padding(end = 10.dp)
                                             .weight(weight = 1f, fill = true)
                                     ) {
                                         BasicText(
+                                            modifier = Modifier.padding(bottom = 4.dp),
                                             style = theme.textStyles.searchItemTitle,
                                             text = item.item.title
                                         )
                                         BasicText(
+                                            modifier = Modifier.padding(bottom = 4.dp),
                                             style = theme.textStyles.searchItemDescription,
                                             text = item.description,
                                             maxLines = 2,
@@ -125,12 +121,9 @@ internal fun ContentSearch(
                                     Icon(
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
-                                            .padding(
-                                                top = 16.dp,
-                                                bottom = 16.dp
-                                            )
+                                            .padding(start = 10.dp)
                                             .size(24.dp),
-                                        painter = painterResource(theme.drawables.iconIdListItemArrowForward),
+                                        painter = painterResource(theme.drawables.iconListItemArrowForward),
                                         tint = Color.Unspecified,
                                         contentDescription = null
                                     )
@@ -165,7 +158,7 @@ internal fun ContentSearch(
                         ) {
                             BasicText(
                                 modifier = Modifier.padding(16.dp),
-                                text = stringResource(theme.strings.textIdSearchIsEmpty),
+                                text = stringResource(theme.strings.searchIsEmpty),
                                 style = theme.textStyles.searchIsEmpty
                             )
                         }

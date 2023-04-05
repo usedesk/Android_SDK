@@ -1,10 +1,10 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks.sections
+package ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections
 
 import androidx.compose.foundation.lazy.LazyListState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
-import ru.usedesk.knowledgebase_gui.screen.blocks.sections.SectionsViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections.SectionsViewModel.State
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class SectionsViewModel(

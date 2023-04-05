@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.compose
+package ru.usedesk.knowledgebase_gui.screen.compose
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
@@ -26,6 +26,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.clickableText
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -46,12 +48,12 @@ internal fun SearchBar(
             modifier = Modifier
                 .weight(weight = 1f, fill = true)
                 .padding(
-                    start = 16.dp,
-                    end = 16.dp,
+                    start = theme.dimensions.contentPadding.start,
+                    end = theme.dimensions.contentPadding.end,
                     bottom = 16.dp
                 )
                 .clip(RoundedCornerShape(10.dp))
-                .background(theme.colors.gray1)
+                .background(color = theme.colors.searchBarBackground)
                 .padding(
                     start = 6.dp,
                     end = 8.dp,
@@ -64,7 +66,7 @@ internal fun SearchBar(
                 modifier = Modifier
                     .padding(end = 4.dp)
                     .size(20.dp),
-                painter = painterResource(theme.drawables.iconIdSearch),
+                painter = painterResource(theme.drawables.iconSearch),
                 tint = Color.Unspecified,
                 contentDescription = null
             )
@@ -72,7 +74,7 @@ internal fun SearchBar(
                 modifier = Modifier.weight(weight = 1f, fill = true),
                 fieldModifier = Modifier.fillMaxWidth(),
                 value = value,
-                placeholder = stringResource(theme.strings.textIdSearchPlaceholder),
+                placeholder = stringResource(theme.strings.searchPlaceholder),
                 textStyleText = theme.textStyles.searchText,
                 textStylePlaceholder = theme.textStyles.searchPlaceholder,
                 imeAction = ImeAction.Search,
@@ -89,7 +91,7 @@ internal fun SearchBar(
                         .size(20.dp)
                         .clip(CircleShape)
                         .clickableItem(onClick = onClearClick),
-                    painter = painterResource(theme.drawables.iconIdSearchCancel),
+                    painter = painterResource(theme.drawables.iconSearchCancel),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )
@@ -110,7 +112,7 @@ internal fun SearchBar(
                             end = 16.dp
                         )
                         .clickableText(onClick = it),
-                    text = stringResource(theme.strings.textIdSearchCancel),
+                    text = stringResource(theme.strings.searchCancel),
                     style = theme.textStyles.searchCancel
                 )
             }

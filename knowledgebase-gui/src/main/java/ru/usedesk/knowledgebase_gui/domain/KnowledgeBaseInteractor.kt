@@ -143,6 +143,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                 .htmlToStrings()
                 .take(2)
                 .joinToString("\n")
+                .ifEmpty { "..." }
         )
     }
 

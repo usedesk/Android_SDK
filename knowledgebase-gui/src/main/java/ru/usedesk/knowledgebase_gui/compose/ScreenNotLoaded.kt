@@ -4,7 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -13,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
@@ -24,7 +26,7 @@ internal fun ScreenNotLoaded(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(theme.dimensions.contentPadding)
     ) {
         Box(
             modifier = Modifier
@@ -35,7 +37,7 @@ internal fun ScreenNotLoaded(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
-                painter = painterResource(theme.drawables.imageIdCantLoad),
+                painter = painterResource(theme.drawables.imageCantLoad),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth
             )
@@ -43,22 +45,16 @@ internal fun ScreenNotLoaded(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp
-                ),
+                .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BasicText(
                 modifier = Modifier
-                    .padding(top = 12.dp),
-                text = stringResource(theme.strings.textIdLoadError),
+                    .padding(theme.dimensions.notLoadedErrorPadding),
+                text = stringResource(theme.strings.loadError),
                 style = theme.textStyles.loadError
             )
             AnimatedVisibility(
-                modifier = Modifier
-                    .padding(top = 8.dp),
                 visible = tryAgain != null,
                 enter = fadeIn(),
                 exit = fadeOut()
@@ -66,7 +62,7 @@ internal fun ScreenNotLoaded(
                 BasicText(
                     modifier = Modifier
                         .clickableText(onClick = tryAgain ?: remember { {} }),
-                    text = stringResource(theme.strings.textIdTryAgain),
+                    text = stringResource(theme.strings.tryAgain),
                     style = theme.textStyles.tryAgain
                 )
             }

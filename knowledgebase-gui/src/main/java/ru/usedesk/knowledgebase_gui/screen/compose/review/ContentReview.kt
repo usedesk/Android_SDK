@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.review
+package ru.usedesk.knowledgebase_gui.screen.compose.review
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
+import ru.usedesk.knowledgebase_gui.screen.compose.ComposeTextField
 
 internal const val REVIEW_KEY = "review"
 
@@ -74,7 +75,7 @@ internal fun ContentReview(
             Replies(
                 theme = theme,
                 enabled = !state.buttonLoading,
-                replies = stringArrayResource(theme.strings.arrayIdReviewTags),
+                replies = stringArrayResource(theme.strings.reviewTags),
                 selectedReplies = state.selectedReplies,
                 onReplySelected = viewModel::replySelected
             )
@@ -97,7 +98,7 @@ internal fun ContentReview(
                     ),
                 value = state.reviewValue,
                 enabled = !state.buttonLoading,
-                placeholder = stringResource(theme.strings.textIdArticleReviewPlaceholder),
+                placeholder = stringResource(theme.strings.articleReviewPlaceholder),
                 textStyleText = theme.textStyles.articleReviewCommentText,
                 textStylePlaceholder = theme.textStyles.articleReviewCommentPlaceholder,
                 onValueChange = viewModel::reviewValueChanged,
@@ -149,8 +150,8 @@ private fun Replies(
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(
                                     color = when {
-                                        active -> theme.colors.black2
-                                        else -> theme.colors.gray12
+                                        active -> theme.colors.articleReviewTagSelectedBackground
+                                        else -> theme.colors.articleReviewTagUnselectedBackground
                                     }
                                 )
                                 .clickableItem(
@@ -198,7 +199,7 @@ private fun BoxScope.BottomButton(
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(color = theme.colors.black2)
+                .background(color = theme.colors.articleReviewSendBackground)
                 .clickableItem(
                     enabled = !loading,
                     onClick = onClick
@@ -213,7 +214,7 @@ private fun BoxScope.BottomButton(
                     it.first -> Icon(
                         modifier = Modifier
                             .size(24.dp),
-                        painter = painterResource(theme.drawables.iconIdReviewError),
+                        painter = painterResource(theme.drawables.iconReviewError),
                         contentDescription = null,
                         tint = Color.Unspecified
                     )
@@ -221,10 +222,10 @@ private fun BoxScope.BottomButton(
                         modifier = Modifier
                             .size(24.dp),
                         strokeWidth = theme.dimensions.progressBarStrokeWidth,
-                        color = theme.colors.red
+                        color = theme.colors.progressBarIndicator
                     )
                     else -> BasicText(
-                        text = stringResource(theme.strings.textIdArticleReviewSend),
+                        text = stringResource(theme.strings.articleReviewSend),
                         style = theme.textStyles.articleReviewSend
                     )
                 }

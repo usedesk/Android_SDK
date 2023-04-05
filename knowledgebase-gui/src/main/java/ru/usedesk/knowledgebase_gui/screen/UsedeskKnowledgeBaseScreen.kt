@@ -3,34 +3,13 @@ package ru.usedesk.knowledgebase_gui.screen
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
-import ru.usedesk.knowledgebase_gui.compose.*
-import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
-import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
-import ru.usedesk.knowledgebase_gui.screen.article.ARTICLE_KEY
-import ru.usedesk.knowledgebase_gui.screen.article.ContentArticle
-import ru.usedesk.knowledgebase_gui.screen.blocks.ContentBlocks
-import ru.usedesk.knowledgebase_gui.screen.loading.ContentLoading
-import ru.usedesk.knowledgebase_gui.screen.loading.LOADING_KEY
-import ru.usedesk.knowledgebase_gui.screen.review.ContentReview
-import ru.usedesk.knowledgebase_gui.screen.review.REVIEW_KEY
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
+import ru.usedesk.knowledgebase_gui.screen.compose.ComposeRoot
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
@@ -51,177 +30,15 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     ) = ComposeView(requireContext()).apply {
         setContent {
             val theme = remember { UsedeskKnowledgeBaseTheme.provider() }
-            ScreenRoot(theme)
-        }
-    }
-
-    @Composable
-    private fun ScreenRoot(theme: UsedeskKnowledgeBaseTheme) {
-        val state by viewModel.modelFlow.collectAsState()
-
-        val focusManager = LocalFocusManager.current
-        state.clearFocus?.use { focusManager.clearFocus() }
-
-        val onEvent = viewModel::onEvent
-        val title = when (val screen = state.screen) {
-            is State.Screen.Loading -> null
-            State.Screen.Blocks -> state.blocksState.block.title
-            is State.Screen.Article -> screen.title
-            is State.Screen.Review -> stringResource(theme.strings.textIdArticleReviewTitle)
-        } ?: stringResource(theme.strings.textIdSectionsTitle)
-
-        val scrollBehavior = rememberToolbarScrollBehavior()
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(theme.colors.white2)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-        ) {
-            val supportButtonVisible = remember { mutableStateOf(true) }
-            Crossfade(
-                modifier = Modifier.animateContentSize(),
-                targetState = state.blocksState.block !is State.BlocksState.Block.Search
-            ) { visibleToolbar ->
-                when {
-                    visibleToolbar -> CustomToolbar(
-                        theme = theme,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(theme.colors.white2),
-                        title = title,
-                        scrollBehavior = scrollBehavior,
-                        onBackPressed = requireActivity()::onBackPressed
-                    )
-                    else -> Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(16.dp)
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Content(
-                    theme = theme,
-                    state = state,
-                    supportButtonVisible = supportButtonVisible,
-                    onEvent = onEvent
-                )
-                CardCircleChat(theme = theme,
-                    visible = supportButtonVisible.value,
-                    onClicked = remember {
-                        { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
-                    }
-                )
-            }
-        }
-    }
-
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    private fun Content(
-        theme: UsedeskKnowledgeBaseTheme,
-        state: State,
-        supportButtonVisible: MutableState<Boolean>,
-        onEvent: (Event) -> Unit
-    ) {
-        val forwardTransitionSpec = remember {
-            slideInHorizontally(
-                spring(
-                    stiffness = Spring.StiffnessLow,
-                    visibilityThreshold = IntOffset.VisibilityThreshold
-                )
-            ) { it } with slideOutHorizontally(
-                spring(
-                    stiffness = Spring.StiffnessLow,
-                    visibilityThreshold = IntOffset.VisibilityThreshold
-                )
-            ) { -it }
-        }
-        val backwardTransitionSpec = slideInHorizontally(
-            spring(
-                stiffness = Spring.StiffnessLow,
-                visibilityThreshold = IntOffset.VisibilityThreshold
+            ComposeRoot(
+                theme = theme,
+                viewModel = viewModel,
+                onBackPressed = remember { requireActivity()::onBackPressed },
+                onGoSupport = remember {
+                    { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
+                },
+                onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } }
             )
-        ) { -it } with slideOutHorizontally(
-            spring(
-                stiffness = Spring.StiffnessLow,
-                visibilityThreshold = IntOffset.VisibilityThreshold
-            )
-        ) { it }
-        val noneTransitionSpec = fadeIn() with fadeOut()
-
-        AnimatedContent(
-            modifier = Modifier.fillMaxSize(),
-            targetState = state.screen,
-            transitionSpec = {
-                when (targetState.transition(initialState)) {
-                    State.Transition.FORWARD -> forwardTransitionSpec
-                    State.Transition.BACKWARD -> backwardTransitionSpec
-                    else -> noneTransitionSpec
-                }
-            }) { screen ->
-            when (screen) {
-                is State.Screen.Loading -> {
-                    DisposableEffect(Unit) {
-                        onDispose {
-                            viewModel.viewModelStoreFactory.clear(LOADING_KEY)
-                        }
-                    }
-                    ContentLoading(
-                        theme = theme,
-                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                        tryAgain = remember { { onEvent(Event.TryAgain) } }
-                    )
-                }
-                is State.Screen.Blocks -> {
-                    ContentBlocks(
-                        theme = theme,
-                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                        viewModel = viewModel,
-                        supportButtonVisible = supportButtonVisible,
-                        onEvent = onEvent
-                    )
-                }
-                is State.Screen.Article -> {
-                    DisposableEffect(Unit) {
-                        onDispose {
-                            when (viewModel.modelFlow.value.screen) {
-                                State.Screen.Blocks,
-                                State.Screen.Loading ->
-                                    viewModel.viewModelStoreFactory.clear(ARTICLE_KEY)
-                                is State.Screen.Article,
-                                is State.Screen.Review -> Unit
-                            }
-                        }
-                    }
-                    ContentArticle(
-                        theme = theme,
-                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                        articleId = screen.articleId,
-                        supportButtonVisible = supportButtonVisible,
-                        onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } },
-                        onReview = remember { { onEvent(Event.GoReview(screen.articleId)) } }
-                    )
-                }
-                is State.Screen.Review -> {
-                    supportButtonVisible.value = false
-                    DisposableEffect(Unit) {
-                        onDispose {
-                            viewModel.viewModelStoreFactory.clear(REVIEW_KEY)
-                        }
-                    }
-                    ContentReview(
-                        theme = theme,
-                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                        articleId = screen.articleId,
-                        goBack = viewModel::onBackPressed
-                    )
-                }
-            }
         }
     }
 
@@ -259,10 +76,3 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
     }
 }
-
-@Composable
-internal fun LazyListState.isSupportButtonVisible() = remember(this) {
-    derivedStateOf {
-        firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
-    }
-}.value

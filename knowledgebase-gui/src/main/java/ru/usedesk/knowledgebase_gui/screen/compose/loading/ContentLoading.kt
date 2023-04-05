@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.loading
+package ru.usedesk.knowledgebase_gui.screen.compose.loading
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box

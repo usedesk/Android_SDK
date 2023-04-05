@@ -10,45 +10,45 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
 
 class UsedeskKnowledgeBaseTheme(
+    val palette: Palette = Palette(), //TODO
+    fonts: Fonts = Fonts(),
     val strings: Strings = Strings(),
-    val colors: Colors = Colors(),
     val drawables: Drawables = Drawables(),
-    val fonts: Fonts = Fonts(),
-    val textStyles: TextStyles = TextStyles(fonts, colors),
-    val dimensions: Dimensions = Dimensions()
+    val textStyles: TextStyles = TextStyles(fonts, palette),
+    val dimensions: Dimensions = Dimensions(),
+    val colors: Colors = Colors(palette)
 ) {
     class Strings(
-        @StringRes val textIdSectionsTitle: Int = R.string.usedesk_sections_title,
-        @StringRes val textIdSearchPlaceholder: Int = R.string.usedesk_enter_your_query,
-        @StringRes val textIdSearchCancel: Int = R.string.usedesk_cancel,
-        @StringRes val textIdLoadError: Int = R.string.usedesk_sections_load_error,
-        @StringRes val textIdTryAgain: Int = R.string.usedesk_try_again,
-        @StringRes val textIdSearchIsEmpty: Int = R.string.usedesk_search_fail,
-        @StringRes val textIdArticleRating: Int = R.string.usedesk_rating_question,
-        @StringRes val textIdArticleReviewTitle: Int = R.string.usedesk_article_review_title,
-        @StringRes val textIdArticleReviewSend: Int = R.string.usedesk_send,
-        @StringRes val textIdArticleReviewYes: Int = R.string.usedesk_rating_yes,
-        @StringRes val textIdArticleReviewNo: Int = R.string.usedesk_rating_no,
-        @StringRes val textIdArticleRatingThanks: Int = R.string.usedesk_rating_thanks,
-        @StringRes val textIdArticleReviewPlaceholder: Int = R.string.usedesk_article_review_placeholder,
-        @ArrayRes val arrayIdReviewTags: Int = R.array.usedesk_article_review_tags
+        @StringRes val sectionsTitle: Int = R.string.usedesk_sections_title,
+        @StringRes val searchPlaceholder: Int = R.string.usedesk_enter_your_query,
+        @StringRes val searchCancel: Int = R.string.usedesk_cancel,
+        @StringRes val loadError: Int = R.string.usedesk_sections_load_error,
+        @StringRes val tryAgain: Int = R.string.usedesk_try_again,
+        @StringRes val searchIsEmpty: Int = R.string.usedesk_search_fail,
+        @StringRes val articleRating: Int = R.string.usedesk_rating_question,
+        @StringRes val articleReviewTitle: Int = R.string.usedesk_article_review_title,
+        @StringRes val articleReviewSend: Int = R.string.usedesk_send,
+        @StringRes val articleReviewYes: Int = R.string.usedesk_rating_yes,
+        @StringRes val articleReviewNo: Int = R.string.usedesk_rating_no,
+        @StringRes val articleRatingThanks: Int = R.string.usedesk_rating_thanks,
+        @StringRes val articleReviewPlaceholder: Int = R.string.usedesk_article_review_placeholder,
+        @ArrayRes val reviewTags: Int = R.array.usedesk_article_review_tags
     )
 
-    class Colors(
+    class Palette(
         val white1: Color = Color(0xFFFFFFFF),
         val white2: Color = Color(0xFFF7F7F7),
         val black2: Color = Color(0xFF333333),
         val black3: Color = Color(0xFF666666),
         val gray1: Color = Color(0xFFEEEEEE),
-        val gray12: Color = Color(0xFFD5D5D5),
-        val gray2: Color = Color(0xFFBCBCBC),
-        val gray3: Color = Color(0xFF828282),
+        val gray2: Color = Color(0xFFD5D5D5),
+        val gray3: Color = Color(0xFFBCBCBC),
+        val gray4: Color = Color(0xFF828282),
         val grayCold1: Color = Color(0xFFF2F4FA),
         val grayCold2: Color = Color(0xFF989FB3),
         val red: Color = Color(0xFFEB5757),
@@ -56,199 +56,246 @@ class UsedeskKnowledgeBaseTheme(
         val blue: Color = Color(0xFF2F80ED)
     )
 
+    class Colors(
+        palette: Palette,
+        val rootBackground: Color = palette.white2,
+        val progressBarBackground: Color = palette.white1,
+        val progressBarIndicator: Color = palette.red,
+        val searchBarBackground: Color = palette.gray1,
+        val supportBackground: Color = palette.black2,
+        val listItemBackground: Color = palette.white1,
+        val sectionsIconBackground: Color = palette.grayCold1,
+        val articleRatingGoodBackground: Color = palette.green.copy(alpha = 0.2f),
+        val articleRatingBadBackground: Color = palette.red.copy(alpha = 0.2f),
+        val articleRatingDivider: Color = palette.gray2,
+        val articleReviewTagUnselectedBackground: Color = palette.gray2,
+        val articleReviewTagSelectedBackground: Color = palette.black2,
+        val articleReviewSendBackground: Color = palette.black2
+    )
+
     class Drawables(
-        @DrawableRes val iconIdBack: Int = R.drawable.usedesk_ic_back,
-        @DrawableRes val iconIdSupport: Int = R.drawable.usedesk_ic_support,
-        @DrawableRes val iconIdSearch: Int = R.drawable.usedesk_ic_search,
-        @DrawableRes val iconIdSearchCancel: Int = R.drawable.usedesk_ic_cancel_round,
-        @DrawableRes val iconIdSearchPaginationError: Int = R.drawable.usedesk_ic_error_round,
-        @DrawableRes val iconIdListItemArrowForward: Int = R.drawable.usedesk_ic_arrow_forward,
-        @DrawableRes val iconIdRatingGood: Int = R.drawable.usedesk_ic_rating_good,
-        @DrawableRes val iconIdRatingBad: Int = R.drawable.usedesk_ic_rating_bad,
-        @DrawableRes val iconIdRatingError: Int = R.drawable.usedesk_ic_error_round,
-        @DrawableRes val iconIdReviewError: Int = R.drawable.usedesk_ic_error_round,
-        @DrawableRes val imageIdCantLoad: Int = R.drawable.usedesk_image_cant_load
+        @DrawableRes val iconBack: Int = R.drawable.usedesk_ic_back,
+        @DrawableRes val iconSupport: Int = R.drawable.usedesk_ic_support,
+        @DrawableRes val iconSearch: Int = R.drawable.usedesk_ic_search,
+        @DrawableRes val iconSearchCancel: Int = R.drawable.usedesk_ic_cancel_round,
+        @DrawableRes val iconSearchPaginationError: Int = R.drawable.usedesk_ic_error_round,
+        @DrawableRes val iconListItemArrowForward: Int = R.drawable.usedesk_ic_arrow_forward,
+        @DrawableRes val iconRatingGood: Int = R.drawable.usedesk_ic_rating_good,
+        @DrawableRes val iconRatingBad: Int = R.drawable.usedesk_ic_rating_bad,
+        @DrawableRes val iconRatingError: Int = R.drawable.usedesk_ic_error_round,
+        @DrawableRes val iconReviewError: Int = R.drawable.usedesk_ic_error_round,
+        @DrawableRes val imageCantLoad: Int = R.drawable.usedesk_image_cant_load
     )
 
     class Fonts(
-        val fontSfProDisplay: FontFamily = FontFamily(
+        val sfProDisplay: FontFamily = FontFamily(
             Font(R.font.sf_pro_display_regular),
             Font(R.font.sf_pro_display_medium, FontWeight.Medium),
             Font(R.font.sf_pro_display_semibold, FontWeight.SemiBold),
             Font(R.font.sf_pro_display_semibold, FontWeight.Bold)
         ),
-        val fontSfUiDisplay: FontFamily = FontFamily(
+        val sfUiDisplay: FontFamily = FontFamily(
             Font(R.font.sf_ui_display_regular),
             Font(R.font.sf_ui_display_medium, FontWeight.Medium),
             Font(R.font.sf_ui_display_semibold, FontWeight.SemiBold),
             Font(R.font.sf_ui_display_semibold, FontWeight.Bold)
         ),
-        val fontRoboto: FontFamily = FontFamily(
+        val roboto: FontFamily = FontFamily(
             Font(R.font.roboto_regular),
             Font(R.font.roboto_medium, FontWeight.Medium)
         )
     )
 
     class TextStyles(
-        val fonts: Fonts,
-        val colors: Colors,
-        val toolbarTitle: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+        fonts: Fonts,
+        palette: Palette,
+        val toolbarExpandedTitle: TextStyle = TextStyle(
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.SemiBold,
             fontSize = 24.sp,
-            lineHeight = 32.sp,
-            color = colors.black2
+            color = palette.black2
+        ),
+        val toolbarCollapsedTitle: TextStyle = TextStyle(
+            fontFamily = fonts.sfProDisplay,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 20.sp,
+            color = palette.black2
         ),
         val sectionTitleItem: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.SemiBold,
             fontSize = 22.sp,
-            color = colors.grayCold2
+            color = palette.grayCold2
         ),
         val sectionTextItem: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.Normal,
             fontSize = 17.sp,
-            color = colors.black2
+            color = palette.black2
         ),
         val searchText: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.Normal,
             fontSize = 17.sp,
-            color = colors.black2
+            color = palette.black2
         ),
         val searchPlaceholder: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.Normal,
             fontSize = 17.sp,
-            color = colors.gray3
+            color = palette.gray4
         ),
         val searchCancel: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.Normal,
             fontSize = 17.sp,
-            color = colors.blue
+            color = palette.blue
         ),
         val searchIsEmpty: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
-            color = colors.grayCold2
+            color = palette.grayCold2
         ),
         val loadError: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.Medium,
             fontSize = 17.sp,
-            color = colors.black2
+            color = palette.black2
         ),
         val tryAgain: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontWeight = FontWeight.Medium,
             fontSize = 17.sp,
-            color = colors.blue
+            color = palette.blue
         ),
         val searchItemTitle: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontSize = 17.sp,
             fontWeight = FontWeight.Medium,
-            color = colors.black2
+            color = palette.black2
         ),
         val searchItemDescription: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = colors.black3
+            color = palette.black3
         ),
         val searchItemPath: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfUiDisplay,
+            fontFamily = fonts.sfUiDisplay,
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = colors.grayCold2
+            color = palette.grayCold2
         ),
         val categoriesTitle: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontSize = 17.sp,
             textAlign = TextAlign.Start,
-            color = colors.black2
+            color = palette.black2
         ),
         val categoriesDescription: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontSize = 14.sp,
             textAlign = TextAlign.Start,
-            color = colors.grayCold2
+            color = palette.grayCold2
         ),
         val articlesItemTitle: TextStyle = TextStyle(
-            fontFamily = fonts.fontSfProDisplay,
+            fontFamily = fonts.sfProDisplay,
             fontSize = 17.sp,
             textAlign = TextAlign.Start,
-            color = colors.black2
+            color = palette.black2
         ),
         val articleRatingTitle: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.grayCold2
+            color = palette.grayCold2
         ),
         val articleRatingGood: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.green
+            color = palette.green
         ),
         val articleRatingBad: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.red
+            color = palette.red
         ),
         val articleRatingThanks: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            color = colors.black3
+            color = palette.black3
         ),
         val articleReviewTag: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.white2
+            color = palette.white2
         ),
         val articleReviewTagSelected: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.black2
+            color = palette.black2
         ),
         val articleReviewCommentText: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.black2
+            color = palette.black2
         ),
         val articleReviewCommentPlaceholder: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = colors.grayCold2
+            color = palette.grayCold2
         ),
         val articleReviewSend: TextStyle = TextStyle(
-            fontFamily = fonts.fontRoboto,
+            fontFamily = fonts.roboto,
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = colors.white2
+            color = palette.white2
         )
     )
 
     class Dimensions(
-        val toolbarMinCollapsedHeight: Dp = 56.dp,
-        val toolbarHorizontalPadding: Dp = 16.dp,
-        val toolbarExpandedTitleBottomPadding: Dp = 8.dp,
-        val toolbarCollapsedTitleLineHeight: TextUnit = 28.sp,
-        val progressBarStrokeWidth: Dp = 2.dp
-    )
+        dp8: Dp = 8.dp,
+        dp12: Dp = 16.dp,
+        dp16: Dp = 16.dp,
+        dp24: Dp = 24.dp,
+        dp32: Dp = 32.dp,
+        val contentPadding: Padding = Padding(dp16),
+        val cornerRadius: Dp = 10.dp,
+        val clickableRadius: Dp = dp24,
+        val shadowElevation: Dp = 4.dp,
+        val progressBarStrokeWidth: Dp = 2.dp,
+        val loadingSize: Dp = dp32,
+        val toolbarIconSize: Dp = dp24,
+        val toolbarIntervalX: Dp = dp16,
+        val toolbarIntervalY: Dp = dp16,
+        val toolbarBottomPadding: Dp = dp16,
+        val supportIconSize: Dp = dp24,
+        val supportIconPadding: Padding = Padding(dp16),
+        val notLoadedErrorPadding: Padding = Padding(top = dp12, bottom = dp8),
+        val searchBarBottomPadding: Dp = dp16
+    ) {
+        class Padding(
+            val start: Dp = 0.dp,
+            val end: Dp = 0.dp,
+            val top: Dp = 0.dp,
+            val bottom: Dp = 0.dp
+        ) {
+            constructor(all: Dp) : this(start = all, end = all, top = all, bottom = all)
+
+            //fun vertical() = top + bottom
+            //fun horizontal() = start + end
+        }
+    }
 
     companion object {
-        var provider: () -> UsedeskKnowledgeBaseTheme =
-            { UsedeskKnowledgeBaseTheme() }
+        var provider: () -> UsedeskKnowledgeBaseTheme = { UsedeskKnowledgeBaseTheme() }
     }
 }

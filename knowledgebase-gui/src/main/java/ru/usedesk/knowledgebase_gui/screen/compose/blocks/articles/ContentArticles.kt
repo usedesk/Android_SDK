@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks.articles
+package ru.usedesk.knowledgebase_gui.screen.compose.blocks.articles
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,9 +17,9 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
 @Preview
@@ -29,7 +29,7 @@ private fun Preview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(theme.colors.white2)
+            .background(color = theme.colors.rootBackground)
     ) {
         ContentArticles(
             theme = theme,
@@ -66,35 +66,25 @@ internal fun ContentArticles(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp
-                    )
                     .cardItem(
                         theme = theme,
-                        isTop = remember(
-                            it,
-                            state.articles
-                        ) { it == state.articles.firstOrNull() },
+                        isTop = remember(it, state.articles) { it == state.articles.firstOrNull() },
                         isBottom = remember(
                             it,
                             state.articles
                         ) { it == state.articles.lastOrNull() }
                     )
-                    .clickableItem(
-                        onClick = remember { { onArticleClick(it) } }
-                    )
+                    .clickableItem(onClick = remember { { onArticleClick(it) } })
                     .padding(
                         start = 20.dp,
                         end = 10.dp,
-                        top = 8.dp,
-                        bottom = 8.dp
+                        top = 24.dp,
+                        bottom = 24.dp
                     )
             ) {
                 BasicText(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(end = 10.dp)
                         .weight(weight = 1f, fill = true),
                     style = theme.textStyles.articlesItemTitle,
                     text = it.title
@@ -102,12 +92,9 @@ internal fun ContentArticles(
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(
-                            top = 16.dp,
-                            bottom = 16.dp
-                        )
+                        .padding(start = 10.dp)
                         .size(24.dp),
-                    painter = painterResource(theme.drawables.iconIdListItemArrowForward),
+                    painter = painterResource(theme.drawables.iconListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )

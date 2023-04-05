@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks.sections
+package ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,9 +19,9 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 @Preview
@@ -31,7 +31,7 @@ private fun Preview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(theme.colors.white2)
+            .background(color = theme.colors.rootBackground)
     ) {
         ContentSections(
             theme = theme,
@@ -65,10 +65,6 @@ internal fun ContentSections(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp
-                    )
                     .cardItem(
                         theme = theme,
                         isTop = it == state.sections.firstOrNull(),
@@ -89,7 +85,7 @@ internal fun ContentSections(
                         .align(Alignment.CenterVertically)
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(color = theme.colors.grayCold1)
+                        .background(color = theme.colors.sectionsIconBackground)
                 ) {
                     BasicText(
                         modifier = Modifier
@@ -118,7 +114,7 @@ internal fun ContentSections(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .size(24.dp),
-                    painter = painterResource(theme.drawables.iconIdListItemArrowForward),
+                    painter = painterResource(theme.drawables.iconListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null
                 )

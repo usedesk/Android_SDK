@@ -106,9 +106,7 @@ private suspend fun CustomToolbarScrollState.flingToolbar(
 internal suspend fun CustomToolbarScrollState.snapToolbar() {
     // In case the app bar motion was stopped in a state where it's partially visible, snap it to
     // the nearest state.
-    if (heightOffset < 0 &&
-        heightOffset > heightOffsetLimit
-    ) {
+    if (heightOffset < 0 && heightOffset > heightOffsetLimit) {
         AnimationState(initialValue = heightOffset).animateTo(
             targetValue = if (collapsedFraction < 0.5f) 0f else heightOffsetLimit,
             animationSpec = spring(stiffness = Spring.StiffnessMediumLow)

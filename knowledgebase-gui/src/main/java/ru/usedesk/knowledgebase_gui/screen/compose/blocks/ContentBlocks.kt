@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks
+package ru.usedesk.knowledgebase_gui.screen.compose.blocks
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.Spring
@@ -8,16 +8,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
-import ru.usedesk.knowledgebase_gui.compose.SearchBar
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.blocks.articles.ContentArticles
-import ru.usedesk.knowledgebase_gui.screen.blocks.categories.ContentCategories
-import ru.usedesk.knowledgebase_gui.screen.blocks.search.ContentSearch
-import ru.usedesk.knowledgebase_gui.screen.blocks.sections.ContentSections
+import ru.usedesk.knowledgebase_gui.screen.compose.SearchBar
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.articles.ContentArticles
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories.ContentCategories
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.ContentSearch
+import ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections.ContentSections
 
 internal const val SECTIONS_KEY = "sections"
 internal const val CATEGORIES_KEY = "categories"

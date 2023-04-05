@@ -1,4 +1,4 @@
-package ru.usedesk.knowledgebase_gui.screen.blocks.categories
+package ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,9 +17,9 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.isSupportButtonVisible
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 @Preview
@@ -29,7 +29,7 @@ private fun Preview() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(theme.colors.white2)
+            .background(color = theme.colors.rootBackground)
     ) {
         ContentCategories(
             theme = theme,
@@ -66,10 +66,6 @@ internal fun ContentCategories(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp
-                    )
                     .cardItem(
                         theme = theme,
                         isTop = it == state.categories.firstOrNull(),
@@ -81,14 +77,13 @@ internal fun ContentCategories(
                     .padding(
                         start = 20.dp,
                         end = 10.dp,
-                        top = 8.dp,
-                        bottom = 8.dp
+                        top = 12.dp,
+                        bottom = 12.dp
                     )
             ) {
                 BasicText(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 10.dp),
+                        .fillMaxWidth(),
                     style = theme.textStyles.categoriesTitle,
                     text = it.title
                 )
@@ -99,7 +94,6 @@ internal fun ContentCategories(
                     BasicText(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            .padding(end = 10.dp)
                             .weight(weight = 1f, fill = true),
                         style = theme.textStyles.categoriesDescription,
                         text = it.description
@@ -107,8 +101,9 @@ internal fun ContentCategories(
                     Icon(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
+                            .padding(start = 10.dp)
                             .size(24.dp),
-                        painter = painterResource(theme.drawables.iconIdListItemArrowForward),
+                        painter = painterResource(theme.drawables.iconListItemArrowForward),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )

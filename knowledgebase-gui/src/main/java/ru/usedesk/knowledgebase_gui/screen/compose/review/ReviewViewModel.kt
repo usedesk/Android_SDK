@@ -4,6 +4,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._entity.ReviewState
+import ru.usedesk.knowledgebase_gui.compose.TextFilter
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.compose.review.ReviewViewModel.State
 
@@ -11,6 +12,8 @@ internal class ReviewViewModel(
     private val kbInteractor: IKnowledgeBaseInteractor,
     private val articleId: Long
 ) : UsedeskViewModel<State>(State()) {
+
+    private val reviewFilter = TextFilter.MultiLine(512)
 
     init {
         kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
@@ -36,7 +39,7 @@ internal class ReviewViewModel(
     }
 
     fun reviewValueChanged(reviewValue: TextFieldValue) {
-        setModel { copy(reviewValue = reviewValue).updateButtonShowed() }
+        setModel { copy(reviewValue = reviewFilter.onValueChanged(reviewValue)).updateButtonShowed() }
     }
 
     fun reviewFocusChanged(focused: Boolean) {

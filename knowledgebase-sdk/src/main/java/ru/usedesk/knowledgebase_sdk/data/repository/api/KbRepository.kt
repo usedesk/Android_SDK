@@ -34,84 +34,27 @@ internal class KbRepository @Inject constructor(
                     )
                 }
             } ?: listOf()
-            listOf(
-                UsedeskCategory(
-                    categoryId,
-                    categoryResponse.title ?: "",
-                    categoryResponse.description ?: "",
-                    articles
-                ),
-                UsedeskCategory(
-                    categoryId + 10000L,
-                    categoryResponse.title ?: "",
-                    categoryResponse.description ?: "",
-                    articles
-                ),
-                UsedeskCategory(
-                    categoryId + 1000000L,
-                    categoryResponse.title ?: "",
-                    categoryResponse.description ?: "",
-                    articles
-                ),
-                UsedeskCategory(
-                    categoryId + 100000000L,
-                    categoryResponse.title ?: "",
-                    categoryResponse.description ?: "",
-                    articles
-                ),
-                UsedeskCategory(
-                    categoryId + 10000000000L,
-                    categoryResponse.title ?: "",
-                    categoryResponse.description ?: "",
-                    articles
-                )
+
+            UsedeskCategory(
+                categoryId,
+                categoryResponse.title ?: "",
+                categoryResponse.description ?: "",
+                articles
             )
         }
-    }.flatten()
+    }
 
     private fun Array<SectionResponse?>.convert() = mapNotNull { sectionResponse ->
         valueOrNull {
             val categories = sectionResponse!!.categories?.convert() ?: listOf()
-            listOf(
-                UsedeskSection(
-                    sectionResponse.id!!,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                ),
-                UsedeskSection(
-                    sectionResponse.id!! + 10000L,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                ),
-                UsedeskSection(
-                    sectionResponse.id!! + 100000000L,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                ),
-                UsedeskSection(
-                    sectionResponse.id!! + 10000000000L,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                ),
-                UsedeskSection(
-                    sectionResponse.id!! + 1000000000000L,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                ),
-                UsedeskSection(
-                    sectionResponse.id!! + 100000000000000L,
-                    sectionResponse.title ?: "",
-                    sectionResponse.image,
-                    categories
-                )
+            UsedeskSection(
+                sectionResponse.id!!,
+                sectionResponse.title ?: "",
+                sectionResponse.image,
+                categories
             )
         }
-    }.flatten()
+    }
 
     override fun getSections(): GetSectionsResponse {
         val request = LoadSections.Request(

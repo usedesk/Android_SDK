@@ -14,13 +14,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.knowledgebase_gui.compose.cardItem
-import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
-import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
@@ -73,17 +69,12 @@ internal fun ContentSections(
                     .clickableItem(
                         onClick = remember { { onSectionClicked(it) } }
                     )
-                    .padding(
-                        start = 10.dp,
-                        end = 10.dp,
-                        top = 8.dp,
-                        bottom = 8.dp
-                    )
+                    .padding(theme.dimensions.sectionsItemInnerPadding)
             ) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .size(44.dp)
+                        .size(theme.dimensions.sectionsItemIconSize)
                         .clip(CircleShape)
                         .background(color = theme.colors.sectionsIconBackground)
                 ) {
@@ -102,10 +93,7 @@ internal fun ContentSections(
                 BasicText(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(
-                            start = 10.dp,
-                            end = 10.dp
-                        )
+                        .padding(theme.dimensions.sectionsItemTitlePadding)
                         .weight(weight = 1f, fill = true),
                     style = theme.textStyles.sectionTextItem,
                     text = it.title
@@ -113,7 +101,7 @@ internal fun ContentSections(
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .size(24.dp),
+                        .size(theme.dimensions.sectionsItemArrowSize),
                     painter = painterResource(theme.drawables.iconListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null

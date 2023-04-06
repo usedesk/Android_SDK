@@ -3,14 +3,17 @@ package ru.usedesk.knowledgebase_gui.compose
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
@@ -24,17 +27,20 @@ internal fun BoxScope.CardCircleChat(
     AnimatedVisibility(
         modifier = Modifier
             .align(Alignment.BottomEnd),
-        visible = visible,
+        visible = visible && theme.isSupportButtonVisible,
         enter = slideInHorizontally { it },
         exit = slideOutHorizontally { it }
     ) {
-        Surface(
-            shape = CircleShape,
+        Box(
             modifier = Modifier
-                .padding(theme.dimensions.contentPadding)
-                .clickableItem(onClick = onClicked),
-            color = theme.colors.supportBackground,
-            shadowElevation = theme.dimensions.shadowElevation
+                .padding(theme.dimensions.rootPadding)
+                .shadow(
+                    elevation = theme.dimensions.shadowElevation,
+                    shape = CircleShape
+                )
+                .clip(CircleShape)
+                .background(color = theme.colors.supportBackground)
+                .clickableItem(onClick = onClicked)
         ) {
             Icon(
                 modifier = Modifier

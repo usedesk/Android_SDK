@@ -191,8 +191,7 @@ class ConfigurationScreen : UsedeskFragment() {
             additionalFields,
             additionalNestedFields,
             binding.switchKb.isChecked,
-            binding.switchKbWithSupportButton.isChecked,
-            binding.switchKbWithArticleRating.isChecked
+            binding.switchKbWithSupportButton.isChecked
         )
     }
 
@@ -258,7 +257,6 @@ class ConfigurationScreen : UsedeskFragment() {
         )
         binding.switchKb.isChecked = withKb
         binding.switchKbWithSupportButton.isChecked = withKbSupportButton
-        binding.switchKbWithArticleRating.isChecked = withKbArticleRating
     }
 
     private fun setAdditionalField(

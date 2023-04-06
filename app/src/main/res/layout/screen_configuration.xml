@@ -655,15 +655,6 @@
                     android:text="@string/kb_support_button"
                     android:textSize="18sp" />
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_kb_with_article_rating"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:padding="14dp"
-                    android:text="@string/kb_article_rating"
-                    android:textSize="18sp" />
-
                 <Button
                     android:id="@+id/btn_go_to_sdk"
                     android:layout_width="match_parent"

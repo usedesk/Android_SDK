@@ -35,13 +35,13 @@ internal fun CustomToolbar(
 
     val collapsingTitleScale = lerp(1f, fullyCollapsedTitleScale, collapsedFraction)
 
-    val collapsedHeight = theme.dimensions.contentPadding.top +
+    val collapsedHeight = theme.dimensions.rootPadding.top +
             theme.dimensions.toolbarIconSize +
             theme.dimensions.toolbarBottomPadding
 
     Surface(
         modifier = Modifier.padding(
-            end = theme.dimensions.contentPadding.end
+            end = theme.dimensions.rootPadding.end
         )
     ) {
         Layout(
@@ -106,9 +106,9 @@ internal fun CustomToolbar(
             measurePolicy = { measurables, constraints ->
                 val intervalX = theme.dimensions.toolbarIntervalX.toPx()
                 val intervalY = theme.dimensions.toolbarIntervalY.toPx()
-                val startPadding = theme.dimensions.contentPadding.start.toPx()
-                val endPadding = theme.dimensions.contentPadding.end.toPx()
-                val topPadding = theme.dimensions.contentPadding.top.toPx()
+                val startPadding = theme.dimensions.rootPadding.start.toPx()
+                val endPadding = theme.dimensions.rootPadding.end.toPx()
+                val topPadding = theme.dimensions.rootPadding.top.toPx()
                 val bottomPadding = theme.dimensions.toolbarBottomPadding.toPx()
 
                 // Measuring widgets inside toolbar:

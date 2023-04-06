@@ -12,13 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.knowledgebase_gui.compose.cardItem
-import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
-import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
 
@@ -75,25 +71,20 @@ internal fun ContentArticles(
                         ) { it == state.articles.lastOrNull() }
                     )
                     .clickableItem(onClick = remember { { onArticleClick(it) } })
-                    .padding(
-                        start = 20.dp,
-                        end = 10.dp,
-                        top = 24.dp,
-                        bottom = 24.dp
-                    )
+                    .padding(theme.dimensions.articlesItemInnerPadding)
             ) {
                 BasicText(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .weight(weight = 1f, fill = true),
+                        .weight(weight = 1f, fill = true)
+                        .padding(theme.dimensions.articlesItemTitlePadding),
                     style = theme.textStyles.articlesItemTitle,
                     text = it.title
                 )
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(start = 10.dp)
-                        .size(24.dp),
+                        .size(theme.dimensions.articlesItemArrowSize),
                     painter = painterResource(theme.drawables.iconListItemArrowForward),
                     tint = Color.Unspecified,
                     contentDescription = null

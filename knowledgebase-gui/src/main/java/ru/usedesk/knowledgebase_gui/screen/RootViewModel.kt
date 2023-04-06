@@ -5,6 +5,7 @@ import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui.compose.TextFilter
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
@@ -17,6 +18,8 @@ internal class RootViewModel(
 ) : UsedeskViewModel<State>(State()) {
 
     val viewModelStoreFactory = ViewModelStoreFactory()
+
+    private val searchFilter = TextFilter.SingleLine()
 
     init {
         kbInteractor.loadSections().launchCollect { onEvent(Event.KbSectionsModel(it)) }
@@ -121,7 +124,7 @@ internal class RootViewModel(
 
 
     private fun State.searchTextChanged(event: Event.SearchTextChanged): State = copy(
-        blocksState = blocksState.copy(searchText = event.value)
+        blocksState = blocksState.copy(searchText = searchFilter.onValueChanged(event.value))
     )
 
     private fun State.sectionClicked(event: Event.SectionClicked): State = copy(

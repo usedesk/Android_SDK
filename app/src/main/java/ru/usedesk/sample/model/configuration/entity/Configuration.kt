@@ -31,8 +31,7 @@ data class Configuration(
     val additionalFields: Map<Long, String> = mapOf(),
     val additionalNestedFields: List<Map<Long, String>> = listOf(),
     val withKb: Boolean = true,
-    val withKbSupportButton: Boolean = true,
-    val withKbArticleRating: Boolean = true
+    val withKbSupportButton: Boolean = true
 ) {
 
     fun toChatConfiguration() = UsedeskChatConfiguration(

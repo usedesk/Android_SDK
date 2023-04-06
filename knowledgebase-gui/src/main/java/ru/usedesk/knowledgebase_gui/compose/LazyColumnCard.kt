@@ -18,17 +18,17 @@ internal fun Modifier.cardItem(
     isBottom: Boolean
 ): Modifier {
     val modifier = padding(
-        start = theme.dimensions.contentPadding.start,
-        end = theme.dimensions.contentPadding.end,
-        bottom = if (isBottom) theme.dimensions.contentPadding.bottom else 0.dp
+        start = theme.dimensions.rootPadding.start,
+        end = theme.dimensions.rootPadding.end,
+        bottom = if (isBottom) theme.dimensions.rootPadding.bottom else 0.dp
     )
     return when {
         isTop || isBottom -> modifier.clip(
             RoundedCornerShape(
-                topStart = if (isTop) theme.dimensions.cornerRadius else 0.dp,
-                topEnd = if (isTop) theme.dimensions.cornerRadius else 0.dp,
-                bottomStart = if (isBottom) theme.dimensions.cornerRadius else 0.dp,
-                bottomEnd = if (isBottom) theme.dimensions.cornerRadius else 0.dp
+                topStart = if (isTop) theme.dimensions.contentCornerRadius else 0.dp,
+                topEnd = if (isTop) theme.dimensions.contentCornerRadius else 0.dp,
+                bottomStart = if (isBottom) theme.dimensions.contentCornerRadius else 0.dp,
+                bottomEnd = if (isBottom) theme.dimensions.contentCornerRadius else 0.dp
             )
         )
         else -> modifier
@@ -37,6 +37,6 @@ internal fun Modifier.cardItem(
 
 @Composable
 internal fun Modifier.card(theme: UsedeskKnowledgeBaseTheme) = fillMaxWidth()
-    .clip(RoundedCornerShape(theme.dimensions.cornerRadius))
+    .clip(RoundedCornerShape(theme.dimensions.contentCornerRadius))
     .shadow(elevation = theme.dimensions.shadowElevation)
     .background(color = theme.colors.listItemBackground)

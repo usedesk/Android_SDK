@@ -26,7 +26,7 @@ internal fun ScreenNotLoaded(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(theme.dimensions.contentPadding)
+            .padding(theme.dimensions.rootPadding)
     ) {
         Box(
             modifier = Modifier

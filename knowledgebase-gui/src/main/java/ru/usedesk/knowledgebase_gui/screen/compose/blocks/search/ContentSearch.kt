@@ -16,7 +16,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.*
@@ -86,12 +85,7 @@ internal fun ContentSearch(
                                         .clickableItem(
                                             onClick = remember { { onArticleClick(item.item) } }
                                         )
-                                        .padding(
-                                            start = 20.dp,
-                                            end = 10.dp,
-                                            top = 8.dp,
-                                            bottom = 8.dp
-                                        )
+                                        .padding(theme.dimensions.searchItemInnerPadding)
                                         .animateItemPlacement()
                                 ) {
                                     Column(
@@ -100,18 +94,19 @@ internal fun ContentSearch(
                                             .weight(weight = 1f, fill = true)
                                     ) {
                                         BasicText(
-                                            modifier = Modifier.padding(bottom = 4.dp),
+                                            modifier = Modifier.padding(theme.dimensions.searchItemTitlePadding),
                                             style = theme.textStyles.searchItemTitle,
                                             text = item.item.title
                                         )
                                         BasicText(
-                                            modifier = Modifier.padding(bottom = 4.dp),
+                                            modifier = Modifier.padding(theme.dimensions.searchItemDescriptionPadding),
                                             style = theme.textStyles.searchItemDescription,
                                             text = item.description,
                                             maxLines = 2,
                                             overflow = TextOverflow.Ellipsis
                                         )
                                         BasicText(
+                                            modifier = Modifier.padding(theme.dimensions.searchItemPathPadding),
                                             style = theme.textStyles.searchItemPath,
                                             text = remember(item) {
                                                 "${item.sectionName} > ${item.categoryName}"
@@ -121,8 +116,7 @@ internal fun ContentSearch(
                                     Icon(
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
-                                            .padding(start = 10.dp)
-                                            .size(24.dp),
+                                            .size(theme.dimensions.searchItemArrowSize),
                                         painter = painterResource(theme.drawables.iconListItemArrowForward),
                                         tint = Color.Unspecified,
                                         contentDescription = null
@@ -136,11 +130,7 @@ internal fun ContentSearch(
                                         theme = theme,
                                         modifier = Modifier
                                             .align(Alignment.Center)
-                                            .padding(
-                                                start = 16.dp,
-                                                end = 16.dp,
-                                                bottom = 16.dp
-                                            ),
+                                            .padding(theme.dimensions.paginationLoadingPadding),
                                         loading = state.nextPageState == NextPageState.LOADING,
                                         onErrorClicked = when (state.nextPageState) {
                                             NextPageState.ERROR -> viewModel::tryNextPageAgain
@@ -157,7 +147,7 @@ internal fun ContentSearch(
                             exit = fadeOut()
                         ) {
                             BasicText(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier.padding(theme.dimensions.searchEmptyTopPadding),
                                 text = stringResource(theme.strings.searchIsEmpty),
                                 style = theme.textStyles.searchIsEmpty
                             )
@@ -172,7 +162,7 @@ internal fun ContentSearch(
                 theme = theme,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(16.dp),
+                    .padding(theme.dimensions.loadingPadding),
                 loading = state.reloadLoading,
                 onErrorClicked = null
             )

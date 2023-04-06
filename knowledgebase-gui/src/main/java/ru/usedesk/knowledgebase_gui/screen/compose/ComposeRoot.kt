@@ -12,7 +12,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.compose.CardCircleChat
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
@@ -70,7 +69,7 @@ internal fun ComposeRoot(
                 else -> Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(16.dp)
+                        .height(theme.dimensions.toolbarBottomPadding)
                 )
             }
         }

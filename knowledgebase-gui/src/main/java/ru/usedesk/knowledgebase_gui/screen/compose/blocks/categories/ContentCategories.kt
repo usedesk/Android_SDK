@@ -12,13 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import ru.usedesk.knowledgebase_gui.compose.cardItem
-import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
-import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
@@ -74,12 +70,7 @@ internal fun ContentCategories(
                     .clickableItem(
                         onClick = remember { { onCategoryClick(it) } }
                     )
-                    .padding(
-                        start = 20.dp,
-                        end = 10.dp,
-                        top = 12.dp,
-                        bottom = 12.dp
-                    )
+                    .padding(theme.dimensions.categoriesItemInnerPadding)
             ) {
                 BasicText(
                     modifier = Modifier
@@ -94,15 +85,15 @@ internal fun ContentCategories(
                     BasicText(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            .weight(weight = 1f, fill = true),
+                            .weight(weight = 1f, fill = true)
+                            .padding(theme.dimensions.categoriesItemTitlePadding),
                         style = theme.textStyles.categoriesDescription,
                         text = it.description
                     )
                     Icon(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
-                            .padding(start = 10.dp)
-                            .size(24.dp),
+                            .size(theme.dimensions.categoriesItemArrowSize),
                         painter = painterResource(theme.drawables.iconListItemArrowForward),
                         tint = Color.Unspecified,
                         contentDescription = null

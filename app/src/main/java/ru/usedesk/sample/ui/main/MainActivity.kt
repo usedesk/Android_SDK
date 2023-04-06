@@ -42,6 +42,7 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -110,14 +111,15 @@ class MainActivity : AppCompatActivity(),
                     navController.apply {
                         if (new.configuration.withKb) {
                             val kbConfiguration = new.configuration.toKbConfiguration()
+                            UsedeskKnowledgeBaseTheme.provider = {
+                                UsedeskKnowledgeBaseTheme(
+                                    isSupportButtonVisible = new.configuration.withKbSupportButton
+                                )
+                            }
                             navigateSafe(
                                 R.id.dest_configurationScreen,
                                 R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-                                UsedeskKnowledgeBaseScreen.createBundle(
-                                    new.configuration.withKbSupportButton,
-                                    new.configuration.withKbArticleRating,
-                                    kbConfiguration
-                                )
+                                UsedeskKnowledgeBaseScreen.createBundle(kbConfiguration)
                             )
                         } else {
                             navigateSafe(

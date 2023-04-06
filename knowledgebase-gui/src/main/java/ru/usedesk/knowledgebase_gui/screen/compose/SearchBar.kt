@@ -25,9 +25,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.clickableText
+import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -41,37 +41,34 @@ internal fun SearchBar(
     onSearch: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = theme.dimensions.rootPadding.start,
+                end = theme.dimensions.rootPadding.end,
+                bottom = theme.dimensions.searchBarBottomPadding
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             modifier = Modifier
                 .weight(weight = 1f, fill = true)
-                .padding(
-                    start = theme.dimensions.contentPadding.start,
-                    end = theme.dimensions.contentPadding.end,
-                    bottom = 16.dp
-                )
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(theme.dimensions.searchBarCornerRadius))
                 .background(color = theme.colors.searchBarBackground)
-                .padding(
-                    start = 6.dp,
-                    end = 8.dp,
-                    top = 6.dp,
-                    bottom = 6.dp
-                ),
+                .padding(theme.dimensions.searchBarInnerPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 modifier = Modifier
-                    .padding(end = 4.dp)
-                    .size(20.dp),
+                    .size(theme.dimensions.searchBarIconSize),
                 painter = painterResource(theme.drawables.iconSearch),
                 tint = Color.Unspecified,
                 contentDescription = null
             )
             ComposeTextField(
-                modifier = Modifier.weight(weight = 1f, fill = true),
+                modifier = Modifier
+                    .weight(weight = 1f, fill = true)
+                    .padding(theme.dimensions.searchBarQueryPadding),
                 fieldModifier = Modifier.fillMaxWidth(),
                 value = value,
                 placeholder = stringResource(theme.strings.searchPlaceholder),
@@ -79,6 +76,7 @@ internal fun SearchBar(
                 textStylePlaceholder = theme.textStyles.searchPlaceholder,
                 imeAction = ImeAction.Search,
                 keyboardActions = KeyboardActions(onSearch = remember { { onSearch() } }),
+                singleLine = true,
                 onValueChange = onValueChange
             )
             AnimatedVisibility(
@@ -88,7 +86,7 @@ internal fun SearchBar(
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(theme.dimensions.searchBarIconSize)
                         .clip(CircleShape)
                         .clickableItem(onClick = onClearClick),
                     painter = painterResource(theme.drawables.iconSearchCancel),
@@ -106,11 +104,7 @@ internal fun SearchBar(
                 null -> Box(modifier = Modifier)
                 else -> BasicText(
                     modifier = Modifier
-                        .padding(
-                            top = 6.dp,
-                            bottom = 22.dp,
-                            end = 16.dp
-                        )
+                        .padding(start = theme.dimensions.searchBarCancelInterval)
                         .clickableText(onClick = it),
                     text = stringResource(theme.strings.searchCancel),
                     style = theme.textStyles.searchCancel
@@ -131,6 +125,7 @@ internal fun ComposeTextField(
     textStylePlaceholder: TextStyle,
     imeAction: ImeAction = ImeAction.Done,
     keyboardActions: KeyboardActions = KeyboardActions(),
+    singleLine: Boolean,
     onValueChange: (TextFieldValue) -> Unit,
     onFocusChanged: (Boolean) -> Unit = remember { {} }
 ) {
@@ -145,7 +140,8 @@ internal fun ComposeTextField(
                 capitalization = KeyboardCapitalization.Sentences,
                 imeAction = imeAction
             ),
-            keyboardActions = keyboardActions
+            keyboardActions = keyboardActions,
+            singleLine = singleLine
         )
 
         AnimatedVisibility(

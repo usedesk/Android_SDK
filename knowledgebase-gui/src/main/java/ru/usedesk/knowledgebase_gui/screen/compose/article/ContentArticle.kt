@@ -27,7 +27,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -174,17 +173,12 @@ private fun ArticleBlock(
                             .clipToBounds()
                             .verticalScroll(scrollState)
                             .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = 16.dp,
+                                start = theme.dimensions.rootPadding.start,
+                                end = theme.dimensions.rootPadding.end,
+                                bottom = theme.dimensions.rootPadding.bottom,
                             )
                             .card(theme)
-                            .padding(
-                                start = 8.dp,
-                                end = 16.dp,
-                                top = 8.dp,
-                                bottom = 8.dp
-                            ),
+                            .padding(theme.dimensions.articleContentInnerPadding),
                         factory = { context ->
                             LinearLayout(context).apply {
                                 orientation = LinearLayout.VERTICAL
@@ -201,7 +195,7 @@ private fun ArticleBlock(
             theme = theme,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(16.dp),
+                .padding(theme.dimensions.loadingPadding),
             loading = state.loading
         )
     }
@@ -217,7 +211,7 @@ private fun ArticleRatingButton(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(theme.dimensions.articleRatingButtonCornerRadius))
             .background(color = remember(good) {
                 when {
                     good -> theme.colors.articleRatingGoodBackground
@@ -228,19 +222,14 @@ private fun ArticleRatingButton(
                 enabled = ratingState is RatingState.Required,
                 onClick = onClick
             )
-            .padding(
-                top = 8.dp,
-                bottom = 8.dp,
-                start = 10.dp,
-                end = 10.dp
-            )
+            .padding(theme.dimensions.articleRatingButtonInnerPadding)
     ) {
         val error = (ratingState as? RatingState.Required)?.error == good
         val loading = (ratingState as? RatingState.Sending)?.good == good
         Crossfade(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .size(16.dp),
+                .size(theme.dimensions.articleRatingButtonIconSize),
             targetState = remember(error, loading) { Pair(error, loading) }
         ) {
             when {
@@ -267,7 +256,7 @@ private fun ArticleRatingButton(
         }
         BasicText(
             modifier = Modifier
-                .padding(start = 10.dp)
+                .padding(start = theme.dimensions.articleRatingButtonInnerInterval)
                 .align(Alignment.CenterVertically),
             text = stringResource(
                 when {
@@ -298,7 +287,7 @@ private fun ArticleRatingButtons(
             onClick = onReviewGoodClick
         )
         ArticleRatingButton(
-            modifier = Modifier.padding(start = 10.dp),
+            modifier = Modifier.padding(start = theme.dimensions.articleRatingButtonInterval),
             theme = theme,
             ratingState = ratingState,
             good = false,
@@ -315,25 +304,17 @@ private fun ArticleRating(
     onReviewBadClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(
-            top = 8.dp,
-            bottom = 8.dp,
-            start = 8.dp,
-            end = 8.dp
-        )
+        modifier = Modifier.padding(theme.dimensions.articleRatingPadding)
     ) {
         Divider(
             modifier = Modifier.fillMaxWidth(),
             color = theme.colors.articleRatingDivider,
-            thickness = 0.5.dp
+            thickness = theme.dimensions.articleDividerHeight
         )
         BasicText(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    top = 16.dp,
-                    bottom = 8.dp
-                ),
+                .padding(theme.dimensions.articleRatingTitlePadding),
             text = stringResource(theme.strings.articleRating),
             style = theme.textStyles.articleRatingTitle
         )

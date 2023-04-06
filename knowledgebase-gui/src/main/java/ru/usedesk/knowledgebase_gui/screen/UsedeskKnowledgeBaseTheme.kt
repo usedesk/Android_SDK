@@ -15,13 +15,14 @@ import androidx.compose.ui.unit.sp
 import ru.usedesk.knowledgebase_gui.R
 
 class UsedeskKnowledgeBaseTheme(
-    val palette: Palette = Palette(), //TODO
+    palette: Palette = Palette(),
     fonts: Fonts = Fonts(),
     val strings: Strings = Strings(),
     val drawables: Drawables = Drawables(),
     val textStyles: TextStyles = TextStyles(fonts, palette),
     val dimensions: Dimensions = Dimensions(),
-    val colors: Colors = Colors(palette)
+    val colors: Colors = Colors(palette),
+    val isSupportButtonVisible: Boolean = true
 ) {
     class Strings(
         @StringRes val sectionsTitle: Int = R.string.usedesk_sections_title,
@@ -262,25 +263,115 @@ class UsedeskKnowledgeBaseTheme(
     )
 
     class Dimensions(
+        dp4: Dp = 4.dp,
         dp8: Dp = 8.dp,
-        dp12: Dp = 16.dp,
+        dp10: Dp = 10.dp,
+        dp12: Dp = 12.dp,
         dp16: Dp = 16.dp,
+        dp20: Dp = 20.dp,
         dp24: Dp = 24.dp,
         dp32: Dp = 32.dp,
-        val contentPadding: Padding = Padding(dp16),
-        val cornerRadius: Dp = 10.dp,
+        dp48: Dp = 48.dp,
+        val rootPadding: Padding = Padding(dp16),
+        val contentCornerRadius: Dp = dp10,
         val clickableRadius: Dp = dp24,
         val shadowElevation: Dp = 4.dp,
         val progressBarStrokeWidth: Dp = 2.dp,
         val loadingSize: Dp = dp32,
+        val loadingPadding: Padding = Padding(dp16),
+        val paginationLoadingPadding: Padding = Padding(
+            start = dp16,
+            end = dp16,
+            bottom = dp16
+        ),
         val toolbarIconSize: Dp = dp24,
         val toolbarIntervalX: Dp = dp16,
         val toolbarIntervalY: Dp = dp16,
         val toolbarBottomPadding: Dp = dp16,
         val supportIconSize: Dp = dp24,
         val supportIconPadding: Padding = Padding(dp16),
-        val notLoadedErrorPadding: Padding = Padding(top = dp12, bottom = dp8),
-        val searchBarBottomPadding: Dp = dp16
+        val notLoadedErrorPadding: Padding = Padding(
+            top = dp12,
+            bottom = dp8
+        ),
+        val searchBarCornerRadius: Dp = dp10,
+        val searchBarBottomPadding: Dp = dp16,
+        val searchBarInnerPadding: Padding = Padding(dp8),
+        val searchBarIconSize: Dp = dp20,
+        val searchBarCancelInterval: Dp = dp12,
+        val searchBarQueryPadding: Padding = Padding(horizontal = dp8),
+        val sectionsItemInnerPadding: Padding = Padding(
+            horizontal = dp10,
+            vertical = dp8
+        ),
+        val sectionsItemIconSize: Dp = dp48,
+        val sectionsItemTitlePadding: Padding = Padding(horizontal = dp10),
+        val sectionsItemArrowSize: Dp = dp24,
+        val categoriesItemInnerPadding: Padding = Padding(
+            start = dp20,
+            end = dp10,
+            top = dp12,
+            bottom = dp12
+        ),
+        val categoriesItemTitlePadding: Padding = Padding(end = dp10),
+        val categoriesItemArrowSize: Dp = dp24,
+        val articlesItemInnerPadding: Padding = Padding(
+            start = dp20,
+            end = dp10,
+            top = dp24,
+            bottom = dp24
+        ),
+        val articlesItemTitlePadding: Padding = Padding(
+            horizontal = dp10
+        ),
+        val articlesItemArrowSize: Dp = dp24,
+        val searchItemInnerPadding: Padding = Padding(
+            start = dp20,
+            end = dp10,
+            top = dp8,
+            bottom = dp8
+        ),
+        val searchItemTitlePadding: Padding = Padding(bottom = dp4, end = dp10),
+        val searchItemDescriptionPadding: Padding = Padding(bottom = dp4, end = dp10),
+        val searchItemPathPadding: Padding = Padding(bottom = dp4, end = dp10),
+        val searchItemArrowSize: Dp = dp24,
+        val searchEmptyTopPadding: Dp = dp16,
+        val articleContentInnerPadding: Padding = Padding(
+            start = dp8,
+            end = dp16,
+            top = dp8,
+            bottom = dp8
+        ),
+        val articleDividerHeight: Dp = 0.5.dp,
+        val articleRatingPadding: Padding = Padding(dp8),
+        val articleRatingTitlePadding: Padding = Padding(
+            top = dp16,
+            bottom = dp8
+        ),
+        val articleRatingButtonCornerRadius: Dp = dp4,
+        val articleRatingButtonInnerPadding: Padding = Padding(
+            horizontal = dp10,
+            vertical = dp8
+        ),
+        val articleRatingButtonIconSize: Dp = dp16,
+        val articleRatingButtonInnerInterval: Dp = dp12,
+        val articleRatingButtonInterval: Dp = dp12,
+        val articleReviewTagsBottomPadding: Dp = dp32,
+        val articleReviewTagsVerticalInterval: Dp = dp10,
+        val articleReviewTagsHorizontalInterval: Dp = dp10,
+        val articleReviewTagCornerRadius: Dp = dp4,
+        val articleReviewTagInnerPadding: Padding = Padding(
+            horizontal = dp10,
+            vertical = dp8
+        ),
+        val articleReviewCommentInnerPadding: Padding = Padding(
+            horizontal = dp10,
+            vertical = dp16
+        ),
+        val articleReviewSendCornerRadius: Dp = dp8,
+        val articleReviewSendPadding: Padding = Padding(dp12),
+        val articleReviewSendHeight: Dp = dp48,
+        val articleReviewSendIconSize: Dp = dp24,
     ) {
         class Padding(
             val start: Dp = 0.dp,
@@ -289,9 +380,10 @@ class UsedeskKnowledgeBaseTheme(
             val bottom: Dp = 0.dp
         ) {
             constructor(all: Dp) : this(start = all, end = all, top = all, bottom = all)
-
-            //fun vertical() = top + bottom
-            //fun horizontal() = start + end
+            constructor(
+                horizontal: Dp = 0.dp,
+                vertical: Dp = 0.dp
+            ) : this(start = horizontal, end = horizontal, top = vertical, bottom = vertical)
         }
     }
 

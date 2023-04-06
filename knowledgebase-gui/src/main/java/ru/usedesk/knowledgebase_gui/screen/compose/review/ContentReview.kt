@@ -16,15 +16,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
@@ -32,6 +30,7 @@ import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.ComposeTextField
 
 internal const val REVIEW_KEY = "review"
+
 
 @Composable
 internal fun ContentReview(
@@ -52,25 +51,27 @@ internal fun ContentReview(
     state.clearFocus?.use { focusManager.clearFocus() }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .clipToBounds()
     ) {
         val scrollState = rememberScrollState()
-        LaunchedEffect(state.reviewFocused) {
-            if (state.reviewFocused) {
-                coroutineScope {
-                    launch {
-                        repeat(10) {
-                            delay(100)
-                            scrollState.scrollTo(Int.MAX_VALUE)
-                        }
-                    }
+        val coroutineScope = rememberCoroutineScope()
+        KeyboardListener { visible ->
+            if (visible) {
+                coroutineScope.launch {
+                    scrollState.animateScrollTo(Int.MAX_VALUE)
                 }
             }
         }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(
+                    start = theme.dimensions.rootPadding.start,
+                    end = theme.dimensions.rootPadding.end
+                ),
         ) {
             Replies(
                 theme = theme,
@@ -82,32 +83,22 @@ internal fun ContentReview(
             ComposeTextField(
                 modifier = Modifier
                     .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 16.dp,
-                        bottom = 16.dp
+                        bottom = theme.dimensions.articleReviewSendHeight +
+                                theme.dimensions.rootPadding.top +
+                                theme.dimensions.rootPadding.bottom
                     )
                     .card(theme),
                 fieldModifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = 10.dp,
-                        end = 10.dp,
-                        top = 16.dp,
-                        bottom = 16.dp,
-                    ),
+                    .padding(theme.dimensions.articleReviewCommentInnerPadding),
                 value = state.reviewValue,
                 enabled = !state.buttonLoading,
                 placeholder = stringResource(theme.strings.articleReviewPlaceholder),
                 textStyleText = theme.textStyles.articleReviewCommentText,
                 textStylePlaceholder = theme.textStyles.articleReviewCommentPlaceholder,
+                singleLine = false,
                 onValueChange = viewModel::reviewValueChanged,
                 onFocusChanged = viewModel::reviewFocusChanged
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
             )
         }
         val tagsPrefix = stringResource(R.string.usedesk_review_tags_prefix)
@@ -133,12 +124,12 @@ private fun Replies(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(bottom = theme.dimensions.articleReviewTagsBottomPadding)
     ) {
         Layout(
             measurePolicy = flexMeasurePolicy(
-                verticalInterval = 10.dp,
-                horizontalInterval = 10.dp
+                verticalInterval = theme.dimensions.articleReviewTagsVerticalInterval,
+                horizontalInterval = theme.dimensions.articleReviewTagsHorizontalInterval
             ),
             content = {
                 replies.forEach { problem ->
@@ -147,7 +138,7 @@ private fun Replies(
                     ) { active ->
                         BasicText(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(RoundedCornerShape(theme.dimensions.articleReviewTagCornerRadius))
                                 .background(
                                     color = when {
                                         active -> theme.colors.articleReviewTagSelectedBackground
@@ -158,12 +149,7 @@ private fun Replies(
                                     enabled = enabled,
                                     onClick = remember { { onReplySelected(problem) } }
                                 )
-                                .padding(
-                                    start = 10.dp,
-                                    end = 10.dp,
-                                    top = 8.dp,
-                                    bottom = 8.dp
-                                ),
+                                .padding(theme.dimensions.articleReviewTagInnerPadding),
                             text = problem,
                             style = when {
                                 active -> theme.textStyles.articleReviewTag
@@ -197,30 +183,32 @@ private fun BoxScope.BottomButton(
             targetState = remember(error, loading) { Pair(error, loading) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .padding(theme.dimensions.rootPadding)
+                .clip(RoundedCornerShape(theme.dimensions.articleReviewSendCornerRadius))
                 .background(color = theme.colors.articleReviewSendBackground)
                 .clickableItem(
                     enabled = !loading,
                     onClick = onClick
                 )
-                .padding(12.dp)
+                .height(theme.dimensions.articleReviewSendHeight)
+                .padding(theme.dimensions.articleReviewSendPadding)
         ) {
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 when {
                     it.first -> Icon(
                         modifier = Modifier
-                            .size(24.dp),
+                            .size(theme.dimensions.articleReviewSendIconSize),
                         painter = painterResource(theme.drawables.iconReviewError),
                         contentDescription = null,
                         tint = Color.Unspecified
                     )
                     it.second -> CircularProgressIndicator(
                         modifier = Modifier
-                            .size(24.dp),
+                            .size(theme.dimensions.articleReviewSendIconSize),
                         strokeWidth = theme.dimensions.progressBarStrokeWidth,
                         color = theme.colors.progressBarIndicator
                     )

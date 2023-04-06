@@ -45,33 +45,21 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     override fun onBackPressed() = viewModel.onBackPressed()
 
     companion object {
-        private const val WITH_SUPPORT_BUTTON_KEY = "a"
-        private const val WITH_ARTICLE_RATING_KEY = "b"
         private const val KNOWLEDGE_BASE_CONFIGURATION = "c"
 
         @JvmStatic
         @JvmOverloads
         fun newInstance(
-            withSupportButton: Boolean = true,
-            withArticleRating: Boolean = true,
             knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration
         ): UsedeskKnowledgeBaseScreen = UsedeskKnowledgeBaseScreen().apply {
-            arguments = createBundle(
-                withSupportButton,
-                withArticleRating,
-                knowledgeBaseConfiguration
-            )
+            arguments = createBundle(knowledgeBaseConfiguration)
         }
 
         @JvmStatic
         @JvmOverloads
         fun createBundle(
-            withSupportButton: Boolean = true,
-            withArticleRating: Boolean = true,
             knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration
         ): Bundle = Bundle().apply {
-            putBoolean(WITH_SUPPORT_BUTTON_KEY, withSupportButton)
-            putBoolean(WITH_ARTICLE_RATING_KEY, withArticleRating)
             putParcelable(KNOWLEDGE_BASE_CONFIGURATION, knowledgeBaseConfiguration)
         }
     }

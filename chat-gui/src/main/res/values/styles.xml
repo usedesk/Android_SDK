@@ -1118,14 +1118,14 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
+        <item name="android:gravity">bottom</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:drawablePadding">2dp</item>
-        <item name="android:gravity">bottom</item>
         <item name="android:singleLine">true</item>
-        <item name="android:includeFontPadding">false</item>
+        <item name="android:includeFontPadding">true</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Dark.Text.TextAppearance</item>
+        <item name="android:drawablePadding">4dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully</item>
     </style>
@@ -1140,15 +1140,16 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
-        <item name="android:layout_margin">2dp</item>
         <item name="android:background">@drawable/usedesk_background_time_dark</item>
+        <item name="android:layout_margin">2dp</item>>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Light.Text.TextAppearance</item>
+        <item name="android:drawablePadding">4dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending_light</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully_light</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Light.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Name.Text.TextAppearance" parent="">

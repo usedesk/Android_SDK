@@ -1,9 +1,12 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.content.ContentResolver
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
+import android.telephony.TelephonyManager
 import androidx.core.graphics.scale
 import com.google.gson.Gson
 import kotlinx.coroutines.*
@@ -32,6 +35,7 @@ import javax.inject.Inject
 import kotlin.math.min
 
 internal class ApiRepository @Inject constructor(
+    private val context: Context,
     private val socketApi: SocketApi,
     private val initChatResponseConverter: IInitChatResponseConverter,
     private val messageResponseConverter: IMessageResponseConverter,
@@ -157,6 +161,24 @@ internal class ApiRepository @Inject constructor(
         SocketSendResponse.Error
     }
 
+    private fun getUserData(): SocketRequest.Init.Payload.UserData {
+        val device = "${Build.MANUFACTURER} ${Build.MODEL}"
+        val os = "Android ${Build.VERSION.RELEASE} (API level ${Build.VERSION.SDK_INT})"
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val appVersion = packageInfo.versionName
+        val appName = packageInfo.packageName
+        val telephonyManager =
+            context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+        val mobileOperatorName = telephonyManager?.networkOperatorName ?: ""
+        return SocketRequest.Init.Payload.UserData(
+            device = device,
+            os = os,
+            appName = appName,
+            appVersion = appVersion,
+            mobileOperatorName = mobileOperatorName
+        )
+    }
+
     override suspend fun sendInit(
         configuration: UsedeskChatConfiguration,
         token: String?
@@ -165,14 +187,17 @@ internal class ApiRepository @Inject constructor(
         return result //TODO:
     }
 
-    private fun UsedeskChatConfiguration.toInitChatRequest(token: String?) = SocketRequest.Init(
+    private fun UsedeskChatConfiguration.toInitChatRequest(
+        token: String?
+    ) = SocketRequest.Init(
         token,
         companyAndChannel(),
         urlChat,
         when {
             messagesPageSize > 0 -> messagesPageSize
             else -> null
-        }
+        },
+        getUserData()
     )
 
     override fun convertText(text: String) = messageResponseConverter.convertText(text)

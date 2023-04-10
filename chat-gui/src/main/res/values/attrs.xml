@@ -75,6 +75,8 @@
     <attr name="usedesk_chat_screen_offline_form_action_disabled_background" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_name" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_email" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_field_error" format="reference" />
+    <attr name="usedesk_chat_screen_offline_form_email_error" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_message" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_text_field" format="reference" />
     <attr name="usedesk_chat_screen_offline_form_list_field" format="reference" />

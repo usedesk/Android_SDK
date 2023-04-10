@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_offline_form_send_successed">@string/usedesk_string_offline_form_send_successed</string>
-    <string name="usedesk_offline_form_send_failed">@string/usedesk_string_offline_form_send_failed</string>
-    <string name="usedesk_name">@string/usedesk_string_name</string>
-    <string name="usedesk_email">@string/usedesk_string_email</string>
-    <string name="usedesk_message">@string/usedesk_string_message</string>
-    <string name="usedesk_message_input">@string/usedesk_string_message_input</string>
-    <string name="usedesk_today">@string/usedesk_string_today</string>
-    <string name="usedesk_yesterday">@string/usedesk_string_yesterday</string>
-    <string name="usedesk_download_started">@string/usedesk_string_download_started</string>
-    <string name="usedesk_download_failed">@string/usedesk_string_download_failed</string>
-    <string name="usedesk_chat">@string/usedesk_string_chat</string>
-    <string name="usedesk_feedback_thanks">@string/usedesk_string_feedback_thanks</string>
-    <string name="usedesk_gallery">@string/usedesk_string_gallery</string>
-    <string name="usedesk_camera">@string/usedesk_string_camera</string>
-    <string name="usedesk_storage">@string/usedesk_string_storage</string>
-    <string name="usedesk_dangerous_file">@string/usedesk_string_dangerous_file</string>
-    <string name="usedesk_send_again">@string/usedesk_string_send_again</string>
-    <string name="usedesk_delete_message">@string/usedesk_string_delete_message</string>
-    <string name="usedesk_download">@string/usedesk_string_download</string>
-    <string name="usedesk_file_size_exceeds">@string/usedesk_string_file_size_exceeds</string>
-    <string name="usedesk_files_size_exceeds">@string/usedesk_string_files_size_exceeds</string>
-    <string name="usedesk_not_selected">@string/usedesk_string_not_selected</string>
+    <string name="usedesk_offline_form_send_successed" translatable="false">@string/usedesk_string_offline_form_send_successed</string>
+    <string name="usedesk_offline_form_send_failed" translatable="false">@string/usedesk_string_offline_form_send_failed</string>
+    <string name="usedesk_name" translatable="false">@string/usedesk_string_name</string>
+    <string name="usedesk_email" translatable="false">@string/usedesk_string_email</string>
+    <string name="usedesk_message" translatable="false">@string/usedesk_string_message</string>
+    <string name="usedesk_message_input" translatable="false">@string/usedesk_string_message_input</string>
+    <string name="usedesk_field_error" translatable="false">@string/usedesk_string_field_error</string>
+    <string name="usedesk_email_error" translatable="false">@string/usedesk_string_email_error</string>
+    <string name="usedesk_today" translatable="false">@string/usedesk_string_today</string>
+    <string name="usedesk_yesterday" translatable="false">@string/usedesk_string_yesterday</string>
+    <string name="usedesk_download_started" translatable="false">@string/usedesk_string_download_started</string>
+    <string name="usedesk_download_failed" translatable="false">@string/usedesk_string_download_failed</string>
+    <string name="usedesk_chat" translatable="false">@string/usedesk_string_chat</string>
+    <string name="usedesk_feedback_thanks" translatable="false">@string/usedesk_string_feedback_thanks</string>
+    <string name="usedesk_gallery" translatable="false">@string/usedesk_string_gallery</string>
+    <string name="usedesk_camera" translatable="false">@string/usedesk_string_camera</string>
+    <string name="usedesk_storage" translatable="false">@string/usedesk_string_storage</string>
+    <string name="usedesk_dangerous_file" translatable="false">@string/usedesk_string_dangerous_file</string>
+    <string name="usedesk_send_again" translatable="false">@string/usedesk_string_send_again</string>
+    <string name="usedesk_delete_message" translatable="false">@string/usedesk_string_delete_message</string>
+    <string name="usedesk_download" translatable="false">@string/usedesk_string_download</string>
+    <string name="usedesk_file_size_exceeds" translatable="false">@string/usedesk_string_file_size_exceeds</string>
+    <string name="usedesk_files_size_exceeds" translatable="false">@string/usedesk_string_files_size_exceeds</string>
+    <string name="usedesk_not_selected" translatable="false">@string/usedesk_string_not_selected</string>
 
     <string name="usedesk_string_offline_form_send_successed">Your message has been sent.\nWe will reply to you within one business day.</string>
     <string name="usedesk_string_offline_form_send_failed">Failed to send your request. Please, try again.</string>
@@ -29,6 +31,8 @@
     <string name="usedesk_string_email">Email</string>
     <string name="usedesk_string_message">Message</string>
     <string name="usedesk_string_message_input">Text…</string>
+    <string name="usedesk_string_field_error">Obligatory field</string>
+    <string name="usedesk_string_email_error">Invalid email address</string>
     <string name="usedesk_string_today">Today</string>
     <string name="usedesk_string_yesterday">Yesterday</string>
     <string name="usedesk_string_download_started">Download started</string>

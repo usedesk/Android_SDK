@@ -37,10 +37,7 @@ internal class OfflineFormPage : UsedeskFragment() {
     ).apply {
         binding = this
 
-        binding.tvSend.setOnClickListener {
-            hideKeyboard(it)
-            viewModel.onSendOfflineForm()
-        }
+        binding.tvSend.setOnClickListener { viewModel.sendClicked() }
 
         updateActionButton(false)
 
@@ -48,12 +45,6 @@ internal class OfflineFormPage : UsedeskFragment() {
     }.rootView
 
     private fun init() {
-        viewModel.init(
-            binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_name),
-            binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_email),
-            binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_message),
-        )
-
         fieldsAdapter = OfflineFormFieldsAdapter(
             binding.rvFields,
             binding,
@@ -92,6 +83,9 @@ internal class OfflineFormPage : UsedeskFragment() {
                         }.show()
                     }
                 }
+            }
+            new.hideKeyboard?.use {
+                hideKeyboard(binding.rootView)
             }
         }
     }

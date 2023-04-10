@@ -34,6 +34,8 @@ open class UsedeskViewModel<MODEL>(
 
     protected fun setModel(onUpdate: MODEL.() -> MODEL) = _modelFlow.updateAndGet { it.onUpdate() }
 
+    protected fun <T> T.update(onUpdate: T.() -> T): T = onUpdate()
+
     @Deprecated("Migrate to coroutines")
     private fun addDisposable(disposable: Disposable) {
         disposables.add(disposable)

@@ -992,6 +992,8 @@
         <item name="usedesk_chat_screen_offline_form_name">@string/usedesk_name</item>
         <item name="usedesk_chat_screen_offline_form_email">@string/usedesk_email</item>
         <item name="usedesk_chat_screen_offline_form_message">@string/usedesk_message</item>
+        <item name="usedesk_chat_screen_offline_form_field_error">@string/usedesk_field_error</item>
+        <item name="usedesk_chat_screen_offline_form_email_error">@string/usedesk_email_error</item>
         <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Common.Text.Field</item>
         <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Common.List.Field</item>
     </style>

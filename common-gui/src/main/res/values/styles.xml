@@ -80,6 +80,7 @@
         <item name="android:gravity">center</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Toolbar.Title.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.ContainerRoot" parent="">
@@ -114,6 +115,7 @@
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.Field.CheckBox.Image" parent="">
@@ -170,6 +172,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Title.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.Field.List.Value.Text.TextAppearance" parent="">
@@ -186,6 +189,7 @@
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.List.Value.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.Field.List.Arrow.Image" parent="">
@@ -234,6 +238,7 @@
         <item name="android:singleLine">false</item>
         <item name="android:background">@null</item>
         <item name="android:textAppearance">@style/Usedesk.Common.Field.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.Field.Text.EditText.SingleLine">
@@ -256,10 +261,6 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_gravity">center</item>
         <item name="colorAccent">@color/usedesk_red</item>
-    </style>
-
-    <style name="Usedesk.Common.View.Loading.Page.ContainerRoot" parent="">
-        <item name="android:background">@color/usedesk_white_1</item>
     </style>
 
     <style name="Usedesk.Common.View.Loading.Container" parent="">
@@ -293,6 +294,7 @@
         <item name="usedesk_text_1">@null</item>
         <item name="usedesk_text_2">@string/usedesk_no_internet_title</item>
         <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Title.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.View.Loading.Text.TextAppearance" parent="">
@@ -309,6 +311,7 @@
         <item name="usedesk_text_1">@null</item>
         <item name="usedesk_text_2">@string/usedesk_no_internet_text</item>
         <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Common.Alert.Dialog.Button" parent="Widget.MaterialComponents.Button.TextButton">

@@ -28,4 +28,5 @@
         <item name="usedesk_common_container_4">@style/Custom.Chat.Message.Text.Container4</item>
     </style>
     <!--Adaptive Padding End-->
+
 </resources>

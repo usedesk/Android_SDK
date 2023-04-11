@@ -8,6 +8,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -27,8 +28,8 @@ internal fun CardCircleProgress(
     AnimatedVisibility(
         modifier = modifier,
         visible = loading || onErrorClicked != null,
-        enter = scaleIn(),
-        exit = scaleOut()
+        enter = remember { scaleIn(theme.animationSpec()) },
+        exit = remember { scaleOut(theme.animationSpec()) }
     ) {
         Surface(
             shape = CircleShape,
@@ -41,7 +42,10 @@ internal fun CardCircleProgress(
                 .size(theme.dimensions.loadingSize),
             color = theme.colors.progressBarBackground
         ) {
-            Crossfade(targetState = onErrorClicked) { onErrorClicked ->
+            Crossfade(
+                targetState = onErrorClicked,
+                animationSpec = remember { theme.animationSpec() }
+            ) { onErrorClicked ->
                 when (onErrorClicked) {
                     null -> CircularProgressIndicator(
                         modifier = Modifier

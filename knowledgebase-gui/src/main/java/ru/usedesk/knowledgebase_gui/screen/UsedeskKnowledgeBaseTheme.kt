@@ -3,6 +3,8 @@ package ru.usedesk.knowledgebase_gui.screen
 import androidx.annotation.ArrayRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.Spring.StiffnessMediumLow
+import androidx.compose.animation.core.spring
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -22,8 +24,11 @@ class UsedeskKnowledgeBaseTheme(
     val textStyles: TextStyles = TextStyles(fonts, palette),
     val dimensions: Dimensions = Dimensions(),
     val colors: Colors = Colors(palette),
-    val isSupportButtonVisible: Boolean = true
+    val isSupportButtonVisible: Boolean = true,
+    val animationStiffness: Float = StiffnessMediumLow
 ) {
+    fun <T> animationSpec() = spring<T>(stiffness = animationStiffness)
+
     class Strings(
         @StringRes val sectionsTitle: Int = R.string.usedesk_sections_title,
         @StringRes val searchPlaceholder: Int = R.string.usedesk_enter_your_query,

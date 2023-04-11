@@ -66,3 +66,6 @@ internal fun LazyListState.isSupportButtonVisible() = remember(this) {
         firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
     }
 }.value
+
+@Composable
+internal fun Modifier.update(onUpdate: @Composable Modifier.() -> Modifier) = this.onUpdate()

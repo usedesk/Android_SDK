@@ -27,10 +27,8 @@ import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.compose.ComposeTextField
 
 internal const val REVIEW_KEY = "review"
-
 
 @Composable
 internal fun ContentReview(
@@ -81,6 +79,7 @@ internal fun ContentReview(
                 onReplySelected = viewModel::replySelected
             )
             ComposeTextField(
+                theme = theme,
                 modifier = Modifier
                     .padding(
                         bottom = theme.dimensions.articleReviewSendHeight +
@@ -134,7 +133,8 @@ private fun Replies(
             content = {
                 replies.forEach { problem ->
                     Crossfade(
-                        targetState = problem in selectedReplies
+                        targetState = problem in selectedReplies,
+                        animationSpec = remember { theme.animationSpec() }
                     ) { active ->
                         BasicText(
                             modifier = Modifier
@@ -176,8 +176,8 @@ private fun BoxScope.BottomButton(
             .fillMaxWidth()
             .align(Alignment.BottomCenter),
         visible = showed,
-        enter = slideInVertically { it },
-        exit = slideOutVertically { it }
+        enter = remember { slideInVertically(theme.animationSpec()) { it } },
+        exit = remember { slideOutVertically(theme.animationSpec()) { it } }
     ) {
         Crossfade(
             targetState = remember(error, loading) { Pair(error, loading) },
@@ -191,7 +191,8 @@ private fun BoxScope.BottomButton(
                     onClick = onClick
                 )
                 .height(theme.dimensions.articleReviewSendHeight)
-                .padding(theme.dimensions.articleReviewSendPadding)
+                .padding(theme.dimensions.articleReviewSendPadding),
+            animationSpec = remember { theme.animationSpec() }
         ) {
             Box(
                 modifier = Modifier

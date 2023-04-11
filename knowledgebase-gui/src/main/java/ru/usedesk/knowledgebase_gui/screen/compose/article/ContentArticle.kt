@@ -77,7 +77,10 @@ private fun ArticleBlock(
     onReviewBadClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.contentState) { contentState ->
+        Crossfade(
+            targetState = state.contentState,
+            animationSpec = remember { theme.animationSpec() }
+        ) { contentState ->
             when (contentState) {
                 is ContentState.Empty -> {
                     supportButtonVisible.value = true
@@ -98,8 +101,8 @@ private fun ArticleBlock(
                                 val state by viewModel.modelFlow.collectAsState()
                                 AnimatedVisibility(
                                     visible = state.articleShowed,
-                                    enter = fadeIn(),
-                                    exit = fadeOut()
+                                    enter = remember { fadeIn(theme.animationSpec()) },
+                                    exit = remember { fadeOut(theme.animationSpec()) }
                                 ) {
                                     ArticleRating(
                                         theme = theme,
@@ -169,7 +172,7 @@ private fun ArticleBlock(
                         scrollState.value == 0 || scrollState.value < scrollState.maxValue
                     AndroidView(
                         modifier = Modifier
-                            .animateContentSize()
+                            .animateContentSize(animationSpec = remember { theme.animationSpec() })
                             .clipToBounds()
                             .verticalScroll(scrollState)
                             .padding(
@@ -230,7 +233,8 @@ private fun ArticleRatingButton(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .size(theme.dimensions.articleRatingButtonIconSize),
-            targetState = remember(error, loading) { Pair(error, loading) }
+            targetState = remember(error, loading) { Pair(error, loading) },
+            animationSpec = remember { theme.animationSpec() }
         ) {
             when {
                 it.first -> Icon(
@@ -318,18 +322,23 @@ private fun ArticleRating(
             text = stringResource(theme.strings.articleRating),
             style = theme.textStyles.articleRatingTitle
         )
-        when (state.ratingState) {
-            is RatingState.Required,
-            is RatingState.Sending -> ArticleRatingButtons(
-                theme = theme,
-                ratingState = state.ratingState,
-                onReviewGoodClick = onReviewGoodClick,
-                onReviewBadClick = onReviewBadClick
-            )
-            is RatingState.Sent -> BasicText(
-                text = stringResource(theme.strings.articleRatingThanks),
-                style = theme.textStyles.articleRatingThanks
-            )
+        Crossfade(
+            modifier = Modifier.animateContentSize(theme.animationSpec()),
+            targetState = state.ratingState !is RatingState.Sent,
+            animationSpec = remember { theme.animationSpec() }
+        ) { showButtons ->
+            when {
+                showButtons -> ArticleRatingButtons(
+                    theme = theme,
+                    ratingState = state.ratingState,
+                    onReviewGoodClick = onReviewGoodClick,
+                    onReviewBadClick = onReviewBadClick
+                )
+                else -> BasicText(
+                    text = stringResource(theme.strings.articleRatingThanks),
+                    style = theme.textStyles.articleRatingThanks
+                )
+            }
         }
     }
 }

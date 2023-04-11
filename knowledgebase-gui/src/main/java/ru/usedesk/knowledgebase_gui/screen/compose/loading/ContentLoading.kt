@@ -26,7 +26,8 @@ internal fun ContentLoading(
     ) { kbUiComponent -> LoadingViewModel(kbUiComponent.interactor) }
     val state by viewModel.modelFlow.collectAsState()
     Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.contentState) { contentState ->
+        Crossfade(targetState = state.contentState,
+            animationSpec = remember { theme.animationSpec() }) { contentState ->
             when (contentState) {
                 is ContentState.Empty,
                 is ContentState.Loaded -> Box(modifier = Modifier.fillMaxSize())

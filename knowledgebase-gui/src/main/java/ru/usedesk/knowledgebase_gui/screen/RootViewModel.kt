@@ -31,6 +31,8 @@ internal class RootViewModel(
                 is Event.TryAgain -> tryAgain()
                 is Event.KbSectionsModel -> kbSectionsModel(event)
                 is Event.SearchTextChanged -> searchTextChanged(event)
+                is Event.SearchBarClicked -> searchBarClicked()
+                is Event.SearchBarAnimationFinished -> searchBarAnimationFinished()
                 is Event.SearchClicked -> searchClicked()
                 is Event.SearchClearClicked -> searchClearClicked()
                 is Event.SearchCancelClicked -> searchCancelClicked()
@@ -49,7 +51,9 @@ internal class RootViewModel(
                 blocksState = blocksState.copy(
                     block = previousBlock,
                     searchText = TextFieldValue(),
-                    clearFocus = UsedeskEvent(Unit)
+                    clearFocus = UsedeskEvent(Unit),
+                    waitForSearchAnimation = false,
+                    searchBarFocused = false
                 )
             )
         }
@@ -76,13 +80,15 @@ internal class RootViewModel(
         }
     )
 
+    private fun State.kbSectionsModel(event: Event.KbSectionsModel): State = when (screen) {
+        is State.Screen.Loading -> when (event.sectionsModel.loadingState) {
+            is LoadingState.Loaded -> copy(screen = State.Screen.Blocks)
+            else -> this
+        }
+        else -> this
+    }
+
     private fun State.searchClicked(): State = copy(
-        blocksState = blocksState.copy(
-            block = when (blocksState.block) {
-                is State.BlocksState.Block.Search -> blocksState.block
-                else -> State.BlocksState.Block.Search(blocksState.block)
-            }
-        ),
         clearFocus = UsedeskEvent(Unit),
         action = UsedeskEvent {
             kbInteractor.loadArticles(
@@ -109,23 +115,48 @@ internal class RootViewModel(
     private fun State.searchCancelClicked(): State = copy(
         blocksState = blocksState.copy(
             searchText = TextFieldValue(),
-            block = blocksState.block.previousBlock ?: State.BlocksState.Block.Sections
+            block = blocksState.block.previousBlock ?: State.BlocksState.Block.Sections,
+            waitForSearchAnimation = false,
+            searchBarFocused = false
         ),
         clearFocus = UsedeskEvent(Unit)
     )
-
-    private fun State.kbSectionsModel(event: Event.KbSectionsModel): State = when (screen) {
-        is State.Screen.Loading -> when (event.sectionsModel.loadingState) {
-            is LoadingState.Loaded -> copy(screen = State.Screen.Blocks)
-            else -> this
-        }
-        else -> this
-    }
 
 
     private fun State.searchTextChanged(event: Event.SearchTextChanged): State = copy(
         blocksState = blocksState.copy(searchText = searchFilter.onValueChanged(event.value))
     )
+
+    private fun State.searchBarClicked(): State = when (blocksState.block) {
+        is State.BlocksState.Block.Search -> this
+        else -> copy(
+            blocksState = blocksState.copy(
+                block = State.BlocksState.Block.Search(
+                    previousBlock = blocksState.block,
+                    title = blocksState.block.title ?: ""
+                ),
+                waitForSearchAnimation = true,
+                searchBarFocused = false
+            ),
+            action = UsedeskEvent {
+                kbInteractor.loadArticles(
+                    newQuery = blocksState.searchText.text,
+                    nextPage = false,
+                    reload = true
+                )
+            }
+        )
+    }
+
+    private fun State.searchBarAnimationFinished(): State = when {
+        blocksState.waitForSearchAnimation -> copy(
+            blocksState = blocksState.copy(
+                waitForSearchAnimation = false,
+                searchBarFocused = true
+            )
+        )
+        else -> this
+    }
 
     private fun State.sectionClicked(event: Event.SectionClicked): State = copy(
         blocksState = blocksState.copy(
@@ -215,7 +246,9 @@ internal class RootViewModel(
         data class BlocksState(
             val block: Block = Block.Sections,
             val searchText: TextFieldValue = TextFieldValue(),
-            val clearFocus: UsedeskEvent<Unit>? = null
+            val clearFocus: UsedeskEvent<Unit>? = null,
+            val waitForSearchAnimation: Boolean = false,
+            val searchBarFocused: Boolean = false
         ) {
             sealed interface Block {
                 val previousBlock: Block?
@@ -239,10 +272,9 @@ internal class RootViewModel(
                 ) : Block
 
                 data class Search(
-                    override val previousBlock: Block
-                ) : Block {
-                    override val title: String = ""
-                }
+                    override val previousBlock: Block,
+                    override val title: String
+                ) : Block
 
                 fun transition(previous: Block?) = when (previous) {
                     null -> Transition.NONE
@@ -282,6 +314,8 @@ internal class RootViewModel(
         object TryAgain : Event
         data class KbSectionsModel(val sectionsModel: SectionsModel) : Event
         data class SearchTextChanged(val value: TextFieldValue) : Event
+        object SearchBarClicked : Event
+        object SearchBarAnimationFinished : Event
         object SearchClicked : Event
         object SearchCancelClicked : Event
         object SearchClearClicked : Event

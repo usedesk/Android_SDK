@@ -57,7 +57,10 @@ internal fun ContentSearch(
     val state by viewModel.modelFlow.collectAsState()
     supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.reloadError) { reloadError ->
+        Crossfade(
+            targetState = state.reloadError,
+            animationSpec = remember { theme.animationSpec() }
+        ) { reloadError ->
             when {
                 reloadError -> ScreenNotLoaded(
                     theme = theme,
@@ -143,8 +146,8 @@ internal fun ContentSearch(
 
                         AnimatedVisibility(
                             visible = content.isEmpty(),
-                            enter = fadeIn(),
-                            exit = fadeOut()
+                            enter = remember { fadeIn(theme.animationSpec()) },
+                            exit = remember { fadeOut(theme.animationSpec()) }
                         ) {
                             BasicText(
                                 modifier = Modifier.padding(theme.dimensions.searchEmptyTopPadding),

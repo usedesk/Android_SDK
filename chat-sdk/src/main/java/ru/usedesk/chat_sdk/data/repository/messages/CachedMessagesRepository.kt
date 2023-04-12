@@ -202,13 +202,9 @@ internal class CachedMessagesRepository @Inject constructor(
     override suspend fun getNextLocalId() = messagesRepository.getNextLocalId()
 
     private fun findUserKey(): String? {
-        val config = userInfoRepository.getConfiguration()
-            ?: configuration
+        val config = userInfoRepository.getConfiguration() ?: configuration
         val token = config.clientToken
-        return when (token?.isNotEmpty()) {
-            true -> token
-            else -> null
-        }
+        return token?.ifEmpty { null }
     }
 
     private fun requireUserKey(): String = findUserKey()

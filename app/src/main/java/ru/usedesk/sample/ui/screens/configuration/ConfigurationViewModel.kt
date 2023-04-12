@@ -2,10 +2,8 @@ package ru.usedesk.sample.ui.screens.configuration
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import ru.usedesk.sample.ServiceLocator
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
@@ -62,29 +60,8 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     private fun validate(configuration: Configuration): ConfigurationValidation {
-        val chatValidation = UsedeskChatConfiguration(
-            configuration.urlChat,
-            configuration.urlChatApi,
-            configuration.companyId,
-            configuration.channelId,
-            configuration.messagesPageSize,
-            configuration.clientToken,
-            configuration.clientEmail,
-            configuration.clientName,
-            configuration.clientNote,
-            configuration.clientPhoneNumber,
-            configuration.clientAdditionalId,
-            configuration.clientInitMessage,
-            null,
-            configuration.cacheFiles
-        ).validate()
-        val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(
-            configuration.urlApi,
-            configuration.accountId,
-            configuration.token,
-            configuration.clientEmail,
-            configuration.clientName
-        ).validate()
+        val chatValidation = configuration.toChatConfiguration().validate()
+        val knowledgeBaseValidation = configuration.toKbConfiguration().validate()
         return ConfigurationValidation(
             chatValidation,
             knowledgeBaseValidation
@@ -92,8 +69,8 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
-        when (configuration.materialComponents) {
-            modelFlow.value.configuration.materialComponents -> false
+        when (configuration.common.materialComponents) {
+            modelFlow.value.configuration.common.materialComponents -> false
             else -> {
                 configurationRepository.setConfiguration(configuration)
                 true

@@ -27,6 +27,7 @@ import ru.usedesk.knowledgebase_gui.screen.compose.review.REVIEW_KEY
 @Composable
 internal fun ComposeRoot(
     theme: UsedeskKnowledgeBaseTheme,
+    isSupportButtonVisible: Boolean,
     viewModel: RootViewModel,
     onBackPressed: () -> Unit,
     onGoSupport: () -> Unit,
@@ -106,6 +107,7 @@ internal fun ComposeRoot(
                 )
                 CardCircleChat(
                     theme = theme,
+                    isSupportButtonVisible = isSupportButtonVisible,
                     visible = supportButtonVisible.value,
                     onClicked = onGoSupport
                 )

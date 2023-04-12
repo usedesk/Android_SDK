@@ -42,7 +42,6 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
-import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity(),
     private var permissionDownloadResult: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val materialComponents = viewModel.modelFlow.value.configuration.materialComponents
+        val materialComponents = viewModel.modelFlow.value.configuration.common.materialComponents
         when {
             materialComponents -> mapOf(
                 R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
@@ -109,17 +108,18 @@ class MainActivity : AppCompatActivity(),
             if (old?.goSdk != new.goSdk) {
                 new.goSdk?.use {
                     navController.apply {
-                        if (new.configuration.withKb) {
+                        if (new.configuration.kb.withKb) {
                             val kbConfiguration = new.configuration.toKbConfiguration()
-                            UsedeskKnowledgeBaseTheme.provider = {
-                                UsedeskKnowledgeBaseTheme(
-                                    isSupportButtonVisible = new.configuration.withKbSupportButton
-                                )
-                            }
                             navigateSafe(
                                 R.id.dest_configurationScreen,
                                 R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-                                UsedeskKnowledgeBaseScreen.createBundle(kbConfiguration)
+                                UsedeskKnowledgeBaseScreen.createBundle(
+                                    configuration = kbConfiguration,
+                                    withSupportButton = new.configuration.kb.withKbSupportButton,
+                                    sectionId = new.configuration.kb.sectionId,
+                                    categoryId = new.configuration.kb.categoryId,
+                                    articleId = new.configuration.kb.articleId
+                                )
                             )
                         } else {
                             navigateSafe(
@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity(),
     private fun initUsedeskService(configuration: Configuration) {
         setNotificationsServiceFactory(
             when {
-                configuration.foregroundService -> CustomForegroundNotificationsService.Factory()
+                configuration.chat.foregroundService -> CustomForegroundNotificationsService.Factory()
                 else -> null
             }
         )
@@ -282,7 +282,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun createChatScreenBundle(configuration: Configuration): Bundle {
         val chatConfiguration = configuration.toChatConfiguration()
-        if (configuration.adaptiveTimePadding) {
+        if (configuration.chat.adaptiveTimePadding) {
             mapOf(
                 R.style.Usedesk_Chat_Message_Text_Agent to R.style.Custom_Chat_Message_Text_Agent,
                 R.style.Usedesk_Chat_Message_Text_Client to R.style.Custom_Chat_Message_Text_Client
@@ -297,12 +297,12 @@ class MainActivity : AppCompatActivity(),
         }
         return UsedeskChatScreen.createBundle(
             chatConfiguration,
-            configuration.customAgentName.ifEmpty { null },
+            configuration.chat.customAgentName.ifEmpty { null },
             REJECTED_FILE_TYPES,
-            messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
-            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null },
-            groupAgentMessages = configuration.groupAgentMessages,
-            adaptiveTextMessageTimePadding = configuration.adaptiveTimePadding
+            messagesDateFormat = configuration.chat.messagesDateFormat.ifEmpty { null },
+            messageTimeFormat = configuration.chat.messageTimeFormat.ifEmpty { null },
+            groupAgentMessages = configuration.chat.groupAgentMessages,
+            adaptiveTextMessageTimePadding = configuration.chat.adaptiveTimePadding
         )
     }
 

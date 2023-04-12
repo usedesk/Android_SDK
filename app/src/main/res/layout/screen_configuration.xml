@@ -67,13 +67,27 @@
                     android:textSize="18sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_token"
+                    android:id="@+id/til_url_api"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_token"
+                        android:id="@+id/et_url_api"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/url_chat_api"
+                        android:inputType="textUri" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_api_token"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_api_token"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/api_token_hint"
@@ -131,20 +145,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/url_chat_hint"
-                        android:inputType="textUri" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_url_offline_form"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/configuration_usedesk_margin">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_url_offline_form"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/url_chat_api"
                         android:inputType="textUri" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -610,30 +610,58 @@
                     android:textSize="20sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_url_api"
+                    android:id="@+id/til_kb_id"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_url_api"
+                        android:id="@+id/et_kb_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/url_kb_api"
-                        android:inputType="textUri" />
+                        android:hint="@string/kb_id_hint"
+                        android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_account_id"
+                    android:id="@+id/til_kb_section_id"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/configuration_usedesk_margin">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_account_id"
+                        android:id="@+id/et_kb_section_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/account_id_hint"
+                        android:hint="@string/kb_section_id_hint"
+                        android:inputType="numberDecimal" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_kb_category_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_kb_category_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/kb_category_id_hint"
+                        android:inputType="numberDecimal" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_kb_article_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_kb_article_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/kb_article_id_hint"
                         android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 

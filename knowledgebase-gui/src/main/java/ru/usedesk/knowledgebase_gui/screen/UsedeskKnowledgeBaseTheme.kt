@@ -24,7 +24,6 @@ class UsedeskKnowledgeBaseTheme(
     val textStyles: TextStyles = TextStyles(fonts, palette),
     val dimensions: Dimensions = Dimensions(),
     val colors: Colors = Colors(palette),
-    val isSupportButtonVisible: Boolean = true,
     val animationStiffness: Float = StiffnessMediumLow
 ) {
     fun <T> animationSpec() = spring<T>(stiffness = animationStiffness)

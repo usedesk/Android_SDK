@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 @KbUiScope
@@ -35,6 +36,7 @@ internal interface KbUiComponent {
 
         fun close() {
             kbUiComponent = null
+            UsedeskKnowledgeBaseSdk.release()
         }
 
         fun require(): KbUiComponent =

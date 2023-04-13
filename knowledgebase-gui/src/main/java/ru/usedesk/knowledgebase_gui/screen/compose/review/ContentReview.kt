@@ -28,8 +28,6 @@ import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
-internal const val REVIEW_KEY = "review"
-
 @Composable
 internal fun ContentReview(
     theme: UsedeskKnowledgeBaseTheme,
@@ -39,8 +37,13 @@ internal fun ContentReview(
 ) {
     val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
-        viewModelStoreOwner = remember { { viewModelStoreFactory.get(REVIEW_KEY) } }
+        viewModelStoreOwner = remember { { viewModelStoreFactory.get(StoreKeys.REVIEW.name) } }
     ) { kbUiComponent -> ReviewViewModel(kbUiComponent.interactor, articleId) }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModelStoreFactory.clear(StoreKeys.REVIEW.name)
+        }
+    }
     val state by viewModel.modelFlow.collectAsState()
 
     state.goBack?.use { goBack() }

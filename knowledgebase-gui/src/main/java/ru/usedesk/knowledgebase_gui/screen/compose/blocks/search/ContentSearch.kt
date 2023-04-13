@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.compose.blocks.SEARCH_KEY
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
@@ -51,7 +50,6 @@ internal fun ContentSearch(
     onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
     val viewModel = kbUiViewModel(
-        key = SEARCH_KEY,
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
     val state by viewModel.modelFlow.collectAsState()

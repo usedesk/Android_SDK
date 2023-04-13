@@ -287,8 +287,11 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         message: String
     ) {
         ioScope.launch {
-            val response = responseWithDelay(SendReviewResponse.Error::class.java) {
-                knowledgeRepository.sendReview(subject, message)
+            val response = when {
+                message.isEmpty() -> SendReviewResponse.Done()
+                else -> responseWithDelay(SendReviewResponse.Error::class.java) {
+                    knowledgeRepository.sendReview(subject, message)
+                }
             }
             getArticleModelFlow(articleId).updateWithLock {
                 copy(

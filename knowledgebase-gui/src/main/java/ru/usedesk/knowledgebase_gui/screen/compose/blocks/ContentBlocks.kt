@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import ru.usedesk.knowledgebase_gui.compose.StoreKeys
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
@@ -14,11 +15,6 @@ import ru.usedesk.knowledgebase_gui.screen.compose.blocks.articles.ContentArticl
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories.ContentCategories
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.ContentSearch
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections.ContentSections
-
-internal const val SECTIONS_KEY = "sections"
-internal const val CATEGORIES_KEY = "categories"
-internal const val ARTICLES_KEY = "articles"
-internal const val SEARCH_KEY = "search"
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -77,7 +73,7 @@ internal fun ContentBlocks(
                             ContentSections(
                                 theme = theme,
                                 viewModelStoreOwner = remember {
-                                    { viewModelStoreFactory.get(SECTIONS_KEY) }
+                                    { viewModelStoreFactory.get(StoreKeys.SECTIONS.name) }
                                 },
                                 supportButtonVisible = supportButtonVisible,
                                 onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
@@ -91,14 +87,14 @@ internal fun ContentBlocks(
                                         is State.BlocksState.Block.Categories,
                                         is State.BlocksState.Block.Search -> Unit
                                         State.BlocksState.Block.Sections ->
-                                            viewModelStoreFactory.clear(CATEGORIES_KEY)
+                                            viewModelStoreFactory.clear(StoreKeys.CATEGORIES.name)
                                     }
                                 }
                             }
                             ContentCategories(
                                 theme = theme,
                                 viewModelStoreOwner = remember {
-                                    { viewModelStoreFactory.get(CATEGORIES_KEY) }
+                                    { viewModelStoreFactory.get(StoreKeys.CATEGORIES.name) }
                                 },
                                 sectionId = block.sectionId,
                                 supportButtonVisible = supportButtonVisible,
@@ -113,18 +109,14 @@ internal fun ContentBlocks(
                                         is State.BlocksState.Block.Search -> Unit
                                         is State.BlocksState.Block.Categories,
                                         State.BlocksState.Block.Sections ->
-                                            viewModelStoreFactory.clear(ARTICLES_KEY)
+                                            viewModelStoreFactory.clear(StoreKeys.ARTICLES.name)
                                     }
                                 }
                             }
                             ContentArticles(
                                 theme = theme,
                                 viewModelStoreOwner = remember {
-                                    {
-                                        viewModelStoreFactory.get(
-                                            ARTICLES_KEY
-                                        )
-                                    }
+                                    { viewModelStoreFactory.get(StoreKeys.ARTICLES.name) }
                                 },
                                 categoryId = block.categoryId,
                                 supportButtonVisible = supportButtonVisible,
@@ -141,18 +133,14 @@ internal fun ContentBlocks(
                                         is State.BlocksState.Block.Articles,
                                         is State.BlocksState.Block.Categories,
                                         State.BlocksState.Block.Sections ->
-                                            viewModelStoreFactory.clear(SEARCH_KEY)
+                                            viewModelStoreFactory.clear(StoreKeys.SEARCH.name)
                                     }
                                 }
                             }
                             ContentSearch(
                                 theme = theme,
                                 viewModelStoreOwner = remember {
-                                    {
-                                        viewModelStoreFactory.get(
-                                            SEARCH_KEY
-                                        )
-                                    }
+                                    { viewModelStoreFactory.get(StoreKeys.SEARCH.name) }
                                 },
                                 supportButtonVisible = supportButtonVisible,
                                 onArticleClick = remember {

@@ -15,3 +15,15 @@ internal class ViewModelStoreFactory {
         viewModelStoreMap.values.forEach(ViewModelStore::clear)
     }
 }
+
+internal enum class StoreKeys {
+    LOADING,
+    SECTIONS,
+    CATEGORIES,
+    ARTICLES,
+    SEARCH,
+    ARTICLE,
+    REVIEW;
+
+    override fun toString() = name
+}

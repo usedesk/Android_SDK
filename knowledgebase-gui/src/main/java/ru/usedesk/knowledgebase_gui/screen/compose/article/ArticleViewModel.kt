@@ -25,6 +25,7 @@ internal class ArticleViewModel(
                     ),
                     loading = when (articleModel.loadingState) {
                         is LoadingState.Loading -> true
+                        is LoadingState.Loaded -> !articleShowed
                         else -> false
                     },
                     ratingState = articleModel.ratingState,
@@ -45,6 +46,24 @@ internal class ArticleViewModel(
         kbInteractor.loadArticle(articleId)
     }
 
+    fun articleHidden() {
+        setModel {
+            copy(
+                articleShowed = false,
+                loading = true
+            )
+        }
+    }
+
+    fun articleShowed() {
+        setModel {
+            copy(
+                articleShowed = true,
+                loading = contentState !is ContentState.Loaded
+            )
+        }
+    }
+
     fun onRating(good: Boolean) {
         setModel { copy(reviewExpected = true) }
         kbInteractor.sendRating(
@@ -61,6 +80,7 @@ internal class ArticleViewModel(
         val scrollState: ScrollState = ScrollState(0),
         val contentState: ContentState<UsedeskArticleContent> = ContentState.Empty(),
         val loading: Boolean = true,
+        val articleShowed: Boolean = false,
         val ratingState: RatingState = RatingState.Required(),
         val reviewExpected: Boolean = false,
         val goReview: UsedeskEvent<Unit>? = null

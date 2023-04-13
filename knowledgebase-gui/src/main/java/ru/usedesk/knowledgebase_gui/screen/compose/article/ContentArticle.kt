@@ -31,10 +31,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.*
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
-
-internal const val ARTICLE_KEY = "article"
 
 @Composable
 internal fun ContentArticle(
@@ -42,13 +41,27 @@ internal fun ContentArticle(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     supportButtonVisible: MutableState<Boolean>,
+    getCurrentScreen: () -> RootViewModel.State.Screen,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
     val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
-        viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
+        viewModelStoreOwner = remember { { viewModelStoreFactory.get(StoreKeys.ARTICLE.name) } }
     ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            when (getCurrentScreen()) {
+                RootViewModel.State.Screen.Blocks,
+                RootViewModel.State.Screen.Incorrect,
+                RootViewModel.State.Screen.Loading ->
+                    viewModelStoreFactory.clear(StoreKeys.ARTICLE.name)
+                is RootViewModel.State.Screen.Article,
+                is RootViewModel.State.Screen.Review -> Unit
+            }
+        }
+    }
 
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
@@ -77,8 +90,6 @@ private fun ArticleBlock(
     onReviewBadClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        val nullableContent = (state.contentState as? ContentState.Loaded)?.content
-        var articleShowed by remember(nullableContent) { mutableStateOf(false) }
         Crossfade(
             targetState = state.contentState,
             animationSpec = remember { theme.animationSpec() }
@@ -102,7 +113,7 @@ private fun ArticleBlock(
                             setContent {
                                 val state by viewModel.modelFlow.collectAsState()
                                 AnimatedVisibility(
-                                    visible = articleShowed,
+                                    visible = state.articleShowed,
                                     enter = remember { fadeIn(theme.animationSpec()) },
                                     exit = remember { fadeOut(theme.animationSpec()) }
                                 ) {
@@ -141,7 +152,7 @@ private fun ArticleBlock(
                                 override fun onPageCommitVisible(view: WebView, url: String?) {
                                     super.onPageCommitVisible(view, url)
 
-                                    articleShowed = true
+                                    viewModel.articleShowed()
                                 }
                             }
                             setBackgroundColor(theme.colors.listItemBackground.toArgb())
@@ -164,11 +175,11 @@ private fun ArticleBlock(
                         }
                     }
                     val scrollState = when {
-                        articleShowed -> state.scrollState
+                        state.articleShowed -> state.scrollState
                         else -> rememberScrollState()
                     }
-                    DisposableEffect(nullableContent) {
-                        onDispose { articleShowed = false }
+                    DisposableEffect(Unit) {
+                        onDispose { viewModel.articleHidden() }
                     }
                     supportButtonVisible.value =
                         scrollState.value == 0 || scrollState.value < scrollState.maxValue
@@ -201,7 +212,7 @@ private fun ArticleBlock(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(theme.dimensions.loadingPadding),
-            loading = state.loading || !articleShowed
+            loading = state.loading
         )
     }
 }

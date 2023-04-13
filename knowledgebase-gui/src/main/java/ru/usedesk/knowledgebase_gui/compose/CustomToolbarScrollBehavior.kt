@@ -1,15 +1,20 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.animateDecay
+import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import kotlin.math.abs
 
 internal class CustomToolbarScrollBehavior(
+    val theme: UsedeskKnowledgeBaseTheme,
     val state: CustomToolbarScrollState,
     val flingAnimationSpec: DecayAnimationSpec<Float>?,
 ) {
@@ -68,7 +73,7 @@ internal class CustomToolbarScrollBehavior(
                     initialVelocity = available.y,
                     flingAnimationSpec = flingAnimationSpec
                 )
-                state.snapToolbar()
+                state.snapToolbar(theme)
             }
             return result
         }
@@ -103,13 +108,13 @@ private suspend fun CustomToolbarScrollState.flingToolbar(
     return Velocity(0f, remainingVelocity)
 }
 
-internal suspend fun CustomToolbarScrollState.snapToolbar() {
+internal suspend fun CustomToolbarScrollState.snapToolbar(theme: UsedeskKnowledgeBaseTheme) {
     // In case the app bar motion was stopped in a state where it's partially visible, snap it to
     // the nearest state.
     if (heightOffset < 0 && heightOffset > heightOffsetLimit) {
         AnimationState(initialValue = heightOffset).animateTo(
             targetValue = if (collapsedFraction < 0.5f) 0f else heightOffsetLimit,
-            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+            animationSpec = theme.animationSpec()
         ) {
             heightOffset = value
         }
@@ -117,9 +122,11 @@ internal suspend fun CustomToolbarScrollState.snapToolbar() {
 }
 
 @Composable
-internal fun rememberToolbarScrollBehavior() = CustomToolbarScrollBehavior(
-    state = rememberToolbarScrollState(
-        initialHeightOffsetLimit = -Float.MAX_VALUE
-    ),
-    flingAnimationSpec = rememberSplineBasedDecay()
-)
+internal fun rememberToolbarScrollBehavior(theme: UsedeskKnowledgeBaseTheme) =
+    CustomToolbarScrollBehavior(
+        theme = theme,
+        state = rememberToolbarScrollState(
+            initialHeightOffsetLimit = -Float.MAX_VALUE
+        ),
+        flingAnimationSpec = rememberSplineBasedDecay()
+    )

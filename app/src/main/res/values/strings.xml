@@ -7,7 +7,10 @@
     <string name="url_kb_api" translatable="false">KB API URL</string>
     <string name="company_id_hint" translatable="false">Company ID</string>
     <string name="channel_id_hint" translatable="false">Channel ID</string>
-    <string name="account_id_hint" translatable="false">KB ID</string>
+    <string name="kb_id_hint" translatable="false">KB ID</string>
+    <string name="kb_section_id_hint" translatable="false">Section ID</string>
+    <string name="kb_category_id_hint" translatable="false">Category ID</string>
+    <string name="kb_article_id_hint" translatable="false">Article ID</string>
     <string name="api_token_hint" translatable="false">API Token</string>
     <string name="client_email_hint" translatable="false">Client Email</string>
     <string name="client_name" translatable="false">Client Name</string>
@@ -30,6 +33,7 @@
     <string name="group_agent_messages_hint" translatable="false">Group Agent Messages</string>
     <string name="kb_base_hint" translatable="false">With Knowledge Base</string>
     <string name="kb_support_button" translatable="false">With Knowledge Base Support Button</string>
+    <string name="kb_no_back_stack" translatable="false">No Back Stack</string>
     <string name="button_go_to_sdk" translatable="false">Go To SDK</string>
     <string name="create_chat" translatable="false">Create Chat</string>
     <string name="validation_empty_error" translatable="false">Field required</string>

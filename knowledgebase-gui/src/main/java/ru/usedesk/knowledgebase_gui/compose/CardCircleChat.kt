@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,15 +22,16 @@ import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 @Composable
 internal fun BoxScope.CardCircleChat(
     theme: UsedeskKnowledgeBaseTheme,
+    isSupportButtonVisible: Boolean,
     visible: Boolean,
     onClicked: () -> Unit
 ) {
     AnimatedVisibility(
         modifier = Modifier
             .align(Alignment.BottomEnd),
-        visible = visible && theme.isSupportButtonVisible,
-        enter = slideInHorizontally { it },
-        exit = slideOutHorizontally { it }
+        visible = visible && isSupportButtonVisible,
+        enter = remember { slideInHorizontally(theme.animationSpec()) { it } },
+        exit = remember { slideOutHorizontally(theme.animationSpec()) { it } }
     ) {
         Box(
             modifier = Modifier

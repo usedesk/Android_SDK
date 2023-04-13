@@ -1,12 +1,13 @@
 package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,10 +40,8 @@ internal fun CustomToolbar(
             theme.dimensions.toolbarIconSize +
             theme.dimensions.toolbarBottomPadding
 
-    Surface(
-        modifier = Modifier.padding(
-            end = theme.dimensions.rootPadding.end
-        )
+    Box(
+        modifier = Modifier.padding(end = theme.dimensions.rootPadding.end)
     ) {
         Layout(
             modifier = Modifier
@@ -50,12 +49,15 @@ internal fun CustomToolbar(
                 .heightIn(min = collapsedHeight),
             content = {
                 Crossfade(
-                    modifier = Modifier.layoutId(ExpandedTitleId),
-                    targetState = title
+                    modifier = Modifier
+                        .layoutId(ExpandedTitleId)
+                        .fillMaxWidth()
+                        .animateContentSize(animationSpec = remember { theme.animationSpec() }),
+                    targetState = title,
+                    animationSpec = remember { theme.animationSpec() }
                 ) { title ->
                     Text(
                         modifier = Modifier
-                            .layoutId(ExpandedTitleId)
                             .wrapContentHeight(align = Alignment.Top)
                             .graphicsLayer(
                                 scaleX = collapsingTitleScale,
@@ -67,11 +69,16 @@ internal fun CustomToolbar(
                     )
                 }
                 Crossfade(
-                    modifier = Modifier.layoutId(CollapsedTitleId),
-                    targetState = title
+                    modifier = Modifier
+                        .layoutId(CollapsedTitleId)
+                        .fillMaxWidth()
+                        .animateContentSize(animationSpec = remember { theme.animationSpec() }),
+                    targetState = title,
+                    animationSpec = remember { theme.animationSpec() }
                 ) { title ->
                     Text(
                         modifier = Modifier
+                            .layoutId(CollapsedTitleId)
                             .wrapContentHeight(align = Alignment.Top)
                             .graphicsLayer(
                                 scaleX = collapsingTitleScale,

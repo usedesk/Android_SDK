@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.knowledgebase_gui.screen.compose.blocks.SEARCH_KEY
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
@@ -51,13 +50,15 @@ internal fun ContentSearch(
     onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
     val viewModel = kbUiViewModel(
-        key = SEARCH_KEY,
         viewModelStoreOwner = viewModelStoreOwner
     ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
     val state by viewModel.modelFlow.collectAsState()
     supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.reloadError) { reloadError ->
+        Crossfade(
+            targetState = state.reloadError,
+            animationSpec = remember { theme.animationSpec() }
+        ) { reloadError ->
             when {
                 reloadError -> ScreenNotLoaded(
                     theme = theme,
@@ -143,8 +144,8 @@ internal fun ContentSearch(
 
                         AnimatedVisibility(
                             visible = content.isEmpty(),
-                            enter = fadeIn(),
-                            exit = fadeOut()
+                            enter = remember { fadeIn(theme.animationSpec()) },
+                            exit = remember { fadeOut(theme.animationSpec()) }
                         ) {
                             BasicText(
                                 modifier = Modifier.padding(theme.dimensions.searchEmptyTopPadding),

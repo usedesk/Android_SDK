@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui._entity.ReviewState
@@ -216,35 +215,24 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     private fun launchAddViews(articleId: Long) {
         ioScope.launch {
             val response = knowledgeRepository.addViews(articleId)
-            when (response) {
-                is AddViewsResponse.Done -> {
-                    UsedeskLog.onLog("AddViewsResponse.Done") { response.views.toString() }
-                }
-                is AddViewsResponse.Error -> {}
-            }
         }
     }
 
     override fun loadArticle(articleId: Long): StateFlow<ArticleModel> = runBlocking {
         getArticleModelFlow(articleId).apply {
             updateWithLock {
-                if (this.articleId != articleId || loadingState is ru.usedesk.knowledgebase_gui._entity.LoadingState.Error) {
+                if (this.articleId != articleId || loadingState is LoadingState.Error) {
                     val searchArticle = searchModelFlow.value.searchItems
                         ?.firstOrNull { it.item.id == articleId }
                     when (searchArticle) {
                         null -> {
                             launchArticleJob(articleId)
-                            ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.ArticleModel(
-                                articleId
-                            )
+                            ArticleModel(articleId)
                         }
-                        else -> ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.ArticleModel(
+                        else -> ArticleModel(
                             articleId = articleId,
-                            loadingState = ru.usedesk.knowledgebase_gui._entity.LoadingState.Loaded(
-                                data = searchArticle.item
-                            ),
-                            ratingState = ratingStateMap[articleId]
-                                ?: ru.usedesk.knowledgebase_gui._entity.RatingState.Required()
+                            loadingState = LoadingState.Loaded(data = searchArticle.item),
+                            ratingState = ratingStateMap[articleId] ?: RatingState.Required()
                         )
                     }
                 } else this
@@ -265,19 +253,11 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             }
             getArticleModelFlow(articleId).updateWithLock {
                 val ratingState = when (response) {
-                    is SendRatingResponse.Done -> {
-                        UsedeskLog.onLog("SendRatingResponse.Done") {
-                            "positive: ${response.positive} negative: ${response.negative}"
-                        }
-                        RatingState.Sent(good)
-                    }
+                    is SendRatingResponse.Done -> RatingState.Sent(good)
                     is SendRatingResponse.Error -> RatingState.Required(good)
                 }
                 ratingStateMap[articleId] = ratingState
-                when (articleId) {
-                    this.articleId -> copy(ratingState = ratingState)
-                    else -> this
-                }
+                copy(ratingState = ratingState)
             }
         }
     }
@@ -307,8 +287,11 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         message: String
     ) {
         ioScope.launch {
-            val response = responseWithDelay(SendReviewResponse.Error::class.java) {
-                knowledgeRepository.sendReview(subject, message)
+            val response = when {
+                message.isEmpty() -> SendReviewResponse.Done()
+                else -> responseWithDelay(SendReviewResponse.Error::class.java) {
+                    knowledgeRepository.sendReview(subject, message)
+                }
             }
             getArticleModelFlow(articleId).updateWithLock {
                 copy(

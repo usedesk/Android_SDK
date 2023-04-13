@@ -8,20 +8,20 @@ import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddViews
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CreateTicket
 
 internal interface ApiRetrofit {
-    @GET("support/{account_id}/list")
+    @GET("uapi/support/{account_id}/list")
     fun getSections(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Query("api_token") token: String
     ): Call<ResponseBody>
 
-    @GET("support/{account_id}/articles/{article_id}")
+    @GET("uapi/support/{account_id}/articles/{article_id}")
     fun getArticleContent(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Path(value = "article_id", encoded = true) articleId: Long,
         @Query("api_token") token: String
     ): Call<ResponseBody>
 
-    @GET("support/{account_id}/articles/list")
+    @GET("uapi/support/{account_id}/articles/list")
     fun getArticles(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Query("api_token") token: String,
@@ -36,20 +36,20 @@ internal interface ApiRetrofit {
         @Query("order") order: String?
     ): Call<ResponseBody>
 
-    @POST("support/{account_id}/articles/{article_id}/add-views")
+    @POST("uapi/support/{account_id}/articles/{article_id}/add-views")
     fun addViews(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Path(value = "article_id", encoded = true) articleId: Long,
         @Body token: AddViews.Request
     ): Call<ResponseBody>
 
-    @POST("support/{account_id}/articles/{article_id}/change-rating")
+    @POST("uapi/support/{account_id}/articles/{article_id}/change-rating")
     fun changeRating(
         @Path(value = "account_id", encoded = true) accountId: String,
         @Path(value = "article_id", encoded = true) articleId: Long,
         @Body body: AddRating.Request
     ): Call<ResponseBody>
 
-    @POST("create/ticket")
+    @POST("uapi/create/ticket")
     fun createTicket(@Body body: CreateTicket.Request): Call<ResponseBody>
 }

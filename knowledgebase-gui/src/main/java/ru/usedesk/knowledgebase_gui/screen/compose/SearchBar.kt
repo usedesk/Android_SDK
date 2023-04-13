@@ -1,43 +1,55 @@
 package ru.usedesk.knowledgebase_gui.screen.compose
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.clickableText
-import ru.usedesk.knowledgebase_gui.compose.padding
+import androidx.compose.ui.tooling.preview.Preview
+import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
+
+@Preview
+@Composable
+private fun Preview() {
+    val theme = UsedeskKnowledgeBaseTheme.provider()
+    SearchBar(
+        theme = theme,
+        value = TextFieldValue(),
+        focused = false,
+        onClearClick = {},
+        onCancelClick = {},
+        onValueChange = {},
+        onSearchBarClicked = {},
+        onSearch = {}
+    )
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 internal fun SearchBar(
     theme: UsedeskKnowledgeBaseTheme,
     value: TextFieldValue,
+    focused: Boolean,
     onClearClick: () -> Unit,
     onCancelClick: (() -> Unit)?,
     onValueChange: (TextFieldValue) -> Unit,
+    onSearchBarClicked: () -> Unit,
     onSearch: () -> Unit
 ) {
     Row(
@@ -65,24 +77,39 @@ internal fun SearchBar(
                 tint = Color.Unspecified,
                 contentDescription = null
             )
+            val focusRequester = remember { FocusRequester() }
             ComposeTextField(
+                theme = theme,
                 modifier = Modifier
                     .weight(weight = 1f, fill = true)
+                    .update {
+                        when {
+                            focused -> this
+                            else -> clickableText(onClick = onSearchBarClicked)
+                        }
+                    }
                     .padding(theme.dimensions.searchBarQueryPadding),
+                enabled = focused,
                 fieldModifier = Modifier.fillMaxWidth(),
                 value = value,
+                focusRequester = focusRequester,
                 placeholder = stringResource(theme.strings.searchPlaceholder),
                 textStyleText = theme.textStyles.searchText,
                 textStylePlaceholder = theme.textStyles.searchPlaceholder,
                 imeAction = ImeAction.Search,
-                keyboardActions = KeyboardActions(onSearch = remember { { onSearch() } }),
+                keyboardActions = KeyboardActions(onSearch = remember(onSearch) { { onSearch() } }),
                 singleLine = true,
                 onValueChange = onValueChange
             )
+            LaunchedEffect(focused) {
+                if (focused) {
+                    focusRequester.requestFocus()
+                }
+            }
             AnimatedVisibility(
                 value.text.isNotEmpty(),
-                enter = fadeIn() + scaleIn(),
-                exit = fadeOut() + scaleOut()
+                enter = remember { fadeIn(theme.animationSpec()) + scaleIn(theme.animationSpec()) },
+                exit = remember { fadeOut(theme.animationSpec()) + scaleOut(theme.animationSpec()) }
             ) {
                 Icon(
                     modifier = Modifier
@@ -98,7 +125,8 @@ internal fun SearchBar(
         Crossfade(
             targetState = onCancelClick,
             modifier = Modifier
-                .animateContentSize()
+                .animateContentSize(animationSpec = remember { theme.animationSpec() }),
+            animationSpec = remember { theme.animationSpec() }
         ) {
             when (it) {
                 null -> Box(modifier = Modifier)
@@ -110,51 +138,6 @@ internal fun SearchBar(
                     style = theme.textStyles.searchCancel
                 )
             }
-        }
-    }
-}
-
-@Composable
-internal fun ComposeTextField(
-    modifier: Modifier = Modifier,
-    fieldModifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    value: TextFieldValue,
-    placeholder: String,
-    textStyleText: TextStyle,
-    textStylePlaceholder: TextStyle,
-    imeAction: ImeAction = ImeAction.Done,
-    keyboardActions: KeyboardActions = KeyboardActions(),
-    singleLine: Boolean,
-    onValueChange: (TextFieldValue) -> Unit,
-    onFocusChanged: (Boolean) -> Unit = remember { {} }
-) {
-    Box(modifier = modifier) {
-        BasicTextField(
-            modifier = fieldModifier.onFocusChanged(remember { { onFocusChanged(it.isFocused) } }),
-            value = value,
-            onValueChange = onValueChange,
-            enabled = enabled,
-            textStyle = textStyleText,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                imeAction = imeAction
-            ),
-            keyboardActions = keyboardActions,
-            singleLine = singleLine
-        )
-
-        AnimatedVisibility(
-            modifier = Modifier,
-            visible = value.text.isEmpty(),
-            enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)) + slideInHorizontally { it / 10 },
-            exit = fadeOut(spring(stiffness = Spring.StiffnessMedium)) + slideOutHorizontally { it / 10 }
-        ) {
-            BasicText(
-                modifier = fieldModifier,
-                text = placeholder,
-                style = textStylePlaceholder
-            )
         }
     }
 }

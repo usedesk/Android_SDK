@@ -31,10 +31,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.*
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
-
-internal const val ARTICLE_KEY = "article"
 
 @Composable
 internal fun ContentArticle(
@@ -42,13 +41,27 @@ internal fun ContentArticle(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     supportButtonVisible: MutableState<Boolean>,
+    getCurrentScreen: () -> RootViewModel.State.Screen,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
     val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
-        viewModelStoreOwner = remember { { viewModelStoreFactory.get(ARTICLE_KEY) } }
+        viewModelStoreOwner = remember { { viewModelStoreFactory.get(StoreKeys.ARTICLE.name) } }
     ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            when (getCurrentScreen()) {
+                RootViewModel.State.Screen.Blocks,
+                RootViewModel.State.Screen.Incorrect,
+                RootViewModel.State.Screen.Loading ->
+                    viewModelStoreFactory.clear(StoreKeys.ARTICLE.name)
+                is RootViewModel.State.Screen.Article,
+                is RootViewModel.State.Screen.Review -> Unit
+            }
+        }
+    }
 
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
@@ -77,7 +90,10 @@ private fun ArticleBlock(
     onReviewBadClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.contentState) { contentState ->
+        Crossfade(
+            targetState = state.contentState,
+            animationSpec = remember { theme.animationSpec() }
+        ) { contentState ->
             when (contentState) {
                 is ContentState.Empty -> {
                     supportButtonVisible.value = true
@@ -98,8 +114,8 @@ private fun ArticleBlock(
                                 val state by viewModel.modelFlow.collectAsState()
                                 AnimatedVisibility(
                                     visible = state.articleShowed,
-                                    enter = fadeIn(),
-                                    exit = fadeOut()
+                                    enter = remember { fadeIn(theme.animationSpec()) },
+                                    exit = remember { fadeOut(theme.animationSpec()) }
                                 ) {
                                     ArticleRating(
                                         theme = theme,
@@ -169,7 +185,7 @@ private fun ArticleBlock(
                         scrollState.value == 0 || scrollState.value < scrollState.maxValue
                     AndroidView(
                         modifier = Modifier
-                            .animateContentSize()
+                            .animateContentSize(animationSpec = remember { theme.animationSpec() })
                             .clipToBounds()
                             .verticalScroll(scrollState)
                             .padding(
@@ -230,7 +246,8 @@ private fun ArticleRatingButton(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .size(theme.dimensions.articleRatingButtonIconSize),
-            targetState = remember(error, loading) { Pair(error, loading) }
+            targetState = remember(error, loading) { Pair(error, loading) },
+            animationSpec = remember { theme.animationSpec() }
         ) {
             when {
                 it.first -> Icon(
@@ -318,18 +335,23 @@ private fun ArticleRating(
             text = stringResource(theme.strings.articleRating),
             style = theme.textStyles.articleRatingTitle
         )
-        when (state.ratingState) {
-            is RatingState.Required,
-            is RatingState.Sending -> ArticleRatingButtons(
-                theme = theme,
-                ratingState = state.ratingState,
-                onReviewGoodClick = onReviewGoodClick,
-                onReviewBadClick = onReviewBadClick
-            )
-            is RatingState.Sent -> BasicText(
-                text = stringResource(theme.strings.articleRatingThanks),
-                style = theme.textStyles.articleRatingThanks
-            )
+        Crossfade(
+            modifier = Modifier.animateContentSize(theme.animationSpec()),
+            targetState = state.ratingState !is RatingState.Sent,
+            animationSpec = remember { theme.animationSpec() }
+        ) { showButtons ->
+            when {
+                showButtons -> ArticleRatingButtons(
+                    theme = theme,
+                    ratingState = state.ratingState,
+                    onReviewGoodClick = onReviewGoodClick,
+                    onReviewBadClick = onReviewBadClick
+                )
+                else -> BasicText(
+                    text = stringResource(theme.strings.articleRatingThanks),
+                    style = theme.textStyles.articleRatingThanks
+                )
+            }
         }
     }
 }

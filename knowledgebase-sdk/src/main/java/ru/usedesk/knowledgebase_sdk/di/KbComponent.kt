@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.common_sdk.di.UsedeskCommonModule
-import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
@@ -36,7 +35,6 @@ internal interface KbComponent {
             ).also { kbComponent = it }
 
         fun close() {
-            UsedeskKnowledgeBaseSdk.release()
             kbComponent = null
         }
     }

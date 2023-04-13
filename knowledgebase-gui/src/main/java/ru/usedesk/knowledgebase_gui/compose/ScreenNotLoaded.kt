@@ -56,8 +56,8 @@ internal fun ScreenNotLoaded(
             )
             AnimatedVisibility(
                 visible = tryAgain != null,
-                enter = fadeIn(),
-                exit = fadeOut()
+                enter = remember { fadeIn(theme.animationSpec()) },
+                exit = remember { fadeOut(theme.animationSpec()) }
             ) {
                 BasicText(
                     modifier = Modifier

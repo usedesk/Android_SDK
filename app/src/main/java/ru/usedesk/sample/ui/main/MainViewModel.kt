@@ -23,7 +23,7 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
             when {
                 usedeskChatConfiguration.validate().isAllValid() -> copy(
                     configuration = configuration,
-                    goSdk = UsedeskEvent(configuration.withKb)
+                    goSdk = UsedeskEvent(configuration.kb.withKb)
                 )
                 else -> copy(
                     configuration = configuration,
@@ -45,8 +45,9 @@ class MainViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     fun onClientToken(clientToken: String) {
-        val newConfiguration = configurationRepository.configurationFlow.value
-            .copy(clientToken = clientToken)
+        val configuration = configurationRepository.configurationFlow.value
+        val newConfiguration = configuration
+            .copy(chat = configuration.chat.copy(clientToken = clientToken))
 
         configurationRepository.setConfiguration(newConfiguration)
     }

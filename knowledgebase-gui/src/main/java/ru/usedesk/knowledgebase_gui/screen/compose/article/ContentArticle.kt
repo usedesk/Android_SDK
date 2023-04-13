@@ -77,6 +77,8 @@ private fun ArticleBlock(
     onReviewBadClick: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
+        val nullableContent = (state.contentState as? ContentState.Loaded)?.content
+        var articleShowed by remember(nullableContent) { mutableStateOf(false) }
         Crossfade(
             targetState = state.contentState,
             animationSpec = remember { theme.animationSpec() }
@@ -100,7 +102,7 @@ private fun ArticleBlock(
                             setContent {
                                 val state by viewModel.modelFlow.collectAsState()
                                 AnimatedVisibility(
-                                    visible = state.articleShowed,
+                                    visible = articleShowed,
                                     enter = remember { fadeIn(theme.animationSpec()) },
                                     exit = remember { fadeOut(theme.animationSpec()) }
                                 ) {
@@ -139,7 +141,7 @@ private fun ArticleBlock(
                                 override fun onPageCommitVisible(view: WebView, url: String?) {
                                     super.onPageCommitVisible(view, url)
 
-                                    viewModel.articleShowed()
+                                    articleShowed = true
                                 }
                             }
                             setBackgroundColor(theme.colors.listItemBackground.toArgb())
@@ -162,11 +164,11 @@ private fun ArticleBlock(
                         }
                     }
                     val scrollState = when {
-                        state.articleShowed -> state.scrollState
+                        articleShowed -> state.scrollState
                         else -> rememberScrollState()
                     }
-                    DisposableEffect(Unit) {
-                        onDispose { viewModel.articleHidden() }
+                    DisposableEffect(nullableContent) {
+                        onDispose { articleShowed = false }
                     }
                     supportButtonVisible.value =
                         scrollState.value == 0 || scrollState.value < scrollState.maxValue
@@ -199,7 +201,7 @@ private fun ArticleBlock(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(theme.dimensions.loadingPadding),
-            loading = state.loading
+            loading = state.loading || !articleShowed
         )
     }
 }

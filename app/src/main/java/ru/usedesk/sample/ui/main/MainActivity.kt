@@ -42,6 +42,7 @@ import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -110,15 +111,29 @@ class MainActivity : AppCompatActivity(),
                     navController.apply {
                         if (new.configuration.kb.withKb) {
                             val kbConfiguration = new.configuration.toKbConfiguration()
+                            val kb = new.configuration.kb
+                            val deepLink = when {
+                                kb.article && kb.articleId != null -> DeepLink.Article(
+                                    articleId = kb.articleId,
+                                    noBackStack = kb.noBackStack
+                                )
+                                kb.category && kb.categoryId != null -> DeepLink.Category(
+                                    categoryId = kb.categoryId,
+                                    noBackStack = kb.noBackStack
+                                )
+                                kb.section && kb.sectionId != null -> DeepLink.Section(
+                                    sectionId = kb.sectionId,
+                                    noBackStack = kb.noBackStack
+                                )
+                                else -> null
+                            }
                             navigateSafe(
                                 R.id.dest_configurationScreen,
                                 R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
                                 UsedeskKnowledgeBaseScreen.createBundle(
                                     configuration = kbConfiguration,
-                                    withSupportButton = new.configuration.kb.withKbSupportButton,
-                                    sectionId = new.configuration.kb.sectionId,
-                                    categoryId = new.configuration.kb.categoryId,
-                                    articleId = new.configuration.kb.articleId
+                                    withSupportButton = kb.withKbSupportButton,
+                                    deepLink = deepLink
                                 )
                             )
                         } else {

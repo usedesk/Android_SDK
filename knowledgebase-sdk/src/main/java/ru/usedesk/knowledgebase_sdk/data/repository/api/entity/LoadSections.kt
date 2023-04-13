@@ -4,7 +4,7 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface LoadSections {
     class Request(
-        val token: String,
+        val apiToken: String,
         val accountId: String
     )
 

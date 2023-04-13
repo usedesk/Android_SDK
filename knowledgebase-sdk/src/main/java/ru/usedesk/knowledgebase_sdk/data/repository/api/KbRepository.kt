@@ -26,6 +26,9 @@ internal class KbRepository @Inject constructor(
             val categoryId = categoryResponse!!.id!!
             val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
                 valueOrNull {
+                    if (articleResponse?.id == 33051L) {
+                        println()
+                    }
                     UsedeskArticleInfo(
                         articleResponse!!.id!!,
                         articleResponse.title ?: "",
@@ -66,7 +69,7 @@ internal class KbRepository @Inject constructor(
             request,
             LoadSections.Response::class.java
         ) {
-            getSections(it.accountId, it.token)
+            getSections(it.accountId, it.apiToken)
         }
         return when (response?.items) {
             null -> GetSectionsResponse.Error(response?.code)

@@ -104,7 +104,7 @@ internal fun ContentReview(
         val commentPrefix = stringResource(R.string.usedesk_review_comment_prefix)
         BottomButton(
             theme = theme,
-            showed = state.buttonShowed,
+            showed = true,
             error = state.buttonError,
             loading = state.buttonLoading,
             onClick = remember { { viewModel.sendClicked(tagsPrefix, commentPrefix) } }

@@ -33,13 +33,13 @@ internal class ReviewViewModel(
                         goBackExpected = false,
                         goBack = if (goBackExpected) UsedeskEvent(Unit) else null
                     )
-                }.updateButtonShowed()
+                }
             }
         }
     }
 
     fun reviewValueChanged(reviewValue: TextFieldValue) {
-        setModel { copy(reviewValue = reviewFilter.onValueChanged(reviewValue)).updateButtonShowed() }
+        setModel { copy(reviewValue = reviewFilter.onValueChanged(reviewValue)) }
     }
 
     fun reviewFocusChanged(focused: Boolean) {
@@ -53,7 +53,7 @@ internal class ReviewViewModel(
                     in selectedReplies -> selectedReplies - problem
                     else -> selectedReplies + problem
                 }
-            ).updateButtonShowed()
+            )
         }
     }
 
@@ -65,7 +65,7 @@ internal class ReviewViewModel(
             copy(
                 clearFocus = UsedeskEvent(Unit),
                 goBackExpected = true
-            ).updateButtonShowed()
+            )
         }
 
         val subject = "ID: $articleId"
@@ -85,12 +85,6 @@ internal class ReviewViewModel(
         )
     }
 
-    private fun State.updateButtonShowed() = copy(
-        buttonShowed = buttonLoading ||
-                selectedReplies.isNotEmpty() ||
-                reviewValue.text.any(Char::isLetterOrDigit)
-    )
-
     data class State(
         val goBack: UsedeskEvent<Unit>? = null,
         val goBackExpected: Boolean = false,
@@ -98,7 +92,6 @@ internal class ReviewViewModel(
         val selectedReplies: List<String> = listOf(),
         val reviewValue: TextFieldValue = TextFieldValue(),
         val reviewFocused: Boolean = false,
-        val buttonShowed: Boolean = false,
         val buttonLoading: Boolean = false,
         val buttonError: Boolean = false
     )

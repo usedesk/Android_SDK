@@ -41,10 +41,14 @@ data class Configuration(
     data class Kb(
         val withKb: Boolean = true,
         val withKbSupportButton: Boolean = true,
+        val noBackStack: Boolean = false,
         val kbId: String = "",
         val sectionId: Long? = null,
+        val section: Boolean = false,
         val categoryId: Long? = null,
-        val articleId: Long? = null
+        val category: Boolean = false,
+        val articleId: Long? = null,
+        val article: Boolean = false
     )
 
     fun toChatConfiguration() = UsedeskChatConfiguration(

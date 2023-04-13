@@ -110,6 +110,21 @@ class ConfigurationScreen : UsedeskFragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
+        binding.switchKbSection.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                kbDeepLinkSwitched(section = checked)
+            }
+        }
+        binding.switchKbCategory.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                kbDeepLinkSwitched(category = checked)
+            }
+        }
+        binding.switchKbArticle.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                kbDeepLinkSwitched(article = checked)
+            }
+        }
         initTil(binding.tilUrlApi)
         initTil(binding.tilApiToken)
         initTil(binding.tilClientEmail)
@@ -130,6 +145,16 @@ class ConfigurationScreen : UsedeskFragment() {
             }
         }
         return binding.root
+    }
+
+    private fun kbDeepLinkSwitched(
+        section: Boolean = false,
+        category: Boolean = false,
+        article: Boolean = false
+    ) {
+        binding.switchKbSection.isChecked = section
+        binding.switchKbCategory.isChecked = category
+        binding.switchKbArticle.isChecked = article
     }
 
     override fun onPause() {
@@ -194,10 +219,14 @@ class ConfigurationScreen : UsedeskFragment() {
             kb = Configuration.Kb(
                 withKb = binding.switchKb.isChecked,
                 withKbSupportButton = binding.switchKbWithSupportButton.isChecked,
+                noBackStack = binding.switchKbNoBackStack.isChecked,
                 kbId = binding.etKbId.text.toString(),
                 sectionId = binding.etKbSectionId.text.toString().toLongOrNull(),
+                section = binding.switchKbSection.isChecked,
                 categoryId = binding.etKbCategoryId.text.toString().toLongOrNull(),
-                articleId = binding.etKbArticleId.text.toString().toLongOrNull()
+                category = binding.switchKbCategory.isChecked,
+                articleId = binding.etKbArticleId.text.toString().toLongOrNull(),
+                article = binding.switchKbArticle.isChecked
             )
         )
     }
@@ -271,7 +300,11 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etKbCategoryId.setText(categoryId?.toString())
         binding.etKbArticleId.setText(articleId?.toString())
         binding.switchKb.isChecked = withKb
+        binding.switchKbSection.isChecked = section
+        binding.switchKbCategory.isChecked = category
+        binding.switchKbArticle.isChecked = article
         binding.switchKbWithSupportButton.isChecked = withKbSupportButton
+        binding.switchKbNoBackStack.isChecked = noBackStack
     }
 
     private fun Configuration.onNewConfiguration() {

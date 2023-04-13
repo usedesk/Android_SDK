@@ -10,13 +10,14 @@ import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class RootViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor
-) : UsedeskViewModel<State>(State()) {
-
+    private val kbInteractor: IKnowledgeBaseInteractor,
+    deepLink: DeepLink?
+) : UsedeskViewModel<State>(State(deepLink = deepLink)) {
     val viewModelStoreFactory = ViewModelStoreFactory()
 
     private val searchFilter = TextFilter.SingleLine()
@@ -80,9 +81,82 @@ internal class RootViewModel(
         }
     )
 
+    private fun UsedeskSection.toBlock(previousBlock: State.BlocksState.Block.Sections? = State.BlocksState.Block.Sections) =
+        State.BlocksState.Block.Categories(
+            previousBlock = previousBlock,
+            title = title,
+            sectionId = id
+        )
+
+    private fun UsedeskCategory.toBlock(previousBlock: State.BlocksState.Block.Categories?) =
+        State.BlocksState.Block.Articles(
+            previousBlock = previousBlock,
+            title = title,
+            categoryId = id
+        )
+
     private fun State.kbSectionsModel(event: Event.KbSectionsModel): State = when (screen) {
         is State.Screen.Loading -> when (event.sectionsModel.loadingState) {
-            is LoadingState.Loaded -> copy(screen = State.Screen.Blocks)
+            is LoadingState.Loaded -> {
+                var block: State.BlocksState.Block? = null
+                val screen: State.Screen? = when (deepLink) {
+                    is DeepLink.Article -> {
+                        val article = event.sectionsModel.data.articlesMap[deepLink.articleId]
+                        val category = event.sectionsModel.data.categoriesMap[article?.categoryId]
+                        val section = event.sectionsModel.data.categoryParents[category?.id]
+                        block = when {
+                            deepLink.noBackStack || section == null -> null
+                            else -> category?.toBlock(section.toBlock())
+                        }
+                        when (article) {
+                            null -> null
+                            else -> State.Screen.Article(
+                                previousScreen = when (block) {
+                                    null -> null
+                                    else -> State.Screen.Blocks
+                                },
+                                title = article.title,
+                                articleId = article.id
+                            )
+                        }
+                    }
+                    is DeepLink.Category -> {
+                        val category = event.sectionsModel.data.categoriesMap[deepLink.categoryId]
+                        block = category?.toBlock(
+                            when {
+                                deepLink.noBackStack -> null
+                                else -> event.sectionsModel.data.categoryParents[category.id]
+                                    ?.toBlock()
+                            }
+                        )
+                        when (block) {
+                            null -> null
+                            else -> State.Screen.Blocks
+                        }
+                    }
+                    is DeepLink.Section -> {
+                        val section = event.sectionsModel.data.sectionsMap[deepLink.sectionId]
+                        block = section?.toBlock(
+                            when {
+                                deepLink.noBackStack -> null
+                                else -> State.BlocksState.Block.Sections
+                            }
+                        )
+                        when (block) {
+                            null -> null
+                            else -> State.Screen.Blocks
+                        }
+                    }
+                    null -> State.Screen.Blocks
+                }
+                copy(
+                    screen = screen ?: State.Screen.Incorrect,
+                    blocksState = when (block) {
+                        null -> blocksState
+                        else -> State.BlocksState(block = block)
+                    }
+                )
+            }
             else -> this
         }
         else -> this
@@ -201,33 +275,42 @@ internal class RootViewModel(
         val screen: Screen = Screen.Loading,
         val blocksState: BlocksState = BlocksState(),
         val clearFocus: UsedeskEvent<Unit>? = null,
+        val deepLink: DeepLink?,
         private val action: UsedeskEvent<() -> Unit>? = null
     ) {
-
         fun useAction() = action?.use { it() }
 
         sealed interface Screen {
             val previousScreen: Screen?
+            val title: String?
 
             object Loading : Screen {
                 override val previousScreen = null
+                override val title = null
+            }
+
+            object Incorrect : Screen {
+                override val previousScreen = null
+                override val title = null
             }
 
             object Blocks : Screen {
                 override val previousScreen = null
+                override val title = null
             }
 
             data class Article(
-                override val previousScreen: Screen,
-                val title: String,
+                override val previousScreen: Screen?,
+                override val title: String?,
                 val articleId: Long
             ) : Screen
 
             data class Review(
-                override val previousScreen: Screen,
+                override val previousScreen: Screen?,
                 val articleId: Long
-            ) : Screen
-
+            ) : Screen {
+                override val title = null
+            }
 
             fun transition(previous: Screen?) = when (previous) {
                 null -> Transition.NONE
@@ -260,13 +343,13 @@ internal class RootViewModel(
                 }
 
                 data class Categories(
-                    override val previousBlock: Block,
+                    override val previousBlock: Block?,
                     override val title: String,
                     val sectionId: Long
                 ) : Block
 
                 data class Articles(
-                    override val previousBlock: Block,
+                    override val previousBlock: Block?,
                     override val title: String,
                     val categoryId: Long
                 ) : Block

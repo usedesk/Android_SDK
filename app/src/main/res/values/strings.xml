@@ -33,6 +33,7 @@
     <string name="group_agent_messages_hint" translatable="false">Group Agent Messages</string>
     <string name="kb_base_hint" translatable="false">With Knowledge Base</string>
     <string name="kb_support_button" translatable="false">With Knowledge Base Support Button</string>
+    <string name="kb_no_back_stack" translatable="false">No Back Stack</string>
     <string name="button_go_to_sdk" translatable="false">Go To SDK</string>
     <string name="create_chat" translatable="false">Create Chat</string>
     <string name="validation_empty_error" translatable="false">Field required</string>

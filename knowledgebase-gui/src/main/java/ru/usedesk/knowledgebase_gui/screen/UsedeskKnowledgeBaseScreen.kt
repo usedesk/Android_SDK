@@ -1,11 +1,13 @@
 package ru.usedesk.knowledgebase_gui.screen
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
+import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
@@ -19,7 +21,13 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 argsGetParcelable<UsedeskKnowledgeBaseConfiguration>(KEY_CONFIGURATION)
                     ?: throw RuntimeException("UsedeskKnowledgeBaseConfiguration not found. Call the newInstance or createBundle method and put the configuration inside")
             KbUiComponent.open(requireContext(), configuration)
-            KbUiViewModelFactory { RootViewModel(it.interactor) }
+            val deepLink = argsGetParcelable<DeepLink>(KEY_DEEP_LINK)
+            KbUiViewModelFactory {
+                RootViewModel(
+                    it.interactor,
+                    deepLink
+                )
+            }
         }
     )
 
@@ -49,24 +57,18 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
     companion object {
         private const val KEY_CONFIGURATION = "a"
         private const val KEY_WITH_SUPPORT_BUTTON = "b"
-        private const val KEY_SECTION_ID = "c"
-        private const val KEY_CATEGORY_ID = "d"
-        private const val KEY_ARTICLE_ID = "e"
+        private const val KEY_DEEP_LINK = "c"
 
         @JvmStatic
         fun newInstance(
-            knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration,
+            configuration: UsedeskKnowledgeBaseConfiguration,
             withSupportButton: Boolean = true,
-            sectionId: Long? = null,
-            categoryId: Long? = null,
-            articleId: Long? = null
+            deepLink: DeepLink? = null
         ): UsedeskKnowledgeBaseScreen = UsedeskKnowledgeBaseScreen().apply {
             arguments = createBundle(
-                knowledgeBaseConfiguration,
+                configuration,
                 withSupportButton,
-                sectionId,
-                categoryId,
-                articleId
+                deepLink
             )
         }
 
@@ -74,21 +76,35 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         fun createBundle(
             configuration: UsedeskKnowledgeBaseConfiguration,
             withSupportButton: Boolean = true,
-            sectionId: Long? = null,
-            categoryId: Long? = null,
-            articleId: Long? = null
+            deepLink: DeepLink? = null
         ): Bundle = Bundle().apply {
             putParcelable(KEY_CONFIGURATION, configuration)
             putBoolean(KEY_WITH_SUPPORT_BUTTON, withSupportButton)
-            if (sectionId != null) {
-                putLong(KEY_SECTION_ID, sectionId)
-            }
-            if (categoryId != null) {
-                putLong(KEY_CATEGORY_ID, categoryId)
-            }
-            if (articleId != null) {
-                putLong(KEY_ARTICLE_ID, articleId)
+            if (deepLink != null) {
+                putParcelable(KEY_DEEP_LINK, deepLink)
             }
         }
+    }
+
+    sealed interface DeepLink : Parcelable {
+        val noBackStack: Boolean
+
+        @Parcelize
+        data class Section(
+            val sectionId: Long,
+            override val noBackStack: Boolean
+        ) : DeepLink
+
+        @Parcelize
+        data class Category(
+            val categoryId: Long,
+            override val noBackStack: Boolean
+        ) : DeepLink
+
+        @Parcelize
+        data class Article(
+            val articleId: Long,
+            override val noBackStack: Boolean
+        ) : DeepLink
     }
 }

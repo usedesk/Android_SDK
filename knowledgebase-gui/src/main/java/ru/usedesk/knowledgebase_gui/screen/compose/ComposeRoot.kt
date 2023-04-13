@@ -14,10 +14,12 @@ import ru.usedesk.knowledgebase_gui.compose.CardCircleChat
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.Screen
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ARTICLE_KEY
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ContentArticle
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.ContentBlocks
+import ru.usedesk.knowledgebase_gui.screen.compose.incorrect.ContentIncorrect
 import ru.usedesk.knowledgebase_gui.screen.compose.loading.ContentLoading
 import ru.usedesk.knowledgebase_gui.screen.compose.loading.LOADING_KEY
 import ru.usedesk.knowledgebase_gui.screen.compose.review.ContentReview
@@ -40,10 +42,9 @@ internal fun ComposeRoot(
 
     val onEvent = viewModel::onEvent
     val title = when (val screen = state.screen) {
-        is RootViewModel.State.Screen.Loading -> null
-        RootViewModel.State.Screen.Blocks -> state.blocksState.block.title
-        is RootViewModel.State.Screen.Article -> screen.title
-        is RootViewModel.State.Screen.Review -> stringResource(theme.strings.articleReviewTitle)
+        Screen.Blocks -> state.blocksState.block.title
+        is Screen.Review -> stringResource(theme.strings.articleReviewTitle)
+        else -> screen.title
     } ?: stringResource(theme.strings.sectionsTitle)
 
     val scrollBehavior = rememberToolbarScrollBehavior(theme)
@@ -152,7 +153,7 @@ private fun Content(
             }) { screen ->
             Box(modifier = Modifier.fillMaxSize()) {
                 when (screen) {
-                    is RootViewModel.State.Screen.Loading -> {
+                    is Screen.Loading -> {
                         DisposableEffect(Unit) {
                             onDispose {
                                 viewModel.viewModelStoreFactory.clear(LOADING_KEY)
@@ -164,7 +165,10 @@ private fun Content(
                             tryAgain = remember { { onEvent(RootViewModel.Event.TryAgain) } }
                         )
                     }
-                    is RootViewModel.State.Screen.Blocks -> {
+                    is Screen.Incorrect -> {
+                        ContentIncorrect(theme = theme)
+                    }
+                    is Screen.Blocks -> {
                         ContentBlocks(
                             theme = theme,
                             viewModelStoreFactory = viewModel.viewModelStoreFactory,
@@ -173,15 +177,16 @@ private fun Content(
                             onEvent = onEvent
                         )
                     }
-                    is RootViewModel.State.Screen.Article -> {
+                    is Screen.Article -> {
                         DisposableEffect(Unit) {
                             onDispose {
                                 when (viewModel.modelFlow.value.screen) {
-                                    RootViewModel.State.Screen.Blocks,
-                                    RootViewModel.State.Screen.Loading ->
+                                    Screen.Blocks,
+                                    Screen.Incorrect,
+                                    Screen.Loading ->
                                         viewModel.viewModelStoreFactory.clear(ARTICLE_KEY)
-                                    is RootViewModel.State.Screen.Article,
-                                    is RootViewModel.State.Screen.Review -> Unit
+                                    is Screen.Article,
+                                    is Screen.Review -> Unit
                                 }
                             }
                         }
@@ -194,7 +199,7 @@ private fun Content(
                             onReview = remember { { onEvent(RootViewModel.Event.GoReview(screen.articleId)) } }
                         )
                     }
-                    is RootViewModel.State.Screen.Review -> {
+                    is Screen.Review -> {
                         supportButtonVisible.value = false
                         DisposableEffect(Unit) {
                             onDispose {

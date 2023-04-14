@@ -6,6 +6,8 @@
     <string name="usedesk_string_email">Почта</string>
     <string name="usedesk_string_message">Сообщение</string>
     <string name="usedesk_string_message_input">Написать…</string>
+    <string name="usedesk_string_field_error">Обязательное поле</string>
+    <string name="usedesk_string_email_error">Неправильно введена почта</string>
     <string name="usedesk_string_today">Сегодня</string>
     <string name="usedesk_string_yesterday">Вчера</string>
     <string name="usedesk_string_download_started">Загрузка началась</string>

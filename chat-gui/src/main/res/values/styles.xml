@@ -337,6 +337,7 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:text">@string/usedesk_download</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Audio.Download.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Audio">
@@ -991,6 +992,8 @@
         <item name="usedesk_chat_screen_offline_form_name">@string/usedesk_name</item>
         <item name="usedesk_chat_screen_offline_form_email">@string/usedesk_email</item>
         <item name="usedesk_chat_screen_offline_form_message">@string/usedesk_message</item>
+        <item name="usedesk_chat_screen_offline_form_field_error">@string/usedesk_field_error</item>
+        <item name="usedesk_chat_screen_offline_form_email_error">@string/usedesk_email_error</item>
         <item name="usedesk_chat_screen_offline_form_text_field">@style/Usedesk.Common.Text.Field</item>
         <item name="usedesk_chat_screen_offline_form_list_field">@style/Usedesk.Common.List.Field</item>
     </style>
@@ -1078,8 +1081,8 @@
         <item name="android:includeFontPadding">false</item>
         <item name="usedesk_text_1">@string/usedesk_today</item>
         <item name="usedesk_text_2">@string/usedesk_yesterday</item>
-        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Date.Text.TextAppearance
-        </item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Date.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Date.Text.TextAppearance" parent="">
@@ -1106,6 +1109,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.File.Extension.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Time.Dark.Text.TextAppearance" parent="">
@@ -1118,14 +1122,15 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
+        <item name="android:gravity">bottom</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">4dp</item>
         <item name="android:layout_marginBottom">2dp</item>
-        <item name="android:drawablePadding">2dp</item>
-        <item name="android:gravity">bottom</item>
         <item name="android:singleLine">true</item>
-        <item name="android:includeFontPadding">false</item>
+        <item name="android:includeFontPadding">true</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Dark.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
+        <item name="android:drawablePadding">4dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully</item>
     </style>
@@ -1140,15 +1145,17 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|bottom</item>
-        <item name="android:layout_margin">2dp</item>
         <item name="android:background">@drawable/usedesk_background_time_dark</item>
+        <item name="android:layout_margin">2dp</item>>
         <item name="android:paddingStart">4dp</item>
         <item name="android:paddingEnd">4dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:includeFontPadding">true</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Light.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
+        <item name="android:drawablePadding">4dp</item>
         <item name="usedesk_drawable_1">@drawable/usedesk_ic_sending_light</item>
         <item name="usedesk_drawable_2">@drawable/usedesk_ic_sent_successfully_light</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:includeFontPadding">false</item>
-        <item name="android:textAppearance">@style/Usedesk.Chat.Message.Time.Light.Text.TextAppearance</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Name.Text.TextAppearance" parent="">
@@ -1162,6 +1169,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingEnd">16dp</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.File.Name.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.File.Size.Text.TextAppearance" parent="">
@@ -1179,6 +1187,7 @@
         <item name="usedesk_text_color_1">@color/usedesk_gray_3</item>
         <item name="usedesk_text_color_2">@color/usedesk_red</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.File.Size.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Attached.File.Close.Image" parent="">
@@ -1214,6 +1223,7 @@
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Attached.File.Name.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Name.Text.TextAppearance" parent="">
@@ -1228,6 +1238,7 @@
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Name.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Message.Text.TextAppearance" parent="">
@@ -1243,6 +1254,7 @@
         <item name="android:textIsSelectable">true</item>
         <item name="android:textColorLink">@color/usedesk_blue</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Text.Message.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Message.Text.Button.Text.TextAppearance" parent="">
@@ -1265,6 +1277,7 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Message.Text.Button.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.TextAppearance" parent="">
@@ -1283,6 +1296,7 @@
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:text">@string/usedesk_close</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Close.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Image" parent="">
@@ -1308,6 +1322,7 @@
         <item name="android:gravity">center</item>
         <item name="android:text">@string/usedesk_offline_form_send_successed</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Offline.Form.Success.Dialog.Ok.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Gallery.Image" parent="">
@@ -1331,6 +1346,7 @@
         <item name="android:duplicateParentState">true</item>
         <item name="android:text">@string/usedesk_gallery</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Attachment.Dialog.Gallery.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Camera.Image" parent="">
@@ -1354,6 +1370,7 @@
         <item name="android:duplicateParentState">true</item>
         <item name="android:text">@string/usedesk_camera</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Attachment.Dialog.Camera.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Attachment.Dialog.Storage.Image" parent="">
@@ -1377,6 +1394,7 @@
         <item name="android:duplicateParentState">true</item>
         <item name="android:text">@string/usedesk_storage</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Attachment.Dialog.Storage.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Toolbar.Text.TextAppearance" parent="">
@@ -1392,6 +1410,7 @@
         <item name="android:padding">16dp</item>
         <item name="android:singleLine">true</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Show.File.Toolbar.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Name.Text.TextAppearance" parent="">
@@ -1406,6 +1425,7 @@
         <item name="android:layout_margin">2dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Show.File.Name.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Show.File.Size.Text.TextAppearance" parent="">
@@ -1420,6 +1440,7 @@
         <item name="android:layout_margin">2dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Show.File.Size.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Message.Text.TextAppearance" parent="">
@@ -1442,6 +1463,7 @@
         <item name="android:includeFontPadding">false</item>
         <item name="android:inputType">textCapSentences|textNoSuggestions|textMultiLine</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Message.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.FloatingActionButton" parent="">
@@ -1474,8 +1496,9 @@
         <item name="android:paddingEnd">4dp</item>
         <item name="android:elevation">7dp</item>
         <item name="android:includeFontPadding">false</item>
-        <item name="android:textAppearance">@style/Usedesk.Chat.Screen.FloatingActionButton.Additional.TextAppearance</item>
         <item name="android:background">@drawable/usedesk_background_blue_round</item>
+        <item name="android:textAppearance">@style/Usedesk.Chat.Screen.FloatingActionButton.Additional.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Loading.Image" parent="">
@@ -1494,6 +1517,7 @@
         <item name="usedesk_text_1">@null</item>
         <item name="usedesk_text_2">@string/usedesk_no_internet_title</item>
         <item name="android:textAppearance">@style/Usedesk.Common.View.Loading.Title.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Description.Text.TextAppearance" parent="">
@@ -1510,6 +1534,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Offline.Form.Description.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Send.Text.TextAppearance" parent="">
@@ -1528,6 +1553,7 @@
         <item name="android:focusable">true</item>
         <item name="android:text">@string/usedesk_send</item>
         <item name="android:textAppearance">@style/Usedesk.Chat.Screen.Offline.Form.Send.Text.TextAppearance</item>
+        <item name="android:textColor">@null</item>
     </style>
 
     <!--Theme.MaterialComponents Start-->

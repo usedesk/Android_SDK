@@ -6,6 +6,8 @@
     <string name="usedesk_string_email">Enviar</string>
     <string name="usedesk_string_message">Mensagem</string>
     <string name="usedesk_string_message_input">Escrever…</string>
+    <string name="usedesk_string_field_error">Campo obrigatório</string>
+    <string name="usedesk_string_email_error">Endereço de e-mail invalido</string>
     <string name="usedesk_string_today">Hoje</string>
     <string name="usedesk_string_yesterday">Ontem</string>
     <string name="usedesk_string_download_started">Download inciado</string>

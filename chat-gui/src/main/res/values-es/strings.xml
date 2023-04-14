@@ -6,6 +6,8 @@
     <string name="usedesk_string_email">Correo</string>
     <string name="usedesk_string_message">Mensaje</string>
     <string name="usedesk_string_message_input">Escribir…</string>
+    <string name="usedesk_string_field_error">Campo requerido</string>
+    <string name="usedesk_string_email_error">Dirección de corréo electrónico no válida</string>
     <string name="usedesk_string_today">Hoy</string>
     <string name="usedesk_string_yesterday">Ayer</string>
     <string name="usedesk_string_download_started">Descarga iniciada</string>

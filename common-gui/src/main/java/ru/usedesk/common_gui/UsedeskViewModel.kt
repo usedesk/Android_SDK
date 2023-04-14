@@ -22,6 +22,8 @@ open class UsedeskViewModel<MODEL>(defaultModel: MODEL) : ViewModel() {
         mainScope.launch { collect(onValue) }
     }
 
+    protected fun <T> T.update(onUpdate: T.() -> T): T = onUpdate()
+
     protected fun setModel(onUpdate: MODEL.() -> MODEL) = _modelFlow.updateAndGet { it.onUpdate() }
 
     override fun onCleared() {

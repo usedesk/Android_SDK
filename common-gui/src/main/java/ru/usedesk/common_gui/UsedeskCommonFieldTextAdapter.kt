@@ -5,18 +5,10 @@ import android.view.View
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class UsedeskCommonFieldTextAdapter(
-    val binding: Binding
-) {
+class UsedeskCommonFieldTextAdapter(val binding: Binding) {
 
-    private val title = binding.styleValues.getString(R.attr.usedesk_text_1)
-    private val error = binding.styleValues.getString(R.attr.usedesk_text_2)
     private val colorTitle = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
     private val colorRequired = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
-
-    init {
-        setTitle(title)
-    }
 
     fun setTitle(title: String, required: Boolean = false) {
         val tail = when {
@@ -33,20 +25,12 @@ class UsedeskCommonFieldTextAdapter(
         binding.etText.setText(text)
     }
 
-    fun getText(): String = binding.etText.text?.toString() ?: ""
-
     fun setTextChangeListener(onChanged: (String) -> Unit) {
         binding.etText.addTextChangedListener(UsedeskTextChangeListener(onChanged))
     }
 
-    fun showError(show: Boolean) {
-        binding.tilTitle.error = when {
-            show -> {
-                showKeyboard(binding.etText)
-                error
-            }
-            else -> null
-        }
+    fun showError(error: String?) {
+        binding.tilTitle.error = error
     }
 
     fun show(show: Boolean) {

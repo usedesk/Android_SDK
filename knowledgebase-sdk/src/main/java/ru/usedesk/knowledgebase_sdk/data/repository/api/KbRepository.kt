@@ -137,11 +137,12 @@ internal class KbRepository @Inject constructor(
 
     private fun GetArticleContent.Response.convert() = valueOrNull {
         UsedeskArticleContent(
-            id!!,
-            title ?: "",
-            categoryId?.toLongOrNull()!!,
-            views ?: 0,
-            text ?: ""
+            id = id!!,
+            title = title ?: "",
+            categoryId = categoryId?.toLongOrNull()!!,
+            viewsCount = views ?: 0,
+            text = text ?: "",
+            public = public == 1
         )
     }
 

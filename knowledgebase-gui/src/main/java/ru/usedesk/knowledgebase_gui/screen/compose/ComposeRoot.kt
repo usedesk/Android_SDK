@@ -38,9 +38,11 @@ internal fun ComposeRoot(
     state.clearFocus?.use { focusManager.clearFocus() }
 
     val onEvent = viewModel::onEvent
+    val articleTitleState = remember { mutableStateOf<String?>(null) }
     val title = when (val screen = state.screen) {
         Screen.Blocks -> state.blocksState.block.title
         is Screen.Review -> stringResource(theme.strings.articleReviewTitle)
+        is Screen.Article -> screen.title ?: articleTitleState.value
         else -> screen.title
     } ?: stringResource(theme.strings.sectionsTitle)
 
@@ -99,6 +101,7 @@ internal fun ComposeRoot(
                     theme = theme,
                     viewModel = viewModel,
                     state = state,
+                    articleTitleState = articleTitleState,
                     supportButtonVisible = supportButtonVisible,
                     onWebUrl = onWebUrl,
                     onEvent = onEvent
@@ -120,6 +123,7 @@ private fun Content(
     theme: UsedeskKnowledgeBaseTheme,
     viewModel: RootViewModel,
     state: RootViewModel.State,
+    articleTitleState: MutableState<String?>,
     supportButtonVisible: MutableState<Boolean>,
     onWebUrl: (String) -> Unit,
     onEvent: (RootViewModel.Event) -> Unit
@@ -163,26 +167,23 @@ private fun Content(
                         supportButtonVisible = supportButtonVisible,
                         onEvent = onEvent
                     )
-                    is Screen.Article -> {
-                        ContentArticle(
-                            theme = theme,
-                            viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                            articleId = screen.articleId,
-                            supportButtonVisible = supportButtonVisible,
-                            getCurrentScreen = remember { { viewModel.modelFlow.value.screen } },
-                            onWebUrl = onWebUrl,
-                            onReview = remember { { onEvent(RootViewModel.Event.GoReview(screen.articleId)) } }
-                        )
-                    }
-                    is Screen.Review -> {
-                        supportButtonVisible.value = false
-                        ContentReview(
-                            theme = theme,
-                            viewModelStoreFactory = viewModel.viewModelStoreFactory,
-                            articleId = screen.articleId,
-                            goBack = viewModel::onBackPressed
-                        )
-                    }
+                    is Screen.Article -> ContentArticle(
+                        theme = theme,
+                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
+                        articleId = screen.articleId,
+                        articleTitleState = articleTitleState,
+                        supportButtonVisible = supportButtonVisible,
+                        getCurrentScreen = remember { { viewModel.modelFlow.value.screen } },
+                        onWebUrl = onWebUrl,
+                        onReview = remember { { onEvent(RootViewModel.Event.GoReview(screen.articleId)) } }
+                    )
+                    is Screen.Review -> ContentReview(
+                        theme = theme,
+                        viewModelStoreFactory = viewModel.viewModelStoreFactory,
+                        articleId = screen.articleId,
+                        supportButtonVisible = supportButtonVisible,
+                        goBack = viewModel::onBackPressed
+                    )
                 }
             }
         }

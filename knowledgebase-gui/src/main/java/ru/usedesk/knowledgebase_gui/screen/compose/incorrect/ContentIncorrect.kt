@@ -8,7 +8,9 @@ import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
-internal fun ContentIncorrect(theme: UsedeskKnowledgeBaseTheme) {
+internal fun ContentIncorrect(
+    theme: UsedeskKnowledgeBaseTheme
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         ScreenNotLoaded(
             theme = theme,

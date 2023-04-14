@@ -175,7 +175,7 @@ internal class ChatInteractor @Inject constructor(
         ioScope.launch {
             var oldModel: Model? = null
             modelFlow.collect { model ->
-                actionListeners.onModelUpdated(oldModel, model) //TODO: тут валится
+                actionListeners.onModelUpdated(oldModel, model)
                 oldModel = model
             }
         }

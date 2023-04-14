@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
+import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui._entity.ReviewState
 import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.*
@@ -197,12 +198,14 @@ internal class KnowledgeBaseInteractor @Inject constructor(
             getArticleModelFlow(articleId).updateWithLock {
                 when (response) {
                     is GetArticleResponse.Done -> {
-                        launchAddViews(articleId)
-                        ArticleModel(
-                            articleId = articleId,
-                            loadingState = LoadingState.Loaded(data = response.articleContent),
-                            ratingState = ratingStateMap[articleId] ?: RatingState.Required()
-                        )
+                        if (response.articleContent.public) {
+                            launchAddViews(articleId)
+                            ArticleModel(
+                                articleId = articleId,
+                                loadingState = LoadingState.Loaded(data = response.articleContent),
+                                ratingState = ratingStateMap[articleId] ?: RatingState.Required()
+                            )
+                        } else copy(loadingState = LoadingState.Error(code = ACCESS_DENIED))
                     }
                     is GetArticleResponse.Error -> copy(
                         loadingState = LoadingState.Error(code = response.code)

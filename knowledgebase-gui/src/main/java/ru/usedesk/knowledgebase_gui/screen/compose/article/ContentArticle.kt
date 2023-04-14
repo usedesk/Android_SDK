@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui._entity.ContentState
+import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
@@ -40,6 +41,7 @@ internal fun ContentArticle(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
+    articleTitleState: MutableState<String?>,
     supportButtonVisible: MutableState<Boolean>,
     getCurrentScreen: () -> RootViewModel.State.Screen,
     onWebUrl: (String) -> Unit,
@@ -65,6 +67,16 @@ internal fun ContentArticle(
 
     val state by viewModel.modelFlow.collectAsState()
     state.goReview?.use { onReview() }
+
+    DisposableEffect(state.contentState) {
+        articleTitleState.value = when (val contentState = state.contentState) {
+            is ContentState.Loaded -> contentState.content.title
+            else -> null
+        }
+        onDispose {
+            articleTitleState.value = null
+        }
+    }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         ArticleBlock(
@@ -103,7 +115,10 @@ private fun ArticleBlock(
                     supportButtonVisible.value = true
                     ScreenNotLoaded(
                         theme = theme,
-                        tryAgain = if (!state.loading) viewModel::tryAgain else null
+                        tryAgain = when {
+                            !state.loading && contentState.code != ACCESS_DENIED -> viewModel::tryAgain
+                            else -> null
+                        }
                     )
                 }
                 else -> {

@@ -16,4 +16,8 @@ internal sealed interface LoadingState<DATA> {
         override val page: Long = 1L,
         val data: DATA
     ) : LoadingState<DATA>
+
+    companion object {
+        const val ACCESS_DENIED = -1
+    }
 }

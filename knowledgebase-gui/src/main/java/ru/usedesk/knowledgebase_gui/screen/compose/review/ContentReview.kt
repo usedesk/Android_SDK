@@ -33,8 +33,11 @@ internal fun ContentReview(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
+    supportButtonVisible: MutableState<Boolean>,
     goBack: () -> Unit
 ) {
+    supportButtonVisible.value = false
+
     val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
         viewModelStoreOwner = remember { { viewModelStoreFactory.get(StoreKeys.REVIEW.name) } }

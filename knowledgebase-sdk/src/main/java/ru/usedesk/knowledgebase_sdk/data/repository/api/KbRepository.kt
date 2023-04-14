@@ -106,7 +106,8 @@ internal class KbRepository @Inject constructor(
     ): GetArticlesResponse {
         val request = GetArticles.Request(
             query = query,
-            page = page
+            page = page,
+            type = GetArticles.Request.Type.PUBLIC
         )
         val response = doRequestJson(
             configuration.urlApi,
@@ -118,13 +119,13 @@ internal class KbRepository @Inject constructor(
                 configuration.token,
                 request.query,
                 request.count,
-                request.sectionIds?.joinToString(","),
-                request.categoryIds?.joinToString(","),
-                request.articleIds?.joinToString(","),
+                request.sectionIds,
+                request.categoryIds,
+                request.articleIds,
                 request.page,
-                request.type?.name?.lowercase(),
-                request.sort?.name?.lowercase(),
-                request.order?.name?.lowercase()
+                request.type,
+                request.sort,
+                request.order
             )
         }
 

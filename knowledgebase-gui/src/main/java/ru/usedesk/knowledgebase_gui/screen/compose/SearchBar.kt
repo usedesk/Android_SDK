@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.delay
 import ru.usedesk.knowledgebase_gui.compose.*
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
@@ -103,6 +104,7 @@ internal fun SearchBar(
             )
             LaunchedEffect(focused) {
                 if (focused) {
+                    delay(100)
                     focusRequester.requestFocus()
                 }
             }

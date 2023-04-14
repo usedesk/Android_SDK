@@ -282,7 +282,11 @@ class UsedeskKnowledgeBaseTheme(
         val shadowElevation: Dp = 4.dp,
         val progressBarStrokeWidth: Dp = 2.dp,
         val loadingSize: Dp = dp32,
-        val loadingPadding: Padding = Padding(dp16),
+        val loadingPadding: Padding = Padding(
+            start = dp16,
+            end = dp16,
+            top = dp16
+        ),
         val paginationLoadingPadding: Padding = Padding(
             start = dp16,
             end = dp16,

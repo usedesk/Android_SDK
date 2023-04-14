@@ -23,18 +23,18 @@ internal class SearchViewModel(
                         is LoadingState.Loaded -> false
                         else -> reloadError
                     },
-                    nextPageState = if (articlesModel.loadingState is LoadingState.Error &&
-                        articlesModel.loadingState.page > 1L
-                    ) State.NextPageState.ERROR
-                    else if (articlesModel.hasNextPage) State.NextPageState.LOADING
-                    else State.NextPageState.GONE,
+                    nextPageState = when {
+                        articlesModel.loadingState is LoadingState.Error &&
+                                articlesModel.loadingState.page > 1L -> State.NextPageState.ERROR
+                        articlesModel.hasNextPage -> State.NextPageState.LOADING
+                        else -> State.NextPageState.GONE
+                    },
                     content = when (data) {
                         null -> content
                         else -> articlesModel.loadingState.data
                     },
-                    itemShowedIndex = when (data) {
-                        null,
-                        content -> itemShowedIndex
+                    itemShowedIndex = when {
+                        data == null || data === content -> itemShowedIndex
                         else -> when (articlesModel.loadingState.page) {
                             1L -> 0
                             else -> itemShowedIndex
@@ -48,7 +48,9 @@ internal class SearchViewModel(
                             else -> lazyListState
                         }
                     }
-                )
+                ).also {
+                    println(it)
+                }
             }
         }
     }

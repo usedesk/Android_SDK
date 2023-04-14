@@ -55,6 +55,10 @@ internal class ChatInteractor @Inject constructor(
     private var additionalFieldsNeeded: Boolean = true
     private var previousMessagesLoadingJob: Job? = null
 
+    private val fileUploadProgressListeners =
+        mutableMapOf<Long, MutableSet<IFileUploadProgressListener>>()
+    private val fileUploadProgressMutex = Mutex()
+
     private sealed interface Send {
         val localId: Long?
 
@@ -171,7 +175,7 @@ internal class ChatInteractor @Inject constructor(
         ioScope.launch {
             var oldModel: Model? = null
             modelFlow.collect { model ->
-                model.onModelUpdated(oldModel, actionListeners)
+                actionListeners.onModelUpdated(oldModel, model)
                 oldModel = model
             }
         }
@@ -184,47 +188,6 @@ internal class ChatInteractor @Inject constructor(
 
         launchConnect()
     }
-
-    private fun Model.onModelUpdated(oldModel: Model?, listener: IUsedeskActionListener) {
-        val oldMessages = oldModel?.messages
-        when {
-            oldMessages == messages || oldModel?.inited != true -> {
-                listener.onModel(
-                    this,
-                    listOf(),
-                    listOf(),
-                    listOf()
-                )
-            }
-            else -> {
-                val newMessages = mutableListOf<UsedeskMessage>()
-                val updatedMessages = mutableListOf<UsedeskMessage>()
-                val oldestMessageId = oldMessages?.firstOrNull()?.id ?: 0
-                messages.forEach { message ->
-                    if (message.id < 0 || message.id >= oldestMessageId) {
-                        val oldMessage = oldMessages?.firstOrNull { message.isIdEquals(it) }
-                        when {
-                            oldMessage == null -> newMessages.add(message)
-                            oldMessage != message -> updatedMessages.add(message)
-                        }
-                    }
-                }
-                val removedMessages = oldMessages
-                    ?.filter { oldMessage -> messages.all { !oldMessage.isIdEquals(it) } }
-                    ?: listOf()
-                listener.onModel(
-                    this,
-                    newMessages,
-                    updatedMessages,
-                    removedMessages
-                )
-            }
-        }
-    }
-
-    private fun UsedeskMessage.isIdEquals(other: UsedeskMessage) = id == other.id ||
-            this is UsedeskMessageOwner.Client && other is UsedeskMessageOwner.Client
-            && localId == other.localId
 
     private fun sendInitMessage() {
         val initMessage = initClientOfflineForm ?: initClientMessage
@@ -318,7 +281,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun addActionListener(listener: IUsedeskActionListener) {
         actionListeners.add(listener)
-        modelLocked().onModelUpdated(null, listener)
+        listener.onModelUpdated(null, modelLocked())
     }
 
     override fun removeActionListener(listener: IUsedeskActionListener) {
@@ -383,10 +346,6 @@ internal class ChatInteractor @Inject constructor(
             sendQueue.emit(Send.File(fileInfo, localId))
         }
     }
-
-    private val fileUploadProgressListeners =
-        mutableMapOf<Long, MutableSet<IFileUploadProgressListener>>()
-    private val fileUploadProgressMutex = Mutex()
 
     override fun addFileUploadProgressListener(
         localMessageId: Long,
@@ -939,25 +898,17 @@ internal class ChatInteractor @Inject constructor(
 
     private class ActionListeners : IUsedeskActionListener {
         private val listenersMutex = Mutex()
-        private var listeners = mutableSetOf<IUsedeskActionListener>()
+        private var listeners = setOf<IUsedeskActionListener>()
 
         fun add(listener: IUsedeskActionListener) {
-            runBlocking {
-                listenersMutex.withLock {
-                    listeners.add(listener)
-                }
-            }
+            doLocked { listeners = listeners + listener }
         }
 
         fun remove(listener: IUsedeskActionListener) {
-            runBlocking {
-                listenersMutex.withLock {
-                    listeners.remove(listener)
-                }
-            }
+            doLocked { listeners = listeners - listener }
         }
 
-        fun isNoListeners() = runBlocking { listenersMutex.withLock { listeners } }.isEmpty()
+        fun isNoListeners() = doLocked { listeners.isEmpty() }
 
         override fun onModel(
             model: Model,
@@ -965,7 +916,7 @@ internal class ChatInteractor @Inject constructor(
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
         ) {
-            listeners.forEach {
+            doLocked { listeners }.forEach {
                 it.onModel(
                     model,
                     newMessages,
@@ -975,8 +926,11 @@ internal class ChatInteractor @Inject constructor(
             }
         }
 
+        private fun <T> doLocked(onDo: () -> T): T =
+            runBlocking { listenersMutex.withLock { onDo() } }
+
         override fun onException(usedeskException: Exception) {
-            listeners.forEach { it.onException(usedeskException) }
+            doLocked { listeners }.forEach { it.onException(usedeskException) }
         }
     }
 

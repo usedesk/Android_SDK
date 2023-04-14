@@ -111,7 +111,7 @@ internal class SocketConnection(
     fun sendRequest(socketRequest: SocketRequest) {
         val rawRequest = gson.toJson(socketRequest)
         val jsonRequest = JSONObject(rawRequest)
-        UsedeskLog.onLog("Socket.sendRequest") { gson.toJson(rawRequest) }
+        UsedeskLog.onLog("Socket.sendRequest") { rawRequest }
         socket.emit(EVENT_SERVER_ACTION, jsonRequest)
     }
 

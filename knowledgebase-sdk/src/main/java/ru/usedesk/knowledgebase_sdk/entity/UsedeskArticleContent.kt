@@ -5,5 +5,6 @@ data class UsedeskArticleContent(
     val title: String,
     val categoryId: Long,
     val viewsCount: Long,
-    val text: String
+    val text: String,
+    val public: Boolean
 )

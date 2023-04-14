@@ -6,15 +6,22 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 internal interface GetArticles {
     class Request(
         val query: String,
-        val sectionIds: List<Long>? = null,
-        val categoryIds: List<Long>? = null,
-        val articleIds: List<Long>? = null,
+        type: Type? = null,
+        sectionIds: List<Long>? = null,
+        categoryIds: List<Long>? = null,
+        articleIds: List<Long>? = null,
+        sort: Sort? = null,
+        order: Order? = null,
         val count: Int? = null,
         val page: Long? = null,
-        val type: Type? = null,
-        val sort: Sort? = null,
-        val order: Order? = null
     ) {
+        val type = type?.name?.lowercase()
+        val sectionIds = sectionIds?.joinToString(",")
+        val categoryIds = categoryIds?.joinToString(",")
+        val articleIds = articleIds?.joinToString(",")
+        val sort = sort?.name?.lowercase()
+        val order = order?.name?.lowercase()
+
         enum class Type {
             PUBLIC,
             PRIVATE

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
-import ru.usedesk.chat_gui.chat.offlineform._entity.OfflineFormList
+import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Model.OfflineFormItem
 import ru.usedesk.common_gui.UsedeskCommonFieldCheckBoxAdapter
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
@@ -33,7 +33,7 @@ internal class OfflineFormSelectorAdapter(
         }
         viewModel.modelFlow.onEachWithOld(lifecycleCoroutineScope) { old, new ->
             val oldField = old?.customFields?.firstOrNull { it.key == key }
-            val newField = new.customFields.first { it.key == key } as OfflineFormList
+            val newField = new.customFields.first { it.key == key } as OfflineFormItem.List
             if (oldField != newField) {
                 val oldItems = items
                 val newItems = listOf(null) + newField.items

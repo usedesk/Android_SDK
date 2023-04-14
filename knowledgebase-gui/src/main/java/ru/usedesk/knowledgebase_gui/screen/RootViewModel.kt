@@ -98,7 +98,7 @@ internal class RootViewModel(
     private fun State.kbSectionsModel(event: Event.KbSectionsModel): State = when (screen) {
         is State.Screen.Loading -> when (event.sectionsModel.loadingState) {
             is LoadingState.Loaded -> {
-                var block: State.BlocksState.Block? = null
+                val block: State.BlocksState.Block?
                 val screen: State.Screen? = when (deepLink) {
                     is DeepLink.Article -> {
                         val article = event.sectionsModel.data.articlesMap[deepLink.articleId]
@@ -108,17 +108,14 @@ internal class RootViewModel(
                             deepLink.noBackStack || section == null -> null
                             else -> category?.toBlock(section.toBlock())
                         }
-                        when (article) {
-                            null -> null
-                            else -> State.Screen.Article(
-                                previousScreen = when (block) {
-                                    null -> null
-                                    else -> State.Screen.Blocks
-                                },
-                                title = article.title,
-                                articleId = article.id
-                            )
-                        }
+                        State.Screen.Article(
+                            previousScreen = when (block) {
+                                null -> null
+                                else -> State.Screen.Blocks
+                            },
+                            title = article?.title,
+                            articleId = deepLink.articleId
+                        )
                     }
                     is DeepLink.Category -> {
                         val category = event.sectionsModel.data.categoriesMap[deepLink.categoryId]
@@ -147,7 +144,10 @@ internal class RootViewModel(
                             else -> State.Screen.Blocks
                         }
                     }
-                    null -> State.Screen.Blocks
+                    null -> {
+                        block = null
+                        State.Screen.Blocks
+                    }
                 }
                 copy(
                     screen = screen ?: State.Screen.Incorrect,

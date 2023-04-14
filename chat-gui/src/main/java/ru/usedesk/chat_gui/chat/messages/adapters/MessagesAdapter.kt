@@ -431,9 +431,9 @@ internal class MessagesAdapter(
         private fun getDrawableIcon(attrId: Int): Drawable? {
             val id = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
                 .getIdOrZero(attrId)
-            return when {
-                id != 0 -> tvTime.resources.getDrawable(id)
-                else -> null
+            return when (id) {
+                0 -> null
+                else -> tvTime.resources.getDrawable(id)
             }
         }
 

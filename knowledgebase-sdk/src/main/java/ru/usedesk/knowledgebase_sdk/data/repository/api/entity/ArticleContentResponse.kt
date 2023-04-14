@@ -14,6 +14,7 @@ internal interface GetArticleContent {
         val title: String? = null,
         val text: String? = null,
         val categoryId: String? = null,
-        val views: Long? = null
+        val views: Long? = null,
+        val public: Int? = null
     ) : UsedeskApiError()
 }

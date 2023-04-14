@@ -144,14 +144,7 @@ internal fun ContentBlocks(
                                 },
                                 supportButtonVisible = supportButtonVisible,
                                 onArticleClick = remember {
-                                    {
-                                        onEvent(
-                                            Event.ArticleClicked(
-                                                it.id,
-                                                it.title
-                                            )
-                                        )
-                                    }
+                                    { onEvent(Event.ArticleClicked(it.id, it.title)) }
                                 }
                             )
                         }

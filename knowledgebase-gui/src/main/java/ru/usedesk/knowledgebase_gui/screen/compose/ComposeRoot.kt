@@ -67,18 +67,17 @@ internal fun ComposeRoot(
                                 }
                             }
                         }),
-                    targetState = state.blocksState.block !is RootViewModel.State.BlocksState.Block.Search,
+                    targetState = state.screen !is Screen.Blocks ||
+                            state.blocksState.block !is RootViewModel.State.BlocksState.Block.Search,
                     animationSpec = remember { theme.animationSpec() }
                 ) { visibleToolbar ->
                     when {
-                        visibleToolbar -> {
-                            CustomToolbar(
-                                theme = theme,
-                                title = title,
-                                scrollBehavior = scrollBehavior,
-                                onBackPressed = onBackPressed
-                            )
-                        }
+                        visibleToolbar -> CustomToolbar(
+                            theme = theme,
+                            title = title,
+                            scrollBehavior = scrollBehavior,
+                            onBackPressed = onBackPressed
+                        )
                         else -> Box(
                             modifier = Modifier
                                 .fillMaxWidth()

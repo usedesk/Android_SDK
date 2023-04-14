@@ -202,7 +202,11 @@ internal class RootViewModel(
     )
 
     private fun State.searchBarClicked(): State = when (blocksState.block) {
-        is State.BlocksState.Block.Search -> this
+        is State.BlocksState.Block.Search -> copy(
+            blocksState = blocksState.copy(
+                searchBarFocused = true
+            )
+        )
         else -> copy(
             blocksState = blocksState.copy(
                 block = State.BlocksState.Block.Search(
@@ -257,7 +261,8 @@ internal class RootViewModel(
             previousScreen = screen,
             title = event.articleTitle,
             articleId = event.articleId
-        )
+        ),
+        blocksState = blocksState.copy(searchBarFocused = false)
     )
 
     private fun State.articleRatingClicked(event: Event.GoReview): State = copy(

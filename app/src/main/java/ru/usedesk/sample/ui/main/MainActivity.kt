@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.DownloadManager
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -16,6 +17,7 @@ import androidx.activity.viewModels
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -37,8 +39,10 @@ import ru.usedesk.common_gui.UsedeskSnackbar
 import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
-import ru.usedesk.knowledgebase_gui.screens.IUsedeskOnSupportClickListener
-import ru.usedesk.knowledgebase_gui.screens.main.UsedeskKnowledgeBaseScreen
+import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -47,13 +51,15 @@ import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdk
 import java.io.File
 import java.io.FileOutputStream
 
+
 class MainActivity : AppCompatActivity(),
     IOnGoToSdkListener,
     IUsedeskOnSupportClickListener,
     IUsedeskOnFileClickListener,
     IUsedeskOnClientTokenListener,
     IUsedeskOnDownloadListener,
-    IUsedeskOnFullscreenListener {
+    IUsedeskOnFullscreenListener,
+    IUsedeskOnWebUrlListener {
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -64,17 +70,15 @@ class MainActivity : AppCompatActivity(),
     private var permissionDownloadResult: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val materialComponents = viewModel.modelFlow.value.configuration.materialComponents
+        val materialComponents = viewModel.modelFlow.value.configuration.common.materialComponents
         when {
             materialComponents -> mapOf(
                 R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item to R.style.KnowledgeBase_Article_Content_Page_Item_MaterialComponents
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents
             )
             else -> listOf(
                 R.style.Usedesk_Chat_Screen_Messages_Page,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page,
-                R.style.Usedesk_KnowledgeBase_Article_Content_Page_Item
+                R.style.Usedesk_Chat_Screen_Offline_Form_Page
             ).associateWith { it }
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
@@ -105,15 +109,31 @@ class MainActivity : AppCompatActivity(),
             if (old?.goSdk != new.goSdk) {
                 new.goSdk?.use {
                     navController.apply {
-                        if (new.configuration.withKb) {
+                        if (new.configuration.kb.withKb) {
                             val kbConfiguration = new.configuration.toKbConfiguration()
+                            val kb = new.configuration.kb
+                            val deepLink = when {
+                                kb.article && kb.articleId != null -> DeepLink.Article(
+                                    articleId = kb.articleId,
+                                    noBackStack = kb.noBackStack
+                                )
+                                kb.category && kb.categoryId != null -> DeepLink.Category(
+                                    categoryId = kb.categoryId,
+                                    noBackStack = kb.noBackStack
+                                )
+                                kb.section && kb.sectionId != null -> DeepLink.Section(
+                                    sectionId = kb.sectionId,
+                                    noBackStack = kb.noBackStack
+                                )
+                                else -> null
+                            }
                             navigateSafe(
                                 R.id.dest_configurationScreen,
                                 R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
                                 UsedeskKnowledgeBaseScreen.createBundle(
-                                    new.configuration.withKbSupportButton,
-                                    new.configuration.withKbArticleRating,
-                                    kbConfiguration
+                                    configuration = kbConfiguration,
+                                    withSupportButton = kb.withKbSupportButton,
+                                    deepLink = deepLink
                                 )
                             )
                         } else {
@@ -214,6 +234,11 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    override fun onWebUrl(url: String) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+        startActivity(browserIntent)
+    }
+
     override fun onDownload(url: String, name: String) {
         viewModel.setDownloadFile(MainViewModel.DownloadFile(url, name))
         permissionDownloadResult?.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -231,7 +256,7 @@ class MainActivity : AppCompatActivity(),
     private fun initUsedeskService(configuration: Configuration) {
         setNotificationsServiceFactory(
             when {
-                configuration.foregroundService -> CustomForegroundNotificationsService.Factory()
+                configuration.chat.foregroundService -> CustomForegroundNotificationsService.Factory()
                 else -> null
             }
         )
@@ -272,7 +297,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun createChatScreenBundle(configuration: Configuration): Bundle {
         val chatConfiguration = configuration.toChatConfiguration()
-        if (configuration.adaptiveTimePadding) {
+        if (configuration.chat.adaptiveTimePadding) {
             mapOf(
                 R.style.Usedesk_Chat_Message_Text_Agent to R.style.Custom_Chat_Message_Text_Agent,
                 R.style.Usedesk_Chat_Message_Text_Client to R.style.Custom_Chat_Message_Text_Client
@@ -287,12 +312,12 @@ class MainActivity : AppCompatActivity(),
         }
         return UsedeskChatScreen.createBundle(
             chatConfiguration,
-            configuration.customAgentName.ifEmpty { null },
+            configuration.chat.customAgentName.ifEmpty { null },
             REJECTED_FILE_TYPES,
-            messagesDateFormat = configuration.messagesDateFormat.ifEmpty { null },
-            messageTimeFormat = configuration.messageTimeFormat.ifEmpty { null },
-            groupAgentMessages = configuration.groupAgentMessages,
-            adaptiveTextMessageTimePadding = configuration.adaptiveTimePadding
+            messagesDateFormat = configuration.chat.messagesDateFormat.ifEmpty { null },
+            messageTimeFormat = configuration.chat.messageTimeFormat.ifEmpty { null },
+            groupAgentMessages = configuration.chat.groupAgentMessages,
+            adaptiveTextMessageTimePadding = configuration.chat.adaptiveTimePadding
         )
     }
 

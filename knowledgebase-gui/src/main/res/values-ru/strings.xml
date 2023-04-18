@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="usedesk_knowledgebase">@string/usedesk_string_knowledgebase</string>
-    <string name="usedesk_cancel">@string/usedesk_string_cancel</string>
-    <string name="usedesk_articles_not_found">@string/usedesk_string_articles_not_found</string>
-    <string name="usedesk_rating_question">@string/usedesk_string_rating_question</string>
-    <string name="usedesk_rating_whats_wrong">@string/usedesk_string_rating_whats_wrong</string>
-    <string name="usedesk_rating_thanks">@string/usedesk_string_rating_thanks</string>
-    <string name="usedesk_yes">@string/usedesk_string_yes</string>
-    <string name="usedesk_no">@string/usedesk_string_no</string>
-
-    <string name="usedesk_string_knowledgebase">База Знаний</string>
+    <string name="usedesk_string_sections_title">База Знаний</string>
     <string name="usedesk_string_cancel">Отмена</string>
-    <string name="usedesk_string_articles_not_found">Статьи не найдены</string>
+    <string name="usedesk_string_enter_your_query">Введите свой запрос</string>
+    <string name="usedesk_string_search_fail">Ничего не найдено</string>
     <string name="usedesk_string_rating_question">Была ли статья полезна?</string>
-    <string name="usedesk_string_rating_whats_wrong">Посоветуйте, как нам улучшить статью?</string>
+    <string name="usedesk_string_article_review_title">Что не так?</string>
     <string name="usedesk_string_rating_thanks">Спасибо за отзыв!</string>
-    <string name="usedesk_string_yes">Да</string>
-    <string name="usedesk_string_no">Нет</string>
+    <string name="usedesk_string_article_review_placeholder">Ваш комментарий</string>
+    <string name="usedesk_string_sections_load_error">Не удалось загрузить</string>
+    <string name="usedesk_string_try_again">Попробовать еще раз</string>
+    <string name="usedesk_string_rating_yes">Да, была</string>
+    <string name="usedesk_string_rating_no">Не совсем</string>
+    <string name="usedesk_string_not_find_answer">Нет ответа на мой вопрос</string>
+    <string name="usedesk_string_no_pics">Нет иллюстраций</string>
+    <string name="usedesk_string_wont_work">Инструкция не работает</string>
+    <string name="usedesk_string_font_too_small">Маленький шрифт</string>
+    <string name="usedesk_string_hard_to_find">Трудно найти то, что я искал</string>
+    <string name="usedesk_string_review_tags_prefix">Что не так</string>
+    <string name="usedesk_string_review_comment_prefix">Комментарий</string>
 </resources>

@@ -27,13 +27,13 @@ abstract class UsedeskApiRepository<API>(
         apiFactory.getInstance(urlApi, apiClass).getCall()
     }
 
-    protected fun <REQUEST, RESPONSE : UsedeskApiError> doRequestJson(
+    protected fun <REQUEST : Any, RESPONSE : UsedeskApiError> doRequestJson(
         urlApi: String,
         body: REQUEST,
         responseClass: Class<RESPONSE>,
         getCall: API.(REQUEST) -> Call<ResponseBody>
     ): RESPONSE? {
-        UsedeskLog.onLog("jsonBody") { gson.toJson(body) }
+        UsedeskLog.onLog("jsonBody") { "${body::class.java}\n" + gson.toJson(body) }
         return executeSafe(
             urlApi,
             responseClass
@@ -53,7 +53,7 @@ abstract class UsedeskApiRepository<API>(
                 }
             }
         }
-        UsedeskLog.onLog("jsonBody") { gson.toJson(jsonObject) }
+        UsedeskLog.onLog("jsonBody") { "${body::class.java}\n" + gson.toJson(jsonObject) }
         return executeSafe(
             urlApi,
             responseClass
@@ -67,7 +67,7 @@ abstract class UsedeskApiRepository<API>(
         apiMethod: API.(parts: List<MultipartBody.Part>) -> Call<ResponseBody>,
         progressFlow: MutableStateFlow<Pair<Long, Long>>? = null
     ): RESPONSE? {
-        UsedeskLog.onLog("multipartBody") { gson.toJson(request.parts) }
+        UsedeskLog.onLog("multipartBody") { "${request::class.java}\n" + gson.toJson(request.parts) }
         val multipartParts =
             request.parts.mapNotNull { multipartConverter.convert(it, progressFlow) }
         return executeSafe(
@@ -103,7 +103,7 @@ abstract class UsedeskApiRepository<API>(
             e.printStackTrace()
             null
         }
-        UsedeskLog.onLog("rawResponseBody") { rawResponseBody ?: "null" }
+        UsedeskLog.onLog("rawResponseBody") { "$tClass\n" + (rawResponseBody ?: "null") }
 
         return try {
             val safeRawResponse = when {

@@ -24,12 +24,12 @@
         <TextView
             android:id="@+id/tv_file_name"
             style="?attr/usedesk_chat_message_file_name_text"
-            tools:text="Сводная таблица.xls" />
+            tools:text="Table.xls" />
 
         <TextView
             android:id="@+id/tv_file_size"
             style="?attr/usedesk_chat_message_file_size_text"
-            tools:text="384 кб" />
+            tools:text="384KB" />
 
         <TextView
             android:id="@+id/tv_time"

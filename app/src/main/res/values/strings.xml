@@ -1,52 +1,55 @@
 <resources>
-    <string name="app_name">UseDesk SDK</string>
+    <string name="app_name" translatable="false">UseDesk SDK</string>
 
-    <string name="title">Configuration</string>
-    <string name="url_chat_hint">Chat URL</string>
-    <string name="url_chat_api">Chat API URL</string>
-    <string name="url_kb_api">KB API URL</string>
-    <string name="company_id_hint">Company ID</string>
-    <string name="channel_id_hint">Channel ID</string>
-    <string name="account_id_hint">KB ID</string>
-    <string name="api_token_hint">API Token</string>
-    <string name="client_email_hint">Client Email</string>
-    <string name="client_name">Client Name</string>
-    <string name="client_note">Client Note</string>
-    <string name="client_phone">Client Phone Number</string>
-    <string name="client_token">Client Token</string>
-    <string name="client_additional_id">Client Additional ID</string>
-    <string name="client_init_message">Client Init Message</string>
-    <string name="custom_agent_name">Custom Agent Name</string>
-    <string name="custom_date_format">Custom Date Format</string>
-    <string name="custom_time_format">Custom Time Format</string>
-    <string name="messages_page_size">Messages Page Size</string>
-    <string name="client_avatar">Client Avatar</string>
-    <string name="service_title">Foreground Service</string>
-    <string name="service_type_none">No Service</string>
-    <string name="service_type_foreground">Foreground Service</string>
-    <string name="cache_files_hint">Cache Message Files</string>
-    <string name="material_components_theme_hint">Material Components Theme</string>
-    <string name="adaptive_time_padding">Adaptive Time Padding</string>
-    <string name="group_agent_messages_hint">Group Agent Messages</string>
-    <string name="kb_base_hint">With Knowledge Base</string>
-    <string name="kb_support_button">With Knowledge Base Support Button</string>
-    <string name="kb_article_rating">With Knowledge Base Article Rating</string>
-    <string name="button_go_to_sdk">Go To SDK</string>
-    <string name="create_chat">Create Chat</string>
-    <string name="validation_empty_error">Field required</string>
-    <string name="validation_email_error">Invalid email</string>
-    <string name="validation_url_error">Invalid url</string>
-    <string name="validation_phone_error">Invalid phone number</string>
-    <string name="chat">Chat</string>
-    <string name="knowledgebase">Knowledge Base</string>
-    <string name="additional_fields">Additional Fields</string>
-    <string name="additional_nested_fields">Additional Nested Fields</string>
-    <string name="id">ID</string>
-    <string name="id1">ID 1</string>
-    <string name="id2">ID 2</string>
-    <string name="id3">ID 3</string>
-    <string name="value">Value</string>
-    <string name="common">Common</string>
-    <string name="download_started">Download started</string>
-    <string name="download_failed">Download failed</string>
+    <string name="title" translatable="false">Configuration</string>
+    <string name="url_chat_hint" translatable="false">Chat URL</string>
+    <string name="url_chat_api" translatable="false">Chat API URL</string>
+    <string name="url_kb_api" translatable="false">KB API URL</string>
+    <string name="company_id_hint" translatable="false">Company ID</string>
+    <string name="channel_id_hint" translatable="false">Channel ID</string>
+    <string name="kb_id_hint" translatable="false">KB ID</string>
+    <string name="kb_section_id_hint" translatable="false">Section ID</string>
+    <string name="kb_category_id_hint" translatable="false">Category ID</string>
+    <string name="kb_article_id_hint" translatable="false">Article ID</string>
+    <string name="api_token_hint" translatable="false">API Token</string>
+    <string name="client_email_hint" translatable="false">Client Email</string>
+    <string name="client_name" translatable="false">Client Name</string>
+    <string name="client_note" translatable="false">Client Note</string>
+    <string name="client_phone" translatable="false">Client Phone Number</string>
+    <string name="client_token" translatable="false">Client Token</string>
+    <string name="client_additional_id" translatable="false">Client Additional ID</string>
+    <string name="client_init_message" translatable="false">Client Init Message</string>
+    <string name="custom_agent_name" translatable="false">Custom Agent Name</string>
+    <string name="custom_date_format" translatable="false">Custom Date Format</string>
+    <string name="custom_time_format" translatable="false">Custom Time Format</string>
+    <string name="messages_page_size" translatable="false">Messages Page Size</string>
+    <string name="client_avatar" translatable="false">Client Avatar</string>
+    <string name="service_title" translatable="false">Foreground Service</string>
+    <string name="service_type_none" translatable="false">No Service</string>
+    <string name="service_type_foreground" translatable="false">Foreground Service</string>
+    <string name="cache_files_hint" translatable="false">Cache Message Files</string>
+    <string name="material_components_theme_hint" translatable="false">Material Components Theme</string>
+    <string name="adaptive_time_padding" translatable="false">Adaptive Time Padding</string>
+    <string name="group_agent_messages_hint" translatable="false">Group Agent Messages</string>
+    <string name="kb_base_hint" translatable="false">With Knowledge Base</string>
+    <string name="kb_support_button" translatable="false">With Knowledge Base Support Button</string>
+    <string name="kb_no_back_stack" translatable="false">No Back Stack</string>
+    <string name="button_go_to_sdk" translatable="false">Go To SDK</string>
+    <string name="create_chat" translatable="false">Create Chat</string>
+    <string name="validation_empty_error" translatable="false">Field required</string>
+    <string name="validation_email_error" translatable="false">Invalid email</string>
+    <string name="validation_url_error" translatable="false">Invalid url</string>
+    <string name="validation_phone_error" translatable="false">Invalid phone number</string>
+    <string name="chat" translatable="false">Chat</string>
+    <string name="knowledgebase" translatable="false">Knowledge Base</string>
+    <string name="additional_fields" translatable="false">Additional Fields</string>
+    <string name="additional_nested_fields" translatable="false">Additional Nested Fields</string>
+    <string name="id" translatable="false">ID</string>
+    <string name="id1" translatable="false">ID 1</string>
+    <string name="id2" translatable="false">ID 2</string>
+    <string name="id3" translatable="false">ID 3</string>
+    <string name="value" translatable="false">Value</string>
+    <string name="common" translatable="false">Common</string>
+    <string name="download_started" translatable="false">Download started</string>
+    <string name="download_failed" translatable="false">Download failed</string>
 </resources>

@@ -8,7 +8,7 @@ import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 import javax.inject.Inject
 
 internal class ChatViewModel @Inject constructor(
@@ -52,6 +52,6 @@ internal class ChatViewModel @Inject constructor(
     data class Model(
         val clientToken: String? = null,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
-        val goLoading: UsedeskSingleLifeEvent<Unit> = UsedeskSingleLifeEvent(Unit)
+        val goLoading: UsedeskEvent<Unit> = UsedeskEvent(Unit)
     )
 }

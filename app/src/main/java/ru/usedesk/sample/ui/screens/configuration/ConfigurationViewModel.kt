@@ -1,12 +1,9 @@
 package ru.usedesk.sample.ui.screens.configuration
 
-import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
-import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.ServiceLocator
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
@@ -23,10 +20,8 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     )
 
     init {
-        mainScope.launch {
-            configurationRepository.getConfigurationFlow().collect {
-                setModel { copy(configuration = it) }
-            }
+        configurationRepository.configurationFlow.launchCollect {
+            setModel { copy(configuration = it) }
         }
     }
 
@@ -65,29 +60,8 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     private fun validate(configuration: Configuration): ConfigurationValidation {
-        val chatValidation = UsedeskChatConfiguration(
-            configuration.urlChat,
-            configuration.urlChatApi,
-            configuration.companyId,
-            configuration.channelId,
-            configuration.messagesPageSize,
-            configuration.clientToken,
-            configuration.clientEmail,
-            configuration.clientName,
-            configuration.clientNote,
-            configuration.clientPhoneNumber,
-            configuration.clientAdditionalId,
-            configuration.clientInitMessage,
-            null,
-            configuration.cacheFiles
-        ).validate()
-        val knowledgeBaseValidation = UsedeskKnowledgeBaseConfiguration(
-            configuration.urlApi,
-            configuration.accountId,
-            configuration.token,
-            configuration.clientEmail,
-            configuration.clientName
-        ).validate()
+        val chatValidation = configuration.toChatConfiguration().validate()
+        val knowledgeBaseValidation = configuration.toKbConfiguration().validate()
         return ConfigurationValidation(
             chatValidation,
             knowledgeBaseValidation
@@ -95,8 +69,8 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
     }
 
     fun isMaterialComponentsSwitched(configuration: Configuration): Boolean =
-        when (configuration.materialComponents) {
-            modelFlow.value.configuration.materialComponents -> false
+        when (configuration.common.materialComponents) {
+            modelFlow.value.configuration.common.materialComponents -> false
             else -> {
                 configurationRepository.setConfiguration(configuration)
                 true
@@ -117,11 +91,11 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
                                 clientToken = when (result) {
                                     is IUsedeskPreparation.CreateChatResult.Done -> clientToken.copy(
                                         loading = false,
-                                        completed = UsedeskSingleLifeEvent(result.clientToken)
+                                        completed = UsedeskEvent(result.clientToken)
                                     )
                                     IUsedeskPreparation.CreateChatResult.Error -> clientToken.copy(
                                         loading = false,
-                                        error = UsedeskSingleLifeEvent(Unit)
+                                        error = UsedeskEvent(Unit)
                                     )
                                 }
                             )
@@ -137,7 +111,7 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
 
     data class ClientToken(
         val loading: Boolean = false,
-        val completed: UsedeskSingleLifeEvent<String?>? = null,
-        val error: UsedeskSingleLifeEvent<Unit>? = null
+        val completed: UsedeskEvent<String?>? = null,
+        val error: UsedeskEvent<Unit>? = null
     )
 }

@@ -8,7 +8,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 
 internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model()) {
 
@@ -32,8 +32,8 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
                             UsedeskConnectionState.CONNECTED -> State.LOADING
                         },
                         goNext = when {
-                            model.offlineFormSettings != null -> UsedeskSingleLifeEvent(Page.OFFLINE_FORM)
-                            model.inited -> UsedeskSingleLifeEvent(Page.MESSAGES)
+                            model.offlineFormSettings != null -> UsedeskEvent(Page.OFFLINE_FORM)
+                            model.inited -> UsedeskEvent(Page.MESSAGES)
                             else -> null
                         }
                     )
@@ -56,7 +56,7 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
 
     data class Model(
         val state: State = State.LOADING,
-        val goNext: UsedeskSingleLifeEvent<Page>? = null
+        val goNext: UsedeskEvent<Page>? = null
     )
 
     enum class Page {

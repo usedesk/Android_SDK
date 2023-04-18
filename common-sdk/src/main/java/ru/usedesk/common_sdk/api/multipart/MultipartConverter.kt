@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.core.net.toFile
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
@@ -26,7 +27,7 @@ internal class MultipartConverter @Inject constructor(
         is Long -> MultipartBody.Part.createFormData(pair.first, value.toString())
         is Uri -> {
             val mimeType = contentResolver.getMimeType(value)
-            val mediaType = MediaType.parse(mimeType)
+            val mediaType = mimeType.toMediaType()
             val name = contentResolver.getFileName(value)
             //val requestBody = RequestBody.create(mediaType, value.toFile())
             val body = ProgressRequestBody(
@@ -39,7 +40,7 @@ internal class MultipartConverter @Inject constructor(
         is FileBytes -> {
             val uri = Uri.parse(value.originalFile)
             val mimeType = contentResolver.getMimeType(uri)
-            val mediaType = MediaType.parse(mimeType)
+            val mediaType = mimeType.toMediaType()
             val name = contentResolver.getFileName(uri)
             val requestBody = RequestBody.create(mediaType, value.byteArray)
             MultipartBody.Part.createFormData(pair.first, name, requestBody)

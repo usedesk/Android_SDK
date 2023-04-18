@@ -6,7 +6,7 @@ import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 @Parcelize
 class UsedeskKnowledgeBaseConfiguration @JvmOverloads constructor(
-    val urlApi: String = "https://api.usedesk.ru",
+    val urlApi: String = "https://secure.usedesk.ru",
     val accountId: String,
     val token: String,
     val clientEmail: String? = null,
@@ -14,19 +14,19 @@ class UsedeskKnowledgeBaseConfiguration @JvmOverloads constructor(
 ) : Parcelable {
     fun validate(): Validation = Validation(
         validUrlApi = UsedeskValidatorUtil.isValidUrlNecessary(urlApi),
-        validAccountId = accountId.isNotEmpty(),
+        validKbId = accountId.isNotEmpty(),
         validToken = token.isNotEmpty(),
         validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail)
     )
 
     class Validation(
         val validUrlApi: Boolean = false,
-        val validAccountId: Boolean = false,
+        val validKbId: Boolean = false,
         val validToken: Boolean = false,
         val validClientEmail: Boolean = false
     ) {
         fun isAllValid(): Boolean = validUrlApi
-                && validAccountId
+                && validKbId
                 && validToken
                 && validClientEmail
     }

@@ -5,14 +5,14 @@ plugins{
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 33
+    buildToolsVersion "32.1.0 rc1"
 
     defaultConfig {
         applicationId "ru.usedesk.sample"
-        minSdkVersion 19
-        targetSdkVersion 31
-        versionCode = 195
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode = 198
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -69,9 +69,6 @@ dependencies {
     kapt "androidx.annotation:annotation:$annotationVersion"
 
     implementation "com.google.android.material:material:$materialVersion"
-
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     implementation("com.github.bumptech.glide:okhttp3-integration:$glideVersion") {

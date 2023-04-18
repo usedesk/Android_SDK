@@ -12,7 +12,8 @@ import ru.usedesk.sample.model.configuration.entity.Configuration
 class ConfigurationRepository(
     private val sharedPreferences: SharedPreferences
 ) {
-    private val configurationFlow: MutableStateFlow<Configuration>
+    private val _configurationFlow: MutableStateFlow<Configuration>
+    val configurationFlow: StateFlow<Configuration>
 
     init {
         val configuration = try {
@@ -30,10 +31,9 @@ class ConfigurationRepository(
             null
         } ?: Configuration()
 
-        configurationFlow = MutableStateFlow(configuration)
+        _configurationFlow = MutableStateFlow(configuration)
+        configurationFlow = _configurationFlow
     }
-
-    fun getConfigurationFlow(): StateFlow<Configuration> = configurationFlow
 
     fun setConfiguration(configuration: Configuration) {
         val json = Gson().toJson(configuration)
@@ -42,7 +42,7 @@ class ConfigurationRepository(
             .apply()
 
         runBlocking {
-            configurationFlow.emit(configuration)
+            _configurationFlow.emit(configuration)
         }
     }
 

@@ -286,7 +286,7 @@ internal class FormRepository @Inject constructor(
         else -> value
     }
 
-    private fun JsonObject.convert(fieldInfo: FieldInfo): Field? = //TODO: конвертер бы сюда
+    private fun JsonObject.convert(fieldInfo: FieldInfo): Field? =
         when (getOrNull("ticket_field_type_id")?.asInt) {
             3 -> Field.CheckBox(
                 fieldInfo.id,

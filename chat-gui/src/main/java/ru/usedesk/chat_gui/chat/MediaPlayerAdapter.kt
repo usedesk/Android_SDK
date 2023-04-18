@@ -115,7 +115,7 @@ internal class MediaPlayerAdapter(
                         }
                         else -> {}
                     }
-                } //Фулскрин обрабатываем только если не был обновлён videoKey
+                } //Fullscreen will handled only if videoKey is not changed
                 else if (restored || old?.fullscreen != new.fullscreen) {
                     changeFullscreen(new.fullscreen)
                     if (restored) {
@@ -175,7 +175,7 @@ internal class MediaPlayerAdapter(
                     currentMinimizeView?.lVideoMinimized?.addView(pvVideoExoPlayer)
                     videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_enter)
                 }
-                //Каждый раз задаём плеер, иначе он не поймёт что только что произошло
+                //Each time need to set player again, otherwise it will not know what happened
                 pvVideoExoPlayer.player = exoPlayer
                 fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
                 fullscreenListener?.onFullscreenChanged(fullscreen)
@@ -188,7 +188,7 @@ internal class MediaPlayerAdapter(
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvAudioExoPlayer)
                 }
-                //Каждый раз задаём плеер, иначе он не поймёт что только что произошло
+                //Each time need to set player again, otherwise it will not know what happened
                 pvAudioExoPlayer.player = exoPlayer
                 fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
                 fullscreenListener?.onFullscreenChanged(fullscreen)
@@ -223,13 +223,13 @@ internal class MediaPlayerAdapter(
     ) {
         hideKeyboard(pvVideoExoPlayer)
 
-        //Текущий плеер станет старым
+        //Current player will be old
         lastMinimizeView = currentMinimizeView
 
-        //Сбросим старое воспроизведение, если оно было
+        //Reset old player, if it is
         resetPlayer()
 
-        //Сохраним данные для нового воспроизведения
+        //Saving data for new playing
         currentMinimizeView = MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
 
         when (playerType) {
@@ -284,7 +284,7 @@ internal class MediaPlayerAdapter(
         val model = playerViewModel.modelFlow.value
         return when (model.key) {
             mediaKey -> {
-                //Сохраним данные для плеера
+                //Saving data for player
                 currentMinimizeView = MinimizeView(
                     lMinimized,
                     onCancel,

@@ -86,7 +86,7 @@ internal class ConfigurationLoader @Inject constructor(
                     } catch (e: ClassCastException) {
                         try {
                             clientPhone = sharedPreferences.getLong(KEY_PHONE, 0)
-                                .toString() //Для миграции с версий, где хранился Long
+                                .toString() //For migrations with long
                             clientAdditionalId =
                                 sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0).toString()
                         } catch (e1: ClassCastException) {

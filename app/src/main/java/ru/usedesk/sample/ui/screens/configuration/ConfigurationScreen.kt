@@ -90,7 +90,7 @@ class ConfigurationScreen : UsedeskFragment() {
                 )
                 viewModel.createChat(
                     preparation,
-                    configuration.token
+                    configuration.common.apiToken
                 )
             }
         }
@@ -110,16 +110,30 @@ class ConfigurationScreen : UsedeskFragment() {
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        initTil(binding.tilUrlChat)
-        initTil(binding.tilUrlOfflineForm)
+        binding.switchKbSection.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                kbDeepLinkSwitched(section = checked)
+            }
+        }
+        binding.switchKbCategory.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                kbDeepLinkSwitched(category = checked)
+            }
+        }
+        binding.switchKbArticle.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                kbDeepLinkSwitched(article = checked)
+            }
+        }
         initTil(binding.tilUrlApi)
+        initTil(binding.tilApiToken)
+        initTil(binding.tilClientEmail)
+        initTil(binding.tilUrlChat)
         initTil(binding.tilCompanyId)
         initTil(binding.tilChannelId)
-        initTil(binding.tilAccountId)
-        initTil(binding.tilToken)
-        initTil(binding.tilClientEmail)
         initTil(binding.tilClientPhoneNumber)
         initTil(binding.tilMessagesPageSize)
+        initTil(binding.tilKbId)
         binding.ivAvatar.setOnClickListener {
             startImages()
         }
@@ -131,6 +145,16 @@ class ConfigurationScreen : UsedeskFragment() {
             }
         }
         return binding.root
+    }
+
+    private fun kbDeepLinkSwitched(
+        section: Boolean = false,
+        category: Boolean = false,
+        article: Boolean = false
+    ) {
+        binding.switchKbSection.isChecked = section
+        binding.switchKbCategory.isChecked = category
+        binding.switchKbArticle.isChecked = article
     }
 
     override fun onPause() {
@@ -164,51 +188,63 @@ class ConfigurationScreen : UsedeskFragment() {
             else -> listOf(nestedFields)
         }
         return Configuration(
-            binding.switchMaterialComponents.isChecked,
-            binding.etUrlChat.text.toString(),
-            binding.etUrlOfflineForm.text.toString(),
-            binding.etUrlApi.text.toString(),
-            binding.etCompanyId.text.toString(),
-            binding.etChannelId.text.toString(),
-            binding.etAccountId.text.toString(),
-            binding.etMessagesPageSize.text.toString().toIntOrNull() ?: 1,
-            binding.etToken.text.toString(),
-            binding.etClientToken.text.toString(),
-            binding.etClientEmail.text.toString(),
-            binding.etClientName.text.toString(),
-            binding.etClientNote.text.toString(),
-            binding.etClientPhoneNumber.text.toString().toLongOrNull(),
-            binding.etClientAdditionalId.text.toString(),
-            binding.etClientInitMessage.text.toString(),
-            binding.etAvatar.text.toString(),
-            binding.etCustomAgentName.text.toString(),
-            binding.etCustomDateFormat.text.toString(),
-            binding.etCustomTimeFormat.text.toString(),
-            binding.switchService.isChecked,
-            binding.switchCacheFiles.isChecked,
-            binding.switchGroupAgentMessages.isChecked,
-            binding.adaptiveTimePadding.isChecked,
-            additionalFields,
-            additionalNestedFields,
-            binding.switchKb.isChecked,
-            binding.switchKbWithSupportButton.isChecked,
-            binding.switchKbWithArticleRating.isChecked
+            common = Configuration.Common(
+                materialComponents = binding.switchMaterialComponents.isChecked,
+                urlApi = binding.etUrlApi.text.toString(),
+                apiToken = binding.etApiToken.text.toString(),
+                clientEmail = binding.etClientEmail.text.toString(),
+                clientName = binding.etClientName.text.toString(),
+            ),
+            chat = Configuration.Chat(
+                urlChat = binding.etUrlChat.text.toString(),
+                companyId = binding.etCompanyId.text.toString(),
+                channelId = binding.etChannelId.text.toString(),
+                messagesPageSize = binding.etMessagesPageSize.text.toString().toIntOrNull() ?: 1,
+                clientToken = binding.etClientToken.text.toString(),
+                clientNote = binding.etClientNote.text.toString(),
+                clientPhoneNumber = binding.etClientPhoneNumber.text.toString().toLongOrNull(),
+                clientAdditionalId = binding.etClientAdditionalId.text.toString(),
+                clientInitMessage = binding.etClientInitMessage.text.toString(),
+                clientAvatar = binding.etAvatar.text.toString(),
+                customAgentName = binding.etCustomAgentName.text.toString(),
+                messagesDateFormat = binding.etCustomDateFormat.text.toString(),
+                messageTimeFormat = binding.etCustomTimeFormat.text.toString(),
+                foregroundService = binding.switchService.isChecked,
+                cacheFiles = binding.switchCacheFiles.isChecked,
+                groupAgentMessages = binding.switchGroupAgentMessages.isChecked,
+                adaptiveTimePadding = binding.adaptiveTimePadding.isChecked,
+                additionalFields = additionalFields,
+                additionalNestedFields = additionalNestedFields
+            ),
+            kb = Configuration.Kb(
+                withKb = binding.switchKb.isChecked,
+                withKbSupportButton = binding.switchKbWithSupportButton.isChecked,
+                noBackStack = binding.switchKbNoBackStack.isChecked,
+                kbId = binding.etKbId.text.toString(),
+                sectionId = binding.etKbSectionId.text.toString().toLongOrNull(),
+                section = binding.switchKbSection.isChecked,
+                categoryId = binding.etKbCategoryId.text.toString().toLongOrNull(),
+                category = binding.switchKbCategory.isChecked,
+                articleId = binding.etKbArticleId.text.toString().toLongOrNull(),
+                article = binding.switchKbArticle.isChecked
+            )
         )
     }
 
-    private fun Configuration.onNewConfiguration() {
+    private fun Configuration.Common.onUpdated() {
         binding.switchMaterialComponents.isChecked = materialComponents
-        binding.etUrlChat.setText(urlChat)
-        binding.etUrlOfflineForm.setText(urlChatApi)
         binding.etUrlApi.setText(urlApi)
+        binding.etApiToken.setText(apiToken)
+        binding.etClientEmail.setText(clientEmail)
+        binding.etClientName.setText(clientName)
+    }
+
+    private fun Configuration.Chat.onUpdated() {
+        binding.etUrlChat.setText(urlChat)
         binding.etCompanyId.setText(companyId)
         binding.etChannelId.setText(channelId)
         binding.etMessagesPageSize.setText(messagesPageSize.toString())
-        binding.etAccountId.setText(accountId)
-        binding.etToken.setText(token)
         binding.etClientToken.setText(clientToken)
-        binding.etClientEmail.setText(clientEmail)
-        binding.etClientName.setText(clientName)
         binding.etClientPhoneNumber.setText(clientPhoneNumber?.toString() ?: "")
         binding.etClientAdditionalId.setText(clientAdditionalId ?: "")
         binding.etClientInitMessage.setText(clientInitMessage)
@@ -256,9 +292,25 @@ class ConfigurationScreen : UsedeskFragment() {
             nested,
             2
         )
+    }
+
+    private fun Configuration.Kb.onUpdated() {
+        binding.etKbId.setText(kbId)
+        binding.etKbSectionId.setText(sectionId?.toString())
+        binding.etKbCategoryId.setText(categoryId?.toString())
+        binding.etKbArticleId.setText(articleId?.toString())
         binding.switchKb.isChecked = withKb
+        binding.switchKbSection.isChecked = section
+        binding.switchKbCategory.isChecked = category
+        binding.switchKbArticle.isChecked = article
         binding.switchKbWithSupportButton.isChecked = withKbSupportButton
-        binding.switchKbWithArticleRating.isChecked = withKbArticleRating
+        binding.switchKbNoBackStack.isChecked = noBackStack
+    }
+
+    private fun Configuration.onNewConfiguration() {
+        common.onUpdated()
+        chat.onUpdated()
+        kb.onUpdated()
     }
 
     private fun setAdditionalField(
@@ -313,13 +365,13 @@ class ConfigurationScreen : UsedeskFragment() {
     private fun ConfigurationValidation.onNewConfigurationValidation() {
         chatConfigurationValidation.run {
             showError(
-                binding.tilUrlChat,
-                validUrlChat,
+                binding.tilUrlApi,
+                validUrlApi,
                 R.string.validation_url_error
             )
             showError(
-                binding.tilUrlOfflineForm,
-                validUrlOfflineForm,
+                binding.tilUrlChat,
+                validUrlChat,
                 R.string.validation_url_error
             )
             showError(
@@ -348,16 +400,16 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilUrlApi,
                 validUrlApi,
-                R.string.validation_empty_error
+                R.string.validation_url_error
             )
             showError(
-                binding.tilAccountId,
-                validAccountId,
-                R.string.validation_empty_error
-            )
-            showError(
-                binding.tilToken,
+                binding.tilApiToken,
                 validToken,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilKbId,
+                validKbId,
                 R.string.validation_empty_error
             )
         }

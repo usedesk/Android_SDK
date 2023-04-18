@@ -11,7 +11,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_gui.UsedeskViewModel
-import ru.usedesk.common_sdk.entity.UsedeskSingleLifeEvent
+import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Model>(Model()) {
@@ -145,13 +145,13 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                     newModel.update {
                         copy(
                             offlineFormState = OfflineFormState.SENDING,
-                            action = UsedeskSingleLifeEvent {
+                            action = UsedeskEvent {
                                 UsedeskChatSdk.requireInstance().send(offlineForm) { result ->
                                     setModel {
                                         when (result) {
                                             SendOfflineFormResult.Done -> copy(
                                                 offlineFormState = OfflineFormState.SENT_SUCCESSFULLY,
-                                                goExit = UsedeskSingleLifeEvent(
+                                                goExit = UsedeskEvent(
                                                     workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
                                                 )
                                             )
@@ -162,13 +162,13 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                                     }
                                 }
                             },
-                            hideKeyboard = UsedeskSingleLifeEvent(Unit)
+                            hideKeyboard = UsedeskEvent(Unit)
                         )
                     }
                 }
                 else -> newModel.update {
                     copy(
-                        fieldFocus = UsedeskSingleLifeEvent(allFields.firstOrNull {
+                        fieldFocus = UsedeskEvent(allFields.firstOrNull {
                             (it as? OfflineFormItem.Text)?.error == true
                         }?.key)
                     )
@@ -267,11 +267,11 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
         val customFields: List<OfflineFormItem> = listOf(),
         val allFields: List<OfflineFormItem> = listOf(),
         val sendEnabled: Boolean = false,
-        val goExit: UsedeskSingleLifeEvent<Boolean>? = null,
+        val goExit: UsedeskEvent<Boolean>? = null,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
-        val fieldFocus: UsedeskSingleLifeEvent<String?>? = null,
-        val hideKeyboard: UsedeskSingleLifeEvent<Unit>? = null,
-        val action: UsedeskSingleLifeEvent<() -> Unit>? = null
+        val fieldFocus: UsedeskEvent<String?>? = null,
+        val hideKeyboard: UsedeskEvent<Unit>? = null,
+        val action: UsedeskEvent<() -> Unit>? = null
     ) {
         sealed interface OfflineFormItem {
             val key: String

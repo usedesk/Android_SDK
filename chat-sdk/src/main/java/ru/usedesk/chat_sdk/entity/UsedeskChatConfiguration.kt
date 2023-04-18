@@ -26,7 +26,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
 
     fun validate(): Validation = Validation(
         validUrlChat = UsedeskValidatorUtil.isValidUrlNecessary(urlChat),
-        validUrlOfflineForm = UsedeskValidatorUtil.isValidUrlNecessary(urlChatApi),
+        validUrlApi = UsedeskValidatorUtil.isValidUrlNecessary(urlChatApi),
         validCompanyId = companyId.isNotEmptyNumber(),
         validChannelId = channelId.isNotEmptyNumber(),
         validClientToken = clientToken.isValidClientToken(),
@@ -43,7 +43,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
 
     class Validation(
         val validUrlChat: Boolean,
-        val validUrlOfflineForm: Boolean,
+        val validUrlApi: Boolean,
         val validCompanyId: Boolean,
         val validChannelId: Boolean,
         val validClientToken: Boolean,
@@ -51,14 +51,14 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         val validClientPhoneNumber: Boolean
     ) {
         fun isAllValid(): Boolean = validUrlChat
-                && validUrlOfflineForm
+                && validUrlApi
                 && validCompanyId
                 && validChannelId
                 && validClientEmail
                 && validClientPhoneNumber
 
         override fun toString(): String = "Validation(validUrlChat=$validUrlChat, " +
-                "validUrlOfflineForm=$validUrlOfflineForm, " +
+                "validUrlOfflineForm=$validUrlApi, " +
                 "validCompanyId=$validCompanyId, " +
                 "validChannelId=$validChannelId, " +
                 "validClientToken=$validClientToken, " +

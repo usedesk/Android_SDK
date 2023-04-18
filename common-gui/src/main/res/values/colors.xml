@@ -2,6 +2,7 @@
 <resources>
     <color name="usedesk_white_1">#FFFFFF</color>
     <color name="usedesk_white_2">#F7F7F7</color>
+    <color name="usedesk_white_3">#F2F2F2</color>
     <color name="usedesk_gray_1">#EEEEEE</color>
     <color name="usedesk_gray_2">#BCBCBC</color>
     <color name="usedesk_gray_3">#828282</color>
@@ -16,5 +17,4 @@
     <color name="usedesk_green">#26BC00</color>
     <color name="usedesk_blue">#2F80ED</color>
     <color name="usedesk_blur">#80000000</color>
-    <color name="usedesk_blur_toolbar">#00FFFFFF</color>
 </resources>

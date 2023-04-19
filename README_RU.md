@@ -68,8 +68,8 @@ implementation "com.github.usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 | **Параметр**               | **Тип**                 | **Описание**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 |----------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **urlChat***               | String                  | **Адрес сервера для работы с чатами SDK**<br/>Стандартное значение: `pubsubsec.usedesk.ru`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас может отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                |
-| **urlChatApi***            | String                  | **URL для работы с API**<br/>Стандартное значение: `secure.usedesk.ru/uapi`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас будет отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                               |
+| **urlChat***               | String                  | **Адрес сервера для работы с чатами SDK**<br/>Стандартное значение: `pubsubsec.usedesk.ru`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас может отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                |
+| **urlChatApi***            | String                  | **URL для работы с API**<br/>Стандартное значение: `secure.usedesk.ru/uapi`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас будет отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                               |
 | **companyId***             | String                  | **Идентификатор компании в Юздеске**<br/>[Как найти ID компании](https://docs.usedesk.ru/article/61)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **channelId***             | String                  | **Идентификатор канала чата, через который в Юздеск будут поступать обращения из приложения**<br/>[Как создать и настроить канал](https://docs.usedesk.ru/article/858)                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **messagesPageSize**       | Int                     | **Количество загружаемых сообщений при открытии чата**<br/>При открытии чата загружается указанное количество сообщений. По мере прокрутки чата подгружается по 20 сообщений                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -280,23 +280,17 @@ UsedeskChatSdk.stopService(context)
 
 ### Конфигурация
 
-Для работы с SDK Базы Знаний необходимо задать конфигурацию:
-
-```kotlin
-UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
-```
-
 Конфигурация Базы знаний задается в файле [UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/entity/UsedeskKnowledgeBaseConfiguration.kt):
 
 Где * — обязательный параметр
 
-| **Параметр**    | **Тип** | **Описание**                                                                                                                                                                                                                                              |
-|-----------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **urlApi***     | String  | **URL для работы с API**<br/>Стандартное значение: `secure.usedesk.ru/uapi`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас будет отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru |
-| **accountId***  | String  | **Идентификатор базы знаний**<br/>[Как создать Базу знаний](https://docs.usedesk.ru/article/1678)                                                                                                                                                         |
-| **token***      | String  | **Ключ для доступа к API Юздеска**<br/>[Как получить API ключ](https://docs.usedesk.ru/article/10167)                                                                                                                                                     |
-| **clientEmail** | String? | **Почта клиента**                                                                                                                                                                                                                                         |
-| **clientName**  | String? | **Имя клиента**                                                                                                                                                                                                                                           |
+| **Параметр**    | **Тип** | **Описание**                                                                                                                                                                                                                                                 |
+|-----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **urlApi***     | String  | **URL для работы с API**<br/>Стандартное значение: `https://secure.usedesk.ru`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас будет отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru |
+| **accountId***  | String  | **Идентификатор базы знаний**<br/>[Как создать Базу знаний](https://docs.usedesk.ru/article/1678)                                                                                                                                                            |
+| **token***      | String  | **Ключ для доступа к API Юздеска**<br/>[Как получить API ключ](https://docs.usedesk.ru/article/10167)                                                                                                                                                        |
+| **clientEmail** | String? | **Почта клиента**                                                                                                                                                                                                                                            |
+| **clientName**  | String? | **Имя клиента**                                                                                                                                                                                                                                              |
 
 ### Использование с GUI
 
@@ -307,9 +301,9 @@ supportFragmentManager().beginTransaction()
    .replace(
       R.id.container,
       UsedeskKnowledgeBaseFragment.newInstance(
-         withSupportButton,
-         withArticleRating,
-         knowledgeBaseConfiguration
+         configuration = UsedeskKnowledgeBaseConfiguration(),
+         withSupportButton = true,
+         deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
       )
    ).commit()
 ```
@@ -322,9 +316,9 @@ supportFragmentManager().beginTransaction()
 navController.navigate(
    R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
    UsedeskKnowledgeBaseScreen.createBundle(
-      withSupportButton,
-      withArticleRating,
-      knowledgeBaseConfiguration
+      configuration = UsedeskKnowledgeBaseConfiguration(),
+      withSupportButton = true,
+      deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
    )
 )
 ```
@@ -356,15 +350,19 @@ override fun onSupportClick() {
 }
 ```
 
-3) Для обработки кликов по ссылкам в статьях, необходимо реализовать интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt) родителем и возвращать `true` в методе `onWebUrl`, если ссылка обработана. В ином случае ссылка откроется внутри статьи.
+3) Для обработки кликов по ссылкам в статьях, необходимо реализовать интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt).
 
 ### Использование без GUI
 
 Для работы с Базой знаний без GUI необходимо выполнить следующие шаги:
 
-1) Инициализировать Базу Знаний после установки конфигурации:
+1) Инициализировать Базу Знаний:
 
 ```kotlin
+val usedeskKnowledgeBase =
+   UsedeskSdk.initKnowledgeBase(context, UsedeskKnowledgeBaseConfiguration())
+//или
+UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
 val usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
 ```
 

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.entity
 
+
 import android.os.Parcelable
 import android.webkit.MimeTypeMap
 import kotlinx.parcelize.Parcelize

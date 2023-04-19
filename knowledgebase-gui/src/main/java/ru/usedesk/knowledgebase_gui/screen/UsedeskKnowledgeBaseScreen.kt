@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen
 
+
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater

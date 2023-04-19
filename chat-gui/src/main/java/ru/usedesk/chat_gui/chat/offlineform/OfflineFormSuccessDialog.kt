@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.offlineform
 
+
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView

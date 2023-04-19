@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.search
 
+
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.di.chat
 
+
 import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.entity
 
+
 import android.content.Context
 import android.net.Uri
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName

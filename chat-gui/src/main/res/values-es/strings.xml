@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <string name="usedesk_string_offline_form_send_successed">Tu mensaje ha sido enviado.\nLe responderemos dentro de un día hábil.</string>
     <string name="usedesk_string_offline_form_send_failed">No se pudo enviar su solicitud. Inténtalo de nuevo.</string>

@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui
 
+
 import android.view.ViewGroup
 
 interface IUsedeskOnFullscreenListener {

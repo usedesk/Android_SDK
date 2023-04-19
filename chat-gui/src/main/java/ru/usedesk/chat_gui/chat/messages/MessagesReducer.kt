@@ -1,11 +1,19 @@
 package ru.usedesk.chat_gui.chat.messages
 
-import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.*
+
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormSelector
+import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.State
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import ru.usedesk.common_sdk.entity.UsedeskEvent
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.min
 

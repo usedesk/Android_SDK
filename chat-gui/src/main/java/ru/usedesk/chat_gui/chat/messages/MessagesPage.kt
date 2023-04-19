@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages
 
+
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -13,7 +14,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.chat_gui.*
+import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
+import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
+import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
+import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
+import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter

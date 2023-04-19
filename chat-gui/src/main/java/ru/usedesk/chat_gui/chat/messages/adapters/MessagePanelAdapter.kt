@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
+
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView

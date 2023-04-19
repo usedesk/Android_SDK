@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.di.preparation
 
+
 import dagger.Binds
 import dagger.Module
 import ru.usedesk.chat_sdk.domain.IUsedeskPreparation

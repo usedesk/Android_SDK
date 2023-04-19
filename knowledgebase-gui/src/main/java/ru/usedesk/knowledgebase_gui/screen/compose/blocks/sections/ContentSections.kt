@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

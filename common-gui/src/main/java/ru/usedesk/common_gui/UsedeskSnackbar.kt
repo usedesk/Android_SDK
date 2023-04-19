@@ -1,5 +1,6 @@
 package ru.usedesk.common_gui
 
+
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings

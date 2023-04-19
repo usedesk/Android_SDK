@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
+
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,7 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
+import ru.usedesk.common_gui.showImage
+import ru.usedesk.common_gui.visibleGone
 
 internal class AttachedFilesAdapter(
     private val recyclerView: RecyclerView,

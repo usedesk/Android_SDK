@@ -1,13 +1,32 @@
 package ru.usedesk.chat_sdk.data.repository.messages
 
+
 import android.net.Uri
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.yield
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
-import ru.usedesk.chat_sdk.entity.*
-import java.util.*
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import java.util.Calendar
 import javax.inject.Inject
 
 //TODO: do something with repository hierarchy

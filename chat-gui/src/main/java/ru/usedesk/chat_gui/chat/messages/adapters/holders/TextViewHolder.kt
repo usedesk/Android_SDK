@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
+
 import android.text.Html
 import android.text.InputType
 import androidx.core.widget.addTextChangedListener

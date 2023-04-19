@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
+
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -10,8 +11,16 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.view.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.core.view.marginBottom
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,10 +37,31 @@ import ru.usedesk.chat_gui.chat.messages.DateBinding
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_sdk.entity.*
-import ru.usedesk.common_gui.*
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.clearImage
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
+import ru.usedesk.common_gui.showImage
+import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.visibleInvisible
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.max
 
 

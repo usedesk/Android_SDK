@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.chat
 
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,11 @@ import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.UsedeskToolbarAdapter
+import ru.usedesk.common_gui.inflateItem
 
 class UsedeskChatScreen : UsedeskFragment() {
 

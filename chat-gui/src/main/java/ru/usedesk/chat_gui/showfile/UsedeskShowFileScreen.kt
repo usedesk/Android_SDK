@@ -1,5 +1,6 @@
 package ru.usedesk.chat_gui.showfile
 
+
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Intent
@@ -17,7 +18,14 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskFile
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.hideKeyboard
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.showImage
+import ru.usedesk.common_gui.showInstead
+import ru.usedesk.common_gui.visibleGone
 
 class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()

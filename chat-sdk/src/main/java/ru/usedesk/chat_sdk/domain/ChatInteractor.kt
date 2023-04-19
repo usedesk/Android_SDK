@@ -1,16 +1,28 @@
 package ru.usedesk.chat_sdk.domain
 
+
 import android.net.Uri
 import androidx.core.net.toUri
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.LoadPreviousMessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendAdditionalFieldsResponse
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendFileResponse
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendOfflineFormResponse
+import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SocketSendResponse
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
@@ -18,11 +30,30 @@ import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
 import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
 import ru.usedesk.chat_sdk.data.repository.thumbnail.IThumbnailRepository
 import ru.usedesk.chat_sdk.di.IRelease
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.*
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.IFileUploadProgressListener
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
+import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
+import ru.usedesk.chat_sdk.entity.ChatInited
+import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskForm
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskEvent
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 internal class ChatInteractor @Inject constructor(

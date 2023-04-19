@@ -1,5 +1,6 @@
 package ru.usedesk.sample.ui.screens.configuration
 
+
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable

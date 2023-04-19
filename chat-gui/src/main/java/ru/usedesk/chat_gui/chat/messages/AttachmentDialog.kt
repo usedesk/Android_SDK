@@ -1,10 +1,15 @@
 package ru.usedesk.chat_gui.chat.messages
 
+
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.usedesk.chat_gui.R
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskBottomSheetDialog
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.inflateItem
 
 internal class AttachmentDialog private constructor(
     private val screen: UsedeskFragment,

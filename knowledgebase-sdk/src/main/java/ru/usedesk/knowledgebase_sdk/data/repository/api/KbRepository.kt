@@ -4,9 +4,25 @@ import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.*
-import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.*
-import ru.usedesk.knowledgebase_sdk.entity.*
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.AddViewsResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.GetArticleResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.GetArticlesResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.GetSectionsResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.SendRatingResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.SendReviewResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddRating
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddViews
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CategoryResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CreateTicket
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.GetArticleContent
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.GetArticles
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.LoadSections
+import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.SectionResponse
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleInfo
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
+import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 import javax.inject.Inject
 
 internal class KbRepository @Inject constructor(
@@ -26,9 +42,6 @@ internal class KbRepository @Inject constructor(
             val categoryId = categoryResponse!!.id!!
             val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
                 valueOrNull {
-                    if (articleResponse?.id == 33051L) {
-                        println()
-                    }
                     UsedeskArticleInfo(
                         articleResponse!!.id!!,
                         articleResponse.title ?: "",

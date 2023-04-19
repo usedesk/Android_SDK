@@ -5,14 +5,14 @@ plugins{
 }
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion "32.1.0 rc1"
+    compileSdkVersion defaultCompileSdkVersion
+    buildToolsVersion buildToolsVersion
 
     defaultConfig {
         applicationId "ru.usedesk.sample"
-        minSdkVersion 21
-        targetSdkVersion 33
-        versionCode = 197
+        minSdkVersion defaultMinSdkVersion
+        targetSdkVersion defaultTargetSdkVersion
+        versionCode = 198
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

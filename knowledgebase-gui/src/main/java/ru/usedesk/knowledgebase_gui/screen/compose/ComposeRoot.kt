@@ -151,10 +151,12 @@ private fun Content(
                     else -> noneTransitionSpec
                 }
             }) { screen ->
+            val getCurrentScreen = remember { { viewModel.modelFlow.value.screen } }
             Box(modifier = Modifier.fillMaxSize()) {
                 when (screen) {
                     is Screen.Loading -> ContentLoading(
                         theme = theme,
+                        getCurrentScreen = getCurrentScreen,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         tryAgain = remember { { onEvent(RootViewModel.Event.TryAgain) } }
                     )
@@ -168,16 +170,17 @@ private fun Content(
                     )
                     is Screen.Article -> ContentArticle(
                         theme = theme,
+                        getCurrentScreen = getCurrentScreen,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         articleTitleState = articleTitleState,
                         supportButtonVisible = supportButtonVisible,
-                        getCurrentScreen = remember { { viewModel.modelFlow.value.screen } },
                         onWebUrl = onWebUrl,
                         onReview = remember { { onEvent(RootViewModel.Event.GoReview(screen.articleId)) } }
                     )
                     is Screen.Review -> ContentReview(
                         theme = theme,
+                        getCurrentScreen = getCurrentScreen,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         supportButtonVisible = supportButtonVisible,

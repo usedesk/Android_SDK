@@ -7,7 +7,11 @@ import io.socket.client.Socket
 import io.socket.engineio.client.transports.WebSocket
 import org.json.JSONObject
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
-import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.*
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.ErrorResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.FeedbackResponse
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.Inited
+import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.SetClient
 import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException

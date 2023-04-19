@@ -12,7 +12,7 @@ The ["Example" folder](https://github.com/usedesk/Android_SDK/tree/master/app/sr
 
 ### Minimal Android version
 
-At the moment, the minimum version of the OS that is supported by the SDK — **Android 4.4 (API 19)**
+At the moment, the minimum version of the OS that is supported by the SDK — **Android 5.0 (API 21)**
 
 ### SDK components
 

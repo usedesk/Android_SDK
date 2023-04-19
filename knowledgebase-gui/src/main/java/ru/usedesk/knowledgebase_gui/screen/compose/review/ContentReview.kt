@@ -48,6 +48,7 @@ import ru.usedesk.knowledgebase_gui.compose.flexMeasurePolicy
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
@@ -56,6 +57,7 @@ internal fun ContentReview(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     supportButtonVisible: MutableState<Boolean>,
+    getCurrentScreen: () -> RootViewModel.State.Screen,
     goBack: () -> Unit
 ) {
     supportButtonVisible.value = false
@@ -68,7 +70,9 @@ internal fun ContentReview(
     ) { kbUiComponent -> ReviewViewModel(kbUiComponent.interactor, articleId) }
     DisposableEffect(Unit) {
         onDispose {
-            viewModelStoreFactory.clear(StoreKeys.REVIEW.name)
+            if (getCurrentScreen() !is RootViewModel.State.Screen.Review) {
+                viewModelStoreFactory.clear(StoreKeys.REVIEW.name)
+            }
         }
     }
     val state by viewModel.modelFlow.collectAsState()

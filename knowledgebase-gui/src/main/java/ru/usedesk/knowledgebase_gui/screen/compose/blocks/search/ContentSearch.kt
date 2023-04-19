@@ -62,7 +62,8 @@ internal fun ContentSearch(
             when {
                 reloadError -> ScreenNotLoaded(
                     theme = theme,
-                    tryAgain = if (!state.reloadLoading) viewModel::tryLoadAgain else null
+                    tryAgain = viewModel::tryLoadAgain,
+                    tryAgainVisible = !state.reloadLoading
                 )
 
                 else -> Box(modifier = Modifier.fillMaxSize()) {

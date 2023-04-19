@@ -52,7 +52,7 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Search -> remember { { onEvent(Event.SearchCancelClicked) } }
                 else -> null
             },
-            onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } },
+            onValueChange = remember { { onEvent(Event.SearchTextChange(it)) } },
             onSearchBarClicked = remember { { onEvent(Event.SearchBarClicked) } },
             onSearch = remember { { onEvent(Event.SearchClicked) } }
         )
@@ -88,7 +88,6 @@ internal fun ContentBlocks(
                                         is State.BlocksState.Block.Articles,
                                         is State.BlocksState.Block.Categories,
                                         is State.BlocksState.Block.Search -> Unit
-
                                         State.BlocksState.Block.Sections ->
                                             viewModelStoreFactory.clear(StoreKeys.CATEGORIES.name)
                                     }
@@ -111,7 +110,6 @@ internal fun ContentBlocks(
                                     when (viewModel.modelFlow.value.blocksState.block) {
                                         is State.BlocksState.Block.Articles,
                                         is State.BlocksState.Block.Search -> Unit
-
                                         is State.BlocksState.Block.Categories,
                                         State.BlocksState.Block.Sections ->
                                             viewModelStoreFactory.clear(StoreKeys.ARTICLES.name)

@@ -63,11 +63,11 @@ import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.Stat
 @Composable
 internal fun ContentArticle(
     theme: UsedeskKnowledgeBaseTheme,
+    getCurrentScreen: () -> RootViewModel.State.Screen,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     articleTitleState: MutableState<String?>,
     supportButtonVisible: MutableState<Boolean>,
-    getCurrentScreen: () -> RootViewModel.State.Screen,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
@@ -85,7 +85,6 @@ internal fun ContentArticle(
                 RootViewModel.State.Screen.Incorrect,
                 RootViewModel.State.Screen.Loading ->
                     viewModelStoreFactory.clear(StoreKeys.ARTICLE.name)
-
                 is RootViewModel.State.Screen.Article,
                 is RootViewModel.State.Screen.Review -> Unit
             }
@@ -143,10 +142,8 @@ private fun ArticleBlock(
                     supportButtonVisible.value = true
                     ScreenNotLoaded(
                         theme = theme,
-                        tryAgain = when {
-                            !state.loading && contentState.code != ACCESS_DENIED -> viewModel::tryAgain
-                            else -> null
-                        }
+                        tryAgain = viewModel::tryAgain,
+                        tryAgainVisible = !state.loading && contentState.code != ACCESS_DENIED
                     )
                 }
 

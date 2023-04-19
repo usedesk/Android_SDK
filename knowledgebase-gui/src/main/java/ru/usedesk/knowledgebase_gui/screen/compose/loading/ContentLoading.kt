@@ -18,11 +18,13 @@ import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
 internal fun ContentLoading(
     theme: UsedeskKnowledgeBaseTheme,
+    getCurrentScreen: () -> RootViewModel.State.Screen,
     viewModelStoreFactory: ViewModelStoreFactory,
     tryAgain: () -> Unit
 ) {
@@ -33,7 +35,9 @@ internal fun ContentLoading(
     ) { kbUiComponent -> LoadingViewModel(kbUiComponent.interactor) }
     DisposableEffect(Unit) {
         onDispose {
-            viewModelStoreFactory.clear(StoreKeys.LOADING.name)
+            if (getCurrentScreen() !is RootViewModel.State.Screen.Loading) {
+                viewModelStoreFactory.clear(StoreKeys.LOADING.name)
+            }
         }
     }
     val state by viewModel.modelFlow.collectAsState()
@@ -46,7 +50,8 @@ internal fun ContentLoading(
 
                 is ContentState.Error -> ScreenNotLoaded(
                     theme = theme,
-                    tryAgain = if (!state.loading) tryAgain else null
+                    tryAgain = tryAgain,
+                    tryAgainVisible = !state.loading
                 )
             }
         }

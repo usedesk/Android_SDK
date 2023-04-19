@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.showfile
 
-
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Intent

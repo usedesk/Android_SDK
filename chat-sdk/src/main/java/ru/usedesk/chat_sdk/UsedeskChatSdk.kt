@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk
 
-
 import android.content.Context
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex

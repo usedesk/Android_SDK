@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat
 
-
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils

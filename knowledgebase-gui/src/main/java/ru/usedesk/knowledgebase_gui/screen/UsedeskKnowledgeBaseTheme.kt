@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.screen
 
-
 import androidx.annotation.ArrayRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

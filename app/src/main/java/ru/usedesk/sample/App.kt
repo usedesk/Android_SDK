@@ -1,6 +1,5 @@
 package ru.usedesk.sample
 
-
 import androidx.multidex.MultiDexApplication
 import ru.usedesk.common_sdk.UsedeskLog
 

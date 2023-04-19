@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk.entity
 
-
 import java.util.concurrent.atomic.AtomicBoolean
 
 class UsedeskEvent<DATA>(val data: DATA) {

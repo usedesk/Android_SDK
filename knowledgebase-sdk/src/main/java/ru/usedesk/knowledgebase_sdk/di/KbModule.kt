@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_sdk.di
 
-
 import dagger.Binds
 import dagger.Module
 import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase

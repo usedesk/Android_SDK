@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.service.notifications
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Build

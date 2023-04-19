@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-
 import android.net.Uri
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
-
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings

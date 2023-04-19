@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.domain
 
-
 import android.net.Uri
 import androidx.core.net.toUri
 import kotlinx.coroutines.CoroutineScope

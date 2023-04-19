@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size

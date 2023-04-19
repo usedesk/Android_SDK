@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.di.common
 
-
 import android.content.ContentResolver
 import android.content.Context
 import com.google.gson.Gson

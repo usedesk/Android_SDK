@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat
 
-
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskFragment
 

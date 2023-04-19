@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.di.preparation
 
-
 import dagger.Component
 import ru.usedesk.chat_sdk.di.IRelease
 import ru.usedesk.chat_sdk.di.common.CommonChatComponent

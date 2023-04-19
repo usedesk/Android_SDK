@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource

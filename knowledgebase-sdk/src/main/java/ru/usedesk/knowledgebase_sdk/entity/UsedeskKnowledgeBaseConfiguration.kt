@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_sdk.entity
 
-
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil

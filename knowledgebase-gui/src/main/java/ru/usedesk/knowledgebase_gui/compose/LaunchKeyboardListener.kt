@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-
 import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

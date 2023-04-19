@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui._di
 
-
 import android.content.Context
 import dagger.Binds
 import dagger.Module

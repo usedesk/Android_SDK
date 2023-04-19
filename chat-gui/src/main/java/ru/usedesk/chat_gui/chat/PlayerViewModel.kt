@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat
 
-
 import com.google.android.exoplayer2.ExoPlayer
 import ru.usedesk.common_gui.UsedeskViewModel
 

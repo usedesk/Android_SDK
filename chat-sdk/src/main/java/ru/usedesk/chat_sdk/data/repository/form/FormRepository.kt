@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.form
 
-
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
 import com.google.gson.JsonArray

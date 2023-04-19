@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.form
 
-
 import androidx.annotation.CheckResult
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText

@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.domain
 
-
 import androidx.core.text.parseAsHtml
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

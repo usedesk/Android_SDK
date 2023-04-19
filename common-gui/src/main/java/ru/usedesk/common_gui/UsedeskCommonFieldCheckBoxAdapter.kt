@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView

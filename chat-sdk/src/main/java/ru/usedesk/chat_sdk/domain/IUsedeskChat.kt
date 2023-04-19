@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.domain
 
-
 import android.net.Uri
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState

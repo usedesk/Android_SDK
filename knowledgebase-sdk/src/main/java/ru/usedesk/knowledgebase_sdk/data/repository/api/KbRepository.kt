@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api
 
-
 import com.google.gson.Gson
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository

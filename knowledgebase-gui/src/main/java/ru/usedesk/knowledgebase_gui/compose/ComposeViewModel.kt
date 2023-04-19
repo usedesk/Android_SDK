@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.compose
 
-
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.review
 
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically

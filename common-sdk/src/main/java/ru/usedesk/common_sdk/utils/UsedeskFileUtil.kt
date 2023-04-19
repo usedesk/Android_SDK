@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk.utils
 
-
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri

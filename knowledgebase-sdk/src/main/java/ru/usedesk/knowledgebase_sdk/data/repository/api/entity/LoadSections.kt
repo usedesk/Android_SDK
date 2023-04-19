@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
-
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface LoadSections {

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
-
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup

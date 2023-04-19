@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.graphics.drawable.Animatable
 import android.view.View
 import android.widget.ImageView

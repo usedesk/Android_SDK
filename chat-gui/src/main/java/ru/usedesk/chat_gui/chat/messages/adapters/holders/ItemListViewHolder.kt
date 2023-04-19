@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
-
 import android.text.Html
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow

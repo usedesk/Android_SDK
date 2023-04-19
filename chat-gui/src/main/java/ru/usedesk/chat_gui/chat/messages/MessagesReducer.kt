@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormSelector

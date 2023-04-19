@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.di
 
-
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

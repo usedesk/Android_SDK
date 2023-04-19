@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk.api
 
-
 import android.content.Context
 import android.os.Build
 import com.google.android.gms.security.ProviderInstaller

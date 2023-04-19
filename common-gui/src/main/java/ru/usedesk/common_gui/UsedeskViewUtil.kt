@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager

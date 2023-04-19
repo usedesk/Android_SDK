@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages
 
-
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle

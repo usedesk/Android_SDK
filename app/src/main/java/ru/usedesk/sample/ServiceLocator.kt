@@ -1,6 +1,5 @@
 package ru.usedesk.sample
 
-
 import android.content.Context
 import ru.usedesk.sample.model.configuration.repository.ConfigurationRepository
 

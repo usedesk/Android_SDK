@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.content.Context
 import com.google.android.material.bottomsheet.BottomSheetDialog
 

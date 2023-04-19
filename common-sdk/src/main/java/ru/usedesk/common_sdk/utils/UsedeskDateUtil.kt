@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk.utils
 
-
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

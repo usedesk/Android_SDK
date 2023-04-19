@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.messages.adapters
 
-
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle

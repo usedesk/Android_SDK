@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_sdk.di
 
-
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component

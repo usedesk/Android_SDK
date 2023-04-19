@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk.api.multipart
 
-
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.core.net.toFile

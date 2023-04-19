@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.thumbnail
 
-
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever

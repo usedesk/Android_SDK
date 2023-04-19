@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.offlineform
 
-
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Model.OfflineFormItem
 import ru.usedesk.chat_sdk.UsedeskChatSdk

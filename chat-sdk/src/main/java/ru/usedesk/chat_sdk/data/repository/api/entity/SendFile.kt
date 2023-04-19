@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api.entity
 
-
 import android.net.Uri
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.MultipartRequest
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError

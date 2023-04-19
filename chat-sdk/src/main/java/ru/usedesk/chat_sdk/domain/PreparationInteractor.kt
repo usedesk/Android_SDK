@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.domain
 
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

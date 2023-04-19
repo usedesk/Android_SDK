@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api
 
-
 import androidx.annotation.CheckResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.usedesk.chat_sdk.entity.ChatInited

@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View

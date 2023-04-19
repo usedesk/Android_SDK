@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration
 
-
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson

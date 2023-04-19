@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.domain
 
-
 import kotlinx.coroutines.flow.StateFlow
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui._entity.RatingState

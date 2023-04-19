@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.content.Context
 import android.content.res.TypedArray
 import androidx.core.content.res.getColorOrThrow

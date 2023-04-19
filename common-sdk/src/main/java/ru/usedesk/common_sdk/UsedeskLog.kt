@@ -1,6 +1,5 @@
 package ru.usedesk.common_sdk
 
-
 import android.util.Log
 
 object UsedeskLog {

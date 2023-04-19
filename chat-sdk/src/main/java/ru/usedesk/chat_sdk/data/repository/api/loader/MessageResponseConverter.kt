@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.api.loader
 
-
 import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback

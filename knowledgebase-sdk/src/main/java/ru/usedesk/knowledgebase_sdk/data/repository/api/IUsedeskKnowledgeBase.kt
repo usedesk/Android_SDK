@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api
 
-
 import androidx.annotation.CheckResult
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection

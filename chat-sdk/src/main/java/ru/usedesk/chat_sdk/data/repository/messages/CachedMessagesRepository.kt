@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.data.repository.messages
 
-
 import android.net.Uri
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope

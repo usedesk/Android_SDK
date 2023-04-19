@@ -1,6 +1,5 @@
 package ru.usedesk.common_gui
 
-
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher

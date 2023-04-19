@@ -1,6 +1,5 @@
 package ru.usedesk.chat_gui.chat.di
 
-
 import androidx.lifecycle.ViewModel
 import dagger.Binds
 import dagger.Module

@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.entity
 
-
 import java.util.Calendar
 
 class UsedeskMessageAgentVideo(

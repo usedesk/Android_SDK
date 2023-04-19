@@ -13,7 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineformselector.OfflineFormSelectorPage
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.hideKeyboard
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.visibleGone
 
 internal class OfflineFormPage : UsedeskFragment() {
 

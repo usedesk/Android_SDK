@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import ru.usedesk.knowledgebase_gui.compose.StoreKeys
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
+import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.Event
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
@@ -51,7 +52,7 @@ internal fun ContentBlocks(
                 is State.BlocksState.Block.Search -> remember { { onEvent(Event.SearchCancelClicked) } }
                 else -> null
             },
-            onValueChange = remember { { onEvent(Event.SearchTextChanged(it)) } },
+            onValueChange = remember { { onEvent(Event.SearchTextChange(it)) } },
             onSearchBarClicked = remember { { onEvent(Event.SearchBarClicked) } },
             onSearch = remember { { onEvent(Event.SearchClicked) } }
         )
@@ -72,13 +73,14 @@ internal fun ContentBlocks(
                         State.BlocksState.Block.Sections -> {
                             ContentSections(
                                 theme = theme,
-                                viewModelStoreOwner = remember {
-                                    { viewModelStoreFactory.get(StoreKeys.SECTIONS.name) }
+                                viewModelStoreOwner = rememberViewModelStoreOwner {
+                                    viewModelStoreFactory.get(StoreKeys.SECTIONS.name)
                                 },
                                 supportButtonVisible = supportButtonVisible,
                                 onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                             )
                         }
+
                         is State.BlocksState.Block.Categories -> {
                             DisposableEffect(Unit) {
                                 onDispose {
@@ -93,14 +95,15 @@ internal fun ContentBlocks(
                             }
                             ContentCategories(
                                 theme = theme,
-                                viewModelStoreOwner = remember {
-                                    { viewModelStoreFactory.get(StoreKeys.CATEGORIES.name) }
+                                viewModelStoreOwner = rememberViewModelStoreOwner {
+                                    viewModelStoreFactory.get(StoreKeys.CATEGORIES.name)
                                 },
                                 sectionId = block.sectionId,
                                 supportButtonVisible = supportButtonVisible,
                                 onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                             )
                         }
+
                         is State.BlocksState.Block.Articles -> {
                             DisposableEffect(Unit) {
                                 onDispose {
@@ -115,8 +118,8 @@ internal fun ContentBlocks(
                             }
                             ContentArticles(
                                 theme = theme,
-                                viewModelStoreOwner = remember {
-                                    { viewModelStoreFactory.get(StoreKeys.ARTICLES.name) }
+                                viewModelStoreOwner = rememberViewModelStoreOwner {
+                                    viewModelStoreFactory.get(StoreKeys.ARTICLES.name)
                                 },
                                 categoryId = block.categoryId,
                                 supportButtonVisible = supportButtonVisible,
@@ -125,6 +128,7 @@ internal fun ContentBlocks(
                                 }
                             )
                         }
+
                         is State.BlocksState.Block.Search -> {
                             DisposableEffect(Unit) {
                                 onDispose {
@@ -139,8 +143,8 @@ internal fun ContentBlocks(
                             }
                             ContentSearch(
                                 theme = theme,
-                                viewModelStoreOwner = remember {
-                                    { viewModelStoreFactory.get(StoreKeys.SEARCH.name) }
+                                viewModelStoreOwner = rememberViewModelStoreOwner {
+                                    viewModelStoreFactory.get(StoreKeys.SEARCH.name)
                                 },
                                 supportButtonVisible = supportButtonVisible,
                                 onArticleClick = remember {

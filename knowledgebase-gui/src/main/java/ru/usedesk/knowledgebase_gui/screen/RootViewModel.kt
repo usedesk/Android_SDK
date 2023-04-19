@@ -31,7 +31,7 @@ internal class RootViewModel(
             when (event) {
                 is Event.TryAgain -> tryAgain()
                 is Event.KbSectionsModel -> kbSectionsModel(event)
-                is Event.SearchTextChanged -> searchTextChanged(event)
+                is Event.SearchTextChange -> searchTextChange(event)
                 is Event.SearchBarClicked -> searchBarClicked()
                 is Event.SearchBarAnimationFinished -> searchBarAnimationFinished()
                 is Event.SearchClicked -> searchClicked()
@@ -196,8 +196,7 @@ internal class RootViewModel(
         clearFocus = UsedeskEvent(Unit)
     )
 
-
-    private fun State.searchTextChanged(event: Event.SearchTextChanged): State = copy(
+    private fun State.searchTextChange(event: Event.SearchTextChange): State = copy(
         blocksState = blocksState.copy(searchText = searchFilter.onValueChanged(event.value))
     )
 
@@ -401,7 +400,7 @@ internal class RootViewModel(
     sealed interface Event {
         object TryAgain : Event
         data class KbSectionsModel(val sectionsModel: SectionsModel) : Event
-        data class SearchTextChanged(val value: TextFieldValue) : Event
+        data class SearchTextChange(val value: TextFieldValue) : Event
         object SearchBarClicked : Event
         object SearchBarAnimationFinished : Event
         object SearchClicked : Event

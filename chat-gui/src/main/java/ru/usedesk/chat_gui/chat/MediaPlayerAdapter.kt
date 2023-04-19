@@ -16,7 +16,12 @@ import com.google.android.exoplayer2.ui.PlayerView
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
 import ru.usedesk.chat_gui.R
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.hideKeyboard
+import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
+import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.common_gui.visibleInvisible
 
 internal class MediaPlayerAdapter(
     fragment: UsedeskFragment,

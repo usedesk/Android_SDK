@@ -48,9 +48,7 @@ internal class SearchViewModel(
                             else -> lazyListState
                         }
                     }
-                ).also {
-                    println(it)
-                }
+                )
             }
         }
     }

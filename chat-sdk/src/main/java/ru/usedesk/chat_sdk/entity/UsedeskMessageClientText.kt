@@ -1,6 +1,6 @@
 package ru.usedesk.chat_sdk.entity
 
-import java.util.*
+import java.util.Calendar
 
 data class UsedeskMessageClientText @JvmOverloads constructor(
     override val id: Long,

@@ -7,7 +7,11 @@ import android.widget.TextView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskForm
-import ru.usedesk.common_gui.*
+import ru.usedesk.common_gui.UsedeskBinding
+import ru.usedesk.common_gui.UsedeskBottomSheetDialog
+import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskResourceManager
+import ru.usedesk.common_gui.inflateItem
 
 internal class FormSelectorDialog private constructor(
     screen: UsedeskFragment,

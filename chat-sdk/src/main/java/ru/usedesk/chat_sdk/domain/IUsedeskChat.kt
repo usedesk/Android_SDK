@@ -1,7 +1,16 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskForm
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 
 interface IUsedeskChat {

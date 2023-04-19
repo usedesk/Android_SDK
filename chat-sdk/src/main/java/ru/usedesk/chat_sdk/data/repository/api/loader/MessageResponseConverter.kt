@@ -2,8 +2,21 @@ package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
+import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskDateUtil.Companion.getLocalCalendar
 import javax.inject.Inject

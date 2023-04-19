@@ -2,7 +2,11 @@ package ru.usedesk.common_gui
 
 import android.content.Context
 import android.content.res.TypedArray
-import androidx.core.content.res.*
+import androidx.core.content.res.getColorOrThrow
+import androidx.core.content.res.getDimensionOrThrow
+import androidx.core.content.res.getIntOrThrow
+import androidx.core.content.res.getResourceIdOrThrow
+import androidx.core.content.res.getStringOrThrow
 
 object UsedeskResourceManager {
     private val resourceMap = hashMapOf<Int, Int>()

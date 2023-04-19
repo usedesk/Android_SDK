@@ -298,10 +298,8 @@ class UsedeskKnowledgeBaseTheme(
         val toolbarBottomPadding: Dp = dp16,
         val supportIconSize: Dp = dp24,
         val supportIconPadding: Padding = Padding(dp16),
-        val notLoadedErrorPadding: Padding = Padding(
-            top = dp12,
-            bottom = dp8
-        ),
+        val notLoadedImagePadding: Padding = Padding(bottom = dp12),
+        val notLoadedTitlePadding: Padding = Padding(bottom = dp8),
         val searchBarCornerRadius: Dp = dp10,
         val searchBarBottomPadding: Dp = dp16,
         val searchBarInnerPadding: Padding = Padding(dp8),

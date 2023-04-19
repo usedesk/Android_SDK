@@ -34,7 +34,7 @@ private fun Preview() {
     ) {
         ContentSearch(
             theme = theme,
-            viewModelStoreOwner = remember { { ViewModelStore() } },
+            viewModelStoreOwner = rememberViewModelStoreOwner { ViewModelStore() },
             supportButtonVisible = remember { mutableStateOf(false) },
             onArticleClick = {}
         )
@@ -62,8 +62,10 @@ internal fun ContentSearch(
             when {
                 reloadError -> ScreenNotLoaded(
                     theme = theme,
-                    tryAgain = if (!state.reloadLoading) viewModel::tryLoadAgain else null
+                    tryAgain = viewModel::tryLoadAgain,
+                    tryAgainVisible = !state.reloadLoading
                 )
+
                 else -> Box(modifier = Modifier.fillMaxSize()) {
                     val content = state.content
                     if (content != null) {

@@ -1,5 +1,10 @@
 buildscript {
     ext {
+        buildToolsVersion = '32.1.0 rc1'
+        defaultCompileSdkVersion = 33
+        defaultTargetSdkVersion = 33
+        defaultMinSdkVersion = 21
+
         kotlinCoroutinesCoreVersion = "1.6.0"
         kotlinCoroutinesAndroidVersion = "1.6.4"
         activityVersion = "1.5.1"//API31
@@ -26,7 +31,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.4.2"
+        classpath "com.android.tools.build:gradle:7.3.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:1.5.31"
     }
@@ -34,7 +39,7 @@ buildscript {
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "4.1.0-develop01"
+    project.version = "4.1.0-develop02"
 
     repositories {
         google()

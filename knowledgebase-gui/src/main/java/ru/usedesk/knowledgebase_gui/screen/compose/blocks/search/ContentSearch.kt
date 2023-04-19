@@ -34,7 +34,7 @@ private fun Preview() {
     ) {
         ContentSearch(
             theme = theme,
-            viewModelStoreOwner = remember { { ViewModelStore() } },
+            viewModelStoreOwner = rememberViewModelStoreOwner { ViewModelStore() },
             supportButtonVisible = remember { mutableStateOf(false) },
             onArticleClick = {}
         )
@@ -64,6 +64,7 @@ internal fun ContentSearch(
                     theme = theme,
                     tryAgain = if (!state.reloadLoading) viewModel::tryLoadAgain else null
                 )
+
                 else -> Box(modifier = Modifier.fillMaxSize()) {
                     val content = state.content
                     if (content != null) {

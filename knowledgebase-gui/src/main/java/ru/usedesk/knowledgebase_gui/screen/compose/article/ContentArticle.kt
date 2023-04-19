@@ -6,9 +6,19 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.LinearLayout
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -16,7 +26,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,7 +47,15 @@ import androidx.compose.ui.viewinterop.AndroidView
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
-import ru.usedesk.knowledgebase_gui.compose.*
+import ru.usedesk.knowledgebase_gui.compose.CardCircleProgress
+import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
+import ru.usedesk.knowledgebase_gui.compose.StoreKeys
+import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
+import ru.usedesk.knowledgebase_gui.compose.card
+import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
+import ru.usedesk.knowledgebase_gui.compose.padding
+import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
@@ -49,7 +73,9 @@ internal fun ContentArticle(
 ) {
     val viewModel = kbUiViewModel(
         key = remember(articleId) { articleId.toString() },
-        viewModelStoreOwner = remember { { viewModelStoreFactory.get(StoreKeys.ARTICLE.name) } }
+        viewModelStoreOwner = rememberViewModelStoreOwner {
+            viewModelStoreFactory.get(StoreKeys.ARTICLE.name)
+        }
     ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
 
     DisposableEffect(Unit) {
@@ -59,6 +85,7 @@ internal fun ContentArticle(
                 RootViewModel.State.Screen.Incorrect,
                 RootViewModel.State.Screen.Loading ->
                     viewModelStoreFactory.clear(StoreKeys.ARTICLE.name)
+
                 is RootViewModel.State.Screen.Article,
                 is RootViewModel.State.Screen.Review -> Unit
             }
@@ -111,6 +138,7 @@ private fun ArticleBlock(
                     supportButtonVisible.value = true
                     Box(modifier = Modifier.fillMaxSize())
                 }
+
                 is ContentState.Error -> {
                     supportButtonVisible.value = true
                     ScreenNotLoaded(
@@ -121,6 +149,7 @@ private fun ArticleBlock(
                         }
                     )
                 }
+
                 else -> {
                     val context = LocalContext.current
                     val ratingView = remember(context) {
@@ -181,6 +210,7 @@ private fun ArticleBlock(
                                     "text/html; charset=utf-8",
                                     "UTF-8"
                                 )
+
                                 else -> webView.loadData(
                                     state.contentState.content.text,
                                     "text/html",
@@ -270,10 +300,12 @@ private fun ArticleRatingButton(
                     contentDescription = null,
                     tint = Color.Unspecified
                 )
+
                 it.second -> CircularProgressIndicator(
                     strokeWidth = theme.dimensions.progressBarStrokeWidth,
                     color = theme.colors.progressBarIndicator
                 )
+
                 else -> Icon(
                     painter = painterResource(
                         when {
@@ -362,6 +394,7 @@ private fun ArticleRating(
                     onReviewGoodClick = onReviewGoodClick,
                     onReviewBadClick = onReviewBadClick
                 )
+
                 else -> BasicText(
                     text = stringResource(theme.strings.articleRatingThanks),
                     style = theme.textStyles.articleRatingThanks

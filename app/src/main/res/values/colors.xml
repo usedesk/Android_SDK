@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <color name="colorPrimary">@color/usedesk_white_2</color>
     <color name="colorPrimaryDark">@color/usedesk_gray_1</color>

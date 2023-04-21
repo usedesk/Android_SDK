@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_sdk.domain
 
 import kotlinx.coroutines.CoroutineScope

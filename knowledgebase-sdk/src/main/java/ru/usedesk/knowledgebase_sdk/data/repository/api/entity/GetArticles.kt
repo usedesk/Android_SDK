@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
 import com.google.gson.annotations.SerializedName

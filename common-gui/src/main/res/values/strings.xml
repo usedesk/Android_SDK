@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <string name="usedesk_settings" translatable="false">@string/usedesk_string_settings</string>
     <string name="usedesk_need_permission" translatable="false">@string/usedesk_string_need_permission</string>

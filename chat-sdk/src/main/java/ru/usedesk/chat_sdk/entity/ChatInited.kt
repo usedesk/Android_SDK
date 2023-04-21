@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_sdk.entity
 
 internal data class ChatInited(

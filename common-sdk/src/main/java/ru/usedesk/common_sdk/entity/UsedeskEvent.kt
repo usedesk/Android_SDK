@@ -1,3 +1,4 @@
+
 package ru.usedesk.common_sdk.entity
 
 import java.util.concurrent.atomic.AtomicBoolean

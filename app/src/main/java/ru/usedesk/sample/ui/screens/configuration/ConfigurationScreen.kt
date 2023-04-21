@@ -1,3 +1,4 @@
+
 package ru.usedesk.sample.ui.screens.configuration
 
 import android.content.pm.PackageManager

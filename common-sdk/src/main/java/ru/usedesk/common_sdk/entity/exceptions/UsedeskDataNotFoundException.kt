@@ -1,3 +1,4 @@
+
 package ru.usedesk.common_sdk.entity.exceptions
 
 class UsedeskDataNotFoundException : UsedeskException {

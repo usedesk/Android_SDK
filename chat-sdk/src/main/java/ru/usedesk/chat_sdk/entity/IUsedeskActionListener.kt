@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_sdk.entity
 
 import ru.usedesk.chat_sdk.domain.IUsedeskChat

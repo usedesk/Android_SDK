@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
 import android.text.Html

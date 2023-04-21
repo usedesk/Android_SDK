@@ -296,13 +296,13 @@ Where * — required parameter
 
 ### Using with the GUI
 
-Use [UsedeskKnowledgeBaseFragment](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/main/UsedeskKnowledgeBaseScreen.kt) to use a ready-made user interface, for example using the `newInstance` method:
+Use [UsedeskKnowledgeBaseScreen](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskKnowledgeBaseScreen.kt) to use a ready-made user interface, for example using the `newInstance` method:
 
 ```kotlin
 supportFragmentManager().beginTransaction()
     .replace(
         R.id.container,
-        UsedeskKnowledgeBaseFragment.newInstance(
+        UsedeskKnowledgeBaseScreen.newInstance(
             configuration = UsedeskKnowledgeBaseConfiguration(),
             withSupportButton = true,
             deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
@@ -340,7 +340,7 @@ override fun onBackPressed() {
 }
 ```
 
-2) Implement the [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) interface as a parent, overriding the `onSupportClick()` method,
+2) Implement the [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnSupportClickListener.kt) interface as a parent, overriding the `onSupportClick()` method,
 
 Example:
 
@@ -352,7 +352,7 @@ override fun onSupportClick() {
 }
 ```
 
-3) To process clicks on links in articles, you need to implement [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt) interface as a parent.
+3) To process clicks on links in articles, you need to implement [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnWebUrlListener.kt) interface as a parent.
 
 ### Using without a GUI
 
@@ -391,7 +391,12 @@ SDK supports the following languages:
 - Spanish,
 - Portuguese.
 
-In addition, you can change an existing language or add a new one. To do this, copy the values from the file [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml"), which is in the root of the project, and add to all strings.xml files of your project. After that you can substitute your own values of string resources.
+In addition, you can change an existing language or add a new one. To do this, you need to copy the resources from the files that refer to `@string/usedesk_string` and add them to the strings.xml of your project, substituting the necessary values:
+- 
+
+- **common-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/common-gui/src/main/res/values/strings.xml "strings.xml")
+- **chat-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/chat-gui/src/main/res/values/strings.xml "strings.xml")
+- **knowledgebase-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/knowledgebase-gui/src/main/res/values/strings.xml "strings.xml")
 
 In the case of changing string resource references when customizing an application, changing string resources in this way may not have the desired result.
 

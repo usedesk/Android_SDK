@@ -294,13 +294,13 @@ UsedeskChatSdk.stopService(context)
 
 ### Использование с GUI
 
-Для использования готового пользовательского интерфейса воспользуйтесь [UsedeskKnowledgeBaseFragment](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/main/UsedeskKnowledgeBaseScreen.kt), например при помощи метода `newInstance`:
+Для использования готового пользовательского интерфейса воспользуйтесь [UsedeskKnowledgeBaseScreen](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskKnowledgeBaseScreen.kt), например при помощи метода `newInstance`:
 
 ```kotlin
 supportFragmentManager().beginTransaction()
    .replace(
       R.id.container,
-      UsedeskKnowledgeBaseFragment.newInstance(
+      UsedeskKnowledgeBaseScreen.newInstance(
          configuration = UsedeskKnowledgeBaseConfiguration(),
          withSupportButton = true,
          deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
@@ -338,7 +338,7 @@ override fun onBackPressed() {
 }
 ```
 
-2) Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`,
+2) Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`,
 
 Пример:
 
@@ -350,7 +350,7 @@ override fun onSupportClick() {
 }
 ```
 
-3) Для обработки кликов по ссылкам в статьях, необходимо реализовать интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt).
+3) Для обработки кликов по ссылкам в статьях, необходимо реализовать интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnWebUrlListener.kt).
 
 ### Использование без GUI
 
@@ -359,11 +359,11 @@ override fun onSupportClick() {
 1) Инициализировать Базу Знаний:
 
 ```kotlin
-val usedeskKnowledgeBase =
-   UsedeskSdk.initKnowledgeBase(context, UsedeskKnowledgeBaseConfiguration())
+val usedeskKnowledgeBase: IUsedeskKnowledgeBase =
+   UsedeskSdk.initKnowledgeBase(context, сonfiguration)
 //или
-UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
-val usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
+UsedeskKnowledgeBaseSdk.setConfiguration(configuration)
+val usedeskKnowledgeBase: IUsedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
 ```
 
 2) Получить объект класса в любом месте:
@@ -389,7 +389,11 @@ SDK поддерживает следующие языки:
 - испанский,
 - португальский.
 
-Помимо этого, можно изменить существующий язык или добавить новый. Для этого необходимо скопировать значения из файла [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml"), который находится в корне проекта, и добавить во все файлы strings.xml вашего проекта. После чего можно подставить свои значения строковых ресурсов.
+Помимо этого, можно изменить существующий язык или добавить новый. Для этого необходимо скопировать ресурсы из файлов, ссылающиеся на `@string/usedesk_string`, и добавить в strings.xml вашего проекта, подставив нужные значения:
+
+- **common-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/common-gui/src/main/res/values/strings.xml "strings.xml")
+- **chat-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/chat-gui/src/main/res/values/strings.xml "strings.xml")
+- **knowledgebase-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/knowledgebase-gui/src/main/res/values/strings.xml "strings.xml")
 
 В случае изменения ссылок на строковые ресурсы при кастомизации приложения изменение строковых ресурсов таким способом может не привести к желаемому результату.
 

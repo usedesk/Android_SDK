@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_sdk.entity
 
 import android.os.Parcelable

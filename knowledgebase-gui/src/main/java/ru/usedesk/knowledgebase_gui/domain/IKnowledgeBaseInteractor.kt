@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_gui.domain
 
 import kotlinx.coroutines.flow.StateFlow

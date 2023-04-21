@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_gui._entity
 
 internal sealed interface ContentState<DATA> {

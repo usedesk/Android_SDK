@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_sdk.di.chat
 
 import dagger.BindsInstance

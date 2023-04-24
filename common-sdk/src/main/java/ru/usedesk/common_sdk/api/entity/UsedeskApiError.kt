@@ -1,3 +1,4 @@
+
 package ru.usedesk.common_sdk.api.entity
 
 open class UsedeskApiError {

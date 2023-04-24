@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.search
 
 import androidx.compose.animation.*

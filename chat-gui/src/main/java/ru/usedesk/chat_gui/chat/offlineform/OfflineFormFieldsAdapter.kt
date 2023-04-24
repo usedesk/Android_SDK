@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_gui.chat.offlineform
 
 import android.text.InputType

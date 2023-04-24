@@ -1,3 +1,4 @@
+
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity
 
 import com.google.gson.annotations.SerializedName

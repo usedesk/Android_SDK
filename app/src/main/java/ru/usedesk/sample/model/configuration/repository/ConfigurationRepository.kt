@@ -1,3 +1,4 @@
+
 package ru.usedesk.sample.model.configuration.repository
 
 import android.content.SharedPreferences

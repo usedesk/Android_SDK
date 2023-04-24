@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_gui.screen
 
 import androidx.annotation.ArrayRes
@@ -328,7 +329,7 @@ class UsedeskKnowledgeBaseTheme(
             bottom = dp24
         ),
         val articlesItemTitlePadding: Padding = Padding(
-            horizontal = dp10
+            end = dp10
         ),
         val articlesItemArrowSize: Dp = dp24,
         val searchItemInnerPadding: Padding = Padding(

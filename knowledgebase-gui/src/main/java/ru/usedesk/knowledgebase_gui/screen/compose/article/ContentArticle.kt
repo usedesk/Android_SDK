@@ -1,7 +1,7 @@
+
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
 import android.os.Build
-import android.view.MotionEvent
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
@@ -137,7 +136,6 @@ private fun ArticleBlock(
                     supportButtonVisible.value = true
                     Box(modifier = Modifier.fillMaxSize())
                 }
-
                 is ContentState.Error -> {
                     supportButtonVisible.value = true
                     ScreenNotLoaded(
@@ -146,7 +144,6 @@ private fun ArticleBlock(
                         tryAgainVisible = !state.loading && contentState.code != ACCESS_DENIED
                     )
                 }
-
                 else -> {
                     val context = LocalContext.current
                     val ratingView = remember(context) {
@@ -171,13 +168,8 @@ private fun ArticleBlock(
                     val webView = remember(context) {
                         WebView(context).apply {
                             isVerticalScrollBarEnabled = false
-                            isHorizontalScrollBarEnabled = false
-                            setOnTouchListener { view, event ->
-                                event.action == MotionEvent.ACTION_MOVE
-                            }
                             settings.apply {
                                 setRenderPriority(WebSettings.RenderPriority.HIGH)
-                                loadWithOverviewMode = true
                                 cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
                                 domStorageEnabled = true
                             }
@@ -228,7 +220,6 @@ private fun ArticleBlock(
                     AndroidView(
                         modifier = Modifier
                             .animateContentSize(animationSpec = remember { theme.animationSpec() })
-                            .clipToBounds()
                             .verticalScroll(scrollState)
                             .padding(
                                 start = theme.dimensions.rootPadding.start,

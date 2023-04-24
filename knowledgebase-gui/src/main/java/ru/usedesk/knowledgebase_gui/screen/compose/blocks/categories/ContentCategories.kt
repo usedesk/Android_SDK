@@ -1,8 +1,8 @@
+
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelStore
@@ -74,7 +75,7 @@ internal fun ContentCategories(
             items = state.categories,
             key = UsedeskCategory::id
         ) {
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .cardItem(
@@ -85,35 +86,50 @@ internal fun ContentCategories(
                     .clickableItem(
                         onClick = remember { { onCategoryClick(it) } }
                     )
-                    .padding(theme.dimensions.categoriesItemInnerPadding)
+                    .padding(theme.dimensions.categoriesItemInnerPadding),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                BasicText(
+                Layout(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    style = theme.textStyles.categoriesTitle,
-                    text = it.title
+                        .weight(weight = 1f, fill = true),
+                    content = {
+                        BasicText(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            style = theme.textStyles.categoriesTitle,
+                            text = it.title
+                        )
+                        BasicText(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(theme.dimensions.categoriesItemTitlePadding),
+                            style = theme.textStyles.categoriesDescription,
+                            text = remember(it.description) { it.description.ifEmpty { " " } }
+                        )
+                    }, measurePolicy = { measurables, constraints ->
+                        val titlePlaceable = measurables[0].measure(constraints)
+                        val descriptionPlaceable = measurables[1].measure(constraints)
+                        val totalHeight = titlePlaceable.height + descriptionPlaceable.height
+                        val titleY = when {
+                            it.description.isEmpty() -> (totalHeight - titlePlaceable.height) / 2
+                            else -> 0
+                        }
+                        layout(
+                            constraints.maxWidth,
+                            totalHeight
+                        ) {
+                            titlePlaceable.placeRelative(0, titleY)
+                            descriptionPlaceable.placeRelative(0, titlePlaceable.height)
+                        }
+                    }
                 )
-                Row(
+                Icon(
                     modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    BasicText(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(weight = 1f, fill = true)
-                            .padding(theme.dimensions.categoriesItemTitlePadding),
-                        style = theme.textStyles.categoriesDescription,
-                        text = it.description
-                    )
-                    Icon(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .size(theme.dimensions.categoriesItemArrowSize),
-                        painter = painterResource(theme.drawables.iconListItemArrowForward),
-                        tint = Color.Unspecified,
-                        contentDescription = null
-                    )
-                }
+                        .size(theme.dimensions.categoriesItemArrowSize),
+                    painter = painterResource(theme.drawables.iconListItemArrowForward),
+                    tint = Color.Unspecified,
+                    contentDescription = null
+                )
             }
         }
     }

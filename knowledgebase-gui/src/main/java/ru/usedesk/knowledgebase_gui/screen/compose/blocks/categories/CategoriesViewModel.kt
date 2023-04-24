@@ -1,3 +1,4 @@
+
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories
 
 import androidx.compose.foundation.lazy.LazyListState

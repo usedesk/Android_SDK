@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.sections
 
 import androidx.compose.foundation.background
@@ -26,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
@@ -61,8 +61,11 @@ internal fun ContentSections(
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
     val viewModel = kbUiViewModel(
-        viewModelStoreOwner = viewModelStoreOwner
-    ) { kbUiComponent -> SectionsViewModel(kbUiComponent.interactor) }
+        viewModelStoreOwner = viewModelStoreOwner,
+        factory = KbUiViewModelFactory { kbUiComponent ->
+            SectionsViewModel(kbUiComponent.interactor)
+        }
+    )
     val state by viewModel.modelFlow.collectAsState()
     supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     LazyColumn(

@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.loading
 
 import androidx.compose.animation.Crossfade
@@ -13,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui.compose.CardCircleProgress
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
 import ru.usedesk.knowledgebase_gui.compose.StoreKeys
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
@@ -32,8 +32,9 @@ internal fun ContentLoading(
     val viewModel = kbUiViewModel(
         viewModelStoreOwner = rememberViewModelStoreOwner {
             viewModelStoreFactory.get(StoreKeys.LOADING.name)
-        }
-    ) { kbUiComponent -> LoadingViewModel(kbUiComponent.interactor) }
+        },
+        factory = KbUiViewModelFactory { kbUiComponent -> LoadingViewModel(kbUiComponent.interactor) }
+    )
     DisposableEffect(Unit) {
         onDispose {
             if (getCurrentScreen() !is RootViewModel.State.Screen.Loading) {

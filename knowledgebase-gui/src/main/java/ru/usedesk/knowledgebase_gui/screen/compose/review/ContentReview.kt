@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.review
 
 import androidx.compose.animation.AnimatedVisibility
@@ -40,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.ComposeTextField
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.KeyboardListener
 import ru.usedesk.knowledgebase_gui.compose.StoreKeys
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
@@ -64,11 +64,17 @@ internal fun ContentReview(
     supportButtonVisible.value = false
 
     val viewModel = kbUiViewModel(
-        key = remember(articleId) { articleId.toString() },
+        key = articleId,
         viewModelStoreOwner = rememberViewModelStoreOwner {
             viewModelStoreFactory.get(StoreKeys.REVIEW.name)
+        },
+        factory = KbUiViewModelFactory { kbUiComponent ->
+            ReviewViewModel(
+                kbUiComponent.interactor,
+                articleId
+            )
         }
-    ) { kbUiComponent -> ReviewViewModel(kbUiComponent.interactor, articleId) }
+    )
     DisposableEffect(Unit) {
         onDispose {
             if (getCurrentScreen() !is RootViewModel.State.Screen.Review) {

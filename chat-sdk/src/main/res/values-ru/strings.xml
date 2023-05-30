@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
     <string name="usedesk_close">@string/usedesk_string_close</string>
     <string name="usedesk_notification_channel_title">@string/usedesk_string_notification_channel_title</string>

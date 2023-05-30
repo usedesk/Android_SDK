@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
 import android.os.Build
@@ -47,6 +46,7 @@ import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
 import ru.usedesk.knowledgebase_gui.compose.CardCircleProgress
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
 import ru.usedesk.knowledgebase_gui.compose.StoreKeys
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
@@ -71,11 +71,19 @@ internal fun ContentArticle(
     onReview: () -> Unit
 ) {
     val viewModel = kbUiViewModel(
-        key = remember(articleId) { articleId.toString() },
+        key = articleId,
         viewModelStoreOwner = rememberViewModelStoreOwner {
             viewModelStoreFactory.get(StoreKeys.ARTICLE.name)
+        },
+        factory = remember(articleId) {
+            KbUiViewModelFactory { kbUiComponent ->
+                ArticleViewModel(
+                    kbUiComponent.interactor,
+                    articleId
+                )
+            }
         }
-    ) { kbUiComponent -> ArticleViewModel(kbUiComponent.interactor, articleId) }
+    )
 
     DisposableEffect(Unit) {
         onDispose {
@@ -228,12 +236,14 @@ private fun ArticleBlock(
                             )
                             .card(theme)
                             .padding(theme.dimensions.articleContentInnerPadding),
-                        factory = { context ->
-                            LinearLayout(context).apply {
-                                orientation = LinearLayout.VERTICAL
+                        factory = remember {
+                            { context ->
+                                LinearLayout(context).apply {
+                                    orientation = LinearLayout.VERTICAL
 
-                                addView(webView)
-                                addView(ratingView)
+                                    addView(webView)
+                                    addView(ratingView)
+                                }
                             }
                         }
                     )

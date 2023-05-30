@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories
 
 import androidx.compose.foundation.background
@@ -21,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
@@ -63,8 +64,14 @@ internal fun ContentCategories(
 ) {
     val viewModel = kbUiViewModel(
         key = sectionId.toString(),
-        viewModelStoreOwner = viewModelStoreOwner
-    ) { kbUiComponent -> CategoriesViewModel(kbUiComponent.interactor, sectionId) }
+        viewModelStoreOwner = viewModelStoreOwner,
+        factory = KbUiViewModelFactory { kbUiComponent ->
+            CategoriesViewModel(
+                kbUiComponent.interactor,
+                sectionId
+            )
+        }
+    )
     val state by viewModel.modelFlow.collectAsState()
     supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     LazyColumn(
@@ -74,17 +81,17 @@ internal fun ContentCategories(
         items(
             items = state.categories,
             key = UsedeskCategory::id
-        ) {
+        ) { category ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .cardItem(
                         theme = theme,
-                        isTop = it == state.categories.firstOrNull(),
-                        isBottom = it == state.categories.lastOrNull()
+                        isTop = category == state.categories.firstOrNull(),
+                        isBottom = category == state.categories.lastOrNull()
                     )
                     .clickableItem(
-                        onClick = remember { { onCategoryClick(it) } }
+                        onClick = remember { { onCategoryClick(category) } }
                     )
                     .padding(theme.dimensions.categoriesItemInnerPadding),
                 verticalAlignment = Alignment.CenterVertically
@@ -97,31 +104,17 @@ internal fun ContentCategories(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             style = theme.textStyles.categoriesTitle,
-                            text = it.title
+                            text = category.title
                         )
                         BasicText(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(theme.dimensions.categoriesItemTitlePadding),
                             style = theme.textStyles.categoriesDescription,
-                            text = remember(it.description) { it.description.ifEmpty { " " } }
+                            text = remember(category.description) { category.description.ifEmpty { " " } }
                         )
-                    }, measurePolicy = { measurables, constraints ->
-                        val titlePlaceable = measurables[0].measure(constraints)
-                        val descriptionPlaceable = measurables[1].measure(constraints)
-                        val totalHeight = titlePlaceable.height + descriptionPlaceable.height
-                        val titleY = when {
-                            it.description.isEmpty() -> (totalHeight - titlePlaceable.height) / 2
-                            else -> 0
-                        }
-                        layout(
-                            constraints.maxWidth,
-                            totalHeight
-                        ) {
-                            titlePlaceable.placeRelative(0, titleY)
-                            descriptionPlaceable.placeRelative(0, titlePlaceable.height)
-                        }
-                    }
+                    },
+                    measurePolicy = measurePolicy(category.description)
                 )
                 Icon(
                     modifier = Modifier
@@ -131,6 +124,27 @@ internal fun ContentCategories(
                     contentDescription = null
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun measurePolicy(description: String): MeasurePolicy = remember(description) {
+    val descriptionIsEmpty = description.isEmpty()
+    MeasurePolicy { measurables, constraints ->
+        val titlePlaceable = measurables[0].measure(constraints)
+        val descriptionPlaceable = measurables[1].measure(constraints)
+        val totalHeight = titlePlaceable.height + descriptionPlaceable.height
+        val titleY = when {
+            descriptionIsEmpty -> (totalHeight - titlePlaceable.height) / 2
+            else -> 0
+        }
+        layout(
+            constraints.maxWidth,
+            totalHeight
+        ) {
+            titlePlaceable.placeRelative(0, titleY)
+            descriptionPlaceable.placeRelative(0, titlePlaceable.height)
         }
     }
 }

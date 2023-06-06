@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
     <attr name="usedesk_knowledgebase_screen_support_button" format="reference" />
     <attr name="usedesk_knowledgebase_screen_toolbar_search" format="reference" />

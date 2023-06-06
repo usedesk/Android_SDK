@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -20,17 +19,17 @@
         android:paddingTop="32dp"
         android:paddingBottom="32dp">
 
-        <ImageButton
+        <ImageView
             android:id="@id/exo_play"
             style="@style/ExoMediaButton.Play"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@drawable/usedesk_ic_play_light" />
+            android:src="@drawable/usedesk_ic_play_light" />
 
-        <ImageButton
+        <ImageView
             android:id="@id/exo_pause"
             style="@style/ExoMediaButton.Pause"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@drawable/usedesk_ic_pause_light" />
+            android:src="@drawable/usedesk_ic_pause_light" />
     </LinearLayout>
 
     <LinearLayout

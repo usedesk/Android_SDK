@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks.search
 
 import androidx.compose.animation.*
@@ -51,8 +50,9 @@ internal fun ContentSearch(
     onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
     val viewModel = kbUiViewModel(
-        viewModelStoreOwner = viewModelStoreOwner
-    ) { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
+        viewModelStoreOwner = viewModelStoreOwner,
+        factory = KbUiViewModelFactory { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
+    )
     val state by viewModel.modelFlow.collectAsState()
     supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     Box(modifier = Modifier.fillMaxSize()) {

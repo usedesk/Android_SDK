@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
     <string name="usedesk_sections_title" translatable="false">@string/usedesk_string_sections_title</string>
     <string name="usedesk_article_review_title" translatable="false">@string/usedesk_string_article_review_title</string>

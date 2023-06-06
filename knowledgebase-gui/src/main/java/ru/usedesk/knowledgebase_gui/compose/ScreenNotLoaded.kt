@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.Crossfade
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
@@ -87,46 +87,51 @@ internal fun ScreenNotLoaded(
                     )
                 }
             },
-            measurePolicy = { measurables, constraints ->
-                val minSize = min(constraints.maxWidth, constraints.maxHeight)
-                val topItemPlaceable = measurables[0].measure(
-                    constraints.copy(
-                        maxWidth = minSize,
-                        maxHeight = minSize,
-                        minWidth = 0,
-                        minHeight = 0
-                    )
-                )
-                val bottomItemPlaceable = measurables[1].measure(constraints)
-                val sumHeight = topItemPlaceable.height + bottomItemPlaceable.height
-                val maxItemHeight = max(topItemPlaceable.height, bottomItemPlaceable.height)
-                val totalHeight: Int
-                val bottomY: Int
-                if (constraints.maxHeight >= maxItemHeight * 2) {
-                    totalHeight = maxItemHeight * 2
-                    bottomY = maxItemHeight
-                } else if (constraints.maxHeight >= sumHeight) {
-                    totalHeight = sumHeight
-                    val bottomSpace = constraints.maxHeight - totalHeight
-                    bottomY = constraints.maxHeight - bottomItemPlaceable.height - bottomSpace
-                } else {
-                    totalHeight = bottomItemPlaceable.height
-                    bottomY = 0
-                }
-                val topY = bottomY - topItemPlaceable.height
-                layout(
-                    constraints.maxWidth,
-                    totalHeight
-                ) {
-                    if (topY >= 0) {
-                        topItemPlaceable.placeRelative(
-                            (constraints.maxWidth - topItemPlaceable.width) / 2,
-                            topY
-                        )
-                    }
-                    bottomItemPlaceable.placeRelative(0, bottomY)
-                }
-            }
+            measurePolicy = measurePolicy()
         )
+    }
+}
+
+@Composable
+private fun measurePolicy(): MeasurePolicy = remember {
+    MeasurePolicy { measurables, constraints ->
+        val minSize = min(constraints.maxWidth, constraints.maxHeight)
+        val topItemPlaceable = measurables[0].measure(
+            constraints.copy(
+                maxWidth = minSize,
+                maxHeight = minSize,
+                minWidth = 0,
+                minHeight = 0
+            )
+        )
+        val bottomItemPlaceable = measurables[1].measure(constraints)
+        val sumHeight = topItemPlaceable.height + bottomItemPlaceable.height
+        val maxItemHeight = max(topItemPlaceable.height, bottomItemPlaceable.height)
+        val totalHeight: Int
+        val bottomY: Int
+        if (constraints.maxHeight >= maxItemHeight * 2) {
+            totalHeight = maxItemHeight * 2
+            bottomY = maxItemHeight
+        } else if (constraints.maxHeight >= sumHeight) {
+            totalHeight = sumHeight
+            val bottomSpace = constraints.maxHeight - totalHeight
+            bottomY = constraints.maxHeight - bottomItemPlaceable.height - bottomSpace
+        } else {
+            totalHeight = bottomItemPlaceable.height
+            bottomY = 0
+        }
+        val topY = bottomY - topItemPlaceable.height
+        layout(
+            constraints.maxWidth,
+            totalHeight
+        ) {
+            if (topY >= 0) {
+                topItemPlaceable.placeRelative(
+                    (constraints.maxWidth - topItemPlaceable.width) / 2,
+                    topY
+                )
+            }
+            bottomItemPlaceable.placeRelative(0, bottomY)
+        }
     }
 }

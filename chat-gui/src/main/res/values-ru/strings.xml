@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources>
     <string name="usedesk_string_offline_form_send_successed">Сообщение отправлено!\nМы ответим вам в течении 1 рабочего дня.</string>
     <string name="usedesk_string_offline_form_send_failed">Не удалось отправить сообщение! Пожалуйста, попробуйте снова.</string>

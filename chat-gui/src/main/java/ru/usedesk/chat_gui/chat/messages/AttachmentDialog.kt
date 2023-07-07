@@ -1,9 +1,7 @@
-
 package ru.usedesk.chat_gui.chat.messages
 
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskBottomSheetDialog
@@ -16,37 +14,29 @@ internal class AttachmentDialog private constructor(
     dialogStyle: Int
 ) : UsedeskBottomSheetDialog(screen.requireContext(), dialogStyle) {
 
-    private val binding: Binding
-
     init {
-        val container = screen.view as ViewGroup
-
-        binding = inflateItem(
+        inflateItem(
             layoutInflater,
-            container,
+            screen.view as ViewGroup,
             R.layout.usedesk_dialog_attachment,
             dialogStyle,
             ::Binding
-        )
+        ).apply {
+            setContentView(rootView)
 
-        setContentView(binding.rootView)
+            lGallery.setOnClickListener {
+                dismiss()
+                screen.startImages()
+            }
 
-        binding.lGallery.setOnClickListener {
-            dismiss()
-            screen.startImages()
-        }
-
-        binding.lCamera.setOnClickListener {
-            dismiss()
-            screen.needCameraPermission()
-        }
-        binding.lStorage.setOnClickListener {
-            dismiss()
-            screen.startFiles()
-        }
-
-        BottomSheetBehavior.from(binding.rootView.parent as View).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
+            lCamera.setOnClickListener {
+                dismiss()
+                screen.needCameraPermission()
+            }
+            lStorage.setOnClickListener {
+                dismiss()
+                screen.startFiles()
+            }
         }
     }
 
@@ -57,7 +47,8 @@ internal class AttachmentDialog private constructor(
         )
     }
 
-    class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
+    private class Binding(rootView: View, defaultStyleId: Int) :
+        UsedeskBinding(rootView, defaultStyleId) {
         val lGallery: View = rootView.findViewById(R.id.l_gallery)
         val lCamera: View = rootView.findViewById(R.id.l_camera)
         val lStorage: View = rootView.findViewById(R.id.l_storage)

@@ -18,7 +18,7 @@ internal interface ICachedMessagesRepository {
 
     suspend fun removeNotSentMessage(localId: Long)
 
-    suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri>
+    suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri?>
 
     suspend fun removeFileFromCache(uri: Uri)
 

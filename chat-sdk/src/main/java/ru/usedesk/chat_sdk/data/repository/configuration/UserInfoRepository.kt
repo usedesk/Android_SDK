@@ -1,8 +1,8 @@
-
 package ru.usedesk.chat_sdk.data.repository.configuration
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -23,7 +23,7 @@ internal class UserInfoRepository @Inject constructor(
     init {
         runBlocking {
             mutex.lock(configurationMap)
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
                 configurationLoader.getData()?.let { configurations ->
                     configurationMap.putAll(configurations.associateBy { it.userKey() })
                 }

@@ -5,6 +5,7 @@ import androidx.core.text.parseAsHtml
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +40,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
     private val articleModelFlowMap = mutableMapOf<Long, MutableStateFlow<ArticleModel>>()
 
     private val mutex = Mutex()
-    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val ratingStateMap = mutableMapOf<Long, RatingState>()
 

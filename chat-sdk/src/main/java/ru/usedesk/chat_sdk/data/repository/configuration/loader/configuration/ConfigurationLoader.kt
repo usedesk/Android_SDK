@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration
 
 import android.content.Context
@@ -8,6 +7,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import javax.inject.Inject
 
 internal class ConfigurationLoader @Inject constructor(
@@ -65,82 +65,99 @@ internal class ConfigurationLoader @Inject constructor(
             .apply()
     }
 
-    private fun loadLegacy(oldVersion: Int): Array<UsedeskChatConfiguration>? = when (oldVersion) {
-        1 -> {
-            val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
-            val urlChatApi = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
-            val companyId = sharedPreferences.getString(KEY_ID, null)
-            val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
-            val clientInitMessage = sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
-            when {
-                urlChat != null
-                        && urlChatApi != null
-                        && companyId != null -> {
-                    var clientName: String? = null
-                    var clientPhone: String? = null
-                    var clientAdditionalId: String? = null
-                    try {
-                        clientName = sharedPreferences.getString(KEY_NAME, null)
-                        clientPhone = sharedPreferences.getString(KEY_PHONE, null)
-                        clientAdditionalId =
-                            sharedPreferences.getString(KEY_ADDITIONAL_ID, null)
-                    } catch (e: ClassCastException) {
+    private fun loadLegacy(oldVersion: Int): Array<UsedeskChatConfiguration>? = valueOrNull {
+        when (oldVersion) {
+            1 -> {
+                val urlChat = sharedPreferences.getString(KEY_URL_CHAT, null)
+                val urlChatApi = sharedPreferences.getString(KEY_URL_OFFLINE_FORM, null)
+                val companyId = sharedPreferences.getString(KEY_ID, null)
+                val clientEmail = sharedPreferences.getString(KEY_EMAIL, null)
+                val clientInitMessage =
+                    sharedPreferences.getString(KEY_CLIENT_INIT_MESSAGE, null)
+                when {
+                    urlChat != null
+                            && urlChatApi != null
+                            && companyId != null -> {
+                        var clientName: String? = null
+                        var clientPhone: String? = null
+                        var clientAdditionalId: String? = null
                         try {
-                            clientPhone = sharedPreferences.getLong(KEY_PHONE, 0)
-                                .toString() //For migrations with long
+                            clientName = sharedPreferences.getString(KEY_NAME, null)
+                            clientPhone = sharedPreferences.getString(KEY_PHONE, null)
                             clientAdditionalId =
-                                sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0).toString()
-                        } catch (e1: ClassCastException) {
-                            e.printStackTrace()
+                                sharedPreferences.getString(KEY_ADDITIONAL_ID, null)
+                        } catch (e: ClassCastException) {
+                            try {
+                                clientPhone = sharedPreferences.getLong(KEY_PHONE, 0)
+                                    .toString() //For migrations with long
+                                clientAdditionalId =
+                                    sharedPreferences.getLong(KEY_ADDITIONAL_ID, 0).toString()
+                            } catch (e1: ClassCastException) {
+                                e.printStackTrace()
+                            }
                         }
-                    }
-                    arrayOf(
-                        UsedeskChatConfiguration(
-                            urlChat = urlChat,
-                            urlChatApi = urlChatApi,
-                            companyId = companyId,
-                            channelId = "",
-                            clientToken = legacyClientToken,
-                            clientEmail = clientEmail,
-                            clientName = clientName,
-                            clientNote = null,
-                            clientPhoneNumber = clientPhone?.toLongOrNull(),
-                            clientAdditionalId = clientAdditionalId,
-                            clientInitMessage = clientInitMessage
+                        arrayOf(
+                            UsedeskChatConfiguration(
+                                urlChat = urlChat,
+                                urlChatApi = urlChatApi,
+                                companyId = companyId,
+                                channelId = "",
+                                clientToken = legacyClientToken,
+                                clientEmail = clientEmail,
+                                clientName = clientName,
+                                clientNote = null,
+                                clientPhoneNumber = clientPhone?.toLongOrNull(),
+                                clientAdditionalId = clientAdditionalId,
+                                clientInitMessage = clientInitMessage
+                            )
                         )
-                    )
+                    }
+                    else -> null
                 }
-                else -> null
             }
+            2, 3, 4 -> {
+                val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
+                val json = gson.fromJson(jsonRaw, JsonObject::class.java)
+                if (!json.has("channelId")) {
+                    json.addProperty("channelId", "")
+                }
+                if (!json.has("clientToken")) {
+                    json.addProperty("clientToken", legacyClientToken)
+                }
+                if (!json.has("cacheMessagesWithFile")) {
+                    json.addProperty("cacheMessagesWithFile", true)
+                }
+                if (!json.has("additionalFields")) {
+                    json.add("additionalFields", JsonObject())
+                }
+                if (!json.has("additionalNestedFields")) {
+                    json.add("additionalNestedFields", JsonArray())
+                }
+                if (json.has("urlOfflineForm")) {
+                    val urlOfflineForm = json.get("urlOfflineForm")
+                    json.remove("urlOfflineForm")
+                    json.add("urlChatApi", urlOfflineForm)
+                }
+                val configuration = gson.fromJson(json, UsedeskChatConfiguration::class.java)
+                arrayOf(configuration)
+            }
+            5 -> {
+                val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
+                val json = gson.fromJson(jsonRaw, JsonObject::class.java)
+                if (json.has("urlOfflineForm")) {
+                    val urlOfflineForm = json.get("urlOfflineForm")
+                    json.remove("urlOfflineForm")
+                    json.add("urlChatApi", urlOfflineForm)
+                }
+                val configuration = gson.fromJson(json, UsedeskChatConfiguration::class.java)
+                arrayOf(configuration)
+            }
+            else -> null
         }
-        2, 3, 4 -> try {
-            val jsonRaw = sharedPreferences.getString(KEY_DATA, null)
-            val json = gson.fromJson(jsonRaw, JsonObject::class.java)
-            if (!json.has("channelId")) {
-                json.addProperty("channelId", "")
-            }
-            if (!json.has("clientToken")) {
-                json.addProperty("clientToken", legacyClientToken)
-            }
-            if (!json.has("cacheMessagesWithFile")) {
-                json.addProperty("cacheMessagesWithFile", true)
-            }
-            if (!json.has("additionalFields")) {
-                json.add("additionalFields", JsonObject())
-            }
-            if (!json.has("additionalNestedFields")) {
-                json.add("additionalNestedFields", JsonArray())
-            }
-            val configuration = gson.fromJson(json, UsedeskChatConfiguration::class.java)
-            arrayOf(configuration)
-        } catch (e: Exception) {
-            null
-        }
-        else -> null
     }
 
     companion object {
-        private const val CURRENT_VERSION = 5
+        private const val CURRENT_VERSION = 6
 
         private const val PREF_NAME = "usedeskSdkConfiguration"
 

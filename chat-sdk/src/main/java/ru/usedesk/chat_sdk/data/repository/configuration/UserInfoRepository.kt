@@ -41,8 +41,8 @@ internal class UserInfoRepository @Inject constructor(
     ) {
         runBlocking {
             mutex.withLock {
-                configurationMap[initKey] =
-                    configurationMap.getOrElse(initKey) { initConfiguration }.onUpdate()
+                val configuration = configurationMap.getOrElse(initKey) { initConfiguration }
+                configurationMap[initKey] = configuration.onUpdate()
                 configurationLoader.setData(configurationMap.values.toTypedArray())
             }
         }

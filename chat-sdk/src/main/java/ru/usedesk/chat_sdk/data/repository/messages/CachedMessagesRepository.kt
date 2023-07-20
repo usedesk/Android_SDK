@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.data.repository.messages
 
 import android.net.Uri
@@ -7,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -42,7 +42,8 @@ internal class CachedMessagesRepository @Inject constructor(
 
     private val mutex = Mutex()
 
-    private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri>>()
+    private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri?>>()
+    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     init {
         val userKey = findUserKey()
@@ -131,12 +132,12 @@ internal class CachedMessagesRepository @Inject constructor(
         messagesRepository.removeNotSentMessage(userKey, localId)
     }
 
-    override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri> = mutex.withLock {
+    override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri?> = mutex.withLock {
         getCachedFileInnerAsync(uri)
     }
 
     private fun getCachedFileInnerAsync(uri: Uri) = deferredCachedUriMap.getOrPut(uri) {
-        CoroutineScope(Dispatchers.IO).async {
+        ioScope.async {
             fileLoader.save(uri)
         }
     }
@@ -154,7 +155,9 @@ internal class CachedMessagesRepository @Inject constructor(
             cancel()
             if (isCompleted) {
                 val cachedUri = await()
-                fileLoader.remove(cachedUri)
+                if (cachedUri != null) {
+                    fileLoader.remove(cachedUri)
+                }
             }
         }
     }
@@ -164,27 +167,26 @@ internal class CachedMessagesRepository @Inject constructor(
             draftJob?.cancel()
             draftJob = null
             saveJob?.cancel()
-            saveJob = CoroutineScope(Dispatchers.IO).launch {
-                yield()
+            saveJob = ioScope.launch {
                 val userKey = requireUserKey()
-                yield()
                 mutex.withLock {
                     val messageDraft = messagesRepository.getDraft(userKey)
-                    messagesRepository.setDraft(userKey, messageDraft.copy(
-                        files = messageDraft.files.mapNotNull {
-                            val deferredCachedUri = deferredCachedUriMap[it.uri]
-                            try {
-                                val cachedUri = deferredCachedUri?.getCompleted()!!
-                                it.copy(uri = cachedUri)
-                            } catch (e: Exception) {
-                                null
+                    messagesRepository.setDraft(
+                        userKey,
+                        messageDraft.copy(
+                            files = messageDraft.files.mapNotNull {
+                                val deferredCachedUri = deferredCachedUriMap[it.uri]
+                                when (val cachedUri = deferredCachedUri?.await()) {
+                                    null -> null
+                                    else -> it.copy(uri = cachedUri)
+                                }
                             }
-                        }
-                    ))
+                        )
+                    )
                 }
             }
         } else {
-            draftJob = draftJob ?: CoroutineScope(Dispatchers.IO).launch {
+            draftJob = draftJob ?: ioScope.launch {
                 delay(2000)
                 yield()
                 mutex.withLock {

@@ -51,7 +51,7 @@
     </style>
 
     <style name="Custom.Chat.Attachment.Dialog" parent="Usedesk.Chat.Attachment.Dialog">
-        <item name="bottomSheetStyle">@style/Custom.Chat.Attachment.Dialog</item>
+        <item name="bottomSheetStyle">@style/Custom.Chat.Attachment.Dialog.Style</item>
     </style>
 
 </resources>

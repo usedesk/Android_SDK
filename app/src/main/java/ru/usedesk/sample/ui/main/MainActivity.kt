@@ -84,6 +84,12 @@ class MainActivity : AppCompatActivity(),
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
+        /*mapOf(
+            R.style.Usedesk_Chat_Attachment_Dialog to R.style.Custom_Chat_Attachment_Dialog,
+            R.style.Usedesk_Chat_FormSelector_Dialog to R.style.Custom_Chat_FormSelector_Dialog
+        ).forEach {
+            UsedeskResourceManager.replaceResourceId(it.key, it.value)
+        }*/
         val themeId = when {
             materialComponents -> R.style.AppTheme_MaterialComponents
             else -> R.style.AppTheme
@@ -275,16 +281,13 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    private inline fun <reified T> getChildFragment(): T? = navHostFragment
-        .childFragmentManager
-        .fragments
-        .filterIsInstance<T>()
-        .firstOrNull()
-
     override fun onBackPressed() {
-        val currentFragment = getChildFragment<UsedeskFragment>()
-        if (currentFragment?.onBackPressed() != true && !navController.popBackStack()) {
-            super.onBackPressed()
+        val currentFragment = navHostFragment
+            .childFragmentManager
+            .fragments
+            .firstOrNull()
+        if ((currentFragment as? UsedeskFragment)?.onBackPressed() != true && !navController.popBackStack()) {
+            finish()
         }
     }
 

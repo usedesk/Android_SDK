@@ -28,12 +28,15 @@
         <item name="usedesk_common_toolbar">@style/Usedesk.Common.Toolbar</item>
     </style>
 
-    <style name="Usedesk.Common.BottomSheetDialog.ContainerRoot" parent="">
-        <item name="android:background">@color/usedesk_white_1</item>
+    <style name="Usedesk.Common.BottomSheetDialog.ContainerRoot" parent="" />
+
+    <style name="Usedesk.Common.BottomSheetDialog.Style" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="backgroundTint">@color/usedesk_white_1</item>
     </style>
 
     <style name="Usedesk.Common.BottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-        <item name="usedesk_common_container_root">@style/Usedesk.Common.BottomSheetDialog.ContainerRoot</item>
+        <item name="bottomSheetStyle">@style/Usedesk.Common.BottomSheetDialog.Style</item>
+        <item name="usedesk_common_container_root">@style/Usedesk.Common.BottomSheetDialog.ContainerRoot</item>-
     </style>
 
     <style name="Usedesk.Common.No.Permission.Snackbar" parent="">

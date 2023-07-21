@@ -1,11 +1,9 @@
-
 package ru.usedesk.chat_gui.chat.messages
 
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import android.widget.TextView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.common_gui.UsedeskBinding
@@ -20,27 +18,18 @@ internal class FormSelectorDialog private constructor(
 ) : UsedeskBottomSheetDialog(screen.requireContext(), dialogStyle) {
 
     private val binding: Binding
-    private val notSelectedTitle: String
 
     init {
-        val container = screen.view as ViewGroup
-
         binding = inflateItem(
             layoutInflater,
-            container,
+            screen.view as ViewGroup,
             R.layout.usedesk_dialog_form_selector,
             dialogStyle,
             ::Binding
-        )
+        ).apply {
+            npPicker.wrapSelectorWheel = false
 
-        notSelectedTitle = binding.styleValues.getString(R.attr.usedesk_text_1)
-
-        binding.npPicker.wrapSelectorWheel = false
-
-        setContentView(binding.rootView)
-
-        BottomSheetBehavior.from(binding.rootView.parent as View).apply {
-            state = BottomSheetBehavior.STATE_EXPANDED
+            setContentView(rootView)
         }
     }
 
@@ -51,7 +40,8 @@ internal class FormSelectorDialog private constructor(
         val availableItems = formSelector.list.items.filter {
             it.parentItemsId.isEmpty() || formSelector.parentSelectedId in it.parentItemsId
         }
-        val values = (listOf(notSelectedTitle) + availableItems.map { it.name }).toTypedArray()
+        val values = arrayOf(binding.styleValues.getString(R.attr.usedesk_text_1)) +
+                availableItems.map(UsedeskForm.Field.List.Item::name)
 
         binding.npPicker.apply {
             minValue = 0

@@ -46,6 +46,8 @@ class ConfigurationScreen : UsedeskFragment() {
             if (old?.avatar != new.avatar) {
                 GlideApp.with(binding.ivAvatar)
                     .load(new.avatar)
+                    .placeholder(R.drawable.add_avatar)
+                    .error(R.drawable.add_avatar)
                     .into(binding.ivAvatar)
             }
             if (old?.configuration != new.configuration) {

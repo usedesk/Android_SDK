@@ -46,6 +46,7 @@ dependencies {
     implementation "com.google.android.material:material:$materialVersion"
 
     implementation "com.google.android.exoplayer:exoplayer:$exoPlayerVersion"
+    implementation "com.google.android.exoplayer:extension-okhttp:$exoPlayerVersion"
 
     implementation "com.github.Dimezis:BlurView:version-2.0.2"
     implementation "com.github.chrisbanes:PhotoView:2.3.0"

@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat
 
 import android.view.View
@@ -13,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.ui.PlayerView
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
@@ -23,10 +24,13 @@ import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
+
 
 internal class MediaPlayerAdapter(
     fragment: UsedeskFragment,
-    private val playerViewModel: PlayerViewModel
+    private val playerViewModel: PlayerViewModel,
+    private val usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory
 ) {
     private var fullscreenListener = fragment.findParent<IUsedeskOnFullscreenListener>()
     private var downloadListener = fragment.findParent<IUsedeskOnDownloadListener>()
@@ -47,6 +51,11 @@ internal class MediaPlayerAdapter(
 
     private val exoPlayer: ExoPlayer = playerViewModel.exoPlayer
         ?: ExoPlayer.Builder(fragment.requireContext())
+            .apply {
+                val okHttpClient = usedeskOkHttpClientFactory.createInstance()
+                val okHttpDataSourceFactory = OkHttpDataSource.Factory(okHttpClient)
+                setMediaSourceFactory(DefaultMediaSourceFactory(okHttpDataSourceFactory))
+            }
             .build().also {
                 playerViewModel.exoPlayer = it
                 restored = false

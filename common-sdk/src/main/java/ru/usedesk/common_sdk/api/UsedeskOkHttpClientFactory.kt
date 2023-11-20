@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
 
-internal class UsedeskOkHttpClientFactory @Inject constructor(
+class UsedeskOkHttpClientFactory @Inject constructor(
     private val appContext: Context
 ) : IUsedeskOkHttpClientFactory {
     override fun createInstance(): OkHttpClient = OkHttpClient.Builder().apply {

@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat
 
 import android.os.Bundle
@@ -35,7 +34,8 @@ class UsedeskChatScreen : UsedeskFragment() {
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
             this,
-            playerViewModel
+            playerViewModel,
+            viewModel.usedeskOkHttpClientFactory
         )
     }
 

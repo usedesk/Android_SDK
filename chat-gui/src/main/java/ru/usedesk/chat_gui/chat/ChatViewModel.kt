@@ -9,11 +9,13 @@ import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_gui.UsedeskViewModel
+import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import javax.inject.Inject
 
 internal class ChatViewModel @Inject constructor(
-    private val usedeskChat: IUsedeskChat
+    private val usedeskChat: IUsedeskChat,
+    val usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory
 ) : UsedeskViewModel<ChatViewModel.Model>(Model()) {
 
     private val actionListener = object : IUsedeskActionListener {

@@ -32,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -70,14 +71,10 @@ internal class MessagesAdapter(
     private val dateBinding: DateBinding,
     private val viewModel: MessagesViewModel,
     private val lifecycleScope: LifecycleCoroutineScope,
-    private val customAgentName: String?,
-    private val rejectedFileExtensions: Array<String>,
+    private val chatArgs: ChatArgs,
     private val mediaPlayerAdapter: MediaPlayerAdapter,
     private val onFileClick: (UsedeskFile) -> Unit,
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
-    messagesDateFormat: String,
-    messageTimeFormat: String,
-    private val adaptiveTextMessageTimePadding: Boolean,
     savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
@@ -88,8 +85,8 @@ internal class MessagesAdapter(
 
     private val saved = savedStated != null
 
-    private val dateFormat = SimpleDateFormat(messagesDateFormat, Locale.getDefault())
-    private val timeFormat = SimpleDateFormat(messageTimeFormat, Locale.getDefault())
+    private val dateFormat = SimpleDateFormat(chatArgs.messagesDateFormat, Locale.getDefault())
+    private val timeFormat = SimpleDateFormat(chatArgs.messageTimeFormat, Locale.getDefault())
 
     private val dateStyleValues = dateBinding.styleValues
         .getStyleValues(R.attr.usedesk_chat_message_date_text)
@@ -513,7 +510,7 @@ internal class MessagesAdapter(
             val messageAgent =
                 (chatItem as ChatItem.Message.Agent).message as UsedeskMessageOwner.Agent
 
-            agentBinding.tvName.text = customAgentName ?: messageAgent.name
+            agentBinding.tvName.text = chatArgs.agentName ?: messageAgent.name
             agentBinding.tvName.visibility = visibleGone(chatItem.showName)
 
             val avatarImageId: Int
@@ -607,7 +604,7 @@ internal class MessagesAdapter(
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         init {
-            if (adaptiveTextMessageTimePadding) {
+            if (chatArgs.adaptiveTextMessageTimePadding) {
                 val adaptiveMargin = getAdaptiveMargin(
                     binding.tvTime,
                     binding.lContent
@@ -659,7 +656,7 @@ internal class MessagesAdapter(
             binding.tvFileName.text = name
             binding.tvExtension.text = name.substringAfterLast('.')
             val textColorId = when {
-                rejectedFileExtensions.any(name::endsWith) -> {
+                chatArgs.rejectedFileExtensions.any(name::endsWith) -> {
                     binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
                     R.attr.usedesk_text_color_2
                 }
@@ -1188,7 +1185,7 @@ internal class MessagesAdapter(
 
         override fun bind(chatItem: ChatItem) {
             chatItem as ChatItem.MessageAgentName
-            binding.tvName.text = chatItem.name
+            binding.tvName.text = chatArgs.agentName ?: chatItem.name
         }
     }
 

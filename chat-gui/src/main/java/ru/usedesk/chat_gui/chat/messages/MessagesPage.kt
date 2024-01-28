@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages
 
 import android.content.Intent
@@ -19,6 +18,7 @@ import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
 import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.adapters.FabToBottomAdapter
@@ -69,21 +69,12 @@ internal class MessagesPage : UsedeskFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        findParent<UsedeskChatScreen>()?.getBundleArgs(savedInstanceState) { _,
-            agentName,
-            rejectedFileExtensions,
-            messagesDateFormat,
-            messageTimeFormat,
-            adaptiveTextMessageTimePadding,
-            groupAgentMessages ->
+        findParent<UsedeskChatScreen>()?.run {
+            val chatArgs = getChatArgs(savedInstanceState)
+
             init(
-                agentName,
-                rejectedFileExtensions ?: arrayOf(),
-                savedInstanceState,
-                messagesDateFormat,
-                messageTimeFormat,
-                adaptiveTextMessageTimePadding,
-                groupAgentMessages
+                chatArgs = chatArgs,
+                savedInstanceState = savedInstanceState,
             )
         }
 
@@ -196,15 +187,10 @@ internal class MessagesPage : UsedeskFragment() {
     }
 
     private fun init(
-        agentName: String?,
-        rejectedFileExtensions: Array<String>,
+        chatArgs: ChatArgs,
         savedInstanceState: Bundle?,
-        messagesDateFormat: String,
-        messageTimeFormat: String,
-        adaptiveTextMessageTimePadding: Boolean,
-        groupAgentMessages: Boolean
     ) {
-        viewModel.onEvent(MessagesViewModel.Event.Init(groupAgentMessages))
+        viewModel.onEvent(MessagesViewModel.Event.Init(chatArgs.groupAgentMessages))
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
@@ -223,14 +209,10 @@ internal class MessagesPage : UsedeskFragment() {
             binding.dateBinding,
             viewModel,
             lifecycleScope,
-            agentName,
-            rejectedFileExtensions,
+            chatArgs,
             mediaPlayerAdapter,
             { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
             { findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name) },
-            messagesDateFormat,
-            messageTimeFormat,
-            adaptiveTextMessageTimePadding,
             savedInstanceState
         )
 

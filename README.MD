@@ -143,7 +143,7 @@ The `newInstance` and `createBundle` methods take the following arguments:
 | **Argument**                       | **Type**                 | **Description**                                                                                        |
 |------------------------------------|--------------------------|--------------------------------------------------------------------------------------------------------|
 | **chatConfiguration**              | UsedeskChatConfiguration | `UsedeskChatScreen` assumes the responsibility of calling the `UsedeskChatSdk.setConfiguration` method |
-| **customAgentName**                | String?                  | If set, all agent names in the chat will be replaced by the value of the parameter                     |
+| **agentName**                      | String?                  | If set, all agent names in the chat will be replaced by the value of the parameter                     |
 | **rejectedFileExtensions**         | Collection\<String>?     | List of file extensions marked as dangerous (the `onFileClick` method of the parent is called anyway)  |
 | **messagesDateFormat**             | String?                  | If set, changes the format of the message group date display                                           |
 | **messageTimeFormat**              | String?                  | If set, changes the format of the message time display                                                 |

@@ -57,9 +57,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
         navController = navHostFragment.navController
 
-        getBundleArgs(savedInstanceState) { chatConfiguration, _, _, _, _, _, _ ->
-            init(chatConfiguration)
-        }
+        val chatArgs = getChatArgs(savedInstanceState)
+        init(chatArgs.configuration)
     }.rootView
 
     fun dismissAnyDialog() {
@@ -71,38 +70,28 @@ class UsedeskChatScreen : UsedeskFragment() {
             ?.dismissAnyDialog()
     }
 
-    internal fun getBundleArgs(
-        savedInstanceState: Bundle?,
-        onArgs: (
-            UsedeskChatConfiguration,
-            String?,
-            Array<String>?,
-            String,
-            String,
-            Boolean,
-            Boolean
-        ) -> Unit
-    ) {
-        onArgs(
-            savedInstanceState?.getParcelable(CHAT_CONFIGURATION_KEY)
-                ?: argsGetParcelable(CHAT_CONFIGURATION_KEY)
-                ?: throw RuntimeException("UsedeskChatConfiguration not found. Call the newInstance or createBundle method and put the configuration inside"),
-            argsGetString(AGENT_NAME_KEY),
-            argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY),
-            argsGetString(MESSAGES_DATE_FORMAT_KEY, MESSAGES_DATE_FORMAT_DEFAULT),
-            argsGetString(MESSAGE_TIME_FORMAT_KEY, MESSAGE_TIME_FORMAT_DEFAULT),
-            argsGetBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, false),
-            argsGetBoolean(GROUP_AGENT_MESSAGES, true)
-        )
-    }
+    internal fun getChatArgs(bundle: Bundle?) = ChatArgs(
+        configuration = bundle?.getParcelable(CHAT_CONFIGURATION_KEY)
+            ?: argsGetParcelable(CHAT_CONFIGURATION_KEY)
+            ?: throw RuntimeException("UsedeskChatConfiguration not found. Call the newInstance or createBundle method and put the configuration inside"),
+        agentName = argsGetString(AGENT_NAME_KEY),
+        rejectedFileExtensions = argsGetStringArray(REJECTED_FILE_EXTENSIONS_KEY)?.toList()
+            ?: listOf(),
+        messagesDateFormat = argsGetString(MESSAGES_DATE_FORMAT_KEY, MESSAGES_DATE_FORMAT_DEFAULT),
+        messageTimeFormat = argsGetString(MESSAGE_TIME_FORMAT_KEY, MESSAGE_TIME_FORMAT_DEFAULT),
+        adaptiveTextMessageTimePadding = argsGetBoolean(
+            ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY,
+            false
+        ),
+        groupAgentMessages = argsGetBoolean(GROUP_AGENT_MESSAGES, true)
+    )
 
     override fun onSaveInstanceState(outState: Bundle) {
-        getBundleArgs(outState) { configuration, _, _, _, _, _, _ ->
-            outState.putParcelable(
-                CHAT_CONFIGURATION_KEY,
-                configuration.copy(clientToken = viewModel.modelFlow.value.clientToken)
-            )
-        }
+        val chatArgs = getChatArgs(outState)
+        outState.putParcelable(
+            CHAT_CONFIGURATION_KEY,
+            chatArgs.configuration.copy(clientToken = viewModel.modelFlow.value.clientToken)
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -220,9 +209,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             groupAgentMessages: Boolean = true
         ): Bundle = Bundle().apply {
             putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
-            if (agentName != null) {
-                putString(AGENT_NAME_KEY, agentName)
-            }
+            agentName?.let { putString(AGENT_NAME_KEY, it) }
             val extensions = rejectedFileExtensions
                 ?.map { '.' + it.trim(' ', '.') }
                 ?.toTypedArray()

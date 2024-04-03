@@ -2,6 +2,7 @@
 package ru.usedesk.sample.ui.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ContentResolver
 import android.content.Context
@@ -281,6 +282,7 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         val currentFragment = navHostFragment
             .childFragmentManager

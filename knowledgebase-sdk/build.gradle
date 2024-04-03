@@ -8,7 +8,7 @@ plugins {
 
 android {
     compileSdk defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         minSdkVersion defaultMinSdkVersion
@@ -16,18 +16,16 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.knowledgebase_sdk"
 }
 
 dependencies {
-    implementation fileTree(include: ["*.jar"], dir: "libs")
-
     api project(":common-sdk")
 
     implementation "androidx.core:core-ktx:$coreKtxVersion"

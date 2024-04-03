@@ -8,7 +8,7 @@ plugins {
 
 android {
     compileSdk defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         minSdkVersion defaultMinSdkVersion
@@ -16,37 +16,35 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.chat_sdk"
 }
 
 dependencies {
-    implementation fileTree(include: ["*.jar"], dir: "libs")
-
-    api project(":common-sdk")
+    implementation project(":common-sdk")
 
     implementation("io.socket:socket.io-client:2.0.1") {
         exclude group: "org.json", module: "json"
     }
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesCoreVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
-
     implementation "androidx.core:core-ktx:$coreKtxVersion"
+
+    implementation "com.google.code.gson:gson:$gsonVersion"
 
     implementation "com.google.dagger:dagger:$daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesCoreVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
+
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-
-    implementation "com.google.code.gson:gson:$gsonVersion"
 
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"

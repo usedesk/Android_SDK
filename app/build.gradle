@@ -1,12 +1,12 @@
-plugins{
+plugins {
     id "com.android.application"
     id "kotlin-android"
     id "kotlin-kapt"
 }
 
 android {
-    compileSdkVersion defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    compileSdk defaultCompileSdkVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         applicationId "ru.usedesk.sample"
@@ -37,11 +37,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     buildFeatures {
         dataBinding = true

@@ -1,7 +1,7 @@
 
 package ru.usedesk.chat_gui.chat
 
-import com.google.android.exoplayer2.ExoPlayer
+import androidx.media3.exoplayer.ExoPlayer
 import ru.usedesk.common_gui.UsedeskViewModel
 
 internal class PlayerViewModel : UsedeskViewModel<PlayerViewModel.Model>(Model()) {

@@ -7,7 +7,7 @@ plugins {
 
 android {
     compileSdk defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         minSdkVersion defaultMinSdkVersion
@@ -15,18 +15,16 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.chat_gui"
 }
 
 dependencies {
-    implementation fileTree(include: ["*.jar"], dir: "libs")
-
     api project(":chat-sdk")
     api project(":common-gui")
 
@@ -34,7 +32,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleCommonVersion"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
@@ -45,8 +43,10 @@ dependencies {
 
     implementation "com.google.android.material:material:$materialVersion"
 
-    implementation "com.google.android.exoplayer:exoplayer:$exoPlayerVersion"
-    implementation "com.google.android.exoplayer:extension-okhttp:$exoPlayerVersion"
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation("androidx.media3:media3-ui:$media3Version")
+    implementation("androidx.media3:media3-common:$media3Version")
+    implementation("androidx.media3:media3-datasource-okhttp:$media3Version")
 
     implementation "com.github.Dimezis:BlurView:version-2.0.2"
     implementation "com.github.chrisbanes:PhotoView:2.3.0"

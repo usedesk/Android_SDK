@@ -10,14 +10,11 @@
     android:orientation="vertical"
     tools:targetApi="28">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/exo_center_controls"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="32dp"
-        android:paddingBottom="32dp">
+        android:layout_gravity="center">
 
         <ImageView
             android:id="@id/exo_play"
@@ -30,10 +27,10 @@
             style="@style/ExoMediaButton.Pause"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/usedesk_ic_pause_light" />
-    </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/l_bottom_bar"
+        android:id="@+id/exo_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

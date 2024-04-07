@@ -2,10 +2,9 @@ package ru.usedesk.chat_gui.chat
 
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.ProgressBar
-import androidx.core.view.updateLayoutParams
+import androidx.core.view.doOnLayout
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -63,9 +62,12 @@ internal class MediaPlayerAdapter(
             }
 
     private val playerListener = object : Player.Listener {
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            videoBinding.pbLoading.visibility =
-                visibleInvisible(playbackState == Player.STATE_BUFFERING)
+        override fun onEvents(player: Player, events: Player.Events) {
+            when {
+                player.playbackState == Player.STATE_BUFFERING -> setControlsVisibility(loader = true)
+                player.isPlaying -> setControlsVisibility(pause = true)
+                else -> setControlsVisibility(play = true)
+            }
         }
     }
 
@@ -75,38 +77,40 @@ internal class MediaPlayerAdapter(
     private val videoBinding = VideoExoPlayerBinding(pvVideoExoPlayer)
     private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
 
+    private fun playAfterPause() {
+        if (exoPlayer.playbackState == Player.STATE_ENDED) {
+            exoPlayer.seekTo(0)
+        }
+        exoPlayer.play()
+    }
+
     init {
-        /*audioBinding.contentFrame.updateLayoutParams {
-            width = 0
-            height = 0
-        }*/
+        audioBinding.apply {
+            contentFrame.visibility = View.GONE
+            buttonPlay.setOnClickListener { playAfterPause() }
+            buttonPause.setOnClickListener { exoPlayer.pause() }
+        }
+
+        videoBinding.apply {
+            ivDownload.setOnClickListener {
+                val model = playerViewModel.modelFlow.value
+                downloadListener?.onDownload(model.key, model.name)
+            }
+            ivDownload.visibility = visibleGone(downloadListener != null)
+
+            fullscreenButton.setOnClickListener {
+                playerViewModel.fullscreen()
+            }
+            fullscreenButton.visibility = visibleGone(fullscreenListener != null)
+            buttonPlay.setOnClickListener { playAfterPause() }
+            buttonPause.setOnClickListener { exoPlayer.pause() }
+        }
 
         exoPlayer.addListener(playerListener)
 
         pvVideoExoPlayer.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility ->
-            val visible = visibility == View.VISIBLE
-            /*videoBinding.controls.startAnimation(
-                AnimationUtils.loadAnimation(
-                    fragment.requireContext(),
-                    when {
-                        visible -> R.anim.usedesk_fade_in
-                        else -> R.anim.usedesk_fade_out
-                    }
-                )
-            )*/
-            postControllerBarHeight(visible)
+            onControllerBarHeightChanged(visibility == View.VISIBLE)
         })
-
-        videoBinding.ivDownload.setOnClickListener {
-            val model = playerViewModel.modelFlow.value
-            downloadListener?.onDownload(model.key, model.name)
-        }
-        videoBinding.ivDownload.visibility = visibleGone(downloadListener != null)
-
-        videoBinding.fullscreenButton.setOnClickListener {
-            playerViewModel.fullscreen()
-        }
-        videoBinding.fullscreenButton.visibility = visibleGone(fullscreenListener != null)
 
         playerViewModel.modelFlow.onEachWithOld(fragment.lifecycleScope) { old, new ->
             if (!restored && old?.mode != new.mode) {
@@ -168,11 +172,27 @@ internal class MediaPlayerAdapter(
         })
     }
 
-    private fun postControllerBarHeight(visible: Boolean) {
-        pvVideoExoPlayer.post {
+    private fun setControlsVisibility(
+        loader: Boolean = false,
+        play: Boolean = false,
+        pause: Boolean = false
+    ) {
+        videoBinding.apply {
+            pbLoading.visibility = visibleInvisible(loader)
+            buttonPlay.visibility = visibleGone(play)
+            buttonPause.visibility = visibleGone(pause)
+        }
+        audioBinding.apply {
+            buttonPlay.visibility = visibleGone(play || loader)
+            buttonPause.visibility = visibleGone(pause)
+        }
+    }
+
+    private fun onControllerBarHeightChanged(visible: Boolean) {
+        videoBinding.lBottomBar.doOnLayout {
             currentMinimizeView?.onControlsHeightChanged?.invoke(
                 when {
-                    visible -> videoBinding.lBottomBar?.height ?: 0
+                    visible -> it.measuredHeight
                     else -> 0
                 }
             )
@@ -186,10 +206,10 @@ internal class MediaPlayerAdapter(
 
                 if (fullscreen) {
                     fullscreenListener?.getFullscreenLayout()?.addView(pvVideoExoPlayer)
-                    //videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_exit)
+                    videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_exit)
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvVideoExoPlayer)
-                    //videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_enter)
+                    videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_enter)
                 }
                 //Each time need to set player again, otherwise it will not know what happened
                 pvVideoExoPlayer.player = exoPlayer
@@ -309,7 +329,7 @@ internal class MediaPlayerAdapter(
 
                 changeFullscreen(model.fullscreen)
 
-                postControllerBarHeight(pvVideoExoPlayer.isControllerFullyVisible)
+                onControllerBarHeightChanged(pvVideoExoPlayer.isControllerFullyVisible)
                 playIfLastPlaying()
                 true
             }
@@ -328,14 +348,17 @@ internal class MediaPlayerAdapter(
 
     private class VideoExoPlayerBinding(exoPlayerView: PlayerView) {
         val fullscreenButton = exoPlayerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
-        //val controls = exoPlayerView.findViewById<View>(R.id.exo_controller)
-        val lBottomBar = exoPlayerView.findViewById<View>(R.id.l_bottom_bar)
+        val lBottomBar = exoPlayerView.findViewById<View>(R.id.exo_bottom_bar)
         val pbLoading = exoPlayerView.findViewById<ProgressBar>(R.id.loading)
         val ivDownload = exoPlayerView.findViewById<View>(R.id.iv_download)
+        val buttonPlay = exoPlayerView.findViewById<View>(R.id.exo_play)
+        val buttonPause = exoPlayerView.findViewById<View>(R.id.exo_pause)
     }
 
     private class AudioExoPlayerBinding(exoPlayerView: PlayerView) {
-        //val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
+        val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
+        val buttonPlay = exoPlayerView.findViewById<View>(R.id.exo_play)
+        val buttonPause = exoPlayerView.findViewById<View>(R.id.exo_pause)
     }
 
     private class MinimizeView(

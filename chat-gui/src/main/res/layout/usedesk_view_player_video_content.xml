@@ -30,8 +30,8 @@
 
     </androidx.media3.ui.AspectRatioFrameLayout>
 
-    <View
-        android:id="@id/exo_controller_placeholder"
+    <FrameLayout
+        android:id="@id/exo_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -40,11 +40,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:controller_layout_id="@layout/usedesk_view_player_video_controls" />
-
-    <FrameLayout
-        android:id="@id/exo_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <ProgressBar
         android:id="@+id/loading"

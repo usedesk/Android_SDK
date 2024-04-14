@@ -1,1 +1,18 @@
-include ':app', ':common-sdk', ':common-gui', ':chat-sdk', ':chat-gui', ':knowledgebase-sdk', ':knowledgebase-gui'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+include ":app", ":common-sdk", ":common-gui", ":chat-sdk", ":chat-gui", ":knowledgebase-sdk", ":knowledgebase-gui"

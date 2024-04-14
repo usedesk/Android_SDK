@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+    <androidx.media3.ui.AspectRatioFrameLayout
         android:id="@id/exo_content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,28 +23,23 @@
             android:layout_height="match_parent"
             android:scaleType="fitXY" />
 
-        <com.google.android.exoplayer2.ui.SubtitleView
+        <androidx.media3.ui.SubtitleView
             android:id="@id/exo_subtitles"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
-
-    <View
-        android:id="@id/exo_controller_placeholder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <com.google.android.exoplayer2.ui.PlayerControlView
-        android:id="@id/exo_controller"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:controller_layout_id="@layout/usedesk_view_player_video_controls" />
+    </androidx.media3.ui.AspectRatioFrameLayout>
 
     <FrameLayout
         android:id="@id/exo_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <androidx.media3.ui.PlayerControlView
+        android:id="@id/exo_controller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:controller_layout_id="@layout/usedesk_view_player_video_controls" />
 
     <ProgressBar
         android:id="@+id/loading"

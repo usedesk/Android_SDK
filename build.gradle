@@ -1,53 +1,39 @@
-buildscript {
-    ext {
-        buildToolsVersion = '32.1.0 rc1'
-        defaultCompileSdkVersion = 33
-        defaultTargetSdkVersion = 33
-        defaultMinSdkVersion = 21
-
-        kotlinCoroutinesCoreVersion = "1.6.0"
-        kotlinCoroutinesAndroidVersion = "1.6.4"
-        activityVersion = "1.5.1"//API31
-        fragmentKtxVersion = "1.5.6"
-        coreKtxVersion = "1.9.0"
-        appCompatVersion = "1.6.1"
-        materialVersion = "1.8.0"
-        daggerVersion = "2.42"
-        navVersion = "2.5.3"
-        gsonVersion = "2.9.0"
-        retrofitVersion = "2.9.0"
-        lifecycleCommonVersion = "2.4.1"
-        glideVersion = "4.14.2"
-        recyclerViewVersion = "1.3.0"
-        constraintlayoutVersion = "2.1.4"
-        okHttpVersion = "4.10.0"
-        exoPlayerVersion = "2.19.1"
-        annotationVersion = "1.5.0"
-        multidexVersion = "1.0.3"
-        roomVersion = "2.5.1"
-    }
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:7.3.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
-        classpath "org.jetbrains.kotlin:kotlin-android-extensions:1.5.31"
-    }
+plugins {
+    id "com.android.application" version "8.3.0" apply false
+    id "com.android.library" version "8.3.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.9.23" apply false
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "4.1.6"
-
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-    }
+    project.version = "4.2.0"
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+ext {
+    defaultBuildToolsVersion = "34.0.0"
+    defaultCompileSdkVersion = 34
+    defaultTargetSdkVersion = 34
+    defaultMinSdkVersion = 21
+    javaVersion = JavaVersion.VERSION_17
+
+    kotlinCoroutinesCoreVersion = "1.8.0"
+    kotlinCoroutinesAndroidVersion = "1.8.0"
+    activityVersion = "1.8.2"
+    fragmentKtxVersion = "1.6.2"
+    coreKtxVersion = "1.12.0"
+    appCompatVersion = "1.6.1"
+    materialVersion = "1.11.0"
+    daggerVersion = "2.51.1"
+    navVersion = "2.7.7"
+    gsonVersion = "2.10.1"
+    retrofitVersion = "2.9.0"
+    lifecycleCommonVersion = "2.7.0"
+    glideVersion = "4.14.2"
+    recyclerViewVersion = "1.3.2"
+    constraintLayoutVersion = "2.1.4"
+    okHttpVersion = "4.12.0"
+    media3Version = "1.3.0"
+    annotationVersion = "1.5.0"
+    multidexVersion = "2.0.1"
+    roomVersion = "2.6.1"
 }

@@ -7,7 +7,7 @@ plugins {
 
 android {
     compileSdk defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         minSdkVersion defaultMinSdkVersion
@@ -15,18 +15,16 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.common_sdk"
 }
 
 dependencies {
-    implementation fileTree(include: ["*.jar"], dir: "libs")
-
     implementation "androidx.core:core-ktx:$coreKtxVersion"
 
     implementation "com.google.code.gson:gson:$gsonVersion"
@@ -43,7 +41,7 @@ dependencies {
 
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
 
-    implementation "com.google.android.gms:play-services-auth:20.4.1"
+    implementation "com.google.android.gms:play-services-auth:21.0.0"
 }
 
 afterEvaluate {

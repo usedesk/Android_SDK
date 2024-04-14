@@ -1,12 +1,12 @@
-plugins{
+plugins {
     id "com.android.application"
     id "kotlin-android"
     id "kotlin-kapt"
 }
 
 android {
-    compileSdkVersion defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    compileSdk defaultCompileSdkVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         applicationId "ru.usedesk.sample"
@@ -31,17 +31,17 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
+    android.applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
             outputFileName = "${variant.applicationId}_v${variant.versionName}_c${variant.versionCode}.apk"
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     buildFeatures {
         dataBinding = true

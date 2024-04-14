@@ -26,7 +26,7 @@ internal inline fun rememberViewModelStoreOwner(
     crossinline viewModelStoreProvider: @DisallowComposableCalls () -> ViewModelStore
 ) = remember {
     object : ViewModelStoreOwner {
-        override fun getViewModelStore() = viewModelStoreProvider()
+        override val viewModelStore: ViewModelStore = viewModelStoreProvider()
     }
 }
 

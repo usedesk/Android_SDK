@@ -1,9 +1,9 @@
-
 package ru.usedesk.chat_sdk.service.notifications.view
 
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import ru.usedesk.chat_sdk.R
@@ -20,12 +20,27 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
 
     override fun onCreate() {
         super.onCreate()
-        startForeground(foregroundId, createStartNotification())
+        startForeground(createStartNotification())
     }
 
     override fun showNotification(notification: Notification) {
         stopForeground(true)
-        startForeground(foregroundId, notification)
+        startForeground(notification)
+    }
+
+    private fun startForeground(notification: Notification) {
+        if (Build.VERSION.SDK_INT >= 34) {
+            startForeground(
+                foregroundId,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
+            )
+        } else {
+            startForeground(
+                foregroundId,
+                notification
+            )
+        }
     }
 
     override fun getClosePendingIntent(): PendingIntent? = PendingIntent.getService(

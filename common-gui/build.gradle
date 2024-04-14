@@ -7,7 +7,7 @@ plugins {
 
 android {
     compileSdk defaultCompileSdkVersion
-    buildToolsVersion buildToolsVersion
+    buildToolsVersion = defaultBuildToolsVersion
 
     defaultConfig {
         minSdkVersion defaultMinSdkVersion
@@ -15,24 +15,22 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.common_gui"
 }
 
 dependencies {
-    implementation fileTree(include: ["*.jar"], dir: "libs")
-
     api project(":common-sdk")
 
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
 
     implementation "com.google.android.material:material:$materialVersion"
 

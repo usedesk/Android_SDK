@@ -41,13 +41,13 @@ Add to the dependencies `build.gradle` of your module following lines:
 
 ```
 //Chat SDK
-implementation "com.github.usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
 //Chat GUI
-implementation "com.github.usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
 //Knowlage Base SDK
-implementation "com.github.usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
 //Knowlage Base GUI
-implementation "com.github.usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
 ```
 
 Add to Manifest file:

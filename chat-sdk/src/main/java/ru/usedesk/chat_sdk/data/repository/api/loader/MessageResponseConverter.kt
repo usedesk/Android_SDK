@@ -33,8 +33,8 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
     private val badTagRegex2 = """<((${urlRegex.pattern})|(${emailRegex.pattern}))>""".toRegex()
     private val nextLineRegex = """\n{2,}""".toRegex()
     private val objectRegex = """\{\{$OBJECT_ANY\}\}""".toRegex()
-    private val buttonRegex = """\{\{button:($OBJECT_PART){2}$OBJECT_ANY\}\}""".toRegex()
-    private val fieldRegex = """\{\{form;($OBJECT_PART){1,2}$OBJECT_ANY\}\}""".toRegex()
+    private val buttonRegex = """\{\{button:($OBJECT_ANY)($OBJECT_PART){0,3}\}\}""".toRegex()
+    private val fieldRegex = """\{\{form;($OBJECT_ANY)($OBJECT_PART){1,2}\}\}""".toRegex()
     private val imageRegexp = """!\[[^]]*]\((.*?)\s*(\"(?:.*[^\"])\")?\s*\)""".toRegex()
 
     override fun convertText(text: String): String = try {
@@ -410,15 +410,15 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
             .dropLast(2)
             .split(";")
         return when (parts.size) {
-            4 -> {
+            in 1..4 -> {
                 val buttonObject = MessageObject.Button(
                     Button(
-                        parts[0],
-                        parts[1],
-                        parts[2]
+                        name = parts.getOrNull(0) ?: "",
+                        url = parts.getOrNull(1) ?: "",
+                        type = parts.getOrNull(2) ?: ""
                     )
                 )
-                when (parts[3]) {
+                when (parts.getOrNull(3)) {
                     "show" -> listOf(MessageObject.Text(buttonObject.button.name), buttonObject)
                     else -> listOf(buttonObject)
                 }
@@ -457,6 +457,6 @@ internal class MessageResponseConverter @Inject constructor() : IMessageResponse
 
     companion object {
         private const val OBJECT_ANY = """[^\{\}]*"""
-        private const val OBJECT_PART = """[^\{\};]*;"""
+        private const val OBJECT_PART = """;[^\{\};]*"""
     }
 }

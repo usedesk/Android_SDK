@@ -75,18 +75,16 @@ class ConfigurationScreen : UsedeskFragment() {
                 }
             }
         }
-        binding.etAvatar.addTextChangedListener(UsedeskTextChangeListener {
-            viewModel.setAvatar(it)
-        })
+        binding.etAvatar.addTextChangedListener(UsedeskTextChangeListener(viewModel::setAvatar))
         binding.btnGoToSdk.setOnClickListener {
             val configuration = getConfiguration()
-            if (viewModel.onGoSdkClick(configuration)) {
+            if (viewModel.validateConfiguration(configuration)) {
                 (activity as IOnGoToSdkListener?)?.goToSdk(configuration)
             }
         }
         binding.btnCreateChat.setOnClickListener {
             val configuration = getConfiguration()
-            if (viewModel.onCreateChat(configuration)) {
+            if (viewModel.validateConfiguration(configuration)) {
                 val preparation = UsedeskChatSdk.initPreparation(
                     requireContext(),
                     configuration.toChatConfiguration()

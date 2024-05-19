@@ -517,7 +517,7 @@ internal class ChatInteractor @Inject constructor(
             firstMessageLock?.apply {
                 if (success) {
                     if (isLocked) {
-                        delay(1000)
+                        delay(FIRST_MESSAGE_DELAY)
                     }
                     firstMessageLock = null
                 }
@@ -847,7 +847,7 @@ internal class ChatInteractor @Inject constructor(
                     }
                     break
                 }
-                is LoadPreviousMessageResponse.Error -> delay(5000)
+                is LoadPreviousMessageResponse.Error -> delay(REPEAT_DELAY)
             }
         }
     }
@@ -1011,5 +1011,6 @@ internal class ChatInteractor @Inject constructor(
     companion object {
         private val ACTIVE_STATUSES = listOf(1, 5, 6, 8)
         private const val REPEAT_DELAY = 5000L
+        private const val FIRST_MESSAGE_DELAY = 2000L
     }
 }

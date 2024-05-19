@@ -216,6 +216,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/client_phone"
+                        android:maxLength="15"
                         android:inputType="number"
                         tools:ignore="TextFields" />
                 </com.google.android.material.textfield.TextInputLayout>

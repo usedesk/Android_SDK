@@ -26,20 +26,7 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
         }
     }
 
-    fun onGoSdkClick(configuration: Configuration): Boolean {
-        val configurationValidation = validate(configuration)
-        setModel { copy(validation = configurationValidation) }
-        return if (configurationValidation.chatConfigurationValidation.isAllValid()
-            && configurationValidation.knowledgeBaseConfiguration.isAllValid()
-        ) {
-            configurationRepository.setConfiguration(configuration)
-            true
-        } else {
-            false
-        }
-    }
-
-    fun onCreateChat(configuration: Configuration): Boolean {
+    fun validateConfiguration(configuration: Configuration): Boolean {
         val configurationValidation = validate(configuration)
         setModel { copy(validation = configurationValidation) }
         return if (configurationValidation.chatConfigurationValidation.isAllValid()

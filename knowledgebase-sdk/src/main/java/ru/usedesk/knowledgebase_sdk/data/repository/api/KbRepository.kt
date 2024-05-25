@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_sdk.data.repository.api
 
 import com.google.gson.Gson
@@ -155,7 +154,7 @@ internal class KbRepository @Inject constructor(
             title = title ?: "",
             categoryId = categoryId?.toLongOrNull()!!,
             viewsCount = views ?: 0,
-            text = text ?: "",
+            text = ARTICLE_STYLE + (text ?: ""),
             public = public == 1
         )
     }
@@ -235,5 +234,10 @@ internal class KbRepository @Inject constructor(
             "success" -> SendReviewResponse.Done()
             else -> SendReviewResponse.Error(response?.code)
         }
+    }
+
+    companion object {
+        private const val ARTICLE_STYLE =
+            "<style>img{display: inline;height: auto;max-width: 100%;}</style>"
     }
 }

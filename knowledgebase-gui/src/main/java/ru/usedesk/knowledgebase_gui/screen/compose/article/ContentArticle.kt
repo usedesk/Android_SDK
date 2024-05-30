@@ -1,11 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
-import android.content.Context
 import android.os.Build
-import android.webkit.WebResourceResponse
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.LinearLayout
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -38,14 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import okhttp3.Request
-import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -62,7 +54,6 @@ import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
-import java.net.URI
 
 
 @Composable
@@ -130,62 +121,6 @@ internal fun ContentArticle(
     }
 }
 
-private class ArticleWebView(
-    context: Context,
-    viewModel: ArticleViewModel,
-    theme: UsedeskKnowledgeBaseTheme,
-    onWebUrl: (String) -> Unit
-) : WebView(context) {
-    init {
-        isVerticalScrollBarEnabled = false
-        settings.apply {
-            setRenderPriority(WebSettings.RenderPriority.HIGH)
-            cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-            domStorageEnabled = true
-        }
-        webViewClient = object : WebViewClient() {
-            private val okHttp = UsedeskOkHttpClientFactory(context).createInstance()
-
-            override fun shouldOverrideUrlLoading(
-                view: WebView,
-                url: String
-            ): Boolean {
-                onWebUrl(url)
-                return true
-            }
-
-            override fun onPageCommitVisible(view: WebView, url: String?) {
-                super.onPageCommitVisible(view, url)
-
-                viewModel.articleShowed()
-            }
-
-            override fun shouldInterceptRequest(
-                view: WebView?,
-                url: String?
-            ): WebResourceResponse? = url?.let {
-                try {
-                    if (URI(it).scheme == "https") {
-                        val okHttpRequest = Request.Builder().url(it).build()
-                        val response = okHttp.newCall(okHttpRequest).execute()
-                        WebResourceResponse(
-                            "",
-                            "",
-                            response.body?.byteStream()
-                        )
-                    } else {
-                        null
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
-            }
-        }
-        setBackgroundColor(theme.colors.listItemBackground.toArgb())
-    }
-}
-
 @Composable
 private fun ArticleBlock(
     theme: UsedeskKnowledgeBaseTheme,
@@ -246,15 +181,16 @@ private fun ArticleBlock(
                     }
                     LaunchedEffect(state.contentState) {
                         if (state.contentState is ContentState.Loaded) {
+                            val url = state.contentState.content.text
                             when {
                                 Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                                    state.contentState.content.text,
+                                    url,
                                     "text/html; charset=utf-8",
                                     "UTF-8"
                                 )
 
                                 else -> webView.loadData(
-                                    state.contentState.content.text,
+                                    url,
                                     "text/html",
                                     null
                                 )

@@ -16,7 +16,7 @@ internal sealed class BaseViewHolder(rootView: View) :
     protected var viewHolderScope = CoroutineScope(Dispatchers.Main)
 
     open fun bind(
-        messageId: Long,
+        messageId: String,
         item: MessageFormAdapter.Item,
         scope: CoroutineScope,
         stateFlow: StateFlow<MessagesViewModel.State>

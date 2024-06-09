@@ -7,7 +7,7 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 internal interface LoadPreviousMessages {
     class Request(
         val chatToken: String,
-        val commentId: Long
+        val commentId: String
     )
 
     class Response(

@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "4.2.3-testing01"
+    project.version = "4.3.0-testing01"
 }
 
 ext {

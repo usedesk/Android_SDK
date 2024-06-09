@@ -9,7 +9,7 @@ import androidx.room.Query
 @Dao
 internal interface FormDao {
     @Query("SELECT * FROM DbForm WHERE id = :formId")
-    fun get(formId: Long): DbForm?
+    fun get(formId: String): DbForm?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun save(dbForm: DbForm)

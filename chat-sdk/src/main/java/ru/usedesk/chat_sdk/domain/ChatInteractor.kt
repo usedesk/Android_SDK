@@ -87,20 +87,20 @@ internal class ChatInteractor @Inject constructor(
     private var previousMessagesLoadingJob: Job? = null
 
     private val fileUploadProgressListeners =
-        mutableMapOf<Long, MutableSet<IFileUploadProgressListener>>()
+        mutableMapOf<String, MutableSet<IFileUploadProgressListener>>()
     private val fileUploadProgressMutex = Mutex()
 
     private sealed interface Send {
-        val localId: Long?
+        val localId: String?
 
         class Text(
             val text: String,
-            override val localId: Long?
+            override val localId: String?
         ) : Send
 
         class File(
             val file: UsedeskFileInfo,
-            override val localId: Long?
+            override val localId: String?
         ) : Send
     }
 
@@ -323,7 +323,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun send(
         textMessage: String,
-        localId: Long?
+        localId: String?
     ) {
         runBlocking {
             sendQueue.emit(Send.Text(textMessage, localId))
@@ -332,7 +332,7 @@ internal class ChatInteractor @Inject constructor(
 
     private suspend fun prepareToSendText(
         textMessage: String,
-        localId: Long?
+        localId: String?
     ) {
         val message = textMessage.trim()
         if (message.isNotEmpty()) {
@@ -371,7 +371,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun send(
         fileInfo: UsedeskFileInfo,
-        localId: Long?
+        localId: String?
     ) {
         runBlocking {
             sendQueue.emit(Send.File(fileInfo, localId))
@@ -379,7 +379,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun addFileUploadProgressListener(
-        localMessageId: Long,
+        localMessageId: String,
         listener: IFileUploadProgressListener
     ) {
         runBlocking {
@@ -392,7 +392,7 @@ internal class ChatInteractor @Inject constructor(
     }
 
     override fun removeFileUploadProgressListener(
-        localMessageId: Long,
+        localMessageId: String,
         listener: IFileUploadProgressListener
     ) {
         runBlocking {
@@ -410,7 +410,7 @@ internal class ChatInteractor @Inject constructor(
 
     private suspend fun prepareToSendFile(
         fileInfo: UsedeskFileInfo,
-        localId: Long?
+        localId: String?
     ) {
         val sendingMessage = cachedMessagesRepository.createSendingMessage(
             fileInfo,
@@ -549,7 +549,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun loadForm(messageId: Long) {
+    override fun loadForm(messageId: String) {
         setModel {
             val form = formMap[messageId] ?: UsedeskForm(messageId)
             val message = when (form.state) {
@@ -740,7 +740,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun sendAgain(messageId: Long) {
+    override fun sendAgain(messageId: String) {
         ioScope.launch {
             val model = modelLocked()
             val message = model.messages.firstOrNull { it.id == messageId }
@@ -776,7 +776,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    override fun removeMessage(messageId: Long) {
+    override fun removeMessage(messageId: String) {
         ioScope.launch {
             cachedMessagesRepository.getNotSentMessages()
                 .firstOrNull { it.localId == messageId }
@@ -812,12 +812,12 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    private suspend fun getNextLocalId(localId: Long?) =
+    private suspend fun getNextLocalId(localId: String?) =
         localId ?: cachedMessagesRepository.getNextLocalId()
 
     private fun createSendingMessage(
         text: String,
-        localId: Long
+        localId: String
     ) = UsedeskMessageClientText(
         localId,
         Calendar.getInstance(),
@@ -827,7 +827,7 @@ internal class ChatInteractor @Inject constructor(
     )
 
     private fun launchPreviousMessagesLoading(
-        oldestMessageId: Long,
+        oldestMessageId: String,
         clientToken: String,
     ) = ioScope.launch {
         while (true) {

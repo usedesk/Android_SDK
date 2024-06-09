@@ -21,7 +21,7 @@ internal class MessagesRepository(
 
     private var inited = false
 
-    private val notSentMessages = hashMapOf<Long, NotSentMessage>()
+    private val notSentMessages = hashMapOf<String, NotSentMessage>()
     private var messageDraft = UsedeskMessageDraft()
     private var mutex = Mutex()
 
@@ -52,7 +52,7 @@ internal class MessagesRepository(
 
     override suspend fun removeNotSentMessage(
         userKey: String,
-        localId: Long
+        localId: String
     ) {
         mutex.withLock {
             getSharedPreferences(userKey).run {
@@ -111,7 +111,7 @@ internal class MessagesRepository(
             }
         }
 
-        lastLocalId
+        lastLocalId.toString()
     }
 
     private fun SharedPreferences.initIfNeeded() {
@@ -225,7 +225,7 @@ internal class MessagesRepository(
     }
 
     private class NotSentMessage(
-        val localId: Long,
+        val localId: String,
         val text: String? = null,
         val file: String? = null,
         val image: String? = null,

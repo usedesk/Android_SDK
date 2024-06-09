@@ -16,7 +16,7 @@ internal interface ICachedMessagesRepository {
 
     suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client)
 
-    suspend fun removeNotSentMessage(localId: Long)
+    suspend fun removeNotSentMessage(localId: String)
 
     suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri?>
 
@@ -24,7 +24,7 @@ internal interface ICachedMessagesRepository {
 
     suspend fun createSendingMessage(
         fileInfo: UsedeskFileInfo,
-        localId: Long
+        localId: String
     ): UsedeskMessage.File
 
     /**
@@ -37,5 +37,5 @@ internal interface ICachedMessagesRepository {
 
     suspend fun getMessageDraft(): UsedeskMessageDraft
 
-    suspend fun getNextLocalId(): Long
+    suspend fun getNextLocalId(): String
 }

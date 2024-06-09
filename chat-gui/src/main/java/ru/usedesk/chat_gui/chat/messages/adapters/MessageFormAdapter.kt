@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.annotation.SuppressLint
@@ -10,15 +9,24 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
-import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.*
-import ru.usedesk.chat_gui.chat.messages.adapters.holders.*
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemButton
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemCheckBox
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemList
+import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemText
+import ru.usedesk.chat_gui.chat.messages.adapters.holders.BaseViewHolder
+import ru.usedesk.chat_gui.chat.messages.adapters.holders.ButtonViewHolder
+import ru.usedesk.chat_gui.chat.messages.adapters.holders.CheckBoxViewHolder
+import ru.usedesk.chat_gui.chat.messages.adapters.holders.ItemListViewHolder
+import ru.usedesk.chat_gui.chat.messages.adapters.holders.TextViewHolder
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
@@ -27,23 +35,15 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
 
 internal class MessageFormAdapter(
-    private val recyclerView: RecyclerView,
     private val viewModel: MessagesViewModel,
     private val lifecycleScope: CoroutineScope
 ) : RecyclerView.Adapter<BaseViewHolder>() {
 
     private var adapterScope = CoroutineScope(Dispatchers.Main)
-    private var messageId: Long = 0L
+    private var messageId: String = ""
     private var items = listOf<Item>()
     private var buttons = listOf<Button>()
     private var form: UsedeskForm? = null
-
-    init {
-        recyclerView.layoutManager = object : LinearLayoutManager(recyclerView.context) {
-            override fun canScrollVertically() = false
-        }
-        recyclerView.adapter = this
-    }
 
     private fun getItems(
         buttons: List<Button>,

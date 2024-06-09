@@ -63,7 +63,7 @@ internal class FormRepository @Inject constructor(
         )
     }
 
-    private suspend fun getDbForm(formId: Long) =
+    private suspend fun getDbForm(formId: String) =
         mutex.withLock { valueOrNull { formDao.get(formId) } }
 
     private fun FieldInfo.toFieldText() = Field.Text(
@@ -83,7 +83,7 @@ internal class FormRepository @Inject constructor(
     override suspend fun loadForm(
         urlChatApi: String,
         clientToken: String,
-        formId: Long,
+        formId: String,
         fieldsInfo: List<FieldInfo>
     ): LoadFormResponse {
         val ids = fieldsInfo

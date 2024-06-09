@@ -35,7 +35,7 @@ internal class TextViewHolder(
     }
 
     override fun bind(
-        messageId: Long,
+        messageId: String,
         item: Item,
         scope: CoroutineScope,
         stateFlow: StateFlow<MessagesViewModel.State>

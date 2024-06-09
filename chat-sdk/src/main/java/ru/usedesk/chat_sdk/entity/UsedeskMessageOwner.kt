@@ -9,7 +9,7 @@ sealed interface UsedeskMessageOwner {
 
     sealed interface Client : UsedeskMessageOwner {
         val status: Status
-        val localId: Long
+        val localId: String
 
         enum class Status {
             SENDING,

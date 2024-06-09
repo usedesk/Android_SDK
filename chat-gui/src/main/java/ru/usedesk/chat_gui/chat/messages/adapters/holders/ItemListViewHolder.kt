@@ -26,7 +26,7 @@ internal class ItemListViewHolder(
     private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
 
     override fun bind(
-        messageId: Long,
+        messageId: String,
         item: Item,
         scope: CoroutineScope,
         stateFlow: StateFlow<MessagesViewModel.State>
@@ -58,7 +58,7 @@ internal class ItemListViewHolder(
     }
 
     private fun update(
-        messageId: Long,
+        messageId: String,
         list: Field.List,
         parentList: Field.List?,
         formState: UsedeskForm.State

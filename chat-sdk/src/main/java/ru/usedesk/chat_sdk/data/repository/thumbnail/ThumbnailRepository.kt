@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.data.repository.thumbnail
 
 import android.content.Context
@@ -23,11 +22,11 @@ internal class ThumbnailRepository @Inject constructor(
     private val appContext: Context
 ) : IThumbnailRepository {
     private val cacheDir = appContext.cacheDir
-    private val handledSet = mutableSetOf<Long>()
+    private val handledSet = mutableSetOf<String>()
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val mutex = Mutex()
 
-    override val thumbnailMapFlow = MutableStateFlow<Map<Long, Uri>>(mapOf())
+    override val thumbnailMapFlow = MutableStateFlow<Map<String, Uri>>(mapOf())
 
     override fun loadThumbnail(message: UsedeskMessage.File) {
         if (message.file.isVideo()) {
@@ -44,10 +43,14 @@ internal class ThumbnailRepository @Inject constructor(
         }
     }
 
-    private fun Long.toFile(): File =
-        File(cacheDir, "thumbnail_${toString().replace('-', '_')}.jpg")
+    private fun String.toFile(): File =
+        File(cacheDir, "thumbnail_${replace('-', '_')}.jpg")
 
-    private fun launchLoadThumbnail(id: Long, localId: Long, videoUri: Uri) {
+    private fun launchLoadThumbnail(
+        id: String,
+        localId: String,
+        videoUri: Uri
+    ) {
         ioScope.launch {
             val thumbnailFile = localId.toFile()
             val thumbnailUri = if (thumbnailFile.exists()) {

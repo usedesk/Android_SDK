@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity
 internal class DbForm(
     @PrimaryKey
-    val id: Long,
+    val id: String,
     val userKey: String,
     val fields: String,
     val sent: Boolean

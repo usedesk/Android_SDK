@@ -69,21 +69,21 @@ internal class MessagesViewModel @Inject constructor(
 
         class AttachFiles(val files: Set<UsedeskFileInfo>) : Event
         class DetachFile(val file: UsedeskFileInfo) : Event
-        class SendAgain(val id: Long) : Event
-        class RemoveMessage(val id: Long) : Event
+        class SendAgain(val id: String) : Event
+        class RemoveMessage(val id: String) : Event
         class ShowToBottomButton(val show: Boolean) : Event
         class ShowAttachmentPanel(val show: Boolean) : Event
         object SendDraft : Event
         class MessageButtonClick(val button: Button) : Event
-        class FormApplyClick(val messageId: Long) : Event
-        class FormChanged(val messageId: Long, val field: Field) : Event
-        class FormListClicked(val messageId: Long, val list: Field.List) : Event
+        class FormApplyClick(val messageId: String) : Event
+        class FormChanged(val messageId: String, val field: Field) : Event
+        class FormListClicked(val messageId: String, val list: Field.List) : Event
     }
 
     data class State(
         val messages: List<UsedeskMessage> = listOf(),
-        val formMap: Map<Long, UsedeskForm> = mapOf(),
-        val thumbnailMap: Map<Long, Uri> = mapOf(),
+        val formMap: Map<String, UsedeskForm> = mapOf(),
+        val thumbnailMap: Map<String, Uri> = mapOf(),
         val agentMessages: List<ChatItem.Message.Agent> = listOf(),
         val messageDraft: UsedeskMessageDraft = UsedeskMessageDraft(),
         val formSelector: FormSelector? = null,
@@ -101,7 +101,7 @@ internal class MessagesViewModel @Inject constructor(
     )
 
     class FormSelector(
-        val formId: Long,
+        val formId: String,
         val list: Field.List,
         val parentSelectedId: Long?
     )

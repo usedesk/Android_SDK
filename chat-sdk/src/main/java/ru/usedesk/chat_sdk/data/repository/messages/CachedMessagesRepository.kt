@@ -71,7 +71,7 @@ internal class CachedMessagesRepository @Inject constructor(
 
     override suspend fun createSendingMessage(
         fileInfo: UsedeskFileInfo,
-        localId: Long
+        localId: String
     ): UsedeskMessage.File {
         val calendar = Calendar.getInstance()
         val cachedUri = getCachedFileAsync(fileInfo.uri).await()
@@ -127,7 +127,7 @@ internal class CachedMessagesRepository @Inject constructor(
         messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
     }
 
-    override suspend fun removeNotSentMessage(localId: Long) {
+    override suspend fun removeNotSentMessage(localId: String) {
         val userKey = requireUserKey()
         messagesRepository.removeNotSentMessage(userKey, localId)
     }

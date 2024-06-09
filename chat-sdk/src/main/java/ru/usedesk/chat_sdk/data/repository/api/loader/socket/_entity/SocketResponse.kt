@@ -74,7 +74,7 @@ internal sealed interface SocketResponse {
 
         class Message(
             val payload: Payload?,
-            val id: Long?,
+            val id: String?,
             val type: String?,
             val text: String?,
             @SerializedName("createdAt")
@@ -96,7 +96,7 @@ internal sealed interface SocketResponse {
                 @SerializedName("userRating")
                 val userRating: String? = null
                 val avatar: String? = null
-                val messageId: Long? = null
+                val messageId: String? = null
 
                 class Button {
                     val type: String? = null

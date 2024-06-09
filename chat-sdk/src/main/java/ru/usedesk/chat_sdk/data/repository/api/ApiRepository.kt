@@ -52,7 +52,7 @@ internal class ApiRepository @Inject constructor(
 ), IApiRepository {
 
     private lateinit var eventListener: EventListener
-    private val requestDeferredMap = mutableMapOf<Long, CompletableDeferred<SocketSendResponse>>()
+    private val requestDeferredMap = mutableMapOf<String, CompletableDeferred<SocketSendResponse>>()
     private val mutex = Mutex()
 
     private val socketEventListener = object : SocketApi.EventListener {
@@ -204,7 +204,7 @@ internal class ApiRepository @Inject constructor(
     override fun convertText(text: String) = messageResponseConverter.convertText(text)
 
     override suspend fun sendFeedback(
-        messageId: Long,
+        messageId: String,
         feedback: UsedeskFeedback
     ): SocketSendResponse {
         val result = socketApi.sendRequest(
@@ -246,7 +246,7 @@ internal class ApiRepository @Inject constructor(
         configuration: UsedeskChatConfiguration,
         token: String,
         fileInfo: UsedeskFileInfo,
-        messageId: Long,
+        messageId: String,
         progressFlow: MutableStateFlow<Pair<Long, Long>>
     ): SendFileResponse = when {
         isConnected() -> {
@@ -344,7 +344,7 @@ internal class ApiRepository @Inject constructor(
     override suspend fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
         token: String,
-        messageId: Long
+        messageId: String
     ): LoadPreviousMessageResponse {
         val request = LoadPreviousMessages.Request(
             token,

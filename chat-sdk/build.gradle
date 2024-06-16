@@ -4,6 +4,7 @@ plugins {
     id "kotlin-kapt"
     id "kotlin-parcelize"
     id "maven-publish"
+    id "androidx.room"
 }
 
 android {
@@ -48,6 +49,10 @@ dependencies {
 
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
+}
+
+room {
+    schemaDirectory "$projectDir/schemas"
 }
 
 afterEvaluate {

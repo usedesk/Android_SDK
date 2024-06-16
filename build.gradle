@@ -2,11 +2,12 @@ plugins {
     id "com.android.application" version "8.3.0" apply false
     id "com.android.library" version "8.3.0" apply false
     id "org.jetbrains.kotlin.android" version "1.9.23" apply false
+    id "androidx.room" version "2.6.1" apply false
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "4.3.0-testing01"
+    project.version = "4.3.0-testing02"
 }
 
 ext {

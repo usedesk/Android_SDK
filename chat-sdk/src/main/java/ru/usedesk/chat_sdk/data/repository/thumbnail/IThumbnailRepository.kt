@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 
 internal interface IThumbnailRepository {
-    val thumbnailMapFlow: StateFlow<Map<Long, Uri>>
+    val thumbnailMapFlow: StateFlow<Map<String, Uri>>
 
     fun loadThumbnail(message: UsedeskMessage.File)
 }

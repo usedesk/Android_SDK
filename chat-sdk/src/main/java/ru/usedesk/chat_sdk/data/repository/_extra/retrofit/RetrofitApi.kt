@@ -5,7 +5,12 @@ import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Query
 import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFields
 
 internal interface RetrofitApi {
@@ -22,7 +27,7 @@ internal interface RetrofitApi {
     @GET("uapi/chat/getChatMessage")
     fun loadPreviousMessages(
         @Query("chat_token") chatToken: String,
-        @Query("comment_id") commentId: Long
+        @Query("comment_id") commentId: String
     ): Call<ResponseBody>
 
     @Multipart

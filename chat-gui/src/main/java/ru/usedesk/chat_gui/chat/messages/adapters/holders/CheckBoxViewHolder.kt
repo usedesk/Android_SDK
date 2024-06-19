@@ -28,7 +28,7 @@ internal class CheckBoxViewHolder(
     private val textColorDisabled = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
 
     override fun bind(
-        messageId: Long,
+        messageId: String,
         item: Item,
         scope: CoroutineScope,
         stateFlow: StateFlow<MessagesViewModel.State>
@@ -56,7 +56,7 @@ internal class CheckBoxViewHolder(
     }
 
     private fun update(
-        messageId: Long,
+        messageId: String,
         checkBox: Field.CheckBox,
         state: UsedeskForm.State
     ) {

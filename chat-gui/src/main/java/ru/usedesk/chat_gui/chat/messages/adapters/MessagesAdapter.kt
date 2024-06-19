@@ -1015,10 +1015,18 @@ internal class MessagesAdapter(
             .getString(R.attr.usedesk_text_1)
 
         private val formAdapter = MessageFormAdapter(
-            binding.content.rvItems,
             viewModel,
             lifecycleScope
         )
+
+        init {
+            binding.content.rvItems.apply {
+                layoutManager = object : LinearLayoutManager(recyclerView.context) {
+                    override fun canScrollVertically() = false
+                }
+                adapter = formAdapter
+            }
+        }
 
         private val goodAtStart = binding.styleValues
             .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)

@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.entity
 
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
@@ -9,10 +8,9 @@ interface IUsedeskActionListener {
         newMessages: List<UsedeskMessage>,
         updatedMessages: List<UsedeskMessage>,
         removedMessages: List<UsedeskMessage>
-    ) {
-    }
+    ) = Unit
 
-    fun onException(usedeskException: Exception) {}
+    fun onException(usedeskException: Exception) = Unit
 
     fun onModelUpdated(
         oldModel: IUsedeskChat.Model?,
@@ -31,14 +29,12 @@ interface IUsedeskActionListener {
             else -> {
                 val newMessages = mutableListOf<UsedeskMessage>()
                 val updatedMessages = mutableListOf<UsedeskMessage>()
-                val oldestMessageId = oldMessages?.firstOrNull()?.id ?: 0
+                val oldMessagesMap = oldMessages?.associate { it.id to it } ?: mapOf()
                 newModel.messages.forEach { message ->
-                    if (message.id < 0 || message.id >= oldestMessageId) {
-                        val oldMessage = oldMessages?.firstOrNull { message.isIdEquals(it) }
-                        when {
-                            oldMessage == null -> newMessages.add(message)
-                            oldMessage != message -> updatedMessages.add(message)
-                        }
+                    when (oldMessagesMap[message.id]) {
+                        null -> newMessages.add(message)
+                        message -> Unit
+                        else -> updatedMessages.add(message)
                     }
                 }
                 val removedMessages = oldMessages

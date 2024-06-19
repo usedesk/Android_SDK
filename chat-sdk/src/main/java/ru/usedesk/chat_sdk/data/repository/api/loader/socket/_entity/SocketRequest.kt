@@ -39,7 +39,7 @@ internal sealed class SocketRequest(val type: String) {
 
     class SendMessage(
         text: String,
-        messageId: Long
+        messageId: String
     ) : SocketRequest(TYPE) {
 
         private val message = RequestMessage(text, messageId)
@@ -50,18 +50,18 @@ internal sealed class SocketRequest(val type: String) {
 
         private class RequestMessage(
             private val text: String,
-            messageId: Long
+            messageId: String
         ) {
             private val payload = Payload(messageId)
         }
 
         private class Payload(
-            private val messageId: Long
+            private val messageId: String
         )
     }
 
     class Feedback(
-        messageId: Long,
+        messageId: String,
         feedback: String
     ) : SocketRequest(TYPE) {
 
@@ -69,7 +69,7 @@ internal sealed class SocketRequest(val type: String) {
 
         private class Payload(
             private val data: String,
-            private val messageId: Long
+            private val messageId: String
         ) {
             private val type: String = VALUE_FEEDBACK_ACTION
         }

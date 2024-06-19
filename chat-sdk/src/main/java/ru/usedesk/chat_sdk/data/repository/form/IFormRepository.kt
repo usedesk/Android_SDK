@@ -14,7 +14,7 @@ internal interface IFormRepository {
     suspend fun loadForm(
         urlChatApi: String,
         clientToken: String,
-        formId: Long,
+        formId: String,
         fieldsInfo: List<UsedeskMessageAgentText.FieldInfo>
     ): LoadFormResponse
 

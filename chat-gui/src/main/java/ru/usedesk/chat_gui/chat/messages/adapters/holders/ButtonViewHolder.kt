@@ -34,7 +34,7 @@ internal class ButtonViewHolder(
     }
 
     override fun bind(
-        messageId: Long,
+        messageId: String,
         item: Item,
         scope: CoroutineScope,
         stateFlow: StateFlow<MessagesViewModel.State>
@@ -69,7 +69,7 @@ internal class ButtonViewHolder(
     }
 
     private fun update(
-        messageId: Long,
+        messageId: String,
         state: UsedeskForm.State
     ) {
         binding.tvTitle.apply {

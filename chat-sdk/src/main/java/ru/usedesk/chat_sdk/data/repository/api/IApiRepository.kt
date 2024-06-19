@@ -34,7 +34,7 @@ internal interface IApiRepository {
 
     @CheckResult
     suspend fun sendFeedback(
-        messageId: Long,
+        messageId: String,
         feedback: UsedeskFeedback
     ): SocketSendResponse
 
@@ -46,7 +46,7 @@ internal interface IApiRepository {
         configuration: UsedeskChatConfiguration,
         token: String,
         fileInfo: UsedeskFileInfo,
-        messageId: Long,
+        messageId: String,
         progressFlow: MutableStateFlow<Pair<Long, Long>>
     ): SendFileResponse
 
@@ -65,7 +65,7 @@ internal interface IApiRepository {
     suspend fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
         token: String,
-        messageId: Long
+        messageId: String
     ): LoadPreviousMessageResponse
 
     fun disconnect()

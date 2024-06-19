@@ -23,21 +23,21 @@ interface IUsedeskChat {
 
     fun send(
         textMessage: String,
-        localId: Long? = null
+        localId: String? = null
     )
 
     fun send(
         fileInfo: UsedeskFileInfo,
-        localId: Long? = null
+        localId: String? = null
     )
 
     fun addFileUploadProgressListener(
-        localMessageId: Long,
+        localMessageId: String,
         listener: IFileUploadProgressListener
     )
 
     fun removeFileUploadProgressListener(
-        localMessageId: Long,
+        localMessageId: String,
         listener: IFileUploadProgressListener
     )
 
@@ -48,9 +48,9 @@ interface IUsedeskChat {
         feedback: UsedeskFeedback
     )
 
-    fun sendAgain(messageId: Long)
+    fun sendAgain(messageId: String)
 
-    fun removeMessage(messageId: Long)
+    fun removeMessage(messageId: String)
 
     fun setMessageDraft(messageDraft: UsedeskMessageDraft)
 
@@ -65,7 +65,7 @@ interface IUsedeskChat {
 
     fun loadPreviousMessagesPage()
 
-    fun loadForm(messageId: Long)
+    fun loadForm(messageId: String)
 
     fun saveForm(form: UsedeskForm)
 
@@ -84,12 +84,12 @@ interface IUsedeskChat {
         val connectionState: UsedeskConnectionState = UsedeskConnectionState.CONNECTING,
         val clientToken: String = "",
         val messages: List<UsedeskMessage> = listOf(),
-        val formMap: Map<Long, UsedeskForm> = mapOf(),
+        val formMap: Map<String, UsedeskForm> = mapOf(),
         val previousPageIsAvailable: Boolean = true,
         val previousPageIsLoading: Boolean = false,
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
         val feedbackEvent: UsedeskEvent<Unit>? = null,
-        val thumbnailMap: Map<Long, Uri> = mapOf()
+        val thumbnailMap: Map<String, Uri> = mapOf()
     )
 }

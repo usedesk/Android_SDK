@@ -12,7 +12,7 @@ interface IUsedeskMessagesRepository {
 
     suspend fun removeNotSentMessage(
         userKey: String,
-        localId: Long
+        localId: String
     )
 
     suspend fun getNotSentMessages(userKey: String): List<UsedeskMessageOwner.Client>
@@ -27,5 +27,5 @@ interface IUsedeskMessagesRepository {
     /**
      * Return a negative value
      */
-    suspend fun getNextLocalId(): Long
+    suspend fun getNextLocalId(): String
 }

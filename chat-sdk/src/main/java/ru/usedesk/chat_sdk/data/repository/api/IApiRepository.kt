@@ -50,7 +50,6 @@ internal interface IApiRepository {
         progressFlow: MutableStateFlow<Pair<Long, Long>>
     ): SendFileResponse
 
-    @CheckResult
     suspend fun setClient(configuration: UsedeskChatConfiguration): SetClientResponse
 
     @CheckResult

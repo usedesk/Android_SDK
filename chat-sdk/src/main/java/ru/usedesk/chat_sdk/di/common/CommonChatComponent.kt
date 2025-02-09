@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.di.common
 
 import android.content.ContentResolver
@@ -8,7 +7,10 @@ import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
@@ -57,4 +59,7 @@ internal interface CommonChatDeps {
     val userInfoRepository: IUserInfoRepository
     val chatDatabase: ChatDatabase
     val okHttpClientFactory: IUsedeskOkHttpClientFactory
+    val configurationLoader: IConfigurationLoader
+    val initChatResponseConverter: IInitChatResponseConverter
+    val messageResponseConverter: IMessageResponseConverter
 }

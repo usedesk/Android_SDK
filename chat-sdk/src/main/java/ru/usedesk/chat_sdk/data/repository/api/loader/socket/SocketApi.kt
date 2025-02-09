@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.data.repository.api.loader.socket
 
 import com.google.gson.Gson
@@ -59,11 +58,9 @@ internal class SocketApi @Inject constructor(
         SocketSendResponse.Error
     }
 
-    suspend fun disconnect() {
-        mutex.withLock {
-            socketConnection?.disconnect()
-            socketConnection = null
-        }
+    fun disconnect() {
+        socketConnection?.disconnect()
+        socketConnection = null
     }
 
     interface EventListener {

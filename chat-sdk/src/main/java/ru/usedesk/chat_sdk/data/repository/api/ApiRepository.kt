@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.data.repository.api
 
 import android.content.ContentResolver
@@ -428,9 +427,7 @@ internal class ApiRepository @Inject constructor(
     private fun String.getCorrectStringValue() = replace("\"", "\\\"")
 
     override fun disconnect() {
-        runBlocking {
-            socketApi.disconnect()
-        }
+        socketApi.disconnect()
     }
 
     companion object {

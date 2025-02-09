@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
@@ -9,17 +8,22 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import ru.usedesk.chat_sdk.data.repository.AdditionalFieldsInteractor
+import ru.usedesk.chat_sdk.data.repository.AdditionalFieldsRepository
+import ru.usedesk.chat_sdk.data.repository.ClientTokenRepository
+import ru.usedesk.chat_sdk.data.repository.ToSend
+import ru.usedesk.chat_sdk.data.repository.ToSendRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.LoadPreviousMessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendAdditionalFieldsResponse
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendFileResponse
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendOfflineFormResponse
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SocketSendResponse
@@ -58,23 +62,28 @@ import javax.inject.Inject
 
 internal class ChatInteractor @Inject constructor(
     private val initConfiguration: UsedeskChatConfiguration,
-    private val userInfoRepository: IUserInfoRepository,
+    userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
     private val cachedMessagesRepository: ICachedMessagesRepository,
     private val formRepository: IFormRepository,
-    private val thumbnailRepository: IThumbnailRepository
+    private val thumbnailRepository: IThumbnailRepository,
+    private val additionalFieldsRepository: AdditionalFieldsRepository,
+    private val additionalFieldsInteractor: AdditionalFieldsInteractor,
+    private val toSendRepository: ToSendRepository,
+    private val clientTokenRepository: ClientTokenRepository,
 ) : IUsedeskChat, IRelease {
 
     private var initClientMessage: String? = initConfiguration.clientInitMessage
     private var initClientOfflineForm: String? = null
 
-    private val modelFlow: MutableStateFlow<Model>
+    private val modelFlow = MutableStateFlow(
+        Model(clientToken = clientTokenRepository.clientTokenRepositoryFlow.value.orEmpty())
+    )
 
     private val actionListeners = ActionListeners()
 
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var reconnectJob: Job? = null
-    private val eventMutex = Mutex()
     private val firstMessageMutex = Mutex()
     private var firstMessageLock: Mutex? = null
 
@@ -83,108 +92,11 @@ internal class ChatInteractor @Inject constructor(
 
     private var initedNotSentMessages = listOf<UsedeskMessage>()
 
-    private var additionalFieldsNeeded: Boolean = true
     private var previousMessagesLoadingJob: Job? = null
 
     private val fileUploadProgressListeners =
         mutableMapOf<String, MutableSet<IFileUploadProgressListener>>()
     private val fileUploadProgressMutex = Mutex()
-
-    private sealed interface Send {
-        val localId: String?
-
-        class Text(
-            val text: String,
-            override val localId: String?
-        ) : Send
-
-        class File(
-            val file: UsedeskFileInfo,
-            override val localId: String?
-        ) : Send
-    }
-
-    private val sendQueue = Queue<Send>(ioScope) {
-        when (it) {
-            is Send.File -> prepareToSendFile(it.file, it.localId)
-            is Send.Text -> prepareToSendText(it.text, it.localId)
-        }
-    }
-    private val sendTextQueue = Queue(ioScope, ::doSendText)
-    private val sendFileQueue = Queue(ioScope, ::doSendFile)
-
-    private val eventListener = object : IApiRepository.EventListener {
-        override fun onConnected() {
-            setModel { copy(connectionState = UsedeskConnectionState.CONNECTED) }
-        }
-
-        override fun onDisconnected() {
-            runBlocking {
-                reconnectJob?.cancel()
-                previousMessagesLoadingJob?.cancel()
-                reconnectJob = ioScope.launch {
-                    delay(REPEAT_DELAY)
-                    connect()
-                }
-                setModel {
-                    previousMessagesLoadingJob = null
-                    copy(connectionState = UsedeskConnectionState.DISCONNECTED)
-                }
-            }
-        }
-
-        override fun onTokenError() {
-            val model = modelLocked()
-            if (model.clientToken.isNotEmpty()) {
-                ioScope.launch {
-                    val response = apiRepository.sendInit(initConfiguration, model.clientToken)
-                }
-            }
-        }
-
-        override fun onFeedback() {
-            setModel { copy(feedbackEvent = UsedeskEvent(Unit)) }
-        }
-
-        override fun onException(exception: Exception) {
-            actionListeners.onException(exception)
-        }
-
-        override fun onChatInited(chatInited: ChatInited) {
-            this@ChatInteractor.chatInited = chatInited
-            ioScope.launch {
-                this@ChatInteractor.onChatInited(chatInited)
-            }
-        }
-
-        override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(old = messages)
-        }
-
-        override fun onMessagesNewReceived(messages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(new = messages)
-        }
-
-        override fun onMessageUpdated(message: UsedeskMessage) {
-            this@ChatInteractor.onMessageUpdate(message)
-        }
-
-        override fun onOfflineForm(
-            offlineFormSettings: UsedeskOfflineFormSettings,
-            chatInited: ChatInited
-        ) {
-            this@ChatInteractor.chatInited = chatInited
-            this@ChatInteractor.offlineFormToChat =
-                offlineFormSettings.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
-            setModel {
-                copy(offlineFormSettings = offlineFormSettings)
-            }
-        }
-
-        override fun onSetEmailSuccess() {
-            sendInitMessage()
-        }
-    }
 
     init {
         val oldConfiguration = userInfoRepository.getConfiguration()
@@ -195,13 +107,37 @@ internal class ChatInteractor @Inject constructor(
             else -> initConfiguration.clientInitMessage
         }
 
-        modelFlow = MutableStateFlow(
-            Model(
-                clientToken = initConfiguration.clientToken
-                    ?: oldConfiguration?.clientToken
-                    ?: ""
-            )
-        )
+        ioScope.launch {
+            clientTokenRepository.clientTokenRepositoryFlow
+                .filterNotNull()
+                .collect { clientToken ->
+                    modelFlow.update {
+                        it.copy(clientToken = clientToken)
+                    }
+                }
+        }
+
+        ioScope.launch {
+            additionalFieldsInteractor.initAdditionalFields()
+        }
+
+        ioScope.launch {
+            toSendRepository.toSendFlow.collect {
+                it.prepareToSend()
+            }
+        }
+
+        ioScope.launch {
+            toSendRepository.toSendTextFlow.collect {
+                doSendText(it)
+            }
+        }
+
+        ioScope.launch {
+            toSendRepository.toSendFileFlow.collect {
+                doSendFile(it)
+            }
+        }
 
         ioScope.launch {
             var oldModel: Model? = null
@@ -240,12 +176,12 @@ internal class ChatInteractor @Inject constructor(
                 firstMessageLock = Mutex()
             }
 
-            val model = modelLocked()
+            val clientToken = clientTokenRepository.clientTokenRepositoryFlow.value
             apiRepository.connect(
-                initConfiguration.urlChat,
-                model.clientToken,
-                initConfiguration,
-                eventListener
+                url = initConfiguration.urlChat,
+                token = clientToken,
+                configuration = initConfiguration,
+                eventListener = EventListener(),
             )
         }
     }
@@ -264,12 +200,6 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private fun setModel(onUpdate: Model.() -> Model) = modelFlow.updateAndGet { it.onUpdate() }
-
-    private fun modelLocked(onModel: Model.() -> Unit = {}): Model = runBlocking {
-        eventMutex.withLock {
-            modelFlow.value.apply { onModel() }
-        }
-    }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
         if (message is UsedeskMessage.File && message.file.isVideo()) {
@@ -312,7 +242,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun addActionListener(listener: IUsedeskActionListener) {
         actionListeners.add(listener)
-        listener.onModelUpdated(null, modelLocked())
+        listener.onModelUpdated(null, modelFlow.value)
     }
 
     override fun removeActionListener(listener: IUsedeskActionListener) {
@@ -325,45 +255,25 @@ internal class ChatInteractor @Inject constructor(
         textMessage: String,
         localId: String?
     ) {
-        runBlocking {
-            sendQueue.emit(Send.Text(textMessage, localId))
-        }
+        toSendRepository.addToSend(ToSend.Text(textMessage, localId))
     }
 
-    private suspend fun prepareToSendText(
-        textMessage: String,
-        localId: String?
-    ) {
-        val message = textMessage.trim()
-        if (message.isNotEmpty()) {
-            val sendingMessage = createSendingMessage(message, getNextLocalId(localId))
-            onMessagesNew(new = listOf(sendingMessage))
-            sendText(sendingMessage)
-        }
-    }
-
-    private fun sendAdditionalFieldsIfNeededAsync() {
-        modelLocked {
-            if (additionalFieldsNeeded) {
-                additionalFieldsNeeded = false
-                if (initConfiguration.additionalFields.isNotEmpty() ||
-                    initConfiguration.additionalNestedFields.isNotEmpty()
-                ) {
-                    ioScope.launch {
-                        firstMessageLock?.withLock {}
-                        delay(REPEAT_DELAY)
-                        val response = apiRepository.sendFields(
-                            clientToken,
-                            initConfiguration,
-                            initConfiguration.additionalFields,
-                            initConfiguration.additionalNestedFields
-                        )
-                        if (response is SendAdditionalFieldsResponse.Error) {
-                            eventMutex.withLock {
-                                additionalFieldsNeeded = true
-                            }
-                        }
-                    }
+    private suspend fun ToSend.prepareToSend() {
+        when (this) {
+            is ToSend.File -> {
+                val sendingMessage = cachedMessagesRepository.createSendingMessage(
+                    file,
+                    getNextLocalId(localId)
+                )
+                onMessagesNew(new = listOf(sendingMessage))
+                toSendRepository.toSendFile(sendingMessage)
+            }
+            is ToSend.Text -> {
+                val message = this.text.trim()
+                if (message.isNotEmpty()) {
+                    val sendingMessage = createSendingMessage(message, getNextLocalId(localId))
+                    onMessagesNew(new = listOf(sendingMessage))
+                    sendText(sendingMessage)
                 }
             }
         }
@@ -373,9 +283,7 @@ internal class ChatInteractor @Inject constructor(
         fileInfo: UsedeskFileInfo,
         localId: String?
     ) {
-        runBlocking {
-            sendQueue.emit(Send.File(fileInfo, localId))
-        }
+        toSendRepository.addToSend(ToSend.File(fileInfo, localId))
     }
 
     override fun addFileUploadProgressListener(
@@ -408,18 +316,6 @@ internal class ChatInteractor @Inject constructor(
         fileInfoList.forEach { send(it) }
     }
 
-    private suspend fun prepareToSendFile(
-        fileInfo: UsedeskFileInfo,
-        localId: String?
-    ) {
-        val sendingMessage = cachedMessagesRepository.createSendingMessage(
-            fileInfo,
-            getNextLocalId(localId)
-        )
-        eventListener.onMessagesNewReceived(listOf(sendingMessage))
-        sendFileQueue.emit(sendingMessage)
-    }
-
     private suspend fun sendFileAgain(fileMessage: UsedeskMessage.File) {
         fileMessage as UsedeskMessageOwner.Client
         val uri = Uri.parse(fileMessage.file.content)
@@ -435,15 +331,14 @@ internal class ChatInteractor @Inject constructor(
             else -> null
         }?.let { cachedNotSentMessage ->
             cachedMessagesRepository.updateNotSentMessage(cachedNotSentMessage)
-            eventListener.onMessageUpdated(cachedNotSentMessage)
-            sendFileQueue.emit(cachedNotSentMessage)
+            onMessageUpdate(cachedNotSentMessage)
+            toSendRepository.toSendFile(cachedNotSentMessage)
         }
     }
 
     private suspend fun doSendFile(fileMessage: UsedeskMessage.File) {
         fileMessage as UsedeskMessageOwner.Client
         withFirstMessageLock {
-            val model = modelLocked()
             val progressFlow = MutableStateFlow(0L to 0L)
             val progressJob = CoroutineScope(ioScope.coroutineContext + Job()).launch {
                 progressFlow.collect { progress ->
@@ -453,15 +348,13 @@ internal class ChatInteractor @Inject constructor(
                                 it.onProgress(progress.first, progress.second)
                             }
                         }
-                        if (progress.first == progress.second) {
-                            cancel()
-                        }
                     }
                 }
             }
+            val clientToken = clientTokenRepository.clientTokenRepositoryFlow.value
             val response = apiRepository.sendFile(
                 initConfiguration,
-                model.clientToken,
+                clientToken.orEmpty(),
                 UsedeskFileInfo(
                     fileMessage.file.content.toUri(),
                     fileMessage.file.type,
@@ -470,15 +363,15 @@ internal class ChatInteractor @Inject constructor(
                 fileMessage.localId,
                 progressFlow
             )
+            progressJob.cancel()
             when (response) {
                 is SendFileResponse.Done -> {
                     cachedMessagesRepository.removeNotSentMessage(fileMessage.localId)
                     cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
-                    sendAdditionalFieldsIfNeededAsync()
+                    additionalFieldsRepository.messageSent()
                     true
                 }
                 is SendFileResponse.Error -> {
-                    progressJob.cancel()
                     when (fileMessage) {
                         is UsedeskMessageClientFile -> fileMessage.copy(
                             status = UsedeskMessageOwner.Client.Status.SEND_FAILED
@@ -528,7 +421,7 @@ internal class ChatInteractor @Inject constructor(
 
     private suspend fun sendText(cachedMessage: UsedeskMessageClientText) {
         cachedMessagesRepository.addNotSentMessage(cachedMessage)
-        sendTextQueue.emit(cachedMessage)
+        toSendRepository.toSendText(cachedMessage)
     }
 
     private suspend fun doSendText(textMessage: UsedeskMessageClientText) {
@@ -536,7 +429,7 @@ internal class ChatInteractor @Inject constructor(
             when (apiRepository.sendText(textMessage)) {
                 is SocketSendResponse.Done -> {
                     cachedMessagesRepository.removeNotSentMessage(textMessage.localId)
-                    sendAdditionalFieldsIfNeededAsync()
+                    additionalFieldsRepository.messageSent()
                     true
                 }
                 is SocketSendResponse.Error -> {
@@ -563,17 +456,14 @@ internal class ChatInteractor @Inject constructor(
                 null -> form
                 else -> form.copy(state = UsedeskForm.State.LOADING).apply {
                     launchLoadForm(
-                        clientToken,
-                        message
+                        clientToken = clientToken,
+                        message = message
                     )
                 }
             }
             copy(
                 formMap = formMap.toMutableMap().apply {
-                    put(
-                        messageId,
-                        newForm
-                    )
+                    this[messageId] = newForm
                 }
             )
         }
@@ -594,13 +484,10 @@ internal class ChatInteractor @Inject constructor(
                 val form = formMap[message.id] ?: UsedeskForm(message.id)
                 copy(
                     formMap = formMap.toMutableMap().apply {
-                        put(
-                            message.id,
-                            when (response) {
-                                is LoadFormResponse.Done -> response.form
-                                is LoadFormResponse.Error -> form.copy(state = UsedeskForm.State.LOADING_FAILED)
-                            }
-                        )
+                        this[message.id] = when (response) {
+                            is LoadFormResponse.Done -> response.form
+                            is LoadFormResponse.Error -> form.copy(state = UsedeskForm.State.LOADING_FAILED)
+                        }
                     }
                 )
             }
@@ -611,12 +498,12 @@ internal class ChatInteractor @Inject constructor(
         setModel {
             copy(
                 formMap = formMap.toMutableMap().apply {
-                    put(form.id, form)
-                    ioScope.launch {
-                        formRepository.saveForm(form)
-                    }
+                    this[form.id] = form
                 }
             )
+        }
+        ioScope.launch {
+            formRepository.saveForm(form)
         }
     }
 
@@ -641,15 +528,11 @@ internal class ChatInteractor @Inject constructor(
                     }
                     copy(
                         formMap = formMap.toMutableMap().apply {
-                            val newForm = validatedForm.copy(
+                            this[form.id] = validatedForm.copy(
                                 state = when {
                                     hasError -> UsedeskForm.State.LOADED
                                     else -> UsedeskForm.State.SENDING
                                 }
-                            )
-                            put(
-                                form.id,
-                                newForm
                             )
                         }
                     )
@@ -657,13 +540,6 @@ internal class ChatInteractor @Inject constructor(
             }
         }
     }
-
-    /*override fun addFileProgressListener(
-        localMessageId: Long,
-        onProgress: (Int) -> Unit
-    ) {
-
-    }*/
 
     private fun launchSendForm(
         clientToken: String,
@@ -682,7 +558,7 @@ internal class ChatInteractor @Inject constructor(
             setModel {
                 copy(
                     formMap = formMap.toMutableMap().apply {
-                        put(form.id, newForm)
+                        this[form.id] = newForm
                     }
                 )
             }
@@ -742,7 +618,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun sendAgain(messageId: String) {
         ioScope.launch {
-            val model = modelLocked()
+            val model = modelFlow.value
             val message = model.messages.firstOrNull { it.id == messageId }
             if (message is UsedeskMessageOwner.Client
                 && message.status == UsedeskMessageOwner.Client.Status.SEND_FAILED
@@ -826,28 +702,31 @@ internal class ChatInteractor @Inject constructor(
         UsedeskMessageOwner.Client.Status.SENDING
     )
 
-    private fun launchPreviousMessagesLoading(
-        oldestMessageId: String,
-        clientToken: String,
-    ) = ioScope.launch {
-        while (true) {
-            val response = apiRepository.loadPreviousMessages(
-                initConfiguration,
-                clientToken,
-                oldestMessageId
-            )
-            when (response) {
-                is LoadPreviousMessageResponse.Done -> {
-                    setModel {
+    private fun launchPreviousMessagesLoading(oldestMessageId: String) {
+        previousMessagesLoadingJob?.cancel()
+        previousMessagesLoadingJob = ioScope.launch {
+            while (true) {
+                val clientToken = clientTokenRepository.clientTokenRepositoryFlow
+                    .filterNotNull()
+                    .firstOrNull() ?: return@launch
+                val response = apiRepository.loadPreviousMessages(
+                    initConfiguration,
+                    clientToken,
+                    oldestMessageId
+                )
+                when (response) {
+                    is LoadPreviousMessageResponse.Done -> {
                         previousMessagesLoadingJob = null
-                        copy(
-                            previousPageIsLoading = false,
-                            previousPageIsAvailable = response.messages.isNotEmpty()
-                        )
+                        setModel {
+                            copy(
+                                previousPageIsLoading = false,
+                                previousPageIsAvailable = response.messages.isNotEmpty()
+                            )
+                        }
+                        break
                     }
-                    break
+                    is LoadPreviousMessageResponse.Error -> delay(REPEAT_DELAY)
                 }
-                is LoadPreviousMessageResponse.Error -> delay(REPEAT_DELAY)
             }
         }
     }
@@ -859,11 +738,7 @@ internal class ChatInteractor @Inject constructor(
                 else -> copy(
                     previousPageIsLoading = when {
                         !previousPageIsLoading && previousPageIsAvailable -> {
-                            previousMessagesLoadingJob?.cancel()
-                            previousMessagesLoadingJob = launchPreviousMessagesLoading(
-                                oldestMessageId,
-                                clientToken
-                            )
+                            launchPreviousMessagesLoading(oldestMessageId)
                             true
                         }
                         else -> previousPageIsLoading
@@ -875,9 +750,7 @@ internal class ChatInteractor @Inject constructor(
 
     override fun release() {
         ioScope.cancel()
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            apiRepository.disconnect()
-        }
+        apiRepository.disconnect()
     }
 
     private fun Mutex.unlockSafe(owner: Any? = null) {
@@ -887,8 +760,8 @@ internal class ChatInteractor @Inject constructor(
     }
 
     private suspend fun onChatInited(chatInited: ChatInited) {
-        val model = setModel { copy(clientToken = chatInited.token) }
-        userInfoRepository.updateConfiguration { copy(clientToken = chatInited.token) }
+        val clientToken = chatInited.token
+        clientTokenRepository.setClientToken(clientToken)
 
         if (chatInited.status in ACTIVE_STATUSES) {
             firstMessageMutex.withLock {
@@ -896,6 +769,7 @@ internal class ChatInteractor @Inject constructor(
             }
         }
 
+        val model = modelFlow.value
         val ids = model.messages.map(UsedeskMessage::id)
         val filteredMessages = chatInited.messages.filter { it.id !in ids }
         val notSentMessages = cachedMessagesRepository.getNotSentMessages()
@@ -905,12 +779,10 @@ internal class ChatInteractor @Inject constructor(
         onMessagesNew(new = filteredMessages + filteredNotSentMessages)
 
         when {
-            chatInited.waitingEmail -> model.clientToken.let {
-                apiRepository.setClient(
-                    initConfiguration.copy(clientToken = it)
-                )
-            }
-            else -> eventListener.onSetEmailSuccess()
+            chatInited.waitingEmail -> apiRepository.setClient(
+                initConfiguration.copy(clientToken = clientToken)
+            )
+            else -> sendInitMessage()
         }
         when {
             needToResendMessages -> {
@@ -924,6 +796,77 @@ internal class ChatInteractor @Inject constructor(
                     }
             }
             else -> initedNotSentMessages = notSentMessages
+        }
+    }
+
+    inner class EventListener : IApiRepository.EventListener {
+        override fun onConnected() {
+            setModel { copy(connectionState = UsedeskConnectionState.CONNECTED) }
+        }
+
+        override fun onDisconnected() {
+            reconnectJob?.cancel()
+            previousMessagesLoadingJob?.cancel()
+            previousMessagesLoadingJob = null
+            reconnectJob = ioScope.launch {
+                delay(REPEAT_DELAY)
+                connect()
+            }
+            setModel {
+                copy(connectionState = UsedeskConnectionState.DISCONNECTED)
+            }
+        }
+
+        override fun onTokenError() {
+            val clientToken = clientTokenRepository.clientTokenRepositoryFlow.value
+            if (!clientToken.isNullOrEmpty()) {
+                ioScope.launch {
+                    apiRepository.sendInit(initConfiguration, clientToken)
+                }
+            }
+        }
+
+        override fun onFeedback() {
+            setModel { copy(feedbackEvent = UsedeskEvent(Unit)) }
+        }
+
+        override fun onException(exception: Exception) {
+            actionListeners.onException(exception)
+        }
+
+        override fun onChatInited(chatInited: ChatInited) {
+            this@ChatInteractor.chatInited = chatInited
+            ioScope.launch {
+                this@ChatInteractor.onChatInited(chatInited)
+            }
+        }
+
+        override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(old = messages)
+        }
+
+        override fun onMessagesNewReceived(messages: List<UsedeskMessage>) {
+            this@ChatInteractor.onMessagesNew(new = messages)
+        }
+
+        override fun onMessageUpdated(message: UsedeskMessage) {
+            this@ChatInteractor.onMessageUpdate(message)
+        }
+
+        override fun onOfflineForm(
+            offlineFormSettings: UsedeskOfflineFormSettings,
+            chatInited: ChatInited
+        ) {
+            this@ChatInteractor.chatInited = chatInited
+            this@ChatInteractor.offlineFormToChat =
+                offlineFormSettings.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
+            setModel {
+                copy(offlineFormSettings = offlineFormSettings)
+            }
+        }
+
+        override fun onSetEmailSuccess() {
+            sendInitMessage()
         }
     }
 
@@ -962,49 +905,6 @@ internal class ChatInteractor @Inject constructor(
 
         override fun onException(usedeskException: Exception) {
             doLocked { listeners }.forEach { it.onException(usedeskException) }
-        }
-    }
-
-    class Queue<T>(
-        private val scope: CoroutineScope,
-        private val onValue: suspend (T) -> Unit
-    ) {
-        private val emitQueue = mutableListOf<T>()
-        private val flow = MutableSharedFlow<T>()
-        private val mutex = Mutex()
-        private var emitJob: Job? = null
-
-        init {
-            scope.launch {
-                flow.collect(onValue)
-            }
-        }
-
-        suspend fun collect(collector: FlowCollector<T>) {
-            flow.collect(collector)
-        }
-
-        fun emit(value: T) {
-            runBlocking {
-                mutex.withLock {
-                    emitQueue.add(value)
-                    emitJob = emitJob ?: launchEmit()
-                }
-            }
-        }
-
-        private fun launchEmit() = scope.launch {
-            while (true) {
-                when (val emitValue = mutex.withLock { emitQueue.removeFirstOrNull() }) {
-                    null -> mutex.withLock {
-                        if (emitQueue.isEmpty()) {
-                            emitJob = null
-                        }
-                        emitJob
-                    } ?: break
-                    else -> flow.emit(emitValue)
-                }
-            }
         }
     }
 

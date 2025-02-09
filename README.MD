@@ -12,7 +12,7 @@ The ["Example" folder](https://github.com/usedesk/Android_SDK/tree/master/app/sr
 
 ### Minimal Android version
 
-At the moment, the minimum version of the OS that is supported by the SDK — **Android 4.4 (API 19)**
+At the moment, the minimum version of the OS that is supported by the SDK — **Android 5.0 (API 21)**
 
 ### SDK components
 
@@ -41,13 +41,13 @@ Add to the dependencies `build.gradle` of your module following lines:
 
 ```
 //Chat SDK
-implementation "com.github.usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:chat-sdk:$usedeskSdkVersion"
 //Chat GUI
-implementation "com.github.usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:chat-gui:$usedeskSdkVersion"
 //Knowlage Base SDK
-implementation "com.github.usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:knowledgebase-sdk:$usedeskSdkVersion"
 //Knowlage Base GUI
-implementation "com.github.usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
+implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVersion"
 ```
 
 Add to Manifest file:
@@ -72,8 +72,8 @@ Where * — required parameter
 
 | **Parameter**              | **Type**                | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 |----------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **urlChat***               | String                  | **Server URL for SDK chats**<br/>By default: `pubsubsec.usedesk.ru`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com                                                                                                                                                                                                                                                                                                                                                             |
-| **urlChatApi***            | String                  | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com                                                                                                                                                                                                                                                                                                                                                       |
+| **urlChat***               | String                  | **Server URL for SDK chats**<br/>By default: `pubsubsec.usedesk.ru`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com                                                                                                                                                                                                                                                                                                                                                             |
+| **urlChatApi***            | String                  | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com                                                                                                                                                                                                                                                                                                                                                       |
 | **companyId***             | String                  | **Company ID in Usedesk**<br/>[How to find a company ID](https://en.usedocs.com/article/6396)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | **channelId***             | String                  | **ID of the chat channel through which messages from the application will be placed at Usedesk**<br/>[How to create and set up a channel](https://en.usedocs.com/article/16616)                                                                                                                                                                                                                                                                                                                                                                                                     |
 | **messagesPageSize**       | Int                     | **Number of loaded messages when starting the chat**<br/>When client open a chat, a specified number of messages are loaded. As client scrolls chat, 20 more messages are loaded                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -282,36 +282,30 @@ To log server response processing errors, you can use the class `UsedeskLog`:
 
 ### Configuration
 
-To work with the Knowledge Base SDK, you need to set the configuration:
-
-```kotlin
-UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
-```
-
 The configuration of the Knowledge Base is set in the file [UsedeskKnowledgeBaseConfiguration](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-sdk/src/main/java/ru/usedesk/knowledgebase_sdk/entity/UsedeskKnowledgeBaseConfiguration.kt):
 
 Where * — required parameter
 
-| **Parameter**   | **Type** | **Description**                                                                                                                                                                                                               |
-|-----------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **urlApi***     | String   | **URL to work with Usedesk API**<br/>By default: `secure.usedesk.ru/uapi`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com |
-| **accountId***  | String   | **Knowledge Base ID**<br/>[How to create a Knowledge Base](https://en.usedocs.com/article/7182)                                                                                                                               |
-| **token***      | String   | **Usedesk API Token**<br/>[How to get API Token](https://en.usedocs.com/article/10169)                                                                                                                                        |
-| **clientEmail** | String?  | **Client email**                                                                                                                                                                                                              |
-| **clientName**  | String?  | **Client name**                                                                                                                                                                                                               |
+| **Parameter**   | **Type** | **Description**                                                                                                                                                                                                                  |
+|-----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **urlApi***     | String   | **URL to work with Usedesk API**<br/>By default: `https://secure.usedesk.ru`<br/>If you use server version of Usedesk on your own server, value may be different for you. Check with support for valid URL — support@usedesk.com |
+| **accountId***  | String   | **Knowledge Base ID**<br/>[How to create a Knowledge Base](https://en.usedocs.com/article/7182)                                                                                                                                  |
+| **token***      | String   | **Usedesk API Token**<br/>[How to get API Token](https://en.usedocs.com/article/10169)                                                                                                                                           |
+| **clientEmail** | String?  | **Client email**                                                                                                                                                                                                                 |
+| **clientName**  | String?  | **Client name**                                                                                                                                                                                                                  |
 
 ### Using with the GUI
 
-Use [UsedeskKnowledgeBaseFragment](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/main/UsedeskKnowledgeBaseScreen.kt) to use a ready-made user interface, for example using the `newInstance` method:
+Use [UsedeskKnowledgeBaseScreen](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskKnowledgeBaseScreen.kt) to use a ready-made user interface, for example using the `newInstance` method:
 
 ```kotlin
 supportFragmentManager().beginTransaction()
     .replace(
         R.id.container,
-        UsedeskKnowledgeBaseFragment.newInstance(
-            withSupportButton,
-            withArticleRating,
-            knowledgeBaseConfiguration
+        UsedeskKnowledgeBaseScreen.newInstance(
+            configuration = UsedeskKnowledgeBaseConfiguration(),
+            withSupportButton = true,
+            deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
         )
     ).commit()
 ```
@@ -324,9 +318,9 @@ Example:
 navController.navigate(
     R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
     UsedeskKnowledgeBaseScreen.createBundle(
-        withSupportButton,
-        withArticleRating,
-        knowledgeBaseConfiguration
+        configuration = UsedeskKnowledgeBaseConfiguration(),
+        withSupportButton = true,
+        deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
     )
 )
 ```
@@ -346,7 +340,7 @@ override fun onBackPressed() {
 }
 ```
 
-2) Implement the [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnSupportClickListener.kt) interface as a parent, overriding the `onSupportClick()` method,
+2) Implement the [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnSupportClickListener.kt) interface as a parent, overriding the `onSupportClick()` method,
 
 Example:
 
@@ -358,15 +352,19 @@ override fun onSupportClick() {
 }
 ```
 
-3) To process clicks on links in articles, you need to implement [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screens/IUsedeskOnWebUrlListener.kt) interface as a parent and return `true` in `onWebUrl` method if the link is processed. Otherwise, the link will open inside the article.
+3) To process clicks on links in articles, you need to implement [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnWebUrlListener.kt) interface as a parent.
 
 ### Using without a GUI
 
 To work with the Knowledge Base without GUI you need to perform the following steps:
 
-1) Initialize the Knowledge Base after installing the configuration:
+1) Initialize the Knowledge Base:
 
 ```kotlin
+val usedeskKnowledgeBase =
+    UsedeskSdk.initKnowledgeBase(context, UsedeskKnowledgeBaseConfiguration())
+//or
+UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
 val usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
 ```
 
@@ -393,7 +391,12 @@ SDK supports the following languages:
 - Spanish,
 - Portuguese.
 
-In addition, you can change an existing language or add a new one. To do this, copy the values from the file [strings_template.xml](https://github.com/usedesk/Android_SDK/blob/master/strings_template.xml "strings_template.xml"), which is in the root of the project, and add to all strings.xml files of your project. After that you can substitute your own values of string resources.
+In addition, you can change an existing language or add a new one. To do this, you need to copy the resources from the files that refer to `@string/usedesk_string` and add them to the strings.xml of your project, substituting the necessary values:
+- 
+
+- **common-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/common-gui/src/main/res/values/strings.xml "strings.xml")
+- **chat-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/chat-gui/src/main/res/values/strings.xml "strings.xml")
+- **knowledgebase-gui** [strings.xml](https://github.com/usedesk/Android_SDK/blob/master/knowledgebase-gui/src/main/res/values/strings.xml "strings.xml")
 
 In the case of changing string resource references when customizing an application, changing string resources in this way may not have the desired result.
 

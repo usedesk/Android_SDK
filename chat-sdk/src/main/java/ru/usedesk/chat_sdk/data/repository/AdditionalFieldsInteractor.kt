@@ -7,17 +7,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import javax.inject.Inject
 
 internal class AdditionalFieldsInteractor @Inject constructor(
     private val initConfiguration: UsedeskChatConfiguration,
     private val additionalFieldsRepository: AdditionalFieldsRepository,
-    private val clientTokenRepository: ClientTokenRepository,
+    private val userInfoRepository: UserInfoRepository,
     private val apiRepository: ApiRepository,
 ) {
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -34,7 +34,7 @@ internal class AdditionalFieldsInteractor @Inject constructor(
                     additionalFieldsNeeded && firstMessageSent
                 }
                 combine(
-                    clientTokenRepository.clientTokenRepositoryFlow.filterNotNull(),
+                    userInfoRepository.clientTokenFlowNotNull,
                     needToSendAdditionalFieldsFlow.filter { it },
                 ) { clientToken, _ ->
                     additionalFieldsRepository.additionalFieldsSent(true)

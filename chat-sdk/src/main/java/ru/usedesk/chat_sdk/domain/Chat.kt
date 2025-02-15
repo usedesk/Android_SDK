@@ -9,17 +9,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.AdditionalFieldsInteractor
 import ru.usedesk.chat_sdk.data.repository.AdditionalFieldsRepository
-import ru.usedesk.chat_sdk.data.repository.ClientTokenRepository
+import ru.usedesk.chat_sdk.data.repository.InitClientMessageRepository
 import ru.usedesk.chat_sdk.data.repository.ToSend
 import ru.usedesk.chat_sdk.data.repository.ToSendRepository
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
@@ -27,7 +25,7 @@ import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.LoadPreviousMessag
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendFileResponse
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendOfflineFormResponse
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SocketSendResponse
-import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
@@ -60,9 +58,8 @@ import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.Calendar
 import javax.inject.Inject
 
-internal class ChatInteractor @Inject constructor(
+internal class Chat @Inject constructor(
     private val initConfiguration: UsedeskChatConfiguration,
-    userInfoRepository: IUserInfoRepository,
     private val apiRepository: IApiRepository,
     private val cachedMessagesRepository: ICachedMessagesRepository,
     private val formRepository: IFormRepository,
@@ -70,14 +67,13 @@ internal class ChatInteractor @Inject constructor(
     private val additionalFieldsRepository: AdditionalFieldsRepository,
     private val additionalFieldsInteractor: AdditionalFieldsInteractor,
     private val toSendRepository: ToSendRepository,
-    private val clientTokenRepository: ClientTokenRepository,
+    private val initClientMessageRepository: InitClientMessageRepository,
+    private val initClientMessageInteractor: InitClientMessageInteractor,
+    private val userInfoRepository: UserInfoRepository,
 ) : IUsedeskChat, IRelease {
 
-    private var initClientMessage: String? = initConfiguration.clientInitMessage
-    private var initClientOfflineForm: String? = null
-
     private val modelFlow = MutableStateFlow(
-        Model(clientToken = clientTokenRepository.clientTokenRepositoryFlow.value.orEmpty())
+        Model(clientToken = initConfiguration.clientToken ?: "")
     )
 
     private val actionListeners = ActionListeners()
@@ -99,22 +95,12 @@ internal class ChatInteractor @Inject constructor(
     private val fileUploadProgressMutex = Mutex()
 
     init {
-        val oldConfiguration = userInfoRepository.getConfiguration()
-
-        initClientMessage = when {
-            initClientOfflineForm != null ||
-                    oldConfiguration?.clientInitMessage == initClientMessage -> null
-            else -> initConfiguration.clientInitMessage
-        }
-
         ioScope.launch {
-            clientTokenRepository.clientTokenRepositoryFlow
-                .filterNotNull()
-                .collect { clientToken ->
-                    modelFlow.update {
-                        it.copy(clientToken = clientToken)
-                    }
+            userInfoRepository.clientTokenFlowNotNull.collect { clientToken ->
+                modelFlow.update {
+                    it.copy(clientToken = clientToken)
                 }
+            }
         }
 
         ioScope.launch {
@@ -156,19 +142,6 @@ internal class ChatInteractor @Inject constructor(
         launchConnect()
     }
 
-    private fun sendInitMessage() {
-        val initMessage = initClientOfflineForm ?: initClientMessage
-        initMessage?.let {
-            try {
-                send(it)
-                initClientMessage = null
-                initClientOfflineForm = null
-            } catch (e: Exception) {
-                //nothing
-            }
-        }
-    }
-
     private fun launchConnect() {
         ioScope.launch {
             firstMessageMutex.withLock {
@@ -176,7 +149,7 @@ internal class ChatInteractor @Inject constructor(
                 firstMessageLock = Mutex()
             }
 
-            val clientToken = clientTokenRepository.clientTokenRepositoryFlow.value
+            val clientToken = userInfoRepository.clientTokenFlow.firstOrNull()
             apiRepository.connect(
                 url = initConfiguration.urlChat,
                 token = clientToken,
@@ -199,7 +172,7 @@ internal class ChatInteractor @Inject constructor(
         }
     }
 
-    private fun setModel(onUpdate: Model.() -> Model) = modelFlow.updateAndGet { it.onUpdate() }
+    private fun setModel(onUpdate: Model.() -> Model) = modelFlow.update { it.onUpdate() }
 
     private fun onMessageUpdate(message: UsedeskMessage) {
         if (message is UsedeskMessage.File && message.file.isVideo()) {
@@ -351,7 +324,7 @@ internal class ChatInteractor @Inject constructor(
                     }
                 }
             }
-            val clientToken = clientTokenRepository.clientTokenRepositoryFlow.value
+            val clientToken = userInfoRepository.clientTokenFlow.firstOrNull()
             val response = apiRepository.sendFile(
                 initConfiguration,
                 clientToken.orEmpty(),
@@ -386,7 +359,7 @@ internal class ChatInteractor @Inject constructor(
                             status = UsedeskMessageOwner.Client.Status.SEND_FAILED
                         )
                         else -> null
-                    }?.let(this@ChatInteractor::onMessageUpdate)
+                    }?.let(this@Chat::onMessageUpdate)
                     false
                 }
             }
@@ -399,7 +372,7 @@ internal class ChatInteractor @Inject constructor(
             when (lock?.isLocked) {
                 true -> lock
                 false -> {
-                    lock.lock(this@ChatInteractor)
+                    lock.lock(this@Chat)
                     null
                 }
                 else -> null
@@ -414,7 +387,7 @@ internal class ChatInteractor @Inject constructor(
                     }
                     firstMessageLock = null
                 }
-                unlockSafe(this@ChatInteractor)
+                unlockSafe(this@Chat)
             }
         }
     }
@@ -597,7 +570,8 @@ internal class ChatInteractor @Inject constructor(
                         .filter(String::isNotEmpty)
                     val strings =
                         listOf(clientName, clientEmail, topic) + fields + offlineForm.message
-                    initClientOfflineForm = strings.joinToString(separator = "\n")
+                    val offlineFormMessage = strings.joinToString(separator = "\n")
+                    initClientMessageRepository.offlineFormMessage = offlineFormMessage
                     chatInited?.let { onChatInited(it) }
                     SendOfflineFormResult.Done
                 }
@@ -645,7 +619,7 @@ internal class ChatInteractor @Inject constructor(
                     when (sendingMessage) {
                         is UsedeskMessage.File -> sendFileAgain(sendingMessage)
                         is UsedeskMessageClientText -> sendText(sendingMessage)
-                        else -> {}
+                        else -> Unit
                     }
                 }
             }
@@ -706,8 +680,7 @@ internal class ChatInteractor @Inject constructor(
         previousMessagesLoadingJob?.cancel()
         previousMessagesLoadingJob = ioScope.launch {
             while (true) {
-                val clientToken = clientTokenRepository.clientTokenRepositoryFlow
-                    .filterNotNull()
+                val clientToken = userInfoRepository.clientTokenFlowNotNull
                     .firstOrNull() ?: return@launch
                 val response = apiRepository.loadPreviousMessages(
                     initConfiguration,
@@ -716,7 +689,6 @@ internal class ChatInteractor @Inject constructor(
                 )
                 when (response) {
                     is LoadPreviousMessageResponse.Done -> {
-                        previousMessagesLoadingJob = null
                         setModel {
                             copy(
                                 previousPageIsLoading = false,
@@ -761,7 +733,7 @@ internal class ChatInteractor @Inject constructor(
 
     private suspend fun onChatInited(chatInited: ChatInited) {
         val clientToken = chatInited.token
-        clientTokenRepository.setClientToken(clientToken)
+        userInfoRepository.setClientToken(clientToken)
 
         if (chatInited.status in ACTIVE_STATUSES) {
             firstMessageMutex.withLock {
@@ -782,7 +754,7 @@ internal class ChatInteractor @Inject constructor(
             chatInited.waitingEmail -> apiRepository.setClient(
                 initConfiguration.copy(clientToken = clientToken)
             )
-            else -> sendInitMessage()
+            else -> initClientMessageInteractor.sendInitClientMessage()
         }
         when {
             needToResendMessages -> {
@@ -818,9 +790,9 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onTokenError() {
-            val clientToken = clientTokenRepository.clientTokenRepositoryFlow.value
-            if (!clientToken.isNullOrEmpty()) {
-                ioScope.launch {
+            ioScope.launch {
+                val clientToken = userInfoRepository.clientTokenFlow.firstOrNull()
+                if (!clientToken.isNullOrEmpty()) {
                     apiRepository.sendInit(initConfiguration, clientToken)
                 }
             }
@@ -835,30 +807,30 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onChatInited(chatInited: ChatInited) {
-            this@ChatInteractor.chatInited = chatInited
+            this@Chat.chatInited = chatInited
             ioScope.launch {
-                this@ChatInteractor.onChatInited(chatInited)
+                this@Chat.onChatInited(chatInited)
             }
         }
 
         override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(old = messages)
+            this@Chat.onMessagesNew(old = messages)
         }
 
         override fun onMessagesNewReceived(messages: List<UsedeskMessage>) {
-            this@ChatInteractor.onMessagesNew(new = messages)
+            this@Chat.onMessagesNew(new = messages)
         }
 
         override fun onMessageUpdated(message: UsedeskMessage) {
-            this@ChatInteractor.onMessageUpdate(message)
+            this@Chat.onMessageUpdate(message)
         }
 
         override fun onOfflineForm(
             offlineFormSettings: UsedeskOfflineFormSettings,
             chatInited: ChatInited
         ) {
-            this@ChatInteractor.chatInited = chatInited
-            this@ChatInteractor.offlineFormToChat =
+            this@Chat.chatInited = chatInited
+            this@Chat.offlineFormToChat =
                 offlineFormSettings.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
             setModel {
                 copy(offlineFormSettings = offlineFormSettings)
@@ -866,7 +838,7 @@ internal class ChatInteractor @Inject constructor(
         }
 
         override fun onSetEmailSuccess() {
-            sendInitMessage()
+            initClientMessageInteractor.sendInitClientMessage()
         }
     }
 

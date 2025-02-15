@@ -15,7 +15,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
 import ru.usedesk.chat_sdk.data.repository.api.loader.file.IFileLoader
-import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -31,9 +30,8 @@ import javax.inject.Inject
 
 //TODO: do something with repository hierarchy
 internal class CachedMessagesRepository @Inject constructor(
-    private val configuration: UsedeskChatConfiguration,
+    initConfiguration: UsedeskChatConfiguration,
     private val messagesRepository: IUsedeskMessagesRepository,
-    private val userInfoRepository: IUserInfoRepository,
     private val fileLoader: IFileLoader
 ) : ICachedMessagesRepository {
 
@@ -45,26 +43,24 @@ internal class CachedMessagesRepository @Inject constructor(
     private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri?>>()
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    init {
-        val userKey = findUserKey()
+    private val userKey = initConfiguration.userKey()
 
-        if (userKey != null) {
-            runBlocking {
-                mutex.withLock {
-                    val messageDraft = messagesRepository.getDraft(userKey)
-                    messagesRepository.setDraft(
-                        userKey,
-                        messageDraft.copy(
-                            files = when {
-                                configuration.cacheMessagesWithFile -> messageDraft.files
-                                else -> listOf()
-                            }
-                        )
+    init {
+        runBlocking {
+            mutex.withLock {
+                val messageDraft = messagesRepository.getDraft(userKey)
+                messagesRepository.setDraft(
+                    userKey,
+                    messageDraft.copy(
+                        files = when {
+                            initConfiguration.cacheMessagesWithFile -> messageDraft.files
+                            else -> listOf()
+                        }
                     )
-                    val cachedFiles = messageDraft.files
-                        .map { it.uri to CompletableDeferred(it.uri) }
-                    deferredCachedUriMap.putAll(cachedFiles)
-                }
+                )
+                val cachedFiles = messageDraft.files
+                    .map { it.uri to CompletableDeferred(it.uri) }
+                deferredCachedUriMap.putAll(cachedFiles)
             }
         }
     }
@@ -112,23 +108,19 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     override suspend fun getNotSentMessages(): List<UsedeskMessageOwner.Client> {
-        val userKey = requireUserKey()
         return messagesRepository.getNotSentMessages(userKey)
     }
 
     override suspend fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
-        val userKey = requireUserKey()
         messagesRepository.addNotSentMessage(userKey, notSentMessage)
     }
 
     override suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
-        val requireUserKey = requireUserKey()
-        messagesRepository.removeNotSentMessage(requireUserKey, notSentMessage.localId)
-        messagesRepository.addNotSentMessage(requireUserKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(userKey, notSentMessage.localId)
+        messagesRepository.addNotSentMessage(userKey, notSentMessage)
     }
 
     override suspend fun removeNotSentMessage(localId: String) {
-        val userKey = requireUserKey()
         messagesRepository.removeNotSentMessage(userKey, localId)
     }
 
@@ -143,10 +135,8 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     override suspend fun removeFileFromCache(uri: Uri) {
-        if (configuration.cacheMessagesWithFile) {
-            mutex.withLock {
-                removeDeferredCache(uri)
-            }
+        mutex.withLock {
+            removeDeferredCache(uri)
         }
     }
 
@@ -168,7 +158,6 @@ internal class CachedMessagesRepository @Inject constructor(
             draftJob = null
             saveJob?.cancel()
             saveJob = ioScope.launch {
-                val userKey = requireUserKey()
                 mutex.withLock {
                     val messageDraft = messagesRepository.getDraft(userKey)
                     messagesRepository.setDraft(
@@ -200,7 +189,6 @@ internal class CachedMessagesRepository @Inject constructor(
         messageDraft: UsedeskMessageDraft,
         cacheFiles: Boolean
     ): UsedeskMessageDraft = mutex.withLock {
-        val userKey = requireUserKey()
         messagesRepository.getDraft(userKey).also { oldMessageDraft ->
             messagesRepository.setDraft(userKey, messageDraft)
             if (cacheFiles) {
@@ -216,18 +204,8 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     override suspend fun getMessageDraft(): UsedeskMessageDraft = mutex.withLock {
-        val userKey = requireUserKey()
         messagesRepository.getDraft(userKey)
     }
 
     override suspend fun getNextLocalId() = messagesRepository.getNextLocalId()
-
-    private fun findUserKey(): String? {
-        val config = userInfoRepository.getConfiguration() ?: configuration
-        val token = config.clientToken
-        return token?.ifEmpty { null }
-    }
-
-    private fun requireUserKey(): String = findUserKey()
-        ?: throw RuntimeException("Can't find configuration")
 }

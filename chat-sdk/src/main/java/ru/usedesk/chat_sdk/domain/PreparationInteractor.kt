@@ -7,7 +7,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
-import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.di.IRelease
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import javax.inject.Inject
@@ -15,7 +15,7 @@ import javax.inject.Inject
 internal class PreparationInteractor @Inject constructor(
     private val initConfiguration: UsedeskChatConfiguration,
     private val apiRepository: IApiRepository,
-    private val userInfoRepository: IUserInfoRepository
+    private val userInfoRepository: UserInfoRepository
 ) : IUsedeskPreparation, IRelease {
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 

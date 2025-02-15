@@ -14,10 +14,10 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepositoryImpl
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationLoader
-import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.IConfigurationLoader
+import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationsLoader
 import javax.inject.Scope
 
 @Module(includes = [CommonChatModuleProvides::class, CommonChatModuleBinds::class])
@@ -39,10 +39,10 @@ internal interface CommonChatModuleBinds {
     fun apiRepository(repository: ApiRepository): IApiRepository
 
     @[Binds CommonChatScope]
-    fun userInfoRepository(repository: UserInfoRepository): IUserInfoRepository
+    fun userInfoRepository(repository: UserInfoRepositoryImpl): UserInfoRepository
 
     @[Binds CommonChatScope]
-    fun configurationLoader(loader: ConfigurationLoader): IConfigurationLoader
+    fun configurationLoader(loader: ConfigurationLoader): ConfigurationsLoader
 
     @[Binds CommonChatScope]
     fun messageResponseConverter(loader: MessageResponseConverter): IMessageResponseConverter

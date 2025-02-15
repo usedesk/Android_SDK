@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.domain
 
 import kotlinx.coroutines.CoroutineScope
@@ -6,16 +5,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
-import ru.usedesk.chat_sdk.data.repository.configuration.IUserInfoRepository
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi
+import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.di.IRelease
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import javax.inject.Inject
 
 internal class PreparationInteractor @Inject constructor(
-    private val initConfiguration: UsedeskChatConfiguration,
-    private val apiRepository: IApiRepository,
-    private val userInfoRepository: IUserInfoRepository
+    private val apiRepository: ChatApi,
+    private val userInfoRepository: UserInfoRepository
 ) : IUsedeskPreparation, IRelease {
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -24,13 +21,14 @@ internal class PreparationInteractor @Inject constructor(
         onResult: (IUsedeskPreparation.CreateChatResult) -> Unit
     ) {
         ioScope.launch {
+            val configuration = userInfoRepository.getConfiguration()
             val response = apiRepository.initChat(
-                initConfiguration,
+                configuration,
                 apiToken
             )
             val result = when (response) {
-                is IApiRepository.InitChatResponse.ApiError -> IUsedeskPreparation.CreateChatResult.Error
-                is IApiRepository.InitChatResponse.Done -> {
+                is ChatApi.InitChatResponse.ApiError -> IUsedeskPreparation.CreateChatResult.Error
+                is ChatApi.InitChatResponse.Done -> {
                     userInfoRepository.updateConfiguration { copy(clientToken = clientToken) }
                     IUsedeskPreparation.CreateChatResult.Done(response.clientToken)
                 }

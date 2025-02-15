@@ -18,7 +18,7 @@ import ru.usedesk.chat_sdk.data.repository.messages.MessagesRepository
 import ru.usedesk.chat_sdk.data.repository.thumbnail.IThumbnailRepository
 import ru.usedesk.chat_sdk.data.repository.thumbnail.ThumbnailRepository
 import ru.usedesk.chat_sdk.di.UsedeskCustom
-import ru.usedesk.chat_sdk.domain.ChatInteractor
+import ru.usedesk.chat_sdk.domain.ChatImpl
 import ru.usedesk.chat_sdk.domain.IUsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import javax.inject.Scope
@@ -50,7 +50,7 @@ internal interface ChatModuleBinds {
     fun thumbnailRepository(repository: ThumbnailRepository): IThumbnailRepository
 
     @[Binds ChatScope]
-    fun chatInteractor(interactor: ChatInteractor): IUsedeskChat
+    fun chatInteractor(interactor: ChatImpl): IUsedeskChat
 
     @[Binds ChatScope]
     fun cachedMessagesRepository(interactor: CachedMessagesRepository): ICachedMessagesRepository

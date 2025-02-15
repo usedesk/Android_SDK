@@ -11,11 +11,9 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 
-internal interface IApiRepository {
+internal interface ChatApi {
     @CheckResult
     suspend fun connect(
-        url: String,
-        token: String?,
         configuration: UsedeskChatConfiguration,
         eventListener: EventListener
     ): SocketSendResponse
@@ -23,7 +21,6 @@ internal interface IApiRepository {
     @CheckResult
     suspend fun sendInit(
         configuration: UsedeskChatConfiguration,
-        token: String?
     ): SocketSendResponse
 
     @CheckResult
@@ -44,7 +41,6 @@ internal interface IApiRepository {
     @CheckResult
     suspend fun sendFile(
         configuration: UsedeskChatConfiguration,
-        token: String,
         fileInfo: UsedeskFileInfo,
         messageId: String,
         progressFlow: MutableStateFlow<Pair<Long, Long>>
@@ -54,16 +50,12 @@ internal interface IApiRepository {
 
     @CheckResult
     suspend fun sendFields(
-        token: String,
         configuration: UsedeskChatConfiguration,
-        additionalFields: Map<Long, String>,
-        additionalNestedFields: List<Map<Long, String>>
     ): SendAdditionalFieldsResponse
 
     @CheckResult
     suspend fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
-        token: String,
         messageId: String
     ): LoadPreviousMessageResponse
 

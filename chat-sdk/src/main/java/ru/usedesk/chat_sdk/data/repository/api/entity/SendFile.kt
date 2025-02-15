@@ -7,7 +7,7 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface SendFile {
     class Request(
-        val token: String,
+        val token: String?,
         val messageId: String,
         val file: Uri
     ) : MultipartRequest(

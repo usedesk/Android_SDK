@@ -5,14 +5,18 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import ru.usedesk.chat_sdk.data.repository._extra.DataLoader
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import javax.inject.Inject
 
 internal class ConfigurationLoader @Inject constructor(
+    private val initConfiguration: UsedeskChatConfiguration,
     context: Context,
-) : DataLoader<Array<UsedeskChatConfiguration>>(), IConfigurationLoader {
+) : ConfigurationsLoader {
+
+    private val configurationMap: MutableMap<String, UsedeskChatConfiguration> by lazy {
+        loadData().toMutableMap()
+    }
 
     private val gson = Gson()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
@@ -31,26 +35,34 @@ internal class ConfigurationLoader @Inject constructor(
         }
     }
 
-    override fun loadData(): Array<UsedeskChatConfiguration>? {
-        val version = sharedPreferences.getInt(KEY_VERSION, 1)
-        if (version < CURRENT_VERSION) {
-            migrate(version)
-        }
-
-        return try {
-            val json = sharedPreferences.getString(KEY_DATA, null)
-            gson.fromJson(json, Array<UsedeskChatConfiguration>::class.java)
-        } catch (e: Exception) {
-            null
-        }
+    override fun getConfig(): UsedeskChatConfiguration {
+        return configurationMap[initConfiguration.userKey()] ?: initConfiguration
     }
 
-    private fun migrate(oldVersion: Int) {
-        setData(loadLegacy(oldVersion))
+    override fun setConfig(configuration: UsedeskChatConfiguration?) {
+        when (configuration) {
+            null -> configurationMap.remove(initConfiguration.userKey())
+            else -> configurationMap[initConfiguration.userKey()] = configuration
+        }
+        saveData(configurationMap.values.toTypedArray())
     }
 
-    override fun saveData(data: Array<UsedeskChatConfiguration>) {
-        val json = gson.toJson(data)
+    private fun loadData(): Map<String, UsedeskChatConfiguration> {
+        return valueOrNull {
+            val version = sharedPreferences.getInt(KEY_VERSION, 1)
+            if (version < CURRENT_VERSION) {
+                loadLegacy(version).also {
+                    saveData(it)
+                }
+            } else {
+                val json = sharedPreferences.getString(KEY_DATA, null)
+                gson.fromJson(json, Array<UsedeskChatConfiguration>::class.java)
+            }
+        }?.associateBy(UsedeskChatConfiguration::userKey) ?: emptyMap()
+    }
+
+    private fun saveData(configurations: Array<UsedeskChatConfiguration>?) {
+        val json = gson.toJson(configurations)
 
         sharedPreferences.edit()
             .putString(KEY_DATA, json)

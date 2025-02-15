@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.*
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.EventListener
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.*
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.entity.*
 import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
@@ -34,7 +34,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.min
 
-internal class ApiRepository @Inject constructor(
+internal class ChatApiImpl @Inject constructor(
     private val context: Context,
     private val socketApi: SocketApi,
     private val initChatResponseConverter: IInitChatResponseConverter,
@@ -48,7 +48,7 @@ internal class ApiRepository @Inject constructor(
     multipartConverter,
     gson,
     RetrofitApi::class.java
-), IApiRepository {
+), ChatApi {
 
     private lateinit var eventListener: EventListener
     private val requestDeferredMap = mutableMapOf<String, CompletableDeferred<SocketSendResponse>>()
@@ -144,15 +144,13 @@ internal class ApiRepository @Inject constructor(
     }
 
     override suspend fun connect(
-        url: String,
-        token: String?,
         configuration: UsedeskChatConfiguration,
-        eventListener: EventListener
+        eventListener: EventListener,
     ): SocketSendResponse = try {
         this.eventListener = eventListener
         socketApi.connect(
-            url,
-            configuration.toInitChatRequest(token),
+            configuration.urlChat,
+            configuration.toInitChatRequest(),
             socketEventListener
         )
         SocketSendResponse.Done
@@ -181,16 +179,13 @@ internal class ApiRepository @Inject constructor(
 
     override suspend fun sendInit(
         configuration: UsedeskChatConfiguration,
-        token: String?
     ): SocketSendResponse {
-        val result = socketApi.sendRequest(configuration.toInitChatRequest(token))
+        val result = socketApi.sendRequest(configuration.toInitChatRequest())
         return result //TODO:
     }
 
-    private fun UsedeskChatConfiguration.toInitChatRequest(
-        token: String?
-    ) = SocketRequest.Init(
-        token,
+    private fun UsedeskChatConfiguration.toInitChatRequest() = SocketRequest.Init(
+        clientToken,
         companyAndChannel(),
         urlChat,
         when {
@@ -243,14 +238,13 @@ internal class ApiRepository @Inject constructor(
 
     override suspend fun sendFile(
         configuration: UsedeskChatConfiguration,
-        token: String,
         fileInfo: UsedeskFileInfo,
         messageId: String,
         progressFlow: MutableStateFlow<Pair<Long, Long>>
     ): SendFileResponse = when {
         isConnected() -> {
             val request = SendFile.Request(
-                token,
+                configuration.clientToken,
                 messageId,
                 fileInfo.uri
             )
@@ -342,11 +336,10 @@ internal class ApiRepository @Inject constructor(
 
     override suspend fun loadPreviousMessages(
         configuration: UsedeskChatConfiguration,
-        token: String,
         messageId: String
     ): LoadPreviousMessageResponse {
         val request = LoadPreviousMessages.Request(
-            token,
+            configuration.clientToken,
             messageId
         )
         val response = doRequestJson(
@@ -398,20 +391,17 @@ internal class ApiRepository @Inject constructor(
     private fun UsedeskChatConfiguration.companyAndChannel() = "${companyId}_$channelId"
 
     override suspend fun sendFields(
-        token: String,
         configuration: UsedeskChatConfiguration,
-        additionalFields: Map<Long, String>,
-        additionalNestedFields: List<Map<Long, String>>
     ): SendAdditionalFieldsResponse {
-        val totalFields =
-            (additionalFields.toList() + additionalNestedFields.flatMap(Map<Long, String>::toList))
-                .map { field ->
-                    SendAdditionalFields.Request.AdditionalField(
-                        field.first,
-                        field.second
-                    )
-                }
-        val request = SendAdditionalFields.Request(token, totalFields)
+        val nestedFields = configuration.additionalNestedFields.flatMap(Map<Long, String>::toList)
+        val totalFields = (configuration.additionalFields.toList() + nestedFields)
+            .map { field ->
+                SendAdditionalFields.Request.AdditionalField(
+                    field.first,
+                    field.second
+                )
+            }
+        val request = SendAdditionalFields.Request(configuration.clientToken, totalFields)
         val response = doRequestJson(
             configuration.urlChatApi,
             request,

@@ -5,7 +5,7 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface SendAdditionalFields {
     class Request(
-        private val chatToken: String,
+        private val chatToken: String?,
         private val additionalFields: List<AdditionalField>
     ) {
 

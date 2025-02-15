@@ -10,6 +10,7 @@ import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import javax.inject.Inject
 
 internal class ConfigurationLoader @Inject constructor(
+    private val initConfiguration: UsedeskChatConfiguration,
     context: Context,
 ) : ConfigurationsLoader {
 
@@ -34,14 +35,14 @@ internal class ConfigurationLoader @Inject constructor(
         }
     }
 
-    override fun getConfig(userKey: String): UsedeskChatConfiguration? {
-        return configurationMap[userKey]
+    override fun getConfig(): UsedeskChatConfiguration {
+        return configurationMap[initConfiguration.userKey()] ?: initConfiguration
     }
 
-    override fun setConfig(userKey: String, configuration: UsedeskChatConfiguration?) {
+    override fun setConfig(configuration: UsedeskChatConfiguration?) {
         when (configuration) {
-            null -> configurationMap.remove(userKey)
-            else -> configurationMap[userKey] = configuration
+            null -> configurationMap.remove(initConfiguration.userKey())
+            else -> configurationMap[initConfiguration.userKey()] = configuration
         }
         saveData(configurationMap.values.toTypedArray())
     }

@@ -8,8 +8,8 @@ import dagger.Module
 import dagger.Provides
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase.Companion.DATABASE_NAME
-import ru.usedesk.chat_sdk.data.repository.api.ApiRepository
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi
+import ru.usedesk.chat_sdk.data.repository.api.ChatApiImpl
 import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
@@ -36,7 +36,7 @@ internal class CommonChatModuleProvides {
 @Module
 internal interface CommonChatModuleBinds {
     @[Binds CommonChatScope]
-    fun apiRepository(repository: ApiRepository): IApiRepository
+    fun apiRepository(repository: ChatApiImpl): ChatApi
 
     @[Binds CommonChatScope]
     fun userInfoRepository(repository: UserInfoRepositoryImpl): UserInfoRepository

@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
@@ -55,7 +55,7 @@ internal interface CommonChatDeps {
     val gson: Gson
     val contentResolver: ContentResolver
     val apiFactory: IUsedeskApiFactory
-    val apiRepository: IApiRepository
+    val apiRepository: ChatApi
     val userInfoRepository: UserInfoRepository
     val chatDatabase: ChatDatabase
     val okHttpClientFactory: IUsedeskOkHttpClientFactory

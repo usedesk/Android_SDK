@@ -5,9 +5,9 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 internal interface ConfigurationsLoader {
     fun initLegacyData(onGetClientToken: () -> String?)
 
-    fun getConfig(userKey: String): UsedeskChatConfiguration?
+    fun getConfig(): UsedeskChatConfiguration
 
-    fun setConfig(userKey: String, configuration: UsedeskChatConfiguration?)
+    fun setConfig(configuration: UsedeskChatConfiguration?)
 
     fun clearData()
 }

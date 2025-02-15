@@ -9,7 +9,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,11 +19,11 @@ import ru.usedesk.chat_sdk.data.repository.AdditionalFieldsRepository
 import ru.usedesk.chat_sdk.data.repository.InitClientMessageRepository
 import ru.usedesk.chat_sdk.data.repository.ToSend
 import ru.usedesk.chat_sdk.data.repository.ToSendRepository
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.LoadPreviousMessageResponse
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendFileResponse
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SendOfflineFormResponse
-import ru.usedesk.chat_sdk.data.repository.api.IApiRepository.SocketSendResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.LoadPreviousMessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendFileResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendOfflineFormResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SocketSendResponse
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
 import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
@@ -37,7 +36,6 @@ import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
 import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
-import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -59,8 +57,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 internal class Chat @Inject constructor(
-    private val initConfiguration: UsedeskChatConfiguration,
-    private val apiRepository: IApiRepository,
+    private val apiRepository: ChatApi,
     private val cachedMessagesRepository: ICachedMessagesRepository,
     private val formRepository: IFormRepository,
     private val thumbnailRepository: IThumbnailRepository,
@@ -73,7 +70,7 @@ internal class Chat @Inject constructor(
 ) : IUsedeskChat, IRelease {
 
     private val modelFlow = MutableStateFlow(
-        Model(clientToken = initConfiguration.clientToken ?: "")
+        Model(clientToken = userInfoRepository.getConfiguration().clientToken.orEmpty())
     )
 
     private val actionListeners = ActionListeners()
@@ -149,11 +146,9 @@ internal class Chat @Inject constructor(
                 firstMessageLock = Mutex()
             }
 
-            val clientToken = userInfoRepository.clientTokenFlow.firstOrNull()
+            val configuration = userInfoRepository.getConfiguration()
             apiRepository.connect(
-                url = initConfiguration.urlChat,
-                token = clientToken,
-                configuration = initConfiguration,
+                configuration = configuration,
                 eventListener = EventListener(),
             )
         }
@@ -313,7 +308,7 @@ internal class Chat @Inject constructor(
         fileMessage as UsedeskMessageOwner.Client
         withFirstMessageLock {
             val progressFlow = MutableStateFlow(0L to 0L)
-            val progressJob = CoroutineScope(ioScope.coroutineContext + Job()).launch {
+            val progressJob = ioScope.launch {
                 progressFlow.collect { progress ->
                     if (progress.second != 0L) {
                         fileUploadProgressMutex.withLock {
@@ -324,10 +319,9 @@ internal class Chat @Inject constructor(
                     }
                 }
             }
-            val clientToken = userInfoRepository.clientTokenFlow.firstOrNull()
+            val configuration = userInfoRepository.getConfiguration()
             val response = apiRepository.sendFile(
-                initConfiguration,
-                clientToken.orEmpty(),
+                configuration,
                 UsedeskFileInfo(
                     fileMessage.file.content.toUri(),
                     fileMessage.file.type,
@@ -447,8 +441,9 @@ internal class Chat @Inject constructor(
         message: UsedeskMessageAgentText
     ) {
         ioScope.launch {
+            val configuration = userInfoRepository.getConfiguration()
             val response = formRepository.loadForm(
-                initConfiguration.urlChatApi,
+                configuration.urlChatApi,
                 clientToken,
                 message.id,
                 message.fieldsInfo
@@ -519,8 +514,9 @@ internal class Chat @Inject constructor(
         form: UsedeskForm
     ) {
         ioScope.launch {
+            val configuration = userInfoRepository.getConfiguration()
             val response = formRepository.sendForm(
-                initConfiguration.urlChatApi,
+                configuration.urlChatApi,
                 clientToken,
                 form
             )
@@ -576,8 +572,9 @@ internal class Chat @Inject constructor(
                     SendOfflineFormResult.Done
                 }
                 else -> {
+                    val configuration = userInfoRepository.getConfiguration()
                     val response = apiRepository.sendOfflineForm(
-                        initConfiguration,
+                        configuration,
                         offlineForm
                     )
                     when (response) {
@@ -680,11 +677,9 @@ internal class Chat @Inject constructor(
         previousMessagesLoadingJob?.cancel()
         previousMessagesLoadingJob = ioScope.launch {
             while (true) {
-                val clientToken = userInfoRepository.clientTokenFlowNotNull
-                    .firstOrNull() ?: return@launch
+                val configuration = userInfoRepository.getConfiguration()
                 val response = apiRepository.loadPreviousMessages(
-                    initConfiguration,
-                    clientToken,
+                    configuration,
                     oldestMessageId
                 )
                 when (response) {
@@ -732,8 +727,7 @@ internal class Chat @Inject constructor(
     }
 
     private suspend fun onChatInited(chatInited: ChatInited) {
-        val clientToken = chatInited.token
-        userInfoRepository.setClientToken(clientToken)
+        userInfoRepository.setClientToken(chatInited.token)
 
         if (chatInited.status in ACTIVE_STATUSES) {
             firstMessageMutex.withLock {
@@ -752,7 +746,7 @@ internal class Chat @Inject constructor(
 
         when {
             chatInited.waitingEmail -> apiRepository.setClient(
-                initConfiguration.copy(clientToken = clientToken)
+                userInfoRepository.getConfiguration()
             )
             else -> initClientMessageInteractor.sendInitClientMessage()
         }
@@ -771,7 +765,7 @@ internal class Chat @Inject constructor(
         }
     }
 
-    inner class EventListener : IApiRepository.EventListener {
+    inner class EventListener : ChatApi.EventListener {
         override fun onConnected() {
             setModel { copy(connectionState = UsedeskConnectionState.CONNECTED) }
         }
@@ -791,9 +785,9 @@ internal class Chat @Inject constructor(
 
         override fun onTokenError() {
             ioScope.launch {
-                val clientToken = userInfoRepository.clientTokenFlow.firstOrNull()
-                if (!clientToken.isNullOrEmpty()) {
-                    apiRepository.sendInit(initConfiguration, clientToken)
+                val configuration = userInfoRepository.getConfiguration()
+                if (!configuration.clientToken.isNullOrEmpty()) {
+                    apiRepository.sendInit(configuration)
                 }
             }
         }

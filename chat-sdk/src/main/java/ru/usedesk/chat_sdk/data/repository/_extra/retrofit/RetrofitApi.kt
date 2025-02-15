@@ -26,7 +26,7 @@ internal interface RetrofitApi {
 
     @GET("uapi/chat/getChatMessage")
     fun loadPreviousMessages(
-        @Query("chat_token") chatToken: String,
+        @Query("chat_token") chatToken: String?,
         @Query("comment_id") commentId: String
     ): Call<ResponseBody>
 

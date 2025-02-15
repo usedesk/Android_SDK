@@ -56,7 +56,7 @@ import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.Calendar
 import javax.inject.Inject
 
-internal class Chat @Inject constructor(
+internal class ChatImpl @Inject constructor(
     private val apiRepository: ChatApi,
     private val cachedMessagesRepository: ICachedMessagesRepository,
     private val formRepository: IFormRepository,
@@ -353,7 +353,7 @@ internal class Chat @Inject constructor(
                             status = UsedeskMessageOwner.Client.Status.SEND_FAILED
                         )
                         else -> null
-                    }?.let(this@Chat::onMessageUpdate)
+                    }?.let(this@ChatImpl::onMessageUpdate)
                     false
                 }
             }
@@ -366,7 +366,7 @@ internal class Chat @Inject constructor(
             when (lock?.isLocked) {
                 true -> lock
                 false -> {
-                    lock.lock(this@Chat)
+                    lock.lock(this@ChatImpl)
                     null
                 }
                 else -> null
@@ -381,7 +381,7 @@ internal class Chat @Inject constructor(
                     }
                     firstMessageLock = null
                 }
-                unlockSafe(this@Chat)
+                unlockSafe(this@ChatImpl)
             }
         }
     }
@@ -801,30 +801,30 @@ internal class Chat @Inject constructor(
         }
 
         override fun onChatInited(chatInited: ChatInited) {
-            this@Chat.chatInited = chatInited
+            this@ChatImpl.chatInited = chatInited
             ioScope.launch {
-                this@Chat.onChatInited(chatInited)
+                this@ChatImpl.onChatInited(chatInited)
             }
         }
 
         override fun onMessagesOldReceived(messages: List<UsedeskMessage>) {
-            this@Chat.onMessagesNew(old = messages)
+            this@ChatImpl.onMessagesNew(old = messages)
         }
 
         override fun onMessagesNewReceived(messages: List<UsedeskMessage>) {
-            this@Chat.onMessagesNew(new = messages)
+            this@ChatImpl.onMessagesNew(new = messages)
         }
 
         override fun onMessageUpdated(message: UsedeskMessage) {
-            this@Chat.onMessageUpdate(message)
+            this@ChatImpl.onMessageUpdate(message)
         }
 
         override fun onOfflineForm(
             offlineFormSettings: UsedeskOfflineFormSettings,
             chatInited: ChatInited
         ) {
-            this@Chat.chatInited = chatInited
-            this@Chat.offlineFormToChat =
+            this@ChatImpl.chatInited = chatInited
+            this@ChatImpl.offlineFormToChat =
                 offlineFormSettings.workType == WorkType.ALWAYS_ENABLED_CALLBACK_WITH_CHAT
             setModel {
                 copy(offlineFormSettings = offlineFormSettings)

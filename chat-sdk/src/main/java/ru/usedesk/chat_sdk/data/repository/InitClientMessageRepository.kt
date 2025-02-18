@@ -1,8 +1,10 @@
 package ru.usedesk.chat_sdk.data.repository
 
+import ru.usedesk.chat_sdk.di.chat.ChatScope
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import javax.inject.Inject
 
+@ChatScope
 class InitClientMessageRepository @Inject constructor(
     initChatConfiguration: UsedeskChatConfiguration,
 ) {

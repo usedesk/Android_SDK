@@ -13,7 +13,8 @@ internal interface SaveForm {
         class Field(
             val associate: String,
             val required: Boolean,
-            val value: JsonElement
+            val value: JsonElement,
+            val label: String,
         )
     }
 

@@ -257,12 +257,12 @@ internal class FormRepository @Inject constructor(
                 }
                 is Field.Text -> JsonPrimitive(field.text)
             }
-            when (value) {
-                null -> null
-                else -> SaveForm.Request.Field(
-                    field.id,
-                    field.required,
-                    value
+            value?.run {
+                SaveForm.Request.Field(
+                    associate = field.id,
+                    required = field.required,
+                    value = value,
+                    label = field.name,
                 )
             }
         }

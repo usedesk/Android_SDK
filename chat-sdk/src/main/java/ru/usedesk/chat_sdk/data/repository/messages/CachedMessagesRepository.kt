@@ -163,11 +163,10 @@ internal class CachedMessagesRepository @Inject constructor(
                     messagesRepository.setDraft(
                         userKey,
                         messageDraft.copy(
-                            files = messageDraft.files.mapNotNull {
-                                val deferredCachedUri = deferredCachedUriMap[it.uri]
-                                when (val cachedUri = deferredCachedUri?.await()) {
-                                    null -> null
-                                    else -> it.copy(uri = cachedUri)
+                            files = messageDraft.files.mapNotNull { fileInfo ->
+                                val deferredCachedUri = deferredCachedUriMap[fileInfo.uri]
+                                deferredCachedUri?.await()?.let { cachedUri ->
+                                    fileInfo.copy(uri = cachedUri)
                                 }
                             }
                         )

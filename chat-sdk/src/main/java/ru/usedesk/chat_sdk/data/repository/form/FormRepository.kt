@@ -233,10 +233,7 @@ internal class FormRepository @Inject constructor(
                                 }
                             }
                             when (tree.size) {
-                                1 -> when (val selectedId = field.selected?.id?.toString()) {
-                                    null -> null
-                                    else -> JsonPrimitive(selectedId)
-                                }
+                                1 -> field.selected?.id?.toString()?.let(::JsonPrimitive)
                                 else -> JsonArray().apply {
                                     tree.forEach { list ->
                                         add(JsonObject().apply {

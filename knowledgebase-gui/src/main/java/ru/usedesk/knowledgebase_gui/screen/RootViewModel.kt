@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen
 
 import androidx.compose.ui.text.input.TextFieldValue
@@ -47,9 +46,8 @@ internal class RootViewModel(
     }
 
     private fun State.backPressed() = when (screen) {
-        is State.Screen.Blocks -> when (val previousBlock = blocksState.block.previousBlock) {
-            null -> null
-            else -> copy(
+        is State.Screen.Blocks -> blocksState.block.previousBlock?.let { previousBlock ->
+            copy(
                 blocksState = blocksState.copy(
                     block = previousBlock,
                     searchText = TextFieldValue(),
@@ -60,9 +58,8 @@ internal class RootViewModel(
             )
         }
         else -> null
-    } ?: when (val previousScreen = screen.previousScreen) {
-        null -> null
-        else -> copy(screen = previousScreen)
+    } ?: screen.previousScreen?.let {
+        copy(screen = it)
     }
 
     fun onBackPressed(): Boolean {
@@ -110,10 +107,7 @@ internal class RootViewModel(
                             else -> category?.toBlock(section.toBlock())
                         }
                         State.Screen.Article(
-                            previousScreen = when (block) {
-                                null -> null
-                                else -> State.Screen.Blocks
-                            },
+                            previousScreen = block?.run { State.Screen.Blocks },
                             title = article?.title,
                             articleId = deepLink.articleId
                         )
@@ -127,10 +121,7 @@ internal class RootViewModel(
                                     ?.toBlock()
                             }
                         )
-                        when (block) {
-                            null -> null
-                            else -> State.Screen.Blocks
-                        }
+                        block?.run { State.Screen.Blocks }
                     }
                     is DeepLink.Section -> {
                         val section = event.sectionsModel.data.sectionsMap[deepLink.sectionId]
@@ -140,10 +131,7 @@ internal class RootViewModel(
                                 else -> State.BlocksState.Block.Sections
                             }
                         )
-                        when (block) {
-                            null -> null
-                            else -> State.Screen.Blocks
-                        }
+                        block?.run { State.Screen.Blocks }
                     }
                     null -> {
                         block = null

@@ -137,11 +137,11 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                             )
                         }
                     val offlineForm = UsedeskOfflineForm(
-                        name,
-                        email,
-                        subject,
-                        additionalFields,
-                        message
+                        clientName = name,
+                        clientEmail = email,
+                        topic = subject,
+                        fields = additionalFields,
+                        message = message
                     )
                     newModel.update {
                         copy(

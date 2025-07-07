@@ -37,7 +37,7 @@ internal class FormRepository @Inject constructor(
     gson,
     FormApi::class.java
 ), IFormRepository {
-    private val userKey = initConfiguration.userKey()
+    private val userKey = initConfiguration.clientId
     private val formDao = database.formDao()
     private val mutex = Mutex()
     private val dbGson = Gson()

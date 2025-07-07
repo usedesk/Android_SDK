@@ -4,12 +4,14 @@ package ru.usedesk.chat_sdk.data.repository.messages
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.util.Base64
 import androidx.core.content.edit
 import com.google.gson.Gson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.entity.*
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 internal class MessagesRepository(
@@ -24,18 +26,20 @@ internal class MessagesRepository(
     private val notSentMessages = hashMapOf<String, NotSentMessage>()
     private var messageDraft = UsedeskMessageDraft()
     private var mutex = Mutex()
+    private val encodedUserKey by lazy {
+        val bytes = configuration.clientId.toByteArray(StandardCharsets.UTF_8)
+        Base64.encodeToString(bytes, Base64.NO_WRAP or Base64.URL_SAFE)
+    }
 
-    private fun getSharedPreferences(userKey: String) = appContext.getSharedPreferences(
-        PREF_NAME + userKey,
-        Context.MODE_PRIVATE
-    )
+    private val sharedPreferences by lazy {
+        appContext.getSharedPreferences(
+            PREF_NAME + encodedUserKey,
+            Context.MODE_PRIVATE
+        )
+    }
 
-    override suspend fun addNotSentMessage(
-        userKey: String,
-        clientMessage: UsedeskMessageOwner.Client
-    ) {
+    override suspend fun addNotSentMessage(clientMessage: UsedeskMessageOwner.Client) {
         mutex.withLock {
-            val sharedPreferences = getSharedPreferences(userKey)
             sharedPreferences.initIfNeeded()
 
             if (configuration.cacheMessagesWithFile || clientMessage is UsedeskMessageClientText) {
@@ -50,12 +54,9 @@ internal class MessagesRepository(
         }
     }
 
-    override suspend fun removeNotSentMessage(
-        userKey: String,
-        localId: String
-    ) {
+    override suspend fun removeNotSentMessage(localId: String) {
         mutex.withLock {
-            getSharedPreferences(userKey).run {
+            sharedPreferences.run {
                 initIfNeeded()
 
                 notSentMessages.remove(localId)
@@ -67,14 +68,14 @@ internal class MessagesRepository(
         }
     }
 
-    override suspend fun getNotSentMessages(userKey: String) = mutex.withLock {
-        getSharedPreferences(userKey).initIfNeeded()
+    override suspend fun getNotSentMessages() = mutex.withLock {
+        sharedPreferences.initIfNeeded()
         notSentMessages.values.map(this@MessagesRepository::toClientMessage)
     }
 
-    override suspend fun setDraft(userKey: String, messageDraft: UsedeskMessageDraft) {
+    override suspend fun setDraft(messageDraft: UsedeskMessageDraft) {
         mutex.withLock {
-            getSharedPreferences(userKey).run {
+            sharedPreferences.run {
                 initIfNeeded()
 
                 val oldMessageDraft = this@MessagesRepository.messageDraft
@@ -96,15 +97,14 @@ internal class MessagesRepository(
         }
     }
 
-    override suspend fun getDraft(userKey: String) = mutex.withLock {
-        val sharedPreferences = getSharedPreferences(userKey)
+    override suspend fun getDraft() = mutex.withLock {
         sharedPreferences.initIfNeeded()
         messageDraft
     }
 
     override suspend fun getNextLocalId() = mutex.withLock {
         var lastLocalId = -10000L
-        getSharedPreferences("").run {
+        sharedPreferences.run {
             edit {
                 lastLocalId = getLong(LOCAL_ID_KEY, lastLocalId) - 1
                 putLong(LOCAL_ID_KEY, lastLocalId)

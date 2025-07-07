@@ -43,14 +43,11 @@ internal class CachedMessagesRepository @Inject constructor(
     private val deferredCachedUriMap = hashMapOf<Uri, Deferred<Uri?>>()
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    private val userKey = initConfiguration.userKey()
-
     init {
         runBlocking {
             mutex.withLock {
-                val messageDraft = messagesRepository.getDraft(userKey)
+                val messageDraft = messagesRepository.getDraft()
                 messagesRepository.setDraft(
-                    userKey,
                     messageDraft.copy(
                         files = when {
                             initConfiguration.cacheMessagesWithFile -> messageDraft.files
@@ -108,20 +105,20 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     override suspend fun getNotSentMessages(): List<UsedeskMessageOwner.Client> {
-        return messagesRepository.getNotSentMessages(userKey)
+        return messagesRepository.getNotSentMessages()
     }
 
     override suspend fun addNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
-        messagesRepository.addNotSentMessage(userKey, notSentMessage)
+        messagesRepository.addNotSentMessage(notSentMessage)
     }
 
     override suspend fun updateNotSentMessage(notSentMessage: UsedeskMessageOwner.Client) {
-        messagesRepository.removeNotSentMessage(userKey, notSentMessage.localId)
-        messagesRepository.addNotSentMessage(userKey, notSentMessage)
+        messagesRepository.removeNotSentMessage(notSentMessage.localId)
+        messagesRepository.addNotSentMessage(notSentMessage)
     }
 
     override suspend fun removeNotSentMessage(localId: String) {
-        messagesRepository.removeNotSentMessage(userKey, localId)
+        messagesRepository.removeNotSentMessage(localId)
     }
 
     override suspend fun getCachedFileAsync(uri: Uri): Deferred<Uri?> = mutex.withLock {
@@ -152,16 +149,15 @@ internal class CachedMessagesRepository @Inject constructor(
         }
     }
 
-    private suspend fun updateMessageDraft(now: Boolean) {
+    private fun updateMessageDraft(now: Boolean) {
         if (now) {
             draftJob?.cancel()
             draftJob = null
             saveJob?.cancel()
             saveJob = ioScope.launch {
                 mutex.withLock {
-                    val messageDraft = messagesRepository.getDraft(userKey)
+                    val messageDraft = messagesRepository.getDraft()
                     messagesRepository.setDraft(
-                        userKey,
                         messageDraft.copy(
                             files = messageDraft.files.mapNotNull { fileInfo ->
                                 val deferredCachedUri = deferredCachedUriMap[fileInfo.uri]
@@ -188,8 +184,8 @@ internal class CachedMessagesRepository @Inject constructor(
         messageDraft: UsedeskMessageDraft,
         cacheFiles: Boolean
     ): UsedeskMessageDraft = mutex.withLock {
-        messagesRepository.getDraft(userKey).also { oldMessageDraft ->
-            messagesRepository.setDraft(userKey, messageDraft)
+        messagesRepository.getDraft().also { oldMessageDraft ->
+            messagesRepository.setDraft(messageDraft)
             if (cacheFiles) {
                 val oldFiles = oldMessageDraft.files.map(UsedeskFileInfo::uri)
                 val newFiles = messageDraft.files.map(UsedeskFileInfo::uri)
@@ -203,7 +199,7 @@ internal class CachedMessagesRepository @Inject constructor(
     }
 
     override suspend fun getMessageDraft(): UsedeskMessageDraft = mutex.withLock {
-        messagesRepository.getDraft(userKey)
+        messagesRepository.getDraft()
     }
 
     override suspend fun getNextLocalId() = messagesRepository.getNextLocalId()

@@ -177,6 +177,21 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_client_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/configuration_usedesk_margin">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_client_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/client_id"
+                        android:inputType="textUri"
+                        android:saveEnabled="false" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_client_token"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

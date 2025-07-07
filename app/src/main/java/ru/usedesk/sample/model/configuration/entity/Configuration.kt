@@ -21,6 +21,7 @@ data class Configuration(
         val urlChat: String = "https://pubsubsec.usedesk.ru",
         val companyId: String = "",
         val channelId: String = "",
+        val clientId: String = "",
         val clientToken: String = "",
         val clientNote: String = "",
         val clientPhoneNumber: Long? = null,
@@ -71,7 +72,8 @@ data class Configuration(
         clientAvatar = chat.clientAvatar,
         cacheMessagesWithFile = chat.cacheFiles,
         additionalFields = chat.additionalFields,
-        additionalNestedFields = chat.additionalNestedFields
+        additionalNestedFields = chat.additionalNestedFields,
+        clientId = chat.clientId,
     )
 
     fun toKbConfiguration() = UsedeskKnowledgeBaseConfiguration(

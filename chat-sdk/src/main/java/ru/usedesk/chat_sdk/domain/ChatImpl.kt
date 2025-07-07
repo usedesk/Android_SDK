@@ -574,8 +574,8 @@ internal class ChatImpl @Inject constructor(
                 else -> {
                     val configuration = userInfoRepository.getConfiguration()
                     val response = apiRepository.sendOfflineForm(
-                        configuration,
-                        offlineForm
+                        configuration = configuration,
+                        offlineForm = offlineForm
                     )
                     when (response) {
                         SendOfflineFormResponse.Done -> SendOfflineFormResult.Done

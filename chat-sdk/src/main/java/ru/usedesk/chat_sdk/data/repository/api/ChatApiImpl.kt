@@ -367,12 +367,12 @@ internal class ChatApiImpl @Inject constructor(
         offlineForm: UsedeskOfflineForm
     ): SendOfflineFormResponse {
         val request = SendOfflineForm.Request(
-            offlineForm.clientEmail,
-            offlineForm.clientName,
-            configuration.companyAndChannel(),
-            offlineForm.message.getCorrectStringValue(),
-            offlineForm.topic,
-            offlineForm.fields.map {
+            email = offlineForm.clientEmail,
+            name = offlineForm.clientName,
+            companyId = configuration.companyAndChannel(),
+            message = offlineForm.message.getCorrectStringValue(),
+            topic = offlineForm.topic,
+            jsonFields = offlineForm.fields.map {
                 it.key to it.value.getCorrectStringValue().ifEmpty { null }
             }
         )

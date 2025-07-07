@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
-import android.os.Build
 import android.widget.LinearLayout
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -181,20 +180,14 @@ private fun ArticleBlock(
                     }
                     LaunchedEffect(state.contentState) {
                         if (state.contentState is ContentState.Loaded) {
-                            val url = state.contentState.content.text
-                            when {
-                                Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                                    url,
-                                    "text/html; charset=utf-8",
-                                    "UTF-8"
-                                )
-
-                                else -> webView.loadData(
-                                    url,
-                                    "text/html",
-                                    null
-                                )
-                            }
+                            val htmlData = state.contentState.content.text
+                            webView.loadDataWithBaseURL(
+                                null,
+                                htmlData,
+                                "text/html",
+                                "UTF-8",
+                                null
+                            )
                         }
                     }
                     val scrollState = when {

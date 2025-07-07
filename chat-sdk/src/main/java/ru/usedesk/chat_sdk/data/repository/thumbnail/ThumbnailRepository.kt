@@ -91,10 +91,9 @@ internal class ThumbnailRepository @Inject constructor(
                     media.release()
                 }
                 try {
-                    when (thumbnailBitmap) {
-                        null -> null
-                        else -> thumbnailFile.outputStream().use { out ->
-                            thumbnailBitmap.compress(
+                    thumbnailBitmap?.run {
+                        thumbnailFile.outputStream().use { out ->
+                            compress(
                                 Bitmap.CompressFormat.JPEG,
                                 100,
                                 out

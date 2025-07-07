@@ -201,6 +201,7 @@ class ConfigurationScreen : UsedeskFragment() {
                 companyId = binding.etCompanyId.text.toString(),
                 channelId = binding.etChannelId.text.toString(),
                 messagesPageSize = binding.etMessagesPageSize.text.toString().toIntOrNull() ?: 1,
+                clientId = binding.etClientId.text.toString(),
                 clientToken = binding.etClientToken.text.toString(),
                 clientNote = binding.etClientNote.text.toString(),
                 clientPhoneNumber = binding.etClientPhoneNumber.text.toString().toLongOrNull(),
@@ -245,6 +246,7 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etCompanyId.setText(companyId)
         binding.etChannelId.setText(channelId)
         binding.etMessagesPageSize.setText(messagesPageSize.toString())
+        binding.etClientId.setText(clientId)
         binding.etClientToken.setText(clientToken)
         binding.etClientPhoneNumber.setText(clientPhoneNumber?.toString() ?: "")
         binding.etClientAdditionalId.setText(clientAdditionalId ?: "")
@@ -383,6 +385,11 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilChannelId,
                 validChannelId,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilClientId,
+                validClientId,
                 R.string.validation_empty_error
             )
             showError(

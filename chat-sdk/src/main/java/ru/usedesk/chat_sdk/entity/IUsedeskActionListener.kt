@@ -20,16 +20,16 @@ interface IUsedeskActionListener {
         when {
             oldMessages == newModel.messages || oldModel?.inited != true -> {
                 onModel(
-                    newModel,
-                    listOf(),
-                    listOf(),
-                    listOf()
+                    model = newModel,
+                    newMessages = listOf(),
+                    updatedMessages = listOf(),
+                    removedMessages = listOf()
                 )
             }
             else -> {
                 val newMessages = mutableListOf<UsedeskMessage>()
                 val updatedMessages = mutableListOf<UsedeskMessage>()
-                val oldMessagesMap = oldMessages?.associate { it.id to it } ?: mapOf()
+                val oldMessagesMap = oldMessages?.associateBy { it.id } ?: mapOf()
                 newModel.messages.forEach { message ->
                     when (oldMessagesMap[message.id]) {
                         null -> newMessages.add(message)

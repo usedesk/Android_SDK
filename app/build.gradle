@@ -1,6 +1,6 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     id "kotlin-kapt"
 }
 
@@ -59,24 +59,24 @@ dependencies {
     implementation project(":knowledgebase-sdk")
     implementation project(":knowledgebase-gui")
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
 
-    implementation "androidx.activity:activity-ktx:$activityVersion"
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    kapt "androidx.annotation:annotation:$annotationVersion"
+    implementation libs.androidx.activity.ktx
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.appcompat
+    kapt libs.androidx.annotation
 
-    implementation "com.google.android.material:material:$materialVersion"
+    implementation libs.google.material
 
-    implementation "com.github.bumptech.glide:glide:$glideVersion"
-    implementation("com.github.bumptech.glide:okhttp3-integration:$glideVersion") {
+    implementation libs.glide
+    implementation(libs.glide.okhttp3.integration) {
         exclude group: "glide-parent"
     }
-    kapt "com.github.bumptech.glide:compiler:$glideVersion"
+    kapt libs.glide.compiler
 
-    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation libs.google.gson
 
-    implementation "com.android.support:multidex:$multidexVersion"
+    implementation libs.androidx.multidex
 }

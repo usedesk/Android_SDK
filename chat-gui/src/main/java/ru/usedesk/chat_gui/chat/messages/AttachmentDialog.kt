@@ -31,7 +31,7 @@ internal class AttachmentDialog private constructor(
 
             lCamera.setOnClickListener {
                 dismiss()
-                screen.needCameraPermission()
+                screen.startCamera()
             }
             lStorage.setOnClickListener {
                 dismiss()

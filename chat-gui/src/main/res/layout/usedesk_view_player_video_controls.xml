@@ -8,7 +8,7 @@
     android:background="#44000000"
     android:layoutDirection="ltr"
     android:orientation="vertical"
-    tools:targetApi="28">
+    tools:targetApi="35">
 
     <FrameLayout
         android:id="@+id/exo_center_controls"

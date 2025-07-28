@@ -1,8 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     id "kotlin-kapt"
-    id "maven-publish"
+    alias(libs.plugins.maven.publish)
 }
 
 android {
@@ -28,29 +28,29 @@ dependencies {
     api project(":chat-sdk")
     api project(":common-gui")
 
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycleCommonVersion"
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.lifecycle.common.java8
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation libs.google.dagger
+    kapt libs.google.dagger.compiler
 
-    implementation "com.google.android.material:material:$materialVersion"
+    implementation libs.google.material
 
-    implementation("androidx.media3:media3-exoplayer:$media3Version")
-    implementation("androidx.media3:media3-ui:$media3Version")
-    implementation("androidx.media3:media3-common:$media3Version")
-    implementation("androidx.media3:media3-datasource-okhttp:$media3Version")
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.common)
+    implementation(libs.media3.datasource.okhttp)
 
-    implementation "com.github.Dimezis:BlurView:version-2.0.6"
-    implementation "com.github.chrisbanes:PhotoView:2.3.0"
-    implementation "com.makeramen:roundedimageview:2.3.0"
+    implementation libs.blurview
+    implementation libs.photoview
+    implementation libs.roundedimageview
 }
 
 afterEvaluate {

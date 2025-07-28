@@ -13,6 +13,11 @@ dependencyResolutionManagement {
         mavenCentral()
         maven { url "https://jitpack.io" }
     }
+    versionCatalogs {
+        catalog {
+            from(files("gradle/libs.versions.toml"))
+        }
+    }
 }
 
 include ":app", ":common-sdk", ":common-gui", ":chat-sdk", ":chat-gui", ":knowledgebase-sdk", ":knowledgebase-gui"

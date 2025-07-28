@@ -106,9 +106,6 @@ internal class MessagesPage : UsedeskFragment() {
                 }
             }
         }
-        registerCameraPermission {
-            startCamera(generateCameraFile())
-        }
 
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.formSelector != new.formSelector) {

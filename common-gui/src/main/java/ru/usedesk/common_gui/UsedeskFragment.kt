@@ -1,7 +1,5 @@
-
 package ru.usedesk.common_gui
 
-import android.Manifest
 import android.content.ContentResolver
 import android.net.Uri
 import android.os.Bundle
@@ -23,23 +21,12 @@ import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
 
-    private var permissionCameraLauncher: PermissionLauncher? = null
     private var filesLauncher: ActivityResultLauncher<String>? = null
     private var cameraLauncher: ActivityResultLauncher<Uri>? = null
 
     private var cameraFile: File? = null
 
     open fun onBackPressed(): Boolean = false
-
-    fun registerCameraPermission(
-        onGranted: () -> Unit
-    ) {
-        permissionCameraLauncher = PermissionLauncher(
-            this,
-            Manifest.permission.CAMERA,
-            onGranted
-        )
-    }
 
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
         cameraLauncher = cameraLauncher ?: registerForActivityResult(
@@ -55,10 +42,6 @@ abstract class UsedeskFragment : Fragment() {
         )
     }
 
-    fun needCameraPermission() {
-        permissionCameraLauncher?.launch()
-    }
-
     fun startFiles() {
         filesLauncher?.launch(MIME_TYPE_ALL_FILES)
     }
@@ -67,15 +50,15 @@ abstract class UsedeskFragment : Fragment() {
         filesLauncher?.launch(MIME_TYPE_ALL_IMAGES)
     }
 
-    fun startCamera(cameraFile: File) {
+    fun startCamera() {
+        val cameraFile = generateCameraFile()
+        this.cameraFile = cameraFile
         val cameraUri = cameraFile.toUri().toProviderUri()
         cameraLauncher?.launch(cameraUri)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-        permissionCameraLauncher?.save(outState)
 
         cameraFile?.let {
             outState.putString(CAMERA_FILE_KEY, it.absolutePath)
@@ -85,8 +68,6 @@ abstract class UsedeskFragment : Fragment() {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        permissionCameraLauncher?.load(savedInstanceState)
-
         savedInstanceState?.getString(CAMERA_FILE_KEY)?.let {
             cameraFile = File(it)
         }
@@ -94,9 +75,6 @@ abstract class UsedeskFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
-        permissionCameraLauncher?.unregister()
-        permissionCameraLauncher = null
 
         cameraLauncher?.unregister()
         cameraLauncher = null

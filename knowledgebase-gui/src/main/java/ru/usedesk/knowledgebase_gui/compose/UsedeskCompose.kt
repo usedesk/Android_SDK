@@ -6,7 +6,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +21,7 @@ internal fun Modifier.clickableItem(
     .clickable(
         enabled = enabled,
         interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(bounded = true),
+        indication = ripple(bounded = true),
         onClick = onClick
     )
 
@@ -34,7 +34,7 @@ internal fun Modifier.clickableArea(
     .clickable(
         enabled = enabled,
         interactionSource = remember { MutableInteractionSource() },
-        indication = rememberRipple(
+        indication = ripple(
             bounded = false,
             radius = theme.dimensions.clickableRadius
         ),

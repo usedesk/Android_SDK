@@ -1,9 +1,10 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     id "kotlin-kapt"
     id "kotlin-parcelize"
-    id "maven-publish"
+    alias(libs.plugins.maven.publish)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -24,9 +25,6 @@ android {
     buildFeatures {
         compose true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
-    }
     namespace "ru.usedesk.knowledgebase_gui"
 }
 
@@ -34,30 +32,30 @@ dependencies {
     api project(":common-gui")
     api project(":knowledgebase-sdk")
 
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
-    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
-    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.constraintlayout
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
 
-    implementation "com.google.android.material:material:$materialVersion"
+    implementation libs.google.material
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation libs.google.dagger
+    kapt libs.google.dagger.compiler
 
-    implementation platform("androidx.compose:compose-bom:2024.03.00")
+    implementation platform(libs.androidx.compose.bom)
 
-    implementation "androidx.compose.material3:material3"
-    implementation "androidx.compose.foundation:foundation"
-    implementation "androidx.compose.ui:ui"
-    implementation "androidx.compose.ui:ui-tooling-preview"
-    debugImplementation "androidx.compose.ui:ui-tooling"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0"
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.foundation
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.tooling.preview
+    debugImplementation libs.androidx.compose.ui.tooling
+    implementation libs.androidx.lifecycle.viewmodel.compose
 
-    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation libs.squareup.okhttp3
 }
 
 afterEvaluate {

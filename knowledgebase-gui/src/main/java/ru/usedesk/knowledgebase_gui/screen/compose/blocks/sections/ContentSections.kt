@@ -32,6 +32,7 @@ import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
@@ -70,7 +71,8 @@ internal fun ContentSections(
     supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
     LazyColumn(
         modifier = Modifier,
-        state = state.lazyListState
+        state = state.lazyListState,
+        contentPadding = ComposeUtils.contentInsetsBottom(theme),
     ) {
         items(
             items = state.sections,

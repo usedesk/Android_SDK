@@ -1,4 +1,3 @@
-
 package ru.usedesk.sample.ui.main
 
 import android.Manifest
@@ -45,6 +44,7 @@ import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
 import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
+import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
@@ -135,13 +135,16 @@ class MainActivity : AppCompatActivity(),
                                 )
                                 else -> null
                             }
+                            UsedeskKnowledgeBaseTheme.provider = {
+                                UsedeskKnowledgeBaseTheme(supportWindowInsets = true)
+                            }
                             navigateSafe(
                                 R.id.dest_configurationScreen,
                                 R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
                                 UsedeskKnowledgeBaseScreen.createBundle(
                                     configuration = kbConfiguration,
                                     withSupportButton = kb.withKbSupportButton,
-                                    deepLink = deepLink
+                                    deepLink = deepLink,
                                 )
                             )
                         } else {
@@ -317,13 +320,14 @@ class MainActivity : AppCompatActivity(),
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
         return UsedeskChatScreen.createBundle(
-            chatConfiguration,
-            configuration.chat.customAgentName.ifEmpty { null },
-            REJECTED_FILE_TYPES,
+            usedeskChatConfiguration = chatConfiguration,
+            agentName = configuration.chat.customAgentName.ifEmpty { null },
+            rejectedFileExtensions = REJECTED_FILE_TYPES,
             messagesDateFormat = configuration.chat.messagesDateFormat.ifEmpty { null },
             messageTimeFormat = configuration.chat.messageTimeFormat.ifEmpty { null },
             groupAgentMessages = configuration.chat.groupAgentMessages,
-            adaptiveTextMessageTimePadding = configuration.chat.adaptiveTimePadding
+            adaptiveTextMessageTimePadding = configuration.chat.adaptiveTimePadding,
+            supportWindowInsets = true,
         )
     }
 

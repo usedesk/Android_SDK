@@ -52,6 +52,7 @@ import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
@@ -109,7 +110,10 @@ internal fun ContentArticle(
         }
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         ArticleBlock(
             theme = theme,
             state = state,
@@ -206,6 +210,7 @@ private fun ArticleBlock(
                                 end = theme.dimensions.rootPadding.end,
                                 bottom = theme.dimensions.rootPadding.bottom,
                             )
+                            .insetsBottom(theme)
                             .card(theme)
                             .padding(theme.dimensions.articleContentInnerPadding),
                         factory = remember {

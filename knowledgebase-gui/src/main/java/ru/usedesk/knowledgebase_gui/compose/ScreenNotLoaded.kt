@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import java.lang.Integer.max
 import java.lang.Integer.min
@@ -37,6 +38,7 @@ internal fun ScreenNotLoaded(
                 start = theme.dimensions.rootPadding.start,
                 end = theme.dimensions.rootPadding.end
             )
+            .insetsBottom(theme)
     ) {
         Layout(
             modifier = Modifier

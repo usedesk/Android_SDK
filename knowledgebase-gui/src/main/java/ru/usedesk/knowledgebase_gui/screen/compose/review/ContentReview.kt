@@ -49,6 +49,7 @@ import ru.usedesk.knowledgebase_gui.compose.flexMeasurePolicy
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
@@ -110,7 +111,8 @@ internal fun ContentReview(
                 .padding(
                     start = theme.dimensions.rootPadding.start,
                     end = theme.dimensions.rootPadding.end
-                ),
+                )
+                .insetsBottom(theme),
         ) {
             Replies(
                 theme = theme,
@@ -215,7 +217,8 @@ private fun BoxScope.BottomButton(
     AnimatedVisibility(
         modifier = Modifier
             .fillMaxWidth()
-            .align(Alignment.BottomCenter),
+            .align(Alignment.BottomCenter)
+            .insetsBottom(theme),
         visible = showed,
         enter = remember { slideInVertically(theme.animationSpec()) { it } },
         exit = remember { slideOutVertically(theme.animationSpec()) { it } }

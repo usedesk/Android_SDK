@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.view.View
@@ -10,17 +9,22 @@ import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskTextChangeListener
+import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.onEachWithOld
 
 internal class MessagePanelAdapter(
     private val binding: Binding,
     private val viewModel: MessagesViewModel,
+    supportWindowInsets: Boolean,
     lifecycleCoroutineScope: LifecycleCoroutineScope,
-    onClickAttach: View.OnClickListener
+    onClickAttach: View.OnClickListener,
 ) {
     private val attachedFilesAdapter: AttachedFilesAdapter
 
     init {
+        if (supportWindowInsets) {
+            binding.rootView.insetsAsPaddings(ignoreStatusBar = true)
+        }
         binding.ivAttachFile.setOnClickListener(onClickAttach)
         binding.ivSend.setOnClickListener { onSendClick() }
         attachedFilesAdapter = AttachedFilesAdapter(

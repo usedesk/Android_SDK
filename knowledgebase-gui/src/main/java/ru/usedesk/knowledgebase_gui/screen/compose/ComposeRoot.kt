@@ -1,19 +1,40 @@
 
 package ru.usedesk.knowledgebase_gui.screen.compose
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.compose.CardCircleChat
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsStatusBar
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.Screen
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
@@ -60,14 +81,17 @@ internal fun ComposeRoot(
                     .background(color = theme.colors.rootBackground)
             ) {
                 Crossfade(
-                    modifier = Modifier.animateContentSize(animationSpec = remember { theme.animationSpec() },
-                        finishedListener = remember {
-                            { initial, target ->
-                                if (target.height < initial.height) {
-                                    viewModel.onEvent(RootViewModel.Event.SearchBarAnimationFinished)
+                    modifier = Modifier
+                        .animateContentSize(
+                            animationSpec = remember { theme.animationSpec() },
+                            finishedListener = remember {
+                                { initial, target ->
+                                    if (target.height < initial.height) {
+                                        viewModel.onEvent(RootViewModel.Event.SearchBarAnimationFinished)
+                                    }
                                 }
-                            }
-                        }),
+                            })
+                        .insetsStatusBar(theme),
                     targetState = state.screen !is Screen.Blocks ||
                             state.blocksState.block !is RootViewModel.State.BlocksState.Block.Search,
                     animationSpec = remember { theme.animationSpec() }
@@ -93,7 +117,14 @@ internal fun ComposeRoot(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding)
+                    .padding(
+                        PaddingValues(
+                            top = contentPadding.calculateTopPadding(),
+                            start = contentPadding.calculateLeftPadding(LocalLayoutDirection.current),
+                            end = contentPadding.calculateRightPadding(LocalLayoutDirection.current),
+                            bottom = 0.dp
+                        )
+                    )
                     .background(color = theme.colors.rootBackground)
             ) {
                 val supportButtonVisible = remember { mutableStateOf(true) }

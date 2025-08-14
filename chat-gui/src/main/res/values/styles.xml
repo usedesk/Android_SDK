@@ -1007,6 +1007,7 @@
     <style name="Usedesk.Chat.Screen.Offline.Form.Selector.Page.Container1" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 
     <style name="Usedesk.Chat.Screen.Offline.Form.Selector.Page" parent="">

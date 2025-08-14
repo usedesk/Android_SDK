@@ -40,6 +40,7 @@ import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.SearchViewModel.State.NextPageState
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
@@ -92,6 +93,7 @@ internal fun ContentSearch(
                     if (content != null) {
                         LazyColumn(
                             modifier = Modifier,
+                            contentPadding = ComposeUtils.contentInsetsBottom(theme),
                             state = state.lazyListState
                         ) {
                             items(

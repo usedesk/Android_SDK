@@ -19,7 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,6 +28,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -170,29 +172,25 @@ private fun ArticleBlock(
                             }
                         }
                     }
+                    val coroutineScope = rememberCoroutineScope()
+                    val scrollState = rememberScrollState()
                     val webView = remember(context) {
                         ArticleWebView(
                             context,
                             viewModel,
                             theme,
                             onWebUrl
-                        )
-                    }
-                    LaunchedEffect(state.contentState) {
-                        if (state.contentState is ContentState.Loaded) {
-                            val htmlData = state.contentState.content.text
-                            webView.loadDataWithBaseURL(
-                                null,
-                                htmlData,
-                                "text/html",
-                                "UTF-8",
-                                null
-                            )
+                        ) { y ->
+                            coroutineScope.launch {
+                                scrollState.animateScrollTo(value = y)
+                            }
                         }
                     }
-                    val scrollState = when {
-                        state.articleShowed -> state.scrollState
-                        else -> rememberScrollState()
+                    if (state.contentState is ContentState.Loaded) {
+                        LaunchedEffect(state.contentState) {
+                            val htmlData = state.contentState.content.text
+                            webView.setHtml(htmlData)
+                        }
                     }
                     DisposableEffect(Unit) {
                         onDispose { viewModel.articleHidden() }
@@ -342,7 +340,7 @@ private fun ArticleRating(
     Column(
         modifier = Modifier.padding(theme.dimensions.articleRatingPadding)
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             color = theme.colors.articleRatingDivider,
             thickness = theme.dimensions.articleDividerHeight

@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.AnimatedVisibility
@@ -18,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Composable
@@ -37,6 +37,7 @@ internal fun BoxScope.CardCircleChat(
         Box(
             modifier = Modifier
                 .padding(theme.dimensions.rootPadding)
+                .insetsBottom(theme)
                 .shadow(
                     elevation = theme.dimensions.shadowElevation,
                     shape = CircleShape

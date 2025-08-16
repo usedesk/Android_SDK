@@ -1,4 +1,3 @@
-
 package ru.usedesk.common_gui
 
 import android.view.View
@@ -7,8 +6,15 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 
 class UsedeskToolbarAdapter(
-    private val binding: Binding
+    private val binding: Binding,
+    supportWindowInsets: Boolean,
 ) {
+
+    init {
+        if (supportWindowInsets) {
+            binding.rootView.insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+        }
+    }
 
     fun setTitle(title: String?) {
         binding.tvTitle.text = title

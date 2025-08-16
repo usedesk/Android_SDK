@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen
 
 import androidx.annotation.ArrayRes
@@ -25,7 +24,8 @@ class UsedeskKnowledgeBaseTheme(
     val textStyles: TextStyles = TextStyles(fonts, palette),
     val dimensions: Dimensions = Dimensions(),
     val colors: Colors = Colors(palette),
-    val animationStiffness: Float = StiffnessMediumLow
+    val animationStiffness: Float = StiffnessMediumLow,
+    val supportWindowInsets: Boolean = false,
 ) {
     fun <T> animationSpec() = spring<T>(stiffness = animationStiffness)
 

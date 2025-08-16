@@ -52,11 +52,11 @@ internal class MessagesPage : UsedeskFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = inflateItem(
-        inflater,
-        container,
-        R.layout.usedesk_page_messages,
-        R.style.Usedesk_Chat_Screen_Messages_Page,
-        ::Binding
+        inflater = inflater,
+        container = container,
+        defaultLayoutId = R.layout.usedesk_page_messages,
+        defaultStyleId = R.style.Usedesk_Chat_Screen_Messages_Page,
+        createBinding = ::Binding,
     ).also {
         binding = it
     }.rootView
@@ -191,9 +191,10 @@ internal class MessagesPage : UsedeskFragment() {
         UsedeskChatSdk.init(requireContext())
 
         MessagePanelAdapter(
-            binding.messagePanel,
-            viewModel,
-            lifecycleScope
+            binding = binding.messagePanel,
+            viewModel = viewModel,
+            supportWindowInsets = chatArgs.supportWindowInsets,
+            lifecycleCoroutineScope = lifecycleScope,
         ) {
             findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
@@ -202,24 +203,29 @@ internal class MessagesPage : UsedeskFragment() {
         val mediaPlayerAdapter = findParent<UsedeskChatScreen>()!!.mediaPlayerAdapter
 
         messagesAdapter = MessagesAdapter(
-            binding.rvMessages,
-            binding.dateBinding,
-            viewModel,
-            lifecycleScope,
-            chatArgs,
-            mediaPlayerAdapter,
-            { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
-            { findParent<IUsedeskOnDownloadListener>()?.onDownload(it.content, it.name) },
-            savedInstanceState
+            recyclerView = binding.rvMessages,
+            dateBinding = binding.dateBinding,
+            viewModel = viewModel,
+            lifecycleScope = lifecycleScope,
+            chatArgs = chatArgs,
+            mediaPlayerAdapter = mediaPlayerAdapter,
+            onFileClick = { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
+            onFileDownloadClick = {
+                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                    it.content,
+                    it.name
+                )
+            },
+            savedStated = savedInstanceState
         )
 
         FabToBottomAdapter(
-            binding.fabContainer,
-            binding.fabToBottom,
-            binding.tvToBottom,
-            binding.styleValues,
-            viewModel,
-            lifecycleScope,
+            fabContainer = binding.fabContainer,
+            fabToBottom = binding.fabToBottom,
+            tvToBottom = binding.tvToBottom,
+            parentStyleValues = binding.styleValues,
+            viewModel = viewModel,
+            lifecycleCoroutineScope = lifecycleScope,
             onClickListener = { messagesAdapter?.scrollToBottom() }
         )
     }

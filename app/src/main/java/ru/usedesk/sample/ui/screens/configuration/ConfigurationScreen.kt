@@ -1,4 +1,3 @@
-
 package ru.usedesk.sample.ui.screens.configuration
 
 import android.content.pm.PackageManager
@@ -18,6 +17,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskTextChangeListener
+import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.R
@@ -41,6 +41,9 @@ class ConfigurationScreen : UsedeskFragment() {
             container,
             false
         )
+
+        binding.toolbar.insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+        binding.content.insetsAsPaddings(ignoreStatusBar = true)
 
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.avatar != new.avatar) {

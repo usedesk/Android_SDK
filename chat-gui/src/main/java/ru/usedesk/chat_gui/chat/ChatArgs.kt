@@ -9,5 +9,6 @@ internal data class ChatArgs(
     val messagesDateFormat: String,
     val messageTimeFormat: String,
     val adaptiveTextMessageTimePadding: Boolean,
-    val groupAgentMessages: Boolean
+    val groupAgentMessages: Boolean,
+    val supportWindowInsets: Boolean,
 )

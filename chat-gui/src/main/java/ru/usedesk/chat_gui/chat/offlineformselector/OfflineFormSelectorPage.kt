@@ -9,11 +9,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.insetsAsPaddings
 
 internal class OfflineFormSelectorPage : UsedeskFragment() {
 
@@ -28,21 +30,28 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflateItem(
-        inflater,
-        container,
-        R.layout.usedesk_page_offline_form_selector,
-        R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page,
-        ::Binding
+        inflater = inflater,
+        container = container,
+        defaultLayoutId = R.layout.usedesk_page_offline_form_selector,
+        defaultStyleId = R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page,
+        createBinding = ::Binding
     ).apply {
         binding = this
 
+        findParent<UsedeskChatScreen>()?.run {
+            val chatArgs = getChatArgs(savedInstanceState)
+            if (chatArgs.supportWindowInsets) {
+                binding.rvItems.insetsAsPaddings(ignoreStatusBar = true)
+            }
+        }
+
         val key = argsGetString(KEY_KEY, "")
         OfflineFormSelectorAdapter(
-            key,
-            rvItems,
-            binding,
-            viewModel,
-            lifecycleScope
+            key = key,
+            recyclerView = rvItems,
+            binding = binding,
+            viewModel = viewModel,
+            lifecycleCoroutineScope = lifecycleScope
         )
     }.rootView
 

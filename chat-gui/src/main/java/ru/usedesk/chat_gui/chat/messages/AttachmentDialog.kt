@@ -6,7 +6,6 @@ import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskBottomSheetDialog
 import ru.usedesk.common_gui.UsedeskFragment
-import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
 
 internal class AttachmentDialog private constructor(
@@ -16,11 +15,11 @@ internal class AttachmentDialog private constructor(
 
     init {
         inflateItem(
-            layoutInflater,
-            screen.view as ViewGroup,
-            R.layout.usedesk_dialog_attachment,
-            dialogStyle,
-            ::Binding
+            inflater = layoutInflater,
+            container = screen.view as ViewGroup,
+            defaultLayoutId = R.layout.usedesk_dialog_attachment,
+            defaultStyleId = dialogStyle,
+            createBinding = ::Binding,
         ).apply {
             setContentView(rootView)
 
@@ -31,7 +30,7 @@ internal class AttachmentDialog private constructor(
 
             lCamera.setOnClickListener {
                 dismiss()
-                screen.needCameraPermission()
+                screen.startCamera()
             }
             lStorage.setOnClickListener {
                 dismiss()
@@ -43,7 +42,7 @@ internal class AttachmentDialog private constructor(
     companion object {
         fun create(screen: UsedeskFragment) = AttachmentDialog(
             screen,
-            UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_Attachment_Dialog)
+            R.style.Usedesk_Chat_Attachment_Dialog
         )
     }
 

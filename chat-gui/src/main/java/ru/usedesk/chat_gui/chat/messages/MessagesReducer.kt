@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages
 
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
@@ -56,17 +55,14 @@ internal class MessagesReducer @Inject constructor(
 
     private fun State.formListClicked(event: Event.FormListClicked) = copy(
         formSelector = FormSelector(
-            event.messageId,
-            event.list,
-            when (event.list.parentId) {
-                null -> null
-                else -> {
-                    val form = formMap[event.messageId]
-                    form?.fields
-                        ?.filterIsInstance<Field.List>()
-                        ?.firstOrNull { it.id == event.list.parentId }
-                        ?.selected?.id
-                }
+            formId = event.messageId,
+            list = event.list,
+            parentSelectedId = event.list.parentId?.let { parentId ->
+                val form = formMap[event.messageId]
+                form?.fields
+                    ?.filterIsInstance<Field.List>()
+                    ?.firstOrNull { it.id == parentId }
+                    ?.selected?.id
             }
         )
     )

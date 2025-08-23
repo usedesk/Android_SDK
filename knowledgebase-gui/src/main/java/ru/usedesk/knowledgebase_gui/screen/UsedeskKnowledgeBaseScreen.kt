@@ -1,4 +1,3 @@
-
 package ru.usedesk.knowledgebase_gui.screen
 
 import android.os.Bundle
@@ -64,12 +63,12 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         fun newInstance(
             configuration: UsedeskKnowledgeBaseConfiguration,
             withSupportButton: Boolean = true,
-            deepLink: DeepLink? = null
+            deepLink: DeepLink? = null,
         ): UsedeskKnowledgeBaseScreen = UsedeskKnowledgeBaseScreen().apply {
             arguments = createBundle(
                 configuration,
                 withSupportButton,
-                deepLink
+                deepLink,
             )
         }
 
@@ -77,7 +76,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         fun createBundle(
             configuration: UsedeskKnowledgeBaseConfiguration,
             withSupportButton: Boolean = true,
-            deepLink: DeepLink? = null
+            deepLink: DeepLink? = null,
         ): Bundle = Bundle().apply {
             putParcelable(KEY_CONFIGURATION, configuration)
             putBoolean(KEY_WITH_SUPPORT_BUTTON, withSupportButton)

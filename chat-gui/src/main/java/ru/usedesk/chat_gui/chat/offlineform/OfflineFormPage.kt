@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.offlineform
 
 import android.os.Bundle
@@ -12,12 +11,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.offlineformselector.OfflineFormSelectorPage
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.visibleGone
 
 internal class OfflineFormPage : UsedeskFragment() {
@@ -34,13 +35,20 @@ internal class OfflineFormPage : UsedeskFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = inflateItem(
-        inflater,
-        container,
-        R.layout.usedesk_page_offline_form,
-        R.style.Usedesk_Chat_Screen_Offline_Form_Page,
-        ::Binding
+        inflater = inflater,
+        container = container,
+        defaultLayoutId = R.layout.usedesk_page_offline_form,
+        defaultStyleId = R.style.Usedesk_Chat_Screen_Offline_Form_Page,
+        createBinding = ::Binding,
     ).apply {
         binding = this
+
+        findParent<UsedeskChatScreen>()?.run {
+            val chatArgs = getChatArgs(savedInstanceState)
+            if (chatArgs.supportWindowInsets) {
+                binding.content.insetsAsPaddings(ignoreStatusBar = true)
+            }
+        }
 
         binding.tvSend.setOnClickListener { viewModel.sendClicked() }
 
@@ -167,5 +175,6 @@ internal class OfflineFormPage : UsedeskFragment() {
         val tvSend: TextView = rootView.findViewById(R.id.tv_offline_form_send)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_offline_form_loading)
         val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_send)
+        val content: ViewGroup = rootView.findViewById(R.id.content)
     }
 }

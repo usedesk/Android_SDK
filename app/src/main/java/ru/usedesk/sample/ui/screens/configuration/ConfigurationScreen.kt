@@ -1,4 +1,3 @@
-
 package ru.usedesk.sample.ui.screens.configuration
 
 import android.content.pm.PackageManager
@@ -18,6 +17,7 @@ import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskTextChangeListener
+import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.R
@@ -41,6 +41,9 @@ class ConfigurationScreen : UsedeskFragment() {
             container,
             false
         )
+
+        binding.toolbar.insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+        binding.content.insetsAsPaddings(ignoreStatusBar = true)
 
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.avatar != new.avatar) {
@@ -201,6 +204,7 @@ class ConfigurationScreen : UsedeskFragment() {
                 companyId = binding.etCompanyId.text.toString(),
                 channelId = binding.etChannelId.text.toString(),
                 messagesPageSize = binding.etMessagesPageSize.text.toString().toIntOrNull() ?: 1,
+                clientId = binding.etClientId.text.toString(),
                 clientToken = binding.etClientToken.text.toString(),
                 clientNote = binding.etClientNote.text.toString(),
                 clientPhoneNumber = binding.etClientPhoneNumber.text.toString().toLongOrNull(),
@@ -245,6 +249,7 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etCompanyId.setText(companyId)
         binding.etChannelId.setText(channelId)
         binding.etMessagesPageSize.setText(messagesPageSize.toString())
+        binding.etClientId.setText(clientId)
         binding.etClientToken.setText(clientToken)
         binding.etClientPhoneNumber.setText(clientPhoneNumber?.toString() ?: "")
         binding.etClientAdditionalId.setText(clientAdditionalId ?: "")
@@ -383,6 +388,11 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilChannelId,
                 validChannelId,
+                R.string.validation_empty_error
+            )
+            showError(
+                binding.tilClientId,
+                validClientId,
                 R.string.validation_empty_error
             )
             showError(

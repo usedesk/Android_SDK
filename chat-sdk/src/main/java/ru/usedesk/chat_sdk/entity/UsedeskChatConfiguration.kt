@@ -12,6 +12,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val companyId: String,
     val channelId: String,
     val messagesPageSize: Int = 20,
+    val clientId: String,
     val clientToken: String? = null,
     val clientEmail: String? = null,
     val clientName: String? = null,
@@ -22,7 +23,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
     val clientAvatar: String? = null,
     val cacheMessagesWithFile: Boolean = true,
     val additionalFields: Map<Long, String> = mapOf(),
-    val additionalNestedFields: List<Map<Long, String>> = listOf()
+    val additionalNestedFields: List<Map<Long, String>> = listOf(),
 ) : Parcelable {
 
     fun validate(): Validation = Validation(
@@ -32,11 +33,9 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         validChannelId = channelId.isNotEmptyNumber(),
         validClientToken = clientToken.isValidClientToken(),
         validClientEmail = UsedeskValidatorUtil.isValidEmail(clientEmail),
-        validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber?.toString())
+        validClientPhoneNumber = UsedeskValidatorUtil.isValidPhone(clientPhoneNumber?.toString()),
+        validClientId = clientId.isNotBlank()
     )
-
-    internal fun userKey() =
-        "${companyId}_${channelId}_${clientEmail}_${clientPhoneNumber}_${clientName}"
 
     private fun String.isNotEmptyNumber(): Boolean = isNotEmpty() && all(Char::isDigit)
 
@@ -49,7 +48,8 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
         val validChannelId: Boolean,
         val validClientToken: Boolean,
         val validClientEmail: Boolean,
-        val validClientPhoneNumber: Boolean
+        val validClientPhoneNumber: Boolean,
+        val validClientId: Boolean
     ) {
         fun isAllValid(): Boolean = validUrlChat
                 && validUrlApi
@@ -57,6 +57,7 @@ data class UsedeskChatConfiguration @JvmOverloads constructor(
                 && validChannelId
                 && validClientEmail
                 && validClientPhoneNumber
+                && validClientId
 
         override fun toString(): String = "Validation(validUrlChat=$validUrlChat, " +
                 "validUrlOfflineForm=$validUrlApi, " +

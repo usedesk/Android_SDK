@@ -1,6 +1,5 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
-import android.os.Build
 import android.widget.LinearLayout
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -20,7 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,6 +28,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import kotlinx.coroutines.launch
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -51,6 +52,7 @@ import ru.usedesk.knowledgebase_gui.compose.clickableItem
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
@@ -108,7 +110,10 @@ internal fun ContentArticle(
         }
     }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         ArticleBlock(
             theme = theme,
             state = state,
@@ -171,35 +176,25 @@ private fun ArticleBlock(
                             }
                         }
                     }
+                    val coroutineScope = rememberCoroutineScope()
+                    val scrollState = rememberScrollState()
                     val webView = remember(context) {
                         ArticleWebView(
                             context,
                             viewModel,
                             theme,
                             onWebUrl
-                        )
-                    }
-                    LaunchedEffect(state.contentState) {
-                        if (state.contentState is ContentState.Loaded) {
-                            val url = state.contentState.content.text
-                            when {
-                                Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 -> webView.loadData(
-                                    url,
-                                    "text/html; charset=utf-8",
-                                    "UTF-8"
-                                )
-
-                                else -> webView.loadData(
-                                    url,
-                                    "text/html",
-                                    null
-                                )
+                        ) { y ->
+                            coroutineScope.launch {
+                                scrollState.animateScrollTo(value = y)
                             }
                         }
                     }
-                    val scrollState = when {
-                        state.articleShowed -> state.scrollState
-                        else -> rememberScrollState()
+                    if (state.contentState is ContentState.Loaded) {
+                        LaunchedEffect(state.contentState) {
+                            val htmlData = state.contentState.content.text
+                            webView.setHtml(htmlData)
+                        }
                     }
                     DisposableEffect(Unit) {
                         onDispose { viewModel.articleHidden() }
@@ -215,6 +210,7 @@ private fun ArticleBlock(
                                 end = theme.dimensions.rootPadding.end,
                                 bottom = theme.dimensions.rootPadding.bottom,
                             )
+                            .insetsBottom(theme)
                             .card(theme)
                             .padding(theme.dimensions.articleContentInnerPadding),
                         factory = remember {
@@ -349,7 +345,7 @@ private fun ArticleRating(
     Column(
         modifier = Modifier.padding(theme.dimensions.articleRatingPadding)
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             color = theme.colors.articleRatingDivider,
             thickness = theme.dimensions.articleDividerHeight

@@ -1,10 +1,6 @@
-
 package ru.usedesk.chat_sdk
 
 import android.content.Context
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
 import ru.usedesk.chat_sdk.di.UsedeskCustom
 import ru.usedesk.chat_sdk.di.chat.ChatComponent
@@ -20,7 +16,6 @@ object UsedeskChatSdk {
     const val MAX_FILE_SIZE_MB = 128
     const val MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 
-    private val mutex = Mutex()
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
         null //TODO: remove this from sdk
@@ -45,19 +40,17 @@ object UsedeskChatSdk {
     fun init(
         context: Context,
         chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
-    ): IUsedeskChat = runBlocking {
-        mutex.withLock {
-            setConfiguration(chatConfiguration)
-            val commonChatComponent = CommonChatComponent.open(
-                context,
-                chatConfiguration
-            )
-            ChatComponent.open(
-                commonChatComponent,
-                usedeskMessagesRepository
-            )
-        }
-    }.chatInteractor
+    ): IUsedeskChat {
+        setConfiguration(chatConfiguration)
+        val commonChatComponent = CommonChatComponent.open(
+            context,
+            chatConfiguration
+        )
+        return ChatComponent.open(
+            commonChatComponent,
+            usedeskMessagesRepository
+        ).chatInteractor
+    }
 
     @JvmStatic
     fun getInstance(): IUsedeskChat? = ChatComponent.chatComponent?.chatInteractor
@@ -73,14 +66,10 @@ object UsedeskChatSdk {
     @JvmStatic
     @JvmOverloads
     fun release(force: Boolean = true) {
-        runBlocking {
-            mutex.withLock {
-                if (force || ChatComponent.chatComponent?.chatInteractor?.isNoListeners() == true) {
-                    ChatComponent.close()
-                    if (PreparationComponent.preparationComponent == null) {
-                        CommonChatComponent.close()
-                    }
-                }
+        if (force || ChatComponent.chatComponent?.chatInteractor?.isNoListeners() == true) {
+            ChatComponent.close()
+            if (PreparationComponent.preparationComponent == null) {
+                CommonChatComponent.close()
             }
         }
     }
@@ -90,26 +79,20 @@ object UsedeskChatSdk {
     fun initPreparation(
         context: Context,
         chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
-    ): IUsedeskPreparation = runBlocking {
-        mutex.withLock {
-            setConfiguration(chatConfiguration)
-            val commonChatComponent = CommonChatComponent.open(
-                context,
-                chatConfiguration
-            )
-            PreparationComponent.open(commonChatComponent)
-        }
-    }.preparationInteractor
+    ): IUsedeskPreparation {
+        setConfiguration(chatConfiguration)
+        val commonChatComponent = CommonChatComponent.open(
+            context,
+            chatConfiguration
+        )
+        return PreparationComponent.open(commonChatComponent).preparationInteractor
+    }
 
     @JvmStatic
     fun releasePreparation() {
-        runBlocking {
-            mutex.withLock {
-                PreparationComponent.close()
-                if (ChatComponent.chatComponent == null) {
-                    CommonChatComponent.close()
-                }
-            }
+        PreparationComponent.close()
+        if (ChatComponent.chatComponent == null) {
+            CommonChatComponent.close()
         }
     }
 

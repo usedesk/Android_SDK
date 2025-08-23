@@ -25,9 +25,21 @@ data class UsedeskFile(
             size: String,
             name: String
         ): UsedeskFile {
+            val inputType = type.orEmpty().trim()
             val mimeType = when {
-                type?.contains('/') == true -> type
-                else -> MimeTypeMap.getSingleton().getMimeTypeFromExtension(type ?: "")
+                inputType.contains('/') -> inputType.substringBefore(';').lowercase()
+                inputType.isNotEmpty() -> {
+                    val ext = inputType.removePrefix(".").lowercase()
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+                }
+                else -> null
+            } ?: run {
+                val nameExt = name.substringAfterLast('.', "").lowercase()
+                when {
+                    nameExt.isNotEmpty() -> MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(nameExt)
+                    else -> null
+                }
             } ?: ""
             return UsedeskFile(content, mimeType, size, name)
         }

@@ -18,6 +18,7 @@
     <string name="client_note" translatable="false">Client Note</string>
     <string name="client_phone" translatable="false">Client Phone Number</string>
     <string name="client_token" translatable="false">Client Token</string>
+    <string name="client_id" translatable="false">Client ID (Any unique value)</string>
     <string name="client_additional_id" translatable="false">Client Additional ID</string>
     <string name="client_init_message" translatable="false">Client Init Message</string>
     <string name="custom_agent_name" translatable="false">Custom Agent Name</string>

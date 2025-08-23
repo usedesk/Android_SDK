@@ -216,7 +216,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                             launchAddViews(articleId)
                             ArticleModel(
                                 articleId = articleId,
-                                loadingState = LoadingState.Loaded(data = response.articleContent.prepare()),
+                                loadingState = LoadingState.Loaded(data = response.articleContent.addStyleForAndroid()),
                                 ratingState = ratingStateMap[articleId] ?: RatingState.Required()
                             )
                         } else copy(loadingState = LoadingState.Error(code = ACCESS_DENIED))
@@ -248,7 +248,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
                         }
                         else -> ArticleModel(
                             articleId = articleId,
-                            loadingState = LoadingState.Loaded(data = searchArticle.item.prepare()),
+                            loadingState = LoadingState.Loaded(data = searchArticle.item.addStyleForAndroid()),
                             ratingState = ratingStateMap[articleId] ?: RatingState.Required()
                         )
                     }
@@ -257,7 +257,7 @@ internal class KnowledgeBaseInteractor @Inject constructor(
         }
     }
 
-    private fun UsedeskArticleContent.prepare() = copy(
+    private fun UsedeskArticleContent.addStyleForAndroid() = copy(
         text = text.replace(
             "<table>",
             """<table bordercolor="black" border="1px" style="border-collapse: collapse; padding: 40px;">"""

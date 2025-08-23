@@ -37,7 +37,7 @@ internal class FormRepository @Inject constructor(
     gson,
     FormApi::class.java
 ), IFormRepository {
-    private val userKey = initConfiguration.userKey()
+    private val userKey = initConfiguration.clientId
     private val formDao = database.formDao()
     private val mutex = Mutex()
     private val dbGson = Gson()
@@ -233,10 +233,7 @@ internal class FormRepository @Inject constructor(
                                 }
                             }
                             when (tree.size) {
-                                1 -> when (val selectedId = field.selected?.id?.toString()) {
-                                    null -> null
-                                    else -> JsonPrimitive(selectedId)
-                                }
+                                1 -> field.selected?.id?.toString()?.let(::JsonPrimitive)
                                 else -> JsonArray().apply {
                                     tree.forEach { list ->
                                         add(JsonObject().apply {
@@ -257,12 +254,12 @@ internal class FormRepository @Inject constructor(
                 }
                 is Field.Text -> JsonPrimitive(field.text)
             }
-            when (value) {
-                null -> null
-                else -> SaveForm.Request.Field(
-                    field.id,
-                    field.required,
-                    value
+            value?.run {
+                SaveForm.Request.Field(
+                    associate = field.id,
+                    required = field.required,
+                    value = value,
+                    label = field.name,
                 )
             }
         }

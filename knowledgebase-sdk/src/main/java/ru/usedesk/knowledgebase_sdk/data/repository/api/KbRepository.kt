@@ -43,19 +43,19 @@ internal class KbRepository @Inject constructor(
             val articles = categoryResponse.articles?.mapNotNull { articleResponse ->
                 valueOrNull {
                     UsedeskArticleInfo(
-                        articleResponse!!.id!!,
-                        articleResponse.title ?: "",
-                        categoryId,
-                        articleResponse.views ?: 0
+                        id = articleResponse!!.id!!,
+                        title = articleResponse.title ?: "",
+                        categoryId = categoryId,
+                        viewsCount = articleResponse.views ?: 0
                     )
                 }
             } ?: listOf()
 
             UsedeskCategory(
-                categoryId,
-                categoryResponse.title ?: "",
-                categoryResponse.description ?: "",
-                articles
+                id = categoryId,
+                title = categoryResponse.title ?: "",
+                description = categoryResponse.description ?: "",
+                articles = articles
             )
         }
     }
@@ -64,25 +64,28 @@ internal class KbRepository @Inject constructor(
         valueOrNull {
             val categories = sectionResponse!!.categories?.convert() ?: listOf()
             UsedeskSection(
-                sectionResponse.id!!,
-                sectionResponse.title ?: "",
-                sectionResponse.image,
-                categories
+                id = sectionResponse.id!!,
+                title = sectionResponse.title ?: "",
+                thumbnail = sectionResponse.image,
+                categories = categories
             )
         }
     }
 
     override fun getSections(): GetSectionsResponse {
         val request = LoadSections.Request(
-            configuration.token,
-            configuration.accountId
+            apiToken = configuration.token,
+            accountId = configuration.accountId
         )
         val response = doRequestJson(
-            configuration.urlApi,
-            request,
-            LoadSections.Response::class.java
+            urlApi = configuration.urlApi,
+            body = request,
+            responseClass = LoadSections.Response::class.java
         ) {
-            getSections(it.accountId, it.apiToken)
+            getSections(
+                accountId = it.accountId,
+                token = it.apiToken
+            )
         }
         return when (response?.items) {
             null -> GetSectionsResponse.Error(response?.code)
@@ -92,19 +95,19 @@ internal class KbRepository @Inject constructor(
 
     override fun getArticle(articleId: Long): GetArticleResponse {
         val request = GetArticleContent.Request(
-            configuration.accountId,
-            articleId,
-            configuration.token
+            accountId = configuration.accountId,
+            articleId = articleId,
+            token = configuration.token
         )
         val response = doRequestJson(
-            configuration.urlApi,
-            request,
-            GetArticleContent.Response::class.java
+            urlApi = configuration.urlApi,
+            body = request,
+            responseClass = GetArticleContent.Response::class.java
         ) {
             getArticleContent(
-                it.accountId,
-                it.articleId,
-                it.token
+                accountId = it.accountId,
+                articleId = it.articleId,
+                token = it.token
             )
         }
         return when (val articleContent = response?.convert()) {
@@ -123,22 +126,22 @@ internal class KbRepository @Inject constructor(
             type = GetArticles.Request.Type.PUBLIC
         )
         val response = doRequestJson(
-            configuration.urlApi,
-            request,
-            GetArticles.Response::class.java
+            urlApi = configuration.urlApi,
+            body = request,
+            responseClass = GetArticles.Response::class.java
         ) { request ->
             getArticles(
-                configuration.accountId,
-                configuration.token,
-                request.query,
-                request.count,
-                request.sectionIds,
-                request.categoryIds,
-                request.articleIds,
-                request.page,
-                request.type,
-                request.sort,
-                request.order
+                accountId = configuration.accountId,
+                token = configuration.token,
+                searchQuery = request.query,
+                count = request.count,
+                collectionIds = request.sectionIds,
+                categoryIds = request.categoryIds,
+                articleIds = request.articleIds,
+                page = request.page,
+                type = request.type,
+                sort = request.sort,
+                order = request.order
             )
         }
 
@@ -171,9 +174,9 @@ internal class KbRepository @Inject constructor(
             AddViews.Response::class.java
         ) { request ->
             addViews(
-                request.accountId,
-                request.articleId,
-                request
+                accountId = request.accountId,
+                articleId = request.articleId,
+                token = request
             )
         }
         return when (response?.views) {
@@ -194,9 +197,9 @@ internal class KbRepository @Inject constructor(
             if (good) 0 else 1
         )
         val response = doRequestJson(
-            configuration.urlApi,
-            request,
-            AddRating.Response::class.java
+            urlApi = configuration.urlApi,
+            body = request,
+            responseClass = AddRating.Response::class.java
         ) {
             changeRating(
                 accountId = request.accountId,
@@ -218,17 +221,17 @@ internal class KbRepository @Inject constructor(
         message: String
     ): SendReviewResponse {
         val request = CreateTicket.Request(
-            configuration.token,
-            configuration.clientEmail,
-            configuration.clientName,
-            subject,
-            message
+            apiToken = configuration.token,
+            clientEmail = configuration.clientEmail,
+            clientName = configuration.clientName,
+            subject = subject,
+            message = message
         )
         val response = doRequestJson(
-            configuration.urlApi,
-            request,
-            CreateTicket.Response::class.java,
-            ApiRetrofit::createTicket
+            urlApi = configuration.urlApi,
+            body = request,
+            responseClass = CreateTicket.Response::class.java,
+            getCall = ApiRetrofit::createTicket
         )
         return when (response?.status) {
             "success" -> SendReviewResponse.Done()

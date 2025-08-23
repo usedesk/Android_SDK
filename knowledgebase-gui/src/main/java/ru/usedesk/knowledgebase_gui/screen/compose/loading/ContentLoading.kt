@@ -19,6 +19,7 @@ import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
@@ -43,8 +44,13 @@ internal fun ContentLoading(
         }
     }
     val state by viewModel.modelFlow.collectAsState()
-    Box(modifier = Modifier.fillMaxSize()) {
-        Crossfade(targetState = state.contentState,
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .insetsBottom(theme)
+    ) {
+        Crossfade(
+            targetState = state.contentState,
             animationSpec = remember { theme.animationSpec() }) { contentState ->
             when (contentState) {
                 is ContentState.Empty,

@@ -4,10 +4,10 @@ import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -163,7 +163,7 @@ internal class ChatApiImpl @Inject constructor(
         val device = "${Build.MANUFACTURER} ${Build.MODEL}"
         val os = "Android ${Build.VERSION.RELEASE} (API level ${Build.VERSION.SDK_INT})"
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val appVersion = packageInfo.versionName
+        val appVersion = packageInfo.versionName ?: "null"
         val appName = packageInfo.packageName
         val telephonyManager =
             context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
@@ -297,7 +297,7 @@ internal class ChatApiImpl @Inject constructor(
     private fun String.toFileBytes() = when (this) {
         "" -> null
         else -> try {
-            val uri = Uri.parse(this)
+            val uri = this.toUri()
             val input = when {
                 (uri.scheme ?: "").startsWith("http") -> URL(this).openStream()
                 else -> contentResolver.openInputStream(uri)
@@ -367,12 +367,12 @@ internal class ChatApiImpl @Inject constructor(
         offlineForm: UsedeskOfflineForm
     ): SendOfflineFormResponse {
         val request = SendOfflineForm.Request(
-            offlineForm.clientEmail,
-            offlineForm.clientName,
-            configuration.companyAndChannel(),
-            offlineForm.message.getCorrectStringValue(),
-            offlineForm.topic,
-            offlineForm.fields.map {
+            email = offlineForm.clientEmail,
+            name = offlineForm.clientName,
+            companyId = configuration.companyAndChannel(),
+            message = offlineForm.message.getCorrectStringValue(),
+            topic = offlineForm.topic,
+            jsonFields = offlineForm.fields.map {
                 it.key to it.value.getCorrectStringValue().ifEmpty { null }
             }
         )

@@ -1,9 +1,21 @@
-
 package ru.usedesk.knowledgebase_gui.screen.compose.blocks
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.with
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import ru.usedesk.knowledgebase_gui.compose.StoreKeys
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
@@ -43,7 +55,10 @@ internal fun ContentBlocks(
                 fadeOut(theme.animationSpec())
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         SearchBar(
             theme = theme,
             value = blocksState.searchText,

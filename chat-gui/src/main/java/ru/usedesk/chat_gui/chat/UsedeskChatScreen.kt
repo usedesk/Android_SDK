@@ -47,18 +47,18 @@ class UsedeskChatScreen : UsedeskFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = inflateItem(
-        inflater,
-        container,
-        R.layout.usedesk_screen_chat,
-        R.style.Usedesk_Chat_Screen,
-        ::Binding
+        inflater = inflater,
+        container = container,
+        defaultLayoutId = R.layout.usedesk_screen_chat,
+        defaultStyleId = R.style.Usedesk_Chat_Screen,
+        createBinding = ::Binding
     ).apply {
         navHostFragment =
             childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
         navController = navHostFragment.navController
 
         val chatArgs = getChatArgs(savedInstanceState)
-        init(chatArgs.configuration)
+        init(chatArgs)
     }.rootView
 
     fun dismissAnyDialog() {
@@ -83,7 +83,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY,
             false
         ),
-        groupAgentMessages = argsGetBoolean(GROUP_AGENT_MESSAGES, true)
+        groupAgentMessages = argsGetBoolean(GROUP_AGENT_MESSAGES, true),
+        supportWindowInsets = argsGetBoolean(SUPPORT_WINDOW_INSETS, false),
     )
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -95,14 +96,17 @@ class UsedeskChatScreen : UsedeskFragment() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun Binding.init(chatConfiguration: UsedeskChatConfiguration) {
+    private fun Binding.init(chatArgs: ChatArgs) {
         val usedeskChat = UsedeskChatSdk.init(
-            requireContext(),
-            chatConfiguration
+            context = requireContext(),
+            chatConfiguration = chatArgs.configuration,
         )
         findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
 
-        val toolbarAdapter = UsedeskToolbarAdapter(toolbar).apply {
+        val toolbarAdapter = UsedeskToolbarAdapter(
+            binding = toolbar,
+            supportWindowInsets = chatArgs.supportWindowInsets,
+        ).apply {
             setBackButton(requireActivity()::onBackPressed)
         }
 
@@ -171,6 +175,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         private const val ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY =
             "adaptiveTextMessageTimePaddingKey"
         private const val GROUP_AGENT_MESSAGES = "groupAgentMessages"
+        private const val SUPPORT_WINDOW_INSETS = "supportWindowInsets"
 
         private const val MESSAGES_DATE_FORMAT_DEFAULT = "dd MMMM"
         private const val MESSAGE_TIME_FORMAT_DEFAULT = "HH:mm"
@@ -184,16 +189,18 @@ class UsedeskChatScreen : UsedeskFragment() {
             messagesDateFormat: String? = null,
             messageTimeFormat: String? = null,
             adaptiveTextMessageTimePadding: Boolean = false,
-            groupAgentMessages: Boolean = true
+            groupAgentMessages: Boolean = true,
+            supportWindowInsets: Boolean = false,
         ): UsedeskChatScreen = UsedeskChatScreen().apply {
             arguments = createBundle(
-                usedeskChatConfiguration,
-                agentName,
-                rejectedFileExtensions,
-                messagesDateFormat,
-                messageTimeFormat,
-                adaptiveTextMessageTimePadding,
-                groupAgentMessages
+                usedeskChatConfiguration = usedeskChatConfiguration,
+                agentName = agentName,
+                rejectedFileExtensions = rejectedFileExtensions,
+                messagesDateFormat = messagesDateFormat,
+                messageTimeFormat = messageTimeFormat,
+                adaptiveTextMessageTimePadding = adaptiveTextMessageTimePadding,
+                groupAgentMessages = groupAgentMessages,
+                supportWindowInsets = supportWindowInsets,
             )
         }
 
@@ -206,7 +213,8 @@ class UsedeskChatScreen : UsedeskFragment() {
             messagesDateFormat: String? = null,
             messageTimeFormat: String? = null,
             adaptiveTextMessageTimePadding: Boolean = false,
-            groupAgentMessages: Boolean = true
+            groupAgentMessages: Boolean = true,
+            supportWindowInsets: Boolean = false,
         ): Bundle = Bundle().apply {
             putParcelable(CHAT_CONFIGURATION_KEY, usedeskChatConfiguration)
             agentName?.let { putString(AGENT_NAME_KEY, it) }
@@ -219,6 +227,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             putString(MESSAGE_TIME_FORMAT_KEY, messageTimeFormat)
             putBoolean(ADAPTIVE_TEXT_MESSAGE_TIME_PADDING_KEY, adaptiveTextMessageTimePadding)
             putBoolean(GROUP_AGENT_MESSAGES, groupAgentMessages)
+            putBoolean(SUPPORT_WINDOW_INSETS, supportWindowInsets)
         }
     }
 

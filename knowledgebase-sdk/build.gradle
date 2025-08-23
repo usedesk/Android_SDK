@@ -1,9 +1,9 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     id "kotlin-kapt"
     id "kotlin-parcelize"
-    id "maven-publish"
+    alias(libs.plugins.maven.publish)
 }
 
 android {
@@ -28,18 +28,18 @@ android {
 dependencies {
     api project(":common-sdk")
 
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation libs.androidx.core.ktx
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesCoreVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation libs.google.dagger
+    kapt libs.google.dagger.compiler
 
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    implementation libs.squareup.retrofit
+    implementation libs.squareup.retrofit.converter.scalars
 
-    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation libs.google.gson
 }
 
 afterEvaluate {

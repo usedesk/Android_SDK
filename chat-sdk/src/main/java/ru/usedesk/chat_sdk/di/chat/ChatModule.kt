@@ -33,7 +33,6 @@ internal class ChatModuleProvides {
         customMessagesRepository: UsedeskCustom<IUsedeskMessagesRepository>,
         appContext: Context,
         gson: Gson,
-        fileLoader: IFileLoader,
         chatConfiguration: UsedeskChatConfiguration,
         messageResponseConverter: MessageResponseConverter
     ): IUsedeskMessagesRepository = customMessagesRepository.customInstance ?: MessagesRepository(

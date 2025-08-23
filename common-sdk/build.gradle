@@ -1,8 +1,8 @@
 plugins {
-    id "com.android.library"
-    id "kotlin-android"
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     id "kotlin-kapt"
-    id "maven-publish"
+    alias(libs.plugins.maven.publish)
 }
 
 android {
@@ -25,23 +25,23 @@ android {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation libs.androidx.core.ktx
 
-    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation libs.google.gson
 
-    implementation "com.google.dagger:dagger:$daggerVersion"
-    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation libs.google.dagger
+    kapt libs.google.dagger.compiler
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesCoreVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesAndroidVersion"
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
 
-    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation libs.squareup.retrofit
+    implementation libs.squareup.retrofit.converter.scalars
+    implementation libs.squareup.retrofit.converter.gson
 
-    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation libs.squareup.okhttp3
 
-    implementation "com.google.android.gms:play-services-auth:21.0.0"
+    implementation libs.google.play.services.auth
 }
 
 afterEvaluate {

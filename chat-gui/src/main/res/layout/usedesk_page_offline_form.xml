@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     tools:theme="@style/Usedesk.Chat.Screen.Offline.Form.Page">
 
-    <LinearLayout style="?attr/usedesk_common_container_1">
+    <LinearLayout
+        android:id="@+id/content"
+        style="?attr/usedesk_common_container_1">
 
         <TextView
             android:id="@+id/tv_offline_form_text"

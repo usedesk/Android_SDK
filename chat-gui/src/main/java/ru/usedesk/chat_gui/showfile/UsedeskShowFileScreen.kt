@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.showfile
 
 import android.content.ClipData
@@ -23,6 +22,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showImage
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.common_gui.visibleGone
@@ -64,8 +64,15 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivError.setOnClickListener { viewModel.onRetryPreview() }
 
-        binding.lToolbar.setBlur()
-        binding.lBottom.setBlur()
+        binding.lToolbar.run {
+            insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+            setBlur()
+        }
+
+        binding.lBottom.run {
+            insetsAsPaddings(ignoreStatusBar = true, ignoreIme = true)
+            setBlur()
+        }
     }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

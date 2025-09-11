@@ -7,6 +7,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.StrictMode
@@ -252,7 +253,13 @@ class MainActivity : AppCompatActivity(),
 
     override fun onDownload(url: String, name: String) {
         viewModel.setDownloadFile(MainViewModel.DownloadFile(url, name))
-        permissionDownloadResult?.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            permissionDownloadResult?.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            return
+        }
+
+        downloadFile()
     }
 
     private fun fileToast(descriptionId: Int, name: String) {

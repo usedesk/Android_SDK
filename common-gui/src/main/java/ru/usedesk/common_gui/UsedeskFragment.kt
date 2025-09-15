@@ -1,7 +1,10 @@
 package ru.usedesk.common_gui
 
+import android.Manifest
 import android.content.ContentResolver
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.result.ActivityResultLauncher
@@ -21,14 +24,23 @@ import java.io.File
 
 abstract class UsedeskFragment : Fragment() {
 
+    private val isCameraPermissionDeclared by lazy { getIsCameraPermissionDeclared() }
+
     private var filesLauncher: ActivityResultLauncher<String>? = null
     private var cameraLauncher: ActivityResultLauncher<Uri>? = null
 
     private var cameraFile: File? = null
+    private var cameraPermissionLauncher: PermissionLauncher? = null
 
     open fun onBackPressed(): Boolean = false
 
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
+        cameraPermissionLauncher = cameraPermissionLauncher ?: PermissionLauncher(
+            this,
+            Manifest.permission.CAMERA
+        ) {
+            startCameraInternal()
+        }
         cameraLauncher = cameraLauncher ?: registerForActivityResult(
             ActivityResultContracts.TakePicture(),
             onCameraResult
@@ -51,6 +63,37 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun startCamera() {
+        if (isCameraPermissionDeclared) {
+            cameraPermissionLauncher?.launch()
+        } else {
+            startCameraInternal()
+        }
+    }
+
+    private fun getIsCameraPermissionDeclared(): Boolean {
+        return try {
+            val packageManager = requireContext().packageManager
+            val packageName = requireContext().packageName
+            val info = if (Build.VERSION.SDK_INT >= 33) {
+                packageManager.getPackageInfo(
+                    packageName,
+                    PackageManager.PackageInfoFlags.of(
+                        PackageManager.GET_PERMISSIONS.toLong()
+                    ),
+                )
+            } else {
+                packageManager.getPackageInfo(
+                    packageName,
+                    PackageManager.GET_PERMISSIONS,
+                )
+            }
+            Manifest.permission.CAMERA in info.requestedPermissions.orEmpty()
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun startCameraInternal() {
         val cameraFile = generateCameraFile()
         this.cameraFile = cameraFile
         val cameraUri = cameraFile.toUri().toProviderUri()
@@ -63,6 +106,8 @@ abstract class UsedeskFragment : Fragment() {
         cameraFile?.let {
             outState.putString(CAMERA_FILE_KEY, it.absolutePath)
         }
+
+        cameraPermissionLauncher?.save(outState)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -71,6 +116,8 @@ abstract class UsedeskFragment : Fragment() {
         savedInstanceState?.getString(CAMERA_FILE_KEY)?.let {
             cameraFile = File(it)
         }
+
+        cameraPermissionLauncher?.load(savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -81,6 +128,9 @@ abstract class UsedeskFragment : Fragment() {
 
         filesLauncher?.unregister()
         filesLauncher = null
+
+        cameraPermissionLauncher?.unregister()
+        cameraPermissionLauncher = null
     }
 
     protected fun generateCameraFile() = File(
@@ -97,7 +147,7 @@ abstract class UsedeskFragment : Fragment() {
         }
     }
 
-    protected fun Uri.toProviderUri() = when (scheme) {
+    protected fun Uri.toProviderUri(): Uri? = when (scheme) {
         ContentResolver.SCHEME_FILE -> {
             val applicationContext = requireContext().applicationContext
             FileProvider.getUriForFile(

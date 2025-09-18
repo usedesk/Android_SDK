@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.showfile
 
 import android.content.ClipData
@@ -23,6 +22,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showImage
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.common_gui.visibleGone
@@ -64,8 +64,20 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivError.setOnClickListener { viewModel.onRetryPreview() }
 
-        binding.lToolbar.setBlur()
-        binding.lBottom.setBlur()
+        val supportWindowInsets = argsGetBoolean(SUPPORT_WINDOW_INSETS, false)
+        binding.lToolbar.run {
+            if (supportWindowInsets) {
+                insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+            }
+            setBlur()
+        }
+
+        binding.lBottom.run {
+            if (supportWindowInsets) {
+                insetsAsPaddings(ignoreStatusBar = true, ignoreIme = true)
+            }
+            setBlur()
+        }
     }.rootView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -147,15 +159,26 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     companion object {
         private const val FILE_KEY = "fileKey"
+        private const val SUPPORT_WINDOW_INSETS = "supportWindowInsets"
 
         @JvmStatic
-        fun newInstance(usedeskFile: UsedeskFile) = UsedeskShowFileScreen().apply {
-            arguments = createBundle(usedeskFile)
+        fun newInstance(
+            usedeskFile: UsedeskFile,
+            supportWindowInsets: Boolean = false,
+        ) = UsedeskShowFileScreen().apply {
+            arguments = createBundle(
+                usedeskFile = usedeskFile,
+                supportWindowInsets = supportWindowInsets,
+            )
         }
 
         @JvmStatic
-        fun createBundle(usedeskFile: UsedeskFile) = Bundle().apply {
+        fun createBundle(
+            usedeskFile: UsedeskFile,
+            supportWindowInsets: Boolean = false,
+        ) = Bundle().apply {
             putParcelable(FILE_KEY, usedeskFile)
+            putBoolean(SUPPORT_WINDOW_INSETS, supportWindowInsets)
         }
     }
 

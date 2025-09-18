@@ -288,7 +288,10 @@ class MainActivity : AppCompatActivity(),
         navController.navigateSafe(
             R.id.dest_usedeskChatScreen,
             R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
-            UsedeskShowFileScreen.createBundle(usedeskFile)
+            UsedeskShowFileScreen.createBundle(
+                usedeskFile = usedeskFile,
+                supportWindowInsets = true,
+            )
         )
     }
 

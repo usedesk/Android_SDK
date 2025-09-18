@@ -64,13 +64,18 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivError.setOnClickListener { viewModel.onRetryPreview() }
 
+        val supportWindowInsets = argsGetBoolean(SUPPORT_WINDOW_INSETS, false)
         binding.lToolbar.run {
-            insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+            if (supportWindowInsets) {
+                insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
+            }
             setBlur()
         }
 
         binding.lBottom.run {
-            insetsAsPaddings(ignoreStatusBar = true, ignoreIme = true)
+            if (supportWindowInsets) {
+                insetsAsPaddings(ignoreStatusBar = true, ignoreIme = true)
+            }
             setBlur()
         }
     }.rootView
@@ -154,15 +159,26 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     companion object {
         private const val FILE_KEY = "fileKey"
+        private const val SUPPORT_WINDOW_INSETS = "supportWindowInsets"
 
         @JvmStatic
-        fun newInstance(usedeskFile: UsedeskFile) = UsedeskShowFileScreen().apply {
-            arguments = createBundle(usedeskFile)
+        fun newInstance(
+            usedeskFile: UsedeskFile,
+            supportWindowInsets: Boolean = false,
+        ) = UsedeskShowFileScreen().apply {
+            arguments = createBundle(
+                usedeskFile = usedeskFile,
+                supportWindowInsets = supportWindowInsets,
+            )
         }
 
         @JvmStatic
-        fun createBundle(usedeskFile: UsedeskFile) = Bundle().apply {
+        fun createBundle(
+            usedeskFile: UsedeskFile,
+            supportWindowInsets: Boolean = false,
+        ) = Bundle().apply {
             putParcelable(FILE_KEY, usedeskFile)
+            putBoolean(SUPPORT_WINDOW_INSETS, supportWindowInsets)
         }
     }
 

@@ -9,20 +9,37 @@ import android.telephony.TelephonyManager
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import com.google.gson.Gson
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
-import ru.usedesk.chat_sdk.data.repository.api.ChatApi.*
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.EventListener
-import ru.usedesk.chat_sdk.data.repository.api.entity.*
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.InitChatResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.LoadPreviousMessageResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendAdditionalFieldsResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendFileResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendOfflineFormResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SetClientResponse
+import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SocketSendResponse
+import ru.usedesk.chat_sdk.data.repository.api.entity.CreateChat
+import ru.usedesk.chat_sdk.data.repository.api.entity.LoadPreviousMessages
+import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFields
+import ru.usedesk.chat_sdk.data.repository.api.entity.SendFile
+import ru.usedesk.chat_sdk.data.repository.api.entity.SendOfflineForm
+import ru.usedesk.chat_sdk.data.repository.api.entity.SetClient
 import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskMessage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.api.IUsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
@@ -30,7 +47,6 @@ import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
 import java.io.ByteArrayOutputStream
 import java.net.URL
-import java.util.*
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -121,21 +137,21 @@ internal class ChatApiImpl @Inject constructor(
         apiToken: String
     ): InitChatResponse {
         val request = CreateChat.Request(
-            apiToken,
-            configuration.companyId,
-            configuration.channelId,
-            configuration.clientName,
-            configuration.clientEmail,
-            configuration.clientPhoneNumber,
-            configuration.clientAdditionalId,
-            configuration.clientNote,
-            configuration.clientAvatar?.toFileBytes()
+            apiToken = apiToken,
+            companyId = configuration.companyId,
+            channelId = configuration.channelId,
+            clientName = configuration.clientName,
+            clientEmail = configuration.clientEmail,
+            clientPhoneNumber = configuration.clientPhoneNumber,
+            clientAdditionalId = configuration.clientAdditionalId,
+            clientNote = configuration.clientNote,
+            avatar = configuration.clientAvatar?.toFileBytes()
         )
         val response = doRequestMultipart(
-            configuration.urlChatApi,
-            request,
-            CreateChat.Response::class.java,
-            RetrofitApi::createChat
+            urlApi = configuration.urlChatApi,
+            request = request,
+            responseClass = CreateChat.Response::class.java,
+            apiMethod = RetrofitApi::createChat
         )
         return when (val clientToken = response?.token) {
             null -> InitChatResponse.ApiError(response?.code)
@@ -149,9 +165,9 @@ internal class ChatApiImpl @Inject constructor(
     ): SocketSendResponse = try {
         this.eventListener = eventListener
         socketApi.connect(
-            configuration.urlChat,
-            configuration.toInitChatRequest(),
-            socketEventListener
+            url = configuration.urlChat,
+            initChatRequest = configuration.toInitChatRequest(),
+            eventListener = socketEventListener
         )
         SocketSendResponse.Done
     } catch (e: Exception) {
@@ -177,11 +193,8 @@ internal class ChatApiImpl @Inject constructor(
         )
     }
 
-    override suspend fun sendInit(
-        configuration: UsedeskChatConfiguration,
-    ): SocketSendResponse {
-        val result = socketApi.sendRequest(configuration.toInitChatRequest())
-        return result //TODO:
+    override suspend fun sendInit(configuration: UsedeskChatConfiguration): SocketSendResponse {
+        return socketApi.sendRequest(configuration.toInitChatRequest())
     }
 
     private fun UsedeskChatConfiguration.toInitChatRequest() = SocketRequest.Init(
@@ -201,16 +214,15 @@ internal class ChatApiImpl @Inject constructor(
         messageId: String,
         feedback: UsedeskFeedback
     ): SocketSendResponse {
-        val result = socketApi.sendRequest(
+        return socketApi.sendRequest(
             SocketRequest.Feedback(
-                messageId,
-                when (feedback) {
+                messageId = messageId,
+                feedback = when (feedback) {
                     UsedeskFeedback.LIKE -> "LIKE"
                     UsedeskFeedback.DISLIKE -> "DISLIKE"
                 }
             )
         )
-        return result //TODO:
     }
 
     override suspend fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse {
@@ -222,8 +234,8 @@ internal class ChatApiImpl @Inject constructor(
         }
         val result = socketApi.sendRequest(
             SocketRequest.SendMessage(
-                messageText.text,
-                messageText.id
+                text = messageText.text,
+                messageId = messageText.id
             )
         )
         return when (result) {
@@ -244,17 +256,17 @@ internal class ChatApiImpl @Inject constructor(
     ): SendFileResponse = when {
         isConnected() -> {
             val request = SendFile.Request(
-                configuration.clientToken,
-                messageId,
-                fileInfo.uri
+                token = configuration.clientToken,
+                messageId = messageId,
+                file = fileInfo.uri
             )
 
             val response = doRequestMultipart(
-                configuration.urlChatApi,
-                request,
-                SendFile.Response::class.java,
-                RetrofitApi::postFile,
-                progressFlow
+                urlApi = configuration.urlChatApi,
+                request = request,
+                responseClass = SendFile.Response::class.java,
+                apiMethod = RetrofitApi::postFile,
+                progressFlow = progressFlow
             )
             when (response?.status) {
                 200 -> SendFileResponse.Done
@@ -268,20 +280,20 @@ internal class ChatApiImpl @Inject constructor(
         when {
             isConnected() -> {
                 val request = SetClient.Request(
-                    configuration.clientToken,
-                    configuration.companyId,
-                    configuration.clientEmail?.getCorrectStringValue(),
-                    configuration.clientName?.getCorrectStringValue(),
-                    configuration.clientNote,
-                    configuration.clientPhoneNumber,
-                    configuration.clientAdditionalId,
-                    configuration.clientAvatar?.toFileBytes()
+                    token = configuration.clientToken,
+                    companyId = configuration.companyId,
+                    email = configuration.clientEmail?.getCorrectStringValue(),
+                    userName = configuration.clientName?.getCorrectStringValue(),
+                    note = configuration.clientNote,
+                    phone = configuration.clientPhoneNumber,
+                    additionalId = configuration.clientAdditionalId,
+                    avatar = configuration.clientAvatar?.toFileBytes()
                 )
                 val response = doRequestMultipart(
-                    configuration.urlChatApi,
-                    request,
-                    SetClient.Response::class.java,
-                    RetrofitApi::setClient
+                    urlApi = configuration.urlChatApi,
+                    request = request,
+                    responseClass = SetClient.Response::class.java,
+                    apiMethod = RetrofitApi::setClient
                 )
                 when (response?.clientId) {
                     null -> SetClientResponse.Error(response?.code)
@@ -315,8 +327,8 @@ internal class ChatApiImpl @Inject constructor(
             )
             originalBitmap.recycle()
             val avatarBitmap = quadBitmap.scale(
-                AVATAR_SIZE,
-                AVATAR_SIZE
+                width = AVATAR_SIZE,
+                height = AVATAR_SIZE
             )
             quadBitmap.recycle()
             avatarBitmap.compress(
@@ -339,17 +351,17 @@ internal class ChatApiImpl @Inject constructor(
         messageId: String
     ): LoadPreviousMessageResponse {
         val request = LoadPreviousMessages.Request(
-            configuration.clientToken,
-            messageId
+            chatToken = configuration.clientToken,
+            commentId = messageId
         )
         val response = doRequestJson(
-            configuration.urlChatApi,
-            request,
-            LoadPreviousMessages.Response::class.java
+            urlApi = configuration.urlChatApi,
+            body = request,
+            responseClass = LoadPreviousMessages.Response::class.java
         ) {
             loadPreviousMessages(
-                it.chatToken,
-                it.commentId
+                chatToken = it.chatToken,
+                commentId = it.commentId
             )
         }
         return when (response?.items) {
@@ -377,10 +389,10 @@ internal class ChatApiImpl @Inject constructor(
             }
         )
         val response = doRequestJsonObject(
-            configuration.urlChatApi,
-            request,
-            SendOfflineForm.Response::class.java,
-            RetrofitApi::sendOfflineForm
+            urlApi = configuration.urlChatApi,
+            body = request,
+            responseClass = SendOfflineForm.Response::class.java,
+            getCall = RetrofitApi::sendOfflineForm
         )
         return when (response?.status) {
             200 -> SendOfflineFormResponse.Done
@@ -397,16 +409,19 @@ internal class ChatApiImpl @Inject constructor(
         val totalFields = (configuration.additionalFields.toList() + nestedFields)
             .map { field ->
                 SendAdditionalFields.Request.AdditionalField(
-                    field.first,
-                    field.second
+                    id = field.first,
+                    value = field.second
                 )
             }
-        val request = SendAdditionalFields.Request(configuration.clientToken, totalFields)
+        val request = SendAdditionalFields.Request(
+            chatToken = configuration.clientToken,
+            additionalFields = totalFields
+        )
         val response = doRequestJson(
-            configuration.urlChatApi,
-            request,
-            SendAdditionalFields.Response::class.java,
-            RetrofitApi::postAdditionalFields
+            urlApi = configuration.urlChatApi,
+            body = request,
+            responseClass = SendAdditionalFields.Response::class.java,
+            getCall = RetrofitApi::postAdditionalFields
         )
         return when (response?.status) {
             200 -> SendAdditionalFieldsResponse.Done

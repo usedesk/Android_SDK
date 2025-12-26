@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.offlineform
 
 import android.text.InputType
@@ -93,18 +92,18 @@ internal class OfflineFormFieldsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.usedesk_item_field_text -> TextViewHolder(
             inflateItem(
-                parent,
-                R.layout.usedesk_item_field_text,
-                textFieldStyle,
-                UsedeskCommonFieldTextAdapter::Binding
+                container = parent,
+                defaultLayoutId = R.layout.usedesk_item_field_text,
+                defaultStyleId = textFieldStyle,
+                createBinding = UsedeskCommonFieldTextAdapter::Binding
             )
         )
         R.layout.usedesk_item_field_list -> ListViewHolder(
             inflateItem(
-                parent,
-                R.layout.usedesk_item_field_list,
-                listFieldStyle,
-                UsedeskCommonFieldListAdapter::Binding
+                container = parent,
+                defaultLayoutId = R.layout.usedesk_item_field_list,
+                defaultStyleId = listFieldStyle,
+                createBinding = UsedeskCommonFieldListAdapter::Binding
             )
         )
         else -> throw RuntimeException("Unknown list type")
@@ -157,7 +156,12 @@ internal class OfflineFormFieldsAdapter(
                         required = item.required
                     )
                     setText(item.text)
-                    setTextChangeListener { viewModel.onTextFieldChanged(item.key, it) }
+                    setTextChangeListener {
+                        viewModel.onTextFieldChanged(
+                            key = item.key,
+                            text = it
+                        )
+                    }
                 }
                 CoroutineScope(coroutineScope.coroutineContext + Job()).apply {
                     itemScope = this

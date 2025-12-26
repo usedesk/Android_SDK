@@ -1,4 +1,3 @@
-
 package ru.usedesk.sample
 
 import androidx.multidex.MultiDexApplication

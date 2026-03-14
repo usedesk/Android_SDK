@@ -1,12 +1,14 @@
 package ru.usedesk.common_gui
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
@@ -55,11 +57,11 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun startFiles() {
-        filesLauncher?.launch(MIME_TYPE_ALL_FILES)
+        launchSafely { filesLauncher?.launch(MIME_TYPE_ALL_FILES) }
     }
 
     fun startImages() {
-        filesLauncher?.launch(MIME_TYPE_ALL_IMAGES)
+        launchSafely { filesLauncher?.launch(MIME_TYPE_ALL_IMAGES) }
     }
 
     fun startCamera() {
@@ -97,7 +99,7 @@ abstract class UsedeskFragment : Fragment() {
         val cameraFile = generateCameraFile()
         this.cameraFile = cameraFile
         val cameraUri = cameraFile.toUri().toProviderUri()
-        cameraLauncher?.launch(cameraUri)
+        launchSafely { cameraLauncher?.launch(cameraUri) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -247,6 +249,18 @@ abstract class UsedeskFragment : Fragment() {
     ) {
         if (currentDestination?.id == startId) {
             navigate(actionId, args)
+        }
+    }
+
+    private inline fun launchSafely(action: () -> Unit) {
+        try {
+            action()
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(
+                requireContext(),
+                R.string.usedesk_no_app_to_handle_action,
+                Toast.LENGTH_SHORT,
+            ).show()
         }
     }
 

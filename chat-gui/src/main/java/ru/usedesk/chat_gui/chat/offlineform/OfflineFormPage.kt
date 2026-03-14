@@ -59,15 +59,15 @@ internal class OfflineFormPage : UsedeskFragment() {
 
     private fun init() {
         fieldsAdapter = OfflineFormFieldsAdapter(
-            binding.rvFields,
-            binding,
-            viewModel,
-            lifecycleScope
+            recyclerView = binding.rvFields,
+            binding = binding,
+            viewModel = viewModel,
+            coroutineScope = lifecycleScope
         ) { key ->
             findNavController().navigateSafe(
-                R.id.dest_offlineFormPage,
-                R.id.action_offlineFormPage_to_offlineFormSelectorPage,
-                OfflineFormSelectorPage.createBundle(key)
+                startId = R.id.dest_offlineFormPage,
+                actionId = R.id.action_offlineFormPage_to_offlineFormSelectorPage,
+                args = OfflineFormSelectorPage.createBundle(key)
             )
         }
 
@@ -85,8 +85,8 @@ internal class OfflineFormPage : UsedeskFragment() {
                 new.goExit?.use { goToChat ->
                     if (goToChat) {
                         findNavController().navigateSafe(
-                            R.id.dest_offlineFormPage,
-                            R.id.action_offlineFormPage_to_messagesPage
+                            startId = R.id.dest_offlineFormPage,
+                            actionId = R.id.action_offlineFormPage_to_messagesPage
                         )
                     } else {
                         OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
@@ -156,11 +156,10 @@ internal class OfflineFormPage : UsedeskFragment() {
     }
 
     private fun updateActionButton(enabled: Boolean) {
+        binding.tvSend.isEnabled = enabled
         val attr = if (enabled) {
-            binding.tvSend.isEnabled = true
             R.attr.usedesk_chat_screen_offline_form_action_enabled_background
         } else {
-            binding.tvSend.isEnabled = false
             R.attr.usedesk_chat_screen_offline_form_action_disabled_background
         }
 

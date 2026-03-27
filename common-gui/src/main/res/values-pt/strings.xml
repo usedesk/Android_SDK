@@ -8,4 +8,5 @@
     <string name="usedesk_string_done">Feito</string>
     <string name="usedesk_string_no_internet_title">Sem internet</string>
     <string name="usedesk_string_no_internet_text">Tente desligar o modo avião, ligue o Wi-Fi ou a internet móvel e verifique a força do sinal da rede</string>
+    <string name="usedesk_string_no_app_to_handle_action">Nenhum aplicativo disponível para realizar esta ação</string>
 </resources>

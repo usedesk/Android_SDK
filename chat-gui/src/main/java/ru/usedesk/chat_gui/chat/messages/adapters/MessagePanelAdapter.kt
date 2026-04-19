@@ -34,7 +34,9 @@ internal class MessagePanelAdapter(
         )
 
         binding.etMessage.run {
+            isSaveEnabled = false
             setText(viewModel.modelFlow.value.messageDraft.text)
+            setSelection(text?.length ?: 0)
             addTextChangedListener(UsedeskTextChangeListener {
                 viewModel.onEvent(MessagesViewModel.Event.MessageChanged(it))
             })

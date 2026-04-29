@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
+import android.text.Selection.removeSelection
 import android.text.Spannable
 import android.text.method.LinkMovementMethod
 import android.view.Gravity
@@ -624,6 +625,11 @@ internal class MessagesAdapter(
             }
         }
 
+        protected fun setMessageText(value: CharSequence) {
+            (binding.tvText.text as? Spannable)?.let(::removeSelection)
+            binding.tvText.text = value
+        }
+
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
 
@@ -632,7 +638,7 @@ internal class MessagesAdapter(
             val messageText = (chatItem as ChatItem.Message).message as UsedeskMessage.Text
 
             binding.tvText.run {
-                text = Html.fromHtml(messageText.convertedText + " ") //TODO: temp fix
+                setMessageText(Html.fromHtml(messageText.convertedText + " ")) //TODO: temp fix
                 visibility = visibleGone(messageText.convertedText.isNotEmpty())
             }
         }
@@ -1075,7 +1081,7 @@ internal class MessagesAdapter(
                         messageAgentText.feedback == UsedeskFeedback.DISLIKE
                     )
 
-                    binding.content.tvText.text = thanksText
+                    setMessageText(thanksText)
                 }
                 messageAgentText.feedbackNeeded -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
@@ -1094,7 +1100,7 @@ internal class MessagesAdapter(
                                 UsedeskFeedback.LIKE
                             )
                         )
-                        binding.content.tvText.text = thanksText
+                        setMessageText(thanksText)
                     }
 
                     enableSmile(
@@ -1111,7 +1117,7 @@ internal class MessagesAdapter(
                                 UsedeskFeedback.DISLIKE
                             )
                         )
-                        binding.content.tvText.text = thanksText
+                        setMessageText(thanksText)
                     }
                 }
                 else -> binding.content.lFeedback.visibility = View.GONE

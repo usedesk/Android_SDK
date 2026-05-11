@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,7 +35,7 @@ internal fun ContentBlocks(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     viewModel: RootViewModel,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onEvent: (Event) -> Unit
 ) {
     val state by viewModel.modelFlow.collectAsState()
@@ -92,7 +91,7 @@ internal fun ContentBlocks(
                                 viewModelStoreOwner = rememberViewModelStoreOwner {
                                     viewModelStoreFactory.get(StoreKeys.SECTIONS.name)
                                 },
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                             )
                         }
@@ -115,7 +114,7 @@ internal fun ContentBlocks(
                                     viewModelStoreFactory.get(StoreKeys.CATEGORIES.name)
                                 },
                                 sectionId = block.sectionId,
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                             )
                         }
@@ -138,7 +137,7 @@ internal fun ContentBlocks(
                                     viewModelStoreFactory.get(StoreKeys.ARTICLES.name)
                                 },
                                 categoryId = block.categoryId,
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onArticleClick = remember {
                                     { onEvent(Event.ArticleClicked(it.id, it.title)) }
                                 }
@@ -162,7 +161,7 @@ internal fun ContentBlocks(
                                 viewModelStoreOwner = rememberViewModelStoreOwner {
                                     viewModelStoreFactory.get(StoreKeys.SEARCH.name)
                                 },
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onArticleClick = remember {
                                     { onEvent(Event.ArticleClicked(it.id, it.title)) }
                                 }

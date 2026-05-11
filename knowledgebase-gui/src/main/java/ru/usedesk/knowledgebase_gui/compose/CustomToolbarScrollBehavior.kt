@@ -7,6 +7,8 @@ import androidx.compose.animation.core.animateDecay
 import androidx.compose.animation.core.animateTo
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -14,6 +16,7 @@ import androidx.compose.ui.unit.Velocity
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 import kotlin.math.abs
 
+@Stable
 internal class CustomToolbarScrollBehavior(
     val theme: UsedeskKnowledgeBaseTheme,
     val state: CustomToolbarScrollState,
@@ -123,11 +126,14 @@ internal suspend fun CustomToolbarScrollState.snapToolbar(theme: UsedeskKnowledg
 }
 
 @Composable
-internal fun rememberToolbarScrollBehavior(theme: UsedeskKnowledgeBaseTheme) =
-    CustomToolbarScrollBehavior(
-        theme = theme,
-        state = rememberToolbarScrollState(
-            initialHeightOffsetLimit = -Float.MAX_VALUE
-        ),
-        flingAnimationSpec = rememberSplineBasedDecay()
-    )
+internal fun rememberToolbarScrollBehavior(theme: UsedeskKnowledgeBaseTheme): CustomToolbarScrollBehavior {
+    val state = rememberToolbarScrollState(initialHeightOffsetLimit = -Float.MAX_VALUE)
+    val flingAnimationSpec = rememberSplineBasedDecay<Float>()
+    return remember(theme, state, flingAnimationSpec) {
+        CustomToolbarScrollBehavior(
+            theme = theme,
+            state = state,
+            flingAnimationSpec = flingAnimationSpec
+        )
+    }
+}

@@ -29,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,7 +66,7 @@ internal fun ContentArticle(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     articleTitleState: MutableState<String?>,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
@@ -98,7 +99,9 @@ internal fun ContentArticle(
     }
 
     val state by viewModel.modelFlow.collectAsState()
-    state.goReview?.use { onReview() }
+
+    val goReview = state.goReview
+    LaunchedEffect(goReview) { goReview?.use { onReview() } }
 
     DisposableEffect(state.contentState) {
         articleTitleState.value = when (val contentState = state.contentState) {
@@ -118,7 +121,7 @@ internal fun ContentArticle(
             theme = theme,
             state = state,
             viewModel = viewModel,
-            supportButtonVisible = supportButtonVisible,
+            onSupportButtonVisibleChange = onSupportButtonVisibleChange,
             onWebUrl = onWebUrl,
             onReviewGoodClick = remember { { viewModel.onRating(true) } },
             onReviewBadClick = remember { { viewModel.onRating(false) } }
@@ -131,7 +134,7 @@ private fun ArticleBlock(
     theme: UsedeskKnowledgeBaseTheme,
     state: State,
     viewModel: ArticleViewModel,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
@@ -144,11 +147,11 @@ private fun ArticleBlock(
         ) { contentState ->
             when (contentState) {
                 is ContentState.Empty -> {
-                    supportButtonVisible.value = true
+                    LaunchedEffect(Unit) { onSupportButtonVisibleChange(true) }
                     Box(modifier = Modifier.fillMaxSize())
                 }
                 is ContentState.Error -> {
-                    supportButtonVisible.value = true
+                    LaunchedEffect(Unit) { onSupportButtonVisibleChange(true) }
                     ScreenNotLoaded(
                         theme = theme,
                         tryAgain = viewModel::tryAgain,
@@ -199,8 +202,11 @@ private fun ArticleBlock(
                     DisposableEffect(Unit) {
                         onDispose { viewModel.articleHidden() }
                     }
-                    supportButtonVisible.value =
-                        scrollState.value == 0 || scrollState.value < scrollState.maxValue
+                    // Hide the support button once the article is scrolled to the bottom (the rating block).
+                    LaunchedEffect(scrollState) {
+                        snapshotFlow { scrollState.value == 0 || scrollState.value < scrollState.maxValue }
+                            .collect { onSupportButtonVisibleChange(it) }
+                    }
                     AndroidView(
                         modifier = Modifier
                             .animateContentSize(animationSpec = remember { theme.animationSpec() })

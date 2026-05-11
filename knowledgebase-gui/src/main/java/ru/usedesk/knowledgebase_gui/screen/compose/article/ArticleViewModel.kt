@@ -1,7 +1,6 @@
 
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
-import androidx.compose.foundation.ScrollState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._entity.ContentState
@@ -78,7 +77,6 @@ internal class ArticleViewModel(
     }
 
     data class State(
-        val scrollState: ScrollState = ScrollState(0),
         val contentState: ContentState<UsedeskArticleContent> = ContentState.Empty(),
         val loading: Boolean = true,
         val articleShowed: Boolean = false,

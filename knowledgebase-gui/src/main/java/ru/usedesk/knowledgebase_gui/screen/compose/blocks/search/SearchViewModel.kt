@@ -63,15 +63,18 @@ internal class SearchViewModel(
     }
 
     fun lowestItemShowed() {
+        var loadNextPage = false
         setModel {
             val size = content?.size ?: 0
             when {
-                size > itemShowedIndex -> copy(itemShowedIndex = size).apply {
-                    kbInteractor.loadArticles(nextPage = true)
+                size > itemShowedIndex -> {
+                    loadNextPage = true
+                    copy(itemShowedIndex = size)
                 }
                 else -> this
             }
         }
+        if (loadNextPage) kbInteractor.loadArticles(nextPage = true)
     }
 
     data class State(

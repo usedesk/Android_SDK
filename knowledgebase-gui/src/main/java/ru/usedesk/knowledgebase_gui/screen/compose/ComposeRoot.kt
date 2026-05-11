@@ -2,9 +2,7 @@
 package ru.usedesk.knowledgebase_gui.screen.compose
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -12,14 +10,11 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,12 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import ru.usedesk.knowledgebase_gui.compose.CardCircleChat
 import ru.usedesk.knowledgebase_gui.compose.CustomToolbar
 import ru.usedesk.knowledgebase_gui.compose.rememberToolbarScrollBehavior
+import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsHorizontal
 import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsStatusBar
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.Screen
@@ -44,7 +38,6 @@ import ru.usedesk.knowledgebase_gui.screen.compose.incorrect.ContentIncorrect
 import ru.usedesk.knowledgebase_gui.screen.compose.loading.ContentLoading
 import ru.usedesk.knowledgebase_gui.screen.compose.review.ContentReview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ComposeRoot(
     theme: UsedeskKnowledgeBaseTheme,
@@ -57,7 +50,8 @@ internal fun ComposeRoot(
     val state by viewModel.modelFlow.collectAsState()
 
     val focusManager = LocalFocusManager.current
-    state.clearFocus?.use { focusManager.clearFocus() }
+    val clearFocus = state.clearFocus
+    LaunchedEffect(clearFocus) { clearFocus?.use { focusManager.clearFocus() } }
 
     val onEvent = viewModel::onEvent
     val articleTitleState = remember { mutableStateOf<String?>(null) }
@@ -69,83 +63,57 @@ internal fun ComposeRoot(
     } ?: stringResource(theme.strings.sectionsTitle)
 
     val scrollBehavior = rememberToolbarScrollBehavior(theme)
+    val supportButtonVisible = remember { mutableStateOf(true) }
 
-    Scaffold(
+    // Column (not Scaffold): collapsing the toolbar resizes the content via layout, not by re-subcomposing it.
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = theme.colors.rootBackground)
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            Box(
-                modifier = Modifier
-                    .background(color = theme.colors.rootBackground)
-            ) {
-                Crossfade(
-                    modifier = Modifier
-                        .animateContentSize(
-                            animationSpec = remember { theme.animationSpec() },
-                            finishedListener = remember {
-                                { initial, target ->
-                                    if (target.height < initial.height) {
-                                        viewModel.onEvent(RootViewModel.Event.SearchBarAnimationFinished)
-                                    }
-                                }
-                            })
-                        .insetsStatusBar(theme),
-                    targetState = state.screen !is Screen.Blocks ||
-                            state.blocksState.block !is RootViewModel.State.BlocksState.Block.Search,
-                    animationSpec = remember { theme.animationSpec() }
-                ) { visibleToolbar ->
-                    when {
-                        visibleToolbar -> CustomToolbar(
-                            theme = theme,
-                            title = title,
-                            scrollBehavior = scrollBehavior,
-                            onBackPressed = onBackPressed
-                        )
-                        else -> Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(theme.dimensions.toolbarBottomPadding)
-                                .background(color = theme.colors.rootBackground)
-                        )
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) {
+        CustomToolbar(
+            theme = theme,
+            title = title,
+            scrollBehavior = scrollBehavior,
+            searchMode = state.screen is Screen.Blocks &&
+                    state.blocksState.block is RootViewModel.State.BlocksState.Block.Search,
+            onBackPressed = onBackPressed,
+            onSearchModeEntered = remember(viewModel) {
+                { viewModel.onEvent(RootViewModel.Event.SearchBarAnimationFinished) }
+            },
+            modifier = Modifier
+                .background(color = theme.colors.rootBackground)
+                .insetsStatusBar(theme)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .insetsHorizontal(theme)
+                .background(color = theme.colors.rootBackground)
+        ) {
+            Content(
+                theme = theme,
+                viewModel = viewModel,
+                state = state,
+                articleTitleState = articleTitleState,
+                onSupportButtonVisibleChange = remember {
+                    { visible ->
+                        supportButtonVisible.value = visible
                     }
-                }
-            }
-        },
-        content = { contentPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        PaddingValues(
-                            top = contentPadding.calculateTopPadding(),
-                            start = contentPadding.calculateLeftPadding(LocalLayoutDirection.current),
-                            end = contentPadding.calculateRightPadding(LocalLayoutDirection.current),
-                            bottom = 0.dp
-                        )
-                    )
-                    .background(color = theme.colors.rootBackground)
-            ) {
-                val supportButtonVisible = remember { mutableStateOf(true) }
-                Content(
-                    theme = theme,
-                    viewModel = viewModel,
-                    state = state,
-                    articleTitleState = articleTitleState,
-                    supportButtonVisible = supportButtonVisible,
-                    onWebUrl = onWebUrl,
-                    onEvent = onEvent
-                )
-                CardCircleChat(
-                    theme = theme,
-                    isSupportButtonVisible = isSupportButtonVisible,
-                    visible = supportButtonVisible.value,
-                    onClicked = onGoSupport
-                )
-            }
+                },
+                onWebUrl = onWebUrl,
+                onEvent = onEvent
+            )
+            CardCircleChat(
+                theme = theme,
+                isSupportButtonVisible = isSupportButtonVisible,
+                visible = supportButtonVisible.value,
+                onClicked = onGoSupport
+            )
         }
-    )
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -155,7 +123,7 @@ private fun Content(
     viewModel: RootViewModel,
     state: RootViewModel.State,
     articleTitleState: MutableState<String?>,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onEvent: (RootViewModel.Event) -> Unit
 ) {
@@ -197,7 +165,7 @@ private fun Content(
                         theme = theme,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         viewModel = viewModel,
-                        supportButtonVisible = supportButtonVisible,
+                        onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                         onEvent = onEvent
                     )
                     is Screen.Article -> ContentArticle(
@@ -206,7 +174,7 @@ private fun Content(
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         articleTitleState = articleTitleState,
-                        supportButtonVisible = supportButtonVisible,
+                        onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                         onWebUrl = onWebUrl,
                         onReview = remember { { onEvent(RootViewModel.Event.GoReview(screen.articleId)) } }
                     )
@@ -215,7 +183,7 @@ private fun Content(
                         getCurrentScreen = getCurrentScreen,
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
-                        supportButtonVisible = supportButtonVisible,
+                        onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                         goBack = viewModel::onBackPressed
                     )
                 }

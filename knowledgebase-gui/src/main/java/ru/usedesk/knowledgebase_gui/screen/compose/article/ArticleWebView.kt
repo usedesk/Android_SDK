@@ -2,6 +2,8 @@ package ru.usedesk.knowledgebase_gui.screen.compose.article
 
 import android.content.Context
 import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -52,13 +54,21 @@ internal class ArticleWebView(
             javaScriptEnabled = true
         }
         addJavascriptInterface(JsBridge(), "AndroidBridge")
+        webChromeClient = WebChromeClient() // needed for HTML5 video to render
         webViewClient = object : WebViewClient() {
             private val okHttp = UsedeskOkHttpClientFactory(context).createInstance()
 
             override fun shouldOverrideUrlLoading(
                 view: WebView,
-                url: String
+                request: WebResourceRequest
             ): Boolean {
+                if (!request.isForMainFrame) return false
+                onWebUrl(request.url.toString())
+                return true
+            }
+
+            // API < 24: the WebResourceRequest overload isn't called
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 onWebUrl(url)
                 return true
             }
@@ -71,12 +81,14 @@ internal class ArticleWebView(
 
             override fun shouldInterceptRequest(
                 view: WebView,
-                url: String?
-            ): WebResourceResponse? = url?.let {
-                try {
-                    when (URI(it).scheme) {
+                request: WebResourceRequest
+            ): WebResourceResponse? {
+                if (!request.isForMainFrame) return null
+                val url = request.url?.toString() ?: return null
+                return try {
+                    when (URI(url).scheme) {
                         "https" -> {
-                            val okHttpRequest = Request.Builder().url(it).build()
+                            val okHttpRequest = Request.Builder().url(url).build()
                             val response = okHttp.newCall(okHttpRequest).execute()
                             response.body.let { body ->
                                 WebResourceResponse(
@@ -98,6 +110,9 @@ internal class ArticleWebView(
     }
 
     fun setHtml(html: String) {
+        // cap embedded video height so the player doesn't overflow the screen in landscape
+        val maxIframeHeightPx = (resources.displayMetrics.heightPixels / density * 0.8f).toInt()
+        val style = "<style>iframe{max-height:${maxIframeHeightPx}px;}</style>"
         val script = """
             <script type="text/javascript">
                 document.addEventListener('click', function(event) {
@@ -113,11 +128,38 @@ internal class ArticleWebView(
                         }
                     }
                 });
+                (function() {
+                    try {
+                        // wrap tables so only the table scrolls sideways, not the page
+                        var tables = document.querySelectorAll('table');
+                        for (var i = 0; i < tables.length; i++) {
+                            var table = tables[i];
+                            var parent = table.parentNode;
+                            if (!parent) continue;
+                            if (parent.getAttribute && parent.getAttribute('data-usedesk-table-scroll') === '1') continue;
+                            var wrap = document.createElement('div');
+                            wrap.setAttribute('data-usedesk-table-scroll', '1');
+                            wrap.style.overflowX = 'auto';
+                            parent.insertBefore(wrap, table);
+                            wrap.appendChild(table);
+                        }
+                    } catch (e) {}
+                    try {
+                        // WebView won't derive iframe aspect-ratio from width/height attrs — do it ourselves
+                        var iframes = document.querySelectorAll('iframe');
+                        for (var j = 0; j < iframes.length; j++) {
+                            var frame = iframes[j];
+                            var fw = parseFloat(frame.getAttribute('width'));
+                            var fh = parseFloat(frame.getAttribute('height'));
+                            if (fw > 0 && fh > 0) frame.style.aspectRatio = fw + ' / ' + fh;
+                        }
+                    } catch (e) {}
+                })();
             </script>
         """.trimIndent()
         loadDataWithBaseURL(
             null,
-            "$html$script",
+            "$style$html$script",
             "text/html",
             "UTF-8",
             null

@@ -241,6 +241,6 @@ internal class KbRepository @Inject constructor(
 
     companion object {
         private const val ARTICLE_STYLE =
-            "<style>img{display: inline;height: auto;max-width: 100%;}</style>"
+            "<style>img{display: inline;height: auto;max-width: 100%;}iframe{display: block;max-width: 100%;height: auto;overflow-x: auto;}body{overflow-wrap: break-word;}</style>"
     }
 }

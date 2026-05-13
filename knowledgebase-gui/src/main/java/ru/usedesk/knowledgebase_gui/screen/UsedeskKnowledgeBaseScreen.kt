@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.screen.compose.ComposeRoot
+import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewsHolder
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
@@ -31,6 +33,18 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
     )
 
+    private val articleViews: ArticleViewsHolder by viewModels()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        articleViews.attachTo(requireActivity())
+    }
+
+    override fun onDetach() {
+        articleViews.detach()
+        super.onDetach()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,6 +57,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 theme = theme,
                 isSupportButtonVisible = isSupportButtonVisible,
                 viewModel = viewModel,
+                articleViews = articleViews,
                 onBackPressed = remember { requireActivity()::onBackPressed },
                 onGoSupport = remember {
                     { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }

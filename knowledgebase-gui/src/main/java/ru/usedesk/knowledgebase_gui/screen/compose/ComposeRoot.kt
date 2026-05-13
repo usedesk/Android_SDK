@@ -1,6 +1,7 @@
 
 package ru.usedesk.knowledgebase_gui.screen.compose
 
+import android.view.ViewGroup
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -32,6 +34,7 @@ import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsStatusBar
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State.Screen
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
+import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewsHolder
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ContentArticle
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.ContentBlocks
 import ru.usedesk.knowledgebase_gui.screen.compose.incorrect.ContentIncorrect
@@ -43,6 +46,7 @@ internal fun ComposeRoot(
     theme: UsedeskKnowledgeBaseTheme,
     isSupportButtonVisible: Boolean,
     viewModel: RootViewModel,
+    articleViews: ArticleViewsHolder,
     onBackPressed: () -> Unit,
     onGoSupport: () -> Unit,
     onWebUrl: (String) -> Unit
@@ -64,6 +68,14 @@ internal fun ComposeRoot(
 
     val scrollBehavior = rememberToolbarScrollBehavior(theme)
     val supportButtonVisible = remember { mutableStateOf(true) }
+
+    LaunchedEffect(theme) { articleViews.webView.applyTheme(theme) }
+    DisposableEffect(Unit) {
+        onDispose {
+            (articleViews.webView.parent as? ViewGroup)?.removeView(articleViews.webView)
+            (articleViews.ratingView.parent as? ViewGroup)?.removeView(articleViews.ratingView)
+        }
+    }
 
     // Column (not Scaffold): collapsing the toolbar resizes the content via layout, not by re-subcomposing it.
     Column(
@@ -98,6 +110,7 @@ internal fun ComposeRoot(
                 viewModel = viewModel,
                 state = state,
                 articleTitleState = articleTitleState,
+                articleViews = articleViews,
                 onSupportButtonVisibleChange = remember {
                     { visible ->
                         supportButtonVisible.value = visible
@@ -123,6 +136,7 @@ private fun Content(
     viewModel: RootViewModel,
     state: RootViewModel.State,
     articleTitleState: MutableState<String?>,
+    articleViews: ArticleViewsHolder,
     onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onEvent: (RootViewModel.Event) -> Unit
@@ -174,6 +188,7 @@ private fun Content(
                         viewModelStoreFactory = viewModel.viewModelStoreFactory,
                         articleId = screen.articleId,
                         articleTitleState = articleTitleState,
+                        articleViews = articleViews,
                         onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                         onWebUrl = onWebUrl,
                         onReview = remember { { onEvent(RootViewModel.Event.GoReview(screen.articleId)) } }

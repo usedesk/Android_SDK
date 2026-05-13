@@ -4,25 +4,23 @@ import android.content.Context
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.ui.graphics.toArgb
-import okhttp3.Request
-import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import java.net.URI
 
-internal class ArticleWebView(
-    context: Context,
-    viewModel: ArticleViewModel,
-    theme: UsedeskKnowledgeBaseTheme,
-    onWebUrl: (String) -> Unit,
-    private val onScrollTo: (Int) -> Unit
-) : WebView(context) {
+internal class ArticleWebView(context: Context) : WebView(context) {
 
     private val density = context.resources.displayMetrics.density
+
+    private var onWebUrl: (String) -> Unit = {}
+    private var onScrollTo: (Int) -> Unit = {}
+    private var onArticleShowed: () -> Unit = {}
+    private var onArticleHidden: () -> Unit = {}
+
+    private var boundViewModel: ArticleViewModel? = null
+    private var loadedArticleId: Long? = null
 
     private inner class JsBridge {
         @JavascriptInterface
@@ -48,16 +46,13 @@ internal class ArticleWebView(
     init {
         isVerticalScrollBarEnabled = false
         settings.apply {
-            setRenderPriority(WebSettings.RenderPriority.HIGH)
             cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
             domStorageEnabled = true
             javaScriptEnabled = true
         }
         addJavascriptInterface(JsBridge(), "AndroidBridge")
-        webChromeClient = WebChromeClient() // needed for HTML5 video to render
+        webChromeClient = WebChromeClient() // required for HTML5 video
         webViewClient = object : WebViewClient() {
-            private val okHttp = UsedeskOkHttpClientFactory(context).createInstance()
-
             override fun shouldOverrideUrlLoading(
                 view: WebView,
                 request: WebResourceRequest
@@ -75,41 +70,49 @@ internal class ArticleWebView(
 
             override fun onPageCommitVisible(view: WebView, url: String?) {
                 super.onPageCommitVisible(view, url)
-
-                viewModel.articleShowed()
-            }
-
-            override fun shouldInterceptRequest(
-                view: WebView,
-                request: WebResourceRequest
-            ): WebResourceResponse? {
-                if (!request.isForMainFrame) return null
-                val url = request.url?.toString() ?: return null
-                return try {
-                    when (URI(url).scheme) {
-                        "https" -> {
-                            val okHttpRequest = Request.Builder().url(url).build()
-                            val response = okHttp.newCall(okHttpRequest).execute()
-                            response.body.let { body ->
-                                WebResourceResponse(
-                                    body.contentType()?.toString(),
-                                    response.header("content-encoding", "utf-8"),
-                                    body.byteStream()
-                                )
-                            }
-                        }
-                        else -> null
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
+                alpha = 1f
+                onArticleShowed()
             }
         }
+    }
+
+    fun bind(
+        viewModel: ArticleViewModel,
+        onWebUrl: (String) -> Unit,
+        onScrollTo: (Int) -> Unit
+    ) {
+        boundViewModel = viewModel
+        this.onWebUrl = onWebUrl
+        this.onScrollTo = onScrollTo
+        this.onArticleShowed = { viewModel.articleShowed() }
+        this.onArticleHidden = { viewModel.articleHidden() }
+        if (loadedArticleId != viewModel.articleId) alpha = 0f
+        onResume()
+    }
+
+    fun unbind(viewModel: ArticleViewModel) {
+        if (boundViewModel !== viewModel) return // stale unbind: another composition rebound us
+        boundViewModel = null
+        onWebUrl = {}
+        onScrollTo = {}
+        onArticleShowed = {}
+        onArticleHidden = {}
+        onPause() // keep DOM; just pause playback so re-bind resumes
+    }
+
+    fun applyTheme(theme: UsedeskKnowledgeBaseTheme) {
         setBackgroundColor(theme.colors.listItemBackground.toArgb())
     }
 
-    fun setHtml(html: String) {
+    fun setHtml(articleId: Long, html: String) {
+        if (loadedArticleId == articleId) {
+            alpha = 1f
+            onArticleShowed() // onPageCommitVisible won't fire for cached DOM
+            return
+        }
+        alpha = 0f
+        onArticleHidden()
+        loadedArticleId = articleId
         // cap embedded video height so the player doesn't overflow the screen in landscape
         val maxIframeHeightPx = (resources.displayMetrics.heightPixels / density * 0.8f).toInt()
         val style = "<style>iframe{max-height:${maxIframeHeightPx}px;}</style>"

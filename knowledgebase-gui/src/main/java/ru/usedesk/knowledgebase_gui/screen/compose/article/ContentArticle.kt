@@ -1,11 +1,9 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
+import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,8 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
@@ -66,6 +62,7 @@ internal fun ContentArticle(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     articleTitleState: MutableState<String?>,
+    articleViews: ArticleViewsHolder,
     onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
@@ -121,6 +118,7 @@ internal fun ContentArticle(
             theme = theme,
             state = state,
             viewModel = viewModel,
+            articleViews = articleViews,
             onSupportButtonVisibleChange = onSupportButtonVisibleChange,
             onWebUrl = onWebUrl,
             onReviewGoodClick = remember { { viewModel.onRating(true) } },
@@ -134,11 +132,14 @@ private fun ArticleBlock(
     theme: UsedeskKnowledgeBaseTheme,
     state: State,
     viewModel: ArticleViewModel,
+    articleViews: ArticleViewsHolder,
     onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
+    val webView = articleViews.webView
+    val ratingView = articleViews.ratingView
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(
             targetState = state.contentState,
@@ -159,48 +160,34 @@ private fun ArticleBlock(
                     )
                 }
                 else -> {
-                    val context = LocalContext.current
-                    val ratingView = remember(context) {
-                        ComposeView(context).apply {
-                            setContent {
-                                val state by viewModel.modelFlow.collectAsState()
-                                AnimatedVisibility(
-                                    visible = state.articleShowed,
-                                    enter = remember { fadeIn(theme.animationSpec()) },
-                                    exit = remember { fadeOut(theme.animationSpec()) }
-                                ) {
-                                    ArticleRating(
-                                        theme = theme,
-                                        state = state,
-                                        onReviewGoodClick = onReviewGoodClick,
-                                        onReviewBadClick = onReviewBadClick
-                                    )
-                                }
-                            }
-                        }
-                    }
                     val coroutineScope = rememberCoroutineScope()
                     val scrollState = rememberScrollState()
-                    val webView = remember(context) {
-                        ArticleWebView(
-                            context,
-                            viewModel,
-                            theme,
-                            onWebUrl
-                        ) { y ->
-                            coroutineScope.launch {
-                                scrollState.animateScrollTo(value = y)
+                    DisposableEffect(viewModel) {
+                        webView.bind(
+                            viewModel = viewModel,
+                            onWebUrl = onWebUrl,
+                            onScrollTo = { y ->
+                                coroutineScope.launch {
+                                    scrollState.animateScrollTo(value = y)
+                                }
                             }
-                        }
+                        )
+                        onDispose { webView.unbind(viewModel) }
+                    }
+                    DisposableEffect(viewModel, theme, onReviewGoodClick, onReviewBadClick) {
+                        articleViews.bindRating(
+                            theme = theme,
+                            viewModel = viewModel,
+                            onReviewGoodClick = onReviewGoodClick,
+                            onReviewBadClick = onReviewBadClick
+                        )
+                        onDispose { articleViews.unbindRating(viewModel) }
                     }
                     if (state.contentState is ContentState.Loaded) {
                         LaunchedEffect(state.contentState) {
-                            val htmlData = state.contentState.content.text
-                            webView.setHtml(htmlData)
+                            val content = state.contentState.content
+                            webView.setHtml(articleId = content.id, html = content.text)
                         }
-                    }
-                    DisposableEffect(Unit) {
-                        onDispose { viewModel.articleHidden() }
                     }
                     // Hide the support button once the article is scrolled to the bottom (the rating block).
                     LaunchedEffect(scrollState) {
@@ -209,7 +196,6 @@ private fun ArticleBlock(
                     }
                     AndroidView(
                         modifier = Modifier
-                            .animateContentSize(animationSpec = remember { theme.animationSpec() })
                             .verticalScroll(scrollState)
                             .padding(
                                 start = theme.dimensions.rootPadding.start,
@@ -223,7 +209,8 @@ private fun ArticleBlock(
                             { context ->
                                 LinearLayout(context).apply {
                                     orientation = LinearLayout.VERTICAL
-
+                                    (webView.parent as? ViewGroup)?.removeView(webView)
+                                    (ratingView.parent as? ViewGroup)?.removeView(ratingView)
                                     addView(webView)
                                     addView(ratingView)
                                 }
@@ -342,7 +329,7 @@ private fun ArticleRatingButtons(
 }
 
 @Composable
-private fun ArticleRating(
+internal fun ArticleRating(
     theme: UsedeskKnowledgeBaseTheme,
     state: State,
     onReviewGoodClick: () -> Unit,

@@ -12,7 +12,7 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticleViewModel(
     private val kbInteractor: IKnowledgeBaseInteractor,
-    private val articleId: Long
+    val articleId: Long
 ) : UsedeskViewModel<State>(State()) {
 
     init {

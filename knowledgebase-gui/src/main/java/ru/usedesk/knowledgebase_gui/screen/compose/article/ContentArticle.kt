@@ -75,8 +75,10 @@ internal fun ContentArticle(
         factory = remember(articleId) {
             KbUiViewModelFactory { kbUiComponent ->
                 ArticleViewModel(
-                    kbUiComponent.interactor,
-                    articleId
+                    kbInteractor = kbUiComponent.interactor,
+                    articleId = articleId,
+                    // Fires on real exit (store clear), not on rotation — stop bg playback then.
+                    onArticleCleared = articleViews.webView::stopMedia
                 )
             }
         }

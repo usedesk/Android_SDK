@@ -12,8 +12,15 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticleViewModel(
     private val kbInteractor: IKnowledgeBaseInteractor,
-    val articleId: Long
+    val articleId: Long,
+    private val onArticleCleared: () -> Unit = {}
 ) : UsedeskViewModel<State>(State()) {
+
+    override fun onCleared() {
+        super.onCleared()
+        onArticleCleared()
+    }
+
 
     init {
         kbInteractor.loadArticle(articleId).launchCollect { articleModel ->

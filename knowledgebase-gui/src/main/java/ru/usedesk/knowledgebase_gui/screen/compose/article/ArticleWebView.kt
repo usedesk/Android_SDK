@@ -1,6 +1,11 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -8,8 +13,14 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.ui.graphics.toArgb
+import org.json.JSONObject
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
+// JS is required for anchor scroll, table wrapping, iframe aspect-ratio and the cross-origin
+// fullscreen-stretch workaround. Pages load via loadDataWithBaseURL(null, …), giving them a unique
+// origin so their JS can't reach other origins' cookies / storage.
+@SuppressLint("SetJavaScriptEnabled")
 internal class ArticleWebView(context: Context) : WebView(context) {
 
     private val density = context.resources.displayMetrics.density
@@ -22,16 +33,19 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     private var boundViewModel: ArticleViewModel? = null
     private var loadedArticleId: Long? = null
 
+    var fullscreenListener: UsedeskOnFullscreenListener? = null
+    private var customView: View? = null
+    private var customViewCallback: WebChromeClient.CustomViewCallback? = null
+    val isInFullscreen: Boolean get() = customView != null
+
     private inner class JsBridge {
         @JavascriptInterface
         fun onAnchorClick(anchor: String) {
-            val js = "(function() {" +
-                    "    var element = document.getElementById('$anchor') || document.getElementsByName('$anchor')[0];" +
-                    "    if (element) {" +
-                    "        return element.getBoundingClientRect().y;" +
-                    "    }" +
-                    "    return null;" +
-                    "})()"
+            // Pass anchor as a JS string argument (JSONObject.quote produces a safely-escaped
+            // literal) so a crafted anchor name can't break out of the quotes and inject code.
+            val js =
+                "(function(a){var e=document.getElementById(a)||document.getElementsByName(a)[0];" +
+                        "return e?e.getBoundingClientRect().y:null;})(${JSONObject.quote(anchor)})"
             this@ArticleWebView.post {
                 this@ArticleWebView.evaluateJavascript(js) {
                     val y = it.toFloatOrNull()
@@ -43,6 +57,41 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         }
     }
 
+    private val articleChromeClient = object : WebChromeClient() {
+        override fun onShowCustomView(view: View, callback: CustomViewCallback) {
+            if (customView != null) {
+                // WebView re-entered fullscreen without a hide — discard the stale callback.
+                onHideCustomView()
+            }
+            val container = fullscreenListener?.getFullscreenLayout()
+            if (container == null) {
+                callback.onCustomViewHidden()
+                return
+            }
+            customView = view
+            customViewCallback = callback
+            (view.parent as? ViewGroup)?.removeView(view)
+            container.addView(view, LayoutParams(MATCH_PARENT, MATCH_PARENT))
+            container.visibility = VISIBLE
+            // Cross-origin players (VK/YouTube) request fullscreen inside their own iframe — our
+            // iframe element never gets the ':fullscreen' pseudo, so stretch it manually.
+            evaluateJavascript("if (window.__usedeskEnterFs) window.__usedeskEnterFs();", null)
+            fullscreenListener?.onFullscreenChanged(true)
+        }
+
+        override fun onHideCustomView() {
+            val view = customView ?: return
+            val container = view.parent as? ViewGroup
+            container?.removeView(view)
+            container?.visibility = GONE
+            customView = null
+            customViewCallback?.onCustomViewHidden()
+            customViewCallback = null
+            evaluateJavascript("if (window.__usedeskExitFs) window.__usedeskExitFs();", null)
+            fullscreenListener?.onFullscreenChanged(false)
+        }
+    }
+
     init {
         isVerticalScrollBarEnabled = false
         settings.apply {
@@ -51,7 +100,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
             javaScriptEnabled = true
         }
         addJavascriptInterface(JsBridge(), "AndroidBridge")
-        webChromeClient = WebChromeClient() // required for HTML5 video
+        webChromeClient = articleChromeClient
         webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
                 view: WebView,
@@ -100,6 +149,43 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         onPause() // keep DOM; just pause playback so re-bind resumes
     }
 
+    /** Stop embedded media and force a fresh load next time setHtml is called. */
+    fun stopMedia() {
+        loadedArticleId = null
+        // WebView.onPause() doesn't actually pause cross-origin iframe players —
+        // reload the iframe src to truly stop streaming.
+        evaluateJavascript(
+            "document.querySelectorAll('iframe').forEach(function(f){" +
+                    "var s=f.src;f.src='about:blank';f.src=s;" +
+                    "});",
+            null
+        )
+    }
+
+    fun exitFullscreen(): Boolean {
+        if (customView == null) return false
+        articleChromeClient.onHideCustomView()
+        return true
+    }
+
+    /** Detach the fullscreen custom view from its current container without ending fullscreen. */
+    fun detachCustomView() {
+        (customView?.parent as? ViewGroup)?.removeView(customView)
+    }
+
+    /** Reattach the cached custom view to a new container — used to resume fullscreen across Activity recreate. */
+    fun reattachCustomView(container: ViewGroup) {
+        val view = customView ?: return
+        (view.parent as? ViewGroup)?.removeView(view)
+        try {
+            container.addView(view, LayoutParams(MATCH_PARENT, MATCH_PARENT))
+            container.visibility = VISIBLE
+        } catch (_: IllegalStateException) {
+            // addView can fail in pathological host setups; bail out of fullscreen cleanly.
+            exitFullscreen()
+        }
+    }
+
     fun applyTheme(theme: UsedeskKnowledgeBaseTheme) {
         setBackgroundColor(theme.colors.listItemBackground.toArgb())
     }
@@ -118,6 +204,29 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         val style = "<style>iframe{max-height:${maxIframeHeightPx}px;}</style>"
         val script = """
             <script type="text/javascript">
+                // Cross-origin iframe fullscreen: WebView fires onShowCustomView but never sets
+                // ':fullscreen' on the iframe in our document. These helpers are invoked from the
+                // Android side to forcibly stretch / restore the iframe.
+                window.__usedeskFsRestore = [];
+                window.__usedeskEnterFs = function() {
+                    var iframes = document.querySelectorAll('iframe');
+                    for (var i = 0; i < iframes.length; i++) {
+                        var frame = iframes[i];
+                        var rect = frame.getBoundingClientRect();
+                        if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
+                        window.__usedeskFsRestore.push({frame: frame, cssText: frame.style.cssText});
+                        frame.style.cssText = frame.style.cssText +
+                            ';position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important;' +
+                            'width:100vw!important;height:100vh!important;max-height:none!important;z-index:2147483647!important;';
+                    }
+                };
+                window.__usedeskExitFs = function() {
+                    var restore = window.__usedeskFsRestore || [];
+                    for (var i = 0; i < restore.length; i++) {
+                        restore[i].frame.style.cssText = restore[i].cssText;
+                    }
+                    window.__usedeskFsRestore = [];
+                };
                 document.addEventListener('click', function(event) {
                     var target = event.target;
                     while (target && target.tagName !== 'A') {
@@ -155,6 +264,13 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                             var fw = parseFloat(frame.getAttribute('width'));
                             var fh = parseFloat(frame.getAttribute('height'));
                             if (fw > 0 && fh > 0) frame.style.aspectRatio = fw + ' / ' + fh;
+                            // ensure embedded players show their fullscreen button
+                            frame.setAttribute('allowfullscreen', '');
+                            frame.allowFullscreen = true;
+                            var allow = frame.getAttribute('allow') || '';
+                            if (allow.indexOf('fullscreen') < 0) {
+                                frame.setAttribute('allow', (allow ? allow + '; ' : '') + 'fullscreen');
+                            }
                         }
                     } catch (e) {}
                 })();

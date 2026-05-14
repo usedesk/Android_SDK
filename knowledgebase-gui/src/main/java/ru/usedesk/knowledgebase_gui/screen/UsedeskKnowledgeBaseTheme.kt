@@ -30,20 +30,20 @@ class UsedeskKnowledgeBaseTheme(
     fun <T> animationSpec() = spring<T>(stiffness = animationStiffness)
 
     class Strings(
-        @StringRes val sectionsTitle: Int = R.string.usedesk_sections_title,
-        @StringRes val searchPlaceholder: Int = R.string.usedesk_enter_your_query,
-        @StringRes val searchCancel: Int = R.string.usedesk_cancel,
-        @StringRes val loadError: Int = R.string.usedesk_sections_load_error,
-        @StringRes val tryAgain: Int = R.string.usedesk_try_again,
-        @StringRes val searchIsEmpty: Int = R.string.usedesk_search_fail,
-        @StringRes val articleRating: Int = R.string.usedesk_rating_question,
-        @StringRes val articleReviewTitle: Int = R.string.usedesk_article_review_title,
-        @StringRes val articleReviewSend: Int = R.string.usedesk_send,
-        @StringRes val articleReviewYes: Int = R.string.usedesk_rating_yes,
-        @StringRes val articleReviewNo: Int = R.string.usedesk_rating_no,
-        @StringRes val articleRatingThanks: Int = R.string.usedesk_rating_thanks,
-        @StringRes val articleReviewPlaceholder: Int = R.string.usedesk_article_review_placeholder,
-        @ArrayRes val reviewTags: Int = R.array.usedesk_article_review_tags
+        @param:StringRes val sectionsTitle: Int = R.string.usedesk_sections_title,
+        @param:StringRes val searchPlaceholder: Int = R.string.usedesk_enter_your_query,
+        @param:StringRes val searchCancel: Int = R.string.usedesk_cancel,
+        @param:StringRes val loadError: Int = R.string.usedesk_sections_load_error,
+        @param:StringRes val tryAgain: Int = R.string.usedesk_try_again,
+        @param:StringRes val searchIsEmpty: Int = R.string.usedesk_search_fail,
+        @param:StringRes val articleRating: Int = R.string.usedesk_rating_question,
+        @param:StringRes val articleReviewTitle: Int = R.string.usedesk_article_review_title,
+        @param:StringRes val articleReviewSend: Int = R.string.usedesk_send,
+        @param:StringRes val articleReviewYes: Int = R.string.usedesk_rating_yes,
+        @param:StringRes val articleReviewNo: Int = R.string.usedesk_rating_no,
+        @param:StringRes val articleRatingThanks: Int = R.string.usedesk_rating_thanks,
+        @param:StringRes val articleReviewPlaceholder: Int = R.string.usedesk_article_review_placeholder,
+        @param:ArrayRes val reviewTags: Int = R.array.usedesk_article_review_tags
     )
 
     class Palette(
@@ -80,17 +80,17 @@ class UsedeskKnowledgeBaseTheme(
     )
 
     class Drawables(
-        @DrawableRes val iconBack: Int = R.drawable.usedesk_ic_back,
-        @DrawableRes val iconSupport: Int = R.drawable.usedesk_ic_support,
-        @DrawableRes val iconSearch: Int = R.drawable.usedesk_ic_search,
-        @DrawableRes val iconSearchCancel: Int = R.drawable.usedesk_ic_cancel_round,
-        @DrawableRes val iconSearchPaginationError: Int = R.drawable.usedesk_ic_error_round,
-        @DrawableRes val iconListItemArrowForward: Int = R.drawable.usedesk_ic_arrow_forward,
-        @DrawableRes val iconRatingGood: Int = R.drawable.usedesk_ic_rating_good,
-        @DrawableRes val iconRatingBad: Int = R.drawable.usedesk_ic_rating_bad,
-        @DrawableRes val iconRatingError: Int = R.drawable.usedesk_ic_error_round,
-        @DrawableRes val iconReviewError: Int = R.drawable.usedesk_ic_error_round,
-        @DrawableRes val imageCantLoad: Int = R.drawable.usedesk_image_cant_load
+        @param:DrawableRes val iconBack: Int = R.drawable.usedesk_ic_back,
+        @param:DrawableRes val iconSupport: Int = R.drawable.usedesk_ic_support,
+        @param:DrawableRes val iconSearch: Int = R.drawable.usedesk_ic_search,
+        @param:DrawableRes val iconSearchCancel: Int = R.drawable.usedesk_ic_cancel_round,
+        @param:DrawableRes val iconSearchPaginationError: Int = R.drawable.usedesk_ic_error_round,
+        @param:DrawableRes val iconListItemArrowForward: Int = R.drawable.usedesk_ic_arrow_forward,
+        @param:DrawableRes val iconRatingGood: Int = R.drawable.usedesk_ic_rating_good,
+        @param:DrawableRes val iconRatingBad: Int = R.drawable.usedesk_ic_rating_bad,
+        @param:DrawableRes val iconRatingError: Int = R.drawable.usedesk_ic_error_round,
+        @param:DrawableRes val iconReviewError: Int = R.drawable.usedesk_ic_error_round,
+        @param:DrawableRes val imageCantLoad: Int = R.drawable.usedesk_image_cant_load
     )
 
     class Fonts(

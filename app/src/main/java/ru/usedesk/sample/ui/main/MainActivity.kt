@@ -30,12 +30,12 @@ import androidx.navigation.fragment.NavHostFragment
 import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
 import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
 import ru.usedesk.common_gui.onEachWithOld
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity(),
     IUsedeskOnFileClickListener,
     IUsedeskOnClientTokenListener,
     IUsedeskOnDownloadListener,
-    IUsedeskOnFullscreenListener,
+    UsedeskOnFullscreenListener,
     IUsedeskOnWebUrlListener {
 
     private val viewModel: MainViewModel by viewModels()

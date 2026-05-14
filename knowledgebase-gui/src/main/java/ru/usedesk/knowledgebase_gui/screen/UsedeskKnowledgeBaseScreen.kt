@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.screen.compose.ComposeRoot
@@ -37,7 +38,10 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        articleViews.attachTo(requireActivity())
+        articleViews.attachTo(
+            activity = requireActivity(),
+            fullscreenListener = findParent<UsedeskOnFullscreenListener>()
+        )
     }
 
     override fun onDetach() {
@@ -58,7 +62,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 isSupportButtonVisible = isSupportButtonVisible,
                 viewModel = viewModel,
                 articleViews = articleViews,
-                onBackPressed = remember { requireActivity()::onBackPressed },
+                onBackPressed = remember {
+                    { requireActivity().onBackPressedDispatcher.onBackPressed() }
+                },
                 onGoSupport = remember {
                     { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
                 },
@@ -67,7 +73,8 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
     }
 
-    override fun onBackPressed() = viewModel.onBackPressed()
+    override fun onBackPressed() =
+        articleViews.webView.exitFullscreen() || viewModel.onBackPressed()
 
     companion object {
         private const val KEY_CONFIGURATION = "a"

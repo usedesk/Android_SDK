@@ -8,7 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -142,15 +142,15 @@ private fun Content(
     onEvent: (RootViewModel.Event) -> Unit
 ) {
     val forwardTransitionSpec = remember {
-        slideInHorizontally(theme.animationSpec()) { it } with
+        slideInHorizontally(theme.animationSpec()) { it } togetherWith
                 slideOutHorizontally(theme.animationSpec()) { -it }
     }
     val backwardTransitionSpec = remember {
-        slideInHorizontally(theme.animationSpec()) { -it } with
+        slideInHorizontally(theme.animationSpec()) { -it } togetherWith
                 slideOutHorizontally(theme.animationSpec()) { it }
     }
     val noneTransitionSpec = remember {
-        fadeIn(theme.animationSpec()) with
+        fadeIn(theme.animationSpec()) togetherWith
                 fadeOut(theme.animationSpec())
     }
 

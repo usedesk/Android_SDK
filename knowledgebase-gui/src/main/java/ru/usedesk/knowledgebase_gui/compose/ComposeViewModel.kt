@@ -23,6 +23,7 @@ internal inline fun <reified T : ViewModel> kbUiViewModel(
 internal class KbUiViewModelFactory<T : ViewModel>(
     private val createInstance: (KbUiComponent) -> T
 ) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         createInstance(KbUiComponent.require()) as T
 }

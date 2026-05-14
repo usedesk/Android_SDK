@@ -16,9 +16,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
-import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
@@ -32,7 +32,7 @@ internal class MediaPlayerAdapter(
     private val playerViewModel: PlayerViewModel,
     private val usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory
 ) {
-    private var fullscreenListener = fragment.findParent<IUsedeskOnFullscreenListener>()
+    private var fullscreenListener = fragment.findParent<UsedeskOnFullscreenListener>()
     private var downloadListener = fragment.findParent<IUsedeskOnDownloadListener>()
 
     private val pvVideoExoPlayer = inflateItem(

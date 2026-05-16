@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -38,8 +39,14 @@ internal fun ContentBlocks(
     onSupportButtonVisibleChange: (Boolean) -> Unit,
     onEvent: (Event) -> Unit
 ) {
-    val state by viewModel.modelFlow.collectAsState()
-    val blocksState = state.blocksState
+    val state = viewModel.modelFlow.collectAsState()
+    // derivedStateOf scopes the snapshot subscription to *this* derived value, so this
+    // composable invalidates only when the specific field changes — typing in the search bar
+    // updates only searchText (read via the lambda below inside SearchBar) and does not
+    // re-run ContentBlocks.
+    val block by remember { derivedStateOf { state.value.blocksState.block } }
+    val focused by remember { derivedStateOf { state.value.blocksState.searchBarFocused } }
+    val searchTextProvider = remember { { state.value.blocksState.searchText } }
 
     val forwardTransitionSpec = remember {
         slideInHorizontally(theme.animationSpec()) { it } togetherWith
@@ -60,10 +67,10 @@ internal fun ContentBlocks(
     ) {
         SearchBar(
             theme = theme,
-            value = blocksState.searchText,
-            focused = state.blocksState.searchBarFocused,
+            value = searchTextProvider,
+            focused = focused,
             onClearClick = remember { { onEvent(Event.SearchClearClicked) } },
-            onCancelClick = when (blocksState.block) {
+            onCancelClick = when (block) {
                 is State.BlocksState.Block.Search -> remember { { onEvent(Event.SearchCancelClicked) } }
                 else -> null
             },
@@ -74,7 +81,7 @@ internal fun ContentBlocks(
         Box(modifier = Modifier.fillMaxSize()) {
             AnimatedContent(
                 modifier = Modifier.fillMaxSize(),
-                targetState = blocksState.block,
+                targetState = block,
                 transitionSpec = {
                     when (targetState.transition(initialState)) {
                         State.Transition.FORWARD -> forwardTransitionSpec

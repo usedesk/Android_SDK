@@ -63,7 +63,11 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 viewModel = viewModel,
                 articleViews = articleViews,
                 onBackPressed = remember {
-                    { requireActivity().onBackPressedDispatcher.onBackPressed() }
+                    {
+                        if (!this@UsedeskKnowledgeBaseScreen.onBackPressed()) {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                        }
+                    }
                 },
                 onGoSupport = remember {
                     { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }

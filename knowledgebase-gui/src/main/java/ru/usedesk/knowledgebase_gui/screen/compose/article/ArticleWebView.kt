@@ -2,6 +2,7 @@ package ru.usedesk.knowledgebase_gui.screen.compose.article
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
@@ -17,9 +18,11 @@ import org.json.JSONObject
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
+private const val FS_TAG = "UsedeskKbFs"
+
 // JS is required for anchor scroll, table wrapping, iframe aspect-ratio and the cross-origin
-// fullscreen-stretch workaround. Pages load via loadDataWithBaseURL(null, …), giving them a unique
-// origin so their JS can't reach other origins' cookies / storage.
+// fullscreen workarounds. Pages can be loaded with a host base URL (UsedeskKnowledgeBaseConfiguration.urlApi)
+// so cross-origin players (YouTube/RuTube) accept the embed.
 @SuppressLint("SetJavaScriptEnabled")
 internal class ArticleWebView(context: Context) : WebView(context) {
 
@@ -71,11 +74,25 @@ internal class ArticleWebView(context: Context) : WebView(context) {
             customView = view
             customViewCallback = callback
             (view.parent as? ViewGroup)?.removeView(view)
-            container.addView(view, LayoutParams(MATCH_PARENT, MATCH_PARENT))
+            try {
+                container.addView(view, LayoutParams(MATCH_PARENT, MATCH_PARENT))
+            } catch (e: Exception) {
+                Log.e(FS_TAG, "onShowCustomView: addView FAILED", e)
+                throw e
+            }
             container.visibility = VISIBLE
-            // Cross-origin players (VK/YouTube) request fullscreen inside their own iframe — our
-            // iframe element never gets the ':fullscreen' pseudo, so stretch it manually.
-            evaluateJavascript("if (window.__usedeskEnterFs) window.__usedeskEnterFs();", null)
+            // Two host-side workarounds for cross-origin iframes:
+            // 1. __usedeskForceFs — iframe.requestFullscreen() in parent DOM. If WebView accepts
+            //    (we're inside the FS user-gesture chain), it sets ':fullscreen' on the iframe and
+            //    CSS auto-stretches it.
+            // 2. __usedeskEnterFs — manual style stretch as a fallback when requestFullscreen is
+            //    rejected. Also keeps the FS swap visually instant for YouTube (otherwise there's
+            //    a ~500ms flash while WebView's native ':fullscreen' kicks in).
+            evaluateJavascript(
+                "if (window.__usedeskForceFs) window.__usedeskForceFs();" +
+                        "if (window.__usedeskEnterFs) window.__usedeskEnterFs();",
+                null
+            )
             fullscreenListener?.onFullscreenChanged(true)
         }
 
@@ -87,7 +104,11 @@ internal class ArticleWebView(context: Context) : WebView(context) {
             customView = null
             customViewCallback?.onCustomViewHidden()
             customViewCallback = null
-            evaluateJavascript("if (window.__usedeskExitFs) window.__usedeskExitFs();", null)
+            evaluateJavascript(
+                "if (window.__usedeskForceExitFs) window.__usedeskForceExitFs();" +
+                        "if (window.__usedeskExitFs) window.__usedeskExitFs();",
+                null
+            )
             fullscreenListener?.onFullscreenChanged(false)
         }
     }
@@ -180,8 +201,9 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         try {
             container.addView(view, LayoutParams(MATCH_PARENT, MATCH_PARENT))
             container.visibility = VISIBLE
-        } catch (_: IllegalStateException) {
+        } catch (e: IllegalStateException) {
             // addView can fail in pathological host setups; bail out of fullscreen cleanly.
+            Log.e(FS_TAG, "reattachCustomView: addView FAILED, exiting FS", e)
             exitFullscreen()
         }
     }
@@ -190,7 +212,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         setBackgroundColor(theme.colors.listItemBackground.toArgb())
     }
 
-    fun setHtml(articleId: Long, html: String) {
+    fun setHtml(articleId: Long, html: String, baseUrl: String?) {
         if (loadedArticleId == articleId) {
             alpha = 1f
             onArticleShowed() // onPageCommitVisible won't fire for cached DOM
@@ -199,14 +221,17 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         alpha = 0f
         onArticleHidden()
         loadedArticleId = articleId
-        // cap embedded video height so the player doesn't overflow the screen in landscape
-        val maxIframeHeightPx = (resources.displayMetrics.heightPixels / density * 0.8f).toInt()
-        val style = "<style>iframe{max-height:${maxIframeHeightPx}px;}</style>"
+        // Cap embedded video height so the player doesn't overflow the screen in landscape.
+        // useWideViewPort is left at its default (false), so 1 CSS px == 1 dp in this WebView.
+        val maxIframeHeightDp = (resources.displayMetrics.heightPixels / density * 0.8f).toInt()
+        val style = "<style>iframe{max-height:${maxIframeHeightDp}px;}</style>"
         val script = """
             <script type="text/javascript">
-                // Cross-origin iframe fullscreen: WebView fires onShowCustomView but never sets
-                // ':fullscreen' on the iframe in our document. These helpers are invoked from the
-                // Android side to forcibly stretch / restore the iframe.
+                // Manual fallback for cross-origin iframe fullscreen: WebView fires onShowCustomView
+                // but never sets ':fullscreen' on the iframe in our document for non-HTML5-FS
+                // players (VK uses an in-iframe CSS trick), and for YouTube the ':fullscreen' state
+                // arrives ~500ms late, giving a "1-frame VK-style" flash. Stretching the iframe
+                // ourselves makes the FS swap visually instant.
                 window.__usedeskFsRestore = [];
                 window.__usedeskEnterFs = function() {
                     var iframes = document.querySelectorAll('iframe');
@@ -226,6 +251,30 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                         restore[i].frame.style.cssText = restore[i].cssText;
                     }
                     window.__usedeskFsRestore = [];
+                };
+                // Ask the parent document to register the visible iframe as :fullscreen so CSS
+                // auto-stretches it. Helps cross-origin players whose in-iframe FS doesn't escalate
+                // to the parent doc.
+                window.__usedeskForceFs = function() {
+                    var iframes = document.querySelectorAll('iframe');
+                    for (var i = 0; i < iframes.length; i++) {
+                        var f = iframes[i];
+                        var r = f.getBoundingClientRect();
+                        if (r.bottom <= 0 || r.top >= window.innerHeight) continue;
+                        try {
+                            if (f.requestFullscreen) { f.requestFullscreen(); break; }
+                            if (f.webkitRequestFullscreen) { f.webkitRequestFullscreen(); break; }
+                        } catch (e) {}
+                    }
+                };
+                window.__usedeskForceExitFs = function() {
+                    try {
+                        if (document.exitFullscreen && document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+                            document.webkitExitFullscreen();
+                        }
+                    } catch (e) {}
                 };
                 document.addEventListener('click', function(event) {
                     var target = event.target;
@@ -257,27 +306,22 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                         }
                     } catch (e) {}
                     try {
-                        // WebView won't derive iframe aspect-ratio from width/height attrs — do it ourselves
+                        // WebView won't derive iframe aspect-ratio from width/height attrs — do it ourselves.
+                        // NB: allowfullscreen / allow="fullscreen" are NOT patched here — those must be
+                        // present on the parsed iframe element (see KbRepository.injectIframePermissions).
                         var iframes = document.querySelectorAll('iframe');
                         for (var j = 0; j < iframes.length; j++) {
                             var frame = iframes[j];
                             var fw = parseFloat(frame.getAttribute('width'));
                             var fh = parseFloat(frame.getAttribute('height'));
                             if (fw > 0 && fh > 0) frame.style.aspectRatio = fw + ' / ' + fh;
-                            // ensure embedded players show their fullscreen button
-                            frame.setAttribute('allowfullscreen', '');
-                            frame.allowFullscreen = true;
-                            var allow = frame.getAttribute('allow') || '';
-                            if (allow.indexOf('fullscreen') < 0) {
-                                frame.setAttribute('allow', (allow ? allow + '; ' : '') + 'fullscreen');
-                            }
                         }
                     } catch (e) {}
                 })();
             </script>
         """.trimIndent()
         loadDataWithBaseURL(
-            null,
+            baseUrl,
             "$style$html$script",
             "text/html",
             "UTF-8",

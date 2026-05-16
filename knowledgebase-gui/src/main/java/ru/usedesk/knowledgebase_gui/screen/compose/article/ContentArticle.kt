@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.launch
+import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -142,6 +143,9 @@ private fun ArticleBlock(
 ) {
     val webView = articleViews.webView
     val ratingView = articleViews.ratingView
+    // Stable base URL for loadDataWithBaseURL — gives embedded iframes a real Origin so
+    // YouTube/RuTube accept the embed (fixes YouTube error 153, RuTube fullscreen button).
+    val articleBaseUrl = remember { KbUiComponent.require().configuration.urlApi }
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(
             targetState = state.contentState,
@@ -188,7 +192,11 @@ private fun ArticleBlock(
                     if (state.contentState is ContentState.Loaded) {
                         LaunchedEffect(state.contentState) {
                             val content = state.contentState.content
-                            webView.setHtml(articleId = content.id, html = content.text)
+                            webView.setHtml(
+                                articleId = content.id,
+                                html = content.text,
+                                baseUrl = articleBaseUrl
+                            )
                         }
                     }
                     // Hide the support button once the article is scrolled to the bottom (the rating block).

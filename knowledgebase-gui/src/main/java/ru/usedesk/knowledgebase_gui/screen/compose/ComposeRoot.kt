@@ -19,6 +19,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,19 +52,31 @@ internal fun ComposeRoot(
     onGoSupport: () -> Unit,
     onWebUrl: (String) -> Unit
 ) {
-    val state by viewModel.modelFlow.collectAsState()
+    val state = viewModel.modelFlow.collectAsState()
+    // Per-field derivedStateOf keeps ComposeRoot's snapshot subscription narrow: it invalidates
+    // only when these specific fields actually change, instead of on every VM emission.
+    // Typing in the search bar mutates state.blocksState.searchText (not read here), so this
+    // scope no longer recomposes per keystroke.
+    val clearFocus by remember { derivedStateOf { state.value.clearFocus } }
+    val screen by remember { derivedStateOf { state.value.screen } }
+    val blockTitle by remember { derivedStateOf { state.value.blocksState.block.title } }
+    val searchMode by remember {
+        derivedStateOf {
+            state.value.screen is Screen.Blocks &&
+                    state.value.blocksState.block is RootViewModel.State.BlocksState.Block.Search
+        }
+    }
 
     val focusManager = LocalFocusManager.current
-    val clearFocus = state.clearFocus
     LaunchedEffect(clearFocus) { clearFocus?.use { focusManager.clearFocus() } }
 
     val onEvent = viewModel::onEvent
     val articleTitleState = remember { mutableStateOf<String?>(null) }
-    val title = when (val screen = state.screen) {
-        Screen.Blocks -> state.blocksState.block.title
+    val title = when (val s = screen) {
+        Screen.Blocks -> blockTitle
         is Screen.Review -> stringResource(theme.strings.articleReviewTitle)
-        is Screen.Article -> screen.title ?: articleTitleState.value
-        else -> screen.title
+        is Screen.Article -> s.title ?: articleTitleState.value
+        else -> s.title
     } ?: stringResource(theme.strings.sectionsTitle)
 
     val scrollBehavior = rememberToolbarScrollBehavior(theme)
@@ -88,8 +101,7 @@ internal fun ComposeRoot(
             theme = theme,
             title = title,
             scrollBehavior = scrollBehavior,
-            searchMode = state.screen is Screen.Blocks &&
-                    state.blocksState.block is RootViewModel.State.BlocksState.Block.Search,
+            searchMode = searchMode,
             onBackPressed = onBackPressed,
             onSearchModeEntered = remember(viewModel) {
                 { viewModel.onEvent(RootViewModel.Event.SearchBarAnimationFinished) }
@@ -108,7 +120,7 @@ internal fun ComposeRoot(
             Content(
                 theme = theme,
                 viewModel = viewModel,
-                state = state,
+                screen = screen,
                 articleTitleState = articleTitleState,
                 articleViews = articleViews,
                 onSupportButtonVisibleChange = remember {
@@ -122,7 +134,7 @@ internal fun ComposeRoot(
             CardCircleChat(
                 theme = theme,
                 isSupportButtonVisible = isSupportButtonVisible,
-                visible = supportButtonVisible.value,
+                visible = remember { { supportButtonVisible.value } },
                 onClicked = onGoSupport
             )
         }
@@ -134,7 +146,7 @@ internal fun ComposeRoot(
 private fun Content(
     theme: UsedeskKnowledgeBaseTheme,
     viewModel: RootViewModel,
-    state: RootViewModel.State,
+    screen: Screen,
     articleTitleState: MutableState<String?>,
     articleViews: ArticleViewsHolder,
     onSupportButtonVisibleChange: (Boolean) -> Unit,
@@ -157,7 +169,7 @@ private fun Content(
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),
-            targetState = state.screen,
+            targetState = screen,
             transitionSpec = {
                 when (targetState.transition(initialState)) {
                     RootViewModel.State.Transition.FORWARD -> forwardTransitionSpec

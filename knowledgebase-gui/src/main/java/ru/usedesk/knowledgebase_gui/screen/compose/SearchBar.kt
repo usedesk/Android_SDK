@@ -1,9 +1,20 @@
 
 package ru.usedesk.knowledgebase_gui.screen.compose
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -23,7 +34,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
-import ru.usedesk.knowledgebase_gui.compose.*
+import ru.usedesk.knowledgebase_gui.compose.ComposeTextField
+import ru.usedesk.knowledgebase_gui.compose.clickableItem
+import ru.usedesk.knowledgebase_gui.compose.clickableText
+import ru.usedesk.knowledgebase_gui.compose.padding
+import ru.usedesk.knowledgebase_gui.compose.update
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 @Preview
@@ -32,7 +47,7 @@ private fun Preview() {
     val theme = UsedeskKnowledgeBaseTheme.provider()
     SearchBar(
         theme = theme,
-        value = TextFieldValue(),
+        value = { TextFieldValue() },
         focused = false,
         onClearClick = {},
         onCancelClick = {},
@@ -46,7 +61,7 @@ private fun Preview() {
 @Composable
 internal fun SearchBar(
     theme: UsedeskKnowledgeBaseTheme,
-    value: TextFieldValue,
+    value: () -> TextFieldValue,
     focused: Boolean,
     onClearClick: () -> Unit,
     onCancelClick: (() -> Unit)?,
@@ -54,6 +69,9 @@ internal fun SearchBar(
     onSearchBarClicked: () -> Unit,
     onSearch: () -> Unit
 ) {
+    // Deferred read: invoking value() here (not in the parent) keeps text-change snapshot
+    // subscriptions scoped to SearchBar — ContentBlocks/ComposeRoot don't see them.
+    val currentValue = value()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,7 +111,7 @@ internal fun SearchBar(
                     .padding(theme.dimensions.searchBarQueryPadding),
                 enabled = focused,
                 fieldModifier = Modifier.fillMaxWidth(),
-                value = value,
+                value = currentValue,
                 focusRequester = focusRequester,
                 placeholder = stringResource(theme.strings.searchPlaceholder),
                 textStyleText = theme.textStyles.searchText,
@@ -110,7 +128,7 @@ internal fun SearchBar(
                 }
             }
             AnimatedVisibility(
-                value.text.isNotEmpty(),
+                currentValue.text.isNotEmpty(),
                 enter = remember { fadeIn(theme.animationSpec()) + scaleIn(theme.animationSpec()) },
                 exit = remember { fadeOut(theme.animationSpec()) + scaleOut(theme.animationSpec()) }
             ) {

@@ -24,13 +24,13 @@ import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 internal fun BoxScope.CardCircleChat(
     theme: UsedeskKnowledgeBaseTheme,
     isSupportButtonVisible: Boolean,
-    visible: Boolean,
+    visible: () -> Boolean,
     onClicked: () -> Unit
 ) {
     AnimatedVisibility(
         modifier = Modifier
             .align(Alignment.BottomEnd),
-        visible = visible && isSupportButtonVisible,
+        visible = isSupportButtonVisible && visible(),
         enter = remember { slideInHorizontally(theme.animationSpec()) { it } },
         exit = remember { slideOutHorizontally(theme.animationSpec()) { it } }
     ) {

@@ -4,7 +4,7 @@ package ru.usedesk.knowledgebase_gui._di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
@@ -12,7 +12,9 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 @Component(modules = [KbUiModule::class])
 internal interface KbUiComponent {
 
-    val interactor: IKnowledgeBaseInteractor
+    val interactor: KnowledgeBaseInteractor
+
+    val configuration: UsedeskKnowledgeBaseConfiguration
 
     @Component.Factory
     interface Factory {

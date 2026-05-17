@@ -4,7 +4,7 @@ import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.FormSelector
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.State
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.domain.UsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
@@ -17,7 +17,7 @@ import javax.inject.Inject
 import kotlin.math.min
 
 internal class MessagesReducer @Inject constructor(
-    private val usedeskChat: IUsedeskChat
+    private val usedeskChat: UsedeskChat
 ) {
 
     fun reduceModel(state: State, event: Event): State = state.reduce(event)

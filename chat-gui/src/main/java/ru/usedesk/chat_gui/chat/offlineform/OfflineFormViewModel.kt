@@ -4,9 +4,9 @@ package ru.usedesk.chat_gui.chat.offlineform
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Model.OfflineFormItem
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.domain.UsedeskChat
+import ru.usedesk.chat_sdk.domain.UsedeskChat.SendOfflineFormResult
+import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
@@ -20,9 +20,9 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
     private val usedeskChat = UsedeskChatSdk.requireInstance()
     private val configuration = UsedeskChatSdk.requireConfiguration()
 
-    private val actionListener: IUsedeskActionListener = object : IUsedeskActionListener {
+    private val actionListener: UsedeskActionListener = object : UsedeskActionListener {
         override fun onModel(
-            model: IUsedeskChat.Model,
+            model: UsedeskChat.Model,
             newMessages: List<UsedeskMessage>,
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>

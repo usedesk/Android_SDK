@@ -7,18 +7,18 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
-import ru.usedesk.chat_sdk.di.IRelease
+import ru.usedesk.chat_sdk.di.Release
 import javax.inject.Inject
 
 internal class PreparationInteractor @Inject constructor(
     private val apiRepository: ChatApi,
     private val userInfoRepository: UserInfoRepository
-) : IUsedeskPreparation, IRelease {
+) : UsedeskPreparation, Release {
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     override fun createChat(
         apiToken: String,
-        onResult: (IUsedeskPreparation.CreateChatResult) -> Unit
+        onResult: (UsedeskPreparation.CreateChatResult) -> Unit
     ) {
         ioScope.launch {
             val configuration = userInfoRepository.getConfiguration()
@@ -27,10 +27,10 @@ internal class PreparationInteractor @Inject constructor(
                 apiToken
             )
             val result = when (response) {
-                is ChatApi.InitChatResponse.ApiError -> IUsedeskPreparation.CreateChatResult.Error
+                is ChatApi.InitChatResponse.ApiError -> UsedeskPreparation.CreateChatResult.Error
                 is ChatApi.InitChatResponse.Done -> {
                     userInfoRepository.updateConfiguration { copy(clientToken = clientToken) }
-                    IUsedeskPreparation.CreateChatResult.Done(response.clientToken)
+                    UsedeskPreparation.CreateChatResult.Done(response.clientToken)
                 }
             }
             onResult(result)

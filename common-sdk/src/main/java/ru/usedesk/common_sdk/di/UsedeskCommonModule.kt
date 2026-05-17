@@ -10,10 +10,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import ru.usedesk.common_sdk.api.ApiFactory
-import ru.usedesk.common_sdk.api.IUsedeskApiFactory
-import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.UsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
+import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactoryImpl
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.MultipartConverter
 
 @Module(includes = [UsedeskCommonModuleProvides::class, UsedeskCommonModuleBinds::class])
@@ -33,11 +33,11 @@ internal class UsedeskCommonModuleProvides {
 @Module
 internal interface UsedeskCommonModuleBinds {
     @Binds
-    fun multipartConverter(converter: MultipartConverter): IUsedeskMultipartConverter
+    fun multipartConverter(converter: MultipartConverter): UsedeskMultipartConverter
 
     @Binds
-    fun apiFactory(factory: ApiFactory): IUsedeskApiFactory
+    fun apiFactory(factory: ApiFactory): UsedeskApiFactory
 
     @Binds
-    fun okHttpClientFactory(factory: UsedeskOkHttpClientFactory): IUsedeskOkHttpClientFactory
+    fun okHttpClientFactory(factory: UsedeskOkHttpClientFactoryImpl): UsedeskOkHttpClientFactory
 }

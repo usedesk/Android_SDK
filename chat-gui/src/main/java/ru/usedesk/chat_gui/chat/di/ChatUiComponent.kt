@@ -7,7 +7,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.MapKey
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.domain.UsedeskChat
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Scope
@@ -16,14 +16,14 @@ import kotlin.reflect.KClass
 @[ChatUiScope Component(modules = [ChatUiModule::class])]
 internal interface ChatUiComponent {
     val viewModelFactory: ViewModelFactory
-    val usedeskChat: IUsedeskChat
+    val usedeskChat: UsedeskChat
     val appContext: Context
 
     @Component.Factory
     interface Factory {
         fun create(
             @BindsInstance appContext: Context,
-            @BindsInstance usedeskChat: IUsedeskChat
+            @BindsInstance usedeskChat: UsedeskChat
         ): ChatUiComponent
     }
 

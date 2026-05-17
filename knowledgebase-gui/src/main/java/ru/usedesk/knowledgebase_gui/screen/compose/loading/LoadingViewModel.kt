@@ -4,12 +4,12 @@ package ru.usedesk.knowledgebase_gui.screen.compose.loading
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.compose.loading.LoadingViewModel.State
 
 internal class LoadingViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor
+    private val kbInteractor: KnowledgeBaseInteractor
 ) : UsedeskViewModel<State>(State()) {
 
     init {

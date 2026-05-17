@@ -9,8 +9,8 @@ import javax.inject.Inject
 
 internal class ApiFactory @Inject constructor(
     private val gson: Gson,
-    private val okHttpClientFactory: IUsedeskOkHttpClientFactory
-) : IUsedeskApiFactory {
+    private val okHttpClientFactory: UsedeskOkHttpClientFactory
+) : UsedeskApiFactory {
 
     private val instanceMap: MutableMap<String, Any> = HashMap()
 

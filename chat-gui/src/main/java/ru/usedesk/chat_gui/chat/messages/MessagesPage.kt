@@ -13,10 +13,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
-import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
+import ru.usedesk.chat_gui.UsedeskOnAttachmentClickListener
+import ru.usedesk.chat_gui.UsedeskOnDownloadListener
+import ru.usedesk.chat_gui.UsedeskOnFileClickListener
+import ru.usedesk.chat_gui.UsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
@@ -135,7 +135,7 @@ internal class MessagesPage : UsedeskFragment() {
             }
             if (old?.openUrl != new.openUrl) {
                 new.openUrl?.use {
-                    findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
+                    findParent<UsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
                 }
             }
         }
@@ -196,7 +196,7 @@ internal class MessagesPage : UsedeskFragment() {
             supportWindowInsets = chatArgs.supportWindowInsets,
             lifecycleCoroutineScope = lifecycleScope,
         ) {
-            findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
+            findParent<UsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
         }
 
@@ -209,9 +209,9 @@ internal class MessagesPage : UsedeskFragment() {
             lifecycleScope = lifecycleScope,
             chatArgs = chatArgs,
             mediaPlayerAdapter = mediaPlayerAdapter,
-            onFileClick = { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
+            onFileClick = { findParent<UsedeskOnFileClickListener>()?.onFileClick(it) },
             onFileDownloadClick = {
-                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                findParent<UsedeskOnDownloadListener>()?.onDownload(
                     it.content,
                     it.name
                 )

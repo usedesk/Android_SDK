@@ -6,11 +6,11 @@ import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._entity.ReviewState
 import ru.usedesk.knowledgebase_gui.compose.TextFilter
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.compose.review.ReviewViewModel.State
 
 internal class ReviewViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor,
+    private val kbInteractor: KnowledgeBaseInteractor,
     private val articleId: Long
 ) : UsedeskViewModel<State>(State()) {
 

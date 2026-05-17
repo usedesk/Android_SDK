@@ -70,9 +70,9 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                     }
                 },
                 onGoSupport = remember {
-                    { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
+                    { findParent<UsedeskOnSupportClickListener>()?.onSupportClick() }
                 },
-                onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } }
+                onWebUrl = remember { { findParent<UsedeskOnWebUrlListener>()?.onWebUrl(it) } }
             )
         }
     }

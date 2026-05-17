@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.messages
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 
-interface IUsedeskMessagesRepository {
+interface UsedeskMessagesRepository {
     suspend fun addNotSentMessage(clientMessage: UsedeskMessageOwner.Client)
 
     suspend fun removeNotSentMessage(localId: String)
@@ -19,3 +19,12 @@ interface IUsedeskMessagesRepository {
      */
     suspend fun getNextLocalId(): String
 }
+
+@Deprecated(
+    message = "Use ru.usedesk.chat_sdk.data.repository.messages.UsedeskMessagesRepository",
+    replaceWith = ReplaceWith(
+        "UsedeskMessagesRepository",
+        "ru.usedesk.chat_sdk.data.repository.messages.UsedeskMessagesRepository"
+    )
+)
+typealias IUsedeskMessagesRepository = UsedeskMessagesRepository

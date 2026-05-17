@@ -1,13 +1,13 @@
 package ru.usedesk.chat_sdk
 
 import android.content.Context
-import ru.usedesk.chat_sdk.data.repository.messages.IUsedeskMessagesRepository
+import ru.usedesk.chat_sdk.data.repository.messages.UsedeskMessagesRepository
 import ru.usedesk.chat_sdk.di.UsedeskCustom
 import ru.usedesk.chat_sdk.di.chat.ChatComponent
 import ru.usedesk.chat_sdk.di.common.CommonChatComponent
 import ru.usedesk.chat_sdk.di.preparation.PreparationComponent
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
+import ru.usedesk.chat_sdk.domain.UsedeskChat
+import ru.usedesk.chat_sdk.domain.UsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 
@@ -19,7 +19,7 @@ object UsedeskChatSdk {
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
         null //TODO: remove this from sdk
-    private var usedeskMessagesRepository = UsedeskCustom<IUsedeskMessagesRepository>()
+    private var usedeskMessagesRepository = UsedeskCustom<UsedeskMessagesRepository>()
 
 
     @JvmStatic
@@ -40,7 +40,7 @@ object UsedeskChatSdk {
     fun init(
         context: Context,
         chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
-    ): IUsedeskChat {
+    ): UsedeskChat {
         setConfiguration(chatConfiguration)
         val commonChatComponent = CommonChatComponent.open(
             context,
@@ -53,14 +53,14 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun getInstance(): IUsedeskChat? = ChatComponent.chatComponent?.chatInteractor
+    fun getInstance(): UsedeskChat? = ChatComponent.chatComponent?.chatInteractor
 
     @JvmStatic
-    fun requireInstance(): IUsedeskChat = getInstance()
+    fun requireInstance(): UsedeskChat = getInstance()
         ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
 
     /**
-     * Release all resources of IUsedeskChat
+     * Release all resources of UsedeskChat
      * @param force If it is false, resources will be released only if no one listener exists
      */
     @JvmStatic
@@ -79,7 +79,7 @@ object UsedeskChatSdk {
     fun initPreparation(
         context: Context,
         chatConfiguration: UsedeskChatConfiguration = requireConfiguration()
-    ): IUsedeskPreparation {
+    ): UsedeskPreparation {
         setConfiguration(chatConfiguration)
         val commonChatComponent = CommonChatComponent.open(
             context,
@@ -104,7 +104,7 @@ object UsedeskChatSdk {
     }
 
     @JvmStatic
-    fun setUsedeskMessagesRepository(usedeskMessagesRepository: IUsedeskMessagesRepository?) {
+    fun setUsedeskMessagesRepository(usedeskMessagesRepository: UsedeskMessagesRepository?) {
         this.usedeskMessagesRepository = UsedeskCustom(usedeskMessagesRepository)
     }
 

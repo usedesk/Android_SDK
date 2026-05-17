@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.api.entity
 
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.MultipartRequest
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 
 internal interface SetClient {
     class Request(

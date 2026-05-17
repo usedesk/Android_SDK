@@ -1,10 +1,9 @@
-
 package ru.usedesk.common_sdk.api.multipart
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.MultipartBody
 
-interface IUsedeskMultipartConverter {
+interface UsedeskMultipartConverter {
     fun convert(
         pair: Pair<String, Any?>,
         progressFlow: MutableStateFlow<Pair<Long, Long>>?
@@ -15,3 +14,12 @@ interface IUsedeskMultipartConverter {
         val originalFile: String
     )
 }
+
+@Deprecated(
+    message = "Use ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter",
+    replaceWith = ReplaceWith(
+        "UsedeskMultipartConverter",
+        "ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter"
+    )
+)
+typealias IUsedeskMultipartConverter = UsedeskMultipartConverter

@@ -31,6 +31,11 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 import javax.inject.Inject
 
+private val HTML_NON_TEXT_BLOCK_REGEX = Regex(
+    "<(style|script)\\b[^>]*>.*?</\\1\\s*>",
+    setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+)
+
 internal class KnowledgeBaseInteractorImpl @Inject constructor(
     private val knowledgeRepository: UsedeskKnowledgeBase
 ) : KnowledgeBaseInteractor {
@@ -161,7 +166,8 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
         )
     }
 
-    private fun String.htmlToStrings() = parseAsHtml()
+    private fun String.htmlToStrings() = HTML_NON_TEXT_BLOCK_REGEX.replace(this, "")
+        .parseAsHtml()
         .toString()
         .split('\n', '\r')
         .asSequence()

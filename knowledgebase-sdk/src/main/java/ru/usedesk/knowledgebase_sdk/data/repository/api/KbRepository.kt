@@ -283,7 +283,7 @@ internal class KbRepository @Inject constructor(
         // a character class — we constrain the value by matching anything except the same quote
         // char via a tempered alternation.
         private val ALLOW_ATTR_REGEX = Regex(
-            "\\ballow\\s*=\\s*(\"|')((?:(?!\\1).)*)\\1",
+            "(?<![-\\w])allow\\s*=\\s*(\"|')((?:(?!\\1).)*)\\1",
             RegexOption.IGNORE_CASE
         )
     }

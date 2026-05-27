@@ -9,7 +9,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getMimeType
 import java.io.File
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 internal class MultipartConverter @Inject constructor(
     private val contentResolver: ContentResolver
-) : IUsedeskMultipartConverter {
+) : UsedeskMultipartConverter {
     override fun convert(
         pair: Pair<String, Any?>,
         progressFlow: MutableStateFlow<Pair<Long, Long>>?

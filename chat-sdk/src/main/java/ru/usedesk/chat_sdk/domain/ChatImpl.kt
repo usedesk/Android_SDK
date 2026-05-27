@@ -25,17 +25,17 @@ import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendFileResponse
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SendOfflineFormResponse
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SocketSendResponse
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
-import ru.usedesk.chat_sdk.data.repository.form.IFormRepository
-import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.LoadFormResponse
-import ru.usedesk.chat_sdk.data.repository.form.IFormRepository.SendFormResponse
-import ru.usedesk.chat_sdk.data.repository.messages.ICachedMessagesRepository
-import ru.usedesk.chat_sdk.data.repository.thumbnail.IThumbnailRepository
-import ru.usedesk.chat_sdk.di.IRelease
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.IFileUploadProgressListener
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.Model
-import ru.usedesk.chat_sdk.domain.IUsedeskChat.SendOfflineFormResult
+import ru.usedesk.chat_sdk.data.repository.form.FormRepository
+import ru.usedesk.chat_sdk.data.repository.form.FormRepository.LoadFormResponse
+import ru.usedesk.chat_sdk.data.repository.form.FormRepository.SendFormResponse
+import ru.usedesk.chat_sdk.data.repository.messages.CachedMessagesRepository
+import ru.usedesk.chat_sdk.data.repository.thumbnail.ThumbnailRepository
+import ru.usedesk.chat_sdk.di.Release
+import ru.usedesk.chat_sdk.domain.UsedeskChat.IFileUploadProgressListener
+import ru.usedesk.chat_sdk.domain.UsedeskChat.Model
+import ru.usedesk.chat_sdk.domain.UsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.ChatInited
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -58,16 +58,16 @@ import javax.inject.Inject
 
 internal class ChatImpl @Inject constructor(
     private val apiRepository: ChatApi,
-    private val cachedMessagesRepository: ICachedMessagesRepository,
-    private val formRepository: IFormRepository,
-    private val thumbnailRepository: IThumbnailRepository,
+    private val cachedMessagesRepository: CachedMessagesRepository,
+    private val formRepository: FormRepository,
+    private val thumbnailRepository: ThumbnailRepository,
     private val additionalFieldsRepository: AdditionalFieldsRepository,
     private val additionalFieldsInteractor: AdditionalFieldsInteractor,
     private val toSendRepository: ToSendRepository,
     private val initClientMessageRepository: InitClientMessageRepository,
     private val initClientMessageInteractor: InitClientMessageInteractor,
     private val userInfoRepository: UserInfoRepository,
-) : IUsedeskChat, IRelease {
+) : UsedeskChat, Release {
 
     private val modelFlow = MutableStateFlow(
         Model(clientToken = userInfoRepository.getConfiguration().clientToken.orEmpty())
@@ -208,12 +208,12 @@ internal class ChatImpl @Inject constructor(
         }
     }
 
-    override fun addActionListener(listener: IUsedeskActionListener) {
+    override fun addActionListener(listener: UsedeskActionListener) {
         actionListeners.add(listener)
         listener.onModelUpdated(null, modelFlow.value)
     }
 
-    override fun removeActionListener(listener: IUsedeskActionListener) {
+    override fun removeActionListener(listener: UsedeskActionListener) {
         actionListeners.remove(listener)
     }
 
@@ -836,15 +836,15 @@ internal class ChatImpl @Inject constructor(
         }
     }
 
-    private class ActionListeners : IUsedeskActionListener {
+    private class ActionListeners : UsedeskActionListener {
         private val listenersMutex = Mutex()
-        private var listeners = setOf<IUsedeskActionListener>()
+        private var listeners = setOf<UsedeskActionListener>()
 
-        fun add(listener: IUsedeskActionListener) {
+        fun add(listener: UsedeskActionListener) {
             doLocked { listeners = listeners + listener }
         }
 
-        fun remove(listener: IUsedeskActionListener) {
+        fun remove(listener: UsedeskActionListener) {
             doLocked { listeners = listeners - listener }
         }
 

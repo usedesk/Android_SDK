@@ -21,7 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -58,11 +58,11 @@ internal fun ContentReview(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     getCurrentScreen: () -> RootViewModel.State.Screen,
     goBack: () -> Unit
 ) {
-    supportButtonVisible.value = false
+    LaunchedEffect(Unit) { onSupportButtonVisibleChange(false) }
 
     val viewModel = kbUiViewModel(
         key = articleId,
@@ -85,10 +85,12 @@ internal fun ContentReview(
     }
     val state by viewModel.modelFlow.collectAsState()
 
-    state.goBack?.use { goBack() }
+    val goBackEvent = state.goBack
+    LaunchedEffect(goBackEvent) { goBackEvent?.use { goBack() } }
 
     val focusManager = LocalFocusManager.current
-    state.clearFocus?.use { focusManager.clearFocus() }
+    val clearFocus = state.clearFocus
+    LaunchedEffect(clearFocus) { clearFocus?.use { focusManager.clearFocus() } }
 
     Box(
         modifier = Modifier

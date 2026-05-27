@@ -27,22 +27,22 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
-import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
+import ru.usedesk.chat_gui.UsedeskOnClientTokenListener
+import ru.usedesk.chat_gui.UsedeskOnDownloadListener
+import ru.usedesk.chat_gui.UsedeskOnFileClickListener
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
 import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
-import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnSupportClickListener
-import ru.usedesk.knowledgebase_gui.screen.IUsedeskOnWebUrlListener
+import ru.usedesk.knowledgebase_gui.screen.UsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screen.UsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
@@ -57,12 +57,12 @@ import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity(),
     IOnGoToSdkListener,
-    IUsedeskOnSupportClickListener,
-    IUsedeskOnFileClickListener,
-    IUsedeskOnClientTokenListener,
-    IUsedeskOnDownloadListener,
-    IUsedeskOnFullscreenListener,
-    IUsedeskOnWebUrlListener {
+    UsedeskOnSupportClickListener,
+    UsedeskOnFileClickListener,
+    UsedeskOnClientTokenListener,
+    UsedeskOnDownloadListener,
+    UsedeskOnFullscreenListener,
+    UsedeskOnWebUrlListener {
 
     private val viewModel: MainViewModel by viewModels()
 

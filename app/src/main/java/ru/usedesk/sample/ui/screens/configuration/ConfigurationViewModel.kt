@@ -2,7 +2,7 @@
 package ru.usedesk.sample.ui.screens.configuration
 
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
+import ru.usedesk.chat_sdk.domain.UsedeskPreparation
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.sample.ServiceLocator
@@ -66,7 +66,7 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
         }
 
     fun createChat(
-        preparationInteractor: IUsedeskPreparation,
+        preparationInteractor: UsedeskPreparation,
         apiToken: String
     ) {
         setModel {
@@ -77,11 +77,11 @@ class ConfigurationViewModel : UsedeskViewModel<Model>(Model()) {
                         setModel {
                             copy(
                                 clientToken = when (result) {
-                                    is IUsedeskPreparation.CreateChatResult.Done -> clientToken.copy(
+                                    is UsedeskPreparation.CreateChatResult.Done -> clientToken.copy(
                                         loading = false,
                                         completed = UsedeskEvent(result.clientToken)
                                     )
-                                    IUsedeskPreparation.CreateChatResult.Error -> clientToken.copy(
+                                    UsedeskPreparation.CreateChatResult.Error -> clientToken.copy(
                                         loading = false,
                                         error = UsedeskEvent(Unit)
                                     )

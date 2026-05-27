@@ -15,25 +15,25 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
-import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
-import ru.usedesk.chat_gui.IUsedeskOnFullscreenListener
+import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible
-import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 
 @UnstableApi
 internal class MediaPlayerAdapter(
     fragment: UsedeskFragment,
     private val playerViewModel: PlayerViewModel,
-    private val usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory
+    private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
 ) {
-    private var fullscreenListener = fragment.findParent<IUsedeskOnFullscreenListener>()
-    private var downloadListener = fragment.findParent<IUsedeskOnDownloadListener>()
+    private var fullscreenListener = fragment.findParent<UsedeskOnFullscreenListener>()
+    private var downloadListener = fragment.findParent<UsedeskOnDownloadListener>()
 
     private val pvVideoExoPlayer = inflateItem(
         fragment.view as ViewGroup,

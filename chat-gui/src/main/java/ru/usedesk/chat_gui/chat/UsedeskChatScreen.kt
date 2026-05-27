@@ -8,8 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import ru.usedesk.chat_gui.IUsedeskOnChatInitedListener
-import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
+import ru.usedesk.chat_gui.UsedeskOnChatInitedListener
+import ru.usedesk.chat_gui.UsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
@@ -101,7 +101,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             context = requireContext(),
             chatConfiguration = chatArgs.configuration,
         )
-        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
+        findParent<UsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
 
         val toolbarAdapter = UsedeskToolbarAdapter(
             binding = toolbar,
@@ -118,7 +118,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 new.clientToken != null &&
                 old.clientToken != new.clientToken
             ) {
-                findParent<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
+                findParent<UsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
             }
             if (old?.offlineFormSettings != new.offlineFormSettings) {
                 toolbarAdapter.updateTitle(styleValues, navController.currentDestination)

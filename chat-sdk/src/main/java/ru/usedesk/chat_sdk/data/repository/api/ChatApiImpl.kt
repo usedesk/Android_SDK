@@ -29,8 +29,8 @@ import ru.usedesk.chat_sdk.data.repository.api.entity.SendAdditionalFields
 import ru.usedesk.chat_sdk.data.repository.api.entity.SendFile
 import ru.usedesk.chat_sdk.data.repository.api.entity.SendOfflineForm
 import ru.usedesk.chat_sdk.data.repository.api.entity.SetClient
-import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
@@ -41,10 +41,10 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
-import ru.usedesk.common_sdk.api.IUsedeskApiFactory
+import ru.usedesk.common_sdk.api.UsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter.FileBytes
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 import java.io.ByteArrayOutputStream
 import java.net.URL
 import javax.inject.Inject
@@ -53,11 +53,11 @@ import kotlin.math.min
 internal class ChatApiImpl @Inject constructor(
     private val context: Context,
     private val socketApi: SocketApi,
-    private val initChatResponseConverter: IInitChatResponseConverter,
-    private val messageResponseConverter: IMessageResponseConverter,
+    private val initChatResponseConverter: InitChatResponseConverter,
+    private val messageResponseConverter: MessageResponseConverter,
     private val contentResolver: ContentResolver,
-    multipartConverter: IUsedeskMultipartConverter,
-    apiFactory: IUsedeskApiFactory,
+    multipartConverter: UsedeskMultipartConverter,
+    apiFactory: UsedeskApiFactory,
     gson: Gson
 ) : UsedeskApiRepository<RetrofitApi>(
     apiFactory,

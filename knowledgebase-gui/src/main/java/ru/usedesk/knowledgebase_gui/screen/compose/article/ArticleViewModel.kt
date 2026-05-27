@@ -1,20 +1,27 @@
 
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
-import androidx.compose.foundation.ScrollState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui._entity.RatingState
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewModel.State
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 
 internal class ArticleViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor,
-    private val articleId: Long
+    private val kbInteractor: KnowledgeBaseInteractor,
+    val articleId: Long,
+    // Fires only on real store-clear (article exit), NOT on rotation/recompose — single hook for the
+    // shared ArticleWebView to stop bg media without polluting the View with VM-lifecycle knowledge.
+    private val onArticleCleared: () -> Unit = {}
 ) : UsedeskViewModel<State>(State()) {
+
+    override fun onCleared() {
+        super.onCleared()
+        onArticleCleared()
+    }
 
     init {
         kbInteractor.loadArticle(articleId).launchCollect { articleModel ->
@@ -78,7 +85,6 @@ internal class ArticleViewModel(
     }
 
     data class State(
-        val scrollState: ScrollState = ScrollState(0),
         val contentState: ContentState<UsedeskArticleContent> = ContentState.Empty(),
         val loading: Boolean = true,
         val articleShowed: Boolean = false,

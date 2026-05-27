@@ -2,10 +2,10 @@
 package ru.usedesk.chat_sdk.di.preparation
 
 import dagger.Component
-import ru.usedesk.chat_sdk.di.IRelease
+import ru.usedesk.chat_sdk.di.Release
 import ru.usedesk.chat_sdk.di.common.CommonChatComponent
 import ru.usedesk.chat_sdk.di.common.CommonChatDeps
-import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
+import ru.usedesk.chat_sdk.domain.UsedeskPreparation
 
 @PreparationScope
 @Component(
@@ -14,7 +14,7 @@ import ru.usedesk.chat_sdk.domain.IUsedeskPreparation
 )
 internal interface PreparationComponent : CommonChatDeps {
 
-    val preparationInteractor: IUsedeskPreparation
+    val preparationInteractor: UsedeskPreparation
 
     @Component.Factory
     interface Factory {
@@ -31,7 +31,7 @@ internal interface PreparationComponent : CommonChatDeps {
                 .also { preparationComponent = it }
 
         fun close() {
-            (preparationComponent?.preparationInteractor as? IRelease)?.release()
+            (preparationComponent?.preparationInteractor as? Release)?.release()
             preparationComponent = null
         }
     }

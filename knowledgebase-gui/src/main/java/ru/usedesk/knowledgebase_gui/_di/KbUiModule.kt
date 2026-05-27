@@ -5,8 +5,8 @@ import android.content.Context
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
 import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractorImpl
 import ru.usedesk.knowledgebase_sdk.UsedeskKnowledgeBaseSdk
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 import javax.inject.Scope
@@ -26,7 +26,7 @@ internal class KbUiModuleProvides {
 @Module
 internal interface KbUiModuleBinds {
     @[Binds KbUiScope]
-    fun interactor(interactor: KnowledgeBaseInteractor): IKnowledgeBaseInteractor
+    fun interactor(interactor: KnowledgeBaseInteractorImpl): KnowledgeBaseInteractor
 }
 
 @Scope

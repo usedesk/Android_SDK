@@ -19,7 +19,7 @@ internal class MessagesRepository(
     private val gson: Gson,
     private val configuration: UsedeskChatConfiguration,
     private val messageResponseConverter: MessageResponseConverter
-) : IUsedeskMessagesRepository {
+) : UsedeskMessagesRepository {
 
     private var inited = false
 

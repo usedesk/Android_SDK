@@ -5,14 +5,14 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import ru.usedesk.common_sdk.di.UsedeskCommonModule
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 @KbScope
 @Component(modules = [UsedeskCommonModule::class, KbModule::class])
 internal interface KbComponent {
 
-    val usedeskKb: IUsedeskKnowledgeBase
+    val usedeskKb: UsedeskKnowledgeBase
 
     @Component.Factory
     interface Factory {

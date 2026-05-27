@@ -1,15 +1,15 @@
 package ru.usedesk.knowledgebase_sdk.data.repository.api
 
 import com.google.gson.Gson
-import ru.usedesk.common_sdk.api.IUsedeskApiFactory
+import ru.usedesk.common_sdk.api.UsedeskApiFactory
 import ru.usedesk.common_sdk.api.UsedeskApiRepository
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.AddViewsResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.GetArticleResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.GetArticlesResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.GetSectionsResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.SendRatingResponse
-import ru.usedesk.knowledgebase_sdk.data.repository.api.IUsedeskKnowledgeBase.SendReviewResponse
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.AddViewsResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.GetArticleResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.GetArticlesResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.GetSectionsResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.SendRatingResponse
+import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.SendReviewResponse
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddRating
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddViews
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CategoryResponse
@@ -27,15 +27,15 @@ import javax.inject.Inject
 
 internal class KbRepository @Inject constructor(
     private val configuration: UsedeskKnowledgeBaseConfiguration,
-    multipartConverter: IUsedeskMultipartConverter,
-    apiFactory: IUsedeskApiFactory,
+    multipartConverter: UsedeskMultipartConverter,
+    apiFactory: UsedeskApiFactory,
     gson: Gson
 ) : UsedeskApiRepository<ApiRetrofit>(
     apiFactory,
     multipartConverter,
     gson,
     ApiRetrofit::class.java
-), IUsedeskKnowledgeBase {
+), UsedeskKnowledgeBase {
 
     private fun Array<CategoryResponse?>.convert() = mapNotNull { categoryResponse ->
         valueOrNull {
@@ -157,10 +157,39 @@ internal class KbRepository @Inject constructor(
             title = title ?: "",
             categoryId = categoryId?.toLongOrNull()!!,
             viewsCount = views ?: 0,
-            text = ARTICLE_STYLE + (text ?: ""),
+            text = ARTICLE_STYLE + injectIframePermissions(text ?: ""),
             public = public == 1
         )
     }
+
+    /**
+     * Ensures every `<iframe>` carries `allowfullscreen` and an `allow` policy that includes
+     * `fullscreen`. The attributes must be present on the parsed element — patching them later via
+     * DOM API doesn't help RuTube/YouTube show the fullscreen button.
+     *
+     * Supports both double-quoted (`allow="..."`) and single-quoted (`allow='...'`) attribute
+     * forms; un-quoted attribute values are not in the HTML5 iframe spec and are not handled.
+     */
+    private fun injectIframePermissions(html: String): String =
+        IFRAME_OPEN_TAG_REGEX.replace(html) { match ->
+            var attrs = match.groupValues[1]
+            if (!ALLOWFULLSCREEN_ATTR_REGEX.containsMatchIn(attrs)) {
+                attrs = "$attrs allowfullscreen"
+            }
+            val allow = ALLOW_ATTR_REGEX.find(attrs)
+            attrs = when {
+                allow == null -> "$attrs allow=\"$IFRAME_ALLOW_DEFAULT\""
+                // groupValues[1] is the quote char (" or '), groupValues[2] is the value inside.
+                allow.groupValues[2].contains("fullscreen", ignoreCase = true) -> attrs
+                else -> {
+                    val quote = allow.groupValues[1]
+                    val merged = allow.groupValues[2].trimEnd().trimEnd(';').trim()
+                    val newValue = if (merged.isEmpty()) "fullscreen" else "$merged; fullscreen"
+                    attrs.replaceRange(allow.range, "allow=$quote$newValue$quote")
+                }
+            }
+            "<iframe$attrs>"
+        }
 
     override fun addViews(articleId: Long): AddViewsResponse {
         val request = AddViews.Request(
@@ -241,6 +270,21 @@ internal class KbRepository @Inject constructor(
 
     companion object {
         private const val ARTICLE_STYLE =
-            "<style>img{display: inline;height: auto;max-width: 100%;}</style>"
+            "<style>img{display: inline;height: auto;max-width: 100%;}iframe{display: block;max-width: 100%;height: auto;overflow-x: auto;}body{overflow-wrap: break-word;}</style>"
+
+        private const val IFRAME_ALLOW_DEFAULT =
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+
+        private val IFRAME_OPEN_TAG_REGEX = Regex("<iframe\\b([^>]*)>", RegexOption.IGNORE_CASE)
+        private val ALLOWFULLSCREEN_ATTR_REGEX = Regex("\\ballowfullscreen\\b", RegexOption.IGNORE_CASE)
+
+        // Group 1 captures the opening quote (" or '), group 2 captures the value inside it.
+        // The backreference \1 in [^\1] would be nice but Kotlin Regex doesn't support that inside
+        // a character class — we constrain the value by matching anything except the same quote
+        // char via a tempered alternation.
+        private val ALLOW_ATTR_REGEX = Regex(
+            "(?<![-\\w])allow\\s*=\\s*(\"|')((?:(?!\\1).)*)\\1",
+            RegexOption.IGNORE_CASE
+        )
     }
 }

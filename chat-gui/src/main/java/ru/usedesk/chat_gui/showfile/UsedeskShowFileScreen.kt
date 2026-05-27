@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
-import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
+import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskBinding
@@ -55,7 +55,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivDownload.setOnClickListener {
             viewModel.modelFlow.value.file?.let { file ->
-                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                findParent<UsedeskOnDownloadListener>()?.onDownload(
                     file.content,
                     file.name
                 )

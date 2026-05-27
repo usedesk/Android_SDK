@@ -10,10 +10,10 @@ import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase
 import ru.usedesk.chat_sdk.data.repository._extra.ChatDatabase.Companion.DATABASE_NAME
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi
 import ru.usedesk.chat_sdk.data.repository.api.ChatApiImpl
-import ru.usedesk.chat_sdk.data.repository.api.loader.IInitChatResponseConverter
-import ru.usedesk.chat_sdk.data.repository.api.loader.IMessageResponseConverter
 import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.InitChatResponseConverterImpl
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
+import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverterImpl
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepositoryImpl
 import ru.usedesk.chat_sdk.data.repository.configuration.loader.configuration.ConfigurationLoader
@@ -45,10 +45,10 @@ internal interface CommonChatModuleBinds {
     fun configurationLoader(loader: ConfigurationLoader): ConfigurationsLoader
 
     @[Binds CommonChatScope]
-    fun messageResponseConverter(loader: MessageResponseConverter): IMessageResponseConverter
+    fun messageResponseConverter(loader: MessageResponseConverterImpl): MessageResponseConverter
 
     @[Binds CommonChatScope]
-    fun initChatResponseConverter(loader: InitChatResponseConverter): IInitChatResponseConverter
+    fun initChatResponseConverter(loader: InitChatResponseConverterImpl): InitChatResponseConverter
 }
 
 @Scope

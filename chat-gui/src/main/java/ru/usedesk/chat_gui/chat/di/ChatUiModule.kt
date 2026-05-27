@@ -6,8 +6,8 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import ru.usedesk.chat_gui.chat.ChatViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
-import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactoryImpl
 
 @Module(includes = [ChatUiModuleBinds::class, ChatUiModuleProvides::class])
 internal interface ChatUiModule
@@ -25,5 +25,5 @@ internal interface ChatUiModuleBinds {
     fun chatViewModel(viewModel: ChatViewModel): ViewModel
 
     @Binds
-    fun usedeskOkHttpClientFactory(factory: UsedeskOkHttpClientFactory): IUsedeskOkHttpClientFactory
+    fun usedeskOkHttpClientFactory(factory: UsedeskOkHttpClientFactoryImpl): UsedeskOkHttpClientFactory
 }

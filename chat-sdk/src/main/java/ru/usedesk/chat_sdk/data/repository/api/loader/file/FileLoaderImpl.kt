@@ -4,7 +4,7 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.file
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
-import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
+import ru.usedesk.common_sdk.api.UsedeskApiRepository.Companion.valueOrNull
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
 import java.io.File
 import java.io.FileOutputStream
@@ -17,15 +17,10 @@ internal class FileLoaderImpl @Inject constructor(
     private val contentResolver = appContext.contentResolver
     private val cacheDir = appContext.cacheDir
 
-    override suspend fun save(uri: Uri) = when {
+    override suspend fun save(uri: Uri): Uri? = when {
         uri.toString().startsWith("file://" + cacheDir.absolutePath) -> uri
-        else -> {
-            var outputUri: Uri? = null
-            contentResolver.openInputStream(uri).use { inputStream ->
-                if (inputStream == null) {
-                    throw UsedeskDataNotFoundException("Can't read file: $uri")
-                }
-
+        else -> valueOrNull {
+            contentResolver.openInputStream(uri)?.use { inputStream ->
                 val fileName = contentResolver.getFileName(uri)
                 val name = "${System.currentTimeMillis()}${fileName.hashCode()}"
                 val newFileName = fileName.replaceBeforeLast(
@@ -35,10 +30,8 @@ internal class FileLoaderImpl @Inject constructor(
                 )
                 val outputFile = File(cacheDir, newFileName)
                 FileOutputStream(outputFile).use(inputStream::copyTo)
-
-                outputUri = Uri.fromFile(outputFile)
+                Uri.fromFile(outputFile)
             }
-            outputUri ?: throw RuntimeException("Something wrong with caching file")
         }
     }
 

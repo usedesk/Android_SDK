@@ -67,7 +67,7 @@ internal class CachedMessagesRepositoryImpl @Inject constructor(
         localId: String
     ): UsedeskMessage.File {
         val calendar = Calendar.getInstance()
-        val cachedUri = getCachedFileAsync(fileInfo.uri).await()
+        val cachedUri = getCachedFileAsync(fileInfo.uri).await() ?: fileInfo.uri
         val file = UsedeskFile.create(
             cachedUri.toString(),
             fileInfo.type,

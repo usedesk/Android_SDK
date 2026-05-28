@@ -1,10 +1,11 @@
-
 package ru.usedesk.common_gui
+
 
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import ru.usedesk.common_gui.R as commonR
 
 class UsedeskCommonFieldCheckBoxAdapter(
     private val binding: Binding
@@ -13,9 +14,9 @@ class UsedeskCommonFieldCheckBoxAdapter(
     private val checkedImageId: Int
 
     init {
-        binding.styleValues.getStyleValues(R.attr.usedesk_common_field_checkbox_image).let {
-            uncheckedImageId = it.getId(R.attr.usedesk_drawable_1)
-            checkedImageId = it.getId(R.attr.usedesk_drawable_2)
+        binding.styleValues.getStyleValues(commonR.attr.usedesk_common_field_checkbox_image).let {
+            uncheckedImageId = it.getId(commonR.attr.usedesk_drawable_1)
+            checkedImageId = it.getId(commonR.attr.usedesk_drawable_2)
         }
         setChecked(false)
     }
@@ -41,8 +42,8 @@ class UsedeskCommonFieldCheckBoxAdapter(
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val lClickable: ViewGroup = rootView.findViewById(R.id.l_clickable)
-        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
-        val ivCheck: ImageView = rootView.findViewById(R.id.iv_check)
+        val lClickable: ViewGroup = rootView.findViewById(commonR.id.l_clickable)
+        val tvTitle: TextView = rootView.findViewById(commonR.id.tv_title)
+        val ivCheck: ImageView = rootView.findViewById(commonR.id.iv_check)
     }
 }

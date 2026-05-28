@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.loading
 
 import android.os.Bundle
@@ -7,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.loading.LoadingViewModel.Page
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.chat_gui.R as chatR
 
 internal class LoadingPage : UsedeskFragment() {
 
@@ -30,8 +29,8 @@ internal class LoadingPage : UsedeskFragment() {
     ): View = inflateItem(
         inflater,
         container,
-        R.layout.usedesk_page_loading,
-        R.style.Usedesk_Chat_Screen_Loading_Page,
+        chatR.layout.usedesk_page_loading,
+        chatR.style.Usedesk_Chat_Screen_Loading_Page,
         ::Binding
     ).apply {
         loadingAdapter = UsedeskCommonViewLoadingAdapter(vLoadingBinding)
@@ -46,10 +45,10 @@ internal class LoadingPage : UsedeskFragment() {
             }
             new.goNext?.use { page ->
                 findNavController().navigateSafe(
-                    R.id.dest_loadingPage,
+                    chatR.id.dest_loadingPage,
                     when (page) {
-                        Page.OFFLINE_FORM -> R.id.action_loadingPage_to_offlineFormPage
-                        Page.MESSAGES -> R.id.action_loadingPage_to_messagesPage
+                        Page.OFFLINE_FORM -> chatR.id.action_loadingPage_to_offlineFormPage
+                        Page.MESSAGES -> chatR.id.action_loadingPage_to_messagesPage
                     }
                 )
             }
@@ -60,7 +59,7 @@ internal class LoadingPage : UsedeskFragment() {
         UsedeskBinding(rootView, defaultStyleId) {
 
         val vLoadingBinding = UsedeskCommonViewLoadingAdapter.Binding(
-            rootView.findViewById(R.id.v_loading),
+            rootView.findViewById(chatR.id.v_loading),
             defaultStyleId
         )
     }

@@ -1,11 +1,12 @@
-
 package ru.usedesk.common_gui
+
 
 import android.graphics.drawable.Animatable
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import ru.usedesk.common_gui.R as commonR
 
 class UsedeskCommonViewLoadingAdapter(
     private val binding: Binding
@@ -74,39 +75,39 @@ class UsedeskCommonViewLoadingAdapter(
     class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val imageBinding = ImageBinding(
-            rootView.findViewById(R.id.iv_loading_image),
-            styleValues.getStyle(R.attr.usedesk_common_view_loading_image)
+            rootView.findViewById(commonR.id.iv_loading_image),
+            styleValues.getStyle(commonR.attr.usedesk_common_view_loading_image)
         )
         val titleBinding = TitleBinding(
-            rootView.findViewById(R.id.tv_loading_title),
-            styleValues.getStyle(R.attr.usedesk_common_view_loading_title)
+            rootView.findViewById(commonR.id.tv_loading_title),
+            styleValues.getStyle(commonR.attr.usedesk_common_view_loading_title)
         )
         val textBinding = TextBinding(
-            rootView.findViewById(R.id.tv_loading_text),
-            styleValues.getStyle(R.attr.usedesk_common_view_loading_text)
+            rootView.findViewById(commonR.id.tv_loading_text),
+            styleValues.getStyle(commonR.attr.usedesk_common_view_loading_text)
         )
-        val pbLoading = rootView.findViewById<ProgressBar>(R.id.pb_loading)
+        val pbLoading = rootView.findViewById<ProgressBar>(commonR.id.pb_loading)
     }
 
     class ImageBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val ivLoadingImage = rootView as ImageView
-        val loadingImageId = styleValues.getIdOrZero(R.attr.usedesk_drawable_1)
-        val noInternetImageId = styleValues.getIdOrZero(R.attr.usedesk_drawable_2)
+        val loadingImageId = styleValues.getIdOrZero(commonR.attr.usedesk_drawable_1)
+        val noInternetImageId = styleValues.getIdOrZero(commonR.attr.usedesk_drawable_2)
     }
 
     class TitleBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvLoadingTitle = rootView as TextView
-        val loadingTitleId = styleValues.getIdOrZero(R.attr.usedesk_text_1)
-        val noInternetTitleId = styleValues.getIdOrZero(R.attr.usedesk_text_2)
+        val loadingTitleId = styleValues.getIdOrZero(commonR.attr.usedesk_text_1)
+        val noInternetTitleId = styleValues.getIdOrZero(commonR.attr.usedesk_text_2)
     }
 
     class TextBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val tvLoadingText = rootView as TextView
-        val loadingTextId = styleValues.getIdOrZero(R.attr.usedesk_text_1)
-        val noInternetTextId = styleValues.getIdOrZero(R.attr.usedesk_text_2)
+        val loadingTextId = styleValues.getIdOrZero(commonR.attr.usedesk_text_1)
+        val noInternetTextId = styleValues.getIdOrZero(commonR.attr.usedesk_text_2)
     }
 
     enum class State {

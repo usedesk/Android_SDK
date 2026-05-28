@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.offlineformselector.OfflineFormSelectorPage
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
@@ -20,6 +19,7 @@ import ru.usedesk.common_gui.hideKeyboard
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.chat_gui.R as chatR
 
 internal class OfflineFormPage : UsedeskFragment() {
 
@@ -37,8 +37,8 @@ internal class OfflineFormPage : UsedeskFragment() {
     ) = inflateItem(
         inflater = inflater,
         container = container,
-        defaultLayoutId = R.layout.usedesk_page_offline_form,
-        defaultStyleId = R.style.Usedesk_Chat_Screen_Offline_Form_Page,
+        defaultLayoutId = chatR.layout.usedesk_page_offline_form,
+        defaultStyleId = chatR.style.Usedesk_Chat_Screen_Offline_Form_Page,
         createBinding = ::Binding,
     ).apply {
         binding = this
@@ -65,8 +65,8 @@ internal class OfflineFormPage : UsedeskFragment() {
             coroutineScope = lifecycleScope
         ) { key ->
             findNavController().navigateSafe(
-                startId = R.id.dest_offlineFormPage,
-                actionId = R.id.action_offlineFormPage_to_offlineFormSelectorPage,
+                startId = chatR.id.dest_offlineFormPage,
+                actionId = chatR.id.action_offlineFormPage_to_offlineFormSelectorPage,
                 args = OfflineFormSelectorPage.createBundle(key)
             )
         }
@@ -85,8 +85,8 @@ internal class OfflineFormPage : UsedeskFragment() {
                 new.goExit?.use { goToChat ->
                     if (goToChat) {
                         findNavController().navigateSafe(
-                            startId = R.id.dest_offlineFormPage,
-                            actionId = R.id.action_offlineFormPage_to_messagesPage
+                            startId = chatR.id.dest_offlineFormPage,
+                            actionId = chatR.id.action_offlineFormPage_to_messagesPage
                         )
                     } else {
                         OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
@@ -105,7 +105,7 @@ internal class OfflineFormPage : UsedeskFragment() {
 
     private fun onFailed() {
         val sendFailedStyleValues = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_screen_offline_form_send_failed_snackbar)
+            .getStyleValues(chatR.attr.usedesk_chat_screen_offline_form_send_failed_snackbar)
         showSnackbarError(sendFailedStyleValues)
     }
 
@@ -158,9 +158,9 @@ internal class OfflineFormPage : UsedeskFragment() {
     private fun updateActionButton(enabled: Boolean) {
         binding.tvSend.isEnabled = enabled
         val attr = if (enabled) {
-            R.attr.usedesk_chat_screen_offline_form_action_enabled_background
+            chatR.attr.usedesk_chat_screen_offline_form_action_enabled_background
         } else {
-            R.attr.usedesk_chat_screen_offline_form_action_disabled_background
+            chatR.attr.usedesk_chat_screen_offline_form_action_disabled_background
         }
 
         val colorId = binding.styleValues.getColor(attr)
@@ -169,11 +169,11 @@ internal class OfflineFormPage : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvOfflineText: TextView = rootView.findViewById(R.id.tv_offline_form_text)
-        val rvFields: RecyclerView = rootView.findViewById(R.id.rv_fields)
-        val tvSend: TextView = rootView.findViewById(R.id.tv_offline_form_send)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_offline_form_loading)
-        val lAction: ViewGroup = rootView.findViewById(R.id.l_offline_form_send)
-        val content: ViewGroup = rootView.findViewById(R.id.content)
+        val tvOfflineText: TextView = rootView.findViewById(chatR.id.tv_offline_form_text)
+        val rvFields: RecyclerView = rootView.findViewById(chatR.id.rv_fields)
+        val tvSend: TextView = rootView.findViewById(chatR.id.tv_offline_form_send)
+        val pbLoading: ProgressBar = rootView.findViewById(chatR.id.pb_offline_form_loading)
+        val lAction: ViewGroup = rootView.findViewById(chatR.id.l_offline_form_send)
+        val content: ViewGroup = rootView.findViewById(chatR.id.content)
     }
 }

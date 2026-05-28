@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.view.View
@@ -8,7 +7,6 @@ import android.widget.TextView
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.common_gui.UsedeskBinding
@@ -16,6 +14,8 @@ import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_gui.showImage
 import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
 
 internal class AttachedFilesAdapter(
     private val recyclerView: RecyclerView,
@@ -64,8 +64,8 @@ internal class AttachedFilesAdapter(
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int) = ViewHolder(
         inflateItem(
             viewGroup,
-            R.layout.usedesk_item_chat_attached_file,
-            R.style.Usedesk_Chat_Attached_File,
+            chatR.layout.usedesk_item_chat_attached_file,
+            chatR.style.Usedesk_Chat_Attached_File,
             ::AttachedFileBinding
         )
     )
@@ -80,8 +80,8 @@ internal class AttachedFilesAdapter(
 
         fun bind(usedeskFileInfo: UsedeskFileInfo) {
             val previewImageId = binding.styleValues
-                .getStyleValues(R.attr.usedesk_chat_attached_file_preview_image)
-                .getId(R.attr.usedesk_drawable_1)
+                .getStyleValues(chatR.attr.usedesk_chat_attached_file_preview_image)
+                .getId(commonR.attr.usedesk_drawable_1)
 
             binding.ivPreview.showImage(
                 usedeskFileInfo.uri.toString(),
@@ -101,8 +101,8 @@ internal class AttachedFilesAdapter(
 
     internal class AttachedFileBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
-        val ivDetach: ImageView = rootView.findViewById(R.id.iv_detach)
-        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
+        val ivPreview: ImageView = rootView.findViewById(chatR.id.iv_preview)
+        val ivDetach: ImageView = rootView.findViewById(chatR.id.iv_detach)
+        val tvTitle: TextView = rootView.findViewById(chatR.id.tv_title)
     }
 }

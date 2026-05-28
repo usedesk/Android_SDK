@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
 import android.text.Html
@@ -6,7 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter
@@ -14,16 +12,17 @@ import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemList
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
+import ru.usedesk.common_gui.R as commonR
 
 internal class ItemListViewHolder(
     private val binding: MessageFormAdapter.ItemListBinding,
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
-    private val textColorEnabled = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
-    private val textColorDisabled = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
-    private val backgroundSimple = binding.styleValues.getId(R.attr.usedesk_drawable_1)
-    private val backgroundError = binding.styleValues.getId(R.attr.usedesk_drawable_2)
+    private val textColorEnabled = binding.styleValues.getColor(commonR.attr.usedesk_text_color_1)
+    private val textColorDisabled = binding.styleValues.getColor(commonR.attr.usedesk_text_color_2)
+    private val backgroundSimple = binding.styleValues.getId(commonR.attr.usedesk_drawable_1)
+    private val backgroundError = binding.styleValues.getId(commonR.attr.usedesk_drawable_2)
 
     override fun bind(
         messageId: String,

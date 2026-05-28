@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.offlineformselector
 
 import android.view.ViewGroup
@@ -6,12 +5,13 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Model.OfflineFormItem
 import ru.usedesk.common_gui.UsedeskCommonFieldCheckBoxAdapter
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
 
 internal class OfflineFormSelectorAdapter(
     private val key: String,
@@ -22,7 +22,7 @@ internal class OfflineFormSelectorAdapter(
 ) : RecyclerView.Adapter<OfflineFormSelectorAdapter.ViewHolder>() {
 
     private val itemStyle =
-        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_selector_checkbox)
+        binding.styleValues.getStyle(chatR.attr.usedesk_chat_screen_offline_form_selector_checkbox)
 
     private var items = listOf<String?>()
     private var selected: String? = null
@@ -76,7 +76,7 @@ internal class OfflineFormSelectorAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
         inflateItem(
             parent,
-            R.layout.usedesk_item_field_checkbox,
+            commonR.layout.usedesk_item_field_checkbox,
             itemStyle,
             UsedeskCommonFieldCheckBoxAdapter::Binding
         )
@@ -97,7 +97,7 @@ internal class OfflineFormSelectorAdapter(
         fun bind(item: String?) {
             adapter.run {
                 setTitle(
-                    item ?: binding.rootView.resources.getString(R.string.usedesk_not_selected)
+                    item ?: binding.rootView.resources.getString(chatR.string.usedesk_not_selected)
                 )
                 setChecked(item == selected)
                 setOnClickListener { viewModel.onListFieldChanged(key, item) }

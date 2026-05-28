@@ -14,7 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.usedesk.knowledgebase_gui.R
+import ru.usedesk.common_gui.R as commonR
+import ru.usedesk.knowledgebase_gui.R as kbR
 
 class UsedeskKnowledgeBaseTheme(
     palette: Palette = Palette(),
@@ -30,20 +31,20 @@ class UsedeskKnowledgeBaseTheme(
     fun <T> animationSpec() = spring<T>(stiffness = animationStiffness)
 
     class Strings(
-        @param:StringRes val sectionsTitle: Int = R.string.usedesk_sections_title,
-        @param:StringRes val searchPlaceholder: Int = R.string.usedesk_enter_your_query,
-        @param:StringRes val searchCancel: Int = R.string.usedesk_cancel,
-        @param:StringRes val loadError: Int = R.string.usedesk_sections_load_error,
-        @param:StringRes val tryAgain: Int = R.string.usedesk_try_again,
-        @param:StringRes val searchIsEmpty: Int = R.string.usedesk_search_fail,
-        @param:StringRes val articleRating: Int = R.string.usedesk_rating_question,
-        @param:StringRes val articleReviewTitle: Int = R.string.usedesk_article_review_title,
-        @param:StringRes val articleReviewSend: Int = R.string.usedesk_send,
-        @param:StringRes val articleReviewYes: Int = R.string.usedesk_rating_yes,
-        @param:StringRes val articleReviewNo: Int = R.string.usedesk_rating_no,
-        @param:StringRes val articleRatingThanks: Int = R.string.usedesk_rating_thanks,
-        @param:StringRes val articleReviewPlaceholder: Int = R.string.usedesk_article_review_placeholder,
-        @param:ArrayRes val reviewTags: Int = R.array.usedesk_article_review_tags
+        @param:StringRes val sectionsTitle: Int = kbR.string.usedesk_sections_title,
+        @param:StringRes val searchPlaceholder: Int = kbR.string.usedesk_enter_your_query,
+        @param:StringRes val searchCancel: Int = kbR.string.usedesk_cancel,
+        @param:StringRes val loadError: Int = kbR.string.usedesk_sections_load_error,
+        @param:StringRes val tryAgain: Int = kbR.string.usedesk_try_again,
+        @param:StringRes val searchIsEmpty: Int = kbR.string.usedesk_search_fail,
+        @param:StringRes val articleRating: Int = kbR.string.usedesk_rating_question,
+        @param:StringRes val articleReviewTitle: Int = kbR.string.usedesk_article_review_title,
+        @param:StringRes val articleReviewSend: Int = commonR.string.usedesk_send,
+        @param:StringRes val articleReviewYes: Int = kbR.string.usedesk_rating_yes,
+        @param:StringRes val articleReviewNo: Int = kbR.string.usedesk_rating_no,
+        @param:StringRes val articleRatingThanks: Int = kbR.string.usedesk_rating_thanks,
+        @param:StringRes val articleReviewPlaceholder: Int = kbR.string.usedesk_article_review_placeholder,
+        @param:ArrayRes val reviewTags: Int = kbR.array.usedesk_article_review_tags
     )
 
     class Palette(
@@ -80,35 +81,35 @@ class UsedeskKnowledgeBaseTheme(
     )
 
     class Drawables(
-        @param:DrawableRes val iconBack: Int = R.drawable.usedesk_ic_back,
-        @param:DrawableRes val iconSupport: Int = R.drawable.usedesk_ic_support,
-        @param:DrawableRes val iconSearch: Int = R.drawable.usedesk_ic_search,
-        @param:DrawableRes val iconSearchCancel: Int = R.drawable.usedesk_ic_cancel_round,
-        @param:DrawableRes val iconSearchPaginationError: Int = R.drawable.usedesk_ic_error_round,
-        @param:DrawableRes val iconListItemArrowForward: Int = R.drawable.usedesk_ic_arrow_forward,
-        @param:DrawableRes val iconRatingGood: Int = R.drawable.usedesk_ic_rating_good,
-        @param:DrawableRes val iconRatingBad: Int = R.drawable.usedesk_ic_rating_bad,
-        @param:DrawableRes val iconRatingError: Int = R.drawable.usedesk_ic_error_round,
-        @param:DrawableRes val iconReviewError: Int = R.drawable.usedesk_ic_error_round,
-        @param:DrawableRes val imageCantLoad: Int = R.drawable.usedesk_image_cant_load
+        @param:DrawableRes val iconBack: Int = kbR.drawable.usedesk_ic_back,
+        @param:DrawableRes val iconSupport: Int = kbR.drawable.usedesk_ic_support,
+        @param:DrawableRes val iconSearch: Int = kbR.drawable.usedesk_ic_search,
+        @param:DrawableRes val iconSearchCancel: Int = kbR.drawable.usedesk_ic_cancel_round,
+        @param:DrawableRes val iconSearchPaginationError: Int = kbR.drawable.usedesk_ic_error_round,
+        @param:DrawableRes val iconListItemArrowForward: Int = kbR.drawable.usedesk_ic_arrow_forward,
+        @param:DrawableRes val iconRatingGood: Int = kbR.drawable.usedesk_ic_rating_good,
+        @param:DrawableRes val iconRatingBad: Int = kbR.drawable.usedesk_ic_rating_bad,
+        @param:DrawableRes val iconRatingError: Int = kbR.drawable.usedesk_ic_error_round,
+        @param:DrawableRes val iconReviewError: Int = kbR.drawable.usedesk_ic_error_round,
+        @param:DrawableRes val imageCantLoad: Int = kbR.drawable.usedesk_image_cant_load
     )
 
     class Fonts(
         val sfProDisplay: FontFamily = FontFamily(
-            Font(R.font.sf_pro_display_regular),
-            Font(R.font.sf_pro_display_medium, FontWeight.Medium),
-            Font(R.font.sf_pro_display_semibold, FontWeight.SemiBold),
-            Font(R.font.sf_pro_display_semibold, FontWeight.Bold)
+            Font(commonR.font.sf_pro_display_regular),
+            Font(commonR.font.sf_pro_display_medium, FontWeight.Medium),
+            Font(commonR.font.sf_pro_display_semibold, FontWeight.SemiBold),
+            Font(commonR.font.sf_pro_display_semibold, FontWeight.Bold)
         ),
         val sfUiDisplay: FontFamily = FontFamily(
-            Font(R.font.sf_ui_display_regular),
-            Font(R.font.sf_ui_display_medium, FontWeight.Medium),
-            Font(R.font.sf_ui_display_semibold, FontWeight.SemiBold),
-            Font(R.font.sf_ui_display_semibold, FontWeight.Bold)
+            Font(commonR.font.sf_ui_display_regular),
+            Font(commonR.font.sf_ui_display_medium, FontWeight.Medium),
+            Font(commonR.font.sf_ui_display_semibold, FontWeight.SemiBold),
+            Font(commonR.font.sf_ui_display_semibold, FontWeight.Bold)
         ),
         val roboto: FontFamily = FontFamily(
-            Font(R.font.roboto_regular),
-            Font(R.font.roboto_medium, FontWeight.Medium)
+            Font(commonR.font.roboto_regular),
+            Font(commonR.font.roboto_medium, FontWeight.Medium)
         )
     )
 

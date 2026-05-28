@@ -16,7 +16,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import ru.usedesk.chat_gui.UsedeskOnDownloadListener
-import ru.usedesk.chat_gui.R
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.hideKeyboard
@@ -25,6 +24,8 @@ import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible
 import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
+import androidx.media3.ui.R as media3R
+import ru.usedesk.chat_gui.R as chatR
 
 @UnstableApi
 internal class MediaPlayerAdapter(
@@ -37,14 +38,14 @@ internal class MediaPlayerAdapter(
 
     private val pvVideoExoPlayer = inflateItem(
         fragment.view as ViewGroup,
-        R.layout.usedesk_view_player,
-        R.style.Usedesk_Chat_Player_Video
+        chatR.layout.usedesk_view_player,
+        chatR.style.Usedesk_Chat_Player_Video
     ) { rootView, _ -> rootView as PlayerView }
 
     private val pvAudioExoPlayer = inflateItem(
         fragment.view as ViewGroup,
-        R.layout.usedesk_view_player,
-        R.style.Usedesk_Chat_Player_Audio
+        chatR.layout.usedesk_view_player,
+        chatR.style.Usedesk_Chat_Player_Audio
     ) { rootView, _ -> rootView as PlayerView }
 
     private var restored = playerViewModel.modelFlow.value.key.isNotEmpty()
@@ -206,10 +207,10 @@ internal class MediaPlayerAdapter(
 
                 if (fullscreen) {
                     fullscreenListener?.getFullscreenLayout()?.addView(pvVideoExoPlayer)
-                    videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_exit)
+                    videoBinding.fullscreenButton.setImageResource(media3R.drawable.exo_ic_fullscreen_exit)
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvVideoExoPlayer)
-                    videoBinding.fullscreenButton.setImageResource(R.drawable.exo_ic_fullscreen_enter)
+                    videoBinding.fullscreenButton.setImageResource(media3R.drawable.exo_ic_fullscreen_enter)
                 }
                 //Each time need to set player again, otherwise it will not know what happened
                 pvVideoExoPlayer.player = exoPlayer
@@ -347,18 +348,18 @@ internal class MediaPlayerAdapter(
     }
 
     private class VideoExoPlayerBinding(exoPlayerView: PlayerView) {
-        val fullscreenButton = exoPlayerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
-        val lBottomBar = exoPlayerView.findViewById<View>(R.id.exo_bottom_bar)
-        val pbLoading = exoPlayerView.findViewById<ProgressBar>(R.id.loading)
-        val ivDownload = exoPlayerView.findViewById<View>(R.id.iv_download)
-        val buttonPlay = exoPlayerView.findViewById<View>(R.id.exo_play)
-        val buttonPause = exoPlayerView.findViewById<View>(R.id.exo_pause)
+        val fullscreenButton = exoPlayerView.findViewById<ImageView>(chatR.id.exo_fullscreen_icon)
+        val lBottomBar = exoPlayerView.findViewById<View>(chatR.id.exo_bottom_bar)
+        val pbLoading = exoPlayerView.findViewById<ProgressBar>(chatR.id.loading)
+        val ivDownload = exoPlayerView.findViewById<View>(chatR.id.iv_download)
+        val buttonPlay = exoPlayerView.findViewById<View>(chatR.id.exo_play)
+        val buttonPause = exoPlayerView.findViewById<View>(chatR.id.exo_pause)
     }
 
     private class AudioExoPlayerBinding(exoPlayerView: PlayerView) {
-        val contentFrame = exoPlayerView.findViewById<View>(R.id.exo_content_frame)
-        val buttonPlay = exoPlayerView.findViewById<View>(R.id.exo_play)
-        val buttonPause = exoPlayerView.findViewById<View>(R.id.exo_pause)
+        val contentFrame = exoPlayerView.findViewById<View>(media3R.id.exo_content_frame)
+        val buttonPlay = exoPlayerView.findViewById<View>(chatR.id.exo_play)
+        val buttonPause = exoPlayerView.findViewById<View>(chatR.id.exo_pause)
     }
 
     private class MinimizeView(

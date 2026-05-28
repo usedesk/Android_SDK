@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.offlineformselector
 
 import android.os.Bundle
@@ -8,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel
 import ru.usedesk.chat_gui.chat.requireChatViewModelStoreOwner
@@ -16,6 +14,7 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.insetsAsPaddings
+import ru.usedesk.chat_gui.R as chatR
 
 internal class OfflineFormSelectorPage : UsedeskFragment() {
 
@@ -32,8 +31,8 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
     ): View = inflateItem(
         inflater = inflater,
         container = container,
-        defaultLayoutId = R.layout.usedesk_page_offline_form_selector,
-        defaultStyleId = R.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page,
+        defaultLayoutId = chatR.layout.usedesk_page_offline_form_selector,
+        defaultStyleId = chatR.style.Usedesk_Chat_Screen_Offline_Form_Selector_Page,
         createBinding = ::Binding
     ).apply {
         binding = this
@@ -57,7 +56,7 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
+        val rvItems: RecyclerView = rootView.findViewById(chatR.id.rv_items)
     }
 
     companion object {

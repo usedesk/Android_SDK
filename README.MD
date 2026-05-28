@@ -1,5 +1,9 @@
 # Usedesk Android SDK
 
+## This manual in other languages
+
+Also available in [Russian](README_RU.md)
+
 ## Demo app
 
 The ["Example" folder](https://github.com/usedesk/Android_SDK/tree/master/app/src/main/java/ru/usedesk/sample) of this repository contains a demo project that serves as an example of embedding the Usedesk chat SDK into a client application. You can use it to get acquainted with the basic functionality of the application and test the SDK.

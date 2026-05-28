@@ -26,10 +26,10 @@
 
 ```
 allprojects {
-   repositories {
-      ...
-      maven { url "https://jitpack.io" }
-   }
+  repositories {
+    ...
+    maven { url "https://jitpack.io" }
+  }
 }
 ```
 
@@ -48,14 +48,14 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 Добавьте в файл Manifest:
 
-```
-<uses - permission android : name ="android.permission.INTERNET" / >
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
 
-<!--Для прикрепления фото с камеры в чате-- >
-<uses - permission android : name ="android.permission.CAMERA" / >
+<!--Для прикрепления фото с камеры в чате-->
+<uses-permission android:name="android.permission.CAMERA" />
 
-<!--Только при использовании foreground сервиса уведомлений -->
-<uses - permission android : name ="android.permission.FOREGROUND_SERVICE" / >
+<!--Только при использовании foreground сервиса уведомлений-->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
 
 ## Инициализация Чата
@@ -68,10 +68,11 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 | **Параметр**               | **Тип**                 | **Описание**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 |----------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **urlChat***               | String                  | **Адрес сервера для работы с чатами SDK**<br/>Стандартное значение: `pubsubsec.usedesk.ru`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас может отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                |
-| **urlChatApi***            | String                  | **URL для работы с API**<br/>Стандартное значение: `secure.usedesk.ru/uapi`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас будет отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                               |
+| **urlChat***               | String                  | **Адрес сервера для работы с чатами SDK**<br/>Стандартное значение: `https://pubsubsec.usedesk.ru`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас может отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                        |
+| **urlChatApi***            | String                  | **URL для работы с API**<br/>Стандартное значение: `https://secure.usedesk.ru`<br/>Если вы используете коробочную версию Юздеска на собственном сервере, то этот параметр у вас будет отличаться. Уточните актуальный адрес у поддержки — support@usedesk.ru                                                                                                                                                                                                                                                                                                                            |
 | **companyId***             | String                  | **Идентификатор компании в Юздеске**<br/>[Как найти ID компании](https://docs.usedesk.ru/article/61)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | **channelId***             | String                  | **Идентификатор канала чата, через который в Юздеск будут поступать обращения из приложения**<br/>[Как создать и настроить канал](https://docs.usedesk.ru/article/858)                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **clientId***              | String                  | **Уникальный идентификатор клиента**<br/>Привязывает сохранённую конфигурацию, токен клиента и кэш данных к конкретному пользователю на устройстве. Используйте стабильное значение для каждого пользователя, чтобы SDK корректно восстанавливал состояние чата при следующих запусках.                                                                                                                                                                                                                                                                                                 |
 | **messagesPageSize**       | Int                     | **Количество загружаемых сообщений при открытии чата**<br/>При открытии чата загружается указанное количество сообщений. По мере прокрутки чата подгружается по 20 сообщений                                                                                                                                                                                                                                                                                                                                                                                                            |
 | **clientToken**            | String?                 | **Подпись, однозначно идентифицирующая пользователя и его чат**<br/>Токен выдается в коллбэке после инициализации чата и привязывается к связке почта-телефон-имя пользователя.<br/>Для идентификации различных пользователей на одном устройстве вы должны хранить и передавать полученный токен в метод инициализации<br/>Указав `null` библиотека самостоятельно воспользуется сохранённым токеном на устройстве, использованным ранее с такими же полями `clientEmail`, `clientPhoneNumber`, `clientName` в конфигурации.<br/>Указав `""` сохранённый токен использоваться не будет |
 | **clientEmail**            | String?                 | **Почта клиента**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -81,6 +82,7 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 | **clientAdditionalId**     | String?                 | **Дополнительный идентификатор клиента**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | **clientInitMessage**      | String?                 | **Автоматическое сообщение**<br/>Отправится сразу после инициализации от имени клиента                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | **clientAvatar**           | String?                 | **Изображение аватара клиента**<br/>Путь до файла с изображением. <br/>Если задан, то sdk отправит аватарку единовременно                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **cacheMessagesWithFile**  | Boolean                 | **Кэшировать черновики сообщений вместе с прикреплёнными файлами**<br/>Стандартное значение: `true`. При `false` кэш черновиков не сохраняет прикреплённые файлы между сессиями.                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **additionalFields**       | Map<Long, String>       | **Коллекция дополнительный полей запроса**<br/>Где `key` - ID поля, `value` - значение поля. <br/>Значения поля зависят от типа, для чекбоксов - `"true"` / `"false"`, для списков - текст, точно совпадающий с текстом значения списка, для текста - любой текст.                                                                                                                                                                                                                                                                                                                      |
 | **additionalNestedFields** | List<Map<Long, String>> | **Список коллекций вложенных списков**<br/>Каждый элемент списка - это коллекия значений одного вложенного списка, где `key` - ID поля, `value` - значение поля с текстом, точно совпадающим с текстом значения списка.                                                                                                                                                                                                                                                                                                                                                                 |
 
@@ -115,37 +117,38 @@ UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory(
 
 ### Использование с GUI
 
-Для запуска SDK с готовым пользовательским интерфейсом чата (GUI)
-воспользуйтесь [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt), например при помощи метода `newInstance`:
+Для запуска SDK с готовым пользовательским интерфейсом чата (GUI) воспользуйтесь [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt), например при помощи метода
+`newInstance`:
 
 ```kotlin
 supportFragmentManager.beginTransaction()
-   .replace(
-      R.id.container,
-      UsedeskChatScreen.newInstance(chatConfiguration)
-   ).commit()
+  .replace(
+    R.id.container,
+    UsedeskChatScreen.newInstance(chatConfiguration)
+  ).commit()
 ```
 
 Для использования с Jetpack Navigation можно воспользоваться методом `createBundle`, например:
 
 ```kotlin
 navController.navigate(
-   R.id.action_configurationScreen_to_usedeskChatScreen,
-   UsedeskChatScreen.createBundle(chatConfiguration)
+  R.id.action_configurationScreen_to_usedeskChatScreen,
+  UsedeskChatScreen.createBundle(chatConfiguration)
 )
 ```
 
 Методы `newInstance` и `createBundle` принимают следующие аргументы:
 
-| **Аргумент**                       | **Тип**                  | **Описание**                                                                                              |
-|------------------------------------|--------------------------|-----------------------------------------------------------------------------------------------------------|
-| **chatConfiguration**              | UsedeskChatConfiguration | `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`             |
-| **agentName**                      | String?                  | Если задан, то все имена агентов в чате будут заменены на значение параметра                              |
-| **rejectedFileExtensions**         | Collection\<String>?     | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае) |
-| **messagesDateFormat**             | String?                  | Если задан, то меняет формат одображения даты группы сообщений                                            |
-| **messageTimeFormat**              | String?                  | Если задан, то меняет формат одображения времени сообщений                                                |
-| **adaptiveTextMessageTimePadding** | Boolean                  | При значении `true` сдвигает текст сообщений относительно времени                                         |
-| **groupAgentMessages**             | Boolean                  | При значении `true` группирует сообщения от одного агента                                                 |
+| **Аргумент**                       | **Тип**                  | **Описание**                                                                                                      |
+|------------------------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------|
+| **usedeskChatConfiguration**       | UsedeskChatConfiguration | `UsedeskChatScreen` берёт на себя обязанность вызова метода `UsedeskChatSdk.setConfiguration`                     |
+| **agentName**                      | String?                  | Если задан, то все имена агентов в чате будут заменены на значение параметра                                      |
+| **rejectedFileExtensions**         | Collection\<String>?     | Список расширений файлов, помечаемых как опасные (метод `onFileClick` родителя вызывается в любом случае)         |
+| **messagesDateFormat**             | String?                  | Если задан, то меняет формат одображения даты группы сообщений                                                    |
+| **messageTimeFormat**              | String?                  | Если задан, то меняет формат одображения времени сообщений                                                        |
+| **adaptiveTextMessageTimePadding** | Boolean                  | При значении `true` сдвигает текст сообщений относительно времени                                                 |
+| **groupAgentMessages**             | Boolean                  | При значении `true` группирует сообщения от одного агента                                                         |
+| **supportWindowInsets**            | Boolean                  | При значении `true` экран учитывает window insets (системные status / navigation bars) при размещении содержимого |
 
 Для полноценной работы фрагмента необходимо:
 
@@ -155,54 +158,56 @@ navController.navigate(
 
 ```kotlin
 override fun onBackPressed() {
-   val fragment = getCurrentFragment()
-   if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-      return
-   }
+  val fragment = getCurrentFragment()
+  if (fragment is UsedeskFragment && fragment.onBackPressed()) {
+    return
+  }
 }
 ```
 
-2) Реализовать интерфейс [IUsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFileClickListener.kt) родителем, переопределив метод `onFileClick`
+2) Реализовать интерфейс [UsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFileClickListener.kt) родителем, переопределив метод
+   `onFileClick`
 
 Пример:
 
 ```kotlin
 override fun onFileClick(usedeskFile: UsedeskFile) {
-   supportFragmentManager.beginTransaction()
-      .replace(R.id.container, UsedeskShowFileScreen.newInstance(usedeskFile))
-      .commit()
-   //или
-   navController.navigate(
-      R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
-      UsedeskShowFileScreen.createBundle(usedeskFile)
-   )
+  supportFragmentManager.beginTransaction()
+    .replace(R.id.container, UsedeskShowFileScreen.newInstance(usedeskFile))
+    .commit()
+  //или
+  navController.navigate(
+    R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
+    UsedeskShowFileScreen.createBundle(usedeskFile)
+  )
 }
 ```
 
-3) Реализовать интерфейс [IUsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnDownloadListener.kt) родителем, переопределив метод `onDownload`.
+3) Реализовать интерфейс [UsedeskOnDownloadListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnDownloadListener.kt) родителем, переопределив метод
+   `onDownload`.
 
-4) Для привязки жизненного цикла ViewModel к родителю необходимо реализовать интерфейс [IUsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/IUsedeskChatViewModelStoreOwner.kt)
+4) Для привязки жизненного цикла ViewModel к родителю необходимо реализовать интерфейс [UsedeskChatViewModelStoreOwner](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatViewModelStoreOwner.kt)
 
-5) Для получения токена клиента реализовать интерфейс [IUsedeskOnClientTokenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnClientTokenListener.kt)
+5) Для получения токена клиента реализовать интерфейс [UsedeskOnClientTokenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnClientTokenListener.kt)
    родителем.
 
-6) Для отслеживания момента инициализации чата реализовать интерфейс [IUsedeskOnChatInitedListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnChatInitedListener.kt) родителем.
+6) Для отслеживания момента инициализации чата реализовать интерфейс [UsedeskOnChatInitedListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnChatInitedListener.kt) родителем.
 
 7) Для корректной работы прикрепления фото с камеры необходимо добавить в файл `AndroidManifest.xml` следующие строки:
 
 ```
 <provider
-    android:name="androidx.core.content.FileProvider"
-    android:authorities="${applicationId}.provider"
-    android:exported="false"
-    android:grantUriPermissions="true">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/usedesk_provider_paths" />
+  android:name="androidx.core.content.FileProvider"
+  android:authorities="${applicationId}.provider"
+  android:exported="false"
+  android:grantUriPermissions="true">
+  <meta-data
+    android:name="android.support.FILE_PROVIDER_PATHS"
+    android:resource="@xml/usedesk_provider_paths" />
 </provider>
 ```
 
-8) Для возможности отображения видео во весь экран необходимо реализовать интерфейс [IUsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/IUsedeskOnFullscreenListener.kt)
+8) Для возможности отображения видео во весь экран необходимо реализовать интерфейс [UsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFullscreenListener.kt)
 
 ### Использование без GUI
 
@@ -217,7 +222,7 @@ val usedeskChat = UsedeskChatSdk.init(requireContext())
 val usedeskChat = UsedeskChatSdk.init(requireContext(), UsedeskChatConfiguration())
 ```
 
-2) Получить экземпляр `IUsedeskChat` после инициализации. Для этого нужно вызвать:
+2) Получить экземпляр `UsedeskChat` после инициализации. Для этого нужно вызвать:
 
 ```kotlin
 val usedeskChat = UsedeskChatSdk.requireInstance()
@@ -226,7 +231,7 @@ val usedeskChat = UsedeskChatSdk.requireInstance()
 3) Добавить слушателя событий:
 
 ```kotlin
-val listener = object : IUsedeskActionListener {}
+val listener = object : UsedeskActionListener {}
 usedeskChat.addListener(listener)
 ```
 
@@ -246,7 +251,7 @@ UsedeskChatSdk.release(false)
 
 Попытка получить экземпляр без инициализации или после освобожения вызовет исключение.
 
-5) Использовать интерфейс для прослушивания событий чата [IUsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/IUsedeskActionListener.kt):
+5) Использовать интерфейс для прослушивания событий чата [UsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/UsedeskActionListener.kt):
 
 | **Метод**       | **Описание события**                                      |
 |-----------------|-----------------------------------------------------------|
@@ -298,14 +303,14 @@ UsedeskChatSdk.stopService(context)
 
 ```kotlin
 supportFragmentManager().beginTransaction()
-   .replace(
-      R.id.container,
-      UsedeskKnowledgeBaseScreen.newInstance(
-         configuration = UsedeskKnowledgeBaseConfiguration(),
-         withSupportButton = true,
-         deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
-      )
-   ).commit()
+  .replace(
+    R.id.container,
+    UsedeskKnowledgeBaseScreen.newInstance(
+      configuration = UsedeskKnowledgeBaseConfiguration(),
+      withSupportButton = true,
+      deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
+    )
+  ).commit()
 ```
 
 Для использования с Jetpack Navigation можно воспользоваться методом `createBundle`.
@@ -314,12 +319,12 @@ supportFragmentManager().beginTransaction()
 
 ```kotlin
 navController.navigate(
-   R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
-   UsedeskKnowledgeBaseScreen.createBundle(
-      configuration = UsedeskKnowledgeBaseConfiguration(),
-      withSupportButton = true,
-      deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
-   )
+  R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+  UsedeskKnowledgeBaseScreen.createBundle(
+    configuration = UsedeskKnowledgeBaseConfiguration(),
+    withSupportButton = true,
+    deepLink = DeepLink.Article(articleId = 123L, noBackStack = true)
+  )
 )
 ```
 
@@ -331,26 +336,27 @@ navController.navigate(
 
 ```kotlin
 override fun onBackPressed() {
-   val fragment = getCurrentFragment()
-   if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-      return
-   }
+  val fragment = getCurrentFragment()
+  if (fragment is UsedeskFragment && fragment.onBackPressed()) {
+    return
+  }
 }
 ```
 
-2) Реализовать интерфейс [IUsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnSupportClickListener.kt) родителем, переопределив метод `onSupportClick()`,
+2) Реализовать интерфейс [UsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskOnSupportClickListener.kt) родителем, переопределив метод
+   `onSupportClick()`,
 
 Пример:
 
 ```kotlin
 override fun onSupportClick() {
-   supportFragmentManager().beginTransaction()
-      .replace(R.id.container, UsedeskChatScreen().newInstance())
-      .commit()
+  supportFragmentManager().beginTransaction()
+    .replace(R.id.container, UsedeskChatScreen().newInstance())
+    .commit()
 }
 ```
 
-3) Для обработки кликов по ссылкам в статьях, необходимо реализовать интерфейс [IUsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/IUsedeskOnWebUrlListener.kt).
+3) Для обработки кликов по ссылкам в статьях, необходимо реализовать интерфейс [UsedeskOnWebUrlListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskOnWebUrlListener.kt).
 
 ### Использование без GUI
 
@@ -359,11 +365,11 @@ override fun onSupportClick() {
 1) Инициализировать Базу Знаний:
 
 ```kotlin
-val usedeskKnowledgeBase: IUsedeskKnowledgeBase =
-   UsedeskSdk.initKnowledgeBase(context, сonfiguration)
+val usedeskKnowledgeBase =
+  UsedeskSdk.initKnowledgeBase(context, UsedeskKnowledgeBaseConfiguration())
 //или
-UsedeskKnowledgeBaseSdk.setConfiguration(configuration)
-val usedeskKnowledgeBase: IUsedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
+UsedeskKnowledgeBaseSdk.setConfiguration(UsedeskKnowledgeBaseConfiguration())
+val usedeskKnowledgeBase = UsedeskSdk.initKnowledgeBase(context)
 ```
 
 2) Получить объект класса в любом месте:
@@ -399,4 +405,4 @@ SDK поддерживает следующие языки:
 
 ## Документация
 
-Методы для работы с SDK, кастомизация элементов, а также ошибки описаны в нашей документации: [http://sdk.usedocs.ru](http://sdk.usedocs.ru/)
+Методы для работы с SDK, кастомизация элементов, а также ошибки описаны в нашей документации: [https://sdk.usedocs.ru](https://sdk.usedocs.ru/)

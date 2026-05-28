@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -41,18 +40,20 @@ import ru.usedesk.common_gui.UsedeskSnackbar
 import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskDataNotFoundException
-import ru.usedesk.knowledgebase_gui.screen.UsedeskOnSupportClickListener
-import ru.usedesk.knowledgebase_gui.screen.UsedeskOnWebUrlListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
-import ru.usedesk.sample.R
+import ru.usedesk.knowledgebase_gui.screen.UsedeskOnSupportClickListener
+import ru.usedesk.knowledgebase_gui.screen.UsedeskOnWebUrlListener
 import ru.usedesk.sample.databinding.ActivityMainBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.service.CustomForegroundNotificationsService
 import ru.usedesk.sample.ui.screens.configuration.ConfigurationScreen.IOnGoToSdkListener
 import java.io.File
 import java.io.FileOutputStream
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
+import ru.usedesk.sample.R as sampleR
 
 
 class MainActivity : AppCompatActivity(),
@@ -76,25 +77,25 @@ class MainActivity : AppCompatActivity(),
         val materialComponents = viewModel.modelFlow.value.configuration.common.materialComponents
         when {
             materialComponents -> mapOf(
-                R.style.Usedesk_Chat_Screen_Messages_Page to R.style.Chat_Screen_Messages_Page_MaterialComponents,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page to R.style.Chat_Screen_Offline_Form_Page_MaterialComponents
+                chatR.style.Usedesk_Chat_Screen_Messages_Page to chatR.style.Chat_Screen_Messages_Page_MaterialComponents,
+                chatR.style.Usedesk_Chat_Screen_Offline_Form_Page to chatR.style.Chat_Screen_Offline_Form_Page_MaterialComponents
             )
             else -> listOf(
-                R.style.Usedesk_Chat_Screen_Messages_Page,
-                R.style.Usedesk_Chat_Screen_Offline_Form_Page
+                chatR.style.Usedesk_Chat_Screen_Messages_Page,
+                chatR.style.Usedesk_Chat_Screen_Offline_Form_Page
             ).associateWith { it }
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
         /*mapOf(
-            R.style.Usedesk_Chat_Attachment_Dialog to R.style.Custom_Chat_Attachment_Dialog,
-            R.style.Usedesk_Chat_FormSelector_Dialog to R.style.Custom_Chat_FormSelector_Dialog
+            chatR.style.Usedesk_Chat_Attachment_Dialog to sampleR.style.Custom_Chat_Attachment_Dialog,
+            chatR.style.Usedesk_Chat_FormSelector_Dialog to sampleR.style.Custom_Chat_FormSelector_Dialog
         ).forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }*/
         val themeId = when {
-            materialComponents -> R.style.AppTheme_MaterialComponents
-            else -> R.style.AppTheme
+            materialComponents -> sampleR.style.AppTheme_MaterialComponents
+            else -> sampleR.style.AppTheme
         }
         setTheme(themeId)
         super.onCreate(savedInstanceState)
@@ -103,9 +104,10 @@ class MainActivity : AppCompatActivity(),
 
         binding = DataBindingUtil.setContentView(
             this,
-            R.layout.activity_main
+            sampleR.layout.activity_main
         )
-        navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
+        navHostFragment =
+            supportFragmentManager.findFragmentById(sampleR.id.container) as NavHostFragment
         navController = navHostFragment.navController
 
         viewModel.modelFlow.onEachWithOld(lifecycleScope) { old, new ->
@@ -140,8 +142,8 @@ class MainActivity : AppCompatActivity(),
                                 UsedeskKnowledgeBaseTheme(supportWindowInsets = true)
                             }
                             navigateSafe(
-                                R.id.dest_configurationScreen,
-                                R.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
+                                sampleR.id.dest_configurationScreen,
+                                sampleR.id.action_configurationScreen_to_usedeskKnowledgeBaseScreen,
                                 UsedeskKnowledgeBaseScreen.createBundle(
                                     configuration = kbConfiguration,
                                     withSupportButton = kb.withKbSupportButton,
@@ -150,8 +152,8 @@ class MainActivity : AppCompatActivity(),
                             )
                         } else {
                             navigateSafe(
-                                R.id.dest_configurationScreen,
-                                R.id.action_configurationScreen_to_usedeskChatScreen,
+                                sampleR.id.dest_configurationScreen,
+                                sampleR.id.action_configurationScreen_to_usedeskChatScreen,
                                 createChatScreenBundle(new.configuration)
                             )
                         }
@@ -166,7 +168,7 @@ class MainActivity : AppCompatActivity(),
                 downloadFile()
             } else {
                 val snackbarStyleId = UsedeskResourceManager.getResourceId(
-                    R.style.Usedesk_Common_No_Permission_Snackbar
+                    commonR.style.Usedesk_Common_No_Permission_Snackbar
                 )
                 UsedeskResourceManager.StyleValues(
                     this,
@@ -174,11 +176,11 @@ class MainActivity : AppCompatActivity(),
                 ).apply {
                     UsedeskSnackbar.create(
                         binding.root,
-                        getColor(R.attr.usedesk_background_color_1),
-                        getString(R.attr.usedesk_text_1),
-                        getColor(R.attr.usedesk_text_color_1),
-                        getString(R.attr.usedesk_text_2),
-                        getColor(R.attr.usedesk_text_color_2)
+                        getColor(commonR.attr.usedesk_background_color_1),
+                        getString(commonR.attr.usedesk_text_1),
+                        getColor(commonR.attr.usedesk_text_color_1),
+                        getString(commonR.attr.usedesk_text_2),
+                        getColor(commonR.attr.usedesk_text_color_2)
                     ).show()
                 }
             }
@@ -196,7 +198,7 @@ class MainActivity : AppCompatActivity(),
         viewModel.useDownloadFile { downloadFile ->
             try {
                 val downloadManager =
-                    getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                    getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 val uri = Uri.parse(downloadFile.url)
                 when (uri.scheme) {
                     ContentResolver.SCHEME_FILE,
@@ -239,9 +241,9 @@ class MainActivity : AppCompatActivity(),
                             )
                     )
                 }
-                fileToast(R.string.download_started, downloadFile.name)
+                fileToast(sampleR.string.download_started, downloadFile.name)
             } catch (e: Exception) {
-                fileToast(R.string.download_failed, downloadFile.name)
+                fileToast(sampleR.string.download_failed, downloadFile.name)
             }
         }
     }
@@ -286,8 +288,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun onFileClick(usedeskFile: UsedeskFile) {
         navController.navigateSafe(
-            R.id.dest_usedeskChatScreen,
-            R.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
+            sampleR.id.dest_usedeskChatScreen,
+            sampleR.id.action_usedeskChatScreen_to_usedeskShowFileScreen,
             UsedeskShowFileScreen.createBundle(
                 usedeskFile = usedeskFile,
                 supportWindowInsets = true,
@@ -308,8 +310,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun onSupportClick() {
         navController.navigateSafe(
-            R.id.dest_usedeskKnowledgeBaseScreen,
-            R.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,
+            sampleR.id.dest_usedeskKnowledgeBaseScreen,
+            sampleR.id.action_usedeskKnowledgeBaseScreen_to_usedeskChatScreen,
             createChatScreenBundle(viewModel.modelFlow.value.configuration)
         )
     }
@@ -318,13 +320,13 @@ class MainActivity : AppCompatActivity(),
         val chatConfiguration = configuration.toChatConfiguration()
         if (configuration.chat.adaptiveTimePadding) {
             mapOf(
-                R.style.Usedesk_Chat_Message_Text_Agent to R.style.Custom_Chat_Message_Text_Agent,
-                R.style.Usedesk_Chat_Message_Text_Client to R.style.Custom_Chat_Message_Text_Client
+                chatR.style.Usedesk_Chat_Message_Text_Agent to sampleR.style.Custom_Chat_Message_Text_Agent,
+                chatR.style.Usedesk_Chat_Message_Text_Client to sampleR.style.Custom_Chat_Message_Text_Client
             )
         } else {
             mapOf(
-                R.style.Usedesk_Chat_Message_Text_Agent to R.style.Usedesk_Chat_Message_Text_Agent,
-                R.style.Usedesk_Chat_Message_Text_Client to R.style.Usedesk_Chat_Message_Text_Client
+                chatR.style.Usedesk_Chat_Message_Text_Agent to chatR.style.Usedesk_Chat_Message_Text_Agent,
+                chatR.style.Usedesk_Chat_Message_Text_Client to chatR.style.Usedesk_Chat_Message_Text_Client
             )
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)

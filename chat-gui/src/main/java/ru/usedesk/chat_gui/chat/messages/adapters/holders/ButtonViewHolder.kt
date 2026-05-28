@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
 import android.view.View
@@ -6,7 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.ButtonBinding
@@ -15,19 +13,22 @@ import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemBu
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.common_gui.visibleGone
 import ru.usedesk.common_gui.visibleInvisible
+import ru.usedesk.common_gui.R as commonR
 
 internal class ButtonViewHolder(
     private val binding: ButtonBinding,
     private val onEvent: (Event) -> Unit
 ) : BaseViewHolder(binding.rootView) {
 
-    private val applyTitleDefault = binding.styleValues.getString(R.attr.usedesk_text_1)
-    private val applyTitleSuccsessfull = binding.styleValues.getString(R.attr.usedesk_text_2)
-    private val applyTitleFailed = binding.styleValues.getString(R.attr.usedesk_text_3)
-    private val backgroundDefault = binding.styleValues.getColor(R.attr.usedesk_background_color_1)
+    private val applyTitleDefault = binding.styleValues.getString(commonR.attr.usedesk_text_1)
+    private val applyTitleSuccsessfull = binding.styleValues.getString(commonR.attr.usedesk_text_2)
+    private val applyTitleFailed = binding.styleValues.getString(commonR.attr.usedesk_text_3)
+    private val backgroundDefault =
+        binding.styleValues.getColor(commonR.attr.usedesk_background_color_1)
     private val backgroundSuccsessfull =
-        binding.styleValues.getColor(R.attr.usedesk_background_color_2)
-    private val backgroundFailed = binding.styleValues.getColor(R.attr.usedesk_background_color_3)
+        binding.styleValues.getColor(commonR.attr.usedesk_background_color_2)
+    private val backgroundFailed =
+        binding.styleValues.getColor(commonR.attr.usedesk_background_color_3)
 
     init {
         binding.pbLoading.visibility = View.INVISIBLE

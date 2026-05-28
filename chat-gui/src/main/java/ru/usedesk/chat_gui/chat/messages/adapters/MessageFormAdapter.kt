@@ -16,7 +16,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemButton
 import ru.usedesk.chat_gui.chat.messages.adapters.MessageFormAdapter.Item.ItemCheckBox
@@ -33,6 +32,7 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentText.Button
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.chat_gui.R as chatR
 
 internal class MessageFormAdapter(
     private val viewModel: MessagesViewModel,
@@ -123,38 +123,38 @@ internal class MessageFormAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.usedesk_chat_message_item_button -> ButtonViewHolder(
+        chatR.layout.usedesk_chat_message_item_button -> ButtonViewHolder(
             inflateItem(
                 parent,
-                R.layout.usedesk_chat_message_item_button,
-                R.style.Usedesk_Chat_Message_Text_Button,
+                chatR.layout.usedesk_chat_message_item_button,
+                chatR.style.Usedesk_Chat_Message_Text_Button,
                 ::ButtonBinding
             ),
             viewModel::onEvent
         )
-        R.layout.usedesk_chat_message_item_text -> TextViewHolder(
+        chatR.layout.usedesk_chat_message_item_text -> TextViewHolder(
             inflateItem(
                 parent,
-                R.layout.usedesk_chat_message_item_text,
-                R.style.Usedesk_Chat_Message_Text_Field_Text,
+                chatR.layout.usedesk_chat_message_item_text,
+                chatR.style.Usedesk_Chat_Message_Text_Field_Text,
                 ::TextBinding
             ),
             viewModel::onEvent
         )
-        R.layout.usedesk_chat_message_item_checkbox -> CheckBoxViewHolder(
+        chatR.layout.usedesk_chat_message_item_checkbox -> CheckBoxViewHolder(
             inflateItem(
                 parent,
-                R.layout.usedesk_chat_message_item_checkbox,
-                R.style.Usedesk_Chat_Message_Text_Field_CheckBox,
+                chatR.layout.usedesk_chat_message_item_checkbox,
+                chatR.style.Usedesk_Chat_Message_Text_Field_CheckBox,
                 ::CheckBoxBinding
             ),
             viewModel::onEvent
         )
-        R.layout.usedesk_chat_message_item_itemlist -> ItemListViewHolder(
+        chatR.layout.usedesk_chat_message_item_itemlist -> ItemListViewHolder(
             inflateItem(
                 parent,
-                R.layout.usedesk_chat_message_item_itemlist,
-                R.style.Usedesk_Chat_Message_Text_Field_List,
+                chatR.layout.usedesk_chat_message_item_itemlist,
+                chatR.style.Usedesk_Chat_Message_Text_Field_List,
                 ::ItemListBinding
             ),
             viewModel::onEvent
@@ -163,10 +163,10 @@ internal class MessageFormAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (items[position]) {
-        is ItemButton -> R.layout.usedesk_chat_message_item_button
-        is ItemText -> R.layout.usedesk_chat_message_item_text
-        is ItemCheckBox -> R.layout.usedesk_chat_message_item_checkbox
-        is ItemList -> R.layout.usedesk_chat_message_item_itemlist
+        is ItemButton -> chatR.layout.usedesk_chat_message_item_button
+        is ItemText -> chatR.layout.usedesk_chat_message_item_text
+        is ItemCheckBox -> chatR.layout.usedesk_chat_message_item_checkbox
+        is ItemList -> chatR.layout.usedesk_chat_message_item_itemlist
     }
 
     override fun onBindViewHolder(
@@ -193,26 +193,26 @@ internal class MessageFormAdapter(
 
     internal class ButtonBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val lBtn: CardView = rootView.findViewById(R.id.l_btn)
-        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
+        val lBtn: CardView = rootView.findViewById(chatR.id.l_btn)
+        val tvTitle: TextView = rootView.findViewById(chatR.id.tv_title)
+        val pbLoading: ProgressBar = rootView.findViewById(chatR.id.pb_loading)
     }
 
     internal class TextBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val etText: EditText = rootView.findViewById(R.id.et_text)
+        val etText: EditText = rootView.findViewById(chatR.id.et_text)
     }
 
     internal class CheckBoxBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvText: TextView = rootView.findViewById(R.id.tv_text)
-        val ivChecked: ImageView = rootView.findViewById(R.id.iv_checked)
+        val tvText: TextView = rootView.findViewById(chatR.id.tv_text)
+        val ivChecked: ImageView = rootView.findViewById(chatR.id.iv_checked)
     }
 
     internal class ItemListBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvText: TextView = rootView.findViewById(R.id.tv_text)
-        val lFrame: View = rootView.findViewById(R.id.l_frame)
-        val lClickable: View = rootView.findViewById(R.id.l_clickable)
+        val tvText: TextView = rootView.findViewById(chatR.id.tv_text)
+        val lFrame: View = rootView.findViewById(chatR.id.l_frame)
+        val lClickable: View = rootView.findViewById(chatR.id.l_clickable)
     }
 }

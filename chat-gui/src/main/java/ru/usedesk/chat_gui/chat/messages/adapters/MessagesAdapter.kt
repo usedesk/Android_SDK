@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_gui.chat.messages.adapters
 
 import android.graphics.Rect
@@ -32,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
 import ru.usedesk.chat_gui.chat.messages.DateBinding
@@ -65,6 +63,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.max
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
 
 
 internal class MessagesAdapter(
@@ -90,9 +90,9 @@ internal class MessagesAdapter(
     private val timeFormat = SimpleDateFormat(chatArgs.messageTimeFormat, Locale.getDefault())
 
     private val dateStyleValues = dateBinding.styleValues
-        .getStyleValues(R.attr.usedesk_chat_message_date_text)
-    private val todayText = dateStyleValues.getString(R.attr.usedesk_text_1)
-    private val yesterdayText = dateStyleValues.getString(R.attr.usedesk_text_2)
+        .getStyleValues(chatR.attr.usedesk_chat_message_date_text)
+    private val todayText = dateStyleValues.getString(commonR.attr.usedesk_text_1)
+    private val yesterdayText = dateStyleValues.getString(commonR.attr.usedesk_text_2)
 
     private val timeFormatText = timeFormat.format(Calendar.getInstance().apply {
         set(Calendar.YEAR, 9999)
@@ -286,107 +286,107 @@ internal class MessagesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.usedesk_item_chat_date -> DateViewHolder(
+        chatR.layout.usedesk_item_chat_date -> DateViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Date,
+                chatR.style.Usedesk_Chat_Date,
                 ::DateBinding
             )
         )
-        R.layout.usedesk_item_chat_loading -> LoadingViewHolder(
+        chatR.layout.usedesk_item_chat_loading -> LoadingViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Loading,
+                chatR.style.Usedesk_Chat_Loading,
                 ::UsedeskBinding
             )
         )
-        R.layout.usedesk_item_chat_message_text_agent -> MessageTextAgentViewHolder(
+        chatR.layout.usedesk_item_chat_message_text_agent -> MessageTextAgentViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Text_Agent,
+                chatR.style.Usedesk_Chat_Message_Text_Agent,
                 ::MessageTextAgentBinding
             )
         )
-        R.layout.usedesk_item_chat_message_file_agent -> MessageFileAgentViewHolder(
+        chatR.layout.usedesk_item_chat_message_file_agent -> MessageFileAgentViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_File_Agent,
+                chatR.style.Usedesk_Chat_Message_File_Agent,
                 ::MessageFileAgentBinding
             )
         )
-        R.layout.usedesk_item_chat_message_image_agent -> MessageImageAgentViewHolder(
+        chatR.layout.usedesk_item_chat_message_image_agent -> MessageImageAgentViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Image_Agent,
+                chatR.style.Usedesk_Chat_Message_Image_Agent,
                 ::MessageImageAgentBinding
             )
         )
-        R.layout.usedesk_item_chat_message_video_agent -> MessageVideoAgentViewHolder(
+        chatR.layout.usedesk_item_chat_message_video_agent -> MessageVideoAgentViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Video_Agent,
+                chatR.style.Usedesk_Chat_Message_Video_Agent,
                 ::MessageVideoAgentBinding
             )
         )
-        R.layout.usedesk_item_chat_message_audio_agent -> MessageAudioAgentViewHolder(
+        chatR.layout.usedesk_item_chat_message_audio_agent -> MessageAudioAgentViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Audio_Agent,
+                chatR.style.Usedesk_Chat_Message_Audio_Agent,
                 ::MessageAudioAgentBinding
             )
         )
-        R.layout.usedesk_item_chat_message_text_client -> MessageTextClientViewHolder(
+        chatR.layout.usedesk_item_chat_message_text_client -> MessageTextClientViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Text_Client,
+                chatR.style.Usedesk_Chat_Message_Text_Client,
                 ::MessageTextClientBinding
             )
         )
-        R.layout.usedesk_item_chat_message_file_client -> MessageFileClientViewHolder(
+        chatR.layout.usedesk_item_chat_message_file_client -> MessageFileClientViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_File_Client,
+                chatR.style.Usedesk_Chat_Message_File_Client,
                 ::MessageFileClientBinding
             )
         )
-        R.layout.usedesk_item_chat_message_image_client -> MessageImageClientViewHolder(
+        chatR.layout.usedesk_item_chat_message_image_client -> MessageImageClientViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Image_Client,
+                chatR.style.Usedesk_Chat_Message_Image_Client,
                 ::MessageImageClientBinding
             )
         )
-        R.layout.usedesk_item_chat_message_video_client -> MessageVideoClientViewHolder(
+        chatR.layout.usedesk_item_chat_message_video_client -> MessageVideoClientViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Video_Client,
+                chatR.style.Usedesk_Chat_Message_Video_Client,
                 ::MessageVideoClientBinding
             )
         )
-        R.layout.usedesk_item_chat_message_audio_client -> MessageAudioClientViewHolder(
+        chatR.layout.usedesk_item_chat_message_audio_client -> MessageAudioClientViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Audio_Client,
+                chatR.style.Usedesk_Chat_Message_Audio_Client,
                 ::MessageAudioClientBinding
             )
         )
-        R.layout.usedesk_item_chat_message_agent_name -> MessageAgentNameViewHolder(
+        chatR.layout.usedesk_item_chat_message_agent_name -> MessageAgentNameViewHolder(
             inflateItem(
                 parent,
                 viewType,
-                R.style.Usedesk_Chat_Message_Text_Agent,
+                chatR.style.Usedesk_Chat_Message_Text_Agent,
                 ::MessageAgentNameBinding
             )
         )
@@ -397,32 +397,24 @@ internal class MessagesAdapter(
         holder.bind(items[position])
     }
 
-    override fun onBindViewHolder(
-        holder: BaseViewHolder,
-        position: Int,
-        payloads: MutableList<Any>
-    ) {
-        super.onBindViewHolder(holder, position, payloads)
-    }
-
     override fun getItemCount() = items.size
 
     override fun getItemViewType(position: Int): Int {
         return when (val item = items[position]) {
-            is ChatItem.ChatDate -> R.layout.usedesk_item_chat_date
-            is ChatItem.Loading -> R.layout.usedesk_item_chat_loading
-            is ChatItem.MessageAgentName -> R.layout.usedesk_item_chat_message_agent_name
+            is ChatItem.ChatDate -> chatR.layout.usedesk_item_chat_date
+            is ChatItem.Loading -> chatR.layout.usedesk_item_chat_loading
+            is ChatItem.MessageAgentName -> chatR.layout.usedesk_item_chat_message_agent_name
             is ChatItem.Message -> when (item.message) {
-                is UsedeskMessageAgentText -> R.layout.usedesk_item_chat_message_text_agent
-                is UsedeskMessageAgentImage -> R.layout.usedesk_item_chat_message_image_agent
-                is UsedeskMessageAgentVideo -> R.layout.usedesk_item_chat_message_video_agent
-                is UsedeskMessageAgentAudio -> R.layout.usedesk_item_chat_message_audio_agent
-                is UsedeskMessageAgentFile -> R.layout.usedesk_item_chat_message_file_agent
-                is UsedeskMessageClientText -> R.layout.usedesk_item_chat_message_text_client
-                is UsedeskMessageClientImage -> R.layout.usedesk_item_chat_message_image_client
-                is UsedeskMessageClientVideo -> R.layout.usedesk_item_chat_message_video_client
-                is UsedeskMessageClientAudio -> R.layout.usedesk_item_chat_message_audio_client
-                is UsedeskMessageClientFile -> R.layout.usedesk_item_chat_message_file_client
+                is UsedeskMessageAgentText -> chatR.layout.usedesk_item_chat_message_text_agent
+                is UsedeskMessageAgentImage -> chatR.layout.usedesk_item_chat_message_image_agent
+                is UsedeskMessageAgentVideo -> chatR.layout.usedesk_item_chat_message_video_agent
+                is UsedeskMessageAgentAudio -> chatR.layout.usedesk_item_chat_message_audio_agent
+                is UsedeskMessageAgentFile -> chatR.layout.usedesk_item_chat_message_file_agent
+                is UsedeskMessageClientText -> chatR.layout.usedesk_item_chat_message_text_client
+                is UsedeskMessageClientImage -> chatR.layout.usedesk_item_chat_message_image_client
+                is UsedeskMessageClientVideo -> chatR.layout.usedesk_item_chat_message_video_client
+                is UsedeskMessageClientAudio -> chatR.layout.usedesk_item_chat_message_audio_client
+                is UsedeskMessageClientFile -> chatR.layout.usedesk_item_chat_message_file_client
             }
         }
     }
@@ -453,11 +445,12 @@ internal class MessagesAdapter(
         private val isClient: Boolean
     ) : BaseViewHolder(itemView) {
 
-        private val sendingDrawable: Drawable? = getDrawableIcon(R.attr.usedesk_drawable_1)
-        private val successfullyDrawable: Drawable? = getDrawableIcon(R.attr.usedesk_drawable_2)
+        private val sendingDrawable: Drawable? = getDrawableIcon(commonR.attr.usedesk_drawable_1)
+        private val successfullyDrawable: Drawable? =
+            getDrawableIcon(commonR.attr.usedesk_drawable_2)
 
         private fun getDrawableIcon(attrId: Int): Drawable? {
-            val id = styleValues.getStyleValues(R.attr.usedesk_chat_message_time_text)
+            val id = styleValues.getStyleValues(chatR.attr.usedesk_chat_message_time_text)
                 .getIdOrZero(attrId)
             return when (id) {
                 0 -> null
@@ -518,26 +511,27 @@ internal class MessagesAdapter(
             val visibleState: Int
             val invisibleState: Int
 
-            agentBinding.styleValues.getStyleValues(R.attr.usedesk_chat_message_avatar_image).run {
-                avatarImageId = getId(R.attr.usedesk_drawable_1)
-                val visibility = listOf(View.VISIBLE, View.INVISIBLE, View.GONE)
-                    .getOrNull(getInt(android.R.attr.visibility))
-                when (visibility) {
-                    View.INVISIBLE -> {
-                        visibleState = View.INVISIBLE
-                        invisibleState = View.INVISIBLE
-                    }
-                    View.GONE -> {
-                        visibleState = View.GONE
-                        invisibleState = View.GONE
-                    }
-                    else -> {
-                        visibleState = View.VISIBLE
-                        invisibleState = View.INVISIBLE
-                        agentBinding.ivAvatar.showImage(messageAgent.avatar, avatarImageId)
+            agentBinding.styleValues.getStyleValues(chatR.attr.usedesk_chat_message_avatar_image)
+                .run {
+                    avatarImageId = getId(commonR.attr.usedesk_drawable_1)
+                    val visibility = listOf(View.VISIBLE, View.INVISIBLE, View.GONE)
+                        .getOrNull(getInt(android.R.attr.visibility))
+                    when (visibility) {
+                        View.INVISIBLE -> {
+                            visibleState = View.INVISIBLE
+                            invisibleState = View.INVISIBLE
+                        }
+                        View.GONE -> {
+                            visibleState = View.GONE
+                            invisibleState = View.GONE
+                        }
+                        else -> {
+                            visibleState = View.VISIBLE
+                            invisibleState = View.INVISIBLE
+                            agentBinding.ivAvatar.showImage(messageAgent.avatar, avatarImageId)
+                        }
                     }
                 }
-            }
 
             agentBinding.ivAvatar.visibility = when {
                 chatItem.showAvatar -> visibleState
@@ -569,11 +563,11 @@ internal class MessagesAdapter(
                         visibleInvisible(clientMessage.status == UsedeskMessageOwner.Client.Status.SEND_FAILED)
                     setOnClickListener {
                         PopupMenu(it.context, it).apply {
-                            inflate(R.menu.usedesk_messages_error_popup)
+                            inflate(chatR.menu.usedesk_messages_error_popup)
                             setOnMenuItemClickListener { item ->
                                 when (item.itemId) {
-                                    R.id.send_again -> Event.SendAgain(clientMessage.localId)
-                                    R.id.remove_message -> Event.RemoveMessage(clientMessage.localId)
+                                    chatR.id.send_again -> Event.SendAgain(clientMessage.localId)
+                                    chatR.id.remove_message -> Event.RemoveMessage(clientMessage.localId)
                                     else -> null
                                 }?.let(viewModel::onEvent)
                                 true
@@ -651,7 +645,7 @@ internal class MessagesAdapter(
     ) : MessageViewHolder(itemView, binding.tvTime, binding.styleValues, isClient) {
 
         private val textSizeStyleValues =
-            binding.styleValues.getStyleValues(R.attr.usedesk_chat_message_file_size_text)
+            binding.styleValues.getStyleValues(chatR.attr.usedesk_chat_message_file_size_text)
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -663,12 +657,13 @@ internal class MessagesAdapter(
             binding.tvExtension.text = name.substringAfterLast('.')
             val textColorId = when {
                 chatArgs.rejectedFileExtensions.any(name::endsWith) -> {
-                    binding.tvFileSize.text = textSizeStyleValues.getString(R.attr.usedesk_text_1)
-                    R.attr.usedesk_text_color_2
+                    binding.tvFileSize.text =
+                        textSizeStyleValues.getString(commonR.attr.usedesk_text_1)
+                    commonR.attr.usedesk_text_color_2
                 }
                 else -> {
                     binding.tvFileSize.text = messageFile.file.size
-                    R.attr.usedesk_text_color_1
+                    commonR.attr.usedesk_text_color_1
                 }
             }
             binding.tvFileSize.setTextColor(textSizeStyleValues.getColor(textColorId))
@@ -685,8 +680,8 @@ internal class MessagesAdapter(
         private var oldItem: ChatItem.Message? = null
 
         private val loadingImageId = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_image_preview_image)
-            .getId(R.attr.usedesk_drawable_1)
+            .getStyleValues(chatR.attr.usedesk_chat_message_image_preview_image)
+            .getId(commonR.attr.usedesk_drawable_1)
 
         override fun bind(chatItem: ChatItem) {
             super.bind(chatItem)
@@ -1011,14 +1006,14 @@ internal class MessagesAdapter(
     ) : MessageTextViewHolder(binding.rootView, binding.content, false) {
 
         private val goodStyleValues = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
+            .getStyleValues(chatR.attr.usedesk_chat_message_feedback_good_image)
 
         private val badStyleValues = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_feedback_bad_image)
+            .getStyleValues(chatR.attr.usedesk_chat_message_feedback_bad_image)
 
         private val thanksText = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_text_message_text)
-            .getString(R.attr.usedesk_text_1)
+            .getStyleValues(chatR.attr.usedesk_chat_message_text_message_text)
+            .getString(commonR.attr.usedesk_text_1)
 
         private val formAdapter = MessageFormAdapter(
             viewModel,
@@ -1035,7 +1030,7 @@ internal class MessagesAdapter(
         }
 
         private val goodAtStart = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_message_feedback_good_image)
+            .getStyleValues(chatR.attr.usedesk_chat_message_feedback_good_image)
             .getInt(android.R.attr.layout_gravity) in arrayOf(Gravity.START, Gravity.LEFT)
 
         override fun bind(chatItem: ChatItem) {
@@ -1059,10 +1054,10 @@ internal class MessagesAdapter(
             val ivLike = binding.content.ivLike
             val ivDislike = binding.content.ivDislike
 
-            val goodImage = goodStyleValues.getId(R.attr.usedesk_drawable_1)
-            val goodColoredImage = goodStyleValues.getId(R.attr.usedesk_drawable_2)
-            val badImage = badStyleValues.getId(R.attr.usedesk_drawable_1)
-            val badColoredImage = badStyleValues.getId(R.attr.usedesk_drawable_2)
+            val goodImage = goodStyleValues.getId(commonR.attr.usedesk_drawable_1)
+            val goodColoredImage = goodStyleValues.getId(commonR.attr.usedesk_drawable_2)
+            val badImage = badStyleValues.getId(commonR.attr.usedesk_drawable_1)
+            val badColoredImage = badStyleValues.getId(commonR.attr.usedesk_drawable_2)
             when {
                 messageAgentText.feedback != null -> {
                     binding.content.lFeedback.visibility = View.VISIBLE
@@ -1261,130 +1256,130 @@ internal class MessagesAdapter(
 
     internal class MessageTextBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val rvItems: RecyclerView = rootView.findViewById(R.id.rv_items)
-        val lFeedback: ViewGroup = rootView.findViewById(R.id.l_feedback)
-        val tvText: TextView = rootView.findViewById(R.id.tv_text)
-        val lContent: ViewGroup = rootView.findViewById(R.id.l_content)
-        val ivLike: ImageView = rootView.findViewById(R.id.iv_like)
-        val ivDislike: ImageView = rootView.findViewById(R.id.iv_dislike)
+        val tvTime: TextView = rootView.findViewById(chatR.id.tv_time)
+        val rvItems: RecyclerView = rootView.findViewById(chatR.id.rv_items)
+        val lFeedback: ViewGroup = rootView.findViewById(chatR.id.l_feedback)
+        val tvText: TextView = rootView.findViewById(chatR.id.tv_text)
+        val lContent: ViewGroup = rootView.findViewById(chatR.id.l_content)
+        val ivLike: ImageView = rootView.findViewById(chatR.id.iv_like)
+        val ivDislike: ImageView = rootView.findViewById(chatR.id.iv_dislike)
     }
 
     internal class MessageTextClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageTextBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
     }
 
     internal class MessageTextAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageTextBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageTextBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
     }
 
     internal class MessageAgentNameBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvName: TextView = rootView.findViewById(R.id.tv_name)
+        val tvName: TextView = rootView.findViewById(chatR.id.tv_name)
     }
 
     internal class MessageFileBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val tvFileName: TextView = rootView.findViewById(R.id.tv_file_name)
-        val tvFileSize: TextView = rootView.findViewById(R.id.tv_file_size)
-        val tvExtension: TextView = rootView.findViewById(R.id.tv_extension)
+        val tvTime: TextView = rootView.findViewById(chatR.id.tv_time)
+        val tvFileName: TextView = rootView.findViewById(chatR.id.tv_file_name)
+        val tvFileSize: TextView = rootView.findViewById(chatR.id.tv_file_size)
+        val tvExtension: TextView = rootView.findViewById(chatR.id.tv_extension)
     }
 
     internal class MessageFileClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageFileBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageFileBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
     }
 
     internal class MessageFileAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageFileBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageFileBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
     }
 
     internal class MessageImageBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val ivPreview: RoundedImageView = rootView.findViewById(R.id.iv_preview)
-        val ivError: ImageView = rootView.findViewById(R.id.iv_error)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
+        val tvTime: TextView = rootView.findViewById(chatR.id.tv_time)
+        val ivPreview: RoundedImageView = rootView.findViewById(chatR.id.iv_preview)
+        val ivError: ImageView = rootView.findViewById(chatR.id.iv_error)
+        val pbLoading: ProgressBar = rootView.findViewById(chatR.id.pb_loading)
     }
 
     internal class MessageVideoBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
+        val tvTime: TextView = rootView.findViewById(chatR.id.tv_time)
 
-        val lVideo: ViewGroup = rootView.findViewById(R.id.l_video)
-        val lStub: ViewGroup = rootView.findViewById(R.id.l_stub)
-        val ivPlay: ImageView = rootView.findViewById(R.id.iv_play)
-        val ivPreview: ImageView = rootView.findViewById(R.id.iv_preview)
+        val lVideo: ViewGroup = rootView.findViewById(chatR.id.l_video)
+        val lStub: ViewGroup = rootView.findViewById(chatR.id.l_stub)
+        val ivPlay: ImageView = rootView.findViewById(chatR.id.iv_play)
+        val ivPreview: ImageView = rootView.findViewById(chatR.id.iv_preview)
     }
 
     internal class MessageAudioBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val tvTime: TextView = rootView.findViewById(R.id.tv_time)
-        val lAudio: ViewGroup = rootView.findViewById(R.id.l_audio)
-        val lStub: ViewGroup = rootView.findViewById(R.id.stub)
-        val stubProgress: View = rootView.findViewById(R.id.stub_progress)
-        val stubScrubber: View = rootView.findViewById(R.id.stub_scrubber)
-        val exoPosition: TextView = rootView.findViewById(R.id.exo_position)
-        val tvDownload: TextView = rootView.findViewById(R.id.tv_download)
-        val ivExoPlay: ImageView = rootView.findViewById(R.id.exo_play)
-        val ivExoPause: ImageView = rootView.findViewById(R.id.exo_pause)
+        val tvTime: TextView = rootView.findViewById(chatR.id.tv_time)
+        val lAudio: ViewGroup = rootView.findViewById(chatR.id.l_audio)
+        val lStub: ViewGroup = rootView.findViewById(chatR.id.stub)
+        val stubProgress: View = rootView.findViewById(chatR.id.stub_progress)
+        val stubScrubber: View = rootView.findViewById(chatR.id.stub_scrubber)
+        val exoPosition: TextView = rootView.findViewById(chatR.id.exo_position)
+        val tvDownload: TextView = rootView.findViewById(chatR.id.tv_download)
+        val ivExoPlay: ImageView = rootView.findViewById(chatR.id.exo_play)
+        val ivExoPause: ImageView = rootView.findViewById(chatR.id.exo_pause)
     }
 
     internal class MessageImageClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageImageBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
     }
 
     internal class MessageVideoClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageVideoBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageVideoBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
     }
 
     internal class MessageAudioClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageAudioBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageAudioBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val client = ClientBinding(rootView, defaultStyleId)
     }
 
     internal class MessageImageAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageImageBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageImageBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
     }
 
     internal class MessageVideoAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageVideoBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageVideoBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
     }
 
     internal class MessageAudioAgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val content = MessageAudioBinding(rootView.findViewById(R.id.content), defaultStyleId)
+        val content = MessageAudioBinding(rootView.findViewById(chatR.id.content), defaultStyleId)
         val agent = AgentBinding(rootView, defaultStyleId)
     }
 
     internal class AgentBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val ivAvatar: ImageView = rootView.findViewById(R.id.iv_avatar)
-        val tvName: TextView = rootView.findViewById(R.id.tv_name)
-        val vEmpty: View = rootView.findViewById(R.id.v_empty)
+        val ivAvatar: ImageView = rootView.findViewById(chatR.id.iv_avatar)
+        val tvName: TextView = rootView.findViewById(chatR.id.tv_name)
+        val vEmpty: View = rootView.findViewById(chatR.id.v_empty)
     }
 
     internal class ClientBinding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val vEmpty: View = rootView.findViewById(R.id.v_empty)
-        val ivSentFailed: ImageView = rootView.findViewById(R.id.iv_sent_failed)
+        val vEmpty: View = rootView.findViewById(chatR.id.v_empty)
+        val ivSentFailed: ImageView = rootView.findViewById(chatR.id.iv_sent_failed)
     }
 }
 

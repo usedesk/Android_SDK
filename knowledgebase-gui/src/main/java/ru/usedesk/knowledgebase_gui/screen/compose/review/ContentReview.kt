@@ -37,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.ComposeTextField
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.KeyboardListener
@@ -52,6 +51,7 @@ import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
+import ru.usedesk.knowledgebase_gui.R as kbR
 
 @Composable
 internal fun ContentReview(
@@ -145,8 +145,8 @@ internal fun ContentReview(
                 onFocusChanged = viewModel::reviewFocusChanged
             )
         }
-        val tagsPrefix = stringResource(R.string.usedesk_review_tags_prefix)
-        val commentPrefix = stringResource(R.string.usedesk_review_comment_prefix)
+        val tagsPrefix = stringResource(kbR.string.usedesk_review_tags_prefix)
+        val commentPrefix = stringResource(kbR.string.usedesk_review_comment_prefix)
         BottomButton(
             theme = theme,
             showed = true,

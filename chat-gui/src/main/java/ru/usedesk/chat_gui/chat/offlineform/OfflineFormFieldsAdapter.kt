@@ -11,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Companion.EMAIL_KEY
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Companion.MESSAGE_KEY
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Companion.NAME_KEY
@@ -20,6 +19,8 @@ import ru.usedesk.common_gui.UsedeskCommonFieldListAdapter
 import ru.usedesk.common_gui.UsedeskCommonFieldTextAdapter
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_gui.onEachWithOld
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
 
 internal class OfflineFormFieldsAdapter(
     recyclerView: RecyclerView,
@@ -30,21 +31,21 @@ internal class OfflineFormFieldsAdapter(
 ) : RecyclerView.Adapter<OfflineFormFieldsAdapter.BaseViewHolder<*>>() {
 
     private val nameTitle =
-        binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_name)
+        binding.styleValues.getString(chatR.attr.usedesk_chat_screen_offline_form_name)
     private val emailTitle =
-        binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_email)
+        binding.styleValues.getString(chatR.attr.usedesk_chat_screen_offline_form_email)
     private val messageTitle =
-        binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_message)
+        binding.styleValues.getString(chatR.attr.usedesk_chat_screen_offline_form_message)
 
     private val commonError =
-        binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_field_error)
+        binding.styleValues.getString(chatR.attr.usedesk_chat_screen_offline_form_field_error)
     private val emailError =
-        binding.styleValues.getString(R.attr.usedesk_chat_screen_offline_form_email_error)
+        binding.styleValues.getString(chatR.attr.usedesk_chat_screen_offline_form_email_error)
 
     private val textFieldStyle =
-        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_text_field)
+        binding.styleValues.getStyle(chatR.attr.usedesk_chat_screen_offline_form_text_field)
     private val listFieldStyle =
-        binding.styleValues.getStyle(R.attr.usedesk_chat_screen_offline_form_list_field)
+        binding.styleValues.getStyle(chatR.attr.usedesk_chat_screen_offline_form_list_field)
 
     private var items = listOf<OfflineFormItem>()
 
@@ -90,18 +91,18 @@ internal class OfflineFormFieldsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.usedesk_item_field_text -> TextViewHolder(
+        commonR.layout.usedesk_item_field_text -> TextViewHolder(
             inflateItem(
                 container = parent,
-                defaultLayoutId = R.layout.usedesk_item_field_text,
+                defaultLayoutId = commonR.layout.usedesk_item_field_text,
                 defaultStyleId = textFieldStyle,
                 createBinding = UsedeskCommonFieldTextAdapter::Binding
             )
         )
-        R.layout.usedesk_item_field_list -> ListViewHolder(
+        commonR.layout.usedesk_item_field_list -> ListViewHolder(
             inflateItem(
                 container = parent,
-                defaultLayoutId = R.layout.usedesk_item_field_list,
+                defaultLayoutId = commonR.layout.usedesk_item_field_list,
                 defaultStyleId = listFieldStyle,
                 createBinding = UsedeskCommonFieldListAdapter::Binding
             )
@@ -120,8 +121,8 @@ internal class OfflineFormFieldsAdapter(
     override fun getItemCount() = items.size
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
-        is OfflineFormItem.List -> R.layout.usedesk_item_field_list
-        is OfflineFormItem.Text -> R.layout.usedesk_item_field_text
+        is OfflineFormItem.List -> commonR.layout.usedesk_item_field_list
+        is OfflineFormItem.Text -> commonR.layout.usedesk_item_field_text
     }
 
     inner class TextViewHolder(
@@ -215,7 +216,7 @@ internal class OfflineFormFieldsAdapter(
                 setTitle(item.title, item.required)
                 setText(
                     item.items.getOrNull(item.selected) ?: binding.rootView.resources.getString(
-                        R.string.usedesk_not_selected
+                        chatR.string.usedesk_not_selected
                     )
                 )
                 setOnClickListener { onListFieldClick(item.key) }

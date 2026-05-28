@@ -1,5 +1,5 @@
-
 package ru.usedesk.common_gui
+
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import ru.usedesk.common_gui.R as commonR
 
 internal class PermissionLauncher(
     private val fragment: UsedeskFragment,
@@ -23,7 +24,7 @@ internal class PermissionLauncher(
     private var dialogIsShown: Boolean = false
 
     private val dialogStyleId = UsedeskResourceManager.getResourceId(
-        R.style.Usedesk_Common_Alert_Dialog_Camera
+        commonR.style.Usedesk_Common_Alert_Dialog_Camera
     )
 
     init {
@@ -31,9 +32,9 @@ internal class PermissionLauncher(
             fragment.requireContext(),
             dialogStyleId
         )
-        titleText = dialogStyle.findString(R.attr.usedesk_text_1)
-        messageText = dialogStyle.findString(R.attr.usedesk_text_2)
-        positiveText = dialogStyle.findString(R.attr.usedesk_text_3)
+        titleText = dialogStyle.findString(commonR.attr.usedesk_text_1)
+        messageText = dialogStyle.findString(commonR.attr.usedesk_text_2)
+        positiveText = dialogStyle.findString(commonR.attr.usedesk_text_3)
 
         permissionLauncher = fragment.registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -48,7 +49,7 @@ internal class PermissionLauncher(
 
     private fun showNoPermissions() {
         val snackbarStyleId = UsedeskResourceManager.getResourceId(
-            R.style.Usedesk_Common_No_Permission_Snackbar
+            commonR.style.Usedesk_Common_No_Permission_Snackbar
         )
         UsedeskResourceManager.StyleValues(
             fragment.requireContext(),
@@ -56,11 +57,11 @@ internal class PermissionLauncher(
         ).apply {
             UsedeskSnackbar.create(
                 fragment.requireView(),
-                getColor(R.attr.usedesk_background_color_1),
-                getString(R.attr.usedesk_text_1),
-                getColor(R.attr.usedesk_text_color_1),
-                getString(R.attr.usedesk_text_2),
-                getColor(R.attr.usedesk_text_color_2)
+                getColor(commonR.attr.usedesk_background_color_1),
+                getString(commonR.attr.usedesk_text_1),
+                getColor(commonR.attr.usedesk_text_color_1),
+                getString(commonR.attr.usedesk_text_2),
+                getColor(commonR.attr.usedesk_text_color_2)
             ).show()
         }
     }

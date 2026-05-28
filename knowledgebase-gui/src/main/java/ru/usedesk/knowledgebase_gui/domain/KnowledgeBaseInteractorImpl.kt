@@ -32,8 +32,13 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 import javax.inject.Inject
 
 private val HTML_NON_TEXT_BLOCK_REGEX = Regex(
-    "<(style|script)\\b[^>]*>.*?</\\1\\s*>",
+    "<(style|script)\\b[^>]*>.*?(?:</\\1\\s*>|\\z)",
     setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
+)
+
+private val CSS_RULE_LIKE_REGEX = Regex(
+    """\b[\w*#.][\w\s.,:#>~+\-*\[\]"'=()]*\{[^{}]*[:;][^{}]*\}""",
+    RegexOption.DOT_MATCHES_ALL
 )
 
 internal class KnowledgeBaseInteractorImpl @Inject constructor(
@@ -169,6 +174,7 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
     private fun String.htmlToStrings() = HTML_NON_TEXT_BLOCK_REGEX.replace(this, "")
         .parseAsHtml()
         .toString()
+        .let { CSS_RULE_LIKE_REGEX.replace(it, "") }
         .split('\n', '\r')
         .asSequence()
         .map {

@@ -1,10 +1,10 @@
 package ru.usedesk.chat_sdk.entity
 
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
+import ru.usedesk.chat_sdk.domain.UsedeskChat
 
-interface IUsedeskActionListener {
+interface UsedeskActionListener {
     fun onModel(
-        model: IUsedeskChat.Model,
+        model: UsedeskChat.Model,
         newMessages: List<UsedeskMessage>,
         updatedMessages: List<UsedeskMessage>,
         removedMessages: List<UsedeskMessage>
@@ -13,8 +13,8 @@ interface IUsedeskActionListener {
     fun onException(usedeskException: Exception) = Unit
 
     fun onModelUpdated(
-        oldModel: IUsedeskChat.Model?,
-        newModel: IUsedeskChat.Model
+        oldModel: UsedeskChat.Model?,
+        newModel: UsedeskChat.Model
     ) {
         val oldMessages = oldModel?.messages
         when {
@@ -54,3 +54,12 @@ interface IUsedeskActionListener {
             this is UsedeskMessageOwner.Client && other is UsedeskMessageOwner.Client
             && localId == other.localId
 }
+
+@Deprecated(
+    message = "Use ru.usedesk.chat_sdk.entity.UsedeskActionListener",
+    replaceWith = ReplaceWith(
+        "UsedeskActionListener",
+        "ru.usedesk.chat_sdk.entity.UsedeskActionListener"
+    )
+)
+typealias IUsedeskActionListener = UsedeskActionListener

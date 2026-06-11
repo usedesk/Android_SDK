@@ -1,15 +1,16 @@
-
 package ru.usedesk.common_gui
+
 
 import android.text.Html
 import android.view.View
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import ru.usedesk.common_gui.R as commonR
 
 class UsedeskCommonFieldTextAdapter(val binding: Binding) {
 
-    private val colorTitle = binding.styleValues.getColor(R.attr.usedesk_text_color_1)
-    private val colorRequired = binding.styleValues.getColor(R.attr.usedesk_text_color_2)
+    private val colorTitle = binding.styleValues.getColor(commonR.attr.usedesk_text_color_1)
+    private val colorRequired = binding.styleValues.getColor(commonR.attr.usedesk_text_color_2)
 
     fun setTitle(title: String, required: Boolean = false) {
         val tail = when {
@@ -39,7 +40,7 @@ class UsedeskCommonFieldTextAdapter(val binding: Binding) {
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val tilTitle: TextInputLayout = rootView.findViewById(R.id.til_title)
-        val etText: TextInputEditText = rootView.findViewById(R.id.et_text)
+        val tilTitle: TextInputLayout = rootView.findViewById(commonR.id.til_title)
+        val etText: TextInputEditText = rootView.findViewById(commonR.id.et_text)
     }
 }

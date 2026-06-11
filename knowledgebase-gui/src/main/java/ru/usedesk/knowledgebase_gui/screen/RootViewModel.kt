@@ -7,15 +7,15 @@ import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
 import ru.usedesk.knowledgebase_gui.compose.TextFilter
 import ru.usedesk.knowledgebase_gui.compose.ViewModelStoreFactory
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel.State
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseScreen.DeepLink
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
 internal class RootViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor,
+    private val kbInteractor: KnowledgeBaseInteractor,
     deepLink: DeepLink?
 ) : UsedeskViewModel<State>(State(deepLink = deepLink)) {
     val viewModelStoreFactory = ViewModelStoreFactory()

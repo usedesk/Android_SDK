@@ -6,14 +6,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -36,22 +36,28 @@ internal fun ContentBlocks(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     viewModel: RootViewModel,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onEvent: (Event) -> Unit
 ) {
-    val state by viewModel.modelFlow.collectAsState()
-    val blocksState = state.blocksState
+    val state = viewModel.modelFlow.collectAsState()
+    // derivedStateOf scopes the snapshot subscription to *this* derived value, so this
+    // composable invalidates only when the specific field changes — typing in the search bar
+    // updates only searchText (read via the lambda below inside SearchBar) and does not
+    // re-run ContentBlocks.
+    val block by remember { derivedStateOf { state.value.blocksState.block } }
+    val focused by remember { derivedStateOf { state.value.blocksState.searchBarFocused } }
+    val searchTextProvider = remember { { state.value.blocksState.searchText } }
 
     val forwardTransitionSpec = remember {
-        slideInHorizontally(theme.animationSpec()) { it } with
+        slideInHorizontally(theme.animationSpec()) { it } togetherWith
                 slideOutHorizontally(theme.animationSpec()) { -it }
     }
     val backwardTransitionSpec = remember {
-        slideInHorizontally(theme.animationSpec()) { -it } with
+        slideInHorizontally(theme.animationSpec()) { -it } togetherWith
                 slideOutHorizontally(theme.animationSpec()) { it }
     }
     val noneTransitionSpec = remember {
-        fadeIn(theme.animationSpec()) with
+        fadeIn(theme.animationSpec()) togetherWith
                 fadeOut(theme.animationSpec())
     }
 
@@ -61,10 +67,10 @@ internal fun ContentBlocks(
     ) {
         SearchBar(
             theme = theme,
-            value = blocksState.searchText,
-            focused = state.blocksState.searchBarFocused,
+            value = searchTextProvider,
+            focused = focused,
             onClearClick = remember { { onEvent(Event.SearchClearClicked) } },
-            onCancelClick = when (blocksState.block) {
+            onCancelClick = when (block) {
                 is State.BlocksState.Block.Search -> remember { { onEvent(Event.SearchCancelClicked) } }
                 else -> null
             },
@@ -75,7 +81,7 @@ internal fun ContentBlocks(
         Box(modifier = Modifier.fillMaxSize()) {
             AnimatedContent(
                 modifier = Modifier.fillMaxSize(),
-                targetState = blocksState.block,
+                targetState = block,
                 transitionSpec = {
                     when (targetState.transition(initialState)) {
                         State.Transition.FORWARD -> forwardTransitionSpec
@@ -92,7 +98,7 @@ internal fun ContentBlocks(
                                 viewModelStoreOwner = rememberViewModelStoreOwner {
                                     viewModelStoreFactory.get(StoreKeys.SECTIONS.name)
                                 },
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onSectionClicked = remember { { onEvent(Event.SectionClicked(it)) } }
                             )
                         }
@@ -115,7 +121,7 @@ internal fun ContentBlocks(
                                     viewModelStoreFactory.get(StoreKeys.CATEGORIES.name)
                                 },
                                 sectionId = block.sectionId,
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onCategoryClick = remember { { onEvent(Event.CategoryClicked(it)) } }
                             )
                         }
@@ -138,7 +144,7 @@ internal fun ContentBlocks(
                                     viewModelStoreFactory.get(StoreKeys.ARTICLES.name)
                                 },
                                 categoryId = block.categoryId,
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onArticleClick = remember {
                                     { onEvent(Event.ArticleClicked(it.id, it.title)) }
                                 }
@@ -162,7 +168,7 @@ internal fun ContentBlocks(
                                 viewModelStoreOwner = rememberViewModelStoreOwner {
                                     viewModelStoreFactory.get(StoreKeys.SEARCH.name)
                                 },
-                                supportButtonVisible = supportButtonVisible,
+                                onSupportButtonVisibleChange = onSupportButtonVisibleChange,
                                 onArticleClick = remember {
                                     { onEvent(Event.ArticleClicked(it.id, it.title)) }
                                 }

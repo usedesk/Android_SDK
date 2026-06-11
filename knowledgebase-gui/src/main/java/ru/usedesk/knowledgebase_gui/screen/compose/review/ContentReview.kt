@@ -21,7 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -37,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
-import ru.usedesk.knowledgebase_gui.R
 import ru.usedesk.knowledgebase_gui.compose.ComposeTextField
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.KeyboardListener
@@ -52,17 +51,18 @@ import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.screen.ComposeUtils.insetsBottom
 import ru.usedesk.knowledgebase_gui.screen.RootViewModel
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
+import ru.usedesk.knowledgebase_gui.R as kbR
 
 @Composable
 internal fun ContentReview(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     getCurrentScreen: () -> RootViewModel.State.Screen,
     goBack: () -> Unit
 ) {
-    supportButtonVisible.value = false
+    LaunchedEffect(Unit) { onSupportButtonVisibleChange(false) }
 
     val viewModel = kbUiViewModel(
         key = articleId,
@@ -85,10 +85,12 @@ internal fun ContentReview(
     }
     val state by viewModel.modelFlow.collectAsState()
 
-    state.goBack?.use { goBack() }
+    val goBackEvent = state.goBack
+    LaunchedEffect(goBackEvent) { goBackEvent?.use { goBack() } }
 
     val focusManager = LocalFocusManager.current
-    state.clearFocus?.use { focusManager.clearFocus() }
+    val clearFocus = state.clearFocus
+    LaunchedEffect(clearFocus) { clearFocus?.use { focusManager.clearFocus() } }
 
     Box(
         modifier = Modifier
@@ -143,8 +145,8 @@ internal fun ContentReview(
                 onFocusChanged = viewModel::reviewFocusChanged
             )
         }
-        val tagsPrefix = stringResource(R.string.usedesk_review_tags_prefix)
-        val commentPrefix = stringResource(R.string.usedesk_review_comment_prefix)
+        val tagsPrefix = stringResource(kbR.string.usedesk_review_tags_prefix)
+        val commentPrefix = stringResource(kbR.string.usedesk_review_comment_prefix)
         BottomButton(
             theme = theme,
             showed = true,

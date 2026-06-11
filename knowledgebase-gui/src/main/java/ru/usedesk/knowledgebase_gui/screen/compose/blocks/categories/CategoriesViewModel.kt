@@ -4,13 +4,13 @@ package ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories
 import androidx.compose.foundation.lazy.LazyListState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.SectionsModel
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor.SectionsModel
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.categories.CategoriesViewModel.State
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskCategory
 
 internal class CategoriesViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor,
+    private val kbInteractor: KnowledgeBaseInteractor,
     private val sectionId: Long
 ) : UsedeskViewModel<State>(State()) {
 

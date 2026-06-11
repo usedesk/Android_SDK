@@ -1,8 +1,7 @@
-
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -14,10 +13,10 @@ import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 
-interface IUsedeskChat {
-    fun addActionListener(listener: IUsedeskActionListener)
+interface UsedeskChat {
+    fun addActionListener(listener: UsedeskActionListener)
 
-    fun removeActionListener(listener: IUsedeskActionListener)
+    fun removeActionListener(listener: UsedeskActionListener)
 
     fun isNoListeners(): Boolean
 
@@ -93,3 +92,12 @@ interface IUsedeskChat {
         val thumbnailMap: Map<String, Uri> = mapOf()
     )
 }
+
+@Deprecated(
+    message = "Use ru.usedesk.chat_sdk.domain.UsedeskChat",
+    replaceWith = ReplaceWith(
+        "UsedeskChat",
+        "ru.usedesk.chat_sdk.domain.UsedeskChat"
+    )
+)
+typealias IUsedeskChat = UsedeskChat

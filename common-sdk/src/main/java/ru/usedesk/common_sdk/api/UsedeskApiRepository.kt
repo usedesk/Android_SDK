@@ -10,11 +10,11 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import ru.usedesk.common_sdk.UsedeskLog
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
 
 abstract class UsedeskApiRepository<API>(
-    private val apiFactory: IUsedeskApiFactory,
-    private val multipartConverter: IUsedeskMultipartConverter,
+    private val apiFactory: UsedeskApiFactory,
+    private val multipartConverter: UsedeskMultipartConverter,
     protected val gson: Gson,
     private val apiClass: Class<API>
 ) {

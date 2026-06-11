@@ -8,9 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
-import ru.usedesk.chat_gui.IUsedeskOnChatInitedListener
-import ru.usedesk.chat_gui.IUsedeskOnClientTokenListener
-import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.UsedeskOnChatInitedListener
+import ru.usedesk.chat_gui.UsedeskOnClientTokenListener
 import ru.usedesk.chat_gui.chat.di.ChatUiComponent
 import ru.usedesk.chat_gui.chat.messages.MessagesPage
 import ru.usedesk.chat_sdk.UsedeskChatSdk
@@ -20,6 +19,8 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
 
 class UsedeskChatScreen : UsedeskFragment() {
 
@@ -49,12 +50,12 @@ class UsedeskChatScreen : UsedeskFragment() {
     ) = inflateItem(
         inflater = inflater,
         container = container,
-        defaultLayoutId = R.layout.usedesk_screen_chat,
-        defaultStyleId = R.style.Usedesk_Chat_Screen,
+        defaultLayoutId = chatR.layout.usedesk_screen_chat,
+        defaultStyleId = chatR.style.Usedesk_Chat_Screen,
         createBinding = ::Binding
     ).apply {
         navHostFragment =
-            childFragmentManager.findFragmentById(R.id.page_container) as NavHostFragment
+            childFragmentManager.findFragmentById(chatR.id.page_container) as NavHostFragment
         navController = navHostFragment.navController
 
         val chatArgs = getChatArgs(savedInstanceState)
@@ -101,7 +102,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             context = requireContext(),
             chatConfiguration = chatArgs.configuration,
         )
-        findParent<IUsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
+        findParent<UsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
 
         val toolbarAdapter = UsedeskToolbarAdapter(
             binding = toolbar,
@@ -118,7 +119,7 @@ class UsedeskChatScreen : UsedeskFragment() {
                 new.clientToken != null &&
                 old.clientToken != new.clientToken
             ) {
-                findParent<IUsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
+                findParent<UsedeskOnClientTokenListener>()?.onClientToken(new.clientToken)
             }
             if (old?.offlineFormSettings != new.offlineFormSettings) {
                 toolbarAdapter.updateTitle(styleValues, navController.currentDestination)
@@ -126,7 +127,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             if (old?.goLoading != new.goLoading) {
                 new.goLoading.use {
                     while (navController.popBackStack()) continue
-                    navController.navigate(R.id.dest_loadingPage)
+                    navController.navigate(chatR.id.dest_loadingPage)
                 }
             }
         }
@@ -139,13 +140,13 @@ class UsedeskChatScreen : UsedeskFragment() {
         val model = viewModel.modelFlow.value
         setTitle(
             when (destination?.id) {
-                R.id.dest_loadingPage,
-                R.id.dest_messagesPage -> styleValues
-                    .getStyleValues(R.attr.usedesk_common_toolbar)
-                    .getStyleValues(R.attr.usedesk_common_toolbar_title_text)
+                chatR.id.dest_loadingPage,
+                chatR.id.dest_messagesPage -> styleValues
+                    .getStyleValues(commonR.attr.usedesk_common_toolbar)
+                    .getStyleValues(commonR.attr.usedesk_common_toolbar_title_text)
                     .getString(android.R.attr.text)
-                R.id.dest_offlineFormPage -> model.offlineFormSettings?.callbackTitle
-                R.id.dest_offlineFormSelectorPage -> model.offlineFormSettings?.topicsTitle
+                chatR.id.dest_offlineFormPage -> model.offlineFormSettings?.callbackTitle
+                chatR.id.dest_offlineFormSelectorPage -> model.offlineFormSettings?.topicsTitle
                 else -> null
             }
         )
@@ -234,6 +235,6 @@ class UsedeskChatScreen : UsedeskFragment() {
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
         val toolbar =
-            UsedeskToolbarAdapter.Binding(rootView.findViewById(R.id.toolbar), defaultStyleId)
+            UsedeskToolbarAdapter.Binding(rootView.findViewById(chatR.id.toolbar), defaultStyleId)
     }
 }

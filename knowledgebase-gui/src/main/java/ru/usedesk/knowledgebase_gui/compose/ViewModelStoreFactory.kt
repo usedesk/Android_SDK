@@ -3,10 +3,12 @@ package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 
+@Stable
 internal class ViewModelStoreFactory {
     private val viewModelStoreMap = mutableMapOf<String, ViewModelStore>()
 

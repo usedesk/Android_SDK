@@ -4,8 +4,8 @@ package ru.usedesk.chat_gui.chat.messages
 import android.net.Uri
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.domain.UsedeskChat
+import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskForm
@@ -20,13 +20,13 @@ import java.util.Calendar
 import javax.inject.Inject
 
 internal class MessagesViewModel @Inject constructor(
-    private val usedeskChat: IUsedeskChat,
+    private val usedeskChat: UsedeskChat,
     private val messagesReducer: MessagesReducer
 ) : UsedeskViewModel<MessagesViewModel.State>(State()) {
 
-    private val actionListener: IUsedeskActionListener = object : IUsedeskActionListener {
+    private val actionListener: UsedeskActionListener = object : UsedeskActionListener {
         override fun onModel(
-            model: IUsedeskChat.Model,
+            model: UsedeskChat.Model,
             newMessages: List<UsedeskMessage>,
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
@@ -57,7 +57,7 @@ internal class MessagesViewModel @Inject constructor(
 
     sealed interface Event {
         class Init(val groupAgentMessages: Boolean) : Event
-        class ChatModel(val model: IUsedeskChat.Model) : Event
+        class ChatModel(val model: UsedeskChat.Model) : Event
         class MessageDraft(val messageDraft: UsedeskMessageDraft) : Event
         class MessagesShowed(val messagesRange: IntRange) : Event
         class MessageChanged(val message: String) : Event
@@ -97,7 +97,7 @@ internal class MessagesViewModel @Inject constructor(
         val previousLoading: Boolean = false,
         val goToBottom: UsedeskEvent<Unit>? = null,
         val openUrl: UsedeskEvent<String>? = null,
-        val lastChatModel: IUsedeskChat.Model? = null
+        val lastChatModel: UsedeskChat.Model? = null
     )
 
     class FormSelector(

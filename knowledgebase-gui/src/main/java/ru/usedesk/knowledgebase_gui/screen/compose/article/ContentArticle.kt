@@ -1,11 +1,9 @@
 package ru.usedesk.knowledgebase_gui.screen.compose.article
 
+import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,16 +27,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.launch
+import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui._entity.ContentState
 import ru.usedesk.knowledgebase_gui._entity.LoadingState.Companion.ACCESS_DENIED
 import ru.usedesk.knowledgebase_gui._entity.RatingState
@@ -65,7 +63,8 @@ internal fun ContentArticle(
     viewModelStoreFactory: ViewModelStoreFactory,
     articleId: Long,
     articleTitleState: MutableState<String?>,
-    supportButtonVisible: MutableState<Boolean>,
+    articleViews: ArticleViewsHolder,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onReview: () -> Unit
 ) {
@@ -77,8 +76,10 @@ internal fun ContentArticle(
         factory = remember(articleId) {
             KbUiViewModelFactory { kbUiComponent ->
                 ArticleViewModel(
-                    kbUiComponent.interactor,
-                    articleId
+                    kbInteractor = kbUiComponent.interactor,
+                    articleId = articleId,
+                    // Fires on real exit (store clear), not on rotation — stop bg playback then.
+                    onArticleCleared = articleViews.webView::stopMedia
                 )
             }
         }
@@ -98,7 +99,9 @@ internal fun ContentArticle(
     }
 
     val state by viewModel.modelFlow.collectAsState()
-    state.goReview?.use { onReview() }
+
+    val goReview = state.goReview
+    LaunchedEffect(goReview) { goReview?.use { onReview() } }
 
     DisposableEffect(state.contentState) {
         articleTitleState.value = when (val contentState = state.contentState) {
@@ -118,7 +121,8 @@ internal fun ContentArticle(
             theme = theme,
             state = state,
             viewModel = viewModel,
-            supportButtonVisible = supportButtonVisible,
+            articleViews = articleViews,
+            onSupportButtonVisibleChange = onSupportButtonVisibleChange,
             onWebUrl = onWebUrl,
             onReviewGoodClick = remember { { viewModel.onRating(true) } },
             onReviewBadClick = remember { { viewModel.onRating(false) } }
@@ -131,11 +135,17 @@ private fun ArticleBlock(
     theme: UsedeskKnowledgeBaseTheme,
     state: State,
     viewModel: ArticleViewModel,
-    supportButtonVisible: MutableState<Boolean>,
+    articleViews: ArticleViewsHolder,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onWebUrl: (String) -> Unit,
     onReviewGoodClick: () -> Unit,
     onReviewBadClick: () -> Unit
 ) {
+    val webView = articleViews.webView
+    val ratingView = articleViews.ratingView
+    // Stable base URL for loadDataWithBaseURL — gives embedded iframes a real Origin so
+    // YouTube/RuTube accept the embed (fixes YouTube error 153, RuTube fullscreen button).
+    val articleBaseUrl = remember { KbUiComponent.require().configuration.urlApi }
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(
             targetState = state.contentState,
@@ -144,11 +154,11 @@ private fun ArticleBlock(
         ) { contentState ->
             when (contentState) {
                 is ContentState.Empty -> {
-                    supportButtonVisible.value = true
+                    LaunchedEffect(Unit) { onSupportButtonVisibleChange(true) }
                     Box(modifier = Modifier.fillMaxSize())
                 }
                 is ContentState.Error -> {
-                    supportButtonVisible.value = true
+                    LaunchedEffect(Unit) { onSupportButtonVisibleChange(true) }
                     ScreenNotLoaded(
                         theme = theme,
                         tryAgain = viewModel::tryAgain,
@@ -156,54 +166,46 @@ private fun ArticleBlock(
                     )
                 }
                 else -> {
-                    val context = LocalContext.current
-                    val ratingView = remember(context) {
-                        ComposeView(context).apply {
-                            setContent {
-                                val state by viewModel.modelFlow.collectAsState()
-                                AnimatedVisibility(
-                                    visible = state.articleShowed,
-                                    enter = remember { fadeIn(theme.animationSpec()) },
-                                    exit = remember { fadeOut(theme.animationSpec()) }
-                                ) {
-                                    ArticleRating(
-                                        theme = theme,
-                                        state = state,
-                                        onReviewGoodClick = onReviewGoodClick,
-                                        onReviewBadClick = onReviewBadClick
-                                    )
-                                }
-                            }
-                        }
-                    }
                     val coroutineScope = rememberCoroutineScope()
                     val scrollState = rememberScrollState()
-                    val webView = remember(context) {
-                        ArticleWebView(
-                            context,
-                            viewModel,
-                            theme,
-                            onWebUrl
-                        ) { y ->
-                            coroutineScope.launch {
-                                scrollState.animateScrollTo(value = y)
+                    DisposableEffect(viewModel) {
+                        webView.bind(
+                            viewModel = viewModel,
+                            onWebUrl = onWebUrl,
+                            onScrollTo = { y ->
+                                coroutineScope.launch {
+                                    scrollState.animateScrollTo(value = y)
+                                }
                             }
-                        }
+                        )
+                        onDispose { webView.unbind(viewModel) }
+                    }
+                    DisposableEffect(viewModel, theme, onReviewGoodClick, onReviewBadClick) {
+                        articleViews.bindRating(
+                            theme = theme,
+                            viewModel = viewModel,
+                            onReviewGoodClick = onReviewGoodClick,
+                            onReviewBadClick = onReviewBadClick
+                        )
+                        onDispose { articleViews.unbindRating(viewModel) }
                     }
                     if (state.contentState is ContentState.Loaded) {
                         LaunchedEffect(state.contentState) {
-                            val htmlData = state.contentState.content.text
-                            webView.setHtml(htmlData)
+                            val content = state.contentState.content
+                            webView.setHtml(
+                                articleId = content.id,
+                                html = content.text,
+                                baseUrl = articleBaseUrl
+                            )
                         }
                     }
-                    DisposableEffect(Unit) {
-                        onDispose { viewModel.articleHidden() }
+                    // Hide the support button once the article is scrolled to the bottom (the rating block).
+                    LaunchedEffect(scrollState) {
+                        snapshotFlow { scrollState.value == 0 || scrollState.value < scrollState.maxValue }
+                            .collect { onSupportButtonVisibleChange(it) }
                     }
-                    supportButtonVisible.value =
-                        scrollState.value == 0 || scrollState.value < scrollState.maxValue
                     AndroidView(
                         modifier = Modifier
-                            .animateContentSize(animationSpec = remember { theme.animationSpec() })
                             .verticalScroll(scrollState)
                             .padding(
                                 start = theme.dimensions.rootPadding.start,
@@ -217,7 +219,8 @@ private fun ArticleBlock(
                             { context ->
                                 LinearLayout(context).apply {
                                     orientation = LinearLayout.VERTICAL
-
+                                    (webView.parent as? ViewGroup)?.removeView(webView)
+                                    (ratingView.parent as? ViewGroup)?.removeView(ratingView)
                                     addView(webView)
                                     addView(ratingView)
                                 }
@@ -336,7 +339,7 @@ private fun ArticleRatingButtons(
 }
 
 @Composable
-private fun ArticleRating(
+internal fun ArticleRating(
     theme: UsedeskKnowledgeBaseTheme,
     state: State,
     onReviewGoodClick: () -> Unit,

@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.api.entity
 
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.MultipartRequest
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
-import ru.usedesk.common_sdk.api.multipart.IUsedeskMultipartConverter
+import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
 
 internal interface CreateChat {
     class Request(
@@ -15,7 +15,7 @@ internal interface CreateChat {
         clientPhoneNumber: Long?,
         clientAdditionalId: String?,
         clientNote: String?,
-        avatar: IUsedeskMultipartConverter.FileBytes?
+        avatar: UsedeskMultipartConverter.FileBytes?
     ) : MultipartRequest(
         "api_token" to apiToken,
         "company_id" to companyId,

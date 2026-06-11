@@ -12,10 +12,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,9 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
+import ru.usedesk.knowledgebase_gui.compose.SupportButtonVisibilityEffect
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
@@ -48,7 +46,7 @@ private fun Preview() {
         ContentSections(
             theme = theme,
             viewModelStoreOwner = rememberViewModelStoreOwner { ViewModelStore() },
-            supportButtonVisible = remember { mutableStateOf(false) },
+            onSupportButtonVisibleChange = {},
             onSectionClicked = {}
         )
     }
@@ -58,7 +56,7 @@ private fun Preview() {
 internal fun ContentSections(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreOwner: ViewModelStoreOwner,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onSectionClicked: (UsedeskSection) -> Unit
 ) {
     val viewModel = kbUiViewModel(
@@ -68,7 +66,7 @@ internal fun ContentSections(
         }
     )
     val state by viewModel.modelFlow.collectAsState()
-    supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
+    SupportButtonVisibilityEffect(state.lazyListState, onSupportButtonVisibleChange)
     LazyColumn(
         modifier = Modifier,
         state = state.lazyListState,

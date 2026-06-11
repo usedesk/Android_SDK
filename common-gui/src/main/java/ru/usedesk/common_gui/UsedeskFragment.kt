@@ -1,5 +1,6 @@
 package ru.usedesk.common_gui
 
+
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.ContentResolver
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.io.File
+import ru.usedesk.common_gui.R as commonR
 
 abstract class UsedeskFragment : Fragment() {
 
@@ -214,9 +216,9 @@ abstract class UsedeskFragment : Fragment() {
     protected fun showSnackbarError(styleValues: UsedeskResourceManager.StyleValues) {
         UsedeskSnackbar.create(
             requireView(),
-            styleValues.getColor(R.attr.usedesk_background_color_1),
-            styleValues.getString(R.attr.usedesk_text_1),
-            styleValues.getColor(R.attr.usedesk_text_color_1)
+            styleValues.getColor(commonR.attr.usedesk_background_color_1),
+            styleValues.getString(commonR.attr.usedesk_text_1),
+            styleValues.getColor(commonR.attr.usedesk_text_color_1)
         ).show()
     }
 
@@ -258,7 +260,7 @@ abstract class UsedeskFragment : Fragment() {
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(
                 requireContext(),
-                R.string.usedesk_no_app_to_handle_action,
+                commonR.string.usedesk_no_app_to_handle_action,
                 Toast.LENGTH_SHORT,
             ).show()
         }

@@ -1,11 +1,10 @@
-
 package ru.usedesk.knowledgebase_sdk.data.repository.api
 
 import androidx.annotation.CheckResult
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
 
-interface IUsedeskKnowledgeBase {
+interface UsedeskKnowledgeBase {
     @CheckResult
     fun getSections(): GetSectionsResponse
 
@@ -67,3 +66,12 @@ interface IUsedeskKnowledgeBase {
         class Error(val code: Int?) : SendReviewResponse
     }
 }
+
+@Deprecated(
+    message = "Use ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase",
+    replaceWith = ReplaceWith(
+        "UsedeskKnowledgeBase",
+        "ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase"
+    )
+)
+typealias IUsedeskKnowledgeBase = UsedeskKnowledgeBase

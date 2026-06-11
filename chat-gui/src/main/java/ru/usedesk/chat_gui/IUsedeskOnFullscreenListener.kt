@@ -1,16 +1,12 @@
-
 package ru.usedesk.chat_gui
 
-import android.view.ViewGroup
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 
-interface IUsedeskOnFullscreenListener {
-    /**
-     * Returns a container for a fullscreen video player.
-     */
-    fun getFullscreenLayout(): ViewGroup
-
-    /**
-     * Fullscreen mode switch callback.
-     */
-    fun onFullscreenChanged(fullscreen: Boolean)
-}
+@Deprecated(
+    message = "Use ru.usedesk.common_gui.UsedeskOnFullscreenListener",
+    replaceWith = ReplaceWith(
+        "UsedeskOnFullscreenListener",
+        "ru.usedesk.common_gui.UsedeskOnFullscreenListener"
+    )
+)
+typealias IUsedeskOnFullscreenListener = UsedeskOnFullscreenListener

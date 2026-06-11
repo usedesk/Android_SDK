@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
@@ -61,12 +64,22 @@ internal fun Modifier.padding(padding: UsedeskKnowledgeBaseTheme.Dimensions.Padd
     bottom = padding.bottom
 )
 
+/**
+ * Reports via [onVisibleChange] whether the support button should be shown (list scrolled to the top),
+ * observing the scroll via [snapshotFlow] so the screen isn't recomposed while scrolling.
+ */
 @Composable
-internal fun LazyListState.isSupportButtonVisible() = remember(this) {
-    derivedStateOf {
-        firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0
+internal fun SupportButtonVisibilityEffect(
+    lazyListState: LazyListState,
+    onVisibleChange: (Boolean) -> Unit
+) {
+    val currentOnVisibleChange by rememberUpdatedState(onVisibleChange)
+    LaunchedEffect(lazyListState) {
+        snapshotFlow {
+            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
+        }.collect { currentOnVisibleChange(it) }
     }
-}.value
+}
 
 @Composable
 internal fun Modifier.update(onUpdate: @Composable Modifier.() -> Modifier) = this.onUpdate()

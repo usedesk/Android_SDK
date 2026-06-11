@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import ru.usedesk.common_gui.R as commonR
 
 class UsedeskToolbarAdapter(
     private val binding: Binding,
@@ -49,8 +50,8 @@ class UsedeskToolbarAdapter(
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
         val toolbar: Toolbar = rootView as Toolbar
-        val ivBack: ImageView = rootView.findViewById(R.id.iv_back)
-        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
-        val ivAction: ImageView = rootView.findViewById(R.id.iv_action)
+        val ivBack: ImageView = rootView.findViewById(commonR.id.iv_back)
+        val tvTitle: TextView = rootView.findViewById(commonR.id.tv_title)
+        val ivAction: ImageView = rootView.findViewById(commonR.id.iv_action)
     }
 }

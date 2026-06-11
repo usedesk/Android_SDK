@@ -13,11 +13,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import ru.usedesk.chat_gui.IUsedeskOnAttachmentClickListener
-import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
-import ru.usedesk.chat_gui.IUsedeskOnFileClickListener
-import ru.usedesk.chat_gui.IUsedeskOnUrlClickListener
-import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.UsedeskOnAttachmentClickListener
+import ru.usedesk.chat_gui.UsedeskOnDownloadListener
+import ru.usedesk.chat_gui.UsedeskOnFileClickListener
+import ru.usedesk.chat_gui.UsedeskOnUrlClickListener
 import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.chat.di.ChatUiComponent
@@ -33,6 +32,7 @@ import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.inflateItem
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileSize
+import ru.usedesk.chat_gui.R as chatR
 
 internal class MessagesPage : UsedeskFragment() {
 
@@ -54,8 +54,8 @@ internal class MessagesPage : UsedeskFragment() {
     ) = inflateItem(
         inflater = inflater,
         container = container,
-        defaultLayoutId = R.layout.usedesk_page_messages,
-        defaultStyleId = R.style.Usedesk_Chat_Screen_Messages_Page,
+        defaultLayoutId = chatR.layout.usedesk_page_messages,
+        defaultStyleId = chatR.style.Usedesk_Chat_Screen_Messages_Page,
         createBinding = ::Binding,
     ).also {
         binding = it
@@ -135,7 +135,7 @@ internal class MessagesPage : UsedeskFragment() {
             }
             if (old?.openUrl != new.openUrl) {
                 new.openUrl?.use {
-                    findParent<IUsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
+                    findParent<UsedeskOnUrlClickListener>()?.onUrlClick(it) ?: onUrlClick(it)
                 }
             }
         }
@@ -151,8 +151,8 @@ internal class MessagesPage : UsedeskFragment() {
         if (rejectedFiles.isNotEmpty()) {
             val message = getString(
                 when (rejectedFiles.size) {
-                    1 -> R.string.usedesk_file_size_exceeds
-                    else -> R.string.usedesk_files_size_exceeds
+                    1 -> chatR.string.usedesk_file_size_exceeds
+                    else -> chatR.string.usedesk_files_size_exceeds
                 },
                 MAX_FILE_SIZE_MB
             )
@@ -196,7 +196,7 @@ internal class MessagesPage : UsedeskFragment() {
             supportWindowInsets = chatArgs.supportWindowInsets,
             lifecycleCoroutineScope = lifecycleScope,
         ) {
-            findParent<IUsedeskOnAttachmentClickListener>()?.onAttachmentClick()
+            findParent<UsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
         }
 
@@ -209,9 +209,9 @@ internal class MessagesPage : UsedeskFragment() {
             lifecycleScope = lifecycleScope,
             chatArgs = chatArgs,
             mediaPlayerAdapter = mediaPlayerAdapter,
-            onFileClick = { findParent<IUsedeskOnFileClickListener>()?.onFileClick(it) },
+            onFileClick = { findParent<UsedeskOnFileClickListener>()?.onFileClick(it) },
             onFileDownloadClick = {
-                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                findParent<UsedeskOnDownloadListener>()?.onDownload(
                     it.content,
                     it.name
                 )
@@ -242,23 +242,26 @@ internal class MessagesPage : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val rvMessages: RecyclerView = rootView.findViewById(R.id.rv_messages)
-        val fabContainer: ViewGroup = rootView.findViewById(R.id.fab_container)
-        val fabToBottom: FloatingActionButton = rootView.findViewById(R.id.fab_to_bottom)
-        val tvToBottom: TextView = rootView.findViewById(R.id.tv_to_bottom_counter)
+        val rvMessages: RecyclerView = rootView.findViewById(chatR.id.rv_messages)
+        val fabContainer: ViewGroup = rootView.findViewById(chatR.id.fab_container)
+        val fabToBottom: FloatingActionButton = rootView.findViewById(chatR.id.fab_to_bottom)
+        val tvToBottom: TextView = rootView.findViewById(chatR.id.tv_to_bottom_counter)
         val messagePanel =
-            MessagePanelAdapter.Binding(rootView.findViewById(R.id.l_message_panel), defaultStyleId)
-        val lMessagesContainer: ViewGroup = rootView.findViewById(R.id.l_messages_container)
+            MessagePanelAdapter.Binding(
+                rootView.findViewById(chatR.id.l_message_panel),
+                defaultStyleId
+            )
+        val lMessagesContainer: ViewGroup = rootView.findViewById(chatR.id.l_messages_container)
         val dateBinding = getDateBinding(lMessagesContainer)
 
         private fun getDateBinding(rootView: ViewGroup): DateBinding {
             val dateView = rootView.findViewWithTag<View>(DATE_ITEM_VIEW_TAG)
             return when {
-                dateView != null -> DateBinding(dateView, R.style.Usedesk_Chat_Date)
+                dateView != null -> DateBinding(dateView, chatR.style.Usedesk_Chat_Date)
                 else -> inflateItem(
                     rootView,
-                    R.layout.usedesk_item_chat_date,
-                    R.style.Usedesk_Chat_Date
+                    chatR.layout.usedesk_item_chat_date,
+                    chatR.style.Usedesk_Chat_Date
                 ) { view, style ->
                     view.tag = DATE_ITEM_VIEW_TAG
                     rootView.addView(view)

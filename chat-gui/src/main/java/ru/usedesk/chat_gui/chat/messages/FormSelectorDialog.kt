@@ -4,13 +4,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import android.widget.TextView
-import ru.usedesk.chat_gui.R
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskBottomSheetDialog
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.chat_gui.R as chatR
+import ru.usedesk.common_gui.R as commonR
 
 internal class FormSelectorDialog private constructor(
     screen: UsedeskFragment,
@@ -23,7 +24,7 @@ internal class FormSelectorDialog private constructor(
         binding = inflateItem(
             layoutInflater,
             screen.view as ViewGroup,
-            R.layout.usedesk_dialog_form_selector,
+            chatR.layout.usedesk_dialog_form_selector,
             dialogStyle,
             ::Binding
         ).apply {
@@ -40,7 +41,7 @@ internal class FormSelectorDialog private constructor(
         val availableItems = formSelector.list.items.filter {
             it.parentItemsId.isEmpty() || formSelector.parentSelectedId in it.parentItemsId
         }
-        val values = arrayOf(binding.styleValues.getString(R.attr.usedesk_text_1)) +
+        val values = arrayOf(binding.styleValues.getString(commonR.attr.usedesk_text_1)) +
                 availableItems.map(UsedeskForm.Field.List.Item::name)
 
         binding.npPicker.apply {
@@ -71,12 +72,12 @@ internal class FormSelectorDialog private constructor(
     companion object {
         fun create(screen: UsedeskFragment) = FormSelectorDialog(
             screen,
-            UsedeskResourceManager.getResourceId(R.style.Usedesk_Chat_FormSelector_Dialog)
+            UsedeskResourceManager.getResourceId(chatR.style.Usedesk_Chat_FormSelector_Dialog)
         )
     }
 
     class Binding(rootView: View, defaultStyleId: Int) : UsedeskBinding(rootView, defaultStyleId) {
-        val tvDone: TextView = rootView.findViewById(R.id.tv_done)
-        val npPicker: NumberPicker = rootView.findViewById(R.id.np_picker)
+        val tvDone: TextView = rootView.findViewById(chatR.id.tv_done)
+        val npPicker: NumberPicker = rootView.findViewById(chatR.id.np_picker)
     }
 }

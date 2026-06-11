@@ -6,13 +6,13 @@ import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.SocketSendResponse
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
-import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import javax.inject.Inject
 
 internal class SocketApi @Inject constructor(
     private val gson: Gson,
-    private val usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory
+    private val usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory
 ) {
     private var socketConnection: SocketConnection? = null
     private val mutex = Mutex()

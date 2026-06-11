@@ -14,8 +14,7 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
-import ru.usedesk.chat_gui.IUsedeskOnDownloadListener
-import ru.usedesk.chat_gui.R
+import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskBinding
 import ru.usedesk.common_gui.UsedeskFragment
@@ -26,6 +25,7 @@ import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showImage
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.common_gui.visibleGone
+import ru.usedesk.chat_gui.R as chatR
 
 class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
@@ -40,14 +40,14 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     ) = inflateItem(
         inflater,
         container,
-        R.layout.usedesk_screen_show_file,
-        R.style.Usedesk_Chat_Show_File,
+        chatR.layout.usedesk_screen_show_file,
+        chatR.style.Usedesk_Chat_Show_File,
         ::Binding
     ).apply {
         binding = this
 
         downloadStatusStyleValues = binding.styleValues
-            .getStyleValues(R.attr.usedesk_chat_show_file_download_status_toast)
+            .getStyleValues(chatR.attr.usedesk_chat_show_file_download_status_toast)
 
         binding.ivBack.setOnClickListener { requireActivity().onBackPressed() }
 
@@ -55,7 +55,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
         binding.ivDownload.setOnClickListener {
             viewModel.modelFlow.value.file?.let { file ->
-                findParent<IUsedeskOnDownloadListener>()?.onDownload(
+                findParent<UsedeskOnDownloadListener>()?.onDownload(
                     file.content,
                     file.name
                 )
@@ -184,18 +184,18 @@ class UsedeskShowFileScreen : UsedeskFragment() {
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {
-        val lToolbar: BlurView = rootView.findViewById(R.id.l_toolbar)
-        val lBottom: BlurView = rootView.findViewById(R.id.l_bottom)
-        val lImage: ViewGroup = rootView.findViewById(R.id.l_image)
-        val lFile: ViewGroup = rootView.findViewById(R.id.l_file)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pb_loading)
-        val ivBack: ImageView = rootView.findViewById(R.id.iv_back)
-        val ivShare: ImageView = rootView.findViewById(R.id.iv_share)
-        val ivError: ImageView = rootView.findViewById(R.id.iv_error)
-        val ivImage: ImageView = rootView.findViewById(R.id.iv_image)
-        val tvTitle: TextView = rootView.findViewById(R.id.tv_title)
-        val tvFileName: TextView = rootView.findViewById(R.id.tv_file_name)
-        val tvFileSize: TextView = rootView.findViewById(R.id.tv_file_size)
-        val ivDownload: ImageView = rootView.findViewById(R.id.iv_download)
+        val lToolbar: BlurView = rootView.findViewById(chatR.id.l_toolbar)
+        val lBottom: BlurView = rootView.findViewById(chatR.id.l_bottom)
+        val lImage: ViewGroup = rootView.findViewById(chatR.id.l_image)
+        val lFile: ViewGroup = rootView.findViewById(chatR.id.l_file)
+        val pbLoading: ProgressBar = rootView.findViewById(chatR.id.pb_loading)
+        val ivBack: ImageView = rootView.findViewById(chatR.id.iv_back)
+        val ivShare: ImageView = rootView.findViewById(chatR.id.iv_share)
+        val ivError: ImageView = rootView.findViewById(chatR.id.iv_error)
+        val ivImage: ImageView = rootView.findViewById(chatR.id.iv_image)
+        val tvTitle: TextView = rootView.findViewById(chatR.id.tv_title)
+        val tvFileName: TextView = rootView.findViewById(chatR.id.tv_file_name)
+        val tvFileSize: TextView = rootView.findViewById(chatR.id.tv_file_size)
+        val ivDownload: ImageView = rootView.findViewById(chatR.id.iv_download)
     }
 }

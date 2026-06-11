@@ -2,10 +2,10 @@ package ru.usedesk.knowledgebase_gui.compose
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.layoutId
@@ -35,30 +35,33 @@ private fun UsedeskKnowledgeBaseTheme.collapsedHeight() = dimensions.rootPadding
         dimensions.toolbarIconSize +
         dimensions.toolbarBottomPadding
 
+/**
+ * Top app bar that collapses on scroll — scroll/search-mode changes re-run measure/draw (the
+ * [MeasurePolicy] and placement layers), never composition (like material3's `MediumTopAppBar`).
+ *
+ * @param onSearchModeEntered fires once the collapse-into-[searchMode] animation finishes (the search
+ * field is focused only then).
+ */
 @Composable
 internal fun CustomToolbar(
     theme: UsedeskKnowledgeBaseTheme,
     title: String,
     scrollBehavior: CustomToolbarScrollBehavior,
-    onBackPressed: () -> Unit
+    searchMode: Boolean,
+    onBackPressed: () -> Unit,
+    onSearchModeEntered: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val fullyCollapsedTitleScale = theme.fullyCollapsedTitleScale()
-
-    val collapsingTitleScale = lerp(
-        1f,
-        fullyCollapsedTitleScale,
-        scrollBehavior.state.collapsedFraction
+    val searchFraction = animateFloatAsState(
+        targetValue = if (searchMode) 1f else 0f,
+        animationSpec = remember { theme.animationSpec() },
+        label = "toolbarSearchFraction",
+        finishedListener = { value -> if (value == 1f) onSearchModeEntered() }
     )
 
-    val collapsedHeight = theme.collapsedHeight()
-
-    Box(
-        modifier = Modifier.padding(end = theme.dimensions.rootPadding.end)
-    ) {
+    Box(modifier = modifier.padding(end = theme.dimensions.rootPadding.end)) {
         Layout(
-            modifier = Modifier
-                .background(color = theme.colors.rootBackground)
-                .heightIn(min = collapsedHeight),
+            modifier = Modifier.background(color = theme.colors.rootBackground),
             content = {
                 Crossfade(
                     modifier = Modifier
@@ -69,13 +72,7 @@ internal fun CustomToolbar(
                     animationSpec = remember { theme.animationSpec() }
                 ) { title ->
                     Text(
-                        modifier = Modifier
-                            .wrapContentHeight(align = Alignment.Top)
-                            .graphicsLayer(
-                                scaleX = collapsingTitleScale,
-                                scaleY = collapsingTitleScale,
-                                transformOrigin = TransformOrigin(0f, 0f)
-                            ),
+                        modifier = Modifier.wrapContentHeight(align = Alignment.Top),
                         text = title,
                         style = theme.textStyles.toolbarExpandedTitle
                     )
@@ -89,14 +86,7 @@ internal fun CustomToolbar(
                     animationSpec = remember { theme.animationSpec() }
                 ) { title ->
                     Text(
-                        modifier = Modifier
-                            .layoutId(CollapsedTitleId)
-                            .wrapContentHeight(align = Alignment.Top)
-                            .graphicsLayer(
-                                scaleX = collapsingTitleScale,
-                                scaleY = collapsingTitleScale,
-                                transformOrigin = TransformOrigin(0f, 0f)
-                            ),
+                        modifier = Modifier.wrapContentHeight(align = Alignment.Top),
                         text = title,
                         style = theme.textStyles.toolbarExpandedTitle,
                         maxLines = 1,
@@ -114,28 +104,30 @@ internal fun CustomToolbar(
                         )
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(theme.dimensions.toolbarIconSize),
+                        modifier = Modifier.size(theme.dimensions.toolbarIconSize),
                         painter = painterResource(theme.drawables.iconBack),
                         tint = Color.Unspecified,
                         contentDescription = null
                     )
                 }
             },
-            measurePolicy = measurePolicy(theme, scrollBehavior)
+            measurePolicy = rememberToolbarMeasurePolicy(theme, scrollBehavior, searchFraction)
         )
     }
 }
 
 @Composable
-private fun measurePolicy(
+private fun rememberToolbarMeasurePolicy(
     theme: UsedeskKnowledgeBaseTheme,
-    scrollBehavior: CustomToolbarScrollBehavior
-): MeasurePolicy = remember(theme, scrollBehavior) {
+    scrollBehavior: CustomToolbarScrollBehavior,
+    searchFraction: State<Float>
+): MeasurePolicy = remember(theme, scrollBehavior, searchFraction) {
     MeasurePolicy { measurables, constraints ->
         val collapsedFraction = scrollBehavior.state.collapsedFraction
+        val searchFractionValue = searchFraction.value
         val fullyCollapsedTitleScale = theme.fullyCollapsedTitleScale()
-        val collapsedHeight = theme.collapsedHeight()
+        val collapsingTitleScale = lerp(1f, fullyCollapsedTitleScale, collapsedFraction)
+        val contentAlpha = 1f - searchFractionValue
 
         val intervalX = theme.dimensions.toolbarIntervalX.toPx()
         val intervalY = theme.dimensions.toolbarIntervalY.toPx()
@@ -207,29 +199,46 @@ private fun measurePolicy(
         val expandedToolbarHeightPx =
             topPadding + navigationIconYOffset + expandedTitlePlaceable.height + bottomPadding
 
-        val toolbarHeightPx = lerp(
+        // Collapse with scroll first, then shrink into the search-mode strip.
+        val scrolledHeightPx = lerp(
             expandedToolbarHeightPx,
-            collapsedHeight.toPx(),
+            theme.collapsedHeight().toPx(),
             collapsedFraction
-        ).roundToInt()
+        )
+        val toolbarHeightPx = lerp(
+            scrolledHeightPx,
+            bottomPadding,
+            searchFractionValue
+        ).roundToInt().coerceAtLeast(0)
 
         // Placing toolbar widgets:
         val totalTitleY = (topPadding + titleY).roundToInt()
         val totalTitleX = (startPadding + titleX).roundToInt()
         layout(constraints.maxWidth, toolbarHeightPx) {
-            navigationIconPlaceable.placeRelative(
+            navigationIconPlaceable.placeRelativeWithLayer(
                 x = startPadding.roundToInt(),
-                y = topPadding.roundToInt()
+                y = topPadding.roundToInt(),
+                layerBlock = { alpha = contentAlpha }
             )
             expandedTitlePlaceable.placeRelativeWithLayer(
                 x = totalTitleX,
                 y = totalTitleY,
-                layerBlock = { alpha = sin((1f - collapsedFraction) * Math.PI / 2f).toFloat() }
+                layerBlock = {
+                    alpha = sin((1f - collapsedFraction) * Math.PI / 2f).toFloat() * contentAlpha
+                    scaleX = collapsingTitleScale
+                    scaleY = collapsingTitleScale
+                    transformOrigin = TransformOrigin(0f, 0f)
+                }
             )
             collapsedTitlePlaceable.placeRelativeWithLayer(
                 x = totalTitleX,
                 y = totalTitleY,
-                layerBlock = { alpha = sin(collapsedFraction * Math.PI / 2f).toFloat() }
+                layerBlock = {
+                    alpha = sin(collapsedFraction * Math.PI / 2f).toFloat() * contentAlpha
+                    scaleX = collapsingTitleScale
+                    scaleY = collapsingTitleScale
+                    transformOrigin = TransformOrigin(0f, 0f)
+                }
             )
         }
     }
@@ -242,12 +251,6 @@ private fun lerpsin(a: Float, b: Float, fraction: Float): Float = lerp(
     b,
     sin(fraction * Math.PI / 2f).toFloat()
 )
-
-/*private fun lerpcos(a: Float, b: Float, fraction: Float): Float = lerp(
-    a,
-    b,
-    cos(fraction * Math.PI / 2f).toFloat()
-)*/
 
 private const val ExpandedTitleId = "expandedTitle"
 private const val CollapsedTitleId = "collapsedTitle"

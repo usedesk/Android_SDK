@@ -14,14 +14,14 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRespo
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.Inited
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.SetClient
 import ru.usedesk.common_sdk.UsedeskLog
-import ru.usedesk.common_sdk.api.IUsedeskOkHttpClientFactory
+import ru.usedesk.common_sdk.api.UsedeskOkHttpClientFactory
 import ru.usedesk.common_sdk.entity.exceptions.UsedeskSocketException
 import java.net.HttpURLConnection
 
 internal class SocketConnection(
     private val gson: Gson,
     url: String,
-    usedeskOkHttpClientFactory: IUsedeskOkHttpClientFactory,
+    usedeskOkHttpClientFactory: UsedeskOkHttpClientFactory,
     private val initChatRequest: SocketRequest.Init,
     private val eventListener: SocketApi.EventListener
 ) {

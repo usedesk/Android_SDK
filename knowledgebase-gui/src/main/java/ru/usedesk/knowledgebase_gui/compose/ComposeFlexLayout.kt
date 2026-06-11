@@ -61,7 +61,7 @@ private fun getFlexRows(
 ): List<List<Placeable>> {
     val rows = mutableListOf<List<Placeable>>()
 
-    if (measurables.size <= 1) {
+    if (measurables.isEmpty()) {
         return rows
     }
 

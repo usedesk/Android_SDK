@@ -3,8 +3,8 @@ package ru.usedesk.chat_gui.chat.loading
 
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.domain.IUsedeskChat
-import ru.usedesk.chat_sdk.entity.IUsedeskActionListener
+import ru.usedesk.chat_sdk.domain.UsedeskChat
+import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.common_gui.UsedeskCommonViewLoadingAdapter.State
@@ -15,9 +15,9 @@ internal class LoadingViewModel : UsedeskViewModel<LoadingViewModel.Model>(Model
 
     private val usedeskChat = UsedeskChatSdk.requireInstance()
 
-    private val actionListener = object : IUsedeskActionListener {
+    private val actionListener = object : UsedeskActionListener {
         override fun onModel(
-            model: IUsedeskChat.Model,
+            model: UsedeskChat.Model,
             newMessages: List<UsedeskMessage>,
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>

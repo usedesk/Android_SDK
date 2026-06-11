@@ -1,5 +1,6 @@
 package ru.usedesk.knowledgebase_gui.screen
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
@@ -9,9 +10,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_gui.UsedeskFragment
+import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.screen.compose.ComposeRoot
+import ru.usedesk.knowledgebase_gui.screen.compose.article.ArticleViewsHolder
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
@@ -31,6 +34,21 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
     )
 
+    private val articleViews: ArticleViewsHolder by viewModels()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        articleViews.attachTo(
+            activity = requireActivity(),
+            fullscreenListener = findParent<UsedeskOnFullscreenListener>()
+        )
+    }
+
+    override fun onDetach() {
+        articleViews.detach()
+        super.onDetach()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,16 +61,24 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 theme = theme,
                 isSupportButtonVisible = isSupportButtonVisible,
                 viewModel = viewModel,
-                onBackPressed = remember { requireActivity()::onBackPressed },
-                onGoSupport = remember {
-                    { findParent<IUsedeskOnSupportClickListener>()?.onSupportClick() }
+                articleViews = articleViews,
+                onBackPressed = remember {
+                    {
+                        if (!this@UsedeskKnowledgeBaseScreen.onBackPressed()) {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                        }
+                    }
                 },
-                onWebUrl = remember { { findParent<IUsedeskOnWebUrlListener>()?.onWebUrl(it) } }
+                onGoSupport = remember {
+                    { findParent<UsedeskOnSupportClickListener>()?.onSupportClick() }
+                },
+                onWebUrl = remember { { findParent<UsedeskOnWebUrlListener>()?.onWebUrl(it) } }
             )
         }
     }
 
-    override fun onBackPressed() = viewModel.onBackPressed()
+    override fun onBackPressed() =
+        articleViews.webView.exitFullscreen() || viewModel.onBackPressed()
 
     companion object {
         private const val KEY_CONFIGURATION = "a"

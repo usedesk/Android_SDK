@@ -4,12 +4,12 @@ package ru.usedesk.knowledgebase_gui.screen.compose.blocks.search
 import androidx.compose.foundation.lazy.LazyListState
 import ru.usedesk.common_gui.UsedeskViewModel
 import ru.usedesk.knowledgebase_gui._entity.LoadingState
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor
-import ru.usedesk.knowledgebase_gui.domain.IKnowledgeBaseInteractor.ArticlesModel.SearchItem
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor
+import ru.usedesk.knowledgebase_gui.domain.KnowledgeBaseInteractor.ArticlesModel.SearchItem
 import ru.usedesk.knowledgebase_gui.screen.compose.blocks.search.SearchViewModel.State
 
 internal class SearchViewModel(
-    private val kbInteractor: IKnowledgeBaseInteractor
+    private val kbInteractor: KnowledgeBaseInteractor
 ) : UsedeskViewModel<State>(State()) {
 
     init {
@@ -63,15 +63,18 @@ internal class SearchViewModel(
     }
 
     fun lowestItemShowed() {
+        var loadNextPage = false
         setModel {
             val size = content?.size ?: 0
             when {
-                size > itemShowedIndex -> copy(itemShowedIndex = size).apply {
-                    kbInteractor.loadArticles(nextPage = true)
+                size > itemShowedIndex -> {
+                    loadNextPage = true
+                    copy(itemShowedIndex = size)
                 }
                 else -> this
             }
         }
+        if (loadNextPage) kbInteractor.loadArticles(nextPage = true)
     }
 
     data class State(

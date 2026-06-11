@@ -20,10 +20,10 @@ import ru.usedesk.common_gui.UsedeskTextChangeListener
 import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showInstead
 import ru.usedesk.sample.GlideApp
-import ru.usedesk.sample.R
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
+import ru.usedesk.sample.R as sampleR
 
 class ConfigurationScreen : UsedeskFragment() {
 
@@ -37,7 +37,7 @@ class ConfigurationScreen : UsedeskFragment() {
     ): View {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.screen_configuration,
+            sampleR.layout.screen_configuration,
             container,
             false
         )
@@ -49,8 +49,8 @@ class ConfigurationScreen : UsedeskFragment() {
             if (old?.avatar != new.avatar) {
                 GlideApp.with(binding.ivAvatar)
                     .load(new.avatar)
-                    .placeholder(R.drawable.add_avatar)
-                    .error(R.drawable.add_avatar)
+                    .placeholder(sampleR.drawable.add_avatar)
+                    .error(sampleR.drawable.add_avatar)
                     .into(binding.ivAvatar)
             }
             if (old?.configuration != new.configuration) {
@@ -373,37 +373,37 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilUrlApi,
                 validUrlApi,
-                R.string.validation_url_error
+                sampleR.string.validation_url_error
             )
             showError(
                 binding.tilUrlChat,
                 validUrlChat,
-                R.string.validation_url_error
+                sampleR.string.validation_url_error
             )
             showError(
                 binding.tilCompanyId,
                 validCompanyId,
-                R.string.validation_empty_error
+                sampleR.string.validation_empty_error
             )
             showError(
                 binding.tilChannelId,
                 validChannelId,
-                R.string.validation_empty_error
+                sampleR.string.validation_empty_error
             )
             showError(
                 binding.tilClientId,
                 validClientId,
-                R.string.validation_empty_error
+                sampleR.string.validation_empty_error
             )
             showError(
                 binding.tilClientEmail,
                 validClientEmail,
-                R.string.validation_email_error
+                sampleR.string.validation_email_error
             )
             showError(
                 binding.tilClientPhoneNumber,
                 validClientPhoneNumber,
-                R.string.validation_phone_error
+                sampleR.string.validation_phone_error
             )
         }
 
@@ -411,17 +411,17 @@ class ConfigurationScreen : UsedeskFragment() {
             showError(
                 binding.tilUrlApi,
                 validUrlApi,
-                R.string.validation_url_error
+                sampleR.string.validation_url_error
             )
             showError(
                 binding.tilApiToken,
                 validToken,
-                R.string.validation_empty_error
+                sampleR.string.validation_empty_error
             )
             showError(
                 binding.tilKbId,
                 validKbId,
-                R.string.validation_empty_error
+                sampleR.string.validation_empty_error
             )
         }
     }

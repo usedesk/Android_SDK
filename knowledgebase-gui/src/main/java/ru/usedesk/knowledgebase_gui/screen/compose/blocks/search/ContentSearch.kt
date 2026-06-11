@@ -17,10 +17,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,9 +33,9 @@ import androidx.lifecycle.ViewModelStoreOwner
 import ru.usedesk.knowledgebase_gui.compose.CardCircleProgress
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.compose.ScreenNotLoaded
+import ru.usedesk.knowledgebase_gui.compose.SupportButtonVisibilityEffect
 import ru.usedesk.knowledgebase_gui.compose.cardItem
 import ru.usedesk.knowledgebase_gui.compose.clickableItem
-import ru.usedesk.knowledgebase_gui.compose.isSupportButtonVisible
 import ru.usedesk.knowledgebase_gui.compose.kbUiViewModel
 import ru.usedesk.knowledgebase_gui.compose.padding
 import ru.usedesk.knowledgebase_gui.compose.rememberViewModelStoreOwner
@@ -57,7 +56,7 @@ private fun Preview() {
         ContentSearch(
             theme = theme,
             viewModelStoreOwner = rememberViewModelStoreOwner { ViewModelStore() },
-            supportButtonVisible = remember { mutableStateOf(false) },
+            onSupportButtonVisibleChange = {},
             onArticleClick = {}
         )
     }
@@ -67,7 +66,7 @@ private fun Preview() {
 internal fun ContentSearch(
     theme: UsedeskKnowledgeBaseTheme,
     viewModelStoreOwner: ViewModelStoreOwner,
-    supportButtonVisible: MutableState<Boolean>,
+    onSupportButtonVisibleChange: (Boolean) -> Unit,
     onArticleClick: (UsedeskArticleContent) -> Unit
 ) {
     val viewModel = kbUiViewModel(
@@ -75,7 +74,7 @@ internal fun ContentSearch(
         factory = KbUiViewModelFactory { kbUiComponent -> SearchViewModel(kbUiComponent.interactor) }
     )
     val state by viewModel.modelFlow.collectAsState()
-    supportButtonVisible.value = state.lazyListState.isSupportButtonVisible()
+    SupportButtonVisibilityEffect(state.lazyListState, onSupportButtonVisibleChange)
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(
             targetState = state.reloadError,
@@ -150,7 +149,7 @@ internal fun ContentSearch(
                                 }
                             }
                             item(key = content.size) {
-                                viewModel.lowestItemShowed()
+                                LaunchedEffect(Unit) { viewModel.lowestItemShowed() }
                                 Box(modifier = Modifier.fillMaxWidth()) {
                                     CardCircleProgress(
                                         theme = theme,

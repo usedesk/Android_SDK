@@ -1,11 +1,10 @@
 package ru.usedesk.chat_gui.chat.messages.rating
 
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.updateLayoutParams
 import ru.usedesk.chat_sdk.entity.UsedeskRating
 import ru.usedesk.common_gui.UsedeskResourceManager
@@ -24,9 +23,12 @@ internal class RatingViewBinder(
         .getStyleValues(chatR.attr.usedesk_chat_message_feedback_good_image)
     private val badStyle = styleValues
         .getStyleValues(chatR.attr.usedesk_chat_message_feedback_bad_image)
+    private val starStyle = styleValues
+        .getStyleValues(chatR.attr.usedesk_chat_message_feedback_star_image)
     private val goodAtStart = goodStyle
         .getInt(android.R.attr.layout_gravity) in arrayOf(Gravity.START, Gravity.LEFT)
     private val reactionWidth = root.layoutParams.width
+    private val inflater = LayoutInflater.from(options.context)
 
     fun bind(rating: UsedeskRating, onSelect: (Long) -> Unit) {
         root.visibility = View.VISIBLE
@@ -92,17 +94,16 @@ internal class RatingViewBinder(
         val selectedIndex = rating.options.indexOfFirst { it.id == rating.selectedId }
         rating.options.forEachIndexed { index, option ->
             val selected = selectedIndex >= 0 && index <= selectedIndex
-            AppCompatImageView(options.context).apply {
-                val compact = rating.options.size > 5
-                val size = dp(if (compact) 28 else 44)
-                layoutParams = LinearLayout.LayoutParams(size, size).apply {
-                    if (!compact && index > 0) marginStart = dp(2)
-                }
-                val padding = dp(if (compact) 3 else 6)
-                setPadding(padding, padding, padding, padding)
+            (inflater.inflate(
+                chatR.layout.usedesk_item_chat_rating_star,
+                options,
+                false
+            ) as ImageView).apply {
                 setImageResource(
-                    if (selected) chatR.drawable.usedesk_ic_star_filled
-                    else chatR.drawable.usedesk_ic_star_outline
+                    starStyle.getId(
+                        if (selected) commonR.attr.usedesk_drawable_2
+                        else commonR.attr.usedesk_drawable_1
+                    )
                 )
                 contentDescription = option.label
                 isEnabled = rating.selectedId == null
@@ -186,6 +187,4 @@ internal class RatingViewBinder(
     private fun UsedeskRating.option(reaction: UsedeskRating.Option.Reaction) = options.first {
         it.reaction == reaction
     }
-
-    private fun dp(value: Int) = (value * root.resources.displayMetrics.density).toInt()
 }

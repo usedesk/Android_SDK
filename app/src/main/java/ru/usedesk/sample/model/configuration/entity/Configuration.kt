@@ -35,6 +35,7 @@ data class Configuration(
         val foregroundService: Boolean = false,
         val cacheFiles: Boolean = true,
         val adaptiveTimePadding: Boolean = true,
+        val customRating: Boolean = false,
         val groupAgentMessages: Boolean = true,
         val additionalFields: Map<Long, String> = mapOf(),
         val additionalNestedFields: List<Map<Long, String>> = listOf()

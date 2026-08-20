@@ -317,28 +317,36 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun createChatScreenBundle(configuration: Configuration): Bundle {
+        val chat = configuration.chat
         val chatConfiguration = configuration.toChatConfiguration()
-        if (configuration.chat.adaptiveTimePadding) {
-            mapOf(
-                chatR.style.Usedesk_Chat_Message_Text_Agent to sampleR.style.Custom_Chat_Message_Text_Agent,
-                chatR.style.Usedesk_Chat_Message_Text_Client to sampleR.style.Custom_Chat_Message_Text_Client
-            )
+        val agentMessageStyle = when {
+            chat.customRating -> if (chat.adaptiveTimePadding) {
+                sampleR.style.Custom_Chat_Message_Text_Agent_AdaptiveRating
+            } else {
+                sampleR.style.Custom_Chat_Message_Text_Agent_Rating
+            }
+            chat.adaptiveTimePadding -> sampleR.style.Custom_Chat_Message_Text_Agent
+            else -> chatR.style.Usedesk_Chat_Message_Text_Agent
+        }
+        val clientMessageStyle = if (chat.adaptiveTimePadding) {
+            sampleR.style.Custom_Chat_Message_Text_Client
         } else {
-            mapOf(
-                chatR.style.Usedesk_Chat_Message_Text_Agent to chatR.style.Usedesk_Chat_Message_Text_Agent,
-                chatR.style.Usedesk_Chat_Message_Text_Client to chatR.style.Usedesk_Chat_Message_Text_Client
-            )
-        }.forEach {
+            chatR.style.Usedesk_Chat_Message_Text_Client
+        }
+        mapOf(
+            chatR.style.Usedesk_Chat_Message_Text_Agent to agentMessageStyle,
+            chatR.style.Usedesk_Chat_Message_Text_Client to clientMessageStyle
+        ).forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
         return UsedeskChatScreen.createBundle(
             usedeskChatConfiguration = chatConfiguration,
-            agentName = configuration.chat.customAgentName.ifEmpty { null },
+            agentName = chat.customAgentName.ifEmpty { null },
             rejectedFileExtensions = REJECTED_FILE_TYPES,
-            messagesDateFormat = configuration.chat.messagesDateFormat.ifEmpty { null },
-            messageTimeFormat = configuration.chat.messageTimeFormat.ifEmpty { null },
-            groupAgentMessages = configuration.chat.groupAgentMessages,
-            adaptiveTextMessageTimePadding = configuration.chat.adaptiveTimePadding,
+            messagesDateFormat = chat.messagesDateFormat.ifEmpty { null },
+            messageTimeFormat = chat.messageTimeFormat.ifEmpty { null },
+            groupAgentMessages = chat.groupAgentMessages,
+            adaptiveTextMessageTimePadding = chat.adaptiveTimePadding,
             supportWindowInsets = true,
         )
     }

@@ -30,6 +30,42 @@
     </style>
     <!--Adaptive Padding End-->
 
+    <style name="Custom.Chat.Message.Feedback.Good.Image" parent="Usedesk.Chat.Message.Feedback.Good.Image">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_star_outline</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_star_filled</item>
+    </style>
+
+    <style name="Custom.Chat.Message.Feedback.Bad.Image" parent="Usedesk.Chat.Message.Feedback.Bad.Image">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_star_outline</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_star_filled</item>
+    </style>
+
+    <style name="Custom.Chat.Message.Feedback.Star.Image" parent="Usedesk.Chat.Message.Feedback.Star.Image">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:padding">3dp</item>
+        <item name="usedesk_drawable_1">@drawable/usedesk_ic_smile_sad</item>
+        <item name="usedesk_drawable_2">@drawable/usedesk_ic_smile_happy_colored</item>
+    </style>
+
+    <style name="Custom.Chat.Message.Text.Agent.Rating" parent="Usedesk.Chat.Message.Text.Agent">
+        <item name="usedesk_chat_message_feedback_good_image">@style/Custom.Chat.Message.Feedback.Good.Image</item>
+        <item name="usedesk_chat_message_feedback_bad_image">@style/Custom.Chat.Message.Feedback.Bad.Image</item>
+        <item name="usedesk_chat_message_feedback_star_image">@style/Custom.Chat.Message.Feedback.Star.Image</item>
+    </style>
+
+    <style name="Custom.Chat.Message.Text.Agent.AdaptiveRating" parent="Custom.Chat.Message.Text.Agent.Rating">
+        <item name="usedesk_common_container_4">@style/Custom.Chat.Message.Text.Container4</item>
+    </style>
+
     <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">16dp</item>

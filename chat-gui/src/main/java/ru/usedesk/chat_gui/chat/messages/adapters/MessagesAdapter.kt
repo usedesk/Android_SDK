@@ -7,7 +7,6 @@ import android.text.Html
 import android.text.Selection.removeSelection
 import android.text.Spannable
 import android.text.method.LinkMovementMethod
-import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,7 @@ import ru.usedesk.chat_gui.chat.messages.DateBinding
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.ChatItem
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel.Event
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_gui.chat.messages.rating.RatingViewBinder
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentAudio
@@ -1005,15 +1004,17 @@ internal class MessagesAdapter(
         private val binding: MessageTextAgentBinding
     ) : MessageTextViewHolder(binding.rootView, binding.content, false) {
 
-        private val goodStyleValues = binding.styleValues
-            .getStyleValues(chatR.attr.usedesk_chat_message_feedback_good_image)
-
-        private val badStyleValues = binding.styleValues
-            .getStyleValues(chatR.attr.usedesk_chat_message_feedback_bad_image)
-
         private val thanksText = binding.styleValues
             .getStyleValues(chatR.attr.usedesk_chat_message_text_message_text)
             .getString(commonR.attr.usedesk_text_1)
+
+        private val ratingViewBinder = RatingViewBinder(
+            root = binding.content.lFeedback,
+            options = binding.content.lRatingOptions,
+            like = binding.content.ivLike,
+            dislike = binding.content.ivDislike,
+            styleValues = binding.styleValues
+        )
 
         private val formAdapter = MessageFormAdapter(
             viewModel,
@@ -1029,10 +1030,6 @@ internal class MessagesAdapter(
             }
         }
 
-        private val goodAtStart = binding.styleValues
-            .getStyleValues(chatR.attr.usedesk_chat_message_feedback_good_image)
-            .getInt(android.R.attr.layout_gravity) in arrayOf(Gravity.START, Gravity.LEFT)
-
         override fun bind(chatItem: ChatItem) {
             chatItem as ChatItem.Message.Agent
             super.bind(chatItem)
@@ -1040,150 +1037,25 @@ internal class MessagesAdapter(
 
             val messageAgentText = chatItem.message as UsedeskMessageAgentText
             formAdapter.update(messageAgentText)
+            val rating = messageAgentText.rating
 
             binding.content.rootView.layoutParams.apply {
                 width = when {
                     messageAgentText.buttons.isEmpty()
                             && messageAgentText.fieldsInfo.isEmpty()
-                            && !messageAgentText.feedbackNeeded
-                            && messageAgentText.feedback == null -> FrameLayout.LayoutParams.WRAP_CONTENT
+                            && rating == null -> FrameLayout.LayoutParams.WRAP_CONTENT
                     else -> FrameLayout.LayoutParams.MATCH_PARENT
                 }
             }
 
-            val ivLike = binding.content.ivLike
-            val ivDislike = binding.content.ivDislike
-
-            val goodImage = goodStyleValues.getId(commonR.attr.usedesk_drawable_1)
-            val goodColoredImage = goodStyleValues.getId(commonR.attr.usedesk_drawable_2)
-            val badImage = badStyleValues.getId(commonR.attr.usedesk_drawable_1)
-            val badColoredImage = badStyleValues.getId(commonR.attr.usedesk_drawable_2)
-            when {
-                messageAgentText.feedback != null -> {
-                    binding.content.lFeedback.visibility = View.VISIBLE
-
-                    aloneSmile(
-                        ivLike,
-                        binding.content.lFeedback,
-                        goodColoredImage,
-                        messageAgentText.feedback == UsedeskFeedback.LIKE
-                    )
-
-                    aloneSmile(
-                        ivDislike,
-                        binding.content.lFeedback,
-                        badColoredImage,
-                        messageAgentText.feedback == UsedeskFeedback.DISLIKE
-                    )
-
+            if (rating == null) {
+                ratingViewBinder.clear()
+            } else {
+                ratingViewBinder.bind(rating) { ratingId ->
                     setMessageText(thanksText)
+                    viewModel.onEvent(Event.SendRating(messageAgentText, ratingId))
                 }
-                messageAgentText.feedbackNeeded -> {
-                    binding.content.lFeedback.visibility = View.VISIBLE
-
-                    enableSmile(
-                        ivLike,
-                        ivDislike,
-                        binding.content.lFeedback,
-                        goodAtStart,
-                        goodImage,
-                        goodColoredImage
-                    ) {
-                        viewModel.onEvent(
-                            Event.SendFeedback(
-                                messageAgentText,
-                                UsedeskFeedback.LIKE
-                            )
-                        )
-                        setMessageText(thanksText)
-                    }
-
-                    enableSmile(
-                        ivDislike,
-                        ivLike,
-                        binding.content.lFeedback,
-                        !goodAtStart,
-                        badImage,
-                        badColoredImage
-                    ) {
-                        viewModel.onEvent(
-                            Event.SendFeedback(
-                                messageAgentText,
-                                UsedeskFeedback.DISLIKE
-                            )
-                        )
-                        setMessageText(thanksText)
-                    }
-                }
-                else -> binding.content.lFeedback.visibility = View.GONE
-            }
-        }
-
-        private fun aloneSmile(
-            imageView: ImageView,
-            container: ViewGroup,
-            imageId: Int,
-            visible: Boolean
-        ) {
-            imageView.apply {
-                setImageResource(imageId)
-                post {
-                    x = container.width / 4.0f
-                }
-                alpha = when {
-                    visible -> 1.0f
-                    else -> 0.0f
-                }
-                isEnabled = false
-                isClickable = false
-                setOnClickListener(null)
-            }
-        }
-
-        private fun enableSmile(
-            imageViewMain: ImageView,
-            imageViewSub: ImageView,
-            container: ViewGroup,
-            initStart: Boolean,
-            initImageId: Int,
-            activeImageId: Int,
-            onClick: () -> Unit
-        ) {
-            imageViewMain.apply {
-                post {
-                    x = when {
-                        initStart -> 0.0f
-                        else -> container.width / 2.0f
-                    }
-                }
-                alpha = 1.0f
-                scaleX = 1.0f
-                scaleY = 1.0f
-                isEnabled = true
-                setImageResource(initImageId)
-                setOnClickListener {
-                    isEnabled = false
-                    isClickable = false
-                    setOnClickListener(null)
-                    imageViewSub.apply {
-                        isEnabled = false
-                        isClickable = false
-                        setOnClickListener(null)
-                    }
-
-                    setImageResource(activeImageId)
-
-                    onClick()
-
-                    animate().setDuration(500)
-                        .x(container.width / 4.0f)
-
-                    imageViewSub.animate()
-                        .setDuration(500)
-                        .alpha(0.0f)
-                        .scaleX(0.5f)
-                        .scaleY(0.5f)
-                }
+                if (rating.selectedId != null) setMessageText(thanksText)
             }
         }
     }
@@ -1259,6 +1131,7 @@ internal class MessagesAdapter(
         val tvTime: TextView = rootView.findViewById(chatR.id.tv_time)
         val rvItems: RecyclerView = rootView.findViewById(chatR.id.rv_items)
         val lFeedback: ViewGroup = rootView.findViewById(chatR.id.l_feedback)
+        val lRatingOptions: ViewGroup = rootView.findViewById(chatR.id.l_rating_options)
         val tvText: TextView = rootView.findViewById(chatR.id.tv_text)
         val lContent: ViewGroup = rootView.findViewById(chatR.id.l_content)
         val ivLike: ImageView = rootView.findViewById(chatR.id.iv_like)

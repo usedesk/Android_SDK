@@ -28,7 +28,7 @@ internal class MessagesReducer @Inject constructor(
         is Event.MessageDraft -> messageDraft(event)
         is Event.MessagesShowed -> messagesShowed(event)
         is Event.MessageChanged -> messageChanged(event)
-        is Event.SendFeedback -> sendFeedback(event)
+        is Event.SendRating -> sendRating(event)
         is Event.AttachFiles -> attachFiles(event)
         is Event.DetachFile -> detachFile(event)
         is Event.MessageButtonClick -> messageButtonClick(event)
@@ -165,10 +165,10 @@ internal class MessagesReducer @Inject constructor(
         usedeskChat.setMessageDraft(messageDraft)
     }
 
-    private fun State.sendFeedback(event: Event.SendFeedback) = apply {
-        usedeskChat.send(
+    private fun State.sendRating(event: Event.SendRating) = apply {
+        usedeskChat.sendRating(
             event.message,
-            event.feedback
+            event.ratingId
         )
     }
 

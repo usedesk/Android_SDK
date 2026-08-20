@@ -37,7 +37,6 @@ import ru.usedesk.chat_sdk.domain.UsedeskChat.SendOfflineFormResult
 import ru.usedesk.chat_sdk.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
@@ -534,21 +533,23 @@ internal class ChatImpl @Inject constructor(
         }
     }
 
-    override fun send(
+    override fun sendRating(
         agentMessage: UsedeskMessageAgentText,
-        feedback: UsedeskFeedback
+        ratingId: Long
     ) {
+        val rating = agentMessage.rating ?: return
+        val option = rating.options.firstOrNull { it.id == ratingId } ?: return
+
         ioScope.launch {
-            when (apiRepository.sendFeedback(agentMessage.id, feedback)) {
+            when (apiRepository.sendRating(agentMessage.id, option.data)) {
                 is SocketSendResponse.Done -> onMessageUpdate(
                     agentMessage.copy(
-                        feedbackNeeded = false,
-                        feedback = feedback
+                        rating = rating.copy(selectedId = ratingId)
                     )
                 )
                 is SocketSendResponse.Error -> {
                     delay(REPEAT_DELAY)
-                    send(agentMessage, feedback)
+                    sendRating(agentMessage, ratingId)
                 }
             }
         }

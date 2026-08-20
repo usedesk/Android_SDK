@@ -35,7 +35,6 @@ import ru.usedesk.chat_sdk.data.repository.api.loader.socket.SocketApi
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketRequest
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
@@ -210,17 +209,14 @@ internal class ChatApiImpl @Inject constructor(
 
     override fun convertText(text: String) = messageResponseConverter.convertText(text)
 
-    override suspend fun sendFeedback(
+    override suspend fun sendRating(
         messageId: String,
-        feedback: UsedeskFeedback
+        ratingData: String
     ): SocketSendResponse {
         return socketApi.sendRequest(
-            SocketRequest.Feedback(
+            SocketRequest.Rating(
                 messageId = messageId,
-                feedback = when (feedback) {
-                    UsedeskFeedback.LIKE -> "LIKE"
-                    UsedeskFeedback.DISLIKE -> "DISLIKE"
-                }
+                ratingData = ratingData
             )
         )
     }

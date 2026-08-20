@@ -3,7 +3,7 @@ package ru.usedesk.chat_sdk.data.repository.api.loader
 
 import android.util.Patterns
 import ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity.SocketResponse.AddMessage
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
+import ru.usedesk.chat_sdk.entity.UsedeskRating
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageAgentAudio
@@ -161,26 +161,14 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
 
             valueOrNull {
                 val objects: List<MessageObject>
-                val feedbackNeeded: Boolean
-                val feedback: UsedeskFeedback?
+                val rating: UsedeskRating?
                 val text = from.text ?: ""
                 if (!fromClient) {
                     objects = text.toMessageObjects()
-                    feedback = when (from.payload?.userRating) {
-                        "LIKE" -> UsedeskFeedback.LIKE
-                        "DISLIKE" -> UsedeskFeedback.DISLIKE
-                        else -> null
-                    }
-                    feedbackNeeded = feedback == null && from.payload?.buttons?.any {
-                        it?.data == "GOOD_CHAT" ||
-                                it?.data == "BAD_CHAT" ||
-                                it?.icon == "like" ||
-                                it?.icon == "dislike"
-                    } ?: false
+                    rating = RatingResponseConverter.convert(from.payload)
                 } else {
                     objects = listOf(MessageObject.Text(text))
-                    feedbackNeeded = false
-                    feedback = null
+                    rating = null
                 }
 
                 val fileMessages = objects.filterIsInstance<MessageObject.Image>()
@@ -227,20 +215,17 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                         UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                         localId
                     )
-                    else -> {
-                        UsedeskMessageAgentText(
-                            id,
-                            messageDate,
-                            text,
-                            convertedText,
-                            name,
-                            avatar,
-                            feedbackNeeded,
-                            feedback,
-                            buttons,
-                            fieldsInfo = fieldsInfo
-                        )
-                    }
+                    else -> UsedeskMessageAgentText(
+                        id = id,
+                        createdAt = messageDate,
+                        text = text,
+                        convertedText = convertedText,
+                        name = name,
+                        avatar = avatar,
+                        buttons = buttons,
+                        fieldsInfo = fieldsInfo,
+                        rating = rating
+                    )
                 }
                 messages.add(0, textMessage)
             }

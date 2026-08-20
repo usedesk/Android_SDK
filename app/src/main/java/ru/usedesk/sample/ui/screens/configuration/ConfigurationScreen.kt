@@ -216,8 +216,9 @@ class ConfigurationScreen : UsedeskFragment() {
                 messageTimeFormat = binding.etCustomTimeFormat.text.toString(),
                 foregroundService = binding.switchService.isChecked,
                 cacheFiles = binding.switchCacheFiles.isChecked,
-                groupAgentMessages = binding.switchGroupAgentMessages.isChecked,
                 adaptiveTimePadding = binding.adaptiveTimePadding.isChecked,
+                customRating = binding.switchCustomRating.isChecked,
+                groupAgentMessages = binding.switchGroupAgentMessages.isChecked,
                 additionalFields = additionalFields,
                 additionalNestedFields = additionalNestedFields
             ),
@@ -259,8 +260,9 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.etCustomTimeFormat.setText(messageTimeFormat)
         binding.switchService.isChecked = foregroundService
         binding.switchCacheFiles.isChecked = cacheFiles
-        binding.switchGroupAgentMessages.isChecked = groupAgentMessages
         binding.adaptiveTimePadding.isChecked = adaptiveTimePadding
+        binding.switchCustomRating.isChecked = customRating
+        binding.switchGroupAgentMessages.isChecked = groupAgentMessages
         setAdditionalField(
             binding.etAdditionalField1Id,
             binding.etAdditionalField1Value,

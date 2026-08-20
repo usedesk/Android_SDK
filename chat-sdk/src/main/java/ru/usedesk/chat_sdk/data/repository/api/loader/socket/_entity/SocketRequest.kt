@@ -60,12 +60,12 @@ internal sealed class SocketRequest(val type: String) {
         )
     }
 
-    class Feedback(
+    class Rating(
         messageId: String,
-        feedback: String
+        ratingData: String
     ) : SocketRequest(TYPE) {
 
-        private val payload = Payload(feedback, messageId)
+        private val payload = Payload(ratingData, messageId)
 
         private class Payload(
             private val data: String,

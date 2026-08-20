@@ -91,17 +91,31 @@ internal sealed interface SocketResponse {
                 val size: String?
             )
 
-            class Payload(val buttons: Array<Button?>?) {
-
+            class Payload(
+                val buttons: Array<Button?>?,
+                val buttonsCsi: ButtonsCsi? = null,
                 @SerializedName("userRating")
-                val userRating: String? = null
-                val avatar: String? = null
+                val userRating: String? = null,
+                val avatar: String? = null,
                 val messageId: String? = null
+            ) {
 
                 class Button {
                     val type: String? = null
                     val icon: String? = null
                     val data: String? = null
+                }
+
+                class ButtonsCsi(
+                    val buttonType: String?,
+                    val npsType: String?,
+                    val iconType: String?,
+                    val data: List<Item?>?
+                ) {
+                    class Item(
+                        val label: String?,
+                        val id: Long?
+                    )
                 }
             }
         }

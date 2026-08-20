@@ -5,7 +5,6 @@ import androidx.annotation.CheckResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.usedesk.chat_sdk.entity.ChatInited
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineForm
@@ -30,9 +29,9 @@ internal interface ChatApi {
     ): SendOfflineFormResponse
 
     @CheckResult
-    suspend fun sendFeedback(
+    suspend fun sendRating(
         messageId: String,
-        feedback: UsedeskFeedback
+        ratingData: String
     ): SocketSendResponse
 
     @CheckResult

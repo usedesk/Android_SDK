@@ -29,6 +29,7 @@ photoViewVersion = "2.3.0"
 roundedImageViewVersion = "2.3.0"
 composeBomVersion = "2025.07.00"
 playServicesAuthVersion = "21.4.0"
+junitVersion = "4.13.2"
 
 [libraries]
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityVersion" }
@@ -73,6 +74,7 @@ socket-io-client = { group = "io.socket", name = "socket.io-client", version.ref
 blurview = { group = "com.github.Dimezis", name = "BlurView", version.ref = "blurViewVersion" }
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoViewVersion" }
 roundedimageview = { group = "com.makeramen", name = "roundedimageview", version.ref = "roundedImageViewVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

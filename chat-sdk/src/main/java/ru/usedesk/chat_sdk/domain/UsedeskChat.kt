@@ -3,7 +3,6 @@ package ru.usedesk.chat_sdk.domain
 import android.net.Uri
 import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
@@ -42,9 +41,9 @@ interface UsedeskChat {
 
     fun send(fileInfoList: Collection<UsedeskFileInfo>)
 
-    fun send(
+    fun sendRating(
         agentMessage: UsedeskMessageAgentText,
-        feedback: UsedeskFeedback
+        ratingId: Long
     )
 
     fun sendAgain(messageId: String)

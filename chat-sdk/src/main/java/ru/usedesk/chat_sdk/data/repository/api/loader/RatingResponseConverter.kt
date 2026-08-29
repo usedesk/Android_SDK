@@ -5,8 +5,8 @@ import ru.usedesk.chat_sdk.entity.UsedeskRating
 
 internal object RatingResponseConverter {
 
-    private const val LEGACY_LIKE_ID = 1L
-    private const val LEGACY_DISLIKE_ID = 3L
+    private const val LEGACY_LIKE_ID = "1"
+    private const val LEGACY_DISLIKE_ID = "3"
     private const val LEGACY_LIKE_DATA = "LIKE"
     private const val LEGACY_DISLIKE_DATA = "DISLIKE"
     private const val ICON_TYPE_REACTION = "reaction"
@@ -21,7 +21,7 @@ internal object RatingResponseConverter {
             ?.let { buttonsCsi ->
                 val items = buttonsCsi.data.orEmpty()
                 val options = items.mapNotNull { item ->
-                    item?.id?.let { id ->
+                    item?.id?.takeIf { it.isNotBlank() }?.let { id ->
                         UsedeskRating.Option(
                             id = id,
                             label = item.label.orEmpty(),
@@ -84,11 +84,9 @@ internal object RatingResponseConverter {
         )
     }
 
-    private fun String?.toSelectedId(options: List<UsedeskRating.Option>): Long? {
+    private fun String?.toSelectedId(options: List<UsedeskRating.Option>): String? {
         val rating = this?.trim()?.takeIf(String::isNotEmpty) ?: return null
-        rating.toLongOrNull()?.let { id ->
-            return options.firstOrNull { it.id == id }?.id
-        }
+        options.firstOrNull { it.id == rating }?.let { return it.id }
         val normalizedLabel = when {
             rating.equals("LIKE", ignoreCase = true) ||
                     rating.equals("GOOD_CHAT", ignoreCase = true) -> LABEL_LIKE

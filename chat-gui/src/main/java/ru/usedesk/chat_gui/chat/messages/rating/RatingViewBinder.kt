@@ -30,7 +30,7 @@ internal class RatingViewBinder(
     private val reactionWidth = root.layoutParams.width
     private val inflater = LayoutInflater.from(options.context)
 
-    fun bind(rating: UsedeskRating, onSelect: (Long) -> Unit) {
+    fun bind(rating: UsedeskRating, onSelect: (String) -> Unit) {
         root.visibility = View.VISIBLE
         when (rating.appearance) {
             UsedeskRating.Appearance.REACTIONS -> bindReactions(rating, onSelect)
@@ -45,7 +45,7 @@ internal class RatingViewBinder(
         root.visibility = View.GONE
     }
 
-    private fun bindReactions(rating: UsedeskRating, onSelect: (Long) -> Unit) {
+    private fun bindReactions(rating: UsedeskRating, onSelect: (String) -> Unit) {
         root.updateLayoutParams { width = reactionWidth }
         options.removeAllViews()
         options.visibility = View.GONE
@@ -85,7 +85,7 @@ internal class RatingViewBinder(
         }
     }
 
-    private fun bindStars(rating: UsedeskRating, onSelect: (Long) -> Unit) {
+    private fun bindStars(rating: UsedeskRating, onSelect: (String) -> Unit) {
         hideReactions()
         root.updateLayoutParams { width = ViewGroup.LayoutParams.WRAP_CONTENT }
         options.visibility = View.VISIBLE

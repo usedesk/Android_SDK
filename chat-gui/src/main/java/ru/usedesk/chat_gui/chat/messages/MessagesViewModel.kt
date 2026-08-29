@@ -63,7 +63,7 @@ internal class MessagesViewModel @Inject constructor(
 
         class SendRating(
             val message: UsedeskMessageAgentText,
-            val ratingId: Long
+            val ratingId: String
         ) : Event
 
         class AttachFiles(val files: Set<UsedeskFileInfo>) : Event

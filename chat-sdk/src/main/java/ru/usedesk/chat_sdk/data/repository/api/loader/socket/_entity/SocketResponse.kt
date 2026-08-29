@@ -114,7 +114,7 @@ internal sealed interface SocketResponse {
                 ) {
                     class Item(
                         val label: String?,
-                        val id: Long?
+                        val id: String?
                     )
                 }
             }

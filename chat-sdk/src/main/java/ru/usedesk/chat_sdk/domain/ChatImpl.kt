@@ -535,7 +535,7 @@ internal class ChatImpl @Inject constructor(
 
     override fun sendRating(
         agentMessage: UsedeskMessageAgentText,
-        ratingId: Long
+        ratingId: String
     ) {
         val rating = agentMessage.rating ?: return
         val option = rating.options.firstOrNull { it.id == ratingId } ?: return

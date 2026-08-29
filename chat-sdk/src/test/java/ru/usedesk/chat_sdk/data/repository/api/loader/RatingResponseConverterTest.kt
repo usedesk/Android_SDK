@@ -26,11 +26,12 @@ class RatingResponseConverterTest {
                 "nps_type": "three_point",
                 "icon_type": "stars",
                 "data": [
-                  {"label": "low", "id": 30},
-                  {"label": "middle", "id": 20},
-                  {"label": "high", "id": 10}
+                  {"label": "low", "id": "low-id"},
+                  {"label": "middle", "id": "middle-id"},
+                  {"label": "high", "id": "high-id"}
                 ]
-              }
+              },
+              "userRating": "middle-id"
             }
             """
         )
@@ -38,14 +39,15 @@ class RatingResponseConverterTest {
         val rating = RatingResponseConverter.convert(payload)!!
 
         assertEquals(UsedeskRating.Appearance.STARS, rating.appearance)
-        assertEquals(listOf(30L, 20L, 10L), rating.options.map { it.id })
+        assertEquals(listOf("low-id", "middle-id", "high-id"), rating.options.map { it.id })
         assertEquals(listOf("low", "middle", "high"), rating.options.map { it.label })
-        assertEquals(listOf("30", "20", "10"), rating.options.map { it.data })
+        assertEquals(listOf("low-id", "middle-id", "high-id"), rating.options.map { it.data })
         assertEquals(listOf(null, null, null), rating.options.map { it.reaction })
+        assertEquals("middle-id", rating.selectedId)
     }
 
     @Test
-    fun `new rating is preferred over legacy buttons and restores numeric rating`() {
+    fun `new rating accepts numeric ids and rating`() {
         val payload = payload(
             """
             {
@@ -69,8 +71,8 @@ class RatingResponseConverterTest {
 
         val rating = RatingResponseConverter.convert(payload)!!
 
-        assertEquals(listOf(14L, 13L, 12L, 11L, 10L), rating.options.map { it.id })
-        assertEquals(12L, rating.selectedId)
+        assertEquals(listOf("14", "13", "12", "11", "10"), rating.options.map { it.id })
+        assertEquals("12", rating.selectedId)
     }
 
     @Test
@@ -89,7 +91,7 @@ class RatingResponseConverterTest {
         val rating = RatingResponseConverter.convert(payload)!!
 
         assertEquals(UsedeskRating.Appearance.REACTIONS, rating.appearance)
-        assertEquals(listOf(3L, 1L), rating.options.map { it.id })
+        assertEquals(listOf("3", "1"), rating.options.map { it.id })
         assertEquals(listOf("dislike", "like"), rating.options.map { it.label })
         assertEquals(listOf("DISLIKE", "LIKE"), rating.options.map { it.data })
         assertEquals(
@@ -134,14 +136,14 @@ class RatingResponseConverterTest {
         )!!
 
         assertEquals(UsedeskRating.Appearance.REACTIONS, rating.appearance)
-        assertEquals(listOf(3L, 1L), rating.options.map(UsedeskRating.Option::id))
+        assertEquals(listOf("3", "1"), rating.options.map(UsedeskRating.Option::id))
     }
 
     @Test
     fun `legacy rating without buttons still restores selected reaction`() {
         val rating = RatingResponseConverter.convert(payload("""{"userRating":"LIKE"}"""))!!
 
-        assertEquals(1L, rating.selectedId)
+        assertEquals("1", rating.selectedId)
     }
 
     @Test

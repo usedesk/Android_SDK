@@ -43,7 +43,7 @@ interface UsedeskChat {
 
     fun sendRating(
         agentMessage: UsedeskMessageAgentText,
-        ratingId: Long
+        ratingId: String
     )
 
     fun sendAgain(messageId: String)

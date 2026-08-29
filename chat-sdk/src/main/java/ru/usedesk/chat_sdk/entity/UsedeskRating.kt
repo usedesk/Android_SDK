@@ -3,12 +3,12 @@ package ru.usedesk.chat_sdk.entity
 data class UsedeskRating(
     val appearance: Appearance,
     val options: List<Option>,
-    val selectedId: Long? = null
+    val selectedId: String? = null
 ) {
     data class Option @JvmOverloads constructor(
-        val id: Long,
+        val id: String,
         val label: String,
-        val data: String = id.toString(),
+        val data: String = id,
         val reaction: Reaction? = null
     ) {
         enum class Reaction {

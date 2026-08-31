@@ -32,6 +32,7 @@
     <string name="cache_files_hint" translatable="false">Cache Message Files</string>
     <string name="material_components_theme_hint" translatable="false">Material Components Theme</string>
     <string name="adaptive_time_padding" translatable="false">Adaptive Time Padding</string>
+    <string name="custom_rating" translatable="false">Custom Rating</string>
     <string name="group_agent_messages_hint" translatable="false">Group Agent Messages</string>
     <string name="kb_base_hint" translatable="false">With Knowledge Base</string>
     <string name="kb_support_button" translatable="false">With Knowledge Base Support Button</string>

@@ -378,6 +378,14 @@
                     android:textSize="18sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_custom_rating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    android:text="@string/custom_rating"
+                    android:textSize="18sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_group_agent_messages"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

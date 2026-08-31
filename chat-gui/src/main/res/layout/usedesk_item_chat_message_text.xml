@@ -23,6 +23,16 @@
                 android:id="@+id/iv_like"
                 style="?attr/usedesk_chat_message_feedback_good_image"
                 tools:src="@drawable/usedesk_ic_smile_happy" />
+
+            <LinearLayout
+                android:id="@+id/l_rating_options"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:childCount="5" />
         </FrameLayout>
 
         <TextView

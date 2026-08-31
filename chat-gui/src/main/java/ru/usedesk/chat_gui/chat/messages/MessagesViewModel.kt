@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.domain.UsedeskChat
 import ru.usedesk.chat_sdk.entity.UsedeskActionListener
-import ru.usedesk.chat_sdk.entity.UsedeskFeedback
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
 import ru.usedesk.chat_sdk.entity.UsedeskForm
 import ru.usedesk.chat_sdk.entity.UsedeskForm.Field
@@ -62,9 +61,9 @@ internal class MessagesViewModel @Inject constructor(
         class MessagesShowed(val messagesRange: IntRange) : Event
         class MessageChanged(val message: String) : Event
 
-        class SendFeedback(
+        class SendRating(
             val message: UsedeskMessageAgentText,
-            val feedback: UsedeskFeedback
+            val ratingId: String
         ) : Event
 
         class AttachFiles(val files: Set<UsedeskFileInfo>) : Event

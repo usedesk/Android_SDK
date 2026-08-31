@@ -31,6 +31,7 @@
     <attr name="usedesk_chat_message_avatar_image" format="reference" />
     <attr name="usedesk_chat_message_feedback_good_image" format="reference" />
     <attr name="usedesk_chat_message_feedback_bad_image" format="reference" />
+    <attr name="usedesk_chat_message_feedback_star_image" format="reference" />
     <attr name="usedesk_chat_message_time_text" format="reference" />
     <attr name="usedesk_chat_message_date_text" format="reference" />
     <attr name="usedesk_chat_message_name_text" format="reference" />

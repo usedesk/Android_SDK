@@ -15,12 +15,14 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.OptIn
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -66,6 +68,7 @@ import ru.usedesk.chat_gui.R as chatR
 import ru.usedesk.common_gui.R as commonR
 
 
+@OptIn(UnstableApi::class)
 internal class MessagesAdapter(
     private val recyclerView: RecyclerView,
     private val dateBinding: DateBinding,

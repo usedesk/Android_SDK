@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.UsedeskOnAttachmentClickListener
@@ -183,6 +185,7 @@ internal class MessagesPage : UsedeskFragment() {
         formSelectorDialog = null
     }
 
+    @OptIn(UnstableApi::class)
     private fun init(
         chatArgs: ChatArgs,
         savedInstanceState: Bundle?,

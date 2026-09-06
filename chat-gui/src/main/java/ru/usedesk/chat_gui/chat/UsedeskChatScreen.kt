@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.OptIn
 import androidx.fragment.app.viewModels
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -32,6 +34,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         ownerProducer = { findChatViewModelStoreOwner() ?: this }
     )
 
+    @OptIn(UnstableApi::class)
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
             this,
@@ -164,6 +167,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         UsedeskChatSdk.startService(requireContext())
     }
 
+    @OptIn(UnstableApi::class)
     override fun onBackPressed(): Boolean =
         mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
 

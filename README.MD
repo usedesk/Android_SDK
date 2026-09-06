@@ -210,7 +210,7 @@ override fun onFileClick(usedeskFile: UsedeskFile) {
 </provider>
 ```
 
-8) To be able to display video in full screen, the [UsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFullscreenListener.kt) interface must be implemented
+8) To be able to display video in full screen, the [UsedeskOnFullscreenListener](https://github.com/usedesk/Android_SDK/tree/master/common-gui/src/main/java/ru/usedesk/common_gui/UsedeskOnFullscreenListener.kt) interface must be implemented
 
 ### Using without a GUI
 

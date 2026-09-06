@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id "kotlin-kapt"
+    alias(libs.plugins.ksp)
     id "kotlin-parcelize"
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.room)
@@ -38,7 +38,7 @@ dependencies {
     implementation libs.google.gson
 
     implementation libs.google.dagger
-    kapt libs.google.dagger.compiler
+    ksp libs.google.dagger.compiler
 
     implementation libs.kotlinx.coroutines.core
     implementation libs.kotlinx.coroutines.android
@@ -48,7 +48,7 @@ dependencies {
     implementation libs.squareup.retrofit.converter.gson
 
     implementation libs.androidx.room.runtime
-    kapt libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
 
     testImplementation libs.junit
 }

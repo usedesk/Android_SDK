@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id "kotlin-kapt"
+    alias(libs.plugins.ksp)
     alias(libs.plugins.maven.publish)
 }
 
@@ -40,7 +40,7 @@ dependencies {
     implementation(libs.glide.okhttp3.integration) {
         exclude group: "glide-parent"
     }
-    kapt libs.glide.compiler
+    ksp libs.glide.ksp
 
     implementation libs.androidx.navigation.fragment.ktx
     implementation libs.androidx.navigation.ui.ktx

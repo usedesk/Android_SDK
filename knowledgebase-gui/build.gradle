@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id "kotlin-kapt"
+    alias(libs.plugins.ksp)
     id "kotlin-parcelize"
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.kotlin.compose)
@@ -44,7 +44,7 @@ dependencies {
     implementation libs.google.material
 
     implementation libs.google.dagger
-    kapt libs.google.dagger.compiler
+    ksp libs.google.dagger.compiler
 
     implementation platform(libs.androidx.compose.bom)
 

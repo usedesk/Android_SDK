@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
@@ -19,7 +20,6 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskTextChangeListener
 import ru.usedesk.common_gui.insetsAsPaddings
 import ru.usedesk.common_gui.showInstead
-import ru.usedesk.sample.GlideApp
 import ru.usedesk.sample.databinding.ScreenConfigurationBinding
 import ru.usedesk.sample.model.configuration.entity.Configuration
 import ru.usedesk.sample.model.configuration.entity.ConfigurationValidation
@@ -47,7 +47,7 @@ class ConfigurationScreen : UsedeskFragment() {
 
         viewModel.modelFlow.onEachWithOld { old, new ->
             if (old?.avatar != new.avatar) {
-                GlideApp.with(binding.ivAvatar)
+                Glide.with(binding.ivAvatar)
                     .load(new.avatar)
                     .placeholder(sampleR.drawable.add_avatar)
                     .error(sampleR.drawable.add_avatar)

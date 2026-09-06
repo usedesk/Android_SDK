@@ -2,6 +2,7 @@
 agp = "8.11.1"
 androidLibrary = "8.11.1"
 kotlin = "2.2.0"
+kspVersion = "2.2.0-2.0.2"
 roomVersion = "2.7.2"
 kotlinCoroutinesCoreVersion = "1.10.2"
 kotlinCoroutinesAndroidVersion = "1.10.2"
@@ -64,7 +65,7 @@ squareup-retrofit-converter-scalars = { group = "com.squareup.retrofit2", name =
 squareup-retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
 squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttpVersion" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideVersion" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glideVersion" }
+glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glideVersion" }
 glide-okhttp3-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glideVersion" }
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Version" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Version" }
@@ -81,5 +82,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "androidLibrary" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 room = { id = "androidx.room", version.ref = "roomVersion" }
 maven-publish = { id = "maven-publish" } 

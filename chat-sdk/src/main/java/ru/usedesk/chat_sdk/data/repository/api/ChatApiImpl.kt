@@ -11,9 +11,6 @@ import androidx.core.net.toUri
 import com.google.gson.Gson
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.InitChatResponse
@@ -69,18 +66,16 @@ internal class ChatApiImpl @Inject constructor(
     private lateinit var eventListener: EventListener
     private val requestDeferredMap =
         ConcurrentHashMap<String, CompletableDeferred<SocketSendResponse>>()
-    private val mutex = Mutex()
+    private val lock = Any()
 
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() = eventListener.onConnected()
 
         override fun onDisconnected() {
-            runBlocking {
-                mutex.withLock {
-                    requestDeferredMap.run {
-                        values.forEach { it.complete(SocketSendResponse.Error) }
-                        clear()
-                    }
+            synchronized(lock) {
+                requestDeferredMap.run {
+                    values.forEach { it.complete(SocketSendResponse.Error) }
+                    clear()
                 }
             }
             eventListener.onDisconnected()
@@ -225,7 +220,7 @@ internal class ChatApiImpl @Inject constructor(
 
     override suspend fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse {
         messageText as UsedeskMessageOwner.Client
-        val deferred = mutex.withLock {
+        val deferred = synchronized(lock) {
             CompletableDeferred<SocketSendResponse>().also {
                 requestDeferredMap.put(messageText.localId, it)?.complete(SocketSendResponse.Error)
             }
@@ -240,7 +235,7 @@ internal class ChatApiImpl @Inject constructor(
             is SocketSendResponse.Done -> deferred.await()
             is SocketSendResponse.Error -> SocketSendResponse.Error
         }.apply {
-            mutex.withLock {
+            synchronized(lock) {
                 requestDeferredMap.remove(messageText.localId)
             }
         }

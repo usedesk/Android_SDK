@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
 import androidx.core.net.toUri
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -76,7 +77,7 @@ internal class ChatImpl @Inject constructor(
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var reconnectJob: Job? = null
     private val firstMessageMutex = Mutex()
-    private var firstMessageLock: Mutex? = null
+    private var firstMessageGate: CompletableDeferred<Unit>? = null
 
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
@@ -140,8 +141,8 @@ internal class ChatImpl @Inject constructor(
     private fun launchConnect() {
         ioScope.launch {
             firstMessageMutex.withLock {
-                firstMessageLock?.unlockSafe()
-                firstMessageLock = Mutex()
+                firstMessageGate?.complete(Unit)
+                firstMessageGate = CompletableDeferred(Unit)
             }
 
             val configuration = userInfoRepository.getConfiguration()
@@ -360,26 +361,26 @@ internal class ChatImpl @Inject constructor(
 
     private suspend fun withFirstMessageLock(task: suspend () -> Boolean) {
         firstMessageMutex.withLock {
-            val lock = firstMessageLock
-            when (lock?.isLocked) {
-                true -> lock
-                false -> {
-                    lock.lock(this@ChatImpl)
+            val gate = firstMessageGate
+            when (gate?.isCompleted) {
+                false -> gate
+                true -> {
+                    firstMessageGate = CompletableDeferred()
                     null
                 }
                 else -> null
             }
-        }?.withLock { }
+        }?.await()
         val success = task()
         firstMessageMutex.withLock {
-            firstMessageLock?.apply {
+            firstMessageGate?.apply {
                 if (success) {
-                    if (isLocked) {
+                    if (!isCompleted) {
                         delay(FIRST_MESSAGE_DELAY)
                     }
-                    firstMessageLock = null
+                    firstMessageGate = null
                 }
-                unlockSafe(this@ChatImpl)
+                complete(Unit)
             }
         }
     }
@@ -718,18 +719,12 @@ internal class ChatImpl @Inject constructor(
         apiRepository.disconnect()
     }
 
-    private fun Mutex.unlockSafe(owner: Any? = null) {
-        if (isLocked) {
-            unlock(owner)
-        }
-    }
-
     private suspend fun onChatInited(chatInited: ChatInited) {
         userInfoRepository.setClientToken(chatInited.token)
 
         if (chatInited.status in ACTIVE_STATUSES) {
             firstMessageMutex.withLock {
-                firstMessageLock?.unlockSafe()
+                firstMessageGate?.complete(Unit)
             }
         }
 

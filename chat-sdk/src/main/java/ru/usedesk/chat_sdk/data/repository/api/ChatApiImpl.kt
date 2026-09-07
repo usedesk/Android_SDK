@@ -46,6 +46,7 @@ import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -66,7 +67,9 @@ internal class ChatApiImpl @Inject constructor(
 ), ChatApi {
 
     private lateinit var eventListener: EventListener
-    private val requestDeferredMap = mutableMapOf<String, CompletableDeferred<SocketSendResponse>>()
+    // onNew приходит из колбэка сокета и читает мапу мимо mutex
+    private val requestDeferredMap =
+        ConcurrentHashMap<String, CompletableDeferred<SocketSendResponse>>()
     private val mutex = Mutex()
 
     private val socketEventListener = object : SocketApi.EventListener {

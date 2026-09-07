@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 internal class ApiFactory @Inject constructor(
@@ -12,7 +13,8 @@ internal class ApiFactory @Inject constructor(
     private val okHttpClientFactory: UsedeskOkHttpClientFactory
 ) : UsedeskApiFactory {
 
-    private val instanceMap: MutableMap<String, Any> = HashMap()
+    // Кэш читается и пополняется параллельными запросами с Dispatchers.IO
+    private val instanceMap: MutableMap<String, Any> = ConcurrentHashMap()
 
     @Suppress("UNCHECKED_CAST")
     override fun <API> getInstance(baseUrl: String, apiClass: Class<API>): API {

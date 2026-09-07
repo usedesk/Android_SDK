@@ -28,14 +28,15 @@ internal class SocketConnection(
     private val socket: Socket
 
     init {
-        usedeskOkHttpClientFactory.createInstance().also {
-            IO.setDefaultOkHttpWebSocketFactory(it)
-            IO.setDefaultOkHttpCallFactory(it)
-        }
+        val okHttpClient = usedeskOkHttpClientFactory.createInstance()
 
         socket = IO.socket(
             url,
-            IO.Options().apply { transports = arrayOf(WebSocket.NAME) }
+            IO.Options().apply {
+                transports = arrayOf(WebSocket.NAME)
+                webSocketFactory = okHttpClient
+                callFactory = okHttpClient
+            }
         ).apply {
             on(Socket.EVENT_CONNECT) {
                 eventListener.onConnected()

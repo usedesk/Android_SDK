@@ -8,13 +8,13 @@ import java.util.TimeZone
 
 class UsedeskDateUtil {
     companion object {
+        // Сервер отдаёт UTC, но 'Z' в шаблоне экранирована, поэтому зону задаём явно.
+        // Locale.ROOT: у th и ja календарь не григорианский, год уезжает на столетия.
         fun getLocalCalendar(pattern: String, dateValue: String): Calendar = Calendar.getInstance()
             .apply {
-                time = SimpleDateFormat(pattern, Locale.getDefault())
+                time = SimpleDateFormat(pattern, Locale.ROOT)
+                    .apply { timeZone = TimeZone.getTimeZone("UTC") }
                     .parse(dateValue)!!
-
-                val hoursOffset = TimeZone.getDefault().rawOffset / 3600000
-                add(Calendar.HOUR, hoursOffset)
             }
     }
 }

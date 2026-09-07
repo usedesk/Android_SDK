@@ -43,6 +43,7 @@ internal interface CommonChatComponent : CommonChatDeps {
             ).also { commonChatComponent = it }
 
         fun close() {
+            commonChatComponent?.chatDatabase?.close()
             commonChatComponent = null
         }
     }

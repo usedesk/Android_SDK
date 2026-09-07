@@ -716,6 +716,7 @@ internal class ChatImpl @Inject constructor(
 
     override fun release() {
         ioScope.cancel()
+        additionalFieldsInteractor.release()
         apiRepository.disconnect()
     }
 

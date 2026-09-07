@@ -3,9 +3,9 @@ package ru.usedesk.chat_sdk.data.repository.messages
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.util.Base64
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import com.google.gson.Gson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -134,7 +134,7 @@ internal class MessagesRepository(
                 draftText,
                 draftFiles.mapNotNull {
                     try {
-                        val uri = Uri.parse(it)
+                        val uri = it.toUri()
                         UsedeskFileInfo.create(
                             appContext,
                             uri

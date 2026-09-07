@@ -1,6 +1,5 @@
 package ru.usedesk.chat_sdk.domain
 
-import android.net.Uri
 import androidx.core.net.toUri
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -285,7 +284,7 @@ internal class ChatImpl @Inject constructor(
 
     private suspend fun sendFileAgain(fileMessage: UsedeskMessage.File) {
         fileMessage as UsedeskMessageOwner.Client
-        val uri = Uri.parse(fileMessage.file.content)
+        val uri = fileMessage.file.content.toUri()
         val deferredCachedUri = cachedMessagesRepository.getCachedFileAsync(uri)
         val cachedUri = deferredCachedUri.await()
         val newFile = fileMessage.file.copy(content = cachedUri.toString())
@@ -333,7 +332,7 @@ internal class ChatImpl @Inject constructor(
             when (response) {
                 is SendFileResponse.Done -> {
                     cachedMessagesRepository.removeNotSentMessage(fileMessage.localId)
-                    cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
+                    cachedMessagesRepository.removeFileFromCache(fileMessage.file.content.toUri())
                     additionalFieldsRepository.messageSent()
                     true
                 }

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -199,7 +198,7 @@ class MainActivity : AppCompatActivity(),
             try {
                 val downloadManager =
                     getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                val uri = Uri.parse(downloadFile.url)
+                val uri = downloadFile.url.toUri()
                 when (uri.scheme) {
                     ContentResolver.SCHEME_FILE,
                     ContentResolver.SCHEME_CONTENT -> contentResolver.openInputStream(uri)

@@ -3,7 +3,6 @@ package ru.usedesk.chat_gui.showfile
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
 import eightbitlab.com.blurview.RenderScriptBlur
@@ -139,7 +139,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         if (usedeskFile != null) {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = usedeskFile.type
-                val uri = Uri.parse(usedeskFile.content)
+                val uri = usedeskFile.content.toUri()
                 when (uri.scheme) {
                     ContentResolver.SCHEME_FILE,
                     ContentResolver.SCHEME_CONTENT -> {

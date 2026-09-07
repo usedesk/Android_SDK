@@ -16,6 +16,7 @@ import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.OptIn
+import androidx.core.view.isVisible
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
@@ -811,7 +812,7 @@ internal class MessagesAdapter(
                         binding.ivPreview.showImage(
                             newThumbnail.toString(),
                             onSuccess = {
-                                if (binding.ivPlay.visibility == View.VISIBLE) {
+                                if (binding.ivPlay.isVisible) {
                                     changeElements(
                                         showStub = false,
                                         showPreview = true

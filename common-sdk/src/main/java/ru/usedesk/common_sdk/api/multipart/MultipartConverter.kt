@@ -3,6 +3,7 @@ package ru.usedesk.common_sdk.api.multipart
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -38,7 +39,7 @@ internal class MultipartConverter @Inject constructor(
             MultipartBody.Part.createFormData(pair.first, name, body)
         }
         is FileBytes -> {
-            val uri = Uri.parse(value.originalFile)
+            val uri = value.originalFile.toUri()
             val mimeType = contentResolver.getMimeType(uri)
             val mediaType = mimeType.toMediaTypeOrNull()
             val name = contentResolver.getFileName(uri)

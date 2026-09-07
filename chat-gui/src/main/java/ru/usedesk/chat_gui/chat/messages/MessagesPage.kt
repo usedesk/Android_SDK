@@ -1,7 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -235,7 +234,7 @@ internal class MessagesPage : UsedeskFragment() {
 
     private fun onUrlClick(url: String) {
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             })
         } catch (e: Exception) {

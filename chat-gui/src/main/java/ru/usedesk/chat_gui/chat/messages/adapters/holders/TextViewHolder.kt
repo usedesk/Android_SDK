@@ -1,7 +1,7 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
-import android.text.Html
 import android.text.InputType
+import androidx.core.text.HtmlCompat
 import androidx.core.widget.addTextChangedListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -47,11 +47,12 @@ internal class TextViewHolder(
         var formState: UsedeskForm.State? = null
 
         binding.etText.run {
-            hint = Html.fromHtml(
+            hint = HtmlCompat.fromHtml(
                 fieldText.name + when {
                     fieldText.required -> REQUIRED_POSTFIX_HTML
                     else -> ""
-                }
+                },
+                HtmlCompat.FROM_HTML_MODE_LEGACY
             )
             inputType = InputType.TYPE_CLASS_TEXT or when (fieldText.type) {
                 Field.Text.Type.EMAIL -> InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS

@@ -3,7 +3,6 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.text.Html
 import android.text.Selection.removeSelection
 import android.text.Spannable
 import android.text.method.LinkMovementMethod
@@ -16,6 +15,8 @@ import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.OptIn
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
@@ -457,7 +458,7 @@ internal class MessagesAdapter(
                 .getIdOrZero(attrId)
             return when (id) {
                 0 -> null
-                else -> tvTime.resources.getDrawable(id)
+                else -> ContextCompat.getDrawable(tvTime.context, id)
             }
         }
 
@@ -588,8 +589,8 @@ internal class MessagesAdapter(
             isClient: Boolean
         ) {
             val last = when {
-                isClient -> items.getOrNull(adapterPosition + 1) is UsedeskMessageOwner.Agent
-                else -> items.getOrNull(adapterPosition + 1) is UsedeskMessageOwner.Client
+                isClient -> items.getOrNull(bindingAdapterPosition + 1) is UsedeskMessageOwner.Agent
+                else -> items.getOrNull(bindingAdapterPosition + 1) is UsedeskMessageOwner.Client
             }
             vEmpty.visibility = visibleGone(last)
         }
@@ -635,7 +636,12 @@ internal class MessagesAdapter(
             val messageText = (chatItem as ChatItem.Message).message as UsedeskMessage.Text
 
             binding.tvText.run {
-                setMessageText(Html.fromHtml(messageText.convertedText + " ")) //TODO: temp fix
+                setMessageText(
+                    HtmlCompat.fromHtml(
+                        messageText.convertedText + " ", //TODO: temp fix
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                )
                 visibility = visibleGone(messageText.convertedText.isNotEmpty())
             }
         }

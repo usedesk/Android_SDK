@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import ru.usedesk.chat_sdk.R
 
 
@@ -24,7 +25,7 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
     }
 
     override fun showNotification(notification: Notification) {
-        stopForeground(true)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         startForeground(notification)
     }
 

@@ -9,6 +9,7 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.BufferedSink
 import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
@@ -43,7 +44,7 @@ internal class MultipartConverter @Inject constructor(
             val mimeType = contentResolver.getMimeType(uri)
             val mediaType = mimeType.toMediaTypeOrNull()
             val name = contentResolver.getFileName(uri)
-            val requestBody = RequestBody.create(mediaType, value.byteArray)
+            val requestBody = value.byteArray.toRequestBody(mediaType)
             MultipartBody.Part.createFormData(pair.first, name, requestBody)
         }
         else -> null

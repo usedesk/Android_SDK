@@ -1,8 +1,8 @@
 package ru.usedesk.common_gui
 
 
-import android.text.Html
 import android.view.View
+import androidx.core.text.HtmlCompat
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.common_gui.R as commonR
@@ -20,7 +20,7 @@ class UsedeskCommonFieldTextAdapter(val binding: Binding) {
 
         val htmlTitle =
             String.format("<font color=#%s>%s</font>", colorTitle.toString(16), title) + tail
-        binding.tilTitle.hint = Html.fromHtml(htmlTitle)
+        binding.tilTitle.hint = HtmlCompat.fromHtml(htmlTitle, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     fun setText(text: String?) {

@@ -9,8 +9,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.text.Html
 import androidx.core.app.NotificationCompat
+import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -126,7 +126,10 @@ abstract class UsedeskNotificationsService : Service() {
         is UsedeskMessageOwner.Agent -> {
             var title = message.name
             val text = when (message) {
-                is UsedeskMessage.Text -> Html.fromHtml(message.convertedText)
+                is UsedeskMessage.Text -> HtmlCompat.fromHtml(
+                    message.convertedText,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
                 else -> fileMessage
             }
             if (model.count > 1) {

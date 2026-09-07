@@ -610,13 +610,11 @@ internal class ChatImpl @Inject constructor(
                     is UsedeskMessageClientFile -> message.copy(
                         status = UsedeskMessageOwner.Client.Status.SENDING
                     )
-                    else -> null
-                }?.let { sendingMessage ->
+                }.let { sendingMessage ->
                     onMessageUpdate(sendingMessage)
                     when (sendingMessage) {
                         is UsedeskMessage.File -> sendFileAgain(sendingMessage)
                         is UsedeskMessageClientText -> sendText(sendingMessage)
-                        else -> Unit
                     }
                 }
             }

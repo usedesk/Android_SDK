@@ -1,6 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
-import android.text.Html
+import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -65,11 +65,12 @@ internal class CheckBoxViewHolder(
             else -> false
         }
         binding.tvText.run {
-            text = Html.fromHtml(
+            text = HtmlCompat.fromHtml(
                 checkBox.name + when {
                     checkBox.required -> REQUIRED_POSTFIX_HTML
                     else -> ""
-                }
+                },
+                HtmlCompat.FROM_HTML_MODE_LEGACY
             )
             setTextColor(
                 when {

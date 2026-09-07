@@ -5,7 +5,6 @@
     <string name="title" translatable="false">Configuration</string>
     <string name="url_chat_hint" translatable="false">Chat URL</string>
     <string name="url_chat_api" translatable="false">Chat API URL</string>
-    <string name="url_kb_api" translatable="false">KB API URL</string>
     <string name="company_id_hint" translatable="false">Company ID</string>
     <string name="channel_id_hint" translatable="false">Channel ID</string>
     <string name="kb_id_hint" translatable="false">KB ID</string>
@@ -27,8 +26,6 @@
     <string name="messages_page_size" translatable="false">Messages Page Size</string>
     <string name="client_avatar" translatable="false">Client Avatar</string>
     <string name="service_title" translatable="false">Foreground Service</string>
-    <string name="service_type_none" translatable="false">No Service</string>
-    <string name="service_type_foreground" translatable="false">Foreground Service</string>
     <string name="cache_files_hint" translatable="false">Cache Message Files</string>
     <string name="material_components_theme_hint" translatable="false">Material Components Theme</string>
     <string name="adaptive_time_padding" translatable="false">Adaptive Time Padding</string>

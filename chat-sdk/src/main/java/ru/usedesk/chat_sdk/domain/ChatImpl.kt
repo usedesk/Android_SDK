@@ -53,6 +53,8 @@ import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.Calendar
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArraySet
 import javax.inject.Inject
 
 internal class ChatImpl @Inject constructor(
@@ -87,8 +89,7 @@ internal class ChatImpl @Inject constructor(
     private var previousMessagesLoadingJob: Job? = null
 
     private val fileUploadProgressListeners =
-        mutableMapOf<String, MutableSet<IFileUploadProgressListener>>()
-    private val fileUploadProgressMutex = Mutex()
+        ConcurrentHashMap<String, CopyOnWriteArraySet<IFileUploadProgressListener>>()
 
     init {
         ioScope.launch {
@@ -257,26 +258,18 @@ internal class ChatImpl @Inject constructor(
         localMessageId: String,
         listener: IFileUploadProgressListener
     ) {
-        runBlocking {
-            fileUploadProgressMutex.withLock {
-                fileUploadProgressListeners.getOrPut(localMessageId) { mutableSetOf() }.run {
-                    add(listener)
-                }
+        val listeners = fileUploadProgressListeners[localMessageId]
+            ?: CopyOnWriteArraySet<IFileUploadProgressListener>().let {
+                fileUploadProgressListeners.putIfAbsent(localMessageId, it) ?: it
             }
-        }
+        listeners.add(listener)
     }
 
     override fun removeFileUploadProgressListener(
         localMessageId: String,
         listener: IFileUploadProgressListener
     ) {
-        runBlocking {
-            fileUploadProgressMutex.withLock {
-                fileUploadProgressListeners[localMessageId]?.run {
-                    remove(listener)
-                }
-            }
-        }
+        fileUploadProgressListeners[localMessageId]?.remove(listener)
     }
 
     override fun send(fileInfoList: Collection<UsedeskFileInfo>) {
@@ -310,10 +303,8 @@ internal class ChatImpl @Inject constructor(
             val progressJob = ioScope.launch {
                 progressFlow.collect { progress ->
                     if (progress.second != 0L) {
-                        fileUploadProgressMutex.withLock {
-                            fileUploadProgressListeners[fileMessage.localId]?.forEach {
-                                it.onProgress(progress.first, progress.second)
-                            }
+                        fileUploadProgressListeners[fileMessage.localId]?.forEach {
+                            it.onProgress(progress.first, progress.second)
                         }
                     }
                 }

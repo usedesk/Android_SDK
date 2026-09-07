@@ -86,6 +86,8 @@ abstract class UsedeskApiRepository<API>(
                     UsedeskLog.onLog("API") {
                         "ResponseFailed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
                     }
+                    // Тело неудачной попытки читать не будем, но соединение вернуть в пул надо
+                    it.raw().close()
                 }
                 filter
             }.firstOrNull()

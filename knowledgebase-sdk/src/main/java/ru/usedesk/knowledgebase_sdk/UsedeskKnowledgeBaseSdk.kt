@@ -2,16 +2,13 @@
 package ru.usedesk.knowledgebase_sdk
 
 import android.content.Context
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase
 import ru.usedesk.knowledgebase_sdk.di.KbComponent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskKnowledgeBaseConfiguration
 
 object UsedeskKnowledgeBaseSdk {
     private var configuration: UsedeskKnowledgeBaseConfiguration? = null
-    private val mutex = Mutex()
+    private val lock = Any()
 
     @JvmStatic
     fun setConfiguration(knowledgeBaseConfiguration: UsedeskKnowledgeBaseConfiguration) {
@@ -26,15 +23,13 @@ object UsedeskKnowledgeBaseSdk {
     fun init(
         context: Context,
         configuration: UsedeskKnowledgeBaseConfiguration = requireConfiguration()
-    ): UsedeskKnowledgeBase = runBlocking {
-        mutex.withLock {
-            setConfiguration(configuration)
+    ): UsedeskKnowledgeBase = synchronized(lock) {
+        setConfiguration(configuration)
 
-            KbComponent.open(
-                context,
-                configuration
-            ).usedeskKb
-        }
+        KbComponent.open(
+            context,
+            configuration
+        ).usedeskKb
     }
 
     @JvmStatic
@@ -46,10 +41,6 @@ object UsedeskKnowledgeBaseSdk {
 
     @JvmStatic
     fun release() {
-        runBlocking {
-            mutex.withLock {
-                KbComponent.close()
-            }
-        }
+        synchronized(lock) { KbComponent.close() }
     }
 }

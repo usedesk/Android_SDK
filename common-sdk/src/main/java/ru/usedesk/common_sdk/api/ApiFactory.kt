@@ -13,7 +13,6 @@ internal class ApiFactory @Inject constructor(
     private val okHttpClientFactory: UsedeskOkHttpClientFactory
 ) : UsedeskApiFactory {
 
-    // Кэш читается и пополняется параллельными запросами с Dispatchers.IO
     private val instanceMap: MutableMap<String, Any> = ConcurrentHashMap()
 
     @Suppress("UNCHECKED_CAST")

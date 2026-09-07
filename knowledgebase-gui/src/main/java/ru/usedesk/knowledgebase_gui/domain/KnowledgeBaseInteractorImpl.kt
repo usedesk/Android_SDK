@@ -48,7 +48,6 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
 
     private val sectionsModelFlow = MutableStateFlow(SectionsModel())
     private val searchModelFlow = MutableStateFlow(ArticlesModel())
-    // getArticleModelFlow вызывается вне mutex, из ioScope и из runBlocking публичных методов
     private val articleModelFlowMap = ConcurrentHashMap<Long, MutableStateFlow<ArticleModel>>()
 
     private val mutex = Mutex()
@@ -60,7 +59,7 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
     private var loadArticlesJob: Job? = null
     private var loadArticleJob: Job? = null
 
-    // putIfAbsent, а не getOrPut: иначе на статью может родиться второй флоу и экран подпишется не на тот
+    // getOrPut тут неатомарен: на статью родится второй флоу и экран подпишется не на тот
     private fun getArticleModelFlow(articleId: Long) =
         articleModelFlowMap[articleId] ?: MutableStateFlow(ArticleModel()).let {
             articleModelFlowMap.putIfAbsent(articleId, it) ?: it

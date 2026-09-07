@@ -58,8 +58,6 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
     private var loadSectionsJob: Job? = null
     private var loadArticlesJob: Job? = null
     private var loadArticleJob: Job? = null
-
-    // getOrPut тут неатомарен: на статью родится второй флоу и экран подпишется не на тот
     private fun getArticleModelFlow(articleId: Long) =
         articleModelFlowMap[articleId] ?: MutableStateFlow(ArticleModel()).let {
             articleModelFlowMap.putIfAbsent(articleId, it) ?: it

@@ -67,7 +67,6 @@ internal class ChatApiImpl @Inject constructor(
 ), ChatApi {
 
     private lateinit var eventListener: EventListener
-    // onNew приходит из колбэка сокета и читает мапу мимо mutex
     private val requestDeferredMap =
         ConcurrentHashMap<String, CompletableDeferred<SocketSendResponse>>()
     private val mutex = Mutex()

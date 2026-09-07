@@ -28,7 +28,6 @@ class UsedeskOkHttpClientFactoryImpl @Inject constructor(
                 e.printStackTrace()
             }
         }
-        // До API 25 TLS 1.2 не всегда согласуется сам, поэтому включаем его явно
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
             applyLegacyProtocol(TlsVersion.TLS_1_2.javaName)
         }

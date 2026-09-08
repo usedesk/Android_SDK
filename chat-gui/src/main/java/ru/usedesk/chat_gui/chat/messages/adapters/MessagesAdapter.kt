@@ -33,6 +33,7 @@ import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
@@ -772,7 +773,10 @@ internal class MessagesAdapter(
 
         private fun bindVideo(messageFile: UsedeskMessage.File) {
             thumbnailScope.cancel()
-            thumbnailScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
+            thumbnailScope = CoroutineScope(
+                lifecycleScope.coroutineContext +
+                        SupervisorJob(lifecycleScope.coroutineContext[Job])
+            )
             this.usedeskFile = messageFile.file
 
             changeElements(showStub = true)

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -111,7 +112,10 @@ internal class MessageFormAdapter(
             this.buttons = messageAgentText.buttons
             onUpdate(null)
             if (messageAgentText.fieldsInfo.isNotEmpty()) {
-                adapterScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
+                adapterScope = CoroutineScope(
+                    lifecycleScope.coroutineContext +
+                            SupervisorJob(lifecycleScope.coroutineContext[Job])
+                )
                 viewModel.modelFlow.onEach { model ->
                     val form = model.formMap[messageAgentText.id]
                     if (form != this.form) {

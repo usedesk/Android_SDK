@@ -10,9 +10,18 @@ import com.google.gson.Gson
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Calendar
 
 internal class MessagesRepository(
     private val appContext: Context,

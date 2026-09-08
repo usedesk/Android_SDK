@@ -22,6 +22,11 @@ android {
         jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.chat_gui"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {

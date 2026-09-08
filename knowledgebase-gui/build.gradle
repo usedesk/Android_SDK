@@ -26,6 +26,11 @@ android {
         compose true
     }
     namespace "ru.usedesk.knowledgebase_gui"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {

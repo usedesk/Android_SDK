@@ -24,6 +24,11 @@ android {
         jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.knowledgebase_sdk"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {

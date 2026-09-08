@@ -66,17 +66,13 @@ internal class ChatApiImpl @Inject constructor(
     private lateinit var eventListener: EventListener
     private val requestDeferredMap =
         ConcurrentHashMap<String, CompletableDeferred<SocketSendResponse>>()
-    private val lock = Any()
 
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() = eventListener.onConnected()
 
         override fun onDisconnected() {
-            synchronized(lock) {
-                requestDeferredMap.run {
-                    values.forEach { it.complete(SocketSendResponse.Error) }
-                    clear()
-                }
+            requestDeferredMap.keys.toList().forEach { localId ->
+                requestDeferredMap.remove(localId)?.complete(SocketSendResponse.Error)
             }
             eventListener.onDisconnected()
         }
@@ -220,11 +216,9 @@ internal class ChatApiImpl @Inject constructor(
 
     override suspend fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse {
         messageText as UsedeskMessageOwner.Client
-        val deferred = synchronized(lock) {
-            CompletableDeferred<SocketSendResponse>().also {
-                requestDeferredMap.put(messageText.localId, it)?.complete(SocketSendResponse.Error)
-            }
-        }
+        val deferred = CompletableDeferred<SocketSendResponse>()
+        requestDeferredMap.put(messageText.localId, deferred)
+            ?.complete(SocketSendResponse.Error)
         val result = socketApi.sendRequest(
             SocketRequest.SendMessage(
                 text = messageText.text,
@@ -235,9 +229,7 @@ internal class ChatApiImpl @Inject constructor(
             is SocketSendResponse.Done -> deferred.await()
             is SocketSendResponse.Error -> SocketSendResponse.Error
         }.apply {
-            synchronized(lock) {
-                requestDeferredMap.remove(messageText.localId)
-            }
+            requestDeferredMap.remove(messageText.localId)
         }
     }
 

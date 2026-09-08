@@ -84,6 +84,11 @@ internal class MessagesAdapter(
     savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
 
+    private val floatingDateRect = Rect()
+    private val topDateHolderRect = Rect()
+    private val visibleParentRect = Rect()
+    private val visibleChildRect = Rect()
+
     private var items: List<ChatItem> = listOf()
     private val layoutManager = LinearLayoutManager(recyclerView.context).apply {
         reverseLayout = true
@@ -166,8 +171,10 @@ internal class MessagesAdapter(
                     topDateIndex
                 ) as? DateViewHolder
 
-                val floatingDateParentRect = dateBinding.rootView.makeGlobalVisibleRect()
-                val topDateRect = topDateHolder?.binding?.rootView?.makeGlobalVisibleRect()
+                val floatingDateParentRect =
+                    dateBinding.rootView.makeGlobalVisibleRect(floatingDateRect)
+                val topDateRect =
+                    topDateHolder?.binding?.rootView?.makeGlobalVisibleRect(topDateHolderRect)
                 val notVisibleDateIndex = when {
                     topDateRect != null &&
                             topDateRect.bottom <= floatingDateParentRect.bottom -> topDateIndex
@@ -202,7 +209,10 @@ internal class MessagesAdapter(
         }
     }
 
-    private fun View.makeGlobalVisibleRect() = Rect().also(this::getGlobalVisibleRect)
+    private fun View.makeGlobalVisibleRect(out: Rect) = out.apply {
+        setEmpty()
+        getGlobalVisibleRect(this)
+    }
 
     private fun isAtBottom(): Boolean {
         val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
@@ -429,11 +439,9 @@ internal class MessagesAdapter(
     }
 
     fun isVisibleChild(child: View): Boolean {
-        val rectParent = Rect()
-        recyclerView.getGlobalVisibleRect(rectParent)
-        val rectItem = Rect()
-        child.getGlobalVisibleRect(rectItem)
-        return rectParent.contains(rectItem)
+        recyclerView.makeGlobalVisibleRect(visibleParentRect)
+        child.makeGlobalVisibleRect(visibleChildRect)
+        return visibleParentRect.contains(visibleChildRect)
     }
 
     internal abstract class BaseViewHolder(

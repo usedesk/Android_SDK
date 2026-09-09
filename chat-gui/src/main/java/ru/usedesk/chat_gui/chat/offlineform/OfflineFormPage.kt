@@ -91,7 +91,7 @@ internal class OfflineFormPage : UsedeskFragment() {
                     } else {
                         OfflineFormSuccessDialog.newInstance(binding.rootView).apply {
                             setOnDismissListener {
-                                requireActivity().onBackPressed()
+                                requireActivity().onBackPressedDispatcher.onBackPressed()
                             }
                         }.show()
                     }

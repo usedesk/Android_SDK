@@ -49,7 +49,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         downloadStatusStyleValues = binding.styleValues
             .getStyleValues(chatR.attr.usedesk_chat_show_file_download_status_toast)
 
-        binding.ivBack.setOnClickListener { requireActivity().onBackPressed() }
+        binding.ivBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
 
         binding.ivShare.setOnClickListener { onShareFile(viewModel.modelFlow.value.file) }
 

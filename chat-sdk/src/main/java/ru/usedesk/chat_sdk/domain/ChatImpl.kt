@@ -143,8 +143,10 @@ internal class ChatImpl @Inject constructor(
     private fun launchConnect() {
         ioScope.launch {
             firstMessageMutex.withLock {
-                firstMessageGate?.complete(Unit)
-                firstMessageGate = CompletableDeferred(Unit)
+                val gate = firstMessageGate
+                if (gate == null || gate.isCompleted) {
+                    firstMessageGate = CompletableDeferred(Unit)
+                }
             }
 
             val configuration = userInfoRepository.getConfiguration()

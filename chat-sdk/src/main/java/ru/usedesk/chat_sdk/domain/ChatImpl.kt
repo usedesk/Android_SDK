@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -155,15 +156,17 @@ internal class ChatImpl @Inject constructor(
     }
 
     private fun connect() {
-        setModel {
-            when (connectionState) {
-                UsedeskConnectionState.DISCONNECTED -> {
-                    reconnectJob?.cancel()
-                    launchConnect()
-                    copy(connectionState = UsedeskConnectionState.RECONNECTING)
-                }
-                else -> this
+        val old = modelFlow.getAndUpdate { model ->
+            when (model.connectionState) {
+                UsedeskConnectionState.DISCONNECTED -> model.copy(
+                    connectionState = UsedeskConnectionState.RECONNECTING
+                )
+                else -> model
             }
+        }
+        if (old.connectionState == UsedeskConnectionState.DISCONNECTED) {
+            reconnectJob?.cancel()
+            launchConnect()
         }
     }
 
@@ -689,19 +692,20 @@ internal class ChatImpl @Inject constructor(
     }
 
     override fun loadPreviousMessagesPage() {
-        setModel {
-            when (val oldestMessageId = messages.firstOrNull()?.id) {
-                null -> this
-                else -> copy(
-                    previousPageIsLoading = when {
-                        !previousPageIsLoading && previousPageIsAvailable -> {
-                            launchPreviousMessagesLoading(oldestMessageId)
-                            true
-                        }
-                        else -> previousPageIsLoading
-                    }
-                )
+        val old = modelFlow.getAndUpdate { model ->
+            when {
+                model.messages.firstOrNull() == null -> model
+                !model.previousPageIsLoading && model.previousPageIsAvailable ->
+                    model.copy(previousPageIsLoading = true)
+                else -> model
             }
+        }
+        val oldestMessageId = old.messages.firstOrNull()?.id
+        if (oldestMessageId != null &&
+            !old.previousPageIsLoading &&
+            old.previousPageIsAvailable
+        ) {
+            launchPreviousMessagesLoading(oldestMessageId)
         }
     }
 

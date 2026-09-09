@@ -142,6 +142,14 @@ internal class MessagesAdapter(
         updateFirstVisibleIndex()
     }
 
+    override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+        holder.scrollListener?.let(recyclerView::addOnScrollListener)
+    }
+
+    override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
+        holder.scrollListener?.let(recyclerView::removeOnScrollListener)
+    }
+
     private fun updateFirstVisibleIndex() {
         val topItemIndex = layoutManager.findLastVisibleItemPosition()
         if (topItemIndex >= 0) {
@@ -447,6 +455,8 @@ internal class MessagesAdapter(
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
+
+        var scrollListener: RecyclerView.OnScrollListener? = null
 
         abstract fun bind(chatItem: ChatItem)
     }
@@ -768,7 +778,7 @@ internal class MessagesAdapter(
         private var thumbnailScope = CoroutineScope(Dispatchers.Main)
 
         init {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            scrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
@@ -776,7 +786,7 @@ internal class MessagesAdapter(
                     }
                     lastVisible = visible
                 }
-            })
+            }
         }
 
         private fun bindVideo(messageFile: UsedeskMessage.File) {
@@ -877,7 +887,7 @@ internal class MessagesAdapter(
         private var lastVisible = false
 
         init {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            scrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
@@ -885,7 +895,7 @@ internal class MessagesAdapter(
                     }
                     lastVisible = visible
                 }
-            })
+            }
             binding.stubProgress.visibility = View.VISIBLE
             binding.stubScrubber.visibility = View.VISIBLE
             binding.ivExoPause.visibility = View.INVISIBLE

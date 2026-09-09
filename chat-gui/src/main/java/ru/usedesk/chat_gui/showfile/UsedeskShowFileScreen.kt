@@ -31,6 +31,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
 
     private lateinit var binding: Binding
+
+    private var toolbarAlpha = 1f
+    private var bottomAlpha = 1f
+
     private lateinit var downloadStatusStyleValues: UsedeskResourceManager.StyleValues
 
     override fun onCreateView(
@@ -71,6 +75,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             if (supportWindowInsets) {
                 insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
             }
+            toolbarAlpha = alpha
             setBlur()
         }
 
@@ -78,6 +83,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             if (supportWindowInsets) {
                 insetsAsPaddings(ignoreStatusBar = true, ignoreIme = true)
             }
+            bottomAlpha = alpha
             setBlur()
         }
     }.rootView
@@ -121,9 +127,34 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 onError(new.error)
             }
             if (old?.panelShow != new.panelShow) {
-                binding.lToolbar.visibility = visibleGone(new.panelShow)
-                binding.lBottom.visibility = visibleGone(new.panelShow)
+                val animated = old != null
+                binding.lToolbar.fadeVisibility(new.panelShow, animated, toolbarAlpha)
+                binding.lBottom.fadeVisibility(new.panelShow, animated, bottomAlpha)
             }
+        }
+    }
+
+    private fun View.fadeVisibility(show: Boolean, animated: Boolean, shownAlpha: Float) {
+        animate().cancel()
+        val duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        when {
+            !animated -> {
+                alpha = when {
+                    show -> shownAlpha
+                    else -> 0f
+                }
+                visibility = visibleGone(show)
+            }
+            show -> {
+                if (visibility != View.VISIBLE) alpha = 0f
+                visibility = View.VISIBLE
+                animate().alpha(shownAlpha).setDuration(duration).start()
+            }
+            else -> animate()
+                .alpha(0f)
+                .setDuration(duration)
+                .withEndAction { visibility = View.GONE }
+                .start()
         }
     }
 

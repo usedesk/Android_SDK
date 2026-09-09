@@ -1,5 +1,6 @@
 package ru.usedesk.chat_sdk.domain
 
+import androidx.annotation.WorkerThread
 import android.net.Uri
 import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
@@ -70,6 +71,7 @@ interface UsedeskChat {
     fun send(form: UsedeskForm)
 
     interface IFileUploadProgressListener {
+        @WorkerThread
         fun onProgress(sent: Long, total: Long)
     }
 

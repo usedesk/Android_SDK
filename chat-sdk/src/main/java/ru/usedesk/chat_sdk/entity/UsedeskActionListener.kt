@@ -1,8 +1,10 @@
 package ru.usedesk.chat_sdk.entity
 
+import androidx.annotation.WorkerThread
 import ru.usedesk.chat_sdk.domain.UsedeskChat
 
 interface UsedeskActionListener {
+    @WorkerThread
     fun onModel(
         model: UsedeskChat.Model,
         newMessages: List<UsedeskMessage>,
@@ -10,8 +12,10 @@ interface UsedeskActionListener {
         removedMessages: List<UsedeskMessage>
     ) = Unit
 
+    @WorkerThread
     fun onException(usedeskException: Exception) = Unit
 
+    @WorkerThread
     fun onModelUpdated(
         oldModel: UsedeskChat.Model?,
         newModel: UsedeskChat.Model

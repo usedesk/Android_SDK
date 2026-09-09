@@ -252,6 +252,10 @@ UsedeskChatSdk.release(false)
 
 If you pass `false` to the method, the resources will only be released if all listeners have been deleted. If you pass the value `true`, the resources will be released immediately.
 
+**Switching users.** Before initializing again with a different configuration, call `UsedeskChatSdk.release(true)`, or make sure every listener is removed so that `release(false)` takes effect. Until the previous chat is released, a new configuration passed to `init` is ignored and the chat keeps running for the previous user.
+
+**Callback threads.** `UsedeskActionListener`, `IFileUploadProgressListener` and the `onResult` callbacks of `createChat` and `sendOfflineForm` are invoked on a background thread. Switch to the main thread yourself before touching the UI.
+
 Attempting to retrieve an instance without initializing or after release will raise an exception.
 
 5) Use interface to listen to chat events [UsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/UsedeskActionListener.kt):

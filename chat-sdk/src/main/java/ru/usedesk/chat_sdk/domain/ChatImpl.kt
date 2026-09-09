@@ -822,18 +822,17 @@ internal class ChatImpl @Inject constructor(
     }
 
     private class ActionListeners : UsedeskActionListener {
-        private val listenersMutex = Mutex()
-        private var listeners = setOf<UsedeskActionListener>()
+        private val listeners = CopyOnWriteArraySet<UsedeskActionListener>()
 
         fun add(listener: UsedeskActionListener) {
-            doLocked { listeners = listeners + listener }
+            listeners.add(listener)
         }
 
         fun remove(listener: UsedeskActionListener) {
-            doLocked { listeners = listeners - listener }
+            listeners.remove(listener)
         }
 
-        fun isNoListeners() = doLocked { listeners.isEmpty() }
+        fun isNoListeners() = listeners.isEmpty()
 
         override fun onModel(
             model: Model,
@@ -841,7 +840,7 @@ internal class ChatImpl @Inject constructor(
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
         ) {
-            doLocked { listeners }.forEach {
+            listeners.forEach {
                 it.onModel(
                     model,
                     newMessages,
@@ -851,11 +850,8 @@ internal class ChatImpl @Inject constructor(
             }
         }
 
-        private fun <T> doLocked(onDo: () -> T): T =
-            runBlocking { listenersMutex.withLock { onDo() } }
-
         override fun onException(usedeskException: Exception) {
-            doLocked { listeners }.forEach { it.onException(usedeskException) }
+            listeners.forEach { it.onException(usedeskException) }
         }
     }
 

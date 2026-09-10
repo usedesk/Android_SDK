@@ -108,7 +108,6 @@ internal class ConfigurationLoader @Inject constructor(
         private const val KEY_VERSION = "versionKey"
         private const val KEY_DATA = "dataKey"
 
-        // Legacy fields
         private const val KEY_URL_CHAT_API = "urlChatApi"
         private const val KEY_URL_OFFLINE_FORM = "urlOfflineForm"
         private const val KEY_CLIENT_ID = "clientId"

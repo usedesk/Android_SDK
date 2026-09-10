@@ -1573,7 +1573,6 @@
         <item name="android:textColor">@null</item>
     </style>
 
-    <!--Theme.MaterialComponents Start-->
     <style name="Chat.Screen.Message.Text.MaterialComponents" parent="Usedesk.Chat.Screen.Message.Text">
         <item name="android:textColor">@color/usedesk_black_2</item>
         <item name="android:textColorHint">@color/usedesk_gray_3</item>
@@ -1587,5 +1586,4 @@
         <item name="usedesk_chat_screen_offline_form_text_field">@style/Common.Text.Field.MaterialComponents</item>
         <item name="usedesk_chat_screen_offline_form_list_field">@style/Common.List.Field.MaterialComponents</item>
     </style>
-    <!--Theme.MaterialComponents End-->
 </resources>

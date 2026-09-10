@@ -20,9 +20,6 @@ import androidx.lifecycle.AndroidViewModel
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
-// We deliberately hold Views in this ViewModel: the WebView's DOM (and the rating ComposeView's
-// composition) must outlive an Activity recreate. Views are constructed with a MutableContextWrapper
-// whose baseContext is swapped back to the Application on detach(), so no Activity reference leaks.
 @SuppressLint("StaticFieldLeak")
 internal class ArticleViewsHolder(application: Application) : AndroidViewModel(application) {
 
@@ -69,8 +66,6 @@ internal class ArticleViewsHolder(application: Application) : AndroidViewModel(a
         wrapper.baseContext = activity
         webView.fullscreenListener = fullscreenListener
         if (webView.isInFullscreen) {
-            // Fragment.onAttach fires inside the host's super.onCreate — its lateinit binding (and
-            // thus getFullscreenLayout) isn't ready yet. Defer the FS reattach to the next looper tick.
             mainHandler.removeCallbacks(resumeFullscreen)
             mainHandler.post(resumeFullscreen)
         }
@@ -78,8 +73,6 @@ internal class ArticleViewsHolder(application: Application) : AndroidViewModel(a
 
     fun detach() {
         mainHandler.removeCallbacks(resumeFullscreen)
-        // The custom view belongs to the leaving Activity's window. Detach it but keep fullscreen
-        // state — attachTo will reparent the same view onto the new Activity's container.
         if (webView.isInFullscreen) {
             webView.detachCustomView()
         }
@@ -102,7 +95,6 @@ internal class ArticleViewsHolder(application: Application) : AndroidViewModel(a
 
     override fun onCleared() {
         mainHandler.removeCallbacks(resumeFullscreen)
-        // Fragment is going away for good — actually exit fullscreen (callback + signal listener).
         webView.exitFullscreen()
         detach()
         (webView.parent as? ViewGroup)?.removeView(webView)

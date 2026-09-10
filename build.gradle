@@ -15,10 +15,6 @@ allprojects {
 ext {
     defaultCompileSdkVersion = 37
     defaultTargetSdkVersion = 36
-    // ЛОМАЮЩЕЕ ИЗМЕНЕНИЕ: minSdk поднят с 21 до 24 вместе с переходом на API 36.
-    // Причина — androidx: navigation 2.10 требует 24, остальная линейка (core,
-    // appcompat, fragment, activity, lifecycle, room, media3, material) — 23.
-    // Партнёрам с minSdk ниже 24 придётся поднять свой. Отразить в release notes.
     defaultMinSdkVersion = 24
     javaVersion = JavaVersion.VERSION_17
 }

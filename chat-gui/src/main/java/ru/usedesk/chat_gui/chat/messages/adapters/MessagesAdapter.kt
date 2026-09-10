@@ -657,7 +657,7 @@ internal class MessagesAdapter(
             binding.tvText.run {
                 setMessageText(
                     HtmlCompat.fromHtml(
-                        messageText.convertedText + " ", //TODO: temp fix
+                        messageText.convertedText + " ",
                         HtmlCompat.FROM_HTML_MODE_LEGACY
                     )
                 )

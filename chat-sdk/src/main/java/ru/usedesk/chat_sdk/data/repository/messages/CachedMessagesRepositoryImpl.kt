@@ -28,7 +28,6 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import java.util.Calendar
 import javax.inject.Inject
 
-//TODO: do something with repository hierarchy
 internal class CachedMessagesRepositoryImpl @Inject constructor(
     initConfiguration: UsedeskChatConfiguration,
     private val messagesRepository: UsedeskMessagesRepository,

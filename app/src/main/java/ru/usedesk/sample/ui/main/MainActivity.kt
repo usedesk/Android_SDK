@@ -84,12 +84,6 @@ class MainActivity : AppCompatActivity(),
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
-        /*mapOf(
-            chatR.style.Usedesk_Chat_Attachment_Dialog to sampleR.style.Custom_Chat_Attachment_Dialog,
-            chatR.style.Usedesk_Chat_FormSelector_Dialog to sampleR.style.Custom_Chat_FormSelector_Dialog
-        ).forEach {
-            UsedeskResourceManager.replaceResourceId(it.key, it.value)
-        }*/
         val themeId = when {
             materialComponents -> sampleR.style.AppTheme_MaterialComponents
             else -> sampleR.style.AppTheme

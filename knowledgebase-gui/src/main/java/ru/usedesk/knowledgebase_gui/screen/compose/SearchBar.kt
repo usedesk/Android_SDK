@@ -69,8 +69,6 @@ internal fun SearchBar(
     onSearchBarClicked: () -> Unit,
     onSearch: () -> Unit
 ) {
-    // Deferred read: invoking value() here (not in the parent) keeps text-change snapshot
-    // subscriptions scoped to SearchBar — ContentBlocks/ComposeRoot don't see them.
     val currentValue = value()
     Row(
         modifier = Modifier

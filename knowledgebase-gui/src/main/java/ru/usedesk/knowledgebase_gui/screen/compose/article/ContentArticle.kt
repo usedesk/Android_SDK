@@ -78,7 +78,6 @@ internal fun ContentArticle(
                 ArticleViewModel(
                     kbInteractor = kbUiComponent.interactor,
                     articleId = articleId,
-                    // Fires on real exit (store clear), not on rotation — stop bg playback then.
                     onArticleCleared = articleViews.webView::stopMedia
                 )
             }
@@ -143,8 +142,6 @@ private fun ArticleBlock(
 ) {
     val webView = articleViews.webView
     val ratingView = articleViews.ratingView
-    // Stable base URL for loadDataWithBaseURL — gives embedded iframes a real Origin so
-    // YouTube/RuTube accept the embed (fixes YouTube error 153, RuTube fullscreen button).
     val articleBaseUrl = remember { KbUiComponent.require().configuration.urlApi }
     Box(modifier = Modifier.fillMaxSize()) {
         Crossfade(
@@ -199,7 +196,6 @@ private fun ArticleBlock(
                             )
                         }
                     }
-                    // Hide the support button once the article is scrolled to the bottom (the rating block).
                     LaunchedEffect(scrollState) {
                         snapshotFlow { scrollState.value == 0 || scrollState.value < scrollState.maxValue }
                             .collect { onSupportButtonVisibleChange(it) }

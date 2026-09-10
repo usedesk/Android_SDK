@@ -31,7 +31,6 @@ internal class MultipartConverter @Inject constructor(
             val mimeType = contentResolver.getMimeType(value)
             val mediaType = mimeType.toMediaTypeOrNull()
             val name = contentResolver.getFileName(value)
-            //val requestBody = RequestBody.create(mediaType, value.toFile())
             val body = ProgressRequestBody(
                 value.toFile(),
                 mediaType,

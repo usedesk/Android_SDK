@@ -119,7 +119,7 @@ class UsedeskChatScreen : UsedeskFragment() {
             context = requireContext(),
             chatConfiguration = chatArgs.configuration,
         )
-        findParent<UsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
+        findParent<UsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         val toolbarAdapter = UsedeskToolbarAdapter(
             binding = toolbar,

@@ -29,7 +29,6 @@ blurViewVersion = "version-2.0.6"
 photoViewVersion = "2.3.0"
 roundedImageViewVersion = "2.3.0"
 composeBomVersion = "2026.08.00"
-playServicesAuthVersion = "22.0.0"
 junitVersion = "4.13.2"
 
 [libraries]
@@ -57,7 +56,6 @@ google-material = { group = "com.google.android.material", name = "material", ve
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion" }
 google-dagger = { group = "com.google.dagger", name = "dagger", version.ref = "daggerVersion" }
 google-dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "daggerVersion" }
-google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuthVersion" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutinesCoreVersion" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutinesAndroidVersion" }
 squareup-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }

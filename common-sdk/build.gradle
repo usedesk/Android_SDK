@@ -45,8 +45,6 @@ dependencies {
     implementation libs.squareup.retrofit.converter.gson
 
     implementation libs.squareup.okhttp3
-
-    implementation libs.google.play.services.auth
 }
 
 afterEvaluate {

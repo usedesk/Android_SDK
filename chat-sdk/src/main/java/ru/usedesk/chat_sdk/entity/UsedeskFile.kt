@@ -3,14 +3,15 @@ package ru.usedesk.chat_sdk.entity
 
 import android.os.Parcelable
 import android.webkit.MimeTypeMap
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UsedeskFile(
-    val content: String,
-    val type: String,
-    val size: String,
-    val name: String
+    @SerializedName("content") val content: String,
+    @SerializedName("type") val type: String,
+    @SerializedName("size") val size: String,
+    @SerializedName("name") val name: String
 ) : Parcelable {
     fun isImage(): Boolean = type.startsWith(UsedeskFileInfo.IMAGE_TYPE)
 

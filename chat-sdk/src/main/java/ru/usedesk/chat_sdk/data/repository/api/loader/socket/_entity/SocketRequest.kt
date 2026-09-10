@@ -3,30 +3,30 @@ package ru.usedesk.chat_sdk.data.repository.api.loader.socket._entity
 
 import com.google.gson.annotations.SerializedName
 
-internal sealed class SocketRequest(val type: String) {
+internal sealed class SocketRequest(@SerializedName("type") val type: String) {
     class Init(
-        val token: String?,
-        val companyId: String,
-        val url: String,
+        @SerializedName("token") val token: String?,
+        @SerializedName("company_id") val companyId: String,
+        @SerializedName("url") val url: String,
         messageLimit: Int?,
         userData: Payload.UserData
     ) : SocketRequest(TYPE) {
 
-        private val payload = Payload(messageLimit, userData)
+        @SerializedName("payload") private val payload = Payload(messageLimit, userData)
 
         class Payload(
-            val messageLimit: Int?,
+            @SerializedName("message_limit") val messageLimit: Int?,
             @SerializedName("userData") val userData: UserData
         ) {
-            val sdk = VALUE_CURRENT_SDK
-            val type = VALUE_TYPE_SDK
+            @SerializedName("sdk") val sdk = VALUE_CURRENT_SDK
+            @SerializedName("type") val type = VALUE_TYPE_SDK
 
             class UserData(
-                val device: String,
-                val os: String,
-                val appName: String,
-                val appVersion: String,
-                val mobileOperatorName: String
+                @SerializedName("device") val device: String,
+                @SerializedName("os") val os: String,
+                @SerializedName("app_name") val appName: String,
+                @SerializedName("app_version") val appVersion: String,
+                @SerializedName("mobile_operator_name") val mobileOperatorName: String
             )
         }
 
@@ -42,21 +42,21 @@ internal sealed class SocketRequest(val type: String) {
         messageId: String
     ) : SocketRequest(TYPE) {
 
-        private val message = RequestMessage(text, messageId)
+        @SerializedName("message") private val message = RequestMessage(text, messageId)
 
         companion object {
             private const val TYPE = "@@server/chat/SEND_MESSAGE"
         }
 
         private class RequestMessage(
-            private val text: String,
+            @SerializedName("text") private val text: String,
             messageId: String
         ) {
-            private val payload = Payload(messageId)
+            @SerializedName("payload") private val payload = Payload(messageId)
         }
 
         private class Payload(
-            private val messageId: String
+            @SerializedName("message_id") private val messageId: String
         )
     }
 
@@ -65,13 +65,13 @@ internal sealed class SocketRequest(val type: String) {
         ratingData: String
     ) : SocketRequest(TYPE) {
 
-        private val payload = Payload(ratingData, messageId)
+        @SerializedName("payload") private val payload = Payload(ratingData, messageId)
 
         private class Payload(
-            private val data: String,
-            private val messageId: String
+            @SerializedName("data") private val data: String,
+            @SerializedName("message_id") private val messageId: String
         ) {
-            private val type: String = VALUE_FEEDBACK_ACTION
+            @SerializedName("type") private val type: String = VALUE_FEEDBACK_ACTION
         }
 
         companion object {

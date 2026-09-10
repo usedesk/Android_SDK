@@ -1,7 +1,9 @@
 
 package ru.usedesk.common_sdk.api.entity
 
+import com.google.gson.annotations.SerializedName
+
 open class UsedeskApiError {
-    val code: Int? = null
-    val error: String? = null
+    @SerializedName("code") val code: Int? = null
+    @SerializedName("error") val error: String? = null
 }

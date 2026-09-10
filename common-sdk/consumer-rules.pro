@@ -1,1 +1,0 @@
--keepclassmembers class ru.usedesk.common_sdk.api.entity.** { *; }

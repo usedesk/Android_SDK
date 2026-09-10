@@ -5,65 +5,65 @@ import com.google.gson.annotations.SerializedName
 
 internal sealed interface SocketResponse {
     class Inited(
-        val token: String?,
-        val setup: Setup?
+        @SerializedName("token") val token: String?,
+        @SerializedName("setup") val setup: Setup?
     ) : SocketResponse {
 
         class Setup(
             @SerializedName("noOperators")
             val noOperators: Boolean?,
-            val messages: List<AddMessage.Message?>?,
-            val ticket: Ticket?,
-            val callbackSettings: CallbackSettings?
+            @SerializedName("messages") val messages: List<AddMessage.Message?>?,
+            @SerializedName("ticket") val ticket: Ticket?,
+            @SerializedName("callback_settings") val callbackSettings: CallbackSettings?
         ) {
 
             class CallbackSettings(
-                val workType: String?,
-                val callbackTitle: String?,
-                val callbackGreeting: String?,
-                val customFields: Array<CustomField?>?,
-                val topics: Array<Topic?>?,
-                val topicsTitle: String?,
-                val topicsRequired: Int?
+                @SerializedName("work_type") val workType: String?,
+                @SerializedName("callback_title") val callbackTitle: String?,
+                @SerializedName("callback_greeting") val callbackGreeting: String?,
+                @SerializedName("custom_fields") val customFields: Array<CustomField?>?,
+                @SerializedName("topics") val topics: Array<Topic?>?,
+                @SerializedName("topics_title") val topicsTitle: String?,
+                @SerializedName("topics_required") val topicsRequired: Int?
             ) {
 
                 class CustomField(
-                    val type: String?,
-                    val placeholder: String?,
-                    val checked: Boolean?,
-                    val required: Boolean?
+                    @SerializedName("type") val type: String?,
+                    @SerializedName("placeholder") val placeholder: String?,
+                    @SerializedName("checked") val checked: Boolean?,
+                    @SerializedName("required") val required: Boolean?
                 )
 
                 class Topic(
-                    val text: String?,
-                    val checked: Boolean?
+                    @SerializedName("text") val text: String?,
+                    @SerializedName("checked") val checked: Boolean?
                 )
             }
 
             class Ticket(
-                val id: Long?,
-                val statusId: Int?
+                @SerializedName("id") val id: Long?,
+                @SerializedName("status_id") val statusId: Int?
             )
         }
     }
 
     class SetClient(
-        val state: State?,
-        val reset: Boolean?
+        @SerializedName("state") val state: State?,
+        @SerializedName("reset") val reset: Boolean?
     ) : SocketResponse {
 
         class State {
-            val client: Client? = null
+            @SerializedName("client") val client: Client? = null
 
             class Client {
-                val token: String? = null
-                val email: String? = null
-                val chat: Int? = null
+                @SerializedName("token") val token: String? = null
+                @SerializedName("email") val email: String? = null
+                @SerializedName("chat") val chat: Int? = null
             }
         }
     }
 
-    class AddMessage(val message: Message?) : SocketResponse {
+    class AddMessage(@SerializedName("message") val message: Message?) : SocketResponse {
 
         companion object {
             const val TYPE_OPERATOR_TO_CLIENT = "operator_to_client"
@@ -73,60 +73,60 @@ internal sealed interface SocketResponse {
         }
 
         class Message(
-            val payload: Payload?,
-            val id: String?,
-            val type: String?,
-            val text: String?,
+            @SerializedName("payload") val payload: Payload?,
+            @SerializedName("id") val id: String?,
+            @SerializedName("type") val type: String?,
+            @SerializedName("text") val text: String?,
             @SerializedName("createdAt")
             val createdAt: String?,
-            val name: String?,
-            val chat: Any?,
-            val file: File?
+            @SerializedName("name") val name: String?,
+            @SerializedName("chat") val chat: Any?,
+            @SerializedName("file") val file: File?
         ) {
 
             class File(
-                val name: String?,
-                val type: String?,
-                val content: String?,
-                val size: String?
+                @SerializedName("name") val name: String?,
+                @SerializedName("type") val type: String?,
+                @SerializedName("content") val content: String?,
+                @SerializedName("size") val size: String?
             )
 
             class Payload(
-                val buttons: Array<Button?>?,
-                val buttonsCsi: ButtonsCsi? = null,
+                @SerializedName("buttons") val buttons: Array<Button?>?,
+                @SerializedName("buttons_csi") val buttonsCsi: ButtonsCsi? = null,
                 @SerializedName("userRating")
                 val userRating: String? = null,
-                val avatar: String? = null,
-                val messageId: String? = null
+                @SerializedName("avatar") val avatar: String? = null,
+                @SerializedName("message_id") val messageId: String? = null
             ) {
 
                 class Button {
-                    val type: String? = null
-                    val icon: String? = null
-                    val data: String? = null
+                    @SerializedName("type") val type: String? = null
+                    @SerializedName("icon") val icon: String? = null
+                    @SerializedName("data") val data: String? = null
                 }
 
                 class ButtonsCsi(
-                    val buttonType: String?,
-                    val npsType: String?,
-                    val iconType: String?,
-                    val data: List<Item?>?
+                    @SerializedName("button_type") val buttonType: String?,
+                    @SerializedName("nps_type") val npsType: String?,
+                    @SerializedName("icon_type") val iconType: String?,
+                    @SerializedName("data") val data: List<Item?>?
                 ) {
                     class Item(
-                        val label: String?,
-                        val id: String?
+                        @SerializedName("label") val label: String?,
+                        @SerializedName("id") val id: String?
                     )
                 }
             }
         }
     }
 
-    class FeedbackResponse(val answer: Answer?) : SocketResponse {
-        class Answer(val status: Boolean? = null)
+    class FeedbackResponse(@SerializedName("answer") val answer: Answer?) : SocketResponse {
+        class Answer(@SerializedName("status") val status: Boolean? = null)
     }
 
     class ErrorResponse : SocketResponse {
-        val message: String? = null
-        val code: Int? = null
+        @SerializedName("message") val message: String? = null
+        @SerializedName("code") val code: Int? = null
     }
 }

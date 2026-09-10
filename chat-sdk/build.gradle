@@ -13,7 +13,6 @@ android {
         minSdk = defaultMinSdkVersion
         targetSdk = defaultTargetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        consumerProguardFiles "consumer-rules.pro"
     }
     compileOptions {
         sourceCompatibility = javaVersion

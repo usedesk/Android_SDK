@@ -1,1 +1,0 @@
--keepclassmembers class ru.usedesk.knowledgebase_sdk.data.repository.api.entity.** { *; }

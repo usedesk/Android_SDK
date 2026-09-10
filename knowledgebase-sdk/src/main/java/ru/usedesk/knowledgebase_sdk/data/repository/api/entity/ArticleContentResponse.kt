@@ -1,21 +1,22 @@
 
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
+import com.google.gson.annotations.SerializedName
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface GetArticleContent {
     class Request(
-        val accountId: String,
-        val articleId: Long,
-        val token: String
+        @SerializedName("account_id") val accountId: String,
+        @SerializedName("article_id") val articleId: Long,
+        @SerializedName("token") val token: String
     )
 
     class Response(
-        val id: Long? = null,
-        val title: String? = null,
-        val text: String? = null,
-        val categoryId: String? = null,
-        val views: Long? = null,
-        val public: Int? = null
+        @SerializedName("id") val id: Long? = null,
+        @SerializedName("title") val title: String? = null,
+        @SerializedName("text") val text: String? = null,
+        @SerializedName("category_id") val categoryId: String? = null,
+        @SerializedName("views") val views: Long? = null,
+        @SerializedName("public") val public: Int? = null
     ) : UsedeskApiError()
 }

@@ -1,24 +1,25 @@
 
 package ru.usedesk.knowledgebase_sdk.data.repository.api.entity
 
+import com.google.gson.annotations.SerializedName
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface AddRating {
     class Request(
-        val apiToken: String,
-        val accountId: String,
-        val articleId: Long,
-        val countPositive: Int,
-        val countNegative: Int
+        @SerializedName("api_token") val apiToken: String,
+        @SerializedName("account_id") val accountId: String,
+        @SerializedName("article_id") val articleId: Long,
+        @SerializedName("count_positive") val countPositive: Int,
+        @SerializedName("count_negative") val countNegative: Int
     )
 
     class Response(
-        val rating: Rating? = null
+        @SerializedName("rating") val rating: Rating? = null
     ) : UsedeskApiError() {
 
         class Rating(
-            val positive: Int? = null,
-            val negative: Int? = null
+            @SerializedName("positive") val positive: Int? = null,
+            @SerializedName("negative") val negative: Int? = null
         )
     }
 }

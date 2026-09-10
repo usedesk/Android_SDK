@@ -1,21 +1,22 @@
 
 package ru.usedesk.chat_sdk.data.repository.api.entity
 
+import com.google.gson.annotations.SerializedName
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface SendAdditionalFields {
     class Request(
-        private val chatToken: String?,
-        private val additionalFields: List<AdditionalField>
+        @SerializedName("chat_token") private val chatToken: String?,
+        @SerializedName("additional_fields") private val additionalFields: List<AdditionalField>
     ) {
 
         class AdditionalField(
-            private val id: Long,
-            private val value: String
+            @SerializedName("id") private val id: Long,
+            @SerializedName("value") private val value: String
         )
     }
 
     class Response(
-        val status: Int? = null
+        @SerializedName("status") val status: Int? = null
     ) : UsedeskApiError()
 }

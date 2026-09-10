@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "4.7.0-develop05"
+    project.version = "4.8.0-develop01"
 }
 
 ext {

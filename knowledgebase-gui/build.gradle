@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    id "kotlin-parcelize"
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.kotlin.compose)
 }
@@ -11,15 +10,12 @@ android {
     compileSdk defaultCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion defaultMinSdkVersion
-        targetSdkVersion defaultTargetSdkVersion
+        minSdk = defaultMinSdkVersion
+        targetSdk = defaultTargetSdkVersion
     }
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
     }
     buildFeatures {
         compose true

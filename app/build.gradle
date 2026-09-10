@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
 }
 
@@ -9,8 +8,8 @@ android {
 
     defaultConfig {
         applicationId "ru.usedesk.sample"
-        minSdkVersion defaultMinSdkVersion
-        targetSdkVersion defaultTargetSdkVersion
+        minSdk = defaultMinSdkVersion
+        targetSdk = defaultTargetSdkVersion
         versionCode = 208
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
@@ -28,22 +27,26 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
-    android.applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach {
-            outputFileName = "${variant.applicationId}_v${variant.versionName}_c${variant.versionCode}.apk"
-        }
-    }
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
     }
     buildFeatures {
         dataBinding = true
     }
     namespace "ru.usedesk.sample"
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName.set(
+                variant.applicationId.map { appId ->
+                    "${appId}_v${output.versionName.get()}_c${output.versionCode.get()}.apk".toString()
+                }
+            )
+        }
+    }
 }
 
 dependencies {

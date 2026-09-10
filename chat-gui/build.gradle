@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.maven.publish)
 }
@@ -9,16 +8,13 @@ android {
     compileSdk defaultCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion defaultMinSdkVersion
-        targetSdkVersion defaultTargetSdkVersion
+        minSdk = defaultMinSdkVersion
+        targetSdk = defaultTargetSdkVersion
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
     }
     namespace "ru.usedesk.chat_gui"
     publishing {

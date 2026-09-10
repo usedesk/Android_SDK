@@ -17,10 +17,12 @@
 
     <style name="AppTheme" parent="@style/BaseTheme">
         <item name="android:statusBarColor">@color/usedesk_white_2</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="AppTheme.MaterialComponents" parent="@style/BaseTheme.MaterialComponents">
         <item name="android:statusBarColor">@color/usedesk_white_2</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <!--Adaptive Padding Start-->

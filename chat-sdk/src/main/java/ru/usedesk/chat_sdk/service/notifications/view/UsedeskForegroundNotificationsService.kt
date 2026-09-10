@@ -50,10 +50,7 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
         Intent(applicationContext, serviceClass).apply {
             putExtra(STOP_SELF_KEY, true)
         },
-        PendingIntent.FLAG_CANCEL_CURRENT or when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> PendingIntent.FLAG_IMMUTABLE
-            else -> 0
-        }
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     protected open fun createStartNotification(): Notification =

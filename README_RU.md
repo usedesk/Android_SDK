@@ -12,7 +12,7 @@
 
 ### Минимальная версия Android
 
-На данный момент минимальная версия ОС, которая поддерживается в SDK — **Android 5.0 (API 21)**
+На данный момент минимальная версия ОС, которая поддерживается в SDK — **Android 7.0 (API 24)**
 
 ### Состав SDK
 
@@ -60,6 +60,10 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 <!--Только при использовании foreground сервиса уведомлений-->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
+
+<!--Начиная с Android 13 уведомления показываются только после получения этого разрешения-->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
 ## Инициализация Чата
@@ -117,6 +121,15 @@ SDK умеет отправлять уведомления, если прило�
 
 ```kotlin
 UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory())
+```
+
+Сервис объявляется в манифесте с типом `remoteMessaging` — начиная с Android 14 без него система не даст запустить foreground-сервис:
+
+```xml
+<service
+    android:name=".CustomNotificationsService"
+    android:exported="false"
+    android:foregroundServiceType="remoteMessaging" />
 ```
 
 ### Использование с GUI

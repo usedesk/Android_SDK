@@ -12,7 +12,7 @@ The ["Example" folder](https://github.com/usedesk/Android_SDK/tree/master/app/sr
 
 ### Minimal Android version
 
-At the moment, the minimum version of the OS that is supported by the SDK — **Android 5.0 (API 21)**
+At the moment, the minimum version of the OS that is supported by the SDK — **Android 7.0 (API 24)**
 
 ### SDK components
 
@@ -61,6 +61,10 @@ Add to Manifest file:
 
     <!--Only when using the foreground notification service-->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
+
+    <!--Since Android 13 notifications are shown only after this permission is granted-->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
 ## Initializing a Chat
@@ -118,6 +122,15 @@ After creating classes, you can use the factory in the SDK:
 
 ```kotlin
 UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory())
+```
+
+Declare the service in the manifest with the `remoteMessaging` type — since Android 14 the system refuses to start a foreground service without it:
+
+```xml
+<service
+    android:name=".CustomNotificationsService"
+    android:exported="false"
+    android:foregroundServiceType="remoteMessaging" />
 ```
 
 ### Using with GUI

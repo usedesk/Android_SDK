@@ -356,27 +356,32 @@ internal class ChatImpl @Inject constructor(
     }
 
     private suspend fun withFirstMessageLock(task: suspend () -> Boolean) {
-        firstMessageMutex.withLock {
-            val gate = firstMessageGate
-            when (gate?.isCompleted) {
-                false -> gate
-                true -> {
-                    firstMessageGate = CompletableDeferred()
-                    null
-                }
-                else -> null
-            }
-        }?.await()
-        val success = task()
-        firstMessageMutex.withLock {
-            firstMessageGate?.apply {
-                if (success) {
-                    if (!isCompleted) {
-                        delay(FIRST_MESSAGE_DELAY)
+        var ownGate: CompletableDeferred<Unit>? = null
+        while (true) {
+            val gate = firstMessageMutex.withLock {
+                val gate = firstMessageGate
+                when {
+                    gate == null -> null
+                    gate.isCompleted -> {
+                        ownGate = CompletableDeferred()
+                        firstMessageGate = ownGate
+                        null
                     }
+                    else -> gate
+                }
+            } ?: break
+            gate.await()
+        }
+        val success = task()
+        ownGate?.let { gate ->
+            if (success) {
+                delay(FIRST_MESSAGE_DELAY)
+            }
+            firstMessageMutex.withLock {
+                if (success && firstMessageGate === gate) {
                     firstMessageGate = null
                 }
-                complete(Unit)
+                gate.complete(Unit)
             }
         }
     }
@@ -720,12 +725,6 @@ internal class ChatImpl @Inject constructor(
     private suspend fun onChatInited(chatInited: ChatInited) {
         userInfoRepository.setClientToken(chatInited.token)
 
-        if (chatInited.status in ACTIVE_STATUSES) {
-            firstMessageMutex.withLock {
-                firstMessageGate?.complete(Unit)
-            }
-        }
-
         val model = modelFlow.value
         val ids = model.messages.map(UsedeskMessage::id)
         val filteredMessages = chatInited.messages.filter { it.id !in ids }
@@ -862,7 +861,6 @@ internal class ChatImpl @Inject constructor(
     }
 
     companion object {
-        private val ACTIVE_STATUSES = listOf(1, 5, 6, 8)
         private const val REPEAT_DELAY = 5000L
         private const val FIRST_MESSAGE_DELAY = 2000L
     }

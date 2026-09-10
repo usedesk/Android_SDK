@@ -1,6 +1,6 @@
 [versions]
-agp = "9.4.0"
-androidLibrary = "9.4.0"
+agp = "9.3.0"
+androidLibrary = "9.3.0"
 kotlin = "2.4.20"
 kspVersion = "2.3.11"
 roomVersion = "2.8.4"

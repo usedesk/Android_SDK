@@ -38,6 +38,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     private var loadedArticleId: Long? = null
 
     var fullscreenListener: UsedeskOnFullscreenListener? = null
+    var onFullscreenChanged: ((Boolean) -> Unit)? = null
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
     val isInFullscreen: Boolean get() = customView != null
@@ -95,6 +96,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                 null
             )
             fullscreenListener?.onFullscreenChanged(true)
+            onFullscreenChanged?.invoke(true)
         }
 
         override fun onHideCustomView() {
@@ -111,6 +113,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                 null
             )
             fullscreenListener?.onFullscreenChanged(false)
+            onFullscreenChanged?.invoke(false)
         }
     }
 
@@ -130,12 +133,6 @@ internal class ArticleWebView(context: Context) : WebView(context) {
             ): Boolean {
                 if (!request.isForMainFrame) return false
                 onWebUrl(request.url.toString())
-                return true
-            }
-
-            // API < 24: the WebResourceRequest overload isn't called
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                onWebUrl(url)
                 return true
             }
 

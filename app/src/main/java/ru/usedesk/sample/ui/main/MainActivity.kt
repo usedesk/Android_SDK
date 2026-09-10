@@ -1,7 +1,6 @@
 package ru.usedesk.sample.ui.main
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ContentResolver
 import android.content.Intent
@@ -32,7 +31,6 @@ import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
 import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
 import ru.usedesk.chat_sdk.entity.UsedeskFile
-import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
@@ -294,17 +292,6 @@ class MainActivity : AppCompatActivity(),
                 supportWindowInsets = true,
             )
         )
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
-        val currentFragment = navHostFragment
-            .childFragmentManager
-            .fragments
-            .firstOrNull()
-        if ((currentFragment as? UsedeskFragment)?.onBackPressed() != true && !navController.popBackStack()) {
-            finish()
-        }
     }
 
     override fun onSupportClick() {

@@ -45,39 +45,6 @@ class ConfigurationScreen : UsedeskFragment() {
         binding.toolbar.insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
         binding.content.insetsAsPaddings(ignoreStatusBar = true)
 
-        viewModel.modelFlow.onEachWithOld { old, new ->
-            if (old?.avatar != new.avatar) {
-                Glide.with(binding.ivAvatar)
-                    .load(new.avatar)
-                    .placeholder(sampleR.drawable.add_avatar)
-                    .error(sampleR.drawable.add_avatar)
-                    .into(binding.ivAvatar)
-            }
-            if (old?.configuration != new.configuration) {
-                new.configuration.onNewConfiguration()
-            }
-            if (old?.validation != new.validation) {
-                new.validation?.onNewConfigurationValidation()
-            }
-            if (old?.clientToken != new.clientToken) {
-                showInstead(binding.pbCreateChat, binding.btnCreateChat, new.clientToken.loading)
-                new.clientToken.completed?.use {
-                    binding.etClientToken.setText(it)
-                    Toast.makeText(
-                        requireContext(),
-                        "Success:$it",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                new.clientToken.error?.use {
-                    Toast.makeText(
-                        requireContext(),
-                        "Failed:$it",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
         binding.etAvatar.addTextChangedListener(UsedeskTextChangeListener(viewModel::setAvatar))
         binding.btnGoToSdk.setOnClickListener {
             val configuration = getConfiguration()
@@ -149,6 +116,44 @@ class ConfigurationScreen : UsedeskFragment() {
             }
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.modelFlow.onEachWithOld { old, new ->
+            if (old?.avatar != new.avatar) {
+                Glide.with(binding.ivAvatar)
+                    .load(new.avatar)
+                    .placeholder(sampleR.drawable.add_avatar)
+                    .error(sampleR.drawable.add_avatar)
+                    .into(binding.ivAvatar)
+            }
+            if (old?.configuration != new.configuration) {
+                new.configuration.onNewConfiguration()
+            }
+            if (old?.validation != new.validation) {
+                new.validation?.onNewConfigurationValidation()
+            }
+            if (old?.clientToken != new.clientToken) {
+                showInstead(binding.pbCreateChat, binding.btnCreateChat, new.clientToken.loading)
+                new.clientToken.completed?.use {
+                    binding.etClientToken.setText(it)
+                    Toast.makeText(
+                        requireContext(),
+                        "Success:$it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                new.clientToken.error?.use {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed:$it",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun kbDeepLinkSwitched(

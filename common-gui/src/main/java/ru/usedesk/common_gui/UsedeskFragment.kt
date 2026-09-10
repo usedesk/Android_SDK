@@ -238,7 +238,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun <T> Flow<T>.onEachWithOld(action: suspend (old: T?, new: T) -> Unit) = onEachWithOld(
-        lifecycleScope,
+        viewLifecycleOwner.lifecycleScope,
         action
     )
 

@@ -143,8 +143,10 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
             if (old?.goLoading != new.goLoading) {
                 new.goLoading.use {
-                    while (navController.popBackStack()) continue
-                    navController.navigate(chatR.id.dest_loadingPage)
+                    if (navController.currentDestination?.id != chatR.id.dest_loadingPage) {
+                        while (navController.popBackStack()) continue
+                        navController.navigate(chatR.id.dest_loadingPage)
+                    }
                 }
             }
         }

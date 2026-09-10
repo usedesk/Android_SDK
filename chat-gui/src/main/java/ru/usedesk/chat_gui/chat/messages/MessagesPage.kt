@@ -196,7 +196,7 @@ internal class MessagesPage : UsedeskFragment() {
             binding = binding.messagePanel,
             viewModel = viewModel,
             supportWindowInsets = chatArgs.supportWindowInsets,
-            lifecycleCoroutineScope = lifecycleScope,
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
         ) {
             findParent<UsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
@@ -208,7 +208,7 @@ internal class MessagesPage : UsedeskFragment() {
             recyclerView = binding.rvMessages,
             dateBinding = binding.dateBinding,
             viewModel = viewModel,
-            lifecycleScope = lifecycleScope,
+            lifecycleScope = viewLifecycleOwner.lifecycleScope,
             chatArgs = chatArgs,
             mediaPlayerAdapter = mediaPlayerAdapter,
             onFileClick = { findParent<UsedeskOnFileClickListener>()?.onFileClick(it) },
@@ -227,7 +227,7 @@ internal class MessagesPage : UsedeskFragment() {
             tvToBottom = binding.tvToBottom,
             parentStyleValues = binding.styleValues,
             viewModel = viewModel,
-            lifecycleCoroutineScope = lifecycleScope,
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
             onClickListener = { messagesAdapter?.scrollToBottom() }
         )
     }

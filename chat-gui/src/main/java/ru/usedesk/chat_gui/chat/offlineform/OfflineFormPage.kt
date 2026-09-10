@@ -53,16 +53,16 @@ internal class OfflineFormPage : UsedeskFragment() {
         binding.tvSend.setOnClickListener { viewModel.sendClicked() }
 
         updateActionButton(false)
-
-        init()
     }.rootView
 
-    private fun init() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         fieldsAdapter = OfflineFormFieldsAdapter(
             recyclerView = binding.rvFields,
             binding = binding,
             viewModel = viewModel,
-            coroutineScope = lifecycleScope
+            coroutineScope = viewLifecycleOwner.lifecycleScope
         ) { key ->
             findNavController().navigateSafe(
                 startId = chatR.id.dest_offlineFormPage,

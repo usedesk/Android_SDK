@@ -29,6 +29,7 @@ dependencies {
     api project(":common-sdk")
 
     implementation libs.androidx.core
+    implementation libs.androidx.core.ktx
 
     implementation libs.kotlinx.coroutines.core
     implementation libs.kotlinx.coroutines.android

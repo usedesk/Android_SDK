@@ -163,7 +163,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private fun BlurView.setBlur() {
         val algorithm = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> RenderEffectBlur()
-            else -> RenderScriptBlur(context)
+            else -> @Suppress("DEPRECATION") RenderScriptBlur(context)
         }
         setupWith(binding.rootView as ViewGroup, algorithm)
             .setFrameClearDrawable(background)

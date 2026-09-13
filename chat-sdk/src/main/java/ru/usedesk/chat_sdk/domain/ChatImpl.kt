@@ -293,8 +293,7 @@ internal class ChatImpl @Inject constructor(
             is UsedeskMessageClientVideo -> fileMessage.copy(file = newFile)
             is UsedeskMessageClientImage -> fileMessage.copy(file = newFile)
             is UsedeskMessageClientFile -> fileMessage.copy(file = newFile)
-            else -> null
-        }?.let { cachedNotSentMessage ->
+        }.let { cachedNotSentMessage ->
             cachedMessagesRepository.updateNotSentMessage(cachedNotSentMessage)
             onMessageUpdate(cachedNotSentMessage)
             toSendRepository.toSendFile(cachedNotSentMessage)
@@ -347,8 +346,7 @@ internal class ChatImpl @Inject constructor(
                         is UsedeskMessageClientAudio -> fileMessage.copy(
                             status = UsedeskMessageOwner.Client.Status.SEND_FAILED
                         )
-                        else -> null
-                    }?.let(this@ChatImpl::onMessageUpdate)
+                    }.let(this@ChatImpl::onMessageUpdate)
                     false
                 }
             }

@@ -17,7 +17,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
@@ -336,13 +336,13 @@ class MainActivity : AppCompatActivity(),
     override fun onClientToken(clientToken: String) = viewModel.onClientToken(clientToken)
 
     private fun fullscreenMode(enable: Boolean) {
-        ViewCompat.getWindowInsetsController(binding.root)?.run {
+        WindowCompat.getInsetsController(window, binding.root).run {
             systemBarsBehavior = if (enable) {
                 hide(WindowInsetsCompat.Type.systemBars())
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             } else {
                 show(WindowInsetsCompat.Type.systemBars())
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
             }
         }
     }

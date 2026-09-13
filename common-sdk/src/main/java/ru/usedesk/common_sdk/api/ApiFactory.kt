@@ -20,7 +20,7 @@ internal class ApiFactory @Inject constructor(
         val url = baseUrl.getCorrectUrl()
         val key = "${apiClass.name}:$url"
         return (instanceMap[key] ?: createInstance(url, apiClass).also {
-            instanceMap[key] = it!!
+            instanceMap[key] = requireNotNull(it)
         }) as API
     }
 

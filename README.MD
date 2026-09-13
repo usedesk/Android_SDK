@@ -169,7 +169,7 @@ The `newInstance` and `createBundle` methods take the following arguments:
 
 For the fragment to work fully it is necessary to:
 
-1) The screen handles the system back button itself through `OnBackPressedDispatcher`, including predictive back (targetSdk 36). Forwarding the event from the activity is not needed; the `onBackPressed()` method of the SDK fragments was removed in 4.7.0 — if your code called it, drop the call
+1) The screen handles the system back button itself through `OnBackPressedDispatcher`, including predictive back (targetSdk 36). Forwarding the event from the activity is not needed; the `onBackPressed()` method of the SDK fragments was removed in 4.8.0 — if your code called it, drop the call
 
 2) Implement the [UsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFileClickListener.kt) interface by overriding the
    `onFileClick` method
@@ -339,7 +339,7 @@ navController.navigate(
 
 For the fragment to work properly it is necessary to:
 
-1) The screen handles the system back button itself through `OnBackPressedDispatcher`, including predictive back (targetSdk 36). Forwarding the event from the activity is not needed; the `onBackPressed()` method of the SDK fragments was removed in 4.7.0 — if your code called it, drop the call
+1) The screen handles the system back button itself through `OnBackPressedDispatcher`, including predictive back (targetSdk 36). Forwarding the event from the activity is not needed; the `onBackPressed()` method of the SDK fragments was removed in 4.8.0 — if your code called it, drop the call
 
 2) Implement the [UsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskOnSupportClickListener.kt) interface as a parent, overriding the
    `onSupportClick()` method,

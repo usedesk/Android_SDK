@@ -169,7 +169,7 @@ navController.navigate(
 
 Для полноценной работы фрагмента необходимо:
 
-1) Системную кнопку «назад» экран обрабатывает сам через `OnBackPressedDispatcher`, в том числе при включённом predictive back (targetSdk 36). Пробрасывать событие из активити не нужно; метод `onBackPressed()` у фрагментов SDK удалён в 4.7.0 — если ваш код его вызывал, уберите вызов
+1) Системную кнопку «назад» экран обрабатывает сам через `OnBackPressedDispatcher`, в том числе при включённом predictive back (targetSdk 36). Пробрасывать событие из активити не нужно; метод `onBackPressed()` у фрагментов SDK удалён в 4.8.0 — если ваш код его вызывал, уберите вызов
 
 2) Реализовать интерфейс [UsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFileClickListener.kt) родителем, переопределив метод
    `onFileClick`
@@ -340,7 +340,7 @@ navController.navigate(
 
 Для полноценной работы фрагмента необходимо:
 
-1) Системную кнопку «назад» экран обрабатывает сам через `OnBackPressedDispatcher`, в том числе при включённом predictive back (targetSdk 36). Пробрасывать событие из активити не нужно; метод `onBackPressed()` у фрагментов SDK удалён в 4.7.0 — если ваш код его вызывал, уберите вызов
+1) Системную кнопку «назад» экран обрабатывает сам через `OnBackPressedDispatcher`, в том числе при включённом predictive back (targetSdk 36). Пробрасывать событие из активити не нужно; метод `onBackPressed()` у фрагментов SDK удалён в 4.8.0 — если ваш код его вызывал, уберите вызов
 
 2) Реализовать интерфейс [UsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskOnSupportClickListener.kt) родителем, переопределив метод
    `onSupportClick()`,

@@ -4,37 +4,36 @@ plugins {
 }
 
 android {
-    compileSdk defaultCompileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        applicationId "ru.usedesk.sample"
-        minSdk = defaultMinSdkVersion
-        targetSdk = defaultTargetSdkVersion
+        applicationId = "ru.usedesk.sample"
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode = 208
         versionName = project.version
         vectorDrawables.useSupportLibrary = true
-        multiDexEnabled true
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
         debug {
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled = false
+            shrinkResources = false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
     buildFeatures {
         dataBinding = true
     }
-    namespace "ru.usedesk.sample"
+    namespace = "ru.usedesk.sample"
 }
 
 androidComponents {
@@ -59,12 +58,12 @@ dependencies {
     implementation project(":knowledgebase-sdk")
     implementation project(":knowledgebase-gui")
 
-    implementation libs.androidx.navigation.fragment.ktx
-    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
-    implementation libs.androidx.activity.ktx
-    implementation libs.androidx.core.ktx
-    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.activity
+    implementation libs.androidx.core
+    implementation libs.androidx.fragment
     implementation libs.androidx.appcompat
 
     implementation libs.google.material
@@ -76,6 +75,4 @@ dependencies {
     ksp libs.glide.ksp
 
     implementation libs.google.gson
-
-    implementation libs.androidx.multidex
 }

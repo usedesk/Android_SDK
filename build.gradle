@@ -11,10 +11,3 @@ allprojects {
     project.group = "ru.usedesk"
     project.version = "4.8.0-develop01"
 }
-
-ext {
-    defaultCompileSdkVersion = 37
-    defaultTargetSdkVersion = 36
-    defaultMinSdkVersion = 24
-    javaVersion = JavaVersion.VERSION_17
-}

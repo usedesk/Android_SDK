@@ -5,18 +5,18 @@ plugins {
 }
 
 android {
-    compileSdk defaultCompileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdk = defaultMinSdkVersion
-        targetSdk = defaultTargetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
-    namespace "ru.usedesk.chat_gui"
+    namespace = "ru.usedesk.chat_gui"
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -28,15 +28,15 @@ dependencies {
     api project(":chat-sdk")
     api project(":common-gui")
 
-    implementation libs.androidx.core.ktx
-    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.core
+    implementation libs.androidx.fragment
     implementation libs.androidx.appcompat
     implementation libs.androidx.recyclerview
     implementation libs.androidx.constraintlayout
-    implementation libs.androidx.lifecycle.common.java8
+    implementation libs.androidx.lifecycle.common
 
-    implementation libs.androidx.navigation.fragment.ktx
-    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
     implementation libs.google.dagger
     ksp libs.google.dagger.compiler

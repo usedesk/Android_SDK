@@ -7,18 +7,18 @@ plugins {
 }
 
 android {
-    compileSdk defaultCompileSdkVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdk = defaultMinSdkVersion
-        targetSdk = defaultTargetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
-    namespace "ru.usedesk.chat_sdk"
+    namespace = "ru.usedesk.chat_sdk"
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -33,7 +33,7 @@ dependencies {
         exclude group: "org.json", module: "json"
     }
 
-    implementation libs.androidx.core.ktx
+    implementation libs.androidx.core
 
     implementation libs.google.gson
 
@@ -54,7 +54,7 @@ dependencies {
 }
 
 room {
-    schemaDirectory "$projectDir/schemas"
+    schemaDirectory("$projectDir/schemas")
 }
 
 afterEvaluate {

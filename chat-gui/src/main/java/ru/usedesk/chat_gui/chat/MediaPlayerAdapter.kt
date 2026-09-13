@@ -207,10 +207,10 @@ internal class MediaPlayerAdapter(
 
                 if (fullscreen) {
                     fullscreenListener?.getFullscreenLayout()?.addView(pvVideoExoPlayer)
-                    videoBinding.fullscreenButton.setImageResource(media3R.drawable.exo_ic_fullscreen_exit)
+                    videoBinding.fullscreenButton.setImageResource(chatR.drawable.usedesk_ic_fullscreen_exit)
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvVideoExoPlayer)
-                    videoBinding.fullscreenButton.setImageResource(media3R.drawable.exo_ic_fullscreen_enter)
+                    videoBinding.fullscreenButton.setImageResource(chatR.drawable.usedesk_ic_fullscreen)
                 }
                 pvVideoExoPlayer.player = exoPlayer
                 fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)

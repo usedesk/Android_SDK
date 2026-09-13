@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
-import androidx.annotation.WorkerThread
 import android.net.Uri
+import androidx.annotation.WorkerThread
 import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo

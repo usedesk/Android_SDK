@@ -8,8 +8,6 @@ import androidx.core.content.edit
 import androidx.core.net.toUri
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import java.nio.charset.StandardCharsets
-import java.util.Calendar
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
@@ -23,6 +21,8 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageClientText
 import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
 import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import java.nio.charset.StandardCharsets
+import java.util.Calendar
 
 internal class MessagesRepository(
     private val appContext: Context,

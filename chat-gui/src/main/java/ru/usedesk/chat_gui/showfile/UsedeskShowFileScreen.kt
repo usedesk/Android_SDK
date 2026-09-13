@@ -3,6 +3,7 @@ package ru.usedesk.chat_gui.showfile
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
+import eightbitlab.com.blurview.RenderEffectBlur
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_sdk.entity.UsedeskFile
@@ -159,7 +161,11 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     }
 
     private fun BlurView.setBlur() {
-        setupWith(binding.rootView as ViewGroup, RenderScriptBlur(context))
+        val algorithm = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> RenderEffectBlur()
+            else -> RenderScriptBlur(context)
+        }
+        setupWith(binding.rootView as ViewGroup, algorithm)
             .setFrameClearDrawable(background)
             .setBlurRadius(16f)
     }

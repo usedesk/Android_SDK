@@ -280,11 +280,11 @@ internal class ChatApiImpl @Inject constructor(
                     responseClass = SetClient.Response::class.java,
                     apiMethod = RetrofitApi::setClient
                 )
-                when (response?.clientId) {
+                when (val clientId = response?.clientId) {
                     null -> SetClientResponse.Error(response?.code)
                     else -> {
                         socketEventListener.onSetEmailSuccess()
-                        SetClientResponse.Done
+                        SetClientResponse.Done(clientId)
                     }
                 }
             }

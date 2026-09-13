@@ -734,10 +734,16 @@ internal class ChatImpl @Inject constructor(
         val needToResendMessages = model.messages.isNotEmpty()
         onMessagesNew(new = filteredMessages + filteredNotSentMessages)
 
+        chatInited.clientId?.let { clientId ->
+            setModel { copy(clientId = clientId) }
+        }
         when {
-            chatInited.waitingEmail -> apiRepository.setClient(
-                userInfoRepository.getConfiguration()
-            )
+            chatInited.waitingEmail -> {
+                val response = apiRepository.setClient(userInfoRepository.getConfiguration())
+                if (response is ChatApi.SetClientResponse.Done) {
+                    setModel { copy(clientId = response.clientId) }
+                }
+            }
             else -> initClientMessageInteractor.sendInitClientMessage()
         }
         when {

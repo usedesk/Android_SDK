@@ -90,7 +90,8 @@ interface UsedeskChat {
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
         val feedbackEvent: UsedeskEvent<Unit>? = null,
-        val thumbnailMap: Map<String, Uri> = mapOf()
+        val thumbnailMap: Map<String, Uri> = mapOf(),
+        val clientId: Long? = null
     )
 }
 

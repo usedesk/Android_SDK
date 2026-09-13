@@ -42,7 +42,8 @@ internal sealed interface SocketResponse {
 
             class Ticket(
                 @SerializedName("id") val id: Long?,
-                @SerializedName("status_id") val statusId: Int?
+                @SerializedName("status_id") val statusId: Int?,
+                @SerializedName("client_id") val clientId: Long?
             )
         }
     }

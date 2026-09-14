@@ -3,9 +3,7 @@ package ru.usedesk.common_sdk.di
 
 import android.content.ContentResolver
 import android.content.Context
-import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -25,9 +23,7 @@ internal class UsedeskCommonModuleProvides {
     fun contentResolver(appContext: Context): ContentResolver = appContext.contentResolver
 
     @Provides
-    fun gson(): Gson = GsonBuilder()
-        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-        .create()
+    fun gson(): Gson = Gson()
 }
 
 @Module

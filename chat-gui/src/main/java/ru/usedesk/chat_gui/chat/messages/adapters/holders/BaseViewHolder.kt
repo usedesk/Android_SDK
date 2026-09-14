@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
 import ru.usedesk.chat_gui.chat.messages.MessagesViewModel
@@ -22,7 +23,9 @@ internal sealed class BaseViewHolder(rootView: View) :
         stateFlow: StateFlow<MessagesViewModel.State>
     ) {
         viewHolderScope.cancel()
-        viewHolderScope = CoroutineScope(scope.coroutineContext + Job())
+        viewHolderScope = CoroutineScope(
+            scope.coroutineContext + SupervisorJob(scope.coroutineContext[Job])
+        )
     }
 
     companion object {

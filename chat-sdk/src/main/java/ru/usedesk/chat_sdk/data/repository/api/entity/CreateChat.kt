@@ -1,6 +1,7 @@
 
 package ru.usedesk.chat_sdk.data.repository.api.entity
 
+import com.google.gson.annotations.SerializedName
 import ru.usedesk.common_sdk.api.UsedeskApiRepository.MultipartRequest
 import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
@@ -30,8 +31,8 @@ internal interface CreateChat {
     )
 
     class Response(
-        val status: String? = null,
-        val chatId: Long? = null,
-        val token: String? = null
+        @SerializedName("status") val status: String? = null,
+        @SerializedName("chat_id") val chatId: Long? = null,
+        @SerializedName("token") val token: String? = null
     ) : UsedeskApiError()
 }

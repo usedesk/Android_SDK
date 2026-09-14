@@ -3,7 +3,8 @@ package ru.usedesk.chat_sdk.data.repository.form
 
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.POST
 import ru.usedesk.chat_sdk.data.repository.form.entity.LoadForm
 import ru.usedesk.chat_sdk.data.repository.form.entity.SaveForm
 

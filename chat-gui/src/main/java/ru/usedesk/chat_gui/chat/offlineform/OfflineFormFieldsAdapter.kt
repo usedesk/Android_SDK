@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_gui.chat.offlineform.OfflineFormViewModel.Companion.EMAIL_KEY
@@ -164,7 +165,10 @@ internal class OfflineFormFieldsAdapter(
                         )
                     }
                 }
-                CoroutineScope(coroutineScope.coroutineContext + Job()).apply {
+                CoroutineScope(
+                    coroutineScope.coroutineContext +
+                            SupervisorJob(coroutineScope.coroutineContext[Job])
+                ).apply {
                     itemScope = this
                     launch {
                         var oldState: OfflineFormViewModel.Model? = null

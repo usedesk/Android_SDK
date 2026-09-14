@@ -27,9 +27,6 @@ internal interface CachedMessagesRepository {
         localId: String
     ): UsedeskMessage.File
 
-    /**
-     * Returns old UsedeskMessageDraft value
-     */
     suspend fun setMessageDraft(
         messageDraft: UsedeskMessageDraft,
         cacheFiles: Boolean

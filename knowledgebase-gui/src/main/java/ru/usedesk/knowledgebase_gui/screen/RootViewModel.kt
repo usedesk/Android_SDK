@@ -62,6 +62,8 @@ internal class RootViewModel(
         copy(screen = it)
     }
 
+    fun canGoBack(state: State): Boolean = state.backPressed() != null
+
     fun onBackPressed(): Boolean {
         var handled = false
         setModel {

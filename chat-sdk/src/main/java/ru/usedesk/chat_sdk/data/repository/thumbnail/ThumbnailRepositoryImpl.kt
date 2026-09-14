@@ -81,7 +81,6 @@ internal class ThumbnailRepositoryImpl @Inject constructor(
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-                    //Different methods works on different devices
 
                     media.getFrameAtTime(0)
                 } catch (e: Exception) {

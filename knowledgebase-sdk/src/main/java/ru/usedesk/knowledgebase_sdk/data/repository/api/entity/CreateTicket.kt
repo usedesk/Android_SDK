@@ -6,16 +6,16 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface CreateTicket {
     class Request(
-        private val apiToken: String,
-        private val clientEmail: String? = null,
+        @SerializedName("api_token") private val apiToken: String,
+        @SerializedName("client_email") private val clientEmail: String? = null,
         @SerializedName("clientName")
         private val clientName: String? = null,
-        private val subject: String,
-        private val message: String,
+        @SerializedName("subject") private val subject: String,
+        @SerializedName("message") private val message: String,
     )
 
     class Response(
-        val status: String? = null,
-        val ticketId: Long? = null
+        @SerializedName("status") val status: String? = null,
+        @SerializedName("ticket_id") val ticketId: Long? = null
     ) : UsedeskApiError()
 }

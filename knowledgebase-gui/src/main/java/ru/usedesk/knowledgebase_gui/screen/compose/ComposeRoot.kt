@@ -53,10 +53,6 @@ internal fun ComposeRoot(
     onWebUrl: (String) -> Unit
 ) {
     val state = viewModel.modelFlow.collectAsState()
-    // Per-field derivedStateOf keeps ComposeRoot's snapshot subscription narrow: it invalidates
-    // only when these specific fields actually change, instead of on every VM emission.
-    // Typing in the search bar mutates state.blocksState.searchText (not read here), so this
-    // scope no longer recomposes per keystroke.
     val clearFocus by remember { derivedStateOf { state.value.clearFocus } }
     val screen by remember { derivedStateOf { state.value.screen } }
     val blockTitle by remember { derivedStateOf { state.value.blocksState.block.title } }
@@ -90,7 +86,6 @@ internal fun ComposeRoot(
         }
     }
 
-    // Column (not Scaffold): collapsing the toolbar resizes the content via layout, not by re-subcomposing it.
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -3,7 +3,11 @@ package ru.usedesk.knowledgebase_sdk.data.repository.api
 
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddRating
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.AddViews
 import ru.usedesk.knowledgebase_sdk.data.repository.api.entity.CreateTicket

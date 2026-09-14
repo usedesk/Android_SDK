@@ -36,19 +36,4 @@ internal abstract class TextFilter(private val maxLength: Int) {
         override fun filterChar(char: Char) = true
     }
 
-    /*open class Number(maxLength: Int = 64) : TextFilter(maxLength) {
-        override fun filterChar(char: Char) = char.isDigit()
-    }
-
-    class None(maxLength: Int = 64) : TextFilter(maxLength) {
-        override fun filterChar(char: Char) = true
-    }
-
-    class Phone(maxLength: Int = 13) : Number(maxLength)
-
-    class Email(maxLength: Int = 64) : TextFilter(maxLength) {
-        override fun filterChar(char: Char) = char.lowercaseChar() in 'a'..'z' ||
-                char in '0'..'9' ||
-                char in "@._-+"
-    }*/
 }

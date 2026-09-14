@@ -3,7 +3,7 @@ package ru.usedesk.chat_gui.showfile
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import eightbitlab.com.blurview.BlurView
+import eightbitlab.com.blurview.RenderEffectBlur
 import eightbitlab.com.blurview.RenderScriptBlur
 import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_sdk.entity.UsedeskFile
@@ -31,6 +33,10 @@ class UsedeskShowFileScreen : UsedeskFragment() {
     private val viewModel: ShowFileViewModel by viewModels()
 
     private lateinit var binding: Binding
+
+    private var toolbarAlpha = 1f
+    private var bottomAlpha = 1f
+
     private lateinit var downloadStatusStyleValues: UsedeskResourceManager.StyleValues
 
     override fun onCreateView(
@@ -49,7 +55,9 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         downloadStatusStyleValues = binding.styleValues
             .getStyleValues(chatR.attr.usedesk_chat_show_file_download_status_toast)
 
-        binding.ivBack.setOnClickListener { requireActivity().onBackPressed() }
+        binding.ivBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
 
         binding.ivShare.setOnClickListener { onShareFile(viewModel.modelFlow.value.file) }
 
@@ -69,6 +77,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             if (supportWindowInsets) {
                 insetsAsPaddings(ignoreNavigationBar = true, ignoreIme = true)
             }
+            toolbarAlpha = alpha
             setBlur()
         }
 
@@ -76,6 +85,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
             if (supportWindowInsets) {
                 insetsAsPaddings(ignoreStatusBar = true, ignoreIme = true)
             }
+            bottomAlpha = alpha
             setBlur()
         }
     }.rootView
@@ -119,14 +129,43 @@ class UsedeskShowFileScreen : UsedeskFragment() {
                 onError(new.error)
             }
             if (old?.panelShow != new.panelShow) {
-                binding.lToolbar.visibility = visibleGone(new.panelShow)
-                binding.lBottom.visibility = visibleGone(new.panelShow)
+                val animated = old != null
+                binding.lToolbar.fadeVisibility(new.panelShow, animated, toolbarAlpha)
+                binding.lBottom.fadeVisibility(new.panelShow, animated, bottomAlpha)
             }
         }
     }
 
+    private fun View.fadeVisibility(show: Boolean, animated: Boolean, shownAlpha: Float) {
+        animate().cancel()
+        val duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        when {
+            !animated -> {
+                alpha = when {
+                    show -> shownAlpha
+                    else -> 0f
+                }
+                visibility = visibleGone(show)
+            }
+            show -> {
+                if (visibility != View.VISIBLE) alpha = 0f
+                visibility = View.VISIBLE
+                animate().alpha(shownAlpha).setDuration(duration).start()
+            }
+            else -> animate()
+                .alpha(0f)
+                .setDuration(duration)
+                .withEndAction { visibility = View.GONE }
+                .start()
+        }
+    }
+
     private fun BlurView.setBlur() {
-        setupWith(binding.rootView as ViewGroup, RenderScriptBlur(context))
+        val algorithm = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> RenderEffectBlur()
+            else -> @Suppress("DEPRECATION") RenderScriptBlur(context)
+        }
+        setupWith(binding.rootView as ViewGroup, algorithm)
             .setFrameClearDrawable(background)
             .setBlurRadius(16f)
     }
@@ -139,7 +178,7 @@ class UsedeskShowFileScreen : UsedeskFragment() {
         if (usedeskFile != null) {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = usedeskFile.type
-                val uri = Uri.parse(usedeskFile.content)
+                val uri = usedeskFile.content.toUri()
                 when (uri.scheme) {
                     ContentResolver.SCHEME_FILE,
                     ContentResolver.SCHEME_CONTENT -> {

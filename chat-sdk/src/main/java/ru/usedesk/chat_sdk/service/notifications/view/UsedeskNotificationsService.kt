@@ -9,10 +9,12 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.text.Html
 import androidx.core.app.NotificationCompat
+import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -35,7 +37,7 @@ abstract class UsedeskNotificationsService : Service() {
     protected open val fileMessage: String by lazy { getString(R.string.usedesk_notification_file_message) }
 
     private var model = Model()
-    private val mainScope = CoroutineScope(Dispatchers.Main)
+    private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val modelMutex = Mutex()
     private val actionListener = object : UsedeskActionListener {
         override fun onModel(
@@ -126,7 +128,10 @@ abstract class UsedeskNotificationsService : Service() {
         is UsedeskMessageOwner.Agent -> {
             var title = message.name
             val text = when (message) {
-                is UsedeskMessage.Text -> Html.fromHtml(message.convertedText)
+                is UsedeskMessage.Text -> HtmlCompat.fromHtml(
+                    message.convertedText,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                )
                 else -> fileMessage
             }
             if (model.count > 1) {
@@ -162,6 +167,7 @@ abstract class UsedeskNotificationsService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
+        mainScope.cancel()
         UsedeskChatSdk.requireInstance().removeActionListener(actionListener)
         UsedeskChatSdk.release(false)
     }

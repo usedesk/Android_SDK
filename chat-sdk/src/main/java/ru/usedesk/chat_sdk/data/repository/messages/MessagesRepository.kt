@@ -3,16 +3,26 @@ package ru.usedesk.chat_sdk.data.repository.messages
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import android.util.Base64
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository.api.loader.MessageResponseConverter
-import ru.usedesk.chat_sdk.entity.*
+import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.entity.UsedeskFile
+import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientAudio
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientFile
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientImage
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientText
+import ru.usedesk.chat_sdk.entity.UsedeskMessageClientVideo
+import ru.usedesk.chat_sdk.entity.UsedeskMessageDraft
+import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import java.nio.charset.StandardCharsets
-import java.util.*
+import java.util.Calendar
 
 internal class MessagesRepository(
     private val appContext: Context,
@@ -134,7 +144,7 @@ internal class MessagesRepository(
                 draftText,
                 draftFiles.mapNotNull {
                     try {
-                        val uri = Uri.parse(it)
+                        val uri = it.toUri()
                         UsedeskFileInfo.create(
                             appContext,
                             uri
@@ -225,11 +235,11 @@ internal class MessagesRepository(
     }
 
     private class NotSentMessage(
-        val localId: String,
-        val text: String? = null,
-        val file: String? = null,
-        val image: String? = null,
-        val audio: String? = null,
-        val video: String? = null
+        @SerializedName("local_id") val localId: String,
+        @SerializedName("text") val text: String? = null,
+        @SerializedName("file") val file: String? = null,
+        @SerializedName("image") val image: String? = null,
+        @SerializedName("audio") val audio: String? = null,
+        @SerializedName("video") val video: String? = null
     )
 }

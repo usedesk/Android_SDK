@@ -21,9 +21,6 @@ import ru.usedesk.knowledgebase_gui.screen.UsedeskKnowledgeBaseTheme
 
 private const val FS_TAG = "UsedeskKbFs"
 
-// JS is required for anchor scroll, table wrapping, iframe aspect-ratio and the cross-origin
-// fullscreen workarounds. Pages can be loaded with a host base URL (UsedeskKnowledgeBaseConfiguration.urlApi)
-// so cross-origin players (YouTube/RuTube) accept the embed.
 @SuppressLint("SetJavaScriptEnabled")
 internal class ArticleWebView(context: Context) : WebView(context) {
 
@@ -38,6 +35,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     private var loadedArticleId: Long? = null
 
     var fullscreenListener: UsedeskOnFullscreenListener? = null
+    var onFullscreenChanged: ((Boolean) -> Unit)? = null
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
     val isInFullscreen: Boolean get() = customView != null
@@ -45,8 +43,6 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     private inner class JsBridge {
         @JavascriptInterface
         fun onAnchorClick(anchor: String) {
-            // Pass anchor as a JS string argument (JSONObject.quote produces a safely-escaped
-            // literal) so a crafted anchor name can't break out of the quotes and inject code.
             val js =
                 "(function(a){var e=document.getElementById(a)||document.getElementsByName(a)[0];" +
                         "return e?e.getBoundingClientRect().y:null;})(${JSONObject.quote(anchor)})"
@@ -64,7 +60,6 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     private val articleChromeClient = object : WebChromeClient() {
         override fun onShowCustomView(view: View, callback: CustomViewCallback) {
             if (customView != null) {
-                // WebView re-entered fullscreen without a hide — discard the stale callback.
                 onHideCustomView()
             }
             val container = fullscreenListener?.getFullscreenLayout()
@@ -82,19 +77,13 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                 throw e
             }
             container.visibility = VISIBLE
-            // Two host-side workarounds for cross-origin iframes:
-            // 1. __usedeskForceFs — iframe.requestFullscreen() in parent DOM. If WebView accepts
-            //    (we're inside the FS user-gesture chain), it sets ':fullscreen' on the iframe and
-            //    CSS auto-stretches it.
-            // 2. __usedeskEnterFs — manual style stretch as a fallback when requestFullscreen is
-            //    rejected. Also keeps the FS swap visually instant for YouTube (otherwise there's
-            //    a ~500ms flash while WebView's native ':fullscreen' kicks in).
             evaluateJavascript(
                 "if (window.__usedeskForceFs) window.__usedeskForceFs();" +
                         "if (window.__usedeskEnterFs) window.__usedeskEnterFs();",
                 null
             )
             fullscreenListener?.onFullscreenChanged(true)
+            onFullscreenChanged?.invoke(true)
         }
 
         override fun onHideCustomView() {
@@ -111,6 +100,7 @@ internal class ArticleWebView(context: Context) : WebView(context) {
                 null
             )
             fullscreenListener?.onFullscreenChanged(false)
+            onFullscreenChanged?.invoke(false)
         }
     }
 
@@ -130,12 +120,6 @@ internal class ArticleWebView(context: Context) : WebView(context) {
             ): Boolean {
                 if (!request.isForMainFrame) return false
                 onWebUrl(request.url.toString())
-                return true
-            }
-
-            // API < 24: the WebResourceRequest overload isn't called
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                onWebUrl(url)
                 return true
             }
 
@@ -162,20 +146,17 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     }
 
     fun unbind(viewModel: ArticleViewModel) {
-        if (boundViewModel !== viewModel) return // stale unbind: another composition rebound us
+        if (boundViewModel !== viewModel) return
         boundViewModel = null
         onWebUrl = {}
         onScrollTo = {}
         onArticleShowed = {}
         onArticleHidden = {}
-        onPause() // keep DOM; just pause playback so re-bind resumes
+        onPause()
     }
 
-    /** Stop embedded media and force a fresh load next time setHtml is called. */
     fun stopMedia() {
         loadedArticleId = null
-        // WebView.onPause() doesn't actually pause cross-origin iframe players —
-        // reload the iframe src to truly stop streaming.
         evaluateJavascript(
             "document.querySelectorAll('iframe').forEach(function(f){" +
                     "var s=f.src;f.src='about:blank';f.src=s;" +
@@ -190,12 +171,10 @@ internal class ArticleWebView(context: Context) : WebView(context) {
         return true
     }
 
-    /** Detach the fullscreen custom view from its current container without ending fullscreen. */
     fun detachCustomView() {
         (customView?.parent as? ViewGroup)?.removeView(customView)
     }
 
-    /** Reattach the cached custom view to a new container — used to resume fullscreen across Activity recreate. */
     fun reattachCustomView(container: ViewGroup) {
         val view = customView ?: return
         (view.parent as? ViewGroup)?.removeView(view)
@@ -203,7 +182,6 @@ internal class ArticleWebView(context: Context) : WebView(context) {
             container.addView(view, LayoutParams(MATCH_PARENT, MATCH_PARENT))
             container.visibility = VISIBLE
         } catch (e: IllegalStateException) {
-            // addView can fail in pathological host setups; bail out of fullscreen cleanly.
             Log.e(FS_TAG, "reattachCustomView: addView FAILED, exiting FS", e)
             exitFullscreen()
         }
@@ -216,14 +194,12 @@ internal class ArticleWebView(context: Context) : WebView(context) {
     fun setHtml(articleId: Long, html: String, baseUrl: String?) {
         if (loadedArticleId == articleId) {
             alpha = 1f
-            onArticleShowed() // onPageCommitVisible won't fire for cached DOM
+            onArticleShowed()
             return
         }
         alpha = 0f
         onArticleHidden()
         loadedArticleId = articleId
-        // Cap embedded video height so the player doesn't overflow the screen in landscape.
-        // useWideViewPort is left at its default (false), so 1 CSS px == 1 dp in this WebView.
         val maxIframeHeightDp = (resources.displayMetrics.heightPixels / density * 0.8f).toInt()
         val style = "<style>iframe{max-height:${maxIframeHeightDp}px;}</style>"
         val script = """

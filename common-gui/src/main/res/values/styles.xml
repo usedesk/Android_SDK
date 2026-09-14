@@ -167,7 +167,7 @@
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:textColor">@color/usedesk_gray_2</item>
         <item name="android:textSize">18sp</item>
-    </style><!--textColor не используется-->
+    </style>
 
     <style name="Usedesk.Common.Field.List.Title.Text" parent="">
         <item name="android:layout_width">match_parent</item>
@@ -337,7 +337,6 @@
         <item name="usedesk_text_3" />
     </style>
 
-    <!--Theme.MaterialComponents Start-->
     <style name="Common.Field.Text.InputLayout.MaterialComponents" parent="Usedesk.Common.Field.Text.InputLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -386,5 +385,4 @@
         <item name="usedesk_common_field_list_title_text">@style/Usedesk.Common.Field.List.Title.Text.MaterialComponents</item>
         <item name="usedesk_common_field_list_value_text">@style/Usedesk.Common.Field.List.Value.Text.MaterialComponents</item>
     </style>
-    <!--Theme.MaterialComponents End-->
 </resources>

@@ -12,7 +12,7 @@
 
 ### Минимальная версия Android
 
-На данный момент минимальная версия ОС, которая поддерживается в SDK — **Android 5.0 (API 21)**
+На данный момент минимальная версия ОС, которая поддерживается в SDK — **Android 7.0 (API 24)**
 
 ### Состав SDK
 
@@ -60,6 +60,10 @@ implementation "com.github.Usedesk.Android_SDK:knowledgebase-gui:$usedeskSdkVers
 
 <!--Только при использовании foreground сервиса уведомлений-->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
+
+<!--Начиная с Android 13 уведомления показываются только после получения этого разрешения-->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
 ## Инициализация Чата
@@ -119,6 +123,15 @@ SDK умеет отправлять уведомления, если прило�
 UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory())
 ```
 
+Сервис объявляется в манифесте с типом `remoteMessaging` — начиная с Android 14 без него система не даст запустить foreground-сервис:
+
+```xml
+<service
+    android:name=".CustomNotificationsService"
+    android:exported="false"
+    android:foregroundServiceType="remoteMessaging" />
+```
+
 ### Использование с GUI
 
 Для запуска SDK с готовым пользовательским интерфейсом чата (GUI) воспользуйтесь [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt), например при помощи метода
@@ -156,18 +169,7 @@ navController.navigate(
 
 Для полноценной работы фрагмента необходимо:
 
-1) Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true`, если событие было обработано, либо `false` если нет
-
-Пример:
-
-```kotlin
-override fun onBackPressed() {
-  val fragment = getCurrentFragment()
-  if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-    return
-  }
-}
-```
+1) Системную кнопку «назад» экран обрабатывает сам через `OnBackPressedDispatcher`, в том числе при включённом predictive back (targetSdk 36). Пробрасывать событие из активити не нужно; метод `onBackPressed()` у фрагментов SDK удалён в 4.8.0 — если ваш код его вызывал, уберите вызов
 
 2) Реализовать интерфейс [UsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFileClickListener.kt) родителем, переопределив метод
    `onFileClick`
@@ -253,6 +255,10 @@ UsedeskChatSdk.release(false)
 
 Если передать в метод значение `false`, то ресурсы будут освобождены только в том случае, если все слушатели были удалены. Если передать значение `true`, то ресурсы будут свобождены немедленно.
 
+**Смена пользователя.** Перед повторной инициализацией с другой конфигурацией вызовите `UsedeskChatSdk.release(true)` либо убедитесь, что все слушатели удалены и `release(false)` отработал. Пока прежний чат не освобождён, новая конфигурация в `init` будет проигнорирована, и чат продолжит работать от предыдущего пользователя.
+
+**Потоки колбэков.** `UsedeskActionListener`, `IFileUploadProgressListener`, а также `onResult` у `createChat` и `sendOfflineForm` вызываются с фонового потока. Для обновления интерфейса переключитесь на главный поток самостоятельно.
+
 Попытка получить экземпляр без инициализации или после освобожения вызовет исключение.
 
 5) Использовать интерфейс для прослушивания событий чата [UsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/UsedeskActionListener.kt):
@@ -334,18 +340,7 @@ navController.navigate(
 
 Для полноценной работы фрагмента необходимо:
 
-1) Передавать события `onBackPressed`, вызывая аналогичный метод у фрагмента, который вернёт `true` если событие было обработано, либо `false` если нет.
-
-Пример:
-
-```kotlin
-override fun onBackPressed() {
-  val fragment = getCurrentFragment()
-  if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-    return
-  }
-}
-```
+1) Системную кнопку «назад» экран обрабатывает сам через `OnBackPressedDispatcher`, в том числе при включённом predictive back (targetSdk 36). Пробрасывать событие из активити не нужно; метод `onBackPressed()` у фрагментов SDK удалён в 4.8.0 — если ваш код его вызывал, уберите вызов
 
 2) Реализовать интерфейс [UsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskOnSupportClickListener.kt) родителем, переопределив метод
    `onSupportClick()`,

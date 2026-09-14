@@ -55,7 +55,7 @@ object UsedeskFileUtil {
                     null
                 )?.use { cursor ->
                     if (cursor.moveToFirst()) {
-                        val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        val index = cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)
                         name = cursor.getString(index)
                     }
                 }

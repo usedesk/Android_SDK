@@ -18,7 +18,7 @@ object UsedeskChatSdk {
 
     private var chatConfiguration: UsedeskChatConfiguration? = null
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
-        null //TODO: remove this from sdk
+        null
     private var usedeskMessagesRepository = UsedeskCustom<UsedeskMessagesRepository>()
 
 
@@ -59,10 +59,6 @@ object UsedeskChatSdk {
     fun requireInstance(): UsedeskChat = getInstance()
         ?: throw RuntimeException("Must call UsedeskChatSdk.init(...) before")
 
-    /**
-     * Release all resources of UsedeskChat
-     * @param force If it is false, resources will be released only if no one listener exists
-     */
     @JvmStatic
     @JvmOverloads
     fun release(force: Boolean = true) {

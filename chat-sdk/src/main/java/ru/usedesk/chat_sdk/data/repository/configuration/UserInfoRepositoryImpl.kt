@@ -22,7 +22,6 @@ internal class UserInfoRepositoryImpl @Inject constructor(
     override val clientTokenFlowNotNull: Flow<String> = clientTokenFlow.filterNotNull()
 
     init {
-        // "" means that saved token should not be used
         when (initConfiguration.clientToken) {
             "" -> Unit
             null -> configurationLoader.getConfig().clientToken?.let(::setClientToken)

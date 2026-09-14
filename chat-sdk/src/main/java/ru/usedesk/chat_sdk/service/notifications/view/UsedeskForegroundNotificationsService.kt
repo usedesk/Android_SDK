@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
 import ru.usedesk.chat_sdk.R
 
 
@@ -24,7 +25,7 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
     }
 
     override fun showNotification(notification: Notification) {
-        stopForeground(true)
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         startForeground(notification)
     }
 
@@ -49,10 +50,7 @@ abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsServi
         Intent(applicationContext, serviceClass).apply {
             putExtra(STOP_SELF_KEY, true)
         },
-        PendingIntent.FLAG_CANCEL_CURRENT or when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> PendingIntent.FLAG_IMMUTABLE
-            else -> 0
-        }
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     protected open fun createStartNotification(): Notification =

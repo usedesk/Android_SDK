@@ -14,9 +14,6 @@ interface UsedeskMessagesRepository {
 
     suspend fun getDraft(): UsedeskMessageDraft
 
-    /**
-     * Return a negative value
-     */
     suspend fun getNextLocalId(): String
 }
 

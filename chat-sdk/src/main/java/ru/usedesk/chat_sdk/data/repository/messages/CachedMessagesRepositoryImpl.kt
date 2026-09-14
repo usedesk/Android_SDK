@@ -28,7 +28,6 @@ import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 import java.util.Calendar
 import javax.inject.Inject
 
-//TODO: do something with repository hierarchy
 internal class CachedMessagesRepositoryImpl @Inject constructor(
     initConfiguration: UsedeskChatConfiguration,
     private val messagesRepository: UsedeskMessagesRepository,
@@ -155,14 +154,20 @@ internal class CachedMessagesRepositoryImpl @Inject constructor(
             draftJob = null
             saveJob?.cancel()
             saveJob = ioScope.launch {
+                val deferredByUri = mutex.withLock {
+                    messagesRepository.getDraft().files
+                        .associate { it.uri to deferredCachedUriMap[it.uri] }
+                }
+                val cachedByUri = deferredByUri.mapValues { (_, deferred) -> deferred?.await() }
                 mutex.withLock {
                     val messageDraft = messagesRepository.getDraft()
                     messagesRepository.setDraft(
                         messageDraft.copy(
                             files = messageDraft.files.mapNotNull { fileInfo ->
-                                val deferredCachedUri = deferredCachedUriMap[fileInfo.uri]
-                                deferredCachedUri?.await()?.let { cachedUri ->
-                                    fileInfo.copy(uri = cachedUri)
+                                when (fileInfo.uri) {
+                                    in cachedByUri -> cachedByUri[fileInfo.uri]
+                                        ?.let { cachedUri -> fileInfo.copy(uri = cachedUri) }
+                                    else -> fileInfo
                                 }
                             }
                         )

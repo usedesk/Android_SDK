@@ -3,11 +3,13 @@ package ru.usedesk.common_sdk.api.multipart
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.BufferedSink
 import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 import ru.usedesk.common_sdk.utils.UsedeskFileUtil.getFileName
@@ -29,7 +31,6 @@ internal class MultipartConverter @Inject constructor(
             val mimeType = contentResolver.getMimeType(value)
             val mediaType = mimeType.toMediaTypeOrNull()
             val name = contentResolver.getFileName(value)
-            //val requestBody = RequestBody.create(mediaType, value.toFile())
             val body = ProgressRequestBody(
                 value.toFile(),
                 mediaType,
@@ -38,11 +39,11 @@ internal class MultipartConverter @Inject constructor(
             MultipartBody.Part.createFormData(pair.first, name, body)
         }
         is FileBytes -> {
-            val uri = Uri.parse(value.originalFile)
+            val uri = value.originalFile.toUri()
             val mimeType = contentResolver.getMimeType(uri)
             val mediaType = mimeType.toMediaTypeOrNull()
             val name = contentResolver.getFileName(uri)
-            val requestBody = RequestBody.create(mediaType, value.byteArray)
+            val requestBody = value.byteArray.toRequestBody(mediaType)
             MultipartBody.Part.createFormData(pair.first, name, requestBody)
         }
         else -> null

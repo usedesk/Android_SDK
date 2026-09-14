@@ -11,9 +11,6 @@ import androidx.core.net.toUri
 import com.google.gson.Gson
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.InitChatResponse
@@ -46,6 +43,7 @@ import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter
 import ru.usedesk.common_sdk.api.multipart.UsedeskMultipartConverter.FileBytes
 import java.io.ByteArrayOutputStream
 import java.net.URL
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -66,20 +64,15 @@ internal class ChatApiImpl @Inject constructor(
 ), ChatApi {
 
     private lateinit var eventListener: EventListener
-    private val requestDeferredMap = mutableMapOf<String, CompletableDeferred<SocketSendResponse>>()
-    private val mutex = Mutex()
+    private val requestDeferredMap =
+        ConcurrentHashMap<String, CompletableDeferred<SocketSendResponse>>()
 
     private val socketEventListener = object : SocketApi.EventListener {
         override fun onConnected() = eventListener.onConnected()
 
         override fun onDisconnected() {
-            runBlocking {
-                mutex.withLock {
-                    requestDeferredMap.run {
-                        values.forEach { it.complete(SocketSendResponse.Error) }
-                        clear()
-                    }
-                }
+            requestDeferredMap.keys.toList().forEach { localId ->
+                requestDeferredMap.remove(localId)?.complete(SocketSendResponse.Error)
             }
             eventListener.onDisconnected()
         }
@@ -223,11 +216,9 @@ internal class ChatApiImpl @Inject constructor(
 
     override suspend fun sendText(messageText: UsedeskMessage.Text): SocketSendResponse {
         messageText as UsedeskMessageOwner.Client
-        val deferred = mutex.withLock {
-            CompletableDeferred<SocketSendResponse>().also {
-                requestDeferredMap.put(messageText.localId, it)?.complete(SocketSendResponse.Error)
-            }
-        }
+        val deferred = CompletableDeferred<SocketSendResponse>()
+        requestDeferredMap.put(messageText.localId, deferred)
+            ?.complete(SocketSendResponse.Error)
         val result = socketApi.sendRequest(
             SocketRequest.SendMessage(
                 text = messageText.text,
@@ -238,9 +229,7 @@ internal class ChatApiImpl @Inject constructor(
             is SocketSendResponse.Done -> deferred.await()
             is SocketSendResponse.Error -> SocketSendResponse.Error
         }.apply {
-            mutex.withLock {
-                requestDeferredMap.remove(messageText.localId)
-            }
+            requestDeferredMap.remove(messageText.localId)
         }
     }
 
@@ -291,11 +280,11 @@ internal class ChatApiImpl @Inject constructor(
                     responseClass = SetClient.Response::class.java,
                     apiMethod = RetrofitApi::setClient
                 )
-                when (response?.clientId) {
+                when (val clientId = response?.clientId) {
                     null -> SetClientResponse.Error(response?.code)
                     else -> {
                         socketEventListener.onSetEmailSuccess()
-                        SetClientResponse.Done
+                        SetClientResponse.Done(clientId)
                     }
                 }
             }

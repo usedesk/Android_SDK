@@ -2,7 +2,6 @@ package ru.usedesk.common_sdk.api
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.annotations.Expose
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.MultipartBody
@@ -86,6 +85,7 @@ abstract class UsedeskApiRepository<API>(
                     UsedeskLog.onLog("API") {
                         "ResponseFailed:\nsuccessful:\n${it.isSuccessful}\ncode:\n${it.code()}\nbody\n${it.body()}"
                     }
+                    it.raw().close()
                 }
                 filter
             }.firstOrNull()
@@ -110,11 +110,10 @@ abstract class UsedeskApiRepository<API>(
         }
     }
 
-    abstract class MultipartRequest(vararg val parts: Pair<String, Any?>)
+    abstract class MultipartRequest(@Transient vararg val parts: Pair<String, Any?>)
 
     abstract class JsonRequest(
-        @Expose(serialize = false)
-        val jsonFields: List<Pair<String, String?>> = listOf()
+        @Transient val jsonFields: List<Pair<String, String?>> = listOf()
     )
 
     companion object {

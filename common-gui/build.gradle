@@ -1,34 +1,35 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    id "kotlin-kapt"
+    alias(libs.plugins.ksp)
     alias(libs.plugins.maven.publish)
 }
 
 android {
-    compileSdk defaultCompileSdkVersion
-    buildToolsVersion = defaultBuildToolsVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdkVersion defaultMinSdkVersion
-        targetSdkVersion defaultTargetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    namespace = "ru.usedesk.common_gui"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
     }
-    namespace "ru.usedesk.common_gui"
 }
 
 dependencies {
     api project(":common-sdk")
 
+    implementation libs.androidx.core
     implementation libs.androidx.core.ktx
-    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.fragment
     implementation libs.androidx.appcompat
     implementation libs.androidx.constraintlayout
 
@@ -40,10 +41,10 @@ dependencies {
     implementation(libs.glide.okhttp3.integration) {
         exclude group: "glide-parent"
     }
-    kapt libs.glide.compiler
+    ksp libs.glide.ksp
 
-    implementation libs.androidx.navigation.fragment.ktx
-    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 }
 
 afterEvaluate {

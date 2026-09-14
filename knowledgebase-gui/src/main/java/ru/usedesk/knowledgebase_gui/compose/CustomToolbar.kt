@@ -35,13 +35,6 @@ private fun UsedeskKnowledgeBaseTheme.collapsedHeight() = dimensions.rootPadding
         dimensions.toolbarIconSize +
         dimensions.toolbarBottomPadding
 
-/**
- * Top app bar that collapses on scroll — scroll/search-mode changes re-run measure/draw (the
- * [MeasurePolicy] and placement layers), never composition (like material3's `MediumTopAppBar`).
- *
- * @param onSearchModeEntered fires once the collapse-into-[searchMode] animation finishes (the search
- * field is focused only then).
- */
 @Composable
 internal fun CustomToolbar(
     theme: UsedeskKnowledgeBaseTheme,
@@ -136,8 +129,6 @@ private fun rememberToolbarMeasurePolicy(
         val topPadding = theme.dimensions.rootPadding.top.toPx()
         val bottomPadding = theme.dimensions.toolbarBottomPadding.toPx()
 
-        // Measuring widgets inside toolbar:
-
         val navigationIconPlaceable = measurables.first { it.layoutId == NavigationIconId }
             .measure(
                 constraints.copy(
@@ -171,16 +162,12 @@ private fun rememberToolbarMeasurePolicy(
                 )
             )
 
-        // Calculating coordinates of widgets inside toolbar:
-
-        // Measuring toolbar collapsing distance
         val heightOffsetLimitPx = expandedTitlePlaceable.height + intervalY
         if (scrollBehavior.state.heightOffsetLimit != -heightOffsetLimitPx) {
             scrollBehavior.state.heightOffsetLimit = -heightOffsetLimitPx
             scrollBehavior.state.heightOffset = collapsedFraction * (-heightOffsetLimitPx)
         }
 
-        // Current coordinates of collapsing title
         val titleX = lerpsin(
             0f,
             navigationIconXOffset,
@@ -199,7 +186,6 @@ private fun rememberToolbarMeasurePolicy(
         val expandedToolbarHeightPx =
             topPadding + navigationIconYOffset + expandedTitlePlaceable.height + bottomPadding
 
-        // Collapse with scroll first, then shrink into the search-mode strip.
         val scrolledHeightPx = lerp(
             expandedToolbarHeightPx,
             theme.collapsedHeight().toPx(),
@@ -211,7 +197,6 @@ private fun rememberToolbarMeasurePolicy(
             searchFractionValue
         ).roundToInt().coerceAtLeast(0)
 
-        // Placing toolbar widgets:
         val totalTitleY = (topPadding + titleY).roundToInt()
         val totalTitleX = (startPadding + titleX).roundToInt()
         layout(constraints.maxWidth, toolbarHeightPx) {

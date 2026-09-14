@@ -4,13 +4,17 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.knowledgebase_gui._di.KbUiComponent
 import ru.usedesk.knowledgebase_gui.compose.KbUiViewModelFactory
 import ru.usedesk.knowledgebase_gui.screen.compose.ComposeRoot
@@ -63,11 +67,7 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
                 viewModel = viewModel,
                 articleViews = articleViews,
                 onBackPressed = remember {
-                    {
-                        if (!this@UsedeskKnowledgeBaseScreen.onBackPressed()) {
-                            requireActivity().onBackPressedDispatcher.onBackPressed()
-                        }
-                    }
+                    { requireActivity().onBackPressedDispatcher.onBackPressed() }
                 },
                 onGoSupport = remember {
                     { findParent<UsedeskOnSupportClickListener>()?.onSupportClick() }
@@ -77,8 +77,27 @@ class UsedeskKnowledgeBaseScreen : UsedeskFragment() {
         }
     }
 
-    override fun onBackPressed() =
-        articleViews.webView.exitFullscreen() || viewModel.onBackPressed()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val backCallback = requireActivity().onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, false) { goBack() }
+        val updateBackCallback = {
+            backCallback.isEnabled = articleViews.webView.isInFullscreen ||
+                    viewModel.canGoBack(viewModel.modelFlow.value)
+        }
+        articleViews.webView.onFullscreenChanged = { updateBackCallback() }
+        viewModel.modelFlow.onEachWithOld(viewLifecycleOwner.lifecycleScope) { _, _ ->
+            updateBackCallback()
+        }
+    }
+
+    override fun onDestroyView() {
+        articleViews.webView.onFullscreenChanged = null
+        super.onDestroyView()
+    }
+
+    private fun goBack() = articleViews.webView.exitFullscreen() || viewModel.onBackPressed()
 
     companion object {
         private const val KEY_CONFIGURATION = "a"

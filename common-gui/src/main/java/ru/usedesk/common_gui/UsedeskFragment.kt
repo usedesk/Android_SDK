@@ -36,8 +36,6 @@ abstract class UsedeskFragment : Fragment() {
     private var cameraFile: File? = null
     private var cameraPermissionLauncher: PermissionLauncher? = null
 
-    open fun onBackPressed(): Boolean = false
-
     fun registerCamera(onCameraResult: (Boolean) -> Unit) {
         cameraPermissionLauncher = cameraPermissionLauncher ?: PermissionLauncher(
             this,
@@ -240,7 +238,7 @@ abstract class UsedeskFragment : Fragment() {
     }
 
     fun <T> Flow<T>.onEachWithOld(action: suspend (old: T?, new: T) -> Unit) = onEachWithOld(
-        lifecycleScope,
+        viewLifecycleOwner.lifecycleScope,
         action
     )
 

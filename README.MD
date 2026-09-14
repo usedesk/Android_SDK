@@ -12,7 +12,7 @@ The ["Example" folder](https://github.com/usedesk/Android_SDK/tree/master/app/sr
 
 ### Minimal Android version
 
-At the moment, the minimum version of the OS that is supported by the SDK — **Android 5.0 (API 21)**
+At the moment, the minimum version of the OS that is supported by the SDK — **Android 7.0 (API 24)**
 
 ### SDK components
 
@@ -61,6 +61,10 @@ Add to Manifest file:
 
     <!--Only when using the foreground notification service-->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
+
+    <!--Since Android 13 notifications are shown only after this permission is granted-->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
 ## Initializing a Chat
@@ -120,6 +124,15 @@ After creating classes, you can use the factory in the SDK:
 UsedeskChatSdk.setNotificationsServiceFactory(CustomNotificationsServiceFactory())
 ```
 
+Declare the service in the manifest with the `remoteMessaging` type — since Android 14 the system refuses to start a foreground service without it:
+
+```xml
+<service
+    android:name=".CustomNotificationsService"
+    android:exported="false"
+    android:foregroundServiceType="remoteMessaging" />
+```
+
 ### Using with GUI
 
 To run the SDK with a ready-made chat user interface (GUI), use [UsedeskChatScreen](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/chat/UsedeskChatScreen.kt). For example, using the `newInstance` method:
@@ -156,18 +169,7 @@ The `newInstance` and `createBundle` methods take the following arguments:
 
 For the fragment to work fully it is necessary to:
 
-1) Pass the `onBackPressed` event by calling the same method on the fragment, which will return `true` if the event was handled, or `false` if not
-
-Example:
-
-```kotlin
-override fun onBackPressed() {
-  val fragment = getCurrentFragment()
-  if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-    return
-  }
-}
-```
+1) The screen handles the system back button itself through `OnBackPressedDispatcher`, including predictive back (targetSdk 36). Forwarding the event from the activity is not needed; the `onBackPressed()` method of the SDK fragments was removed in 4.8.0 — if your code called it, drop the call
 
 2) Implement the [UsedeskOnFileClickListener](https://github.com/usedesk/Android_SDK/tree/master/chat-gui/src/main/java/ru/usedesk/chat_gui/UsedeskOnFileClickListener.kt) interface by overriding the
    `onFileClick` method
@@ -252,6 +254,10 @@ UsedeskChatSdk.release(false)
 
 If you pass `false` to the method, the resources will only be released if all listeners have been deleted. If you pass the value `true`, the resources will be released immediately.
 
+**Switching users.** Before initializing again with a different configuration, call `UsedeskChatSdk.release(true)`, or make sure every listener is removed so that `release(false)` takes effect. Until the previous chat is released, a new configuration passed to `init` is ignored and the chat keeps running for the previous user.
+
+**Callback threads.** `UsedeskActionListener`, `IFileUploadProgressListener` and the `onResult` callbacks of `createChat` and `sendOfflineForm` are invoked on a background thread. Switch to the main thread yourself before touching the UI.
+
 Attempting to retrieve an instance without initializing or after release will raise an exception.
 
 5) Use interface to listen to chat events [UsedeskActionListener](https://github.com/usedesk/Android_SDK/tree/master/chat-sdk/src/main/java/ru/usedesk/chat_sdk/entity/UsedeskActionListener.kt):
@@ -333,18 +339,7 @@ navController.navigate(
 
 For the fragment to work properly it is necessary to:
 
-1) Pass `onBackPressed` events by calling a similar method on the fragment, which will return `true` if the event was handled, or `false` if not.
-
-Example:
-
-```kotlin
-override fun onBackPressed() {
-  val fragment = getCurrentFragment()
-  if (fragment is UsedeskFragment && fragment.onBackPressed()) {
-    return
-  }
-}
-```
+1) The screen handles the system back button itself through `OnBackPressedDispatcher`, including predictive back (targetSdk 36). Forwarding the event from the activity is not needed; the `onBackPressed()` method of the SDK fragments was removed in 4.8.0 — if your code called it, drop the call
 
 2) Implement the [UsedeskOnSupportClickListener](https://github.com/usedesk/Android_SDK/tree/master/knowledgebase-gui/src/main/java/ru/usedesk/knowledgebase_gui/screen/UsedeskOnSupportClickListener.kt) interface as a parent, overriding the
    `onSupportClick()` method,

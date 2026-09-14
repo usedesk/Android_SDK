@@ -57,7 +57,6 @@ internal object RatingResponseConverter {
         val legacyRatingPresent = payload.userRating.isLegacyRating()
         if (!legacyFeedbackPresent && !legacyRatingPresent) return null
 
-        // Preserve the legacy UI order.
         val options = listOf(
             UsedeskRating.Option(
                 id = LEGACY_DISLIKE_ID,
@@ -74,7 +73,6 @@ internal object RatingResponseConverter {
         )
         val selectedId = payload.userRating.toSelectedId(options)
         if (!payload.userRating.isNullOrBlank() && selectedId == null) {
-            // Do not reopen an already rated message.
             return null
         }
         return UsedeskRating(

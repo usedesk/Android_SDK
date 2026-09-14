@@ -13,8 +13,6 @@ import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 internal class ArticleViewModel(
     private val kbInteractor: KnowledgeBaseInteractor,
     val articleId: Long,
-    // Fires only on real store-clear (article exit), NOT on rotation/recompose — single hook for the
-    // shared ArticleWebView to stop bg media without polluting the View with VM-lifecycle knowledge.
     private val onArticleCleared: () -> Unit = {}
 ) : UsedeskViewModel<State>(State()) {
 

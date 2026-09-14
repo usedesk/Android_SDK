@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
+import androidx.annotation.OptIn
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -19,6 +23,7 @@ import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskToolbarAdapter
 import ru.usedesk.common_gui.inflateItem
+import ru.usedesk.common_gui.onEachWithOld
 import ru.usedesk.chat_gui.R as chatR
 import ru.usedesk.common_gui.R as commonR
 
@@ -32,6 +37,7 @@ class UsedeskChatScreen : UsedeskFragment() {
         ownerProducer = { findChatViewModelStoreOwner() ?: this }
     )
 
+    @OptIn(UnstableApi::class)
     internal val mediaPlayerAdapter: MediaPlayerAdapter by lazy {
         MediaPlayerAdapter(
             this,
@@ -61,6 +67,17 @@ class UsedeskChatScreen : UsedeskFragment() {
         val chatArgs = getChatArgs(savedInstanceState)
         init(chatArgs)
     }.rootView
+
+    @OptIn(UnstableApi::class)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val fullscreenBackCallback = requireActivity().onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, false) { mediaPlayerAdapter.onBackPressed() }
+        playerViewModel.modelFlow.onEachWithOld(viewLifecycleOwner.lifecycleScope) { _, new ->
+            fullscreenBackCallback.isEnabled = new.fullscreen
+        }
+    }
 
     fun dismissAnyDialog() {
         navHostFragment
@@ -102,13 +119,13 @@ class UsedeskChatScreen : UsedeskFragment() {
             context = requireContext(),
             chatConfiguration = chatArgs.configuration,
         )
-        findParent<UsedeskOnChatInitedListener>()?.onChatInited(usedeskChat) //TODO: will it called single time?
+        findParent<UsedeskOnChatInitedListener>()?.onChatInited(usedeskChat)
 
         val toolbarAdapter = UsedeskToolbarAdapter(
             binding = toolbar,
             supportWindowInsets = chatArgs.supportWindowInsets,
         ).apply {
-            setBackButton(requireActivity()::onBackPressed)
+            setBackButton { requireActivity().onBackPressedDispatcher.onBackPressed() }
         }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -126,8 +143,10 @@ class UsedeskChatScreen : UsedeskFragment() {
             }
             if (old?.goLoading != new.goLoading) {
                 new.goLoading.use {
-                    while (navController.popBackStack()) continue
-                    navController.navigate(chatR.id.dest_loadingPage)
+                    if (navController.currentDestination?.id != chatR.id.dest_loadingPage) {
+                        while (navController.popBackStack()) continue
+                        navController.navigate(chatR.id.dest_loadingPage)
+                    }
                 }
             }
         }
@@ -163,9 +182,6 @@ class UsedeskChatScreen : UsedeskFragment() {
 
         UsedeskChatSdk.startService(requireContext())
     }
-
-    override fun onBackPressed(): Boolean =
-        mediaPlayerAdapter.onBackPressed() || navController.popBackStack()
 
     companion object {
         private const val AGENT_NAME_KEY = "agentNameKey"

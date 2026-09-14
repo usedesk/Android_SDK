@@ -18,7 +18,8 @@ internal class InitChatResponseConverterImpl @Inject constructor(
             true,
             messages,
             convert(from.setup?.callbackSettings, from.setup!!.noOperators),
-            from.setup.ticket?.statusId
+            from.setup.ticket?.statusId,
+            from.setup.ticket?.clientId
         )
     }
 

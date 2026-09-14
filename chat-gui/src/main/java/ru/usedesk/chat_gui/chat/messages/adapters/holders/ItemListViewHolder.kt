@@ -1,6 +1,6 @@
 package ru.usedesk.chat_gui.chat.messages.adapters.holders
 
-import android.text.Html
+import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -69,11 +69,12 @@ internal class ItemListViewHolder(
         }
         binding.tvText.apply {
             text = when (val selected = list.selected) {
-                null -> Html.fromHtml(
+                null -> HtmlCompat.fromHtml(
                     list.name + when {
                         list.required -> REQUIRED_POSTFIX_HTML
                         else -> ""
-                    }
+                    },
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
                 )
                 else -> selected.name
             }

@@ -3,6 +3,7 @@ package ru.usedesk.chat_sdk.data.repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -11,13 +12,14 @@ import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi
 import ru.usedesk.chat_sdk.data.repository.configuration.UserInfoRepository
+import ru.usedesk.chat_sdk.di.Release
 import javax.inject.Inject
 
 internal class AdditionalFieldsInteractor @Inject constructor(
     private val additionalFieldsRepository: AdditionalFieldsRepository,
     private val userInfoRepository: UserInfoRepository,
     private val chatApi: ChatApi,
-) {
+) : Release {
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     fun initAdditionalFields() {
@@ -49,6 +51,10 @@ internal class AdditionalFieldsInteractor @Inject constructor(
                 additionalFieldsRepository.additionalFieldsSent(false)
             }
         }.collect()
+    }
+
+    override fun release() {
+        ioScope.cancel()
     }
 
     companion object {

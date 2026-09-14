@@ -162,14 +162,6 @@ internal class KbRepository @Inject constructor(
         )
     }
 
-    /**
-     * Ensures every `<iframe>` carries `allowfullscreen` and an `allow` policy that includes
-     * `fullscreen`. The attributes must be present on the parsed element — patching them later via
-     * DOM API doesn't help RuTube/YouTube show the fullscreen button.
-     *
-     * Supports both double-quoted (`allow="..."`) and single-quoted (`allow='...'`) attribute
-     * forms; un-quoted attribute values are not in the HTML5 iframe spec and are not handled.
-     */
     private fun injectIframePermissions(html: String): String =
         IFRAME_OPEN_TAG_REGEX.replace(html) { match ->
             var attrs = match.groupValues[1]
@@ -179,7 +171,6 @@ internal class KbRepository @Inject constructor(
             val allow = ALLOW_ATTR_REGEX.find(attrs)
             attrs = when {
                 allow == null -> "$attrs allow=\"$IFRAME_ALLOW_DEFAULT\""
-                // groupValues[1] is the quote char (" or '), groupValues[2] is the value inside.
                 allow.groupValues[2].contains("fullscreen", ignoreCase = true) -> attrs
                 else -> {
                     val quote = allow.groupValues[1]
@@ -278,10 +269,6 @@ internal class KbRepository @Inject constructor(
         private val IFRAME_OPEN_TAG_REGEX = Regex("<iframe\\b([^>]*)>", RegexOption.IGNORE_CASE)
         private val ALLOWFULLSCREEN_ATTR_REGEX = Regex("\\ballowfullscreen\\b", RegexOption.IGNORE_CASE)
 
-        // Group 1 captures the opening quote (" or '), group 2 captures the value inside it.
-        // The backreference \1 in [^\1] would be nice but Kotlin Regex doesn't support that inside
-        // a character class — we constrain the value by matching anything except the same quote
-        // char via a tempered alternation.
         private val ALLOW_ATTR_REGEX = Regex(
             "(?<![-\\w])allow\\s*=\\s*(\"|')((?:(?!\\1).)*)\\1",
             RegexOption.IGNORE_CASE

@@ -1,6 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
 import android.net.Uri
+import androidx.annotation.WorkerThread
 import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskConnectionState
 import ru.usedesk.chat_sdk.entity.UsedeskFileInfo
@@ -70,6 +71,7 @@ interface UsedeskChat {
     fun send(form: UsedeskForm)
 
     interface IFileUploadProgressListener {
+        @WorkerThread
         fun onProgress(sent: Long, total: Long)
     }
 
@@ -88,7 +90,8 @@ interface UsedeskChat {
         val inited: Boolean = false,
         val offlineFormSettings: UsedeskOfflineFormSettings? = null,
         val feedbackEvent: UsedeskEvent<Unit>? = null,
-        val thumbnailMap: Map<String, Uri> = mapOf()
+        val thumbnailMap: Map<String, Uri> = mapOf(),
+        val clientId: Long? = null
     )
 }
 

@@ -1,50 +1,51 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    id "kotlin-kapt"
-    id "kotlin-parcelize"
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    compileSdk defaultCompileSdkVersion
-    buildToolsVersion = defaultBuildToolsVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdkVersion defaultMinSdkVersion
-        targetSdkVersion defaultTargetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
     }
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-    }
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
     buildFeatures {
-        compose true
+        compose = true
     }
-    namespace "ru.usedesk.knowledgebase_gui"
+    namespace = "ru.usedesk.knowledgebase_gui"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
     api project(":common-gui")
     api project(":knowledgebase-sdk")
 
+    implementation libs.androidx.core
     implementation libs.androidx.core.ktx
-    implementation libs.androidx.fragment.ktx
+    implementation libs.androidx.fragment
     implementation libs.androidx.appcompat
     implementation libs.androidx.recyclerview
     implementation libs.androidx.constraintlayout
 
-    implementation libs.androidx.navigation.fragment.ktx
-    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
 
     implementation libs.google.material
 
     implementation libs.google.dagger
-    kapt libs.google.dagger.compiler
+    ksp libs.google.dagger.compiler
 
     implementation platform(libs.androidx.compose.bom)
 

@@ -10,6 +10,7 @@ import ru.usedesk.chat_sdk.domain.UsedeskChat
 import ru.usedesk.chat_sdk.domain.UsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
+import ru.usedesk.chat_sdk.service.notifications.view.NOTIFICATIONS_SERVICE_DEPRECATED
 
 object UsedeskChatSdk {
 
@@ -17,6 +18,8 @@ object UsedeskChatSdk {
     const val MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 
     private var chatConfiguration: UsedeskChatConfiguration? = null
+
+    @Suppress("DEPRECATION")
     private var notificationsServiceFactory: UsedeskNotificationsServiceFactory? =
         null
     private var usedeskMessagesRepository = UsedeskCustom<UsedeskMessagesRepository>()
@@ -92,6 +95,9 @@ object UsedeskChatSdk {
         }
     }
 
+    // Remove in 2027
+    @Deprecated(NOTIFICATIONS_SERVICE_DEPRECATED)
+    @Suppress("DEPRECATION")
     @JvmStatic
     fun setNotificationsServiceFactory(
         notificationsServiceFactory: UsedeskNotificationsServiceFactory?
@@ -104,11 +110,17 @@ object UsedeskChatSdk {
         this.usedeskMessagesRepository = UsedeskCustom(usedeskMessagesRepository)
     }
 
+    // Remove in 2027
+    @Deprecated(NOTIFICATIONS_SERVICE_DEPRECATED)
+    @Suppress("DEPRECATION")
     @JvmStatic
     fun startService(context: Context) {
         notificationsServiceFactory?.startService(context, requireConfiguration())
     }
 
+    // Remove in 2027
+    @Deprecated(NOTIFICATIONS_SERVICE_DEPRECATED)
+    @Suppress("DEPRECATION")
     @JvmStatic
     fun stopService(context: Context) {
         notificationsServiceFactory?.stopService(context)

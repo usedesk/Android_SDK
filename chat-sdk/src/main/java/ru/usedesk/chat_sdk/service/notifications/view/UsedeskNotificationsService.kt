@@ -26,6 +26,12 @@ import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
 
+internal const val NOTIFICATIONS_SERVICE_DEPRECATED =
+    "The local notifications service is legacy: on recent Android versions " +
+            "a background service is not effective. Use Usedesk push notifications instead."
+
+// Remove in 2027
+@Deprecated(NOTIFICATIONS_SERVICE_DEPRECATED)
 abstract class UsedeskNotificationsService : Service() {
     lateinit var notificationManager: NotificationManager
         private set
@@ -98,6 +104,12 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (stopRequested) {
+            stopRequested = false
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+        started = this
         val chatConfiguration = intent?.getParcelableExtra<UsedeskChatConfiguration>(
             USEDESK_CHAT_CONFIGURATION_KEY
         )
@@ -167,8 +179,11 @@ abstract class UsedeskNotificationsService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
+        if (started === this) {
+            started = null
+        }
         mainScope.cancel()
-        UsedeskChatSdk.requireInstance().removeActionListener(actionListener)
+        UsedeskChatSdk.getInstance()?.removeActionListener(actionListener)
         UsedeskChatSdk.release(false)
     }
 
@@ -179,5 +194,12 @@ abstract class UsedeskNotificationsService : Service() {
 
     companion object {
         const val USEDESK_CHAT_CONFIGURATION_KEY = "usedeskChatConfigurationKey"
+
+        @Suppress("DEPRECATION")
+        @Volatile
+        internal var started: UsedeskNotificationsService? = null
+
+        @Volatile
+        internal var stopRequested = false
     }
 }

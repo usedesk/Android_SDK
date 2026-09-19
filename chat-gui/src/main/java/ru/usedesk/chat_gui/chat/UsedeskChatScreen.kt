@@ -171,16 +171,20 @@ class UsedeskChatScreen : UsedeskFragment() {
         )
     }
 
+    @Suppress("DEPRECATION")
     override fun onStart() {
         super.onStart()
 
         UsedeskChatSdk.stopService(requireContext())
     }
 
+    @Suppress("DEPRECATION")
     override fun onStop() {
         super.onStop()
 
-        UsedeskChatSdk.startService(requireContext())
+        if (!requireActivity().isChangingConfigurations) {
+            UsedeskChatSdk.startService(requireContext())
+        }
     }
 
     companion object {

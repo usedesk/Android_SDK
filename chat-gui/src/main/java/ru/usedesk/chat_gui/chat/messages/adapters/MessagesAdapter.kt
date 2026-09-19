@@ -954,7 +954,7 @@ internal class MessagesAdapter(
         }
 
         private fun changeElements(stub: Boolean = false) {
-            binding.lStub.visibility = visibleGone(stub)
+            binding.lStub.visibility = visibleInvisible(stub)
         }
     }
 

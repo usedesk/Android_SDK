@@ -705,13 +705,20 @@ internal class ChatImpl @Inject constructor(
                 else -> model
             }
         }
-        val oldestMessageId = old.messages.firstOrNull()?.id
+        val oldestMessageId = old.messages.firstOrNull()?.commentId()
         if (oldestMessageId != null &&
             !old.previousPageIsLoading &&
             old.previousPageIsAvailable
         ) {
             launchPreviousMessagesLoading(oldestMessageId)
         }
+    }
+
+    private fun UsedeskMessage.commentId(): String = when (this) {
+        is UsedeskMessage.File -> file.content.toUri()
+            .getQueryParameter(COMMENT_ID_QUERY)
+            ?: id
+        else -> id
     }
 
     override fun release() {
@@ -867,5 +874,6 @@ internal class ChatImpl @Inject constructor(
     companion object {
         private const val REPEAT_DELAY = 5000L
         private const val FIRST_MESSAGE_DELAY = 2000L
+        private const val COMMENT_ID_QUERY = "ticket_comment_id"
     }
 }

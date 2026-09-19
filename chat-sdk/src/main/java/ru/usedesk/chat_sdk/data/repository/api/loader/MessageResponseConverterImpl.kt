@@ -93,32 +93,33 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                     from.file.size!!,
                     from.file.name!!
                 )
+                val fileId = from.file.fileId?.toString() ?: id
 
                 when {
                     fromClient -> when {
                         file.isImage() -> UsedeskMessageClientImage(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                             localId
                         )
                         file.isVideo() -> UsedeskMessageClientVideo(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                             localId
                         )
                         file.isAudio() -> UsedeskMessageClientAudio(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
                             localId
                         )
                         else -> UsedeskMessageClientFile(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
@@ -127,28 +128,28 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                     }
                     else -> when {
                         file.isImage() -> UsedeskMessageAgentImage(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
                             avatar
                         )
                         file.isVideo() -> UsedeskMessageAgentVideo(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
                             avatar
                         )
                         file.isAudio() -> UsedeskMessageAgentAudio(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
                             avatar
                         )
                         else -> UsedeskMessageAgentFile(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,

@@ -74,6 +74,7 @@ internal class MediaPlayerAdapter(
 
     private var lastMinimizeView: MinimizeView? = null
     private var currentMinimizeView: MinimizeView? = null
+    private var appliedFullscreen: Boolean? = null
 
     private val videoBinding = VideoExoPlayerBinding(pvVideoExoPlayer)
     private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
@@ -213,8 +214,7 @@ internal class MediaPlayerAdapter(
                     videoBinding.fullscreenButton.setImageResource(chatR.drawable.usedesk_ic_fullscreen)
                 }
                 pvVideoExoPlayer.player = exoPlayer
-                fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
-                fullscreenListener?.onFullscreenChanged(fullscreen)
+                applyFullscreen(fullscreen)
             }
             PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
                 (pvAudioExoPlayer.parent as? ViewGroup)?.removeView(pvAudioExoPlayer)
@@ -225,11 +225,18 @@ internal class MediaPlayerAdapter(
                     currentMinimizeView?.lVideoMinimized?.addView(pvAudioExoPlayer)
                 }
                 pvAudioExoPlayer.player = exoPlayer
-                fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
-                fullscreenListener?.onFullscreenChanged(fullscreen)
+                applyFullscreen(fullscreen)
                 pvAudioExoPlayer.showController()
             }
             else -> {}
+        }
+    }
+
+    private fun applyFullscreen(fullscreen: Boolean) {
+        if (appliedFullscreen != fullscreen) {
+            appliedFullscreen = fullscreen
+            fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
+            fullscreenListener?.onFullscreenChanged(fullscreen)
         }
     }
 

@@ -97,7 +97,7 @@ Where * — required parameter
 
 ### Local notification service configuration
 
-> **Deprecated.** The local notification service is a legacy mechanism: on recent Android versions a background service is not effective, the system restricts it and stops it together with the application process. Use Usedesk push notifications instead. The service will be removed in a future major release.
+> **Deprecated.** The local notification service is a legacy mechanism: on recent Android versions a background service is not effective, the system restricts it and stops it together with the application process. Use Usedesk push notifications instead. The service will be removed in the future.
 
 The SDK can send notifications about new messages if the application is running and a connection to the chat server is established.
 

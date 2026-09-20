@@ -165,7 +165,7 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                 val rating: UsedeskRating?
                 val text = from.text ?: ""
                 if (!fromClient) {
-                    objects = text.toMessageObjects()
+                    objects = text.toMessageObjects().hideButtonNames()
                     rating = RatingResponseConverter.convert(from.payload)
                 } else {
                     objects = listOf(MessageObject.Text(text))
@@ -336,7 +336,10 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
 
     sealed interface MessageObject {
         class Text(val text: String) : MessageObject
-        class Button(val button: UsedeskMessageAgentText.Button) : MessageObject
+        class Button(
+            val button: UsedeskMessageAgentText.Button,
+            val hideName: Boolean = false
+        ) : MessageObject
         class FieldInfo(val fieldInfo: UsedeskMessageAgentText.FieldInfo) : MessageObject
         class Image(val file: UsedeskFile) : MessageObject
     }
@@ -396,21 +399,37 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
             .dropLast(2)
             .split(";")
         return when (parts.size) {
-            in 1..4 -> {
-                val buttonObject = MessageObject.Button(
+            in 1..4 -> listOf(
+                MessageObject.Button(
                     Button(
                         name = parts.getOrNull(0) ?: "",
                         url = parts.getOrNull(1) ?: "",
                         type = parts.getOrNull(2) ?: ""
-                    )
+                    ),
+                    hideName = parts.getOrNull(3) == "noshow"
                 )
-                when (parts.getOrNull(3)) {
-                    "show" -> listOf(MessageObject.Text(buttonObject.button.name), buttonObject)
-                    else -> listOf(buttonObject)
-                }
-            }
+            )
             else -> null
         }
+    }
+
+    private fun List<MessageObject>.hideButtonNames(): List<MessageObject> {
+        val result = toMutableList()
+        forEachIndexed { index, obj ->
+            if (obj is MessageObject.Button && obj.hideName && obj.button.name.isNotEmpty()) {
+                val name = obj.button.name
+                val textIndex = (index - 1 downTo 0).firstOrNull { i ->
+                    (result[i] as? MessageObject.Text)?.text?.contains(name) == true
+                } ?: result.indices.firstOrNull { i ->
+                    (result[i] as? MessageObject.Text)?.text?.contains(name) == true
+                }
+                if (textIndex != null) {
+                    val old = result[textIndex] as MessageObject.Text
+                    result[textIndex] = MessageObject.Text(old.text.replaceFirst(name, "").trim())
+                }
+            }
+        }
+        return result
     }
 
     private fun String.toMessageField(): List<MessageObject>? {

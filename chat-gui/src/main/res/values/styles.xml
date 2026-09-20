@@ -8,6 +8,7 @@
     </style>
 
     <style name="Usedesk.Chat.Player.Audio" parent="">
+        <item name="animation_enabled">false</item>
         <item name="bar_height">2dp</item>
         <item name="buffered_color">@color/usedesk_black_3</item>
         <item name="controller_layout_id">@layout/usedesk_view_player_audio_controls</item>

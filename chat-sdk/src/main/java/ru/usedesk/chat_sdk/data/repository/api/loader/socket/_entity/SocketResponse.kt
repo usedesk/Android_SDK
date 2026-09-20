@@ -89,7 +89,8 @@ internal sealed interface SocketResponse {
                 @SerializedName("name") val name: String?,
                 @SerializedName("type") val type: String?,
                 @SerializedName("content") val content: String?,
-                @SerializedName("size") val size: String?
+                @SerializedName("size") val size: String?,
+                @SerializedName("fileId") val fileId: Long?
             )
 
             class Payload(

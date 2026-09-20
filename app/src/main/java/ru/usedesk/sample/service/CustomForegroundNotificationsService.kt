@@ -7,6 +7,7 @@ import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFact
 import ru.usedesk.chat_sdk.service.notifications.view.UsedeskForegroundNotificationsService
 import ru.usedesk.sample.ui.main.MainActivity
 
+@Suppress("DEPRECATION")
 class CustomForegroundNotificationsService : UsedeskForegroundNotificationsService() {
     override val serviceClass: Class<*> = CustomForegroundNotificationsService::class.java
 

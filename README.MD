@@ -97,6 +97,8 @@ Where * — required parameter
 
 ### Local notification service configuration
 
+> **Deprecated.** The local notification service is a legacy mechanism: on recent Android versions a background service is not effective, the system restricts it and stops it together with the application process. Use Usedesk push notifications instead. The service will be removed in the future.
+
 The SDK can send notifications about new messages if the application is running and a connection to the chat server is established.
 
 To enable the local notification service, you need to create 2 own classes:
@@ -268,6 +270,8 @@ Attempting to retrieve an instance without initializing or after release will ra
 | **onException** | **The exception that has risen**                  |
 
 ### Starting and stopping the local notification service
+
+> **Deprecated**, see [Local notification service configuration](#local-notification-service-configuration).
 
 Starting the notification service:
 

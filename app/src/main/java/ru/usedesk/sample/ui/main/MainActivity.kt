@@ -29,7 +29,7 @@ import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_gui.UsedeskOnFileClickListener
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
-import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
+import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFile
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.UsedeskResourceManager
@@ -264,8 +264,9 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
     }
 
+    @Suppress("DEPRECATION")
     private fun initUsedeskService(configuration: Configuration) {
-        setNotificationsServiceFactory(
+        UsedeskChatSdk.setNotificationsServiceFactory(
             when {
                 configuration.chat.foregroundService -> CustomForegroundNotificationsService.Factory()
                 else -> null

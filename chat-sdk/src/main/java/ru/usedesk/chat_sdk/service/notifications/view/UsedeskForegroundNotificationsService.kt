@@ -9,7 +9,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import ru.usedesk.chat_sdk.R
 
-
+// Remove in 2027
+@Deprecated(NOTIFICATIONS_SERVICE_DEPRECATED)
+@Suppress("DEPRECATION")
 abstract class UsedeskForegroundNotificationsService : UsedeskNotificationsService() {
 
     override val showCloseButton = true

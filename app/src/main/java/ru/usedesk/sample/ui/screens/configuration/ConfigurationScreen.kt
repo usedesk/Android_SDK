@@ -1,6 +1,8 @@
 package ru.usedesk.sample.ui.screens.configuration
 
+import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,12 +12,12 @@ import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import ru.usedesk.chat_sdk.UsedeskChatSdk
-import ru.usedesk.chat_sdk.UsedeskChatSdk.stopService
 import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskTextChangeListener
 import ru.usedesk.common_gui.insetsAsPaddings
@@ -29,6 +31,9 @@ class ConfigurationScreen : UsedeskFragment() {
 
     private val viewModel: ConfigurationViewModel by viewModels()
     private lateinit var binding: ScreenConfigurationBinding
+    private val notificationsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,8 +70,11 @@ class ConfigurationScreen : UsedeskFragment() {
                 )
             }
         }
-        binding.switchService.setOnCheckedChangeListener { _, _ ->
-            stopService(requireContext())
+        binding.switchService.setOnCheckedChangeListener { _, checked ->
+            stopNotificationsService()
+            if (checked && Build.VERSION.SDK_INT >= 33) {
+                notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
         binding.switchMaterialComponents.setOnCheckedChangeListener { _, _ ->
             if (viewModel.isMaterialComponentsSwitched(getConfiguration())) {
@@ -170,6 +178,9 @@ class ConfigurationScreen : UsedeskFragment() {
         super.onPause()
         viewModel.setTempConfiguration(getConfiguration())
     }
+
+    @Suppress("DEPRECATION")
+    private fun stopNotificationsService() = UsedeskChatSdk.stopService(requireContext())
 
     private fun getConfiguration(): Configuration {
         val additionalFields = mapOf(

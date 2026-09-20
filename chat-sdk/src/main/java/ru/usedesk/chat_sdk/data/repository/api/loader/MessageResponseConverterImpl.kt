@@ -418,14 +418,14 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
         forEachIndexed { index, obj ->
             if (obj is MessageObject.Button && obj.hideName && obj.button.name.isNotEmpty()) {
                 val name = obj.button.name
-                val textIndex = (index - 1 downTo 0).firstOrNull { i ->
-                    (result[i] as? MessageObject.Text)?.text?.contains(name) == true
-                } ?: result.indices.firstOrNull { i ->
+                val hasName = { i: Int ->
                     (result[i] as? MessageObject.Text)?.text?.contains(name) == true
                 }
+                val textIndex = (index - 1 downTo 0).firstOrNull(hasName)
+                    ?: result.indices.firstOrNull(hasName)
                 if (textIndex != null) {
                     val old = result[textIndex] as MessageObject.Text
-                    result[textIndex] = MessageObject.Text(old.text.replaceFirst(name, "").trim())
+                    result[textIndex] = MessageObject.Text(old.text.replaceFirst(name, ""))
                 }
             }
         }

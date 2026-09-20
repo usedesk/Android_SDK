@@ -13,6 +13,10 @@ android {
         minSdk = libs.versions.minSdk.get().toInteger()
         targetSdk = libs.versions.targetSdk.get().toInteger()
         vectorDrawables.useSupportLibrary = true
+        buildConfigField "String", "SDK_VERSION", "\"${project.version}\""
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())

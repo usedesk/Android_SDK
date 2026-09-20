@@ -8,7 +8,7 @@ internal interface CreateTicket {
     class Request(
         @SerializedName("api_token") private val apiToken: String,
         @SerializedName("client_email") private val clientEmail: String? = null,
-        @SerializedName("clientName")
+        @SerializedName("client_name")
         private val clientName: String? = null,
         @SerializedName("subject") private val subject: String,
         @SerializedName("message") private val message: String,

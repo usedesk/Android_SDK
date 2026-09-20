@@ -231,7 +231,7 @@ internal class KbRepository @Inject constructor(
             null -> SendRatingResponse.Error(response?.code)
             else -> SendRatingResponse.Done(
                 response.rating.positive ?: 0,
-                response.rating.positive ?: 0
+                response.rating.negative ?: 0
             )
         }
     }

@@ -267,8 +267,8 @@ internal class ChatApiImpl @Inject constructor(
                 val request = SetClient.Request(
                     token = configuration.clientToken,
                     companyId = configuration.companyId,
-                    email = configuration.clientEmail?.getCorrectStringValue(),
-                    userName = configuration.clientName?.getCorrectStringValue(),
+                    email = configuration.clientEmail,
+                    userName = configuration.clientName,
                     note = configuration.clientNote,
                     phone = configuration.clientPhoneNumber,
                     additionalId = configuration.clientAdditionalId,
@@ -367,10 +367,10 @@ internal class ChatApiImpl @Inject constructor(
             email = offlineForm.clientEmail,
             name = offlineForm.clientName,
             companyId = configuration.companyAndChannel(),
-            message = offlineForm.message.getCorrectStringValue(),
+            message = offlineForm.message,
             topic = offlineForm.topic,
             jsonFields = offlineForm.fields.map {
-                it.key to it.value.getCorrectStringValue().ifEmpty { null }
+                it.key to it.value.ifEmpty { null }
             }
         )
         val response = doRequestJsonObject(
@@ -413,8 +413,6 @@ internal class ChatApiImpl @Inject constructor(
             else -> SendAdditionalFieldsResponse.Error(response?.code)
         }
     }
-
-    private fun String.getCorrectStringValue() = replace("\"", "\\\"")
 
     override fun disconnect() {
         socketApi.disconnect()

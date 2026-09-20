@@ -9,14 +9,16 @@ internal sealed class SocketRequest(@SerializedName("type") val type: String) {
         @SerializedName("company_id") val companyId: String,
         @SerializedName("url") val url: String,
         messageLimit: Int?,
-        userData: Payload.UserData
+        userData: Payload.UserData,
+        version: String
     ) : SocketRequest(TYPE) {
 
-        @SerializedName("payload") private val payload = Payload(messageLimit, userData)
+        @SerializedName("payload") private val payload = Payload(messageLimit, userData, version)
 
         class Payload(
             @SerializedName("message_limit") val messageLimit: Int?,
-            @SerializedName("userData") val userData: UserData
+            @SerializedName("userData") val userData: UserData,
+            @SerializedName("version") val version: String
         ) {
             @SerializedName("sdk") val sdk = VALUE_CURRENT_SDK
             @SerializedName("type") val type = VALUE_TYPE_SDK
@@ -26,7 +28,8 @@ internal sealed class SocketRequest(@SerializedName("type") val type: String) {
                 @SerializedName("os") val os: String,
                 @SerializedName("app_name") val appName: String,
                 @SerializedName("app_version") val appVersion: String,
-                @SerializedName("mobile_operator_name") val mobileOperatorName: String
+                @SerializedName("mobile_operator_name") val mobileOperatorName: String,
+                @SerializedName("sdk_version") val sdkVersion: String
             )
         }
 

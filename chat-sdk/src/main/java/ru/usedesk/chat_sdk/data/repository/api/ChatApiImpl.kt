@@ -11,6 +11,7 @@ import androidx.core.net.toUri
 import com.google.gson.Gson
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
+import ru.usedesk.chat_sdk.BuildConfig
 import ru.usedesk.chat_sdk.data.repository._extra.retrofit.RetrofitApi
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.EventListener
 import ru.usedesk.chat_sdk.data.repository.api.ChatApi.InitChatResponse
@@ -181,7 +182,8 @@ internal class ChatApiImpl @Inject constructor(
             os = os,
             appName = appName,
             appVersion = appVersion,
-            mobileOperatorName = mobileOperatorName
+            mobileOperatorName = mobileOperatorName,
+            sdkVersion = BuildConfig.SDK_VERSION
         )
     }
 
@@ -197,7 +199,8 @@ internal class ChatApiImpl @Inject constructor(
             messagesPageSize > 0 -> messagesPageSize
             else -> null
         },
-        getUserData()
+        getUserData(),
+        BuildConfig.SDK_VERSION
     )
 
     override fun convertText(text: String) = messageResponseConverter.convertText(text)

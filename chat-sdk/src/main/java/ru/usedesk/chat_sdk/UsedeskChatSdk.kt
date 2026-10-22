@@ -9,6 +9,7 @@ import ru.usedesk.chat_sdk.di.preparation.PreparationComponent
 import ru.usedesk.chat_sdk.domain.UsedeskChat
 import ru.usedesk.chat_sdk.domain.UsedeskPreparation
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
+import ru.usedesk.chat_sdk.service.notifications.NotificationsServiceController
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 import ru.usedesk.chat_sdk.service.notifications.view.NOTIFICATIONS_SERVICE_DEPRECATED
 
@@ -65,6 +66,7 @@ object UsedeskChatSdk {
     @JvmStatic
     @JvmOverloads
     fun release(force: Boolean = true) {
+        if (force) NotificationsServiceController.stopAll()
         if (force || ChatComponent.chatComponent?.chatInteractor?.isNoListeners() == true) {
             ChatComponent.close()
             if (PreparationComponent.preparationComponent == null) {
@@ -102,6 +104,9 @@ object UsedeskChatSdk {
     fun setNotificationsServiceFactory(
         notificationsServiceFactory: UsedeskNotificationsServiceFactory?
     ) {
+        if (this.notificationsServiceFactory !== notificationsServiceFactory) {
+            NotificationsServiceController.stopAll()
+        }
         this.notificationsServiceFactory = notificationsServiceFactory
     }
 
@@ -115,7 +120,7 @@ object UsedeskChatSdk {
     @Suppress("DEPRECATION")
     @JvmStatic
     fun startService(context: Context) {
-        notificationsServiceFactory?.startService(context, requireConfiguration())
+        chatConfiguration?.let { notificationsServiceFactory?.startService(context, it) }
     }
 
     // Remove in 2027

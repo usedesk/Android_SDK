@@ -80,8 +80,9 @@ internal class MediaPlayerAdapter(
     private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
 
     private fun playAfterPause() {
-        if (exoPlayer.playbackState == Player.STATE_ENDED) {
-            exoPlayer.seekTo(0)
+        when (exoPlayer.playbackState) {
+            Player.STATE_IDLE -> exoPlayer.prepare()
+            Player.STATE_ENDED -> exoPlayer.seekTo(0)
         }
         exoPlayer.play()
     }

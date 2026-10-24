@@ -2,6 +2,7 @@
 package ru.usedesk.common_sdk.api
 
 import com.google.gson.Gson
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -25,12 +26,19 @@ internal class ApiFactory @Inject constructor(
     }
 
     private fun <API> createInstance(baseUrl: String, apiClass: Class<API>) = Retrofit.Builder()
-        .baseUrl(baseUrl.getCorrectUrl())
+        .baseUrl(baseUrl)
         .client(okHttpClientFactory.createInstance())
         .addConverterFactory(GsonConverterFactory.create(gson))
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
         .create(apiClass)
 
-    private fun String.getCorrectUrl() = trimEnd('/') + '/'
+    private fun String.getCorrectUrl(): String {
+        val url = trim().toHttpUrl()
+        var path = url.encodedPath.trimEnd('/')
+        while (path.substringAfterLast('/').equals("uapi", ignoreCase = true)) {
+            path = path.substringBeforeLast('/').trimEnd('/')
+        }
+        return url.newBuilder().encodedPath("$path/").build().toString()
+    }
 }

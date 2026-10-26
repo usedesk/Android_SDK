@@ -1,4 +1,3 @@
-
 package ru.usedesk.chat_sdk.service.notifications.view
 
 import android.app.Notification
@@ -10,7 +9,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.core.content.IntentCompat
 import androidx.core.text.HtmlCompat
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,6 +26,8 @@ import ru.usedesk.chat_sdk.entity.UsedeskActionListener
 import ru.usedesk.chat_sdk.entity.UsedeskChatConfiguration
 import ru.usedesk.chat_sdk.entity.UsedeskMessage
 import ru.usedesk.chat_sdk.entity.UsedeskMessageOwner
+import ru.usedesk.chat_sdk.service.notifications.NotificationsServiceController
+import ru.usedesk.common_sdk.UsedeskLog
 
 internal const val NOTIFICATIONS_SERVICE_DEPRECATED =
     "The local notifications service is legacy: on recent Android versions " +
@@ -32,6 +35,7 @@ internal const val NOTIFICATIONS_SERVICE_DEPRECATED =
 
 // Remove in 2027
 @Deprecated(NOTIFICATIONS_SERVICE_DEPRECATED)
+@Suppress("DEPRECATION")
 abstract class UsedeskNotificationsService : Service() {
     lateinit var notificationManager: NotificationManager
         private set
@@ -45,7 +49,14 @@ abstract class UsedeskNotificationsService : Service() {
     private var model = Model()
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val modelMutex = Mutex()
-    private val actionListener = object : UsedeskActionListener {
+    private var listeningChat: UsedeskChat? = null
+    internal var isStopping = false
+        private set
+    internal var initializationError: RuntimeException? = null
+        private set
+    private var actionListener: UsedeskActionListener? = null
+
+    private fun createActionListener() = object : UsedeskActionListener {
         override fun onModel(
             model: UsedeskChat.Model,
             newMessages: List<UsedeskMessage>,
@@ -54,7 +65,7 @@ abstract class UsedeskNotificationsService : Service() {
         ) {
             newMessages.forEach { message ->
                 if (message is UsedeskMessageOwner.Agent) {
-                    updateModel {
+                    updateModel(this) {
                         copy(
                             message = message,
                             count = when (this@UsedeskNotificationsService.model.message) {
@@ -68,21 +79,33 @@ abstract class UsedeskNotificationsService : Service() {
         }
     }
 
-    private fun updateModel(onUpdate: Model.() -> Model) {
+    private fun updateModel(listener: UsedeskActionListener? = null, onUpdate: Model.() -> Model) {
         mainScope.launch {
             modelMutex.withLock {
-                model = model.onUpdate()
-                model.render()
+                if (!isStopping && (listener == null || actionListener === listener)) {
+                    try {
+                        model = model.onUpdate()
+                        model.render()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: RuntimeException) {
+                        stopAfterFailure(e)
+                    }
+                }
             }
         }
     }
 
     override fun onCreate() {
         super.onCreate()
-
-        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        registerNotification()
+        NotificationsServiceController.created(this)
+        try {
+            notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            registerNotification()
+        } catch (e: RuntimeException) {
+            initializationError = e
+            if (this !is UsedeskForegroundNotificationsService) stopAfterFailure(e)
+        }
     }
 
     private fun registerNotification() {
@@ -100,30 +123,71 @@ abstract class UsedeskNotificationsService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        throw UnsupportedOperationException("Not yet implemented")
+        return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (stopRequested) {
-            stopRequested = false
-            stopSelf(startId)
-            return START_NOT_STICKY
+        if (isStopping) return START_NOT_STICKY
+        try {
+            if (intent?.getBooleanExtra(UsedeskForegroundNotificationsService.STOP_SELF_KEY, false) == true) {
+                NotificationsServiceController.stop(javaClass)
+                return START_NOT_STICKY
+            }
+            val supplied = intent?.let {
+                IntentCompat.getParcelableExtra(it, USEDESK_CHAT_CONFIGURATION_KEY, UsedeskChatConfiguration::class.java)
+            }
+            val configuration = NotificationsServiceController.configuration(this, supplied)
+            if (configuration == null) {
+                NotificationsServiceController.failed(this)
+                return START_NOT_STICKY
+            }
+            startListening(configuration)
+        } catch (e: RuntimeException) {
+            stopAfterFailure(e)
         }
-        started = this
-        val chatConfiguration = intent?.getParcelableExtra<UsedeskChatConfiguration>(
-            USEDESK_CHAT_CONFIGURATION_KEY
-        )
-        when {
-            chatConfiguration != null -> {
-                UsedeskChatSdk.setConfiguration(chatConfiguration)
-                UsedeskChatSdk.init(this).apply {
-                    addActionListener(actionListener)
+        return if (isStopping) START_NOT_STICKY else START_REDELIVER_INTENT
+    }
+
+    internal fun startListening(configuration: UsedeskChatConfiguration) {
+        if (isStopping) return
+        try {
+            require(configuration.validate().isAllValid()) { "Invalid chat configuration" }
+            val chat = UsedeskChatSdk.getInstance() ?: UsedeskChatSdk.init(this, configuration)
+            if (listeningChat !== chat) {
+                detachChat()
+                model = Model()
+                listeningChat = chat
+                createActionListener().also {
+                    actionListener = it
+                    chat.addActionListener(it)
                 }
             }
-            else -> stopSelf(startId)
+        } catch (e: RuntimeException) {
+            stopAfterFailure(e)
         }
+    }
 
-        return START_REDELIVER_INTENT
+    internal fun requestStop() {
+        if (isStopping) return
+        isStopping = true
+        NotificationsServiceController.stopping(this)
+        mainScope.cancel()
+        detachChat()
+        stopSelf()
+    }
+
+    internal fun stopAfterFailure(error: RuntimeException) {
+        UsedeskLog.onLog("NotificationsService") { "Service stopped: $error" }
+        NotificationsServiceController.failed(this)
+    }
+
+    private fun detachChat() {
+        val chat = listeningChat ?: return
+        listeningChat = null
+        val listener = actionListener
+        actionListener = null
+        listener?.let(chat::removeActionListener)
+        if (UsedeskChatSdk.getInstance() === chat) UsedeskChatSdk.release(false)
     }
 
     private fun Model.render() {
@@ -179,12 +243,10 @@ abstract class UsedeskNotificationsService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (started === this) {
-            started = null
-        }
+        isStopping = true
         mainScope.cancel()
-        UsedeskChatSdk.getInstance()?.removeActionListener(actionListener)
-        UsedeskChatSdk.release(false)
+        detachChat()
+        NotificationsServiceController.destroyed(this)
     }
 
     data class Model @JvmOverloads constructor(
@@ -194,12 +256,5 @@ abstract class UsedeskNotificationsService : Service() {
 
     companion object {
         const val USEDESK_CHAT_CONFIGURATION_KEY = "usedeskChatConfigurationKey"
-
-        @Suppress("DEPRECATION")
-        @Volatile
-        internal var started: UsedeskNotificationsService? = null
-
-        @Volatile
-        internal var stopRequested = false
     }
 }

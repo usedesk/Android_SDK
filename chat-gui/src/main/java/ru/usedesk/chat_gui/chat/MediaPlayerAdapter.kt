@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -55,7 +56,11 @@ internal class MediaPlayerAdapter(
             .apply {
                 val okHttpClient = usedeskOkHttpClientFactory.createInstance()
                 val okHttpDataSourceFactory = OkHttpDataSource.Factory(okHttpClient)
-                setMediaSourceFactory(DefaultMediaSourceFactory(okHttpDataSourceFactory))
+                val dataSourceFactory = DefaultDataSource.Factory(
+                    fragment.requireContext(),
+                    okHttpDataSourceFactory
+                )
+                setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
             }
             .build().also {
                 playerViewModel.exoPlayer = it
@@ -80,8 +85,9 @@ internal class MediaPlayerAdapter(
     private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
 
     private fun playAfterPause() {
-        if (exoPlayer.playbackState == Player.STATE_ENDED) {
-            exoPlayer.seekTo(0)
+        when (exoPlayer.playbackState) {
+            Player.STATE_IDLE -> exoPlayer.prepare()
+            Player.STATE_ENDED -> exoPlayer.seekTo(0)
         }
         exoPlayer.play()
     }

@@ -17,9 +17,10 @@ class CustomForegroundNotificationsService : UsedeskForegroundNotificationsServi
         this,
         0,
         Intent(this, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         },
-        PendingIntent.FLAG_IMMUTABLE
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     class Factory : UsedeskNotificationsServiceFactory() {

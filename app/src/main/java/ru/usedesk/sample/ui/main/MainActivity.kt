@@ -178,6 +178,30 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        if (intent.action != ACTION_OPEN_CHAT) return
+        intent.action = null
+
+        if (navController.currentDestination?.id == sampleR.id.dest_usedeskChatScreen) return
+        if (navController.popBackStack(sampleR.id.dest_usedeskChatScreen, false)) return
+
+        val configuration = viewModel.modelFlow.value.configuration
+        if (!configuration.toChatConfiguration().validate().isAllValid()) {
+            Toast.makeText(this, "Invalid configuration", Toast.LENGTH_SHORT).show()
+            return
+        }
+        navController.navigate(
+            sampleR.id.dest_usedeskChatScreen,
+            createChatScreenBundle(configuration)
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -349,6 +373,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     companion object {
+        const val ACTION_OPEN_CHAT = "ru.usedesk.sample.action.OPEN_CHAT"
         private val REJECTED_FILE_TYPES = listOf("apk", "jar", "dex", "so", "aab")
     }
 }

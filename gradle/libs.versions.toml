@@ -83,4 +83,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 room = { id = "androidx.room", version.ref = "roomVersion" }
-maven-publish = { id = "maven-publish" } 
+maven-publish = { id = "maven-publish" }

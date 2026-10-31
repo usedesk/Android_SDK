@@ -93,7 +93,11 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                     from.file.size!!,
                     from.file.name!!
                 )
-                val fileId = from.file.fileId?.toString() ?: id
+                val fileId = from.file.id?.takeIf { it.isNotBlank() }
+                    ?: from.file.attachmentId?.takeIf { it.isNotBlank() }
+                    ?: from.file.fileId?.takeIf { it.isNotBlank() }
+                    ?: id
+                val fileLocalId = from.payload?.messageId ?: fileId
 
                 when {
                     fromClient -> when {
@@ -102,28 +106,28 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                         file.isVideo() -> UsedeskMessageClientVideo(
                             fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                         file.isAudio() -> UsedeskMessageClientAudio(
                             fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                         else -> UsedeskMessageClientFile(
                             fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                     }
                     else -> when {

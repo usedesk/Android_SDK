@@ -90,7 +90,9 @@ internal sealed interface SocketResponse {
                 @SerializedName("type") val type: String?,
                 @SerializedName("content") val content: String?,
                 @SerializedName("size") val size: String?,
-                @SerializedName("fileId") val fileId: Long?
+                @SerializedName("fileId") val fileId: String?,
+                @SerializedName("id") val id: String? = null,
+                @SerializedName("attachmentId") val attachmentId: String? = null
             )
 
             class Payload(

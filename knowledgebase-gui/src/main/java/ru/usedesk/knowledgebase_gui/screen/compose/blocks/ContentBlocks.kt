@@ -40,10 +40,6 @@ internal fun ContentBlocks(
     onEvent: (Event) -> Unit
 ) {
     val state = viewModel.modelFlow.collectAsState()
-    // derivedStateOf scopes the snapshot subscription to *this* derived value, so this
-    // composable invalidates only when the specific field changes — typing in the search bar
-    // updates only searchText (read via the lambda below inside SearchBar) and does not
-    // re-run ContentBlocks.
     val block by remember { derivedStateOf { state.value.blocksState.block } }
     val focused by remember { derivedStateOf { state.value.blocksState.searchBarFocused } }
     val searchTextProvider = remember { { state.value.blocksState.searchText } }

@@ -108,7 +108,7 @@ internal class OfflineFormViewModel : UsedeskViewModel<OfflineFormViewModel.Mode
                     when (it) {
                         is OfflineFormItem.List -> it
                         is OfflineFormItem.Text -> it.copy(
-                            error = it.required && it.text.any(Char::isLetterOrDigit)
+                            error = it.required && !it.text.any(Char::isLetterOrDigit)
                         )
                     }
                 }

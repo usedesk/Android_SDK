@@ -93,62 +93,67 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                     from.file.size!!,
                     from.file.name!!
                 )
+                val fileId = from.file.id?.takeIf { it.isNotBlank() }
+                    ?: from.file.attachmentId?.takeIf { it.isNotBlank() }
+                    ?: from.file.fileId?.takeIf { it.isNotBlank() }
+                    ?: id
+                val fileLocalId = from.payload?.messageId ?: fileId
 
                 when {
                     fromClient -> when {
                         file.isImage() -> UsedeskMessageClientImage(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                         file.isVideo() -> UsedeskMessageClientVideo(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                         file.isAudio() -> UsedeskMessageClientAudio(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                         else -> UsedeskMessageClientFile(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             UsedeskMessageOwner.Client.Status.SUCCESSFULLY_SENT,
-                            localId
+                            fileLocalId
                         )
                     }
                     else -> when {
                         file.isImage() -> UsedeskMessageAgentImage(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
                             avatar
                         )
                         file.isVideo() -> UsedeskMessageAgentVideo(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
                             avatar
                         )
                         file.isAudio() -> UsedeskMessageAgentAudio(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
                             avatar
                         )
                         else -> UsedeskMessageAgentFile(
-                            id,
+                            fileId,
                             messageDate,
                             file,
                             name,
@@ -164,7 +169,7 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
                 val rating: UsedeskRating?
                 val text = from.text ?: ""
                 if (!fromClient) {
-                    objects = text.toMessageObjects()
+                    objects = text.toMessageObjects().hideButtonNames()
                     rating = RatingResponseConverter.convert(from.payload)
                 } else {
                     objects = listOf(MessageObject.Text(text))
@@ -335,7 +340,10 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
 
     sealed interface MessageObject {
         class Text(val text: String) : MessageObject
-        class Button(val button: UsedeskMessageAgentText.Button) : MessageObject
+        class Button(
+            val button: UsedeskMessageAgentText.Button,
+            val hideName: Boolean = false
+        ) : MessageObject
         class FieldInfo(val fieldInfo: UsedeskMessageAgentText.FieldInfo) : MessageObject
         class Image(val file: UsedeskFile) : MessageObject
     }
@@ -395,21 +403,37 @@ internal class MessageResponseConverterImpl @Inject constructor() : MessageRespo
             .dropLast(2)
             .split(";")
         return when (parts.size) {
-            in 1..4 -> {
-                val buttonObject = MessageObject.Button(
+            in 1..4 -> listOf(
+                MessageObject.Button(
                     Button(
                         name = parts.getOrNull(0) ?: "",
                         url = parts.getOrNull(1) ?: "",
                         type = parts.getOrNull(2) ?: ""
-                    )
+                    ),
+                    hideName = parts.getOrNull(3) == "noshow"
                 )
-                when (parts.getOrNull(3)) {
-                    "show" -> listOf(MessageObject.Text(buttonObject.button.name), buttonObject)
-                    else -> listOf(buttonObject)
-                }
-            }
+            )
             else -> null
         }
+    }
+
+    private fun List<MessageObject>.hideButtonNames(): List<MessageObject> {
+        val result = toMutableList()
+        forEachIndexed { index, obj ->
+            if (obj is MessageObject.Button && obj.hideName && obj.button.name.isNotEmpty()) {
+                val name = obj.button.name
+                val hasName = { i: Int ->
+                    (result[i] as? MessageObject.Text)?.text?.contains(name) == true
+                }
+                val textIndex = (index - 1 downTo 0).firstOrNull(hasName)
+                    ?: result.indices.firstOrNull(hasName)
+                if (textIndex != null) {
+                    val old = result[textIndex] as MessageObject.Text
+                    result[textIndex] = MessageObject.Text(old.text.replaceFirst(name, ""))
+                }
+            }
+        }
+        return result
     }
 
     private fun String.toMessageField(): List<MessageObject>? {

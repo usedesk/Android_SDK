@@ -1,11 +1,9 @@
 package ru.usedesk.sample.ui.main
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.ContentResolver
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -19,7 +17,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
@@ -31,9 +29,8 @@ import ru.usedesk.chat_gui.UsedeskOnDownloadListener
 import ru.usedesk.chat_gui.UsedeskOnFileClickListener
 import ru.usedesk.chat_gui.chat.UsedeskChatScreen
 import ru.usedesk.chat_gui.showfile.UsedeskShowFileScreen
-import ru.usedesk.chat_sdk.UsedeskChatSdk.setNotificationsServiceFactory
+import ru.usedesk.chat_sdk.UsedeskChatSdk
 import ru.usedesk.chat_sdk.entity.UsedeskFile
-import ru.usedesk.common_gui.UsedeskFragment
 import ru.usedesk.common_gui.UsedeskOnFullscreenListener
 import ru.usedesk.common_gui.UsedeskResourceManager
 import ru.usedesk.common_gui.UsedeskSnackbar
@@ -87,12 +84,6 @@ class MainActivity : AppCompatActivity(),
         }.forEach {
             UsedeskResourceManager.replaceResourceId(it.key, it.value)
         }
-        /*mapOf(
-            chatR.style.Usedesk_Chat_Attachment_Dialog to sampleR.style.Custom_Chat_Attachment_Dialog,
-            chatR.style.Usedesk_Chat_FormSelector_Dialog to sampleR.style.Custom_Chat_FormSelector_Dialog
-        ).forEach {
-            UsedeskResourceManager.replaceResourceId(it.key, it.value)
-        }*/
         val themeId = when {
             materialComponents -> sampleR.style.AppTheme_MaterialComponents
             else -> sampleR.style.AppTheme
@@ -187,6 +178,30 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        if (intent.action != ACTION_OPEN_CHAT) return
+        intent.action = null
+
+        if (navController.currentDestination?.id == sampleR.id.dest_usedeskChatScreen) return
+        if (navController.popBackStack(sampleR.id.dest_usedeskChatScreen, false)) return
+
+        val configuration = viewModel.modelFlow.value.configuration
+        if (!configuration.toChatConfiguration().validate().isAllValid()) {
+            Toast.makeText(this, "Invalid configuration", Toast.LENGTH_SHORT).show()
+            return
+        }
+        navController.navigate(
+            sampleR.id.dest_usedeskChatScreen,
+            createChatScreenBundle(configuration)
+        )
+    }
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -199,7 +214,7 @@ class MainActivity : AppCompatActivity(),
             try {
                 val downloadManager =
                     getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                val uri = Uri.parse(downloadFile.url)
+                val uri = downloadFile.url.toUri()
                 when (uri.scheme) {
                     ContentResolver.SCHEME_FILE,
                     ContentResolver.SCHEME_CONTENT -> contentResolver.openInputStream(uri)
@@ -273,8 +288,9 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this@MainActivity, text, Toast.LENGTH_LONG).show()
     }
 
+    @Suppress("DEPRECATION")
     private fun initUsedeskService(configuration: Configuration) {
-        setNotificationsServiceFactory(
+        UsedeskChatSdk.setNotificationsServiceFactory(
             when {
                 configuration.chat.foregroundService -> CustomForegroundNotificationsService.Factory()
                 else -> null
@@ -295,17 +311,6 @@ class MainActivity : AppCompatActivity(),
                 supportWindowInsets = true,
             )
         )
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
-        val currentFragment = navHostFragment
-            .childFragmentManager
-            .fragments
-            .firstOrNull()
-        if ((currentFragment as? UsedeskFragment)?.onBackPressed() != true && !navController.popBackStack()) {
-            finish()
-        }
     }
 
     override fun onSupportClick() {
@@ -356,18 +361,19 @@ class MainActivity : AppCompatActivity(),
     override fun onClientToken(clientToken: String) = viewModel.onClientToken(clientToken)
 
     private fun fullscreenMode(enable: Boolean) {
-        ViewCompat.getWindowInsetsController(binding.root)?.run {
+        WindowCompat.getInsetsController(window, binding.root).run {
             systemBarsBehavior = if (enable) {
                 hide(WindowInsetsCompat.Type.systemBars())
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             } else {
                 show(WindowInsetsCompat.Type.systemBars())
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
             }
         }
     }
 
     companion object {
+        const val ACTION_OPEN_CHAT = "ru.usedesk.sample.action.OPEN_CHAT"
         private val REJECTED_FILE_TYPES = listOf("apk", "jar", "dex", "so", "aab")
     }
 }

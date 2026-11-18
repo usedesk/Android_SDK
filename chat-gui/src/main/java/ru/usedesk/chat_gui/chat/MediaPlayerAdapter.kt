@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
@@ -55,7 +56,11 @@ internal class MediaPlayerAdapter(
             .apply {
                 val okHttpClient = usedeskOkHttpClientFactory.createInstance()
                 val okHttpDataSourceFactory = OkHttpDataSource.Factory(okHttpClient)
-                setMediaSourceFactory(DefaultMediaSourceFactory(okHttpDataSourceFactory))
+                val dataSourceFactory = DefaultDataSource.Factory(
+                    fragment.requireContext(),
+                    okHttpDataSourceFactory
+                )
+                setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
             }
             .build().also {
                 playerViewModel.exoPlayer = it
@@ -74,13 +79,15 @@ internal class MediaPlayerAdapter(
 
     private var lastMinimizeView: MinimizeView? = null
     private var currentMinimizeView: MinimizeView? = null
+    private var appliedFullscreen: Boolean? = null
 
     private val videoBinding = VideoExoPlayerBinding(pvVideoExoPlayer)
     private val audioBinding = AudioExoPlayerBinding(pvAudioExoPlayer)
 
     private fun playAfterPause() {
-        if (exoPlayer.playbackState == Player.STATE_ENDED) {
-            exoPlayer.seekTo(0)
+        when (exoPlayer.playbackState) {
+            Player.STATE_IDLE -> exoPlayer.prepare()
+            Player.STATE_ENDED -> exoPlayer.seekTo(0)
         }
         exoPlayer.play()
     }
@@ -136,7 +143,7 @@ internal class MediaPlayerAdapter(
                         }
                         else -> {}
                     }
-                } //Fullscreen will handled only if videoKey is not changed
+                }
                 else if (restored || old?.fullscreen != new.fullscreen) {
                     changeFullscreen(new.fullscreen)
                     if (restored) {
@@ -207,15 +214,13 @@ internal class MediaPlayerAdapter(
 
                 if (fullscreen) {
                     fullscreenListener?.getFullscreenLayout()?.addView(pvVideoExoPlayer)
-                    videoBinding.fullscreenButton.setImageResource(media3R.drawable.exo_ic_fullscreen_exit)
+                    videoBinding.fullscreenButton.setImageResource(chatR.drawable.usedesk_ic_fullscreen_exit)
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvVideoExoPlayer)
-                    videoBinding.fullscreenButton.setImageResource(media3R.drawable.exo_ic_fullscreen_enter)
+                    videoBinding.fullscreenButton.setImageResource(chatR.drawable.usedesk_ic_fullscreen)
                 }
-                //Each time need to set player again, otherwise it will not know what happened
                 pvVideoExoPlayer.player = exoPlayer
-                fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
-                fullscreenListener?.onFullscreenChanged(fullscreen)
+                applyFullscreen(fullscreen)
             }
             PlayerViewModel.Mode.AUDIO_EXO_PLAYER -> {
                 (pvAudioExoPlayer.parent as? ViewGroup)?.removeView(pvAudioExoPlayer)
@@ -225,31 +230,24 @@ internal class MediaPlayerAdapter(
                 } else {
                     currentMinimizeView?.lVideoMinimized?.addView(pvAudioExoPlayer)
                 }
-                //Each time need to set player again, otherwise it will not know what happened
                 pvAudioExoPlayer.player = exoPlayer
-                fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
-                fullscreenListener?.onFullscreenChanged(fullscreen)
+                applyFullscreen(fullscreen)
                 pvAudioExoPlayer.showController()
             }
             else -> {}
         }
     }
 
-    /**
-     * @return true if event was handled
-     */
+    private fun applyFullscreen(fullscreen: Boolean) {
+        if (appliedFullscreen != fullscreen) {
+            appliedFullscreen = fullscreen
+            fullscreenListener?.getFullscreenLayout()?.visibility = visibleGone(fullscreen)
+            fullscreenListener?.onFullscreenChanged(fullscreen)
+        }
+    }
+
     fun onBackPressed(): Boolean = playerViewModel.onBackPressed()
 
-    /**
-     * Resets the current playback and switches the player's view to lMinimized.
-     *
-     * @param lMinimized Parent view for minimized player
-     * @param mediaKey URL of the video/audio source
-     * @param mediaName Video/audio name
-     * @param playerType Video/audio type
-     * @param onCancel Called when the player cancels playing the current media
-     * @param onControlsHeightChanged Called when player controls are visible
-     */
     fun attachPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
@@ -260,13 +258,10 @@ internal class MediaPlayerAdapter(
     ) {
         hideKeyboard(pvVideoExoPlayer)
 
-        //Current player will be old
         lastMinimizeView = currentMinimizeView
 
-        //Reset old player, if it is
         resetPlayer()
 
-        //Saving data for new playing
         currentMinimizeView = MinimizeView(lMinimized, onCancel, onControlsHeightChanged)
 
         when (playerType) {
@@ -286,9 +281,6 @@ internal class MediaPlayerAdapter(
         fullscreenListener?.getFullscreenLayout()?.visibility = View.GONE
     }
 
-    /**
-     * Detach current player view if mediaKey is equal to the mediaKey of current player.
-     */
     fun detachPlayer(key: String): Boolean {
         val model = playerViewModel.modelFlow.value
         return if (model.key == key && !model.fullscreen) {
@@ -302,16 +294,6 @@ internal class MediaPlayerAdapter(
         }
     }
 
-    /**
-     * Places player view inside lMinimized if mediaKey is equal to the mediaKey of current player.
-     *
-     * @param lMinimized Parent view for minimized player
-     * @param mediaKey URL of the video/audio source
-     * @param onCancel Called when the player cancels playing the current media
-     * @param onControlsHeightChanged Called when player controls are visible
-     *
-     * @return true if player was reattached
-     */
     fun reattachPlayer(
         lMinimized: ViewGroup,
         mediaKey: String,
@@ -321,7 +303,6 @@ internal class MediaPlayerAdapter(
         val model = playerViewModel.modelFlow.value
         return when (model.key) {
             mediaKey -> {
-                //Saving data for player
                 currentMinimizeView = MinimizeView(
                     lMinimized,
                     onCancel,

@@ -52,64 +52,14 @@ internal class ThumbnailRepositoryImpl @Inject constructor(
         videoUri: Uri
     ) {
         ioScope.launch {
-            val thumbnailFile = localId.toFile()
-            val thumbnailUri = if (thumbnailFile.exists()) {
-                when (localId) {
-                    id -> thumbnailFile.toUri()
-                    else -> {
-                        val newThumbnailFile = id.toFile()
-                        thumbnailFile.renameTo(newThumbnailFile)
-                        newThumbnailFile.toUri()
-                    }
+            var thumbnailUri: Uri? = null
+            var attempt = 0
+            while (thumbnailUri == null && attempt < ATTEMPTS) {
+                if (attempt > 0) {
+                    delay(RETRY_DELAY * attempt)
                 }
-            } else {
-                val path = videoUri.toString()
-                val media = MediaMetadataRetriever()
-                val thumbnailBitmap = try {
-                    try {
-                        media.setDataSource(path)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        null
-                    } ?: try {
-                        media.setDataSource(path, mapOf())
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        null
-                    } ?: try {
-                        media.setDataSource(appContext, videoUri)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                    //Different methods works on different devices
-
-                    media.getFrameAtTime(0)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                } finally {
-                    media.release()
-                }
-                try {
-                    thumbnailBitmap?.run {
-                        thumbnailFile.outputStream().use { out ->
-                            compress(
-                                Bitmap.CompressFormat.JPEG,
-                                100,
-                                out
-                            )
-                            thumbnailFile.toUri()
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                } finally {
-                    thumbnailBitmap?.recycle()
-                }
-            }
-            if (thumbnailUri == null) {
-                delay(5000)
+                attempt++
+                thumbnailUri = loadThumbnailOnce(id, localId, videoUri)
             }
             mutex.withLock {
                 when (thumbnailUri) {
@@ -123,5 +73,68 @@ internal class ThumbnailRepositoryImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun loadThumbnailOnce(
+        id: String,
+        localId: String,
+        videoUri: Uri
+    ): Uri? {
+        val thumbnailFile = localId.toFile()
+        if (thumbnailFile.exists()) {
+            return when (localId) {
+                id -> thumbnailFile.toUri()
+                else -> {
+                    val newThumbnailFile = id.toFile()
+                    thumbnailFile.renameTo(newThumbnailFile)
+                    newThumbnailFile.toUri()
+                }
+            }
+        }
+        val thumbnailBitmap = extractFrame(videoUri) ?: return null
+        return try {
+            thumbnailFile.outputStream().use { out ->
+                thumbnailBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            }
+            thumbnailFile.toUri()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            thumbnailBitmap.recycle()
+        }
+    }
+
+    private fun extractFrame(videoUri: Uri): Bitmap? {
+        val path = videoUri.toString()
+        val media = MediaMetadataRetriever()
+        return try {
+            try {
+                media.setDataSource(path)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            } ?: try {
+                media.setDataSource(path, mapOf())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            } ?: try {
+                media.setDataSource(appContext, videoUri)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            media.getFrameAtTime(0)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            media.release()
+        }
+    }
+
+    companion object {
+        private const val ATTEMPTS = 3
+        private const val RETRY_DELAY = 5000L
     }
 }

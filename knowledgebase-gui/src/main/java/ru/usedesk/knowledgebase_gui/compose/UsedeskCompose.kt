@@ -64,10 +64,6 @@ internal fun Modifier.padding(padding: UsedeskKnowledgeBaseTheme.Dimensions.Padd
     bottom = padding.bottom
 )
 
-/**
- * Reports via [onVisibleChange] whether the support button should be shown (list scrolled to the top),
- * observing the scroll via [snapshotFlow] so the screen isn't recomposed while scrolling.
- */
 @Composable
 internal fun SupportButtonVisibilityEffect(
     lazyListState: LazyListState,

@@ -43,16 +43,19 @@ internal class OfflineFormSelectorPage : UsedeskFragment() {
                 binding.rvItems.insetsAsPaddings(ignoreStatusBar = true)
             }
         }
+    }.rootView
 
-        val key = argsGetString(KEY_KEY, "")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         OfflineFormSelectorAdapter(
-            key = key,
-            recyclerView = rvItems,
+            key = argsGetString(KEY_KEY, ""),
+            recyclerView = binding.rvItems,
             binding = binding,
             viewModel = viewModel,
-            lifecycleCoroutineScope = lifecycleScope
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope
         )
-    }.rootView
+    }
 
     internal class Binding(rootView: View, defaultStyleId: Int) :
         UsedeskBinding(rootView, defaultStyleId) {

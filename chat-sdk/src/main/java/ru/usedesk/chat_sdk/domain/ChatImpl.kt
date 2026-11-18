@@ -1,7 +1,7 @@
 package ru.usedesk.chat_sdk.domain
 
-import android.net.Uri
 import androidx.core.net.toUri
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -53,6 +54,8 @@ import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings
 import ru.usedesk.chat_sdk.entity.UsedeskOfflineFormSettings.WorkType
 import ru.usedesk.common_sdk.entity.UsedeskEvent
 import java.util.Calendar
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArraySet
 import javax.inject.Inject
 
 internal class ChatImpl @Inject constructor(
@@ -77,7 +80,7 @@ internal class ChatImpl @Inject constructor(
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var reconnectJob: Job? = null
     private val firstMessageMutex = Mutex()
-    private var firstMessageLock: Mutex? = null
+    private var firstMessageGate: CompletableDeferred<Unit>? = null
 
     private var chatInited: ChatInited? = null
     private var offlineFormToChat = false
@@ -87,8 +90,7 @@ internal class ChatImpl @Inject constructor(
     private var previousMessagesLoadingJob: Job? = null
 
     private val fileUploadProgressListeners =
-        mutableMapOf<String, MutableSet<IFileUploadProgressListener>>()
-    private val fileUploadProgressMutex = Mutex()
+        ConcurrentHashMap<String, CopyOnWriteArraySet<IFileUploadProgressListener>>()
 
     init {
         ioScope.launch {
@@ -141,8 +143,10 @@ internal class ChatImpl @Inject constructor(
     private fun launchConnect() {
         ioScope.launch {
             firstMessageMutex.withLock {
-                firstMessageLock?.unlockSafe()
-                firstMessageLock = Mutex()
+                val gate = firstMessageGate
+                if (gate == null || gate.isCompleted) {
+                    firstMessageGate = CompletableDeferred(Unit)
+                }
             }
 
             val configuration = userInfoRepository.getConfiguration()
@@ -154,15 +158,17 @@ internal class ChatImpl @Inject constructor(
     }
 
     private fun connect() {
-        setModel {
-            when (connectionState) {
-                UsedeskConnectionState.DISCONNECTED -> {
-                    reconnectJob?.cancel()
-                    launchConnect()
-                    copy(connectionState = UsedeskConnectionState.RECONNECTING)
-                }
-                else -> this
+        val old = modelFlow.getAndUpdate { model ->
+            when (model.connectionState) {
+                UsedeskConnectionState.DISCONNECTED -> model.copy(
+                    connectionState = UsedeskConnectionState.RECONNECTING
+                )
+                else -> model
             }
+        }
+        if (old.connectionState == UsedeskConnectionState.DISCONNECTED) {
+            reconnectJob?.cancel()
+            launchConnect()
         }
     }
 
@@ -257,26 +263,18 @@ internal class ChatImpl @Inject constructor(
         localMessageId: String,
         listener: IFileUploadProgressListener
     ) {
-        runBlocking {
-            fileUploadProgressMutex.withLock {
-                fileUploadProgressListeners.getOrPut(localMessageId) { mutableSetOf() }.run {
-                    add(listener)
-                }
+        val listeners = fileUploadProgressListeners[localMessageId]
+            ?: CopyOnWriteArraySet<IFileUploadProgressListener>().let {
+                fileUploadProgressListeners.putIfAbsent(localMessageId, it) ?: it
             }
-        }
+        listeners.add(listener)
     }
 
     override fun removeFileUploadProgressListener(
         localMessageId: String,
         listener: IFileUploadProgressListener
     ) {
-        runBlocking {
-            fileUploadProgressMutex.withLock {
-                fileUploadProgressListeners[localMessageId]?.run {
-                    remove(listener)
-                }
-            }
-        }
+        fileUploadProgressListeners[localMessageId]?.remove(listener)
     }
 
     override fun send(fileInfoList: Collection<UsedeskFileInfo>) {
@@ -285,7 +283,7 @@ internal class ChatImpl @Inject constructor(
 
     private suspend fun sendFileAgain(fileMessage: UsedeskMessage.File) {
         fileMessage as UsedeskMessageOwner.Client
-        val uri = Uri.parse(fileMessage.file.content)
+        val uri = fileMessage.file.content.toUri()
         val deferredCachedUri = cachedMessagesRepository.getCachedFileAsync(uri)
         val cachedUri = deferredCachedUri.await()
         val newFile = fileMessage.file.copy(content = cachedUri.toString())
@@ -295,8 +293,7 @@ internal class ChatImpl @Inject constructor(
             is UsedeskMessageClientVideo -> fileMessage.copy(file = newFile)
             is UsedeskMessageClientImage -> fileMessage.copy(file = newFile)
             is UsedeskMessageClientFile -> fileMessage.copy(file = newFile)
-            else -> null
-        }?.let { cachedNotSentMessage ->
+        }.let { cachedNotSentMessage ->
             cachedMessagesRepository.updateNotSentMessage(cachedNotSentMessage)
             onMessageUpdate(cachedNotSentMessage)
             toSendRepository.toSendFile(cachedNotSentMessage)
@@ -310,10 +307,8 @@ internal class ChatImpl @Inject constructor(
             val progressJob = ioScope.launch {
                 progressFlow.collect { progress ->
                     if (progress.second != 0L) {
-                        fileUploadProgressMutex.withLock {
-                            fileUploadProgressListeners[fileMessage.localId]?.forEach {
-                                it.onProgress(progress.first, progress.second)
-                            }
+                        fileUploadProgressListeners[fileMessage.localId]?.forEach {
+                            it.onProgress(progress.first, progress.second)
                         }
                     }
                 }
@@ -333,7 +328,7 @@ internal class ChatImpl @Inject constructor(
             when (response) {
                 is SendFileResponse.Done -> {
                     cachedMessagesRepository.removeNotSentMessage(fileMessage.localId)
-                    cachedMessagesRepository.removeFileFromCache(Uri.parse(fileMessage.file.content))
+                    cachedMessagesRepository.removeFileFromCache(fileMessage.file.content.toUri())
                     additionalFieldsRepository.messageSent()
                     true
                 }
@@ -351,8 +346,7 @@ internal class ChatImpl @Inject constructor(
                         is UsedeskMessageClientAudio -> fileMessage.copy(
                             status = UsedeskMessageOwner.Client.Status.SEND_FAILED
                         )
-                        else -> null
-                    }?.let(this@ChatImpl::onMessageUpdate)
+                    }.let(this@ChatImpl::onMessageUpdate)
                     false
                 }
             }
@@ -360,27 +354,32 @@ internal class ChatImpl @Inject constructor(
     }
 
     private suspend fun withFirstMessageLock(task: suspend () -> Boolean) {
-        firstMessageMutex.withLock {
-            val lock = firstMessageLock
-            when (lock?.isLocked) {
-                true -> lock
-                false -> {
-                    lock.lock(this@ChatImpl)
-                    null
-                }
-                else -> null
-            }
-        }?.withLock { }
-        val success = task()
-        firstMessageMutex.withLock {
-            firstMessageLock?.apply {
-                if (success) {
-                    if (isLocked) {
-                        delay(FIRST_MESSAGE_DELAY)
+        var ownGate: CompletableDeferred<Unit>? = null
+        while (true) {
+            val gate = firstMessageMutex.withLock {
+                val gate = firstMessageGate
+                when {
+                    gate == null -> null
+                    gate.isCompleted -> {
+                        ownGate = CompletableDeferred()
+                        firstMessageGate = ownGate
+                        null
                     }
-                    firstMessageLock = null
+                    else -> gate
                 }
-                unlockSafe(this@ChatImpl)
+            } ?: break
+            gate.await()
+        }
+        val success = task()
+        ownGate?.let { gate ->
+            if (success) {
+                delay(FIRST_MESSAGE_DELAY)
+            }
+            firstMessageMutex.withLock {
+                if (success && firstMessageGate === gate) {
+                    firstMessageGate = null
+                }
+                gate.complete(Unit)
             }
         }
     }
@@ -611,13 +610,11 @@ internal class ChatImpl @Inject constructor(
                     is UsedeskMessageClientFile -> message.copy(
                         status = UsedeskMessageOwner.Client.Status.SENDING
                     )
-                    else -> null
-                }?.let { sendingMessage ->
+                }.let { sendingMessage ->
                     onMessageUpdate(sendingMessage)
                     when (sendingMessage) {
                         is UsedeskMessage.File -> sendFileAgain(sendingMessage)
                         is UsedeskMessageClientText -> sendText(sendingMessage)
-                        else -> Unit
                     }
                 }
             }
@@ -700,41 +697,38 @@ internal class ChatImpl @Inject constructor(
     }
 
     override fun loadPreviousMessagesPage() {
-        setModel {
-            when (val oldestMessageId = messages.firstOrNull()?.id) {
-                null -> this
-                else -> copy(
-                    previousPageIsLoading = when {
-                        !previousPageIsLoading && previousPageIsAvailable -> {
-                            launchPreviousMessagesLoading(oldestMessageId)
-                            true
-                        }
-                        else -> previousPageIsLoading
-                    }
-                )
+        val old = modelFlow.getAndUpdate { model ->
+            when {
+                model.messages.firstOrNull() == null -> model
+                !model.previousPageIsLoading && model.previousPageIsAvailable ->
+                    model.copy(previousPageIsLoading = true)
+                else -> model
             }
         }
+        val oldestMessageId = old.messages.firstOrNull()?.commentId()
+        if (oldestMessageId != null &&
+            !old.previousPageIsLoading &&
+            old.previousPageIsAvailable
+        ) {
+            launchPreviousMessagesLoading(oldestMessageId)
+        }
+    }
+
+    private fun UsedeskMessage.commentId(): String = when (this) {
+        is UsedeskMessage.File -> file.content.toUri()
+            .getQueryParameter(COMMENT_ID_QUERY)
+            ?: id
+        else -> id
     }
 
     override fun release() {
         ioScope.cancel()
+        additionalFieldsInteractor.release()
         apiRepository.disconnect()
-    }
-
-    private fun Mutex.unlockSafe(owner: Any? = null) {
-        if (isLocked) {
-            unlock(owner)
-        }
     }
 
     private suspend fun onChatInited(chatInited: ChatInited) {
         userInfoRepository.setClientToken(chatInited.token)
-
-        if (chatInited.status in ACTIVE_STATUSES) {
-            firstMessageMutex.withLock {
-                firstMessageLock?.unlockSafe()
-            }
-        }
 
         val model = modelFlow.value
         val ids = model.messages.map(UsedeskMessage::id)
@@ -745,10 +739,16 @@ internal class ChatImpl @Inject constructor(
         val needToResendMessages = model.messages.isNotEmpty()
         onMessagesNew(new = filteredMessages + filteredNotSentMessages)
 
+        chatInited.clientId?.let { clientId ->
+            setModel { copy(clientId = clientId) }
+        }
         when {
-            chatInited.waitingEmail -> apiRepository.setClient(
-                userInfoRepository.getConfiguration()
-            )
+            chatInited.waitingEmail -> {
+                val response = apiRepository.setClient(userInfoRepository.getConfiguration())
+                if (response is ChatApi.SetClientResponse.Done) {
+                    setModel { copy(clientId = response.clientId) }
+                }
+            }
             else -> initClientMessageInteractor.sendInitClientMessage()
         }
         when {
@@ -838,18 +838,17 @@ internal class ChatImpl @Inject constructor(
     }
 
     private class ActionListeners : UsedeskActionListener {
-        private val listenersMutex = Mutex()
-        private var listeners = setOf<UsedeskActionListener>()
+        private val listeners = CopyOnWriteArraySet<UsedeskActionListener>()
 
         fun add(listener: UsedeskActionListener) {
-            doLocked { listeners = listeners + listener }
+            listeners.add(listener)
         }
 
         fun remove(listener: UsedeskActionListener) {
-            doLocked { listeners = listeners - listener }
+            listeners.remove(listener)
         }
 
-        fun isNoListeners() = doLocked { listeners.isEmpty() }
+        fun isNoListeners() = listeners.isEmpty()
 
         override fun onModel(
             model: Model,
@@ -857,7 +856,7 @@ internal class ChatImpl @Inject constructor(
             updatedMessages: List<UsedeskMessage>,
             removedMessages: List<UsedeskMessage>
         ) {
-            doLocked { listeners }.forEach {
+            listeners.forEach {
                 it.onModel(
                     model,
                     newMessages,
@@ -867,17 +866,14 @@ internal class ChatImpl @Inject constructor(
             }
         }
 
-        private fun <T> doLocked(onDo: () -> T): T =
-            runBlocking { listenersMutex.withLock { onDo() } }
-
         override fun onException(usedeskException: Exception) {
-            doLocked { listeners }.forEach { it.onException(usedeskException) }
+            listeners.forEach { it.onException(usedeskException) }
         }
     }
 
     companion object {
-        private val ACTIVE_STATUSES = listOf(1, 5, 6, 8)
         private const val REPEAT_DELAY = 5000L
         private const val FIRST_MESSAGE_DELAY = 2000L
+        private const val COMMENT_ID_QUERY = "ticket_comment_id"
     }
 }

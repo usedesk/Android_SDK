@@ -1,26 +1,13 @@
-buildscript {
-    ext {
-        agp_version = "8.10.1"
-    }
-}
-
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
-    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.ksp) apply false
     alias(libs.plugins.room) apply false
 }
 
 allprojects {
     project.group = "ru.usedesk"
-    project.version = "4.7.0"
-}
-
-ext {
-    defaultBuildToolsVersion = "34.0.0"
-    defaultCompileSdkVersion = 35
-    defaultTargetSdkVersion = 35
-    defaultMinSdkVersion = 21
-    javaVersion = JavaVersion.VERSION_17
+    project.version = "4.8.0"
 }

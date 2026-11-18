@@ -3,11 +3,11 @@ package ru.usedesk.sample.service
 
 import android.app.PendingIntent
 import android.content.Intent
-import android.os.Build
 import ru.usedesk.chat_sdk.service.notifications.UsedeskNotificationsServiceFactory
 import ru.usedesk.chat_sdk.service.notifications.view.UsedeskForegroundNotificationsService
 import ru.usedesk.sample.ui.main.MainActivity
 
+@Suppress("DEPRECATION")
 class CustomForegroundNotificationsService : UsedeskForegroundNotificationsService() {
     override val serviceClass: Class<*> = CustomForegroundNotificationsService::class.java
 
@@ -17,12 +17,10 @@ class CustomForegroundNotificationsService : UsedeskForegroundNotificationsServi
         this,
         0,
         Intent(this, MainActivity::class.java).apply {
+            action = MainActivity.ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         },
-        when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M -> PendingIntent.FLAG_IMMUTABLE
-            else -> 0
-        }
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
     class Factory : UsedeskNotificationsServiceFactory() {

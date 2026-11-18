@@ -2,28 +2,29 @@
 package ru.usedesk.chat_sdk.entity
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import ru.usedesk.common_sdk.utils.UsedeskValidatorUtil
 
 @Parcelize
 data class UsedeskChatConfiguration @JvmOverloads constructor(
-    val urlChat: String = "https://pubsubsec.usedesk.ru",
-    val urlChatApi: String = "https://secure.usedesk.ru",
-    val companyId: String,
-    val channelId: String,
-    val messagesPageSize: Int = 20,
-    val clientId: String,
-    val clientToken: String? = null,
-    val clientEmail: String? = null,
-    val clientName: String? = null,
-    val clientNote: String? = null,
-    val clientPhoneNumber: Long? = null,
-    val clientAdditionalId: String? = null,
-    val clientInitMessage: String? = null,
-    val clientAvatar: String? = null,
-    val cacheMessagesWithFile: Boolean = true,
-    val additionalFields: Map<Long, String> = mapOf(),
-    val additionalNestedFields: List<Map<Long, String>> = listOf(),
+    @SerializedName("urlChat") val urlChat: String = "https://pubsubsec.usedesk.ru",
+    @SerializedName("urlChatApi") val urlChatApi: String = "https://secure.usedesk.ru",
+    @SerializedName("companyId") val companyId: String,
+    @SerializedName("channelId") val channelId: String,
+    @SerializedName("messagesPageSize") val messagesPageSize: Int = 20,
+    @SerializedName("clientId") val clientId: String,
+    @SerializedName("clientToken") val clientToken: String? = null,
+    @SerializedName("clientEmail") val clientEmail: String? = null,
+    @SerializedName("clientName") val clientName: String? = null,
+    @SerializedName("clientNote") val clientNote: String? = null,
+    @SerializedName("clientPhoneNumber") val clientPhoneNumber: Long? = null,
+    @SerializedName("clientAdditionalId") val clientAdditionalId: String? = null,
+    @SerializedName("clientInitMessage") val clientInitMessage: String? = null,
+    @SerializedName("clientAvatar") val clientAvatar: String? = null,
+    @SerializedName("cacheMessagesWithFile") val cacheMessagesWithFile: Boolean = true,
+    @SerializedName("additionalFields") val additionalFields: Map<Long, String> = mapOf(),
+    @SerializedName("additionalNestedFields") val additionalNestedFields: List<Map<Long, String>> = listOf(),
 ) : Parcelable {
 
     fun validate(): Validation = Validation(

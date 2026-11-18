@@ -6,5 +6,6 @@ internal data class ChatInited(
     val waitingEmail: Boolean,
     val messages: List<UsedeskMessage>,
     val offlineFormSettings: UsedeskOfflineFormSettings,
-    val status: Int?
+    val status: Int?,
+    val clientId: Long?
 )

@@ -1,9 +1,9 @@
 package ru.usedesk.sample
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import ru.usedesk.common_sdk.UsedeskLog
 
-class App : MultiDexApplication() {
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
         UsedeskLog.enable()

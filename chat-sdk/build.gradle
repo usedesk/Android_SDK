@@ -1,29 +1,33 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    id "kotlin-kapt"
-    id "kotlin-parcelize"
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.room)
 }
 
 android {
-    compileSdk defaultCompileSdkVersion
-    buildToolsVersion = defaultBuildToolsVersion
+    compileSdk = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdkVersion defaultMinSdkVersion
-        targetSdkVersion defaultTargetSdkVersion
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         vectorDrawables.useSupportLibrary = true
+        buildConfigField "String", "SDK_VERSION", "\"${project.version}\""
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.java.get())
     }
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
+    namespace = "ru.usedesk.chat_sdk"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
     }
-    namespace "ru.usedesk.chat_sdk"
 }
 
 dependencies {
@@ -33,12 +37,13 @@ dependencies {
         exclude group: "org.json", module: "json"
     }
 
+    implementation libs.androidx.core
     implementation libs.androidx.core.ktx
 
     implementation libs.google.gson
 
     implementation libs.google.dagger
-    kapt libs.google.dagger.compiler
+    ksp libs.google.dagger.compiler
 
     implementation libs.kotlinx.coroutines.core
     implementation libs.kotlinx.coroutines.android
@@ -48,13 +53,13 @@ dependencies {
     implementation libs.squareup.retrofit.converter.gson
 
     implementation libs.androidx.room.runtime
-    kapt libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
 
     testImplementation libs.junit
 }
 
 room {
-    schemaDirectory "$projectDir/schemas"
+    schemaDirectory("$projectDir/schemas")
 }
 
 afterEvaluate {

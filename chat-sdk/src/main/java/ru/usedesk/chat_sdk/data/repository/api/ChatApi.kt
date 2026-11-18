@@ -89,7 +89,7 @@ internal interface ChatApi {
     }
 
     sealed interface SetClientResponse {
-        object Done : SetClientResponse
+        class Done(val clientId: Long) : SetClientResponse
         class Error(val error: Int? = null) : SetClientResponse
     }
 

@@ -6,22 +6,22 @@ import ru.usedesk.common_sdk.api.entity.UsedeskApiError
 
 internal interface GetArticles {
     class Request(
-        val query: String,
+        @SerializedName("query") val query: String,
         type: Type? = null,
         sectionIds: List<Long>? = null,
         categoryIds: List<Long>? = null,
         articleIds: List<Long>? = null,
         sort: Sort? = null,
         order: Order? = null,
-        val count: Int? = null,
-        val page: Long? = null,
+        @SerializedName("count") val count: Int? = null,
+        @SerializedName("page") val page: Long? = null,
     ) {
-        val type = type?.name?.lowercase()
-        val sectionIds = sectionIds?.joinToString(",")
-        val categoryIds = categoryIds?.joinToString(",")
-        val articleIds = articleIds?.joinToString(",")
-        val sort = sort?.name?.lowercase()
-        val order = order?.name?.lowercase()
+        @SerializedName("type") val type = type?.name?.lowercase()
+        @SerializedName("section_ids") val sectionIds = sectionIds?.joinToString(",")
+        @SerializedName("category_ids") val categoryIds = categoryIds?.joinToString(",")
+        @SerializedName("article_ids") val articleIds = articleIds?.joinToString(",")
+        @SerializedName("sort") val sort = sort?.name?.lowercase()
+        @SerializedName("order") val order = order?.name?.lowercase()
 
         enum class Type {
             PUBLIC,
@@ -43,9 +43,9 @@ internal interface GetArticles {
     }
 
     class Response(
-        val page: Long? = null,
-        var count: Long? = null,
-        val articles: Array<GetArticleContent.Response?>? = null,
+        @SerializedName("page") val page: Long? = null,
+        @SerializedName("count") var count: Long? = null,
+        @SerializedName("articles") val articles: Array<GetArticleContent.Response?>? = null,
         @SerializedName("last-page")
         val lastPage: Long? = null,
         @SerializedName("total-count")

@@ -3,7 +3,6 @@ package ru.usedesk.chat_gui.chat.messages.adapters
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.text.Html
 import android.text.Selection.removeSelection
 import android.text.Spannable
 import android.text.method.LinkMovementMethod
@@ -15,12 +14,17 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.OptIn
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import androidx.core.view.marginBottom
 import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +33,7 @@ import com.makeramen.roundedimageview.RoundedImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import ru.usedesk.chat_gui.chat.ChatArgs
 import ru.usedesk.chat_gui.chat.MediaPlayerAdapter
@@ -66,6 +71,7 @@ import ru.usedesk.chat_gui.R as chatR
 import ru.usedesk.common_gui.R as commonR
 
 
+@OptIn(UnstableApi::class)
 internal class MessagesAdapter(
     private val recyclerView: RecyclerView,
     private val dateBinding: DateBinding,
@@ -77,6 +83,11 @@ internal class MessagesAdapter(
     private val onFileDownloadClick: (UsedeskFile) -> Unit,
     savedStated: Bundle?
 ) : RecyclerView.Adapter<MessagesAdapter.BaseViewHolder>() {
+
+    private val floatingDateRect = Rect()
+    private val topDateHolderRect = Rect()
+    private val visibleParentRect = Rect()
+    private val visibleChildRect = Rect()
 
     private var items: List<ChatItem> = listOf()
     private val layoutManager = LinearLayoutManager(recyclerView.context).apply {
@@ -131,6 +142,14 @@ internal class MessagesAdapter(
         updateFirstVisibleIndex()
     }
 
+    override fun onViewAttachedToWindow(holder: BaseViewHolder) {
+        holder.scrollListener?.let(recyclerView::addOnScrollListener)
+    }
+
+    override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
+        holder.scrollListener?.let(recyclerView::removeOnScrollListener)
+    }
+
     private fun updateFirstVisibleIndex() {
         val topItemIndex = layoutManager.findLastVisibleItemPosition()
         if (topItemIndex >= 0) {
@@ -160,8 +179,10 @@ internal class MessagesAdapter(
                     topDateIndex
                 ) as? DateViewHolder
 
-                val floatingDateParentRect = dateBinding.rootView.makeGlobalVisibleRect()
-                val topDateRect = topDateHolder?.binding?.rootView?.makeGlobalVisibleRect()
+                val floatingDateParentRect =
+                    dateBinding.rootView.makeGlobalVisibleRect(floatingDateRect)
+                val topDateRect =
+                    topDateHolder?.binding?.rootView?.makeGlobalVisibleRect(topDateHolderRect)
                 val notVisibleDateIndex = when {
                     topDateRect != null &&
                             topDateRect.bottom <= floatingDateParentRect.bottom -> topDateIndex
@@ -196,7 +217,10 @@ internal class MessagesAdapter(
         }
     }
 
-    private fun View.makeGlobalVisibleRect() = Rect().also(this::getGlobalVisibleRect)
+    private fun View.makeGlobalVisibleRect(out: Rect) = out.apply {
+        setEmpty()
+        getGlobalVisibleRect(this)
+    }
 
     private fun isAtBottom(): Boolean {
         val visibleBottom = recyclerView.computeVerticalScrollOffset() + recyclerView.height
@@ -423,16 +447,16 @@ internal class MessagesAdapter(
     }
 
     fun isVisibleChild(child: View): Boolean {
-        val rectParent = Rect()
-        recyclerView.getGlobalVisibleRect(rectParent)
-        val rectItem = Rect()
-        child.getGlobalVisibleRect(rectItem)
-        return rectParent.contains(rectItem)
+        recyclerView.makeGlobalVisibleRect(visibleParentRect)
+        child.makeGlobalVisibleRect(visibleChildRect)
+        return visibleParentRect.contains(visibleChildRect)
     }
 
     internal abstract class BaseViewHolder(
         itemView: View
     ) : RecyclerView.ViewHolder(itemView) {
+
+        var scrollListener: RecyclerView.OnScrollListener? = null
 
         abstract fun bind(chatItem: ChatItem)
     }
@@ -453,7 +477,7 @@ internal class MessagesAdapter(
                 .getIdOrZero(attrId)
             return when (id) {
                 0 -> null
-                else -> tvTime.resources.getDrawable(id)
+                else -> ContextCompat.getDrawable(tvTime.context, id)
             }
         }
 
@@ -584,8 +608,8 @@ internal class MessagesAdapter(
             isClient: Boolean
         ) {
             val last = when {
-                isClient -> items.getOrNull(adapterPosition + 1) is UsedeskMessageOwner.Agent
-                else -> items.getOrNull(adapterPosition + 1) is UsedeskMessageOwner.Client
+                isClient -> items.getOrNull(bindingAdapterPosition + 1) is UsedeskMessageOwner.Agent
+                else -> items.getOrNull(bindingAdapterPosition + 1) is UsedeskMessageOwner.Client
             }
             vEmpty.visibility = visibleGone(last)
         }
@@ -631,7 +655,12 @@ internal class MessagesAdapter(
             val messageText = (chatItem as ChatItem.Message).message as UsedeskMessage.Text
 
             binding.tvText.run {
-                setMessageText(Html.fromHtml(messageText.convertedText + " ")) //TODO: temp fix
+                setMessageText(
+                    HtmlCompat.fromHtml(
+                        messageText.convertedText + " ",
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                )
                 visibility = visibleGone(messageText.convertedText.isNotEmpty())
             }
         }
@@ -749,7 +778,7 @@ internal class MessagesAdapter(
         private var thumbnailScope = CoroutineScope(Dispatchers.Main)
 
         init {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            scrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
@@ -757,12 +786,15 @@ internal class MessagesAdapter(
                     }
                     lastVisible = visible
                 }
-            })
+            }
         }
 
         private fun bindVideo(messageFile: UsedeskMessage.File) {
             thumbnailScope.cancel()
-            thumbnailScope = CoroutineScope(lifecycleScope.coroutineContext + Job())
+            thumbnailScope = CoroutineScope(
+                lifecycleScope.coroutineContext +
+                        SupervisorJob(lifecycleScope.coroutineContext[Job])
+            )
             this.usedeskFile = messageFile.file
 
             changeElements(showStub = true)
@@ -808,7 +840,7 @@ internal class MessagesAdapter(
                         binding.ivPreview.showImage(
                             newThumbnail.toString(),
                             onSuccess = {
-                                if (binding.ivPlay.visibility == View.VISIBLE) {
+                                if (binding.ivPlay.isVisible) {
                                     changeElements(
                                         showStub = false,
                                         showPreview = true
@@ -855,7 +887,7 @@ internal class MessagesAdapter(
         private var lastVisible = false
 
         init {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            scrollListener = object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val visible = isVisibleChild(binding.rootView)
                     if (!visible && lastVisible) {
@@ -863,7 +895,7 @@ internal class MessagesAdapter(
                     }
                     lastVisible = visible
                 }
-            })
+            }
             binding.stubProgress.visibility = View.VISIBLE
             binding.stubScrubber.visibility = View.VISIBLE
             binding.ivExoPause.visibility = View.INVISIBLE
@@ -922,7 +954,7 @@ internal class MessagesAdapter(
         }
 
         private fun changeElements(stub: Boolean = false) {
-            binding.lStub.visibility = visibleGone(stub)
+            binding.lStub.visibility = visibleInvisible(stub)
         }
     }
 

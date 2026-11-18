@@ -10,11 +10,9 @@ class UsedeskDateUtil {
     companion object {
         fun getLocalCalendar(pattern: String, dateValue: String): Calendar = Calendar.getInstance()
             .apply {
-                time = SimpleDateFormat(pattern, Locale.getDefault())
+                time = SimpleDateFormat(pattern, Locale.ROOT)
+                    .apply { timeZone = TimeZone.getTimeZone("UTC") }
                     .parse(dateValue)!!
-
-                val hoursOffset = TimeZone.getDefault().rawOffset / 3600000
-                add(Calendar.HOUR, hoursOffset)
             }
     }
 }

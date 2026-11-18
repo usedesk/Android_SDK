@@ -108,7 +108,7 @@ internal class AppRequestListener<T>(
     }
 
     override fun onResourceReady(
-        resource: T & Any,
+        resource: T?,
         model: Any,
         target: Target<T?>?,
         dataSource: DataSource,

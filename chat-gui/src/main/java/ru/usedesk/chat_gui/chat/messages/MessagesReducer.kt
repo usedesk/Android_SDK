@@ -71,7 +71,7 @@ internal class MessagesReducer @Inject constructor(
         mutableMapOf(list.id to list).apply {
             var parent: Field.List? = list
             while (parent != null) {
-                val child = firstOrNull { (it as? Field.List)?.parentId == parent?.id }
+                val child = firstOrNull { it.parentId == parent.id }
                 val childSelected = child?.selected
                 val parentSelected = parent.selected
                 parent = child?.copy(

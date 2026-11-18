@@ -2,6 +2,7 @@
 package ru.usedesk.sample.model.configuration.repository
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -38,9 +39,7 @@ class ConfigurationRepository(
 
     fun setConfiguration(configuration: Configuration) {
         val json = Gson().toJson(configuration)
-        sharedPreferences.edit()
-            .putString(KEY_DATA, json)
-            .apply()
+        sharedPreferences.edit { putString(KEY_DATA, json) }
 
         runBlocking {
             _configurationFlow.emit(configuration)

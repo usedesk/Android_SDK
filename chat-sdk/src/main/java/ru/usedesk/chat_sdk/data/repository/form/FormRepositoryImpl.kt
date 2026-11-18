@@ -226,7 +226,7 @@ internal class FormRepositoryImpl @Inject constructor(
                             var lastChild: Field.List? = field
                             while (lastChild != null) {
                                 lastChild = lists.firstOrNull { list ->
-                                    list.parentId == lastChild?.id
+                                    list.parentId == lastChild.id
                                 }
                                 if (lastChild != null) {
                                     tree.add(lastChild)

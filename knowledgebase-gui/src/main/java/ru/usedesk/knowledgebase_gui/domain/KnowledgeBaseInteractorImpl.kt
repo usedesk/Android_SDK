@@ -29,6 +29,7 @@ import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.Sen
 import ru.usedesk.knowledgebase_sdk.data.repository.api.UsedeskKnowledgeBase.SendReviewResponse
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskArticleContent
 import ru.usedesk.knowledgebase_sdk.entity.UsedeskSection
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 private val HTML_NON_TEXT_BLOCK_REGEX = Regex(
@@ -47,7 +48,7 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
 
     private val sectionsModelFlow = MutableStateFlow(SectionsModel())
     private val searchModelFlow = MutableStateFlow(ArticlesModel())
-    private val articleModelFlowMap = mutableMapOf<Long, MutableStateFlow<ArticleModel>>()
+    private val articleModelFlowMap = ConcurrentHashMap<Long, MutableStateFlow<ArticleModel>>()
 
     private val mutex = Mutex()
     private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -57,10 +58,10 @@ internal class KnowledgeBaseInteractorImpl @Inject constructor(
     private var loadSectionsJob: Job? = null
     private var loadArticlesJob: Job? = null
     private var loadArticleJob: Job? = null
-
-    private fun getArticleModelFlow(articleId: Long) = articleModelFlowMap.getOrPut(articleId) {
-        MutableStateFlow(ArticleModel())
-    }
+    private fun getArticleModelFlow(articleId: Long) =
+        articleModelFlowMap[articleId] ?: MutableStateFlow(ArticleModel()).let {
+            articleModelFlowMap.putIfAbsent(articleId, it) ?: it
+        }
 
     private fun <T> MutableStateFlow<T>.update(onUpdate: T.() -> T) =
         onUpdate(value).also { value = it }

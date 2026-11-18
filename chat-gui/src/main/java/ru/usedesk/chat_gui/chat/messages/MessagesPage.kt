@@ -1,16 +1,17 @@
 package ru.usedesk.chat_gui.chat.messages
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.UnstableApi
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.usedesk.chat_gui.UsedeskOnAttachmentClickListener
@@ -183,6 +184,7 @@ internal class MessagesPage : UsedeskFragment() {
         formSelectorDialog = null
     }
 
+    @OptIn(UnstableApi::class)
     private fun init(
         chatArgs: ChatArgs,
         savedInstanceState: Bundle?,
@@ -194,7 +196,7 @@ internal class MessagesPage : UsedeskFragment() {
             binding = binding.messagePanel,
             viewModel = viewModel,
             supportWindowInsets = chatArgs.supportWindowInsets,
-            lifecycleCoroutineScope = lifecycleScope,
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
         ) {
             findParent<UsedeskOnAttachmentClickListener>()?.onAttachmentClick()
                 ?: viewModel.onEvent(MessagesViewModel.Event.ShowAttachmentPanel(true))
@@ -206,7 +208,7 @@ internal class MessagesPage : UsedeskFragment() {
             recyclerView = binding.rvMessages,
             dateBinding = binding.dateBinding,
             viewModel = viewModel,
-            lifecycleScope = lifecycleScope,
+            lifecycleScope = viewLifecycleOwner.lifecycleScope,
             chatArgs = chatArgs,
             mediaPlayerAdapter = mediaPlayerAdapter,
             onFileClick = { findParent<UsedeskOnFileClickListener>()?.onFileClick(it) },
@@ -225,14 +227,14 @@ internal class MessagesPage : UsedeskFragment() {
             tvToBottom = binding.tvToBottom,
             parentStyleValues = binding.styleValues,
             viewModel = viewModel,
-            lifecycleCoroutineScope = lifecycleScope,
+            lifecycleCoroutineScope = viewLifecycleOwner.lifecycleScope,
             onClickListener = { messagesAdapter?.scrollToBottom() }
         )
     }
 
     private fun onUrlClick(url: String) {
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             })
         } catch (e: Exception) {
